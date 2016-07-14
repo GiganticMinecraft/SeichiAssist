@@ -1,0 +1,66 @@
+# 個別メッセージ設定
+
+# 初ログイン時に表示するメッセージ
+firstloginmessage: '初めまして！このサーバーは一部の整地中毒者によって設立された初の整地専門サーバーです．'
+
+# 初めてブロックを壊したときに表示するメッセージ
+firstbreakblockmessage: 'おめでとうございます！あなたはこのサーバーの整地に初めて貢献しました！特別に整地証明書を発行しました！（最初のスポーン地点にて豪華商品とお取替えできます）整地証明書は総ブロック破壊数1000ごとに１つもらえます'
+
+# 整地証明書の発行間隔
+seichipresentinterval: '1000'
+
+# 上の間隔でブロックを壊すたびに表示するメッセージ
+intervalbreakblockmessage: '整地証明書を発行しました．'
+
+# 採掘速度関連のパラメータ
+# 左クリックの押してる時間によって変化する採掘速度(1秒につき)
+leftclickamount: '0.5'
+
+# WG内効果
+
+# 移動速度上昇の有無
+defaultflagmovementspeed: 'ALLOW'
+
+# 移動速度上昇量
+wgmovementspeedamount: '0.8'
+
+# flyの有無
+defaultflagfly: 'ALLOW'
+
+# ログイン人数に応じた採掘速度変化(１人につき）
+loginplayersamount: '0.1'
+
+# 自分の周囲にいるプレイヤー数の採掘速度変化
+
+# 周囲何ブロックで判定するか．
+surroundblockradius: '100'
+
+# 自分の周囲にいるプレイヤー数に応じた採掘速度変化(１人につき）
+surroundplayersamount: '0.1'
+
+# ドラゲナイタイム
+doragenaistarttime: '20'
+doragenaiendtime: '21'
+
+# y座標が下がる時の採掘速度変化(64から１下がるごとに）
+ylabelamount: '0.005'
+
+# 初ログイン後の採掘速度変化(○日の間）
+firstloginday: '5'
+firstloginamount: '0.5'
+
+# 投票後の採掘速度変化（○時間）
+votehour: '1'
+voteamount: '0.5'
+
+# スポーン地点からの距離ごとの採掘速度変化（○ブロックごとに）
+distancefromspawnradiusinterval: '20'
+distancefromspawnamount: '0.05'
+
+# 生放送開始アラート後の採掘速度変化
+niconicotime: '30'
+niconicoamount: '0.5'
+
+# その日初ログイン後の採掘速度変化（○時間）
+todayfirstloginhour: '1'
+todayfirstloginamount: '0.3'
