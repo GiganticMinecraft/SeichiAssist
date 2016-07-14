@@ -29,6 +29,7 @@ public class TestRunnable extends BukkitRunnable{
 
 		//ログイン人数取得用関数初期化
 		p_num = 0;
+		
 	}
 
 	@Override
@@ -41,10 +42,10 @@ public class TestRunnable extends BukkitRunnable{
 		}
 
 		//ログイン人数を取得しp_numを決定
-		p_num = ( Bukkit.getOnlinePlayers().size() - 1 )  * 1;
+		p_num = ( Bukkit.getOnlinePlayers().size() - 1 )  / 2;
 
 		//プレイヤーにポーションエフェクトを付加
-		player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 110, p_num), true);
+		player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 1200, p_num));
 	}
 
 	//@EventHandler

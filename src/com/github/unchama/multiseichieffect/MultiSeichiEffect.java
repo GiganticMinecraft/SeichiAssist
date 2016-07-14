@@ -48,7 +48,7 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 		Player player = event.getPlayer();
 		
 		//一定時間おきに処理を実行するインスタンスを立ち上げ、そのインスタンスに変数playerを代入
-		new TestRunnable(player).runTaskTimer(this, 0, 100);
+		new TestRunnable(player).runTaskTimer(this, 0, 1201);
 		
 		//タスクキル判定用に変数playerをArrayListに登録
 		tasks.add(player);
