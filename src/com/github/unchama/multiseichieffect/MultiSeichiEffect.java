@@ -53,8 +53,9 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 		//タスクキル判定用に変数playerをArrayListに登録
 		tasks.add(player);
 		
-		getLogger().info("new runTaskTimer create Success!");
-		getLogger().info("Number of Running task : " + tasks.size());
+		//ログ出力
+		//getLogger().info("new runTaskTimer create Success!");
+		//getLogger().info("Number of Running task : " + tasks.size());
 	}
 
 //	デバッグ用(runTaskTimerが残らずきちんと終了してることを確認する時に使った)
@@ -76,7 +77,8 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 		//タスクキル判定用に変数playerをArrayListから削除
 		tasks.remove(player);
 		
-		getLogger().info("new runTaskTimer delete Success!");
-		getLogger().info("Number of Running task : " + tasks.size());
+		//ログ出力
+		//getLogger().info("new runTaskTimer delete Success!");
+		//getLogger().info("Number of Running task : " + tasks.size());
 	}
 }
