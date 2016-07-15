@@ -1,5 +1,6 @@
 package com.github.unchama.multiseichieffect;
 
+
 import java.util.ArrayList;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,6 +16,8 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 	//このクラス自身を表すインスタンス
 	//public static SeichiPlugin instance;
 
+
+	
 	//タスクキル判定用ArrayList
 	public static ArrayList<Player> tasks = new ArrayList<Player>();
 
@@ -58,14 +61,16 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 		//getLogger().info("Number of Running task : " + tasks.size());
 	}
 
-//	デバッグ用(runTaskTimerが残らずきちんと終了してることを確認する時に使った)
-//	@EventHandler
-//	public void onclick(BlockBreakEvent event){
-//		Player player = event.getPlayer();
-//		tasks.remove(player);
-//		getLogger().info("new runTaskTimer delete Success!");
-//		getLogger().info("Number of Running task : " + tasks.size());
-//	}
+	/*
+	//デバッグ用(runTaskTimerが残らずきちんと終了してることを確認する時に使った)
+	@EventHandler
+	public void onclick(BlockBreakEvent event){
+		Player player = event.getPlayer();
+		tasks.remove(player);
+		getLogger().info("new runTaskTimer delete Success!");
+		getLogger().info("Number of Running task : " + tasks.size());
+	}
+	*/
 
 	//プレイヤーがleftした時に実行
 	@EventHandler
@@ -81,4 +86,31 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 		//getLogger().info("new runTaskTimer delete Success!");
 		//getLogger().info("Number of Running task : " + tasks.size());
 	}
+	/*
+	@EventHandler
+	public void onPlayerRightClickEvent(PlayerInteractEvent event){
+		Player player = event.getPlayer();
+		Action action = event.getAction();
+		ItemStack itemstack = event.getItem();
+		itemstack.setAmount(1);
+		Block b = Bukkit.getWorld("World").getBlockAt(43, 64, 249);
+		
+		player.sendMessage("ue-1");
+		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK) ){
+			player.sendMessage("ue");
+			if(((SkullMeta)event.getItem().getItemMeta()).getOwner().equals("unchama")){
+				player.sendMessage("ue2");
+				player.getInventory().removeItem(itemstack);//43 64 249 ~ 43 64 248
+				//ItemStack[] gachachest = ((DoubleChest) b).getInventory().getContents();
+				if(player.getInventory().firstEmpty()== -1){
+					//player.getWorld().dropItemNaturally(player.getLocation(), gachachest[(int)Math.random()*53]);
+					player.sendMessage("地べたに置いたわよ忘れるんじゃないよ");
+				}else{
+					//player.getInventory().addItem(gachachest[(int)Math.random()*53]);
+					player.sendMessage("プレゼントフォーユー");
+				}
+			}
+		}
+	}
+	*/
 }
