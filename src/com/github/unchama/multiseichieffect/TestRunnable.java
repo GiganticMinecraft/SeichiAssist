@@ -47,25 +47,7 @@ public class TestRunnable extends BukkitRunnable{
 		//関数初期化
 		p_num = 0;
 		effect_p_num = 0.0;
-		last_mineblock = (int)player.getStatistic(Statistic.MINE_BLOCK, Material.STONE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.NETHERRACK)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.DIRT)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GRAVEL)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LOG)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LOG_2)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GRASS)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.COAL_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.IRON_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GOLD_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.DIAMOND_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LAPIS_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.EMERALD_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.REDSTONE_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.SAND)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.SANDSTONE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.QUARTZ_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.END_BRICKS)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.ENDER_STONE);
+		last_mineblock = calcMineblock(player);
 		now_mineblock = 0;
 		minute_mineblock = 0;
 		sum_mineblock = 0;
@@ -91,33 +73,14 @@ public class TestRunnable extends BukkitRunnable{
 		}
 
 		//effect_mineblockを計算
-		now_mineblock = (int)player.getStatistic(Statistic.MINE_BLOCK, Material.STONE)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.NETHERRACK)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.DIRT)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GRAVEL)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LOG)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LOG_2)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GRASS)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.COAL_ORE)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.IRON_ORE)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GOLD_ORE)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.DIAMOND_ORE)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LAPIS_ORE)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.EMERALD_ORE)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.REDSTONE_ORE)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.SAND)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.SANDSTONE)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.QUARTZ_ORE)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.END_BRICKS)
-					  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.ENDER_STONE);
+		now_mineblock = calcMineblock(player);
 		minute_mineblock = now_mineblock - last_mineblock;
-		
 		sum_mineblock += minute_mineblock;
 
 		/*
 		if(sum_mineblock > 1000){
 			sum_mineblock -= 1000;
-			
+
 			ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1);
 			SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
 			skull.setDurability((short) 3);
@@ -137,13 +100,13 @@ public class TestRunnable extends BukkitRunnable{
 			player.sendMessage("あくしろはたらけ");
 		}
 		*/
-		
+
 		effect_mineblock = (double)minute_mineblock / 100.0;
 
 		//effect_p_numを計算
 		p_num = Bukkit.getOnlinePlayers().size();
 		effect_p_num = (double)p_num / 2.0;
-		
+
 		//外部コマンド・プラグイン等による採掘速度上昇の検出
 		if(player.hasPotionEffect(PotionEffectType.FAST_DIGGING)){
 			//既に採掘効果上昇がかかっている場合
@@ -168,10 +131,10 @@ public class TestRunnable extends BukkitRunnable{
 			out_sum = 0;
 			now_dulation = -1;
 		}
-		
+
 		//自作プラグイン内の上昇値
 		effect_mysum = (int)(effect_p_num + effect_mineblock - 1);
-		
+
 		//自作プラグインと外部プラグインの上昇値合算
 		if(now_sum == -1 || (int)(now_sum - last_effect_mysum) == (int)out_sum){
 			//自作プラグインの上昇値のみが反映される場合叉は外部プラグインの持続時間が残っている場合
@@ -183,12 +146,12 @@ public class TestRunnable extends BukkitRunnable{
 			effect_sum = effect_mysum + now_sum;
 			out_sum = now_sum;
 		}
-		
+
 		//上昇値の例外判定
 		if(effect_sum < 0){
 			effect_sum = 0;
 		}
-		
+
 		//外部プラグインの上昇値が存在するときの場合分け
 		if(now_dulation == -1){
 			//外部プラグインの上昇値が存在しないとき
@@ -217,4 +180,29 @@ public class TestRunnable extends BukkitRunnable{
 		last_sum_mineblock = sum_mineblock;
 	}
 
+	private int calcMineblock(Player player){
+		int mineblock;
+		mineblock = (int)player.getStatistic(Statistic.MINE_BLOCK, Material.STONE)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.NETHERRACK)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.DIRT)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GRAVEL)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LOG)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LOG_2)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GRASS)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.COAL_ORE)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.IRON_ORE)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GOLD_ORE)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.DIAMOND_ORE)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LAPIS_ORE)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.EMERALD_ORE)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.REDSTONE_ORE)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.SAND)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.SANDSTONE)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.QUARTZ_ORE)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.END_BRICKS)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.ENDER_STONE);
+		return mineblock;
+	}
 }
+
+

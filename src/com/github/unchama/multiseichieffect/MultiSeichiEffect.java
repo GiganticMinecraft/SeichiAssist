@@ -114,3 +114,4 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 	}
 	*/
 }
+
