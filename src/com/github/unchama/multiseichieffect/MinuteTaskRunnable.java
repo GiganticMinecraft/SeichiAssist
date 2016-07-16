@@ -3,8 +3,6 @@ package com.github.unchama.multiseichieffect;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.circularmoonray.sqlstat.LJoinQuit;
-
 public class MinuteTaskRunnable extends BukkitRunnable{
 
 	//このクラス自身を表すインスタンス
@@ -17,7 +15,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	private Gacha gacha;
 	
 	//おあそびついか
-	private int lastlevel;
+	//private int lastlevel;
 
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
@@ -28,7 +26,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		gacha = new Gacha(player,config);
 		
 		//おあそびついか
-		lastlevel = 0;
+		//lastlevel = 0;
 	}
 
 
@@ -74,7 +72,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		effect.setLastMySum();
 		
 		//おあそびついか
-		lastlevel = LJoinQuit.calcRankBorder2(player,lastlevel);
+		//lastlevel = LJoinQuit.calcRankBorder2(player,lastlevel);
 	}
 
 }
