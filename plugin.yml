@@ -1,15 +1,3 @@
 name: MultiSeichiEffect
 main: com.github.unchama.multiseichieffect.MultiSeichiEffect
-version: 0.0.9
-
-commands:
-  gacha:
-      description: This is a demo command.
-      usage: /<command> <set> <probability>
-      permission: multiseichiplugin.seichi
-      permission-message: You don't have <permission>
-  seichi:
-      description: This is a demo command.
-      usage: /<command> <reload>
-      permission: multiseichiplugin.seichi
-      permission-message: You don't have <permission>
+version: 0.0.1
