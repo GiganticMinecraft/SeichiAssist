@@ -3,5 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="C:/pleiades/workspace/spigot-1.10.2.jar"/>
+	<classpathentry kind="lib" path="E:/Users/unchama/Documents/MCServer_test_1.10.2/plugins/SqlStat.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
