@@ -14,8 +14,6 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	private Effect effect;
 	private Gacha gacha;
 
-	//おあそびついか
-	//private int lastlevel;
 
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
@@ -25,8 +23,6 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		effect = new Effect(player,config);
 		gacha = new Gacha(player,config);
 
-		//おあそびついか
-		//lastlevel = 0;
 	}
 
 
@@ -71,8 +67,6 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		effect.setLastSum();
 		effect.setLastMySum();
 
-		//おあそびついか
-		//lastlevel = LJoinQuit.calcRankBorder2(player,lastlevel);
 	}
 
 }
