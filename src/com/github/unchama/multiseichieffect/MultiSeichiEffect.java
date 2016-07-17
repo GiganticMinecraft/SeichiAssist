@@ -1,14 +1,18 @@
 package com.github.unchama.multiseichieffect;
 
+import static com.github.unchama.multiseichieffect.Util.*;
 
 import java.util.HashMap;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +27,7 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 	private Player player;
 	private Config config;
 	private BukkitTask allplayertask;
+	private Gacha gacha;
 
 	private MineBlock mineblock;
 	//コマンドの一覧
@@ -30,6 +35,7 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 
 	public static final HashMap<ItemStack,Double> gachaitem = new HashMap<ItemStack,Double>();
 	public static final HashMap<Player,MineBlock> playermap = new HashMap<Player,MineBlock>();
+
 
 	@Override
 	public void onEnable(){
@@ -43,9 +49,10 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 
 		//コマンドの登録
 		commands = new HashMap<String, TabExecutor>();
-		commands.put("gacha", new gachaCommand(this));
+		commands.put("gacha", new gachaCommand(this,gachaitem));
 		commands.put("seichi", new seichiCommand(this));
 
+		gacha = new Gacha(gachaitem);
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(this, this);
@@ -53,17 +60,18 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 		getLogger().info("SeichiPlugin is Enabled!");
 
 		//一定時間おきに処理を実行するインスタンスを立ち上げ、そのインスタンスに変数playerを代入
-		allplayertask = new HalfHourTaskRunnable(playermap,config).runTaskTimer(this,100,1200 * config.getNo1PlayerInterval()+1);
+		allplayertask = new AllPlayerTaskRunnable(playermap,config).runTaskTimer(this,100,1200 * config.getNo1PlayerInterval()+1);
 
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
 		return commands.get(cmd.getName()).onCommand(sender, cmd, label, args);
-}
+	}
 	@Override
 	public void onDisable() {
 		getLogger().info("SeichiPlugin is Disabled!");
 		allplayertask.cancel();
+		//itemlistを保存したい。
 	}
 
 	//プレイヤーがjoinした時に実行
@@ -77,23 +85,7 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 
 		//1分おきに処理を実行するインスタンスを立ち上げ、そのインスタンスに変数playerを代入
 		new MinuteTaskRunnable(player,config).runTaskTimer(this,0,1201);
-;
-
-		//ログ出力
-		//getLogger().info("new runTaskTimer create Success!");
-		//getLogger().info("Number of Running task : " + tasks.size());
 	}
-
-	/*
-	//デバッグ用(runTaskTimerが残らずきちんと終了してることを確認する時に使った)
-	@EventHandler
-	public void onclick(BlockBreakEvent event){
-		Player player = event.getPlayer();
-		tasks.remove(player);
-		getLogger().info("new runTaskTimer delete Success!");
-		getLogger().info("Number of Running task : " + tasks.size());
-	}
-	*/
 
 	//プレイヤーがleftした時に実行
 	@EventHandler
@@ -104,37 +96,65 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 		playermap.remove(player);
 
 
-
-		//ログ出力
-		//getLogger().info("new runTaskTimer delete Success!");
-		//getLogger().info("Number of Running task : " + tasks.size());
 	}
-/*
+
 	@EventHandler
 	public void onPlayerRightClickEvent(PlayerInteractEvent event){
+
 		Player player = event.getPlayer();
 		Action action = event.getAction();
 		ItemStack itemstack = event.getItem();
-		ItemStack presentitem ;
+		ItemStack present;
 		int amount = 0;
-		Gacha gacha = new Gacha();
-		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK) ){
-			if(event.getItem().getType().equals(gacha.getskull().getType())){
-				amount = player.getItemOnCursor().getAmount();
-				player.getItemOnCursor().setAmount(amount-1);//43 64 249 ~ 43 64 248
-				presentitem = gacha.runGacha();
+		Double probability;
+		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+			if(itemstack.getType().equals(gacha.getskull().getType())){
+				//event.setUseItemInHand(Event.Result.DENY);
+				amount = player.getInventory().getItemInMainHand().getAmount();
+				if (amount == 1) {
+					// がちゃ券を1枚使うので、プレイヤーの手を素手にする
+					player.getInventory().setItemInMainHand(null);
+					} else {
+					// プレイヤーが持っているガチャ券を1枚減らす
+					player.getInventory().getItemInMainHand().setAmount(amount - 1);
+					}
+				//gacha実行
+				present = gacha.runGacha();
+
+				probability = gachaitem.get(present);
+
+
 				if(player.getInventory().firstEmpty()== -1){
-					player.getWorld().dropItemNaturally(player.getLocation(),presentitem);
-					player.sendMessage("地べたに置いたわよ忘れるんじゃないよ");
+					player.getWorld().dropItemNaturally(player.getLocation(),present);
+					if(probability < 0.0001){
+						player.sendMessage(ChatColor.YELLOW + "おめでとう！！！！！Gigantic☆大当たり！");
+						sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり" + ChatColor.AQUA + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
+					}else if(probability < 0.001){
+						player.sendMessage(ChatColor.YELLOW + "おめでとう！！大当たり！");
+						sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり" + ChatColor.DARK_BLUE + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
+					}else if(probability < 0.1){
+						player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！");
+					}else{
+						player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！");
+					}
+					player.sendMessage(ChatColor.RED + "プレゼントが下に落ちました。");
 				}else{
-					player.getInventory().addItem(presentitem);
-					player.sendMessage("プレゼントフォーユー");
+					player.getInventory().addItem(present);
+					if(probability < 0.0001){
+						player.sendMessage(ChatColor.YELLOW + "おめでとう！！！！！Gigantic☆大当たり！");
+						sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり" + ChatColor.AQUA + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
+					}else if(probability < 0.001){
+						player.sendMessage(ChatColor.YELLOW + "おめでとう！！大当たり！");
+						sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり" + ChatColor.DARK_BLUE + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
+					}else if(probability < 0.1){
+						player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！");
+					}else{
+						player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！");
+					}
 				}
 			}
 		}
 	}
-
-	*/
 
 }
 

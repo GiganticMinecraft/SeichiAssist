@@ -13,7 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class HalfHourTaskRunnable extends BukkitRunnable{
+public class AllPlayerTaskRunnable extends BukkitRunnable{
 
 	//このクラス自身を表すインスタンス
 	//public static TestRunnable instance;
@@ -29,7 +29,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
-	HalfHourTaskRunnable(HashMap<Player,MineBlock> _playermap,Config _config) {
+	AllPlayerTaskRunnable(HashMap<Player,MineBlock> _playermap,Config _config) {
 		config = _config;
 		//static なので参照されているだけ？
 		playermap = _playermap;

@@ -23,8 +23,8 @@ public class Gacha{
 
 	private HashMap<ItemStack,Double> itemlist;
 
-	Gacha(){
-		itemlist = MultiSeichiEffect.gachaitem;
+	Gacha(HashMap<ItemStack,Double> _itemlist){
+		itemlist = _itemlist;
 	}
 	Gacha(Player _player, Config _config){
 		player = _player;
@@ -81,7 +81,8 @@ public class Gacha{
                 return item.getKey();
             }
 		}
-		return null;
+		return new ItemStack(Material.BAKED_POTATO,1);
 	}
+
 
 }
