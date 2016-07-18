@@ -2,7 +2,6 @@ package com.github.unchama.multiseichieffect;
 
 import static com.github.unchama.multiseichieffect.Util.*;
 
-import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
@@ -19,13 +18,7 @@ public class Gacha{
 	private int last_point;
 	private int interval;
 	private ItemStack skull;
-	private SkullMeta skullmeta;
 
-	private HashMap<ItemStack,Double> itemlist;
-
-	Gacha(HashMap<ItemStack,Double> _itemlist){
-		setItemlist(_itemlist);
-	}
 	Gacha(Player _player, Config _config){
 		player = _player;
 		config = _config;
@@ -58,7 +51,9 @@ public class Gacha{
 		last_point = point;
 
 	}
-	public ItemStack getskull(){
+	public static ItemStack getskull(){
+		ItemStack skull;
+		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
 		skullmeta = (SkullMeta) skull.getItemMeta();
 		skull.setDurability((short) 3);
@@ -67,15 +62,15 @@ public class Gacha{
 		skull.setItemMeta(skullmeta);
 		return skull;
 	}
-	public ItemStack runGacha() {
-		double sum = 0;
-		double rand = 0;
-		for (Entry<ItemStack, Double> item : getItemlist().entrySet()) {
-		    sum += item.getValue();
-		}
-		rand = Math.random() * sum;
+	public static ItemStack runGacha() {
+		double sum = 1.0;
+		double rand = 0.0;
+		//for (Entry<ItemStack, Double> item : MultiSeichiEffect.gachaitem.entrySet()) {
+		//    sum += item.getValue();
+		//}
+		rand = Math.random();
 
-		for (Entry<ItemStack, Double> item : getItemlist().entrySet()) {
+		for (Entry<ItemStack, Double> item : MultiSeichiEffect.gachaitem.entrySet()) {
 		    sum -= item.getValue();
 		    if (sum <= rand) {
                 return item.getKey();
@@ -83,12 +78,7 @@ public class Gacha{
 		}
 		return new ItemStack(Material.BAKED_POTATO,1);
 	}
-	public HashMap<ItemStack,Double> getItemlist() {
-		return itemlist;
-	}
-	public void setItemlist(HashMap<ItemStack,Double> itemlist) {
-		this.itemlist = itemlist;
-	}
+
 
 
 }

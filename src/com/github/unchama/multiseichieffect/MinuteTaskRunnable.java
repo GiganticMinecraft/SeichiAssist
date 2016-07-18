@@ -13,6 +13,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	private Config config;
 	private Effect effect;
 	private Gacha gacha;
+	private Boolean flag;
+
 
 
 
@@ -22,18 +24,19 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		config = _config;
 		effect = new Effect(player,config);
 		gacha = new Gacha(player,config);
-
 	}
 
 
 	@Override
 	public void run() {
 		// スケジュールで実行する処理の内容をここに書きます。
+		flag = MultiSeichiEffect.playerflag.get(player);
 
 		//タスクキル判定用ArrayListに自分の名前が無かったらこのスゲジュールを削除する
 		if(!MultiSeichiEffect.playermap.containsKey(player)){
 			cancel();
 		}
+
 		//総破壊数を計算
 		effect.mineblock.setNow();
 		effect.mineblock.setIncrease();
@@ -50,8 +53,22 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		//自作プラグインと外部プラグインの上昇値合算
 		effect.setSum();
 
+		//総破壊数によるeffectを計算
+		effect.setMineblock();
+		//ログイン人数によるeffectを計算
+		effect.setPnum();
+
+		//外部コマンド・プラグイン等による採掘速度上昇の検出
+		effect.findOutEffect();
+		//自作プラグイン内の上昇値計算
+		effect.setMySum();
+		//自作プラグインと外部プラグインの上昇値合算
+		effect.setSum();
+
+
+
 		//ポーション効果付与
-		effect.addPotion();
+		effect.addPotion(flag);
 
 		//ガチャ用採掘量データセット
 		gacha.setPoint(effect.mineblock.getIncrease());
