@@ -1,15 +1,20 @@
 name: MultiSeichiEffect
 main: com.github.unchama.multiseichieffect.MultiSeichiEffect
-version: 0.1.0
+version: 0.1.2
 
 commands:
   gacha:
       description: This is a demo command.
-      usage: /<command> <set> <probability>
+      usage: /<command> <add/list/remove/clear>
       permission: multiseichiplugin.seichi
       permission-message: You don't have <permission>
   seichi:
-      description: This is a demo command.
-      usage: /<command> <reload>
+      description: This is a reload command.
+      usage: /<command>
       permission: multiseichiplugin.seichi
+      permission-message: You don't have <permission>
+  ef:
+      description: This is a Effect toggle command.
+      usage: /<command>
+      permission: multiseichiplugin.ef
       permission-message: You don't have <permission>

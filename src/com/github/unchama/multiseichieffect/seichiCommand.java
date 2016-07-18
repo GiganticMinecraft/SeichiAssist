@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 
 public class seichiCommand implements TabExecutor {
-	private MultiSeichiEffect plugin;
+	MultiSeichiEffect plugin;
 
 	public seichiCommand(MultiSeichiEffect _plugin){
 		plugin = _plugin;
@@ -23,16 +23,10 @@ public class seichiCommand implements TabExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
 
-		if(args.length > 1){
-			sender.sendMessage("引数は1つにまでにして下さい");
+		if(args.length == 0){
+			plugin.reloadConfig();
+			sender.sendMessage("reload completed");
 			return true;
-
-		}else if(args.length == 1){
-			if(args[0].equalsIgnoreCase("reload")){
-				plugin.reloadConfig();
-				sender.sendMessage("reload completed");
-				return true;
-			}
 		}
 		return false;
 	}

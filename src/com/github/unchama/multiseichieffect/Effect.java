@@ -38,24 +38,19 @@ public class Effect {
 		last_effect_mysum = 0;
 		effect_now_dulation = -1;
 		mineblock = new MineBlock(player);
-
-
 	}
 	public void findOutEffect(){
 		//外部コマンド・プラグイン等による採掘速度上昇の検出
 		if(player.hasPotionEffect(PotionEffectType.FAST_DIGGING)){
 			//既に採掘効果上昇がかかっている場合
-			//player.sendMessage("うえ-1");
 			PotionEffect[] potioneffect = player.getActivePotionEffects().toArray(new PotionEffect[0]);
 			for( PotionEffect pe : potioneffect){
 				//採掘速度上昇のエフェクトのデータ抽出
-				//player.sendMessage("うえ0");
 				if(pe.getType().equals(PotionEffectType.FAST_DIGGING)){
 					//上昇値
 					effect_now_sum = pe.getAmplifier();
 					//持続時間
 					effect_now_dulation = pe.getDuration();
-					//player.sendMessage("now_sumとnow_dulationの値取得官僚" + now_sum + "-" +now_dulation);
 					break;
 				}
 			}
@@ -65,6 +60,8 @@ public class Effect {
 			effect_now_sum = -1;
 			effect_out_sum = 0;
 			effect_now_dulation = -1;
+
+
 		}
 	}
 
@@ -106,31 +103,33 @@ public class Effect {
 	public void setLastMySum(){
 		last_effect_mysum = effect_mysum;
 	}
-	public void addPotion(){
-		//外部プラグインの上昇値が存在するときの場合分け
-			if(effect_now_dulation == -1){
-				//外部プラグインの上昇値が存在しないとき
-				//player.sendMessage("うえ２");
-				player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 1200, effect_sum, false, false), true);
-			}else{
-				//外部プラグインの上昇値が存在するとき
-				//player.sendMessage("した２");
-				player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, effect_now_dulation, effect_sum, false, false), true);
-			}
+	public void addPotion(Boolean flag){
+	//外部プラグインの上昇値が存在するときの場合分け
+		if(!flag){
+			player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
+		}else if(effect_now_dulation == -1){
+			//外部プラグインの上昇値が存在しないとき
+			//player.sendMessage("うえ２");
+			player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 1200, effect_sum, false, false), true);
+		}else{
+			//外部プラグインの上昇値が存在するとき
+			//player.sendMessage("した２");
+			player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, effect_now_dulation, effect_sum, false, false), true);
+		}
 	}
 	public void sendEffectMessage(){
 		//effect_sumの値が変わってたらお知らせする
-				if(last_effect_sum != effect_sum){
-					player.sendMessage("---------------------------------");
-					player.sendMessage("採掘速度上昇レベルが" + ChatColor.YELLOW +(effect_sum + 1) + ChatColor.WHITE +"になりました。");
-					player.sendMessage("内訳:接続人数(" + getOnlinePlayer()+ "人)→上昇値(" + effect_p_num + ")");
-					player.sendMessage("    1分間のブロック破壊数(" + mineblock.getIncrease() + "個)→上昇値(" + Decimal(effect_mineblock) + ")");
-					if(effect_out_sum != 0){
-						player.sendMessage("    外部からの上昇量(" + effect_out_sum + ")→上昇値(" + effect_out_sum + ")");
-					}
-					player.sendMessage("---------------------------------");
-				}
+		if(last_effect_sum != effect_sum){
+			player.sendMessage("---------------------------------");
+			player.sendMessage("採掘速度上昇レベルが" + ChatColor.YELLOW +(effect_sum + 1) + ChatColor.WHITE +"になりました。");
+			player.sendMessage("内訳:接続人数(" + getOnlinePlayer()+ "人)→上昇値(" + effect_p_num + ")");
+			player.sendMessage("    1分間のブロック破壊数(" + mineblock.getIncrease() + "個)→上昇値(" + Decimal(effect_mineblock) + ")");
+			if(effect_out_sum != 0){
+				player.sendMessage("    外部からの上昇量(" + effect_out_sum + ")→上昇値(" + effect_out_sum + ")");
+			}
+			player.sendMessage("---------------------------------");
 		}
+	}
 	public Player getPlayer(){
 		return player;
 	}
