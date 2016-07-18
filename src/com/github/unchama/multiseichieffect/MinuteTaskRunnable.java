@@ -54,9 +54,9 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		effect.addPotion();
 
 		//ガチャ用採掘量データセット
-		//gacha.setPoint(effect.mineblock.getIncrease());
+		gacha.setPoint(effect.mineblock.getIncrease());
 		//ガチャ券付与
-		//gacha.presentticket();
+		gacha.presentticket();
 
 		//プレイヤーにメッセージ送信
 		effect.sendEffectMessage();

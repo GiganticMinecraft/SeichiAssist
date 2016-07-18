@@ -16,16 +16,16 @@ public class gachaCommand implements TabExecutor{
 	private HashMap<ItemStack,Double> itemlist;
 
 
-	public gachaCommand(MultiSeichiEffect plugin){
+	public gachaCommand(MultiSeichiEffect plugin,HashMap<ItemStack,Double> gachaitem){
 		this.plugin = plugin;
-		itemlist = MultiSeichiEffect.gachaitem;;
+		itemlist = gachaitem;
 	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command,
 			String label, String[] args) {
 		return null;
 	}
-
+	// /gacha set 0.01 (現在手にもってるアイテムが確率0.01でガチャに出現するように設定）
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String label, String[] args) {
@@ -42,7 +42,8 @@ public class gachaCommand implements TabExecutor{
 					sender.sendMessage("このコマンドはゲーム内から実行してください。");
 				} else {
 					Player player = (Player) sender;
-					Gachaset(player,toDouble(args[1]));
+					Gachaset(player,probability);
+					sender.sendMessage(player.getInventory().getItemInMainHand().getType().toString() + player.getInventory().getItemInMainHand().getAmount() + "個を確率" + Decimal(probability) + "としてガチャに追加しました。");
 				}
 
 				return true;
@@ -52,9 +53,10 @@ public class gachaCommand implements TabExecutor{
 		return false;
 	}
 
+
 	private void Gachaset(Player player,Double probability) {
 		ItemStack itemstack;
-		itemstack = player.getItemOnCursor();
+		itemstack = player.getInventory().getItemInMainHand();
 		itemlist.put(itemstack,probability);
 	}
 

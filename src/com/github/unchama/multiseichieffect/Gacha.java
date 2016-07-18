@@ -23,8 +23,8 @@ public class Gacha{
 
 	private HashMap<ItemStack,Double> itemlist;
 
-	Gacha(){
-		itemlist = MultiSeichiEffect.gachaitem;
+	Gacha(HashMap<ItemStack,Double> _itemlist){
+		setItemlist(_itemlist);
 	}
 	Gacha(Player _player, Config _config){
 		player = _player;
@@ -70,18 +70,25 @@ public class Gacha{
 	public ItemStack runGacha() {
 		double sum = 0;
 		double rand = 0;
-		for (Entry<ItemStack, Double> item : itemlist.entrySet()) {
+		for (Entry<ItemStack, Double> item : getItemlist().entrySet()) {
 		    sum += item.getValue();
 		}
 		rand = Math.random() * sum;
 
-		for (Entry<ItemStack, Double> item : itemlist.entrySet()) {
+		for (Entry<ItemStack, Double> item : getItemlist().entrySet()) {
 		    sum -= item.getValue();
 		    if (sum <= rand) {
                 return item.getKey();
             }
 		}
-		return null;
+		return new ItemStack(Material.BAKED_POTATO,1);
 	}
+	public HashMap<ItemStack,Double> getItemlist() {
+		return itemlist;
+	}
+	public void setItemlist(HashMap<ItemStack,Double> itemlist) {
+		this.itemlist = itemlist;
+	}
+
 
 }
