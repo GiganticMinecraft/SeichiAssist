@@ -115,12 +115,13 @@ public class gachaCommand implements TabExecutor{
 			i++;
 		}
 		config.set("num",i);
-
+		player.sendMessage("Saveを完了しました");
 	}
 	private void Gachaload(Player player){
 		for (int i=0; i<config.getInt("num"); i++) {
 			MultiSeichiEffect.gachaitem.put(config.getItemStack("item" + i),config.getDouble("probability" + i ));
 		}
+		player.sendMessage("Loadを完了しました。");
 	}
 
 }
