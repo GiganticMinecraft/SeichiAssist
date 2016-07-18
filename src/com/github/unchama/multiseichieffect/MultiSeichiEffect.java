@@ -1,14 +1,14 @@
 package com.github.unchama.multiseichieffect;
 
-import static com.github.unchama.multiseichieffect.Util.*;
-
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -106,10 +106,11 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 		ItemStack itemstack = event.getItem();
 		ItemStack present;
 		int amount = 0;
-		Double probability;
+		Double probability = 0.5;
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			if(itemstack.getType().equals(gacha.getskull().getType())){
-				//event.setUseItemInHand(Event.Result.DENY);
+				player.sendMessage("ue0");
+				event.setUseInteractedBlock(Event.Result.DENY);
 				amount = player.getInventory().getItemInMainHand().getAmount();
 				if (amount == 1) {
 					// がちゃ券を1枚使うので、プレイヤーの手を素手にする
@@ -118,42 +119,57 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 					// プレイヤーが持っているガチャ券を1枚減らす
 					player.getInventory().getItemInMainHand().setAmount(amount - 1);
 					}
+				player.sendMessage("ue1");
+
 				//gacha実行
 				present = gacha.runGacha();
+				for (Entry<ItemStack, Double> item : gachaitem.entrySet()) {
+					player.sendMessage(item.getKey().getType().toString()+ "    " +item.getValue());
+				}
 
-				probability = gachaitem.get(present);
+				probability = gacha.getItemlist().get(present);
 
+				if(probability == 0.0){
+					player.sendMessage("Errorが発生しました。");
+				}
 
 				if(player.getInventory().firstEmpty()== -1){
 					player.getWorld().dropItemNaturally(player.getLocation(),present);
+
 					if(probability < 0.0001){
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！！！！！Gigantic☆大当たり！");
-						sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり" + ChatColor.AQUA + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
+						//sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり" + ChatColor.AQUA + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
 					}else if(probability < 0.001){
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！！大当たり！");
-						sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり" + ChatColor.DARK_BLUE + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
+						//sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり" + ChatColor.DARK_BLUE + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
 					}else if(probability < 0.1){
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！");
 					}else{
-						player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！");
+						player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！" + probability);
 					}
 					player.sendMessage(ChatColor.RED + "プレゼントが下に落ちました。");
 				}else{
 					player.getInventory().addItem(present);
+
 					if(probability < 0.0001){
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！！！！！Gigantic☆大当たり！");
-						sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり" + ChatColor.AQUA + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
+						//sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり" + ChatColor.AQUA + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
 					}else if(probability < 0.001){
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！！大当たり！");
-						sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり" + ChatColor.DARK_BLUE + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
+						//sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり" + ChatColor.DARK_BLUE + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
 					}else if(probability < 0.1){
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！");
 					}else{
-						player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！");
+						player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！" + probability);
 					}
+					player.sendMessage(ChatColor.RED + "プレゼントをインベントリに入れました。");
 				}
+
+
 			}
+
 		}
+
 	}
 
 }

@@ -1,6 +1,6 @@
 name: MultiSeichiEffect
 main: com.github.unchama.multiseichieffect.MultiSeichiEffect
-version: 0.0.9
+version: 0.1.0
 
 commands:
   gacha:
