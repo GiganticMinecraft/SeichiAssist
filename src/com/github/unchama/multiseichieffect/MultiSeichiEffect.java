@@ -48,7 +48,7 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 
 		//コマンドの登録
 		commands = new HashMap<String, TabExecutor>();
-		commands.put("gacha", new gachaCommand(this/*,gachaitem*/));
+		commands.put("gacha", new gachaCommand(this,getConfig()));
 		commands.put("seichi", new seichiCommand(this));
 		commands.put("ef", new effectCommand(this));
 
@@ -69,6 +69,7 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 	@Override
 	public void onDisable() {
 		getLogger().info("SeichiPlugin is Disabled!");
+		saveConfig();
 		allplayertask.cancel();
 		//itemlistを保存したい。
 	}

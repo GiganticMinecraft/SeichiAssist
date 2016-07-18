@@ -8,15 +8,18 @@ import java.util.Map.Entry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class gachaCommand implements TabExecutor{
 	public MultiSeichiEffect plugin;
+	private FileConfiguration config;
 
 
-	public gachaCommand(MultiSeichiEffect plugin){
+	public gachaCommand(MultiSeichiEffect plugin,FileConfiguration _config){
 		this.plugin = plugin;
+		config = _config;
 	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command,
@@ -61,6 +64,12 @@ public class gachaCommand implements TabExecutor{
 		}else if(args[0].equalsIgnoreCase("clear")){
 			Gachaclear(player);
 			return true;
+		}else if(args[0].equalsIgnoreCase("save")){
+			Gachasave(player);
+			return true;
+		}else if(args[0].equalsIgnoreCase("load")){
+			Gachaload(player);
+			return true;
 		}
 
 		return false;
@@ -97,6 +106,21 @@ public class gachaCommand implements TabExecutor{
 	private void Gachaclear(Player player) {
 		MultiSeichiEffect.gachaitem.clear();
 		player.sendMessage("すべて削除しました。");
+	}
+	private void Gachasave(Player player){
+		int i = 0;
+		for (Entry<ItemStack, Double> item : MultiSeichiEffect.gachaitem.entrySet()){
+			config.set("item"+ i,item.getKey());
+			config.set("probability"+ i,item.getValue());
+			i++;
+		}
+		config.set("num",i);
+
+	}
+	private void Gachaload(Player player){
+		for (int i=0; i<config.getInt("num"); i++) {
+			MultiSeichiEffect.gachaitem.put(config.getItemStack("item" + i),config.getDouble("probability" + i ));
+		}
 	}
 
 }
