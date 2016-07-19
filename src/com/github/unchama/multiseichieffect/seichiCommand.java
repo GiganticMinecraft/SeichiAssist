@@ -25,7 +25,7 @@ public class seichiCommand implements TabExecutor {
 
 		if(args.length == 0){
 			plugin.reloadConfig();
-			sender.sendMessage("reload completed");
+			sender.sendMessage("MultiSeichiEffectのconfig.ymlをリロードしました。");
 			return true;
 		}
 		return false;

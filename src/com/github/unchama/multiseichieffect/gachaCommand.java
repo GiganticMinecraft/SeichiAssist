@@ -56,7 +56,7 @@ public class gachaCommand implements TabExecutor{
 			return true;
 		}else if(args[0].equalsIgnoreCase("list")){
 			if(MultiSeichiEffect.gachaitem.isEmpty()){
-				sender.sendMessage("ガチャが設定されていません");
+				sender.sendMessage("ガチャが設定されていません。");
 				return true;
 			}
 			Gachalist(player);
@@ -97,7 +97,7 @@ public class gachaCommand implements TabExecutor{
 			if(num == i){
 				MultiSeichiEffect.gachaitem.remove(item.getKey());
 				player.sendMessage(i + "|" + item.getKey().getType().toString() + "|" + item.getValue());
-				player.sendMessage("を削除しました.");
+				player.sendMessage("を削除しました。");
 				break;
 			}
 			i++;
@@ -115,13 +115,13 @@ public class gachaCommand implements TabExecutor{
 			i++;
 		}
 		config.set("num",i);
-		player.sendMessage("Saveを完了しました");
+		player.sendMessage("ガチャデータのSaveを完了しました。");
 	}
 	private void Gachaload(Player player){
 		for (int i=0; i<config.getInt("num"); i++) {
 			MultiSeichiEffect.gachaitem.put(config.getItemStack("item" + i),config.getDouble("probability" + i ));
 		}
-		player.sendMessage("Loadを完了しました。");
+		player.sendMessage("ガチャデータのLoadを完了しました。");
 	}
 
 }

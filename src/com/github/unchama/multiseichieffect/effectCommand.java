@@ -38,7 +38,7 @@ public class effectCommand implements TabExecutor {
 				if (MultiSeichiEffect.playerflag.get(player)){
 					sender.sendMessage("採掘速度上昇効果をONにしました。");
 				}else{
-					sender.sendMessage("採掘速度上昇効果をOFFにしました。");
+					sender.sendMessage("採掘速度上昇効果をOFFにしました。ONに戻したい時は再度コマンドを実行します。");
 				}
 
 				return true;
