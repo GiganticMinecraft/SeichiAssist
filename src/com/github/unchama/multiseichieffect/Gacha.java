@@ -34,6 +34,9 @@ public class Gacha{
 	public void presentticket() {
 		if(point >= interval){
 			point -= interval;
+			dropItem(player,skull);
+			player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が下に落ちました。右クリックで使えるゾ");
+			/*
 			if(!isPlayerContainItem(player,skull) && isPlayerInventryEmpty(player)){
 				dropItem(player,skull);
 				player.sendMessage("あなたの"+ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "地べたに置いたわよ忘れるんじゃないよ");
@@ -41,9 +44,11 @@ public class Gacha{
 				addItem(player,skull);
 				player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー");
 			}
+			*/
 		}else if(last_point != point){
 			player.sendMessage("あと" + ChatColor.AQUA + (1000 - point) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
 		}else{
+			//１ブロックも掘ってなかったら煽る
 			player.sendMessage("あ  く  し  ろ  は  た  ら  け");
 		}
 	}

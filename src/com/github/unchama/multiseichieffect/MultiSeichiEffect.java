@@ -134,8 +134,9 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 				if(probability == null){
 					probability = 1.0;
 				}
-
-				player.getWorld().dropItemNaturally(player.getLocation(),present);
+				
+				Util.dropItem(player, present);
+				//player.getWorld().dropItemNaturally(player.getLocation(),present);
 
 				if(probability < 0.0001){
 					player.sendMessage(ChatColor.YELLOW + "おめでとう！！！！！Gigantic☆大当たり！");
