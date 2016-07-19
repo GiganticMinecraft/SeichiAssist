@@ -70,6 +70,7 @@ public class Effect {
 			effect_now_sum = -1;
 			effect_out_sum = 0;
 			effect_now_dulation = -1;
+			firstloginflag = false;
 
 
 		}
@@ -133,7 +134,7 @@ public class Effect {
 			player.sendMessage("内訳:接続人数(" + getOnlinePlayer()+ "人)による上昇値(" + effect_p_num + ")");
 			player.sendMessage("    1分間のブロック破壊数(" + mineblock.getIncrease() + "個)による上昇値(" + Decimal(effect_mineblock) + ")");
 			if(effect_out_sum != 0){
-				player.sendMessage("    投票またはドラゲナイタイムによる上昇値(" + effect_out_sum + ")");
+				player.sendMessage("    投票またはドラゲナイタイムによる上昇値(" + effect_out_sum + ")残り時間(" + effect_now_dulation / 20 + "秒)");
 			}
 			player.sendMessage("---------------------------------");
 		}
