@@ -53,20 +53,6 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		//自作プラグインと外部プラグインの上昇値合算
 		effect.setSum();
 
-		//総破壊数によるeffectを計算
-		effect.setMineblock();
-		//ログイン人数によるeffectを計算
-		effect.setPnum();
-
-		//外部コマンド・プラグイン等による採掘速度上昇の検出
-		effect.findOutEffect();
-		//自作プラグイン内の上昇値計算
-		effect.setMySum();
-		//自作プラグインと外部プラグインの上昇値合算
-		effect.setSum();
-
-
-
 		//ポーション効果付与
 		effect.addPotion(flag);
 
