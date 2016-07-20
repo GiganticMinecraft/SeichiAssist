@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,6 +14,7 @@ public class Util {
 	public static int calcMineblock(Player player){
 		return  (int)player.getStatistic(Statistic.MINE_BLOCK, Material.STONE)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.NETHERRACK)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.NETHER_BRICK)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.DIRT)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GRAVEL)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LOG)
@@ -58,9 +60,14 @@ public class Util {
 	}
 	public static void sendEveryMessage(String str){
 		MultiSeichiEffect plugin = MultiSeichiEffect.instance;
-
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.sendMessage(str);
 		}
-}
+	}
+	public static void sendEverySound(Sound str, float a, float b){
+		MultiSeichiEffect plugin = MultiSeichiEffect.instance;
+		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+			player.playSound(player.getLocation(), str, a, b);
+		}
+	}
 }

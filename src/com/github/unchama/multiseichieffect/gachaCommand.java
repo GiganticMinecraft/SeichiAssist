@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class gachaCommand implements TabExecutor{
 	public MultiSeichiEffect plugin;
-	private FileConfiguration config;
+	private static FileConfiguration config;
 
 
 	public gachaCommand(MultiSeichiEffect plugin,FileConfiguration _config){
@@ -122,6 +122,12 @@ public class gachaCommand implements TabExecutor{
 			MultiSeichiEffect.gachaitem.put(config.getItemStack("item" + i),config.getDouble("probability" + i ));
 		}
 		player.sendMessage("ガチャデータのLoadを完了しました。");
+	}
+
+	static void onEnableGachaLoad(){
+		for (int i=0; i<config.getInt("num"); i++) {
+			MultiSeichiEffect.gachaitem.put(config.getItemStack("item" + i),config.getDouble("probability" + i ));
+		};
 	}
 
 }

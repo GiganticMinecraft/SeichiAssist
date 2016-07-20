@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -35,6 +36,7 @@ public class Gacha{
 		if(point >= interval){
 			point -= interval;
 			dropItem(player,skull);
+			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
 			player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が下に落ちました。右クリックで使えるゾ");
 			/*
 			if(!isPlayerContainItem(player,skull) && isPlayerInventryEmpty(player)){

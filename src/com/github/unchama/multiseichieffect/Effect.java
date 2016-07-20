@@ -130,12 +130,13 @@ public class Effect {
 		//effect_sumの値が変わってたらお知らせする
 		if(last_effect_sum != effect_sum){
 			player.sendMessage("---------------------------------");
-			player.sendMessage("採掘速度上昇レベルが" + ChatColor.YELLOW +(effect_sum) + ChatColor.WHITE +"になりました。");
-			player.sendMessage("内訳:接続人数(" + getOnlinePlayer()+ "人)による上昇値(" + effect_p_num + ")");
-			player.sendMessage("    1分間のブロック破壊数(" + mineblock.getIncrease() + "個)による上昇値(" + Decimal(effect_mineblock) + ")");
+			player.sendMessage("採掘速度上昇レベルが" + ChatColor.RED + effect_sum + ChatColor.WHITE + "になりました。");
+			player.sendMessage("    ※接続人数(" + ChatColor.YELLOW + getOnlinePlayer() + ChatColor.WHITE + "人)による上昇値(" + ChatColor.YELLOW + effect_p_num + ChatColor.WHITE + ")");
+			player.sendMessage("    ※1分間のブロック破壊数(" + ChatColor.YELLOW + mineblock.getIncrease() + ChatColor.WHITE + "個)による上昇値(" + ChatColor.YELLOW + Decimal(effect_mineblock) + ChatColor.WHITE + ")");
 			if(effect_out_sum != 0){
-				player.sendMessage("    投票またはドラゲナイタイムによる上昇値(" + effect_out_sum + ")残り時間(" + effect_now_dulation / 20 + "秒)");
+				player.sendMessage("    ※投票またはドラゲナイタイムによる上昇値(" + ChatColor.YELLOW + effect_out_sum + ChatColor.WHITE + ")残り時間(" + ChatColor.YELLOW + effect_now_dulation / 20 + ChatColor.WHITE + "秒)");
 			}
+			//player.sendMessage("累積整地ブロック数は("+ ChatColor.RED + calcMineblock(player) + ChatColor.WHITE + "個)です。");
 			player.sendMessage("---------------------------------");
 		}
 	}
