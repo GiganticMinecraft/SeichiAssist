@@ -50,8 +50,8 @@ public class Gacha{
 		}else if(last_point != point){
 			player.sendMessage("あと" + ChatColor.AQUA + (1000 - point) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
 		}else{
-			//１ブロックも掘ってなかったら煽る
-			player.sendMessage("あ  く  し  ろ  は  た  ら  け");
+			//１ブロックも掘ってなかったら煽る(やめた)
+			//player.sendMessage("あ  く  し  ろ  は  た  ら  け");
 		}
 	}
 	public void setLastPoint() {
