@@ -139,7 +139,7 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 					// プレイヤーが持っているガチャ券を1枚減らす
 					player.getInventory().getItemInMainHand().setAmount(amount - 1);
 					}
-				//gacha実行
+				//がちゃ実行
 				present = Gacha.runGacha();
 
 				probability = gachaitem.get(present);
@@ -152,24 +152,24 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 
 				Util.dropItem(player, present);
 				//player.getWorld().dropItemNaturally(player.getLocation(),present);
+				String str = ChatColor.RED + "プレゼントが下に落ちました。";
 
 				if(probability < 0.001){
 					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 2);
-					player.sendMessage(ChatColor.YELLOW + "おめでとう！！！！！Gigantic☆大当たり！");
+					player.sendMessage(ChatColor.YELLOW + "おめでとう！！！！！Gigantic☆大当たり！" + str);
 					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！\n" + ChatColor.AQUA + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
 				}else if(probability < 0.01){
 					Util.sendEverySound(Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
-					player.sendMessage(ChatColor.YELLOW + "おめでとう！！大当たり！");
+					player.sendMessage(ChatColor.YELLOW + "おめでとう！！大当たり！" + str);
 					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
 				}else if(probability < 0.1){
-					player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！");
+					player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！" + str);
 				}else if(probability <= 1.0){
-					player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！");
+					player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！" + str);
 				}else{
 					player.sendMessage(ChatColor.RED + "不明なエラーが発生しました。");
 				}
 				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
-				player.sendMessage(ChatColor.RED + "プレゼントが下に落ちました。");
 				lock_rungacha = false;
 			}
 		}
