@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -35,10 +36,12 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 	public static final HashMap<Player,MineBlock> playermap = new HashMap<Player,MineBlock>();
 	public static final HashMap<Player,Boolean> playerflag = new HashMap<Player,Boolean>();
 
+	private boolean lock_rungacha;
 
 	@Override
 	public void onEnable(){
 		instance = this;
+		lock_rungacha = false;
 
 		//Configが"なかったら"コピーする
 		saveDefaultConfig();
@@ -55,6 +58,11 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(this, this);
+
+		//初回ガチャデータロード
+		//gachaCommand.java見ればわかるけどとりあえず実装しただけだからコードまとめたりはそのうちやる
+		gachaCommand.onEnableGachaLoad();
+		getLogger().info("ガチャデータのLoadを完了しました。");
 
 		getLogger().info("SeichiPlugin is Enabled!");
 
@@ -103,22 +111,26 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 
 	}
 
+	//プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
 	@EventHandler
 	public void onPlayerRightClickEvent(PlayerInteractEvent event){
-
 		Player player = event.getPlayer();
 		Action action = event.getAction();
 		ItemStack itemstack = event.getItem();
 		ItemStack present;
 		int amount = 0;
 		Double probability = 0.0;
-
 		if(action.equals(Action.RIGHT_CLICK_AIR)){
 			if(itemstack.getType().equals(Material.SKULL_ITEM)){
+				if(lock_rungacha){
+					player.sendMessage("しばらく待ってからやり直してください");
+					return;
+				}
 				if(gachaitem.isEmpty()){
 					player.sendMessage("ガチャが設定されていません");
 					return;
 				}
+				lock_rungacha = true;
 				amount = player.getInventory().getItemInMainHand().getAmount();
 				if (amount == 1) {
 					// がちゃ券を1枚使うので、プレイヤーの手を素手にする
@@ -127,7 +139,7 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 					// プレイヤーが持っているガチャ券を1枚減らす
 					player.getInventory().getItemInMainHand().setAmount(amount - 1);
 					}
-				//gacha実行
+				//がちゃ実行
 				present = Gacha.runGacha();
 
 				probability = gachaitem.get(present);
@@ -137,6 +149,7 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 				if(present.getAmount() == 0){
 					present.setAmount(1);
 				}
+<<<<<<< HEAD
 				player.getWorld().dropItemNaturally(player.getLocation(),present);
 
 				if(probability < 0.001){
@@ -151,11 +164,31 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 					player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！");
 				}else{
 					player.sendMessage(ChatColor.RED+ "不明なエラーが発生しました．管理者に報告してください．");
+=======
+
+				Util.dropItem(player, present);
+				//player.getWorld().dropItemNaturally(player.getLocation(),present);
+				String str = ChatColor.RED + "プレゼントが下に落ちました。";
+
+				if(probability < 0.001){
+					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 2);
+					player.sendMessage(ChatColor.YELLOW + "おめでとう！！！！！Gigantic☆大当たり！" + str);
+					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！\n" + ChatColor.AQUA + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
+				}else if(probability < 0.01){
+					Util.sendEverySound(Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
+					player.sendMessage(ChatColor.YELLOW + "おめでとう！！大当たり！" + str);
+					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.getItemMeta().getDisplayName() + "を引きました！おめでとうございます！");
+				}else if(probability < 0.1){
+					player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！" + str);
+				}else if(probability <= 1.0){
+					player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！" + str);
+				}else{
+					player.sendMessage(ChatColor.RED + "不明なエラーが発生しました。");
+>>>>>>> unchama/master
 				}
-				player.sendMessage(ChatColor.RED + "プレゼントが下に落ちました。");
-
+				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
+				lock_rungacha = false;
 			}
-
 		}
 
 	}
