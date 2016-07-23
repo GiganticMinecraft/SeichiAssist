@@ -5,16 +5,14 @@ import static com.github.unchama.multiseichieffect.Util.*;
 import org.bukkit.entity.Player;
 
 public class MineBlock{
-	private Player player;
 	private int last_mineblock;
 	private int now_mineblock;
 	private int increase_mineblock;
 
 
 
-
-	MineBlock(Player _player){
-		player = _player;
+	
+	MineBlock(){
 		last_mineblock = calcMineblock(player);
 		now_mineblock = 0;
 		increase_mineblock = 0;

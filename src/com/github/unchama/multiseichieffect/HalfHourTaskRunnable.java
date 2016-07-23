@@ -1,6 +1,7 @@
 package com.github.unchama.multiseichieffect;
 
 import static com.github.unchama.multiseichieffect.Util.*;
+import static com.github.unchama.multiseichieffect.Config.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,32 +14,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class AllPlayerTaskRunnable extends BukkitRunnable{
+public class HalfHourTaskRunnable extends BukkitRunnable{
+	private HashMap<Player,PlayerData> playermap = MultiSeichiEffect.playermap;
 
-	//このクラス自身を表すインスタンス
-	//public static TestRunnable instance;
-	MultiSeichiEffect plugin = MultiSeichiEffect.instance;
-
-	//値の宣言
-	private HashMap<Player,MineBlock> playermap;
-
-	private Config config;
 	private MineBlock mineblock;
-	private int all;
 	private int count = 1;
 
-
-	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
-	AllPlayerTaskRunnable(HashMap<Player,MineBlock> _playermap,Config _config) {
-		config = _config;
-		//static なので参照されているだけ？
-		playermap = _playermap;
+	public HalfHourTaskRunnable() {
 	}
 
 
 	@Override
 	public void run() {
-		all = 0;
 		count = 1;
 		// MineBlock更新
 		for(Player player : playermap.keySet()){

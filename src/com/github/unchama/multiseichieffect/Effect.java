@@ -1,6 +1,7 @@
 package com.github.unchama.multiseichieffect;
 
 import static com.github.unchama.multiseichieffect.Util.*;
+import static com.github.unchama.multiseichieffect.Config.*;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -9,7 +10,6 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Effect {
 	private Player player;
-	private Config config;
 
 
 	private boolean firstloginflag;
@@ -25,10 +25,9 @@ public class Effect {
 	public MineBlock mineblock;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
-	Effect(Player _player,Config _config) {
+	Effect(Player _player) {
 		//関数初期化
 		player = _player;
-		config = _config;
 		firstloginflag = true;
 		effect_p_num = 0.0;
 		effect_mineblock = 0.0;
@@ -77,11 +76,11 @@ public class Effect {
 	}
 
 	public void setMineblock(){
-		effect_mineblock =(double) mineblock.getIncrease() * config.getMinuteMineSpeed();
+		effect_mineblock =(double) mineblock.getIncrease() * getMinuteMineSpeed();
 	}
 
 	public void setPnum(){
-		effect_p_num = (double) getOnlinePlayer() * config.getLoginPlayerMineSpeed();
+		effect_p_num = (double) getOnlinePlayer() * getLoginPlayerMineSpeed();
 	}
 
 	public void setMySum(){

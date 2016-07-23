@@ -1,43 +1,56 @@
 package com.github.unchama.multiseichieffect;
 
+import com.github.unchama.multiseichieffect.Util.*;
+
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class MinuteTaskRunnable extends BukkitRunnable{
-
-	//このクラス自身を表すインスタンス
-	//public static TestRunnable instance;
-
+	HashMap<Player,PlayerData> playermap = MultiSeichiEffect.playermap;
+	
 	//値の宣言
 	private Player player;
-	private Config config;
-	private Effect effect;
-	private Gacha gacha;
-	private Boolean flag;
+	private PlayerData playerdata;
+
 
 
 
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
-	MinuteTaskRunnable(Player _player,Config _config) {
-		player = _player;
-		config = _config;
-		effect = new Effect(player,config);
-		gacha = new Gacha(player,config);
+	MinuteTaskRunnable() {
 	}
 
 
 	@Override
 	public void run() {
-		// スケジュールで実行する処理の内容をここに書きます。
-		flag = MultiSeichiEffect.playerflag.get(player);
-
-		//タスクキル判定用ArrayListに自分の名前が無かったらこのスゲジュールを削除する
-		if(!MultiSeichiEffect.playermap.containsKey(player)){
-			cancel();
+		for (Entry<Player, PlayerData> map : playermap.entrySet()){
+			player = map.getKey();
+			playerdata = map.getValue();
+			//オンラインプレイヤーのみの処理
+			if(playerdata.onlineflag){
+				//エフェクト処理
+				addEffect();
+				//ガチャ券の処理
+				presentGachaTicket();
+				
+			}
+			//全プレイヤーへの処理
 		}
+	}
 
+
+
+
+	private void addEffect() {
+		Effect effect = new Effect(player);
+		MineBlock mineblock = new MineBlock();
+		
 		//総破壊数を計算
+		mineblock.last = calcMineBlock(player);
 		effect.mineblock.setNow();
 		effect.mineblock.setIncrease();
 
@@ -56,10 +69,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		//ポーション効果付与
 		effect.addPotion(flag);
 
-		//ガチャ用採掘量データセット
-		gacha.setPoint(effect.mineblock.getIncrease());
-		//ガチャ券付与
-		gacha.presentticket();
+
 
 		//プレイヤーにメッセージ送信
 		effect.sendEffectMessage();
@@ -70,6 +80,13 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		effect.setLastSum();
 		effect.setLastMySum();
 
+		
+	}
+	private void presentGachaTicket() {
+		//ガチャ用採掘量データセット
+		gacha.setPoint(effect.mineblock.getIncrease());
+		//ガチャ券付与
+		gacha.presentticket();
 	}
 
 }

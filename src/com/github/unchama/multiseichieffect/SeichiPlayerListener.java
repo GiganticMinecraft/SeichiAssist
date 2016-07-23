@@ -1,13 +1,11 @@
 package com.github.unchama.multiseichieffect;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,88 +14,34 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
-public class MultiSeichiEffect extends JavaPlugin implements Listener {
-
-	//このクラス自身を表すインスタンス
-	public static MultiSeichiEffect instance;
-
-	private Player player;
-	private Config config;
-	private BukkitTask allplayertask;
-
-	private MineBlock mineblock;
-	//コマンドの一覧
-	private HashMap<String, TabExecutor> commands;
-
-	public static final HashMap<ItemStack,Double> gachaitem = new HashMap<ItemStack,Double>();
-	public static final HashMap<Player,MineBlock> playermap = new HashMap<Player,MineBlock>();
-	public static final HashMap<Player,Boolean> playerflag = new HashMap<Player,Boolean>();
-
-	private boolean lock_rungacha;
-
-	@Override
-	public void onEnable(){
-		instance = this;
-		lock_rungacha = false;
-
-		//Configが"なかったら"コピーする
-		saveDefaultConfig();
-
-		//config.ymlを読み込む．読み出し方法はconf.getString("key")
-		config = new Config(getConfig());
-
-		//コマンドの登録
-		commands = new HashMap<String, TabExecutor>();
-		commands.put("gacha", new gachaCommand(this,getConfig()));
-		commands.put("seichi", new seichiCommand(this));
-		commands.put("ef", new effectCommand(this));
-
-
-		//リスナーの登録
-		getServer().getPluginManager().registerEvents(this, this);
-
-		//初回ガチャデータロード
-		//gachaCommand.java見ればわかるけどとりあえず実装しただけだからコードまとめたりはそのうちやる
-		gachaCommand.onEnableGachaLoad();
-		getLogger().info("ガチャデータのLoadを完了しました。");
-
-		getLogger().info("SeichiPlugin is Enabled!");
-
-		//一定時間おきに処理を実行するインスタンスを立ち上げ、そのインスタンスに変数playerを代入
-		allplayertask = new AllPlayerTaskRunnable(playermap,config).runTaskTimer(this,100,1200 * config.getNo1PlayerInterval()+1);
-
-	}
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-		return commands.get(cmd.getName()).onCommand(sender, cmd, label, args);
-	}
-	@Override
-	public void onDisable() {
-		getLogger().info("SeichiPlugin is Disabled!");
-		saveConfig();
-		allplayertask.cancel();
-		//itemlistを保存したい。
-	}
-
+public class SeichiPlayerListener implements Listener {
+	
+	
 	//プレイヤーがjoinした時に実行
 	@EventHandler
 	public void onplayerJoinEvent(PlayerJoinEvent event){
-		player = event.getPlayer();
-		mineblock = new MineBlock(player);
-
-		//誰がjoinしたのか取得しplayermapに格納
-		playermap.put(player,mineblock);
-
-		//flag設定をしていないプレイヤーを初期値TRUEにして追加
-		if(!playerflag.containsKey(player)){
-			playerflag.put(player, true);
+		Player player = event.getPlayer();
+		HashMap<Player,PlayerData> playermap = MultiSeichiEffect.playermap;
+		PlayerData playerdata;
+		
+		//ログインしたプレイヤーのPlayerData作成
+		if(!playermap.containsKey(player)){
+			playermap.put(player, new PlayerData());
 		}
-
+		//playerのplayerdataを参照
+		playerdata = playermap.get(player);
+		
+		//初見かどうかの判定
+		if(player.hasPlayedBefore()){
+			playerdata.firstjoinflag = true;
+		}
+		
+		//オンラインプレイヤーフラグをONにする．
+		playerdata.onlineflag = true;
+		
 		//1分おきに処理を実行するインスタンスを立ち上げ、そのインスタンスに変数playerを代入
-		new MinuteTaskRunnable(player,config).runTaskTimer(this,0,1201);
+		new MinuteTaskRunnable(player).runTaskTimer(this,0,1201);
 	}
 
 	//プレイヤーがleftした時に実行
@@ -149,7 +93,6 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 				if(present.getAmount() == 0){
 					present.setAmount(1);
 				}
-<<<<<<< HEAD
 				player.getWorld().dropItemNaturally(player.getLocation(),present);
 
 				if(probability < 0.001){
@@ -164,8 +107,7 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 					player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！");
 				}else{
 					player.sendMessage(ChatColor.RED+ "不明なエラーが発生しました．管理者に報告してください．");
-=======
-
+				}
 				Util.dropItem(player, present);
 				//player.getWorld().dropItemNaturally(player.getLocation(),present);
 				String str = ChatColor.RED + "プレゼントが下に落ちました。";
@@ -184,7 +126,6 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 					player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！" + str);
 				}else{
 					player.sendMessage(ChatColor.RED + "不明なエラーが発生しました。");
->>>>>>> unchama/master
 				}
 				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
 				lock_rungacha = false;
@@ -195,3 +136,4 @@ public class MultiSeichiEffect extends JavaPlugin implements Listener {
 
 }
 
+}

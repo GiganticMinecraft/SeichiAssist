@@ -59,13 +59,13 @@ public class Util {
 		player.getInventory().addItem(itemstack);
 	}
 	public static void sendEveryMessage(String str){
-		MultiSeichiEffect plugin = MultiSeichiEffect.instance;
+		MultiSeichiEffect plugin = MultiSeichiEffect.plugin;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.sendMessage(str);
 		}
 	}
 	public static void sendEverySound(Sound str, float a, float b){
-		MultiSeichiEffect plugin = MultiSeichiEffect.instance;
+		MultiSeichiEffect plugin = MultiSeichiEffect.plugin;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.playSound(player.getLocation(), str, a, b);
 		}

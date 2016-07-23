@@ -4,25 +4,48 @@ import static com.github.unchama.multiseichieffect.Util.*;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-public class Config {
-	private FileConfiguration config;
-	Config(FileConfiguration _config) {
-		config = _config;
+public final class Config{
+	private static FileConfiguration config;
+	MultiSeichiEffect plugin;
+	public Config(MultiSeichiEffect _plugin){
+		plugin = _plugin;
+		saveDefaultConfig();
+		config = getConfig();
+		loadGachaData();
+	}
+	//plugin.ymlがない時にDefaultのファイルを生成
+	public void saveDefaultConfig(){
+		plugin.saveDefaultConfig();
+	}
+	//plugin.ymlファイルからの読み込み
+	public FileConfiguration getConfig(){
+		return plugin.getConfig();
+	}
+	//plugin.ymlファイルからガチャデータの読み込み
+	public void loadGachaData(){
+		int num = config.getInt("num");
+		for (int i=0; i < num; i++ ) {
+			GachaData gachadata = new GachaData();
+			gachadata.itemstack = config.getItemStack("item" + i);
+			gachadata.itemstack = config.getItemStack("probability" + i);
+			MultiSeichiEffect.gachadatalist.add(gachadata);
+		}
+		plugin.getLogger().info("ガチャデータのLoadを完了しました。");
 	}
 
-	public double getMinuteMineSpeed(){
+	public static double getMinuteMineSpeed(){
 		return toDouble(config.getString("minutespeedamount"));
 	}
-	public double getLoginPlayerMineSpeed(){
+	public static double getLoginPlayerMineSpeed(){
 		return toDouble(config.getString("onlineplayersamount"));
 	}
-	public int getGachaPresentInterval(){
+	public static int getGachaPresentInterval(){
 		return toInt(config.getString("presentinterval"));
 	}
-	public int getNo1PlayerInterval(){
+	public static int getNo1PlayerInterval(){
 		return toInt(config.getString("no1playerinterval"));
 	}
-	public int getDefaultMineAmount(){
+	public static int getDefaultMineAmount(){
 		return toInt(config.getString("defaultmineamount"));
 	}
 
