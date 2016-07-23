@@ -1,4 +1,4 @@
-package com.github.unchama.multiseichieffect;
+package com.github.unchama.seichiassist;
 
 import java.math.BigDecimal;
 
@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class Util {
 	//統計の総ブロック破壊数を出力する。
-	public static int calcMineblock(Player player){
+	public static int calcMineBlock(Player player){
 		return  (int)player.getStatistic(Statistic.MINE_BLOCK, Material.STONE)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.NETHERRACK)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.NETHER_BRICK)
@@ -59,13 +59,13 @@ public class Util {
 		player.getInventory().addItem(itemstack);
 	}
 	public static void sendEveryMessage(String str){
-		MultiSeichiEffect plugin = MultiSeichiEffect.plugin;
+		SeichiAssist plugin = SeichiAssist.plugin;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.sendMessage(str);
 		}
 	}
 	public static void sendEverySound(Sound str, float a, float b){
-		MultiSeichiEffect plugin = MultiSeichiEffect.plugin;
+		SeichiAssist plugin = SeichiAssist.plugin;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.playSound(player.getLocation(), str, a, b);
 		}

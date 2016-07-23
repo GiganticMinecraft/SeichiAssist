@@ -1,4 +1,4 @@
-package com.github.unchama.multiseichieffect;
+package com.github.unchama.seichiassist;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,13 +16,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class SeichiPlayerListener implements Listener {
-	
+	HashMap<Player,PlayerData> playermap;
 	
 	//プレイヤーがjoinした時に実行
 	@EventHandler
 	public void onplayerJoinEvent(PlayerJoinEvent event){
 		Player player = event.getPlayer();
-		HashMap<Player,PlayerData> playermap = MultiSeichiEffect.playermap;
+		playermap = SeichiAssist.playermap;
 		PlayerData playerdata;
 		
 		//ログインしたプレイヤーのPlayerData作成
@@ -39,19 +39,17 @@ public class SeichiPlayerListener implements Listener {
 		
 		//オンラインプレイヤーフラグをONにする．
 		playerdata.onlineflag = true;
-		
-		//1分おきに処理を実行するインスタンスを立ち上げ、そのインスタンスに変数playerを代入
-		new MinuteTaskRunnable(player).runTaskTimer(this,0,1201);
 	}
 
 	//プレイヤーがleftした時に実行
 	@EventHandler
 	public void onPlayerQuitEvent(PlayerQuitEvent event){
 		Player player = event.getPlayer();
-
-		//誰がleftしたのか取得しplayermapに格納
-		playermap.remove(player);
-
+		playermap = SeichiAssist.playermap;
+		PlayerData playerdata = playermap.get(player);
+		
+		//オンラインプレイヤーフラグをOFFにする．
+		playerdata.onlineflag = false;
 
 	}
 

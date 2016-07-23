@@ -1,7 +1,7 @@
-package com.github.unchama.multiseichieffect;
+package com.github.unchama.seichiassist;
 
-import static com.github.unchama.multiseichieffect.Util.*;
-import static com.github.unchama.multiseichieffect.Config.*;
+import static com.github.unchama.seichiassist.Config.*;
+import static com.github.unchama.seichiassist.Util.*;
 
 import java.util.ArrayList;
 import java.util.Collections;

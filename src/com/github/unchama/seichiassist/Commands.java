@@ -1,4 +1,4 @@
-package com.github.unchama.multiseichieffect;
+package com.github.unchama.seichiassist;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,11 +9,11 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Commands extends JavaPlugin{
-	MultiSeichiEffect plugin;
+	SeichiAssist plugin;
 	private HashMap<String, TabExecutor> commandlist;
 	
 	//コンストラクタ
-	Commands(MultiSeichiEffect _plugin){
+	Commands(SeichiAssist _plugin){
 		plugin = _plugin;
 		commandlist = new HashMap<String, TabExecutor>();
 		addCommand("gacha",new gachaCommand(plugin));

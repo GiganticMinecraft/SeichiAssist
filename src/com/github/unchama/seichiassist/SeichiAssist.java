@@ -1,4 +1,4 @@
-package com.github.unchama.MultiSeichiEffect;
+package com.github.unchama.seichiassist;
 
 import java.util.*;
 

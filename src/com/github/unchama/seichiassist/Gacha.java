@@ -1,6 +1,6 @@
-package com.github.unchama.multiseichieffect;
+package com.github.unchama.seichiassist;
 
-import static com.github.unchama.multiseichieffect.Util.*;
+import static com.github.unchama.seichiassist.Util.*;
 
 import java.util.Map.Entry;
 

@@ -1,4 +1,4 @@
-package com.github.unchama.multiseichieffect;
+package com.github.unchama.seichiassist;
 
 import org.bukkit.inventory.ItemStack;
 

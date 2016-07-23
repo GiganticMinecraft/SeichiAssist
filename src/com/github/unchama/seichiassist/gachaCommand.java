@@ -1,6 +1,6 @@
-package com.github.unchama.multiseichieffect;
+package com.github.unchama.seichiassist;
 
-import static com.github.unchama.multiseichieffect.Util.*;
+import static com.github.unchama.seichiassist.Util.*;
 
 import java.util.List;
 import java.util.Map.Entry;
@@ -13,11 +13,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class gachaCommand implements TabExecutor{
-	public MultiSeichiEffect plugin;
+	public SeichiAssist plugin;
 	private static FileConfiguration config;
 
 
-	public gachaCommand(MultiSeichiEffect plugin,FileConfiguration _config){
+	public gachaCommand(SeichiAssist plugin,FileConfiguration _config){
 		this.plugin = plugin;
 		config = _config;
 	}
@@ -31,7 +31,6 @@ public class gachaCommand implements TabExecutor{
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String label, String[] args) {
 		Player player = (Player) sender;
-
 
 
 		if (!(sender instanceof Player)) {
@@ -55,7 +54,7 @@ public class gachaCommand implements TabExecutor{
 			Gacharemove(player,num);
 			return true;
 		}else if(args[0].equalsIgnoreCase("list")){
-			if(MultiSeichiEffect.gachaitem.isEmpty()){
+			if(SeichiAssist.gachaitem.isEmpty()){
 				sender.sendMessage("ガチャが設定されていません。");
 				return true;
 			}
@@ -80,22 +79,22 @@ public class gachaCommand implements TabExecutor{
 	private void Gachaadd(Player player,Double probability) {
 		ItemStack itemstack;
 		itemstack = player.getInventory().getItemInMainHand();
-		MultiSeichiEffect.gachaitem.put(itemstack,probability);
+		SeichiAssist.gachaitem.put(itemstack,probability);
 		player.sendMessage(player.getInventory().getItemInMainHand().getType().toString() + player.getInventory().getItemInMainHand().getAmount() + "個を確率" + Decimal(probability) + "としてガチャに追加しました。");
 	}
 	private void Gachalist(Player player){
 		int i = 1;
 		player.sendMessage("アイテム番号|アイテム名|アイテム数|出現確率");
-		for (Entry<ItemStack, Double> item : MultiSeichiEffect.gachaitem.entrySet()) {
+		for (Entry<ItemStack, Double> item : SeichiAssist.gachaitem.entrySet()) {
 			player.sendMessage(i + "|" + item.getKey().getType().toString() + "|" + item.getKey().getAmount() + "|" +item.getValue());
 			i++;
 		}
 	}
 	private void Gacharemove(Player player,int num) {
 		int i = 1;
-		for (Entry<ItemStack, Double> item : MultiSeichiEffect.gachaitem.entrySet()) {
+		for (Entry<ItemStack, Double> item : SeichiAssist.gachaitem.entrySet()) {
 			if(num == i){
-				MultiSeichiEffect.gachaitem.remove(item.getKey());
+				SeichiAssist.gachaitem.remove(item.getKey());
 				player.sendMessage(i + "|" + item.getKey().getType().toString() + "|" + item.getValue());
 				player.sendMessage("を削除しました。");
 				break;
@@ -104,12 +103,12 @@ public class gachaCommand implements TabExecutor{
 		}
 	}
 	private void Gachaclear(Player player) {
-		MultiSeichiEffect.gachaitem.clear();
+		SeichiAssist.gachaitem.clear();
 		player.sendMessage("すべて削除しました。");
 	}
 	private void Gachasave(Player player){
 		int i = 0;
-		for (Entry<ItemStack, Double> item : MultiSeichiEffect.gachaitem.entrySet()){
+		for (Entry<ItemStack, Double> item : SeichiAssist.gachaitem.entrySet()){
 			config.set("item"+ i,item.getKey());
 			config.set("probability"+ i,item.getValue());
 			i++;
@@ -119,14 +118,14 @@ public class gachaCommand implements TabExecutor{
 	}
 	private void Gachaload(Player player){
 		for (int i=0; i<config.getInt("num"); i++) {
-			MultiSeichiEffect.gachaitem.put(config.getItemStack("item" + i),config.getDouble("probability" + i ));
+			SeichiAssist.gachaitem.put(config.getItemStack("item" + i),config.getDouble("probability" + i ));
 		}
 		player.sendMessage("ガチャデータのLoadを完了しました。");
 	}
 
 	static void onEnableGachaLoad(){
 		for (int i=0; i<config.getInt("num"); i++) {
-			MultiSeichiEffect.gachaitem.put(config.getItemStack("item" + i),config.getDouble("probability" + i ));
+			SeichiAssist.gachaitem.put(config.getItemStack("item" + i),config.getDouble("probability" + i ));
 		};
 	}
 

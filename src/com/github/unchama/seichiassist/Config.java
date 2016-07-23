@@ -1,13 +1,13 @@
-package com.github.unchama.multiseichieffect;
+package com.github.unchama.seichiassist;
 
-import static com.github.unchama.multiseichieffect.Util.*;
+import static com.github.unchama.seichiassist.Util.*;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
 public final class Config{
 	private static FileConfiguration config;
-	MultiSeichiEffect plugin;
-	public Config(MultiSeichiEffect _plugin){
+	SeichiAssist plugin;
+	public Config(SeichiAssist _plugin){
 		plugin = _plugin;
 		saveDefaultConfig();
 		config = getConfig();
@@ -28,7 +28,7 @@ public final class Config{
 			GachaData gachadata = new GachaData();
 			gachadata.itemstack = config.getItemStack("item" + i);
 			gachadata.itemstack = config.getItemStack("probability" + i);
-			MultiSeichiEffect.gachadatalist.add(gachadata);
+			SeichiAssist.gachadatalist.add(gachadata);
 		}
 		plugin.getLogger().info("ガチャデータのLoadを完了しました。");
 	}
@@ -41,9 +41,6 @@ public final class Config{
 	}
 	public static int getGachaPresentInterval(){
 		return toInt(config.getString("presentinterval"));
-	}
-	public static int getNo1PlayerInterval(){
-		return toInt(config.getString("no1playerinterval"));
 	}
 	public static int getDefaultMineAmount(){
 		return toInt(config.getString("defaultmineamount"));
