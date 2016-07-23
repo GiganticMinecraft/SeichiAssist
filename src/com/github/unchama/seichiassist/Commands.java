@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist;
 
 import java.util.HashMap;
-import java.util.List;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

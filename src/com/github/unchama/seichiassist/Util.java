@@ -8,6 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 public class Util {
 	//統計の総ブロック破壊数を出力する。
@@ -32,6 +33,17 @@ public class Util {
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.QUARTZ_ORE)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.END_BRICKS)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.ENDER_STONE);
+	}
+	public static ItemStack getskull(){
+		ItemStack skull;
+		SkullMeta skullmeta;
+		skull = new ItemStack(Material.SKULL_ITEM, 1);
+		skullmeta = (SkullMeta) skull.getItemMeta();
+		skull.setDurability((short) 3);
+		skullmeta.setDisplayName("ガチャ券");
+		skullmeta.setOwner("unchama");
+		skull.setItemMeta(skullmeta);
+		return skull;
 	}
 	public static int getOnlinePlayer(){
 		return Bukkit.getOnlinePlayers().size();

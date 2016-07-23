@@ -49,6 +49,16 @@ public class SeichiAssist extends JavaPlugin{
 		for(BukkitTask task:tasklist){
 			task.cancel();
 		}
+		int i = 1;
+		//ガチャのデータを保存
+		for(GachaData gachadata : gachadatalist){
+			Config.config.set("item"+ i,gachadata.itemstack);
+			Config.config.set("Amount"+ i,gachadata.amount);
+			Config.config.set("probability"+ i,gachadata.probability);
+			i++;
+		}
+		Config.config.set("num",i);
+		getLogger().info("ガチャを保存しました．");
 		getLogger().info("SeichiPlugin is Disabled!");
 	}
 	

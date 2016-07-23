@@ -7,9 +7,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 
 public class seichiCommand implements TabExecutor {
-	MultiSeichiEffect plugin;
+	SeichiAssist plugin;
 
-	public seichiCommand(MultiSeichiEffect _plugin){
+	public seichiCommand(SeichiAssist _plugin){
 		plugin = _plugin;
 	}
 	@Override
@@ -24,8 +24,8 @@ public class seichiCommand implements TabExecutor {
 			String[] args) {
 
 		if(args.length == 0){
-			plugin.reloadConfig();
-			sender.sendMessage("MultiSeichiEffectのconfig.ymlをリロードしました。");
+			Config.reloadConfig();
+			sender.sendMessage("SeichiAssistのconfig.ymlをリロードしました。");
 			return true;
 		}
 		return false;

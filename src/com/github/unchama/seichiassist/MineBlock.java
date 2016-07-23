@@ -1,13 +1,13 @@
 package com.github.unchama.seichiassist;
 
 public class MineBlock{
-	int last;
-	int now;
+	int after;
+	int before;
 	int increase;
 	
 	MineBlock(){
-		last = 0;
-		now = 0;
+		after = 0;
+		before = 0;
 		increase = 0;
 	}
 }
