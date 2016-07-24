@@ -37,6 +37,18 @@ public class effectCommand implements TabExecutor {
 				sender.sendMessage("採掘速度上昇効果をOFFにしました。ONに戻したい時は再度コマンドを実行します。");
 			}
 			return true;
+		}else if(args.length == 1){
+			if(args[0].equalsIgnoreCase("smart")){
+				Player player = (Player)sender;
+				PlayerData playerdata = SeichiAssist.playermap.get(player);
+				playerdata.messageflag = !playerdata.messageflag;
+				if (playerdata.messageflag){
+					sender.sendMessage("内訳の表示をONにしました。OFFに戻したい時は再度コマンドを実行します。");
+				}else{
+					sender.sendMessage("内訳の表示をOFFにしました。");
+				}
+				return true;
+			}
 		}
 		return false;
 	}

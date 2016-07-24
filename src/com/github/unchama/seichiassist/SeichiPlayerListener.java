@@ -67,14 +67,8 @@ public class SeichiPlayerListener implements Listener {
 					}
 				//ガチャ実行
 				present = runGacha();
-
+				present.itemstack.setAmount(present.amount);
 				probability = present.probability;
-				if(probability == null){
-					probability = 1.0;
-				}
-				if(present.amount == 0){
-					present.amount = 1;
-				}
 				String str = ChatColor.RED + "プレゼントが下に落ちました。";
 				Util.dropItem(player, present.itemstack);
 				if(probability < 0.001){
@@ -87,10 +81,8 @@ public class SeichiPlayerListener implements Listener {
 					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
 				}else if(probability < 0.1){
 					player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！" + str);
-				}else if(probability <= 1.0){
-					player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！" + str);
 				}else{
-					player.sendMessage(ChatColor.RED + "不明なエラーが発生しました。");
+					player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！" + str);
 				}
 				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
 			}

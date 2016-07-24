@@ -8,7 +8,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-
 import org.bukkit.inventory.PlayerInventory;
 
 public class gachaCommand implements TabExecutor{
@@ -74,7 +73,7 @@ public class gachaCommand implements TabExecutor{
 		gachadata.itemstack = inventory.getItemInMainHand();
 		gachadata.amount = inventory.getItemInMainHand().getAmount();
 		gachadata.probability = probability;
-		
+
 		SeichiAssist.gachadatalist.add(gachadata);
 		player.sendMessage(gachadata.itemstack.getType().toString() + gachadata.amount + "個を確率" + gachadata.probability + "としてガチャに追加しました。");
 	}

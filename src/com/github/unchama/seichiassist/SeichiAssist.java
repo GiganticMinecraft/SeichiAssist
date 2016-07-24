@@ -39,26 +39,27 @@ public class SeichiAssist extends JavaPlugin{
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new SeichiPlayerListener(), this);
 
+		for(Player p : getServer().getOnlinePlayers()){
+			playermap.put(p, new PlayerData(p));
+		}
 
 		getLogger().info("SeichiPlugin is Enabled!");
 
+
 		//一定時間おきに処理を実行するタスク
 		//３０分おき
-		tasklist.add(new HalfHourTaskRunnable(this).runTaskTimer(this,100,1000));
+		tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,1000));
 		//tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
 		//１分おき
-		tasklist.add(new MinuteTaskRunnable(this).runTaskTimer(this,0,1200));
+		tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
 		return commandlist.get(cmd.getName()).onCommand(sender, cmd, label, args);
 	}
 
-
 	@Override
-	public void onDisable() {
-		//configをsave
-		saveConfig();
+	public void onDisable(){
 		//全てのタスクをキャンセル
 		for(BukkitTask task:tasklist){
 			task.cancel();
@@ -67,11 +68,13 @@ public class SeichiAssist extends JavaPlugin{
 		//ガチャのデータを保存
 		for(GachaData gachadata : gachadatalist){
 			Config.config.set("item"+ i,gachadata.itemstack);
-			Config.config.set("Amount"+ i,gachadata.amount);
+			Config.config.set("amount"+ i,gachadata.amount);
 			Config.config.set("probability"+ i,gachadata.probability);
 			i++;
 		}
 		Config.config.set("num",i);
+		//configをsave
+		saveConfig();
 		getLogger().info("ガチャを保存しました．");
 		getLogger().info("SeichiPlugin is Disabled!");
 	}
