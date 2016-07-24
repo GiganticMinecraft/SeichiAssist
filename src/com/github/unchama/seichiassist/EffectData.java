@@ -7,7 +7,7 @@ public class EffectData {
 	int duration;//持続時間
 	double amplifier;//強さ
 	boolean originalflag;//このプラグイン独自の処理による追加エフェクト
-	
+
 	EffectData(){
 		potioneffecttype = null;
 		duration = 0;
@@ -27,9 +27,9 @@ public class EffectData {
 		duration = _duration;
 		amplifier = _amplifier;
 	}
-	
-	
-	
+
+
+
 	//最後のエフェクト合算時に使用する
 	EffectData(int _duration,double _amplifier){
 		duration = _duration;

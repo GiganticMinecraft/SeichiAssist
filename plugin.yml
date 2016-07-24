@@ -1,6 +1,6 @@
-name: MultiSeichiEffect
-main: com.github.unchama.multiseichieffect.MultiSeichiEffect
-version: 0.1.4
+name: SeichiAssist
+main: com.github.unchama.seichiassist.SeichiAssist
+version: 0.1.5
 
 commands:
   gacha:

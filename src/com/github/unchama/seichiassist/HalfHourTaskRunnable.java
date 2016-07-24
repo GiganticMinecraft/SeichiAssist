@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist;
 
-import static com.github.unchama.seichiassist.Config.*;
 import static com.github.unchama.seichiassist.Util.*;
 
 import java.util.ArrayList;
@@ -16,11 +15,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class HalfHourTaskRunnable extends BukkitRunnable{
 	private HashMap<Player,PlayerData> playermap;
+	Player player;
+	SeichiAssist plugin;
 	PlayerData playerdata;
 	private int count;
 	private int all;
 
-	public HalfHourTaskRunnable() {
+	public HalfHourTaskRunnable(SeichiAssist _plugin) {
+		plugin = _plugin;
 	}
 
 
@@ -29,7 +31,12 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		playermap = SeichiAssist.playermap;
 		plugin = SeichiAssist.plugin;
 		count = 1;
-		for (Player player : plugin.getServer().getOnlinePlayers()){
+
+		for (Player p : plugin.getServer().getOnlinePlayers()){
+			if(!playermap.containsKey(p)){
+				playermap.put(p,new PlayerData(p));
+			}
+			player = p;
 			playerdata = playermap.get(player);
 			MineBlock mineblock  = playerdata.halfhourblock;
 			mineblock.after = Util.calcMineBlock(player);

@@ -12,48 +12,33 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class SeichiPlayerListener implements Listener {
 	HashMap<Player,PlayerData> playermap;
-	
+
 	//プレイヤーがjoinした時に実行
 	@EventHandler
 	public void onplayerJoinEvent(PlayerJoinEvent event){
 		Player player = event.getPlayer();
 		playermap = SeichiAssist.playermap;
 		PlayerData playerdata;
-		
+
 		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
 		if(!playermap.containsKey(player)){
-			playermap.put(player, new PlayerData());
-			playermap.get(player).minuteblock.before = Util.calcMineBlock(player);
+			playermap.put(player, new PlayerData(player));
 		}
-		
+
 		//playerのplayerdataを参照
 		playerdata = playermap.get(player);
-		
+
 		//初見かどうかの判定
 		if(player.hasPlayedBefore()){
 			playerdata.firstjoinflag = true;
 		}
-		
-		//オンラインプレイヤーフラグをONにする．
-		playerdata.onlineflag = true;
-	}
-
-	//プレイヤーがleftした時に実行
-	@EventHandler
-	public void onPlayerQuitEvent(PlayerQuitEvent event){
-		Player player = event.getPlayer();
-		playermap = SeichiAssist.playermap;
-		PlayerData playerdata = playermap.get(player);
-		
-		//オンラインプレイヤーフラグをOFFにする．
-		playerdata.onlineflag = false;
 
 	}
+
 
 	//プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
 	@EventHandler
@@ -65,7 +50,7 @@ public class SeichiPlayerListener implements Listener {
 		int amount = 0;
 		Double probability = 0.0;
 		List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
-		
+
 		if(action.equals(Action.RIGHT_CLICK_AIR)){
 			if(itemstack.getType().equals(Material.SKULL_ITEM)){
 				if(gachadatalist.isEmpty()){

@@ -1,7 +1,12 @@
 package com.github.unchama.seichiassist;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -9,6 +14,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class SeichiAssist extends JavaPlugin{
 	public static SeichiAssist plugin;
+	private HashMap<String, TabExecutor> commandlist;
 
 
 	//起動するタスクリスト
@@ -25,21 +31,29 @@ public class SeichiAssist extends JavaPlugin{
 		new Config(this);
 
 		//コマンドの登録系の設定も全てCommands.javaに移動
-		new Commands(this);
+		commandlist = new HashMap<String, TabExecutor>();
+		commandlist.put("gacha",new gachaCommand(plugin));
+		commandlist.put("seichi",new seichiCommand(plugin));
+		commandlist.put("ef",new effectCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new SeichiPlayerListener(), this);
 
-		
+
 		getLogger().info("SeichiPlugin is Enabled!");
 
 		//一定時間おきに処理を実行するタスク
 		//３０分おき
-		tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
+		tasklist.add(new HalfHourTaskRunnable(this).runTaskTimer(this,100,1000));
+		//tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
 		//１分おき
-		tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,600,1200));
-
+		tasklist.add(new MinuteTaskRunnable(this).runTaskTimer(this,0,1200));
 	}
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+		return commandlist.get(cmd.getName()).onCommand(sender, cmd, label, args);
+	}
+
 
 	@Override
 	public void onDisable() {
@@ -61,7 +75,7 @@ public class SeichiAssist extends JavaPlugin{
 		getLogger().info("ガチャを保存しました．");
 		getLogger().info("SeichiPlugin is Disabled!");
 	}
-	
+
 }
 
 
