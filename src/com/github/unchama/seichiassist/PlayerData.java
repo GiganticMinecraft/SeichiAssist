@@ -29,8 +29,10 @@ public class PlayerData {
 	List<EffectData> effectdatalist;
 	//表示される名前
 	String displayname;
-	//登録された時のプレイヤー型
+	//プレイヤー型
 	Player player;
+	//現在のプレイヤーのランク
+	int rank;
 
 	PlayerData(Player _player){
 		firstjoinflag = false;
@@ -42,9 +44,26 @@ public class PlayerData {
 		gachapoint = 0;
 		lastgachapoint = 0;
 		amplifier = 0;
-		minuteblock.before = Util.calcMineBlock(_player);
+		minuteblock.before = 0;
 		halfhourblock.before = minuteblock.before;
 		displayname = _player.getDisplayName();
 		player = _player;
+		rank = 0;
+	}
+	PlayerData(){
+		firstjoinflag = false;
+		effectflag = true;
+		messageflag = false;
+		minuteblock = new MineBlock();
+		halfhourblock = new MineBlock();
+		effectdatalist = new ArrayList<EffectData>();
+		gachapoint = 0;
+		lastgachapoint = 0;
+		amplifier = 0;
+		minuteblock.before = 0;
+		halfhourblock.before = minuteblock.before;
+		displayname = "";
+		player = null;
+		rank = 0;
 	}
 }

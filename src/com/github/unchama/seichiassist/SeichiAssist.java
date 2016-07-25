@@ -65,6 +65,20 @@ public class SeichiAssist extends JavaPlugin{
 			task.cancel();
 		}
 		int i = 1;
+		//プレイヤーのデータをセーブ
+		for(String name : playermap.keySet()){
+			PlayerData d = playermap.get(name);
+			Config.config.set("player" + i,name);
+			Config.config.set(name + "effectflag",d.effectflag);
+			Config.config.set(name + "messageflag",d.messageflag);
+			Config.config.set(name + "gachapoint",d.gachapoint);
+			Config.config.set(name + "rank",d.rank);
+			i++;
+		}
+		Config.config.set("playernum",i);
+		getLogger().info("プレイヤーデータを保存しました。");
+
+		i = 1;
 		//ガチャのデータを保存
 		for(GachaData gachadata : gachadatalist){
 			Config.config.set("item"+ i,gachadata.itemstack);
@@ -72,7 +86,7 @@ public class SeichiAssist extends JavaPlugin{
 			Config.config.set("probability"+ i,gachadata.probability);
 			i++;
 		}
-		Config.config.set("num",i);
+		Config.config.set("gachanum",i);
 		//configをsave
 		saveConfig();
 		getLogger().info("ガチャを保存しました．");

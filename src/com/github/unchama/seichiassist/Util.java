@@ -66,6 +66,7 @@ public class Util {
 		for(i = 0 ; ranklist.get(i).intValue() <= mines ;i++){
 		}
 		name = "[Lv" + (i+1) + "]" + player.getName();
+		SeichiAssist.playermap.get(name).rank = (i+1);
 		return name;
 	}
 
