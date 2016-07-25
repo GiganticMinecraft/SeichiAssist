@@ -32,6 +32,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		for (String name: playermap.keySet()){
 			//playerdataを取得
 			playerdata = playermap.get(name);
+
 			//player型を再取得
 			playerdata.player = plugin.getServer().getPlayer(name);
 			player = playerdata.player;
@@ -47,6 +48,10 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				}
 			}
 
+			if(player == null){
+				return;
+			}
+
 			//独自effect量計算
 			//統計を抜き出し
 			playerdata.minuteblock.after = Util.calcMineBlock(player);
@@ -60,9 +65,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//現在の統計をbeforeに代入
 			playerdata.minuteblock.before = playerdata.minuteblock.after;
 
-			if(!player.isOnline()){
-				return;
-			}
+
 
 			//１分間のブロック破壊量による上昇
 			amplifier = (double) playerdata.minuteblock.increase * Config.getMinuteMineSpeed();
@@ -126,4 +129,47 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			playerdata.lastgachapoint = playerdata.gachapoint;
 		}
 	}
+	/*
+	private void calcRankBorder(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		Config config = plugin.getconfig();
+		Integer level = 0;
+		String name = player.getDisplayName();
+
+		//係数有りパラメータ
+		level += (int)((player).getStatistic(Statistic.MINE_BLOCK, Material.STONE) *
+				config.getResultset().get("stone"));
+		level += (int)((player).getStatistic(Statistic.MINE_BLOCK, Material.NETHERRACK) *
+				config.getResultset().get("netherrack"));
+		level +=(int)((player).getStatistic(Statistic.MINE_BLOCK, Material.DIRT) *
+				config.getResultset().get("dirt"));
+		level += (int)((player).getStatistic(Statistic.MINE_BLOCK, Material.GRAVEL) *
+				config.getResultset().get("gravel"));
+		level += (int)(((player).getStatistic(Statistic.MINE_BLOCK, Material.LOG) +
+				(player).getStatistic(Statistic.MINE_BLOCK, Material.LOG_2)) *
+				config.getResultset().get("log"));
+		level += (int)((player).getStatistic(Statistic.USE_ITEM, Material.SEEDS) *
+				config.getResultset().get("seed"));
+		level += (int)((player).getStatistic(Statistic.USE_ITEM, Material.POTATO_ITEM) *
+				config.getResultset().get("potate"));
+		level += (int)((player).getStatistic(Statistic.USE_ITEM, Material.CARROT_ITEM) *
+				config.getResultset().get("carrot"));
+
+		//別途1倍パラメータ
+		level += (int)((player).getStatistic(Statistic.MINE_BLOCK, Material.ENDER_STONE));
+
+		//比較対象はツリーマップなので、最小値から順に比べ、整地力に応じて設定する
+		for(Integer i : config.getRankset().keySet()){
+			if(level >= i){
+				//プレイヤーネームの設定
+				name = config.getRankset().get(i).getName(player);
+				//権限の付与
+				config.getRankset().get(i).setPermissions(player.addAttachment(plugin), player);
+			}else{
+				break;
+			}
+		}
+
+		player.setDisplayName(name);
+	}*/
 }

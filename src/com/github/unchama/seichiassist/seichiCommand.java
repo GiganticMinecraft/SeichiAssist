@@ -33,32 +33,56 @@ public class seichiCommand implements TabExecutor {
 				return true;
 			}
 			String pname = args[0].toLowerCase();
-			if(!SeichiAssist.playermap.containsKey(pname)){
-				sender.sendMessage("指定されたプレイヤーは一度も鯖に接続していません。");
-				return true;
-			}
-			int duration = Util.toInt(args[1]);
-			double amplifier = Util.toDouble(args[2]);
-			String message = null;
-
-			if(args.length == 4){
-				//引数が４つの場合
-				int num = Util.toInt(args[3]);
-				if(num == 0){
-					//投票の時のメッセージ
-					message = "投票からの上昇値:" + amplifier;
-				}else if(num == 1){
-					//どらげないたいむの時のメッセージ
-					message  = "ドラゲナイタイムからの上昇値:" + amplifier;
+			if(!pname.equalsIgnoreCase("all")){
+				if(!SeichiAssist.playermap.containsKey(pname)){
+					sender.sendMessage("指定されたプレイヤーは一度も鯖に接続していません。");
+					return true;
 				}
-			}else{
-				//引数が３つの場合
-				message = "外部からの上昇値:" + amplifier;
+				int duration = Util.toInt(args[1]);
+				double amplifier = Util.toDouble(args[2]);
+				String message = null;
 
+				if(args.length == 4){
+					//引数が４つの場合
+					int num = Util.toInt(args[3]);
+					if(num == 0){
+						//投票の時のメッセージ
+						message = "投票からの上昇値:" + amplifier;
+					}else if(num == 1){
+						//どらげないたいむの時のメッセージ
+						message  = "ドラゲナイタイム（対象："+ pname +"）からの上昇値:" + amplifier;
+					}
+				}else{
+					//引数が３つの場合
+					message = "外部（対象："+ pname +"）からの上昇値:" + amplifier;
+
+				}
+				sender.sendMessage(pname + "に上昇値"+amplifier+"を" + duration/20 + "秒追加しました。");
+				PlayerData playerdata = SeichiAssist.playermap.get(pname);
+				playerdata.effectdatalist.add(new EffectData(duration,amplifier,message));
+			}else{
+				int duration = Util.toInt(args[1]);
+				double amplifier = Util.toDouble(args[2]);
+				String message = null;
+
+				if(args.length == 4){
+					//引数が４つの場合
+					int num = Util.toInt(args[3]);
+					if(num == 1){
+						//どらげないたいむの時のメッセージ
+						message  = "ドラゲナイタイム（対象：全員）からの上昇値:" + amplifier;
+					}
+				}else{
+					//引数が３つの場合
+					message = "外部からの上昇値（対象：全員）:" + amplifier;
+
+				}
+				for(String pn : SeichiAssist.playermap.keySet()){
+					PlayerData playerdata = SeichiAssist.playermap.get(pn);
+					playerdata.effectdatalist.add(new EffectData(duration,amplifier,message));
+				}
+				sender.sendMessage("全てのプレイヤーに上昇値"+amplifier+"を" + duration/20 + "秒追加しました。");
 			}
-			sender.sendMessage(pname + "に上昇値"+amplifier+"を" + duration/20 + "秒追加しました。");
-			PlayerData playerdata = SeichiAssist.playermap.get(pname);
-			playerdata.effectdatalist.add(new EffectData(duration,amplifier,message));
 			return true;
 		}
 		return false;
