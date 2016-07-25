@@ -1,18 +1,21 @@
-package com.github.unchama.multiseichieffect;
+package com.github.unchama.seichiassist;
 
 import java.math.BigDecimal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 public class Util {
 	//統計の総ブロック破壊数を出力する。
-	public static int calcMineblock(Player player){
+	public static int calcMineBlock(Player player){
 		return  (int)player.getStatistic(Statistic.MINE_BLOCK, Material.STONE)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.NETHERRACK)
+				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.NETHER_BRICK)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.DIRT)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GRAVEL)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LOG)
@@ -31,6 +34,17 @@ public class Util {
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.END_BRICKS)
 				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.ENDER_STONE);
 	}
+	public static ItemStack getskull(){
+		ItemStack skull;
+		SkullMeta skullmeta;
+		skull = new ItemStack(Material.SKULL_ITEM, 1);
+		skullmeta = (SkullMeta) skull.getItemMeta();
+		skull.setDurability((short) 3);
+		skullmeta.setDisplayName("ガチャ券");
+		skullmeta.setOwner("unchama");
+		skull.setItemMeta(skullmeta);
+		return skull;
+	}
 	public static int getOnlinePlayer(){
 		return Bukkit.getOnlinePlayers().size();
 	}
@@ -44,9 +58,6 @@ public class Util {
 		BigDecimal bi = new BigDecimal(String.valueOf(d));
 		return bi.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
 	}
-	public static boolean isPlayerContainItem(Player player,ItemStack itemstack){
-		return player.getInventory().contains(itemstack);
-	}
 	public static boolean isPlayerInventryEmpty(Player player){
 		return (player.getInventory().firstEmpty()== -1);
 	}
@@ -57,10 +68,15 @@ public class Util {
 		player.getInventory().addItem(itemstack);
 	}
 	public static void sendEveryMessage(String str){
-		MultiSeichiEffect plugin = MultiSeichiEffect.instance;
-
+		SeichiAssist plugin = SeichiAssist.plugin;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.sendMessage(str);
 		}
-}
+	}
+	public static void sendEverySound(Sound str, float a, float b){
+		SeichiAssist plugin = SeichiAssist.plugin;
+		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+			player.playSound(player.getLocation(), str, a, b);
+		}
+	}
 }
