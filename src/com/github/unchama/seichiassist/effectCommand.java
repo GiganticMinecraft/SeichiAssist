@@ -29,7 +29,8 @@ public class effectCommand implements TabExecutor {
 			return true;
 		}else if(args.length == 0){
 			Player player = (Player)sender;
-			PlayerData playerdata = SeichiAssist.playermap.get(player);
+			String pname = player.getName().toLowerCase();
+			PlayerData playerdata = SeichiAssist.playermap.get(pname);
 			playerdata.effectflag = !playerdata.effectflag;
 			if (playerdata.effectflag){
 				sender.sendMessage("採掘速度上昇効果をONにしました。");
@@ -40,7 +41,8 @@ public class effectCommand implements TabExecutor {
 		}else if(args.length == 1){
 			if(args[0].equalsIgnoreCase("smart")){
 				Player player = (Player)sender;
-				PlayerData playerdata = SeichiAssist.playermap.get(player);
+				String pname = player.getName().toLowerCase();
+				PlayerData playerdata = SeichiAssist.playermap.get(pname);
 				playerdata.messageflag = !playerdata.messageflag;
 				if (playerdata.messageflag){
 					sender.sendMessage("内訳の表示をONにしました。OFFに戻したい時は再度コマンドを実行します。");

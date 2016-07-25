@@ -4,13 +4,13 @@ version: 0.1.5
 
 commands:
   gacha:
-      description: This is a demo command.
+      description: This is a gacha command.
       usage: /<command> <add/list/remove/clear>
       permission: multiseichiplugin.seichi
       permission-message: You don't have <permission>
   seichi:
-      description: This is a reload command.
-      usage: /<command>
+      description: This is a seichi command.
+      usage: /<command> <playername> <duration(tick)> <amplifier(double)>
       permission: multiseichiplugin.seichi
       permission-message: You don't have <permission>
   ef:

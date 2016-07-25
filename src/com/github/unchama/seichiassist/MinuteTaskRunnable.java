@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,7 +14,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class MinuteTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin;
-	private HashMap<Player,PlayerData> playermap;
+	private HashMap<String,PlayerData> playermap;
+	Player player;
 	PlayerData playerdata;
 	double amplifier;
 	String string;
@@ -25,13 +28,24 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	public void run() {
 		playermap = SeichiAssist.playermap;
 		plugin = SeichiAssist.plugin;
-
-		for (Player player : plugin.getServer().getOnlinePlayers()){
+		List<EffectData> tmplist = new ArrayList<EffectData>();
+		for (String name: playermap.keySet()){
 			//playerdataを取得
-			playerdata = playermap.get(player);
+			playerdata = playermap.get(name);
+			//player型を再取得
+			playerdata.player = plugin.getServer().getPlayer(name);
+			player = playerdata.player;
 
-			//独自効果をすべて削除
-			playerdata.effectdatalist.clear();
+			//エフェクトデータの持続時間を1200tick引いて、０以下のものを削除
+			for(EffectData ed : playerdata.effectdatalist){
+				ed.duration -= 1200;
+				tmplist.add(ed);
+			}
+			for(EffectData ed : tmplist){
+				if(ed.duration <= 0){
+					playerdata.effectdatalist.remove(ed);
+				}
+			}
 
 			//独自effect量計算
 			//統計を抜き出し
@@ -46,6 +60,10 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//現在の統計をbeforeに代入
 			playerdata.minuteblock.before = playerdata.minuteblock.after;
 
+			if(!player.isOnline()){
+				return;
+			}
+
 			//１分間のブロック破壊量による上昇
 			amplifier = (double) playerdata.minuteblock.increase * Config.getMinuteMineSpeed();
 			string = "１分間のブロック破壊量(" + playerdata.minuteblock.increase + "個)からの上昇値:" + amplifier;
@@ -55,6 +73,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			amplifier = (double) plugin.getServer().getOnlinePlayers().size() * Config.getLoginPlayerMineSpeed();
 			string = "プレイヤー数(" + plugin.getServer().getOnlinePlayers().size() + "人)からの上昇値:" + amplifier;
 			playerdata.effectdatalist.add(new EffectData(amplifier,string));
+
 
 			//effect追加の処理
 			double sum = 0;
@@ -76,15 +95,15 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			}
 
 			//プレイヤーにメッセージ送信
-			if(playerdata.amplifier != amplifier){//前の上昇量と今の上昇量が違う場合告知する
+			if(playerdata.amplifier != amplifier || playerdata.messageflag){//前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
 				playerdata.amplifier = amplifier;
 				player.sendMessage(ChatColor.YELLOW + "★" + ChatColor.WHITE + "採掘速度上昇レベルが" + ChatColor.YELLOW + (amplifier+1) + ChatColor.WHITE +"になりました。");
 				if(playerdata.messageflag){
-					player.sendMessage("----------内訳----------");
+					player.sendMessage("----------------------------内訳-----------------------------");
 					for(EffectData ed : playerdata.effectdatalist){
-						player.sendMessage(ed.string);
+						player.sendMessage(ed.string + "(持続時間:" + ed.duration/20 + "秒)");
 					}
-					player.sendMessage("------------------------");
+					player.sendMessage("-------------------------------------------------------------");
 				}
 			}
 

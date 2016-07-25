@@ -21,14 +21,18 @@ public class PlayerData {
 	MineBlock halfhourblock;
 	//ガチャの基準となるポイント
 	int gachapoint;
-	//
+	//最後のガチャポイントデータ
 	int lastgachapoint;
 	//今回の採掘速度上昇量を格納
 	int amplifier;
 	//持ってるポーションエフェクト全てを格納する．
 	List<EffectData> effectdatalist;
+	//表示される名前
+	String displayname;
+	//登録された時のプレイヤー型
+	Player player;
 
-	PlayerData(Player player){
+	PlayerData(Player _player){
 		firstjoinflag = false;
 		effectflag = true;
 		messageflag = false;
@@ -38,7 +42,9 @@ public class PlayerData {
 		gachapoint = 0;
 		lastgachapoint = 0;
 		amplifier = 0;
-		minuteblock.before = Util.calcMineBlock(player);
+		minuteblock.before = Util.calcMineBlock(_player);
 		halfhourblock.before = minuteblock.before;
+		displayname = _player.getDisplayName();
+		player = _player;
 	}
 }

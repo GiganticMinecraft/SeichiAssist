@@ -6,7 +6,6 @@ public class EffectData {
 	PotionEffectType potioneffecttype;
 	int duration;//持続時間
 	double amplifier;//強さ
-	boolean originalflag;//このプラグイン独自の処理による追加エフェクト
 	String string;//メッセージの内容
 
 	EffectData(){
@@ -19,8 +18,14 @@ public class EffectData {
 	//６０秒固定採掘速度固定
 	EffectData(double _amplifier,String _string){
 		potioneffecttype = PotionEffectType.FAST_DIGGING;
-		originalflag = true;
 		duration = 1200;
+		amplifier = _amplifier;
+		string = _string;
+
+	}
+	EffectData(int _duration,double _amplifier,String _string){
+		potioneffecttype = PotionEffectType.FAST_DIGGING;
+		duration = _duration;
 		amplifier = _amplifier;
 		string = _string;
 

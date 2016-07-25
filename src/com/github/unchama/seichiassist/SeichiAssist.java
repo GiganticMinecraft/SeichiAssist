@@ -20,7 +20,7 @@ public class SeichiAssist extends JavaPlugin{
 	//起動するタスクリスト
 	private List<BukkitTask> tasklist = new ArrayList<BukkitTask>();
 	//playerに依存するデータマップ
-	public static final HashMap<Player,PlayerData> playermap = new HashMap<Player,PlayerData>();
+	public static final HashMap<String,PlayerData> playermap = new HashMap<String,PlayerData>();
 	//Gachadataに依存するデータリスト
 	public static final List<GachaData> gachadatalist = new ArrayList<GachaData>();
 
@@ -40,7 +40,7 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new SeichiPlayerListener(), this);
 
 		for(Player p : getServer().getOnlinePlayers()){
-			playermap.put(p, new PlayerData(p));
+			playermap.put(p.getName().toLowerCase(), new PlayerData(p));
 		}
 
 		getLogger().info("SeichiPlugin is Enabled!");
@@ -48,8 +48,7 @@ public class SeichiAssist extends JavaPlugin{
 
 		//一定時間おきに処理を実行するタスク
 		//３０分おき
-		tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,1000));
-		//tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
+		tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
 		//１分おき
 		tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
 	}

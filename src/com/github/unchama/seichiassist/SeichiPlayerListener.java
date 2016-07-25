@@ -15,22 +15,23 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class SeichiPlayerListener implements Listener {
-	HashMap<Player,PlayerData> playermap;
+	HashMap<String,PlayerData> playermap;
 
 	//プレイヤーがjoinした時に実行
 	@EventHandler
 	public void onplayerJoinEvent(PlayerJoinEvent event){
 		Player player = event.getPlayer();
+		String name = player.getName().toLowerCase();
 		playermap = SeichiAssist.playermap;
 		PlayerData playerdata;
 
 		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
-		if(!playermap.containsKey(player)){
-			playermap.put(player, new PlayerData(player));
+		if(!playermap.containsKey(name)){
+			playermap.put(name, new PlayerData(player));
 		}
 
 		//playerのplayerdataを参照
-		playerdata = playermap.get(player);
+		playerdata = playermap.get(name);
 
 		//初見かどうかの判定
 		if(player.hasPlayedBefore()){
