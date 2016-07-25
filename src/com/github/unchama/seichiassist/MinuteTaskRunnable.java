@@ -48,7 +48,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				}
 			}
 
-			if(!player.isOnline()){
+			if(player == null){
 				return;
 			}
 
