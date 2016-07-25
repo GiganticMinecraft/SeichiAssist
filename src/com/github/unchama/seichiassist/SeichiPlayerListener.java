@@ -37,6 +37,8 @@ public class SeichiPlayerListener implements Listener {
 		if(player.hasPlayedBefore()){
 			playerdata.firstjoinflag = true;
 		}
+		playerdata.minuteblock.before = Util.calcMineBlock(player);
+		playerdata.halfhourblock.before = Util.calcMineBlock(player);
 
 	}
 

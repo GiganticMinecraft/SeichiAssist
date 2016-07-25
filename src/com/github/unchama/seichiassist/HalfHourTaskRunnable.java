@@ -31,13 +31,16 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		all = 0;
 		for (String name : playermap.keySet()){
 			playerdata = playermap.get(name);
-			//player型を再取得
-			playerdata.player = plugin.getServer().getPlayer(name);
 			player = playerdata.player;
 			MineBlock mineblock  = playerdata.halfhourblock;
-			mineblock.after = Util.calcMineBlock(player);
-			mineblock.increase = mineblock.after - mineblock.before;
-			mineblock.before = mineblock.after;
+			if(player != null){
+				mineblock.after = Util.calcMineBlock(player);
+				mineblock.increase = mineblock.after - mineblock.before;
+				mineblock.before = mineblock.after;
+			}{
+				mineblock.increase = 0;
+			}
+
 
 			all += mineblock.increase;
 			if(mineblock.increase >= getSendMessageAmount()){
