@@ -37,8 +37,12 @@ public class SeichiPlayerListener implements Listener {
 		if(player.hasPlayedBefore()){
 			playerdata.firstjoinflag = true;
 		}
+		//破壊量データ(before)を設定
 		playerdata.minuteblock.before = Util.calcMineBlock(player);
 		playerdata.halfhourblock.before = Util.calcMineBlock(player);
+
+		//Rankを設定
+		player.setDisplayName(Util.calcplayerRank(player));
 
 	}
 
