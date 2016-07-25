@@ -1,136 +1,129 @@
 package com.github.unchama.seichiassist;
 
-import static com.github.unchama.seichiassist.Config.getLoginPlayerMineSpeed;
-import static com.github.unchama.seichiassist.Config.getMinuteMineSpeed;
-import static com.github.unchama.seichiassist.Util.dropItem;
-import static com.github.unchama.seichiassist.Util.getOnlinePlayer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class MinuteTaskRunnable extends BukkitRunnable{
-	HashMap<Player,PlayerData> playermap = SeichiAssist.playermap;
-	
-	//値の宣言
-	private Player player;
-	private PlayerData playerdata;
+	SeichiAssist plugin;
+	private HashMap<String,PlayerData> playermap;
+	Player player;
+	PlayerData playerdata;
+	double amplifier;
+	String string;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	MinuteTaskRunnable() {
 	}
 
-
 	@Override
 	public void run() {
-		for (Entry<Player, PlayerData> map : playermap.entrySet()){
-			player = map.getKey();
-			playerdata = map.getValue();
-			//オンラインプレイヤーのみの処理
-			if(playerdata.onlineflag){
-				//現在のエフェクトデータ判別処理
-				getEffect();
-				//エフェクト計算
-				calcEffect();
-				//エンチャント付
-				addEffect();
-				//ガチャ券の処理
-				presentGachaTicket();
-				
+		playermap = SeichiAssist.playermap;
+		plugin = SeichiAssist.plugin;
+		List<EffectData> tmplist = new ArrayList<EffectData>();
+		for (String name: playermap.keySet()){
+			//playerdataを取得
+			playerdata = playermap.get(name);
+			//player型を再取得
+			playerdata.player = plugin.getServer().getPlayer(name);
+			player = playerdata.player;
+
+			//エフェクトデータの持続時間を1200tick引いて、０以下のものを削除
+			for(EffectData ed : playerdata.effectdatalist){
+				ed.duration -= 1200;
+				tmplist.add(ed);
 			}
-			//全プレイヤーへの処理
-		}
-	}
-
-
-
-
-
-
-
-	private void getEffect() {
-		//現在のエフェクトリストを全て保存
-		PotionEffect[] potioneffectlist = player.getActivePotionEffects().toArray(new PotionEffect[0]);
-		for(PotionEffect pe : potioneffectlist){
-			if(pe.getDuration()>1){
-				playerdata.effectdatalist.add(new EffectData(pe.getType(),pe.getDuration(),(double)pe.getAmplifier()));
+			for(EffectData ed : tmplist){
+				if(ed.duration <= 0){
+					playerdata.effectdatalist.remove(ed);
+				}
 			}
-		}
-	}
+
+			//独自effect量計算
+			//統計を抜き出し
+			playerdata.minuteblock.after = Util.calcMineBlock(player);
+
+			//１分前の統計からの増減を取得
+			playerdata.minuteblock.setIncrease();
+
+			//ガチャポイントに合算
+			playerdata.gachapoint += playerdata.minuteblock.increase;
+
+			//現在の統計をbeforeに代入
+			playerdata.minuteblock.before = playerdata.minuteblock.after;
+
+			if(!player.isOnline()){
+				return;
+			}
+
+			//１分間のブロック破壊量による上昇
+			amplifier = (double) playerdata.minuteblock.increase * Config.getMinuteMineSpeed();
+			string = "１分間のブロック破壊量(" + playerdata.minuteblock.increase + "個)からの上昇値:" + amplifier;
+			playerdata.effectdatalist.add(new EffectData(amplifier,string));
+
+			//プレイヤー数による上昇
+			amplifier = (double) plugin.getServer().getOnlinePlayers().size() * Config.getLoginPlayerMineSpeed();
+			string = "プレイヤー数(" + plugin.getServer().getOnlinePlayers().size() + "人)からの上昇値:" + amplifier;
+			playerdata.effectdatalist.add(new EffectData(amplifier,string));
 
 
-	private void calcEffect() {
-		MineBlock mineblock = playerdata.minuteblock;
-		
-		//現在の総破壊数
-		mineblock.after = Util.calcMineBlock(player);
-		//前回の総破壊数との差
-		mineblock.increase = mineblock.after - mineblock.before;
-		//今回の破壊数を前回のものに設定
-		mineblock.before = mineblock.after;
-		//総破壊数によるeffectを計算
-		playerdata.effectdatalist.add(new EffectData(PotionEffectType.FAST_DIGGING,
-													 (double) mineblock.increase * getMinuteMineSpeed()
-													));
-		//ログイン人数によるeffectを計算
-		playerdata.effectdatalist.add(new EffectData(PotionEffectType.FAST_DIGGING,
-													 (double) getOnlinePlayer() * getLoginPlayerMineSpeed()
-													));
-		
-	}
-	private void addEffect() {
-		//EffectDataにはDurationとamplifierだけ記憶させておく．
-		HashMap<PotionEffectType,EffectData> typemap = new HashMap<PotionEffectType,EffectData>();
-		
-		for(EffectData ed : playerdata.effectdatalist){
-			//プレイヤーの持つ全てのエフェクトを合算
-			if(typemap.containsKey(ed.potioneffecttype)){
-				//すでにtypemapにプレイヤーのポーションエフェクトタイプが記録されている時
-				//typemapの該当タイプデータを参照
-				EffectData alled = typemap.get(ed.potioneffecttype);
-				//増幅値を合算
-				alled.amplifier += ed.amplifier;
-				//持続時間は一番大きいものを保持
-				if(alled.duration > ed.duration){
-					alled.duration = ed.duration;
+			//effect追加の処理
+			double sum = 0;
+			int maxduration = 0;
+			int amplifier = 0;
+			if(playerdata.effectflag){
+				for(EffectData ed :playerdata.effectdatalist){
+					sum += ed.amplifier;
+					if(maxduration < ed.duration){
+						maxduration = ed.duration;
+					}
+				}
+				amplifier = (int)(sum - 1);
+				if(amplifier < 0){
+					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
+				}else{
+					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, amplifier, false, false), true);
+				}
+			}
+
+			//プレイヤーにメッセージ送信
+			if(playerdata.amplifier != amplifier || playerdata.messageflag){//前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
+				playerdata.amplifier = amplifier;
+				player.sendMessage(ChatColor.YELLOW + "★" + ChatColor.WHITE + "採掘速度上昇レベルが" + ChatColor.YELLOW + (amplifier+1) + ChatColor.WHITE +"になりました。");
+				if(playerdata.messageflag){
+					player.sendMessage("----------------------------内訳-----------------------------");
+					for(EffectData ed : playerdata.effectdatalist){
+						player.sendMessage(ed.string + "(持続時間:" + ed.duration/20 + "秒)");
+					}
+					player.sendMessage("-------------------------------------------------------------");
+				}
+			}
+
+			//ガチャ券付与の処理
+			ItemStack skull = Util.getskull();
+			if(playerdata.gachapoint >= Config.getGachaPresentInterval()){
+				playerdata.gachapoint -= Config.getGachaPresentInterval();
+				if(!player.getInventory().contains(skull) && Util.isPlayerInventryEmpty(player)){
+					Util.dropItem(player,skull);
+					player.sendMessage("あなたの"+ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "地べたに置いたわよ忘れるんじゃないよ");
+				}else{
+					Util.addItem(player,skull);
+					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー");
 				}
 			}else{
-				//typemapにプレイヤーの持つポーションエフェクトを追加
-				typemap.put(ed.potioneffecttype, new EffectData(ed.duration,(double)ed.amplifier));
+				if(playerdata.gachapoint != playerdata.lastgachapoint){
+					player.sendMessage("あと" + ChatColor.AQUA + (Config.getGachaPresentInterval() - playerdata.gachapoint) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
+				}
 			}
-		}
-		//加算処理した全エフェクトをplayerに付与
-		for(Map.Entry<PotionEffectType, EffectData> e : typemap.entrySet()){
-			int allamplifier = (int)e.getValue().amplifier - 1;
-			player.addPotionEffect(new PotionEffect(e.getKey(), 20*e.getValue().duration,allamplifier, false, false), true);
-			//採掘速度のみ変更されている場合通知
-			if(e.getKey() == PotionEffectType.FAST_DIGGING && playerdata.allamplifier == allamplifier){
-				player.sendMessage("採掘速度上昇レベルが(" + ChatColor.RED + allamplifier + ChatColor.WHITE + ")になりました。");
-				playerdata.allamplifier = allamplifier;
-			}
+			playerdata.lastgachapoint = playerdata.gachapoint;
 		}
 	}
-	private void presentGachaTicket() {
-		MineBlock point = playerdata.gachapoint;
-		int interval = Config.getGachaPresentInterval();
-		if(point.after >= interval){
-			point.after -= interval;
-			dropItem(player,Util.getskull());
-			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が下に落ちました。右クリックで使えるゾ");
-		}else if(point.after != point.before){
-			player.sendMessage("あと" + ChatColor.AQUA + (interval - point.after) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
-		}
-		point.before = point.after;
-	}
-
 }
-
-

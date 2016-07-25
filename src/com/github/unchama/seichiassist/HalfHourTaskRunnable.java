@@ -1,8 +1,5 @@
 package com.github.unchama.seichiassist;
 
-import static com.github.unchama.seichiassist.Config.*;
-import static com.github.unchama.seichiassist.Util.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,7 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class HalfHourTaskRunnable extends BukkitRunnable{
-	private HashMap<Player,PlayerData> playermap;
+	private HashMap<String,PlayerData> playermap;
+	Player player;
+	SeichiAssist plugin;
 	PlayerData playerdata;
 	private int count;
 	private int all;
@@ -28,48 +27,62 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 	public void run() {
 		playermap = SeichiAssist.playermap;
 		plugin = SeichiAssist.plugin;
-		count = 1;
-		for (Player player : plugin.getServer().getOnlinePlayers()){
-			playerdata = playermap.get(player);
+		count = 0;
+		all = 0;
+		for (String name : playermap.keySet()){
+			playerdata = playermap.get(name);
+			//player型を再取得
+			playerdata.player = plugin.getServer().getPlayer(name);
+			player = playerdata.player;
 			MineBlock mineblock  = playerdata.halfhourblock;
 			mineblock.after = Util.calcMineBlock(player);
 			mineblock.increase = mineblock.after - mineblock.before;
 			mineblock.before = mineblock.after;
+
 			all += mineblock.increase;
+			if(mineblock.increase >= getSendMessageAmount()){
+				count++;
+			}
 		}
-		if(plugin.getServer().getOnlinePlayers().size() < 3){
+
+
+		if(count < 3){
 			return;
 		}
+
 		//Map.Entry のリストを作る
-		List<Entry<Player,PlayerData>> entries = new ArrayList<Entry<Player, PlayerData>>(playermap.entrySet());
+		List<Entry<String,PlayerData>> entries = new ArrayList<Entry<String, PlayerData>>(playermap.entrySet());
 
 		//Comparator で Map.Entry の値を比較
-		Collections.sort(entries, new Comparator<Entry<Player, PlayerData>>() {
+		Collections.sort(entries, new Comparator<Entry<String, PlayerData>>() {
 		    //比較関数
 		    @Override
-		    public int compare(Entry<Player, PlayerData> o1, Entry<Player, PlayerData> o2) {
+		    public int compare(Entry<String, PlayerData> o1, Entry<String, PlayerData> o2) {
 		    	Integer i1 = new Integer(o1.getValue().halfhourblock.increase);
 		    	Integer i2 = new Integer(o2.getValue().halfhourblock.increase);
-		    	return i2.compareTo(i1);    //降順
+		    	return i2.compareTo(i1);//降順
 		    }
 		});
 
-		for (Entry<Player, PlayerData> e : entries) {
-			if(count>3 || (e.getValue().halfhourblock.increase==0) || all < getSendMessageAmount()){
-				break;
-			}
+		count = 1;
+		for (Entry<String, PlayerData> e : entries) {
+
 			if(count == 1){
-				sendEveryMessage("---------------------------------");
-				sendEveryMessage("この30分間の総破壊量は " + ChatColor.AQUA + all + ChatColor.WHITE + "個でした");
-				sendEveryMessage("破壊量第1位は" + ChatColor.DARK_PURPLE + e.getKey().getName().toString()+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
+				Util.sendEveryMessage("----------------------------------------");
+				Util.sendEveryMessage("この30分間の総破壊量は " + ChatColor.AQUA + all + ChatColor.WHITE + "個でした");
+				Util.sendEveryMessage("破壊量第1位は" + ChatColor.DARK_PURPLE + e.getKey()+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}else if(count == 2){
-				sendEveryMessage("破壊量第2位は" + ChatColor.DARK_BLUE + e.getKey().getName().toString()+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
+				Util.sendEveryMessage("破壊量第2位は" + ChatColor.DARK_BLUE + e.getKey()+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
+			}else if(count == 3){
+				Util.sendEveryMessage("破壊量第3位は" + ChatColor.DARK_AQUA + e.getKey()+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
+				Util.
+				sendEveryMessage("----------------------------------------");
 			}else{
-				sendEveryMessage("破壊量第3位は" + ChatColor.DARK_AQUA + e.getKey().getName().toString()+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
-				sendEveryMessage("---------------------------------");
+				break;
 			}
 			count++;
 		}
+
 
 
 	}

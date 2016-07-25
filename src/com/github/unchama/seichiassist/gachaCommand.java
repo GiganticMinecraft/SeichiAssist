@@ -8,7 +8,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-
 import org.bukkit.inventory.PlayerInventory;
 
 public class gachaCommand implements TabExecutor{
@@ -36,7 +35,7 @@ public class gachaCommand implements TabExecutor{
 		}else if(args.length == 0){
 			return false;
 		}else if(args[0].equalsIgnoreCase("add")){
-			if(args.length == 1){
+			if(args.length != 2){
 				sender.sendMessage("/gacha add 0.05  のように、追加したいアイテムの出現確率を入力してください。");
 				return true;
 			}
@@ -44,7 +43,7 @@ public class gachaCommand implements TabExecutor{
 			Gachaadd(player,probability);
 			return true;
 		}else if(args[0].equalsIgnoreCase("remove")){
-			if(args.length == 1){
+			if(args.length != 2){
 				sender.sendMessage("/gacha remove 2 のように、削除したいリスト番号を入力してください");
 				return true;
 			}
@@ -52,6 +51,9 @@ public class gachaCommand implements TabExecutor{
 			Gacharemove(player,num);
 			return true;
 		}else if(args[0].equalsIgnoreCase("list")){
+			if(args.length != 1){
+				sender.sendMessage("/gacha list で現在登録されているガチャアイテムを全て表示します。");
+			}
 			if(SeichiAssist.gachadatalist.isEmpty()){
 				sender.sendMessage("ガチャが設定されていません。");
 				return true;
@@ -59,6 +61,9 @@ public class gachaCommand implements TabExecutor{
 			Gachalist(player);
 			return true;
 		}else if(args[0].equalsIgnoreCase("clear")){
+			if(args.length != 1){
+				sender.sendMessage("/gacha clear で現在登録されているガチャアイテムを削除します。");
+			}
 			Gachaclear(player);
 			return true;
 		}
@@ -74,7 +79,7 @@ public class gachaCommand implements TabExecutor{
 		gachadata.itemstack = inventory.getItemInMainHand();
 		gachadata.amount = inventory.getItemInMainHand().getAmount();
 		gachadata.probability = probability;
-		
+
 		SeichiAssist.gachadatalist.add(gachadata);
 		player.sendMessage(gachadata.itemstack.getType().toString() + gachadata.amount + "個を確率" + gachadata.probability + "としてガチャに追加しました。");
 	}

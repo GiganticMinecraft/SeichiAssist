@@ -58,9 +58,6 @@ public class Util {
 		BigDecimal bi = new BigDecimal(String.valueOf(d));
 		return bi.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
 	}
-	public static boolean isPlayerContainItem(Player player,ItemStack itemstack){
-		return player.getInventory().contains(itemstack);
-	}
 	public static boolean isPlayerInventryEmpty(Player player){
 		return (player.getInventory().firstEmpty()== -1);
 	}

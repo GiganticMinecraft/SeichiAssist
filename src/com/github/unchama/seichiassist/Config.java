@@ -13,7 +13,7 @@ public class Config{
 		config = getConfig();
 		loadGachaData();
 	}
-	
+
 	public static void reloadConfig(){
 		plugin.reloadConfig();
 		config = getConfig();

@@ -12,48 +12,34 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class SeichiPlayerListener implements Listener {
-	HashMap<Player,PlayerData> playermap;
-	
+	HashMap<String,PlayerData> playermap;
+
 	//プレイヤーがjoinした時に実行
 	@EventHandler
 	public void onplayerJoinEvent(PlayerJoinEvent event){
 		Player player = event.getPlayer();
+		String name = player.getName().toLowerCase();
 		playermap = SeichiAssist.playermap;
 		PlayerData playerdata;
-		
+
 		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
-		if(!playermap.containsKey(player)){
-			playermap.put(player, new PlayerData());
-			playermap.get(player).minuteblock.before = Util.calcMineBlock(player);
+		if(!playermap.containsKey(name)){
+			playermap.put(name, new PlayerData(player));
 		}
-		
+
 		//playerのplayerdataを参照
-		playerdata = playermap.get(player);
-		
+		playerdata = playermap.get(name);
+
 		//初見かどうかの判定
 		if(player.hasPlayedBefore()){
 			playerdata.firstjoinflag = true;
 		}
-		
-		//オンラインプレイヤーフラグをONにする．
-		playerdata.onlineflag = true;
-	}
-
-	//プレイヤーがleftした時に実行
-	@EventHandler
-	public void onPlayerQuitEvent(PlayerQuitEvent event){
-		Player player = event.getPlayer();
-		playermap = SeichiAssist.playermap;
-		PlayerData playerdata = playermap.get(player);
-		
-		//オンラインプレイヤーフラグをOFFにする．
-		playerdata.onlineflag = false;
 
 	}
+
 
 	//プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
 	@EventHandler
@@ -65,7 +51,7 @@ public class SeichiPlayerListener implements Listener {
 		int amount = 0;
 		Double probability = 0.0;
 		List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
-		
+
 		if(action.equals(Action.RIGHT_CLICK_AIR)){
 			if(itemstack.getType().equals(Material.SKULL_ITEM)){
 				if(gachadatalist.isEmpty()){
@@ -82,14 +68,8 @@ public class SeichiPlayerListener implements Listener {
 					}
 				//ガチャ実行
 				present = runGacha();
-
+				present.itemstack.setAmount(present.amount);
 				probability = present.probability;
-				if(probability == null){
-					probability = 1.0;
-				}
-				if(present.amount == 0){
-					present.amount = 1;
-				}
 				String str = ChatColor.RED + "プレゼントが下に落ちました。";
 				Util.dropItem(player, present.itemstack);
 				if(probability < 0.001){
@@ -102,10 +82,8 @@ public class SeichiPlayerListener implements Listener {
 					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
 				}else if(probability < 0.1){
 					player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！" + str);
-				}else if(probability <= 1.0){
-					player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！" + str);
 				}else{
-					player.sendMessage(ChatColor.RED + "不明なエラーが発生しました。");
+					player.sendMessage(ChatColor.YELLOW + "はずれ！また遊んでね！" + str);
 				}
 				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
 			}
