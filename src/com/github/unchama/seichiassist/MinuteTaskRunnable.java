@@ -32,6 +32,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		for (String name: playermap.keySet()){
 			//playerdataを取得
 			playerdata = playermap.get(name);
+
 			//player型を再取得
 			playerdata.player = plugin.getServer().getPlayer(name);
 			player = playerdata.player;
@@ -47,6 +48,10 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				}
 			}
 
+			if(!player.isOnline()){
+				return;
+			}
+
 			//独自effect量計算
 			//統計を抜き出し
 			playerdata.minuteblock.after = Util.calcMineBlock(player);
@@ -60,9 +65,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//現在の統計をbeforeに代入
 			playerdata.minuteblock.before = playerdata.minuteblock.after;
 
-			if(!player.isOnline()){
-				return;
-			}
+
 
 			//１分間のブロック破壊量による上昇
 			amplifier = (double) playerdata.minuteblock.increase * Config.getMinuteMineSpeed();
