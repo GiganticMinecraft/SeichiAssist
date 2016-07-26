@@ -34,15 +34,9 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			playerdata = playermap.get(name);
 
 			//player型を再取得
-			playerdata.player = plugin.getServer().getPlayer(name);
-
-			player = playerdata.player;
-
-
+			player = plugin.getServer().getPlayer(name);
+			
 			//ここからエフェクト関係の処理
-
-
-
 
 			//エフェクトデータの持続時間を1200tick引いて、０以下のものを削除
 			for(EffectData ed : playerdata.effectdatalist){

@@ -27,7 +27,7 @@ public class SeichiPlayerListener implements Listener {
 
 		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
 		if(!playermap.containsKey(name)){
-			playermap.put(name, new PlayerData(player));
+			playermap.put(name, new PlayerData());
 		}
 
 		//playerのplayerdataを参照

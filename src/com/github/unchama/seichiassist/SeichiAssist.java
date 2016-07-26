@@ -40,7 +40,7 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new SeichiPlayerListener(), this);
 
 		for(Player p : getServer().getOnlinePlayers()){
-			playermap.put(p.getName().toLowerCase(), new PlayerData(p));
+			playermap.put(p.getName().toLowerCase(), new PlayerData());
 		}
 
 		getLogger().info("SeichiPlugin is Enabled!");

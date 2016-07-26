@@ -1,9 +1,8 @@
 package com.github.unchama.seichiassist;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import org.bukkit.entity.Player;
 
 
 
@@ -27,29 +26,16 @@ public class PlayerData {
 	int amplifier;
 	//持ってるポーションエフェクト全てを格納する．
 	List<EffectData> effectdatalist;
-	//表示される名前
-	String displayname;
-	//プレイヤー型
-	Player player;
 	//現在のプレイヤーのランク
 	int rank;
-
-	PlayerData(Player _player){
-		firstjoinflag = false;
-		effectflag = true;
-		messageflag = false;
-		minuteblock = new MineBlock();
-		halfhourblock = new MineBlock();
-		effectdatalist = new ArrayList<EffectData>();
-		gachapoint = 0;
-		lastgachapoint = 0;
-		amplifier = 0;
-		minuteblock.before = 0;
-		halfhourblock.before = minuteblock.before;
-		displayname = _player.getDisplayName();
-		player = _player;
-		rank = 0;
-	}
+	//プレイヤーが獲得可能なpassive,activeスキルの数
+	int cangetpassiveskill;
+	int cangetactiveskill;
+	//プレイヤーの持つアクティブスキル番号を格納する.
+	List<Integer> activeskills;
+	//プレイヤーの持つパッシブスキル番号を格納する．
+	List<Integer> passiveskills;
+	
 	PlayerData(){
 		firstjoinflag = false;
 		effectflag = true;
@@ -62,8 +48,10 @@ public class PlayerData {
 		amplifier = 0;
 		minuteblock.before = 0;
 		halfhourblock.before = minuteblock.before;
-		displayname = "";
-		player = null;
-		rank = 0;
+		rank = 1;
+		cangetpassiveskill = 0;
+		cangetactiveskill = 0;
+		activeskills = new ArrayList<Integer>();
+		passiveskills = new ArrayList<Integer>(Arrays.asList(0,1));
 	}
 }

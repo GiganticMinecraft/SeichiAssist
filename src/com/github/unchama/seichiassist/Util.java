@@ -45,6 +45,7 @@ public class Util {
 
 		int mines = 0;
 		String name = player.getDisplayName();
+		PlayerData playerdata = SeichiAssist.playermap.get(name);
 		List<Integer> ranklist = new ArrayList<Integer>(Arrays.asList(
 				15,49,106,198,333,
 				705,1265,2105,3347,4589,
@@ -60,13 +61,28 @@ public class Util {
 				2116248,2306256,2511464,2733088,2954712,//60
 				3176336,3397960,3619584,3841208,4080561,
 				4339062));
+		List<Integer> passiveskillgetrank = Arrays.asList(10);
+		List<Integer> activeskillgetrank = Arrays.asList(15);
 		mines = calcMineBlock(player);
+		while(ranklist.get(playerdata.rank) <= mines){
+			//パッシブスキル獲得レベルまできた時の処理
+			if(passiveskillgetrank.contains(playerdata.rank)){
+				playerdata.cangetpassiveskill++;
+			}
+			//アクティブスキル獲得レベルまできた時の処理
+			if(activeskillgetrank.contains(playerdata.rank)){
+				playerdata.cangetactiveskill++;
+			}
+			playerdata.rank++;
+		}
+		/*
 		//比較対象はリスト
 		int i;
 		for(i = 0 ; ranklist.get(i).intValue() <= mines ;i++){
 		}
-		name = "[Lv" + (i+1) + "]" + player.getName();
+		name = "[ Lv" + (i+1) + " ]" + player.getName();
 		SeichiAssist.playermap.get(name).rank = (i+1);
+		*/
 		return name;
 	}
 
