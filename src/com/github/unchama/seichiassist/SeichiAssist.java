@@ -40,7 +40,21 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new SeichiPlayerListener(), this);
 
 		for(Player p : getServer().getOnlinePlayers()){
-			playermap.put(p.getName().toLowerCase(), new PlayerData(p));
+			String name = p.getName().toLowerCase();
+			playermap.put(name, new PlayerData());
+			//playerのplayerdataを参照
+			PlayerData playerdata = playermap.get(name);
+
+			//初見かどうかの判定
+			if(p.hasPlayedBefore()){
+				playerdata.firstjoinflag = true;
+			}
+			//破壊量データ(before)を設定
+			playerdata.minuteblock.before = Util.calcMineBlock(p);
+			playerdata.halfhourblock.before = Util.calcMineBlock(p);
+
+			//Rankを設定
+			p.setDisplayName(Util.calcplayerRank(p));
 		}
 
 		getLogger().info("SeichiPlugin is Enabled!");
@@ -48,8 +62,8 @@ public class SeichiAssist extends JavaPlugin{
 
 		//一定時間おきに処理を実行するタスク
 		//３０分おき
-		//tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,1000));
-		tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
+		tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,1000));
+		//tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
 		//１分おき
 		tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
 	}

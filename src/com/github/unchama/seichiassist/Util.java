@@ -65,7 +65,7 @@ public class Util {
 		int i;
 		for(i = 0 ; ranklist.get(i).intValue() <= mines ;i++){
 		}
-		name = "[Lv" + (i+1) + "]" + player.getName();
+		name = "[ Lv" + (i+1) + " ]" + player.getName();
 		return name;
 	}
 
@@ -113,5 +113,30 @@ public class Util {
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.playSound(player.getLocation(), str, a, b);
 		}
+	}
+
+	public static String toTimeString(int _second) {
+		int second = _second;
+		int minute = 0;
+		int hour = 0;
+		String time = "";
+		while(second >= 60){
+			second -=60;
+			minute++;
+		}
+		while(minute >= 60){
+			minute -= 60;
+			hour++;
+		}
+		if(hour != 0){
+			time = hour + "時間";
+		}
+		if(minute != 0){
+			time = time + minute + "分";
+		}
+		if(second != 0){
+			time = time + second + "秒";
+		}
+		return time;
 	}
 }

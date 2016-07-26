@@ -3,8 +3,6 @@ package com.github.unchama.seichiassist;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.entity.Player;
-
 
 
 
@@ -23,16 +21,12 @@ public class PlayerData {
 	int gachapoint;
 	//最後のガチャポイントデータ
 	int lastgachapoint;
-	//今回の採掘速度上昇量を格納
-	int amplifier;
+	//今回の採掘速度上昇レベルを格納
+	int minespeedlv;
 	//持ってるポーションエフェクト全てを格納する．
 	List<EffectData> effectdatalist;
-	//表示される名前
-	String displayname;
-	//登録された時のプレイヤー型
-	Player player;
 
-	PlayerData(Player _player){
+	PlayerData(){
 		firstjoinflag = false;
 		effectflag = true;
 		messageflag = false;
@@ -41,10 +35,8 @@ public class PlayerData {
 		effectdatalist = new ArrayList<EffectData>();
 		gachapoint = 0;
 		lastgachapoint = 0;
-		amplifier = 0;
-		minuteblock.before = Util.calcMineBlock(_player);
+		minespeedlv = 0;
+		minuteblock.before = 0;
 		halfhourblock.before = minuteblock.before;
-		displayname = _player.getDisplayName();
-		player = _player;
 	}
 }
