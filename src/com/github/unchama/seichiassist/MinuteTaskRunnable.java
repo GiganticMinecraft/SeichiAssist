@@ -44,7 +44,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			}
 
 			if(plugin.getServer().getPlayer(name) == null){
-				return;
+				continue;
 			}
 
 			//player型を再取得
@@ -125,7 +125,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				}
 			}else{
 				if(playerdata.gachapoint != playerdata.lastgachapoint){
-					player.sendMessage("あと" + ChatColor.AQUA + (Config.getGachaPresentInterval() - playerdata.gachapoint) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
+					player.sendMessage("あと" + ChatColor.AQUA + (Config.getGachaPresentInterval()-(playerdata.gachapoint % Config.getGachaPresentInterval())) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
 				}
 			}
 			playerdata.lastgachapoint = playerdata.gachapoint;
@@ -133,11 +133,6 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//Rankを設定
 			player.setDisplayName(Util.calcplayerRank(player));
-
-
-
-
 		}
 	}
-
 }

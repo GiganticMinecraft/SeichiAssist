@@ -62,10 +62,11 @@ public class SeichiAssist extends JavaPlugin{
 
 		//一定時間おきに処理を実行するタスク
 		//３０分おき
-		tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,1000));
-		//tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
+		//tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,500));
+		tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
 		//１分おき
 		tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
+		//tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,300));
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){

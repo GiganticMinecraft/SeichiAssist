@@ -25,7 +25,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		for (String name : playermap.keySet()){
 			PlayerData playerdata = playermap.get(name);
 			if(plugin.getServer().getPlayer(name) == null){
-				return;
+				continue;
 			}else{
 				Player player = plugin.getServer().getPlayer(name);
 				MineBlock mineblock  = playerdata.halfhourblock;
