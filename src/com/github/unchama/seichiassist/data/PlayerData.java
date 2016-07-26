@@ -1,47 +1,45 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.entity.Player;
+
+import com.github.unchama.seichiassist.Rank;
+
 
 
 
 public class PlayerData {
-	//初めて参加した時のフラグ
-	boolean firstjoinflag;
 	//エフェクトのフラグ
-	boolean effectflag;
+	public boolean effectflag;
 	//内訳メッセージを出すフラグ
-	boolean messageflag;
+	public boolean messageflag;
 	//1分間のデータを保存するincrease:１分間の採掘量
-	MineBlock minuteblock;
+	public MineBlock minuteblock;
 	//３０分間のデータを保存する．
-	MineBlock halfhourblock;
+	public MineBlock halfhourblock;
 	//ガチャの基準となるポイント
-	int gachapoint;
+	public int gachapoint;
 	//最後のガチャポイントデータ
-	int lastgachapoint;
+	public int lastgachapoint;
 	//今回の採掘速度上昇レベルを格納
-	int minespeedlv;
+	public int minespeedlv;
 	//持ってるポーションエフェクト全てを格納する．
-	List<EffectData> effectdatalist;
-<<<<<<< HEAD
+	public List<EffectData> effectdatalist;
 	//現在のプレイヤーのランク
-	int rank;
+	public int rank;
 	//プレイヤーが獲得可能なpassive,activeスキルの数
-	int cangetpassiveskill;
-	int cangetactiveskill;
+	public int cangetpassiveskill;
+	public int cangetactiveskill;
 	//プレイヤーの持つアクティブスキル番号を格納する.
-	List<Integer> activeskills;
+	public List<Integer> activeskills;
 	//プレイヤーの持つパッシブスキル番号を格納する．
-	List<Integer> passiveskills;
-	
-=======
+	public List<Integer> passiveskills;
 
->>>>>>> refs/remotes/origin/master
-	PlayerData(){
-		firstjoinflag = false;
+
+	public PlayerData(){
 		effectflag = true;
 		messageflag = false;
 		minuteblock = new MineBlock();
@@ -49,19 +47,30 @@ public class PlayerData {
 		effectdatalist = new ArrayList<EffectData>();
 		gachapoint = 0;
 		lastgachapoint = 0;
-<<<<<<< HEAD
-		amplifier = 0;
+		minespeedlv = 0;
 		minuteblock.before = 0;
-		halfhourblock.before = minuteblock.before;
+		halfhourblock.before = 0;
 		rank = 1;
 		cangetpassiveskill = 0;
 		cangetactiveskill = 0;
 		activeskills = new ArrayList<Integer>();
 		passiveskills = new ArrayList<Integer>(Arrays.asList(0,1));
-=======
 		minespeedlv = 0;
 		minuteblock.before = 0;
-		halfhourblock.before = minuteblock.before;
->>>>>>> refs/remotes/origin/master
+		halfhourblock.before = 0;
+
 	}
+
+
+	public void updata(Player p) {
+		//破壊量データ(before)を設定
+		minuteblock.before = MineBlock.calcMineBlock(p);
+		halfhourblock.before = MineBlock.calcMineBlock(p);
+		//プレイヤーのランクを計算し取得
+		int rank = Rank.calcplayerRank(p);
+		//ランクによるディスプレイネームを設定
+		Rank.setDisplayName(rank,p);
+
+	}
+
 }

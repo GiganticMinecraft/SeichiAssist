@@ -5,6 +5,9 @@ import static com.github.unchama.seichiassist.Util.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.PlayerData;
+
 public class Config{
 	public static FileConfiguration config;
 	public static SeichiAssist plugin;
@@ -36,6 +39,9 @@ public class Config{
 		int num = config.getInt("playernum");
 		for (int i=1; i < num; i++ ) {
 			String name = config.getString("player"+i);
+			if(SeichiAssist.playermap.containsKey(name)){
+				continue;
+			}
 			PlayerData d = new PlayerData();
 			d.effectflag = config.getBoolean(name + "effectflag");
 			d.messageflag = config.getBoolean(name + "messageflag");

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.commands;
 
 import static com.github.unchama.seichiassist.Util.*;
 
@@ -9,6 +9,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
+
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.GachaData;
 
 public class gachaCommand implements TabExecutor{
 	public SeichiAssist plugin;

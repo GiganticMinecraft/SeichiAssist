@@ -11,6 +11,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.github.unchama.seichiassist.data.MineBlock;
+import com.github.unchama.seichiassist.data.PlayerData;
+
 public class HalfHourTaskRunnable extends BukkitRunnable{
 	private HashMap<String,PlayerData> playermap = SeichiAssist.playermap;
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -23,40 +26,19 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		int count = 0;
 		int all = 0;
 		for (String name : playermap.keySet()){
-<<<<<<< HEAD
-			player = plugin.getServer().getPlayer(name);
+			PlayerData playerdata = playermap.get(name);
+			Player player = plugin.getServer().getPlayer(name);
 			MineBlock mineblock  = playerdata.halfhourblock;
 			if(player != null){
 				mineblock.after = Util.calcMineBlock(player);
-				mineblock.increase = mineblock.after - mineblock.before;
+				mineblock.setIncrease();
 				mineblock.before = mineblock.after;
 			}else{
 				mineblock.increase = 0;
 			}
-
-
 			all += mineblock.increase;
 			if(mineblock.increase >= getSendMessageAmount()){
 				count++;
-=======
-			PlayerData playerdata = playermap.get(name);
-			if(plugin.getServer().getPlayer(name) == null){
-				continue;
-			}else{
-				Player player = plugin.getServer().getPlayer(name);
-				MineBlock mineblock  = playerdata.halfhourblock;
-				if(player != null){
-					mineblock.after = Util.calcMineBlock(player);
-					mineblock.increase = mineblock.after - mineblock.before;
-					mineblock.before = mineblock.after;
-				}else{
-					mineblock.increase = 0;
-				}
-				all += mineblock.increase;
-				if(mineblock.increase >= getSendMessageAmount()){
-					count++;
-				}
->>>>>>> refs/remotes/origin/master
 			}
 		}
 
