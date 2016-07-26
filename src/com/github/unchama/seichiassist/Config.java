@@ -52,7 +52,7 @@ public class Config{
 			GachaData gachadata = new GachaData();
 			gachadata.itemstack = config.getItemStack("item" + i);
 			gachadata.amount = config.getInt("amount" + i);
-			gachadata.itemstack = config.getItemStack("probability" + i);
+			gachadata.probability = config.getDouble("probability" + i);
 			SeichiAssist.gachadatalist.add(gachadata);
 		}
 		plugin.getLogger().info("ガチャデータのLoadを完了しました。");

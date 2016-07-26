@@ -13,12 +13,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class MinuteTaskRunnable extends BukkitRunnable{
-	SeichiAssist plugin;
-	private HashMap<String,PlayerData> playermap;
-	Player player;
-	PlayerData playerdata;
-	double amplifier;
-	String string;
+	private SeichiAssist plugin = SeichiAssist.plugin;
+	private HashMap<String,PlayerData> playermap = SeichiAssist.playermap;
+
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	MinuteTaskRunnable() {
@@ -28,9 +25,10 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	public void run() {
 		playermap = SeichiAssist.playermap;
 		plugin = SeichiAssist.plugin;
-		List<EffectData> tmplist = new ArrayList<EffectData>();
+
 		for (String name: playermap.keySet()){
 			//playerdataを取得
+<<<<<<< HEAD
 			playerdata = playermap.get(name);
 
 			//player型を再取得
@@ -38,6 +36,12 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			
 			//ここからエフェクト関係の処理
 
+=======
+			PlayerData playerdata = playermap.get(name);
+
+			//ここからエフェクト関係の処理
+			List<EffectData> tmplist = new ArrayList<EffectData>();
+>>>>>>> refs/remotes/origin/master
 			//エフェクトデータの持続時間を1200tick引いて、０以下のものを削除
 			for(EffectData ed : playerdata.effectdatalist){
 				ed.duration -= 1200;
@@ -49,9 +53,13 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				}
 			}
 
-			if(player == null){
-				return;
+			if(plugin.getServer().getPlayer(name) == null){
+				continue;
 			}
+
+			//player型を再取得
+			Player player = plugin.getServer().getPlayer(name);
+
 
 			//独自effect量計算
 			//統計を抜き出し
@@ -60,14 +68,13 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//１分前の統計からの増減を取得
 			playerdata.minuteblock.setIncrease();
 
-			//ガチャポイントに合算
-			playerdata.gachapoint += playerdata.minuteblock.increase;
+
 
 			//現在の統計をbeforeに代入
 			playerdata.minuteblock.before = playerdata.minuteblock.after;
 
-
-
+			double amplifier = 0;
+			String string;
 			//１分間のブロック破壊量による上昇
 			amplifier = (double) playerdata.minuteblock.increase * Config.getMinuteMineSpeed();
 			string = "１分間のブロック破壊量(" + playerdata.minuteblock.increase + "個)からの上昇値:" + amplifier;
@@ -82,7 +89,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//effect追加の処理
 			double sum = 0;
 			int maxduration = 0;
-			int amplifier = 0;
+			int minespeedlv = 0;
 			if(playerdata.effectflag){
 				for(EffectData ed :playerdata.effectdatalist){
 					sum += ed.amplifier;
@@ -90,28 +97,32 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 						maxduration = ed.duration;
 					}
 				}
-				amplifier = (int)(sum - 1);
-				if(amplifier < 0){
+				minespeedlv = (int)(sum - 1);
+				if(minespeedlv < 0){
 					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
 				}else{
-					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, amplifier, false, false), true);
+					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, minespeedlv, false, false), true);
 				}
 			}
 
 			//プレイヤーにメッセージ送信
-			if(playerdata.amplifier != amplifier || playerdata.messageflag){//前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
-				playerdata.amplifier = amplifier;
-				player.sendMessage(ChatColor.YELLOW + "★" + ChatColor.WHITE + "採掘速度上昇レベルが" + ChatColor.YELLOW + (amplifier+1) + ChatColor.WHITE +"になりました。");
+			if(playerdata.minespeedlv != minespeedlv || playerdata.messageflag){//前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
+				playerdata.minespeedlv = minespeedlv;
+				player.sendMessage(ChatColor.YELLOW + "★" + ChatColor.WHITE + "採掘速度上昇レベルが" + ChatColor.YELLOW + (minespeedlv+1) + ChatColor.WHITE +"になりました。");
 				if(playerdata.messageflag){
 					player.sendMessage("----------------------------内訳-----------------------------");
 					for(EffectData ed : playerdata.effectdatalist){
-						player.sendMessage(ed.string + "(持続時間:" + ed.duration/20 + "秒)");
+						player.sendMessage(ed.string + "(持続時間:" + Util.toTimeString(ed.duration/20) + ")");
 					}
 					player.sendMessage("-------------------------------------------------------------");
 				}
 			}
 
 			//ガチャ券付与の処理
+
+			//ガチャポイントに合算
+			playerdata.gachapoint += playerdata.minuteblock.increase;
+
 			ItemStack skull = Util.getskull();
 			if(playerdata.gachapoint >= Config.getGachaPresentInterval()){
 				playerdata.gachapoint -= Config.getGachaPresentInterval();
@@ -124,7 +135,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				}
 			}else{
 				if(playerdata.gachapoint != playerdata.lastgachapoint){
-					player.sendMessage("あと" + ChatColor.AQUA + (Config.getGachaPresentInterval() - playerdata.gachapoint) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
+					player.sendMessage("あと" + ChatColor.AQUA + (Config.getGachaPresentInterval()-(playerdata.gachapoint % Config.getGachaPresentInterval())) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
 				}
 			}
 			playerdata.lastgachapoint = playerdata.gachapoint;
@@ -132,11 +143,6 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//Rankを設定
 			player.setDisplayName(Util.calcplayerRank(player));
-
-
-
-
 		}
 	}
-
 }

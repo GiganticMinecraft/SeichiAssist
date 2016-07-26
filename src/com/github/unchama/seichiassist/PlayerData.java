@@ -22,10 +22,11 @@ public class PlayerData {
 	int gachapoint;
 	//最後のガチャポイントデータ
 	int lastgachapoint;
-	//今回の採掘速度上昇量を格納
-	int amplifier;
+	//今回の採掘速度上昇レベルを格納
+	int minespeedlv;
 	//持ってるポーションエフェクト全てを格納する．
 	List<EffectData> effectdatalist;
+<<<<<<< HEAD
 	//現在のプレイヤーのランク
 	int rank;
 	//プレイヤーが獲得可能なpassive,activeスキルの数
@@ -36,6 +37,9 @@ public class PlayerData {
 	//プレイヤーの持つパッシブスキル番号を格納する．
 	List<Integer> passiveskills;
 	
+=======
+
+>>>>>>> refs/remotes/origin/master
 	PlayerData(){
 		firstjoinflag = false;
 		effectflag = true;
@@ -45,6 +49,7 @@ public class PlayerData {
 		effectdatalist = new ArrayList<EffectData>();
 		gachapoint = 0;
 		lastgachapoint = 0;
+<<<<<<< HEAD
 		amplifier = 0;
 		minuteblock.before = 0;
 		halfhourblock.before = minuteblock.before;
@@ -53,5 +58,10 @@ public class PlayerData {
 		cangetactiveskill = 0;
 		activeskills = new ArrayList<Integer>();
 		passiveskills = new ArrayList<Integer>(Arrays.asList(0,1));
+=======
+		minespeedlv = 0;
+		minuteblock.before = 0;
+		halfhourblock.before = minuteblock.before;
+>>>>>>> refs/remotes/origin/master
 	}
 }

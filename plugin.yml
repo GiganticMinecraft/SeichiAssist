@@ -1,6 +1,6 @@
 name: SeichiAssist
 main: com.github.unchama.seichiassist.SeichiAssist
-version: 0.1.7
+version: 0.1.8
 
 commands:
   gacha:
@@ -15,6 +15,6 @@ commands:
       permission-message: You don't have <permission>
   ef:
       description: This is a Effect toggle command.
-      usage: /<command>
+      usage: /<command> <smart>
       permission: multiseichiplugin.ef
       permission-message: You don't have <permission>

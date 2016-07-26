@@ -40,7 +40,25 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new SeichiPlayerListener(), this);
 
 		for(Player p : getServer().getOnlinePlayers()){
+<<<<<<< HEAD
 			playermap.put(p.getName().toLowerCase(), new PlayerData());
+=======
+			String name = p.getName().toLowerCase();
+			playermap.put(name, new PlayerData());
+			//playerのplayerdataを参照
+			PlayerData playerdata = playermap.get(name);
+
+			//初見かどうかの判定
+			if(p.hasPlayedBefore()){
+				playerdata.firstjoinflag = true;
+			}
+			//破壊量データ(before)を設定
+			playerdata.minuteblock.before = Util.calcMineBlock(p);
+			playerdata.halfhourblock.before = Util.calcMineBlock(p);
+
+			//Rankを設定
+			p.setDisplayName(Util.calcplayerRank(p));
+>>>>>>> refs/remotes/origin/master
 		}
 
 		getLogger().info("SeichiPlugin is Enabled!");
@@ -48,10 +66,11 @@ public class SeichiAssist extends JavaPlugin{
 
 		//一定時間おきに処理を実行するタスク
 		//３０分おき
-		//tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,1000));
+		//tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,500));
 		tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
 		//１分おき
 		tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
+		//tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,300));
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){

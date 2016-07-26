@@ -23,7 +23,7 @@ public class SeichiPlayerListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 		playermap = SeichiAssist.playermap;
-		PlayerData playerdata;
+
 
 		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
 		if(!playermap.containsKey(name)){
@@ -31,7 +31,7 @@ public class SeichiPlayerListener implements Listener {
 		}
 
 		//playerのplayerdataを参照
-		playerdata = playermap.get(name);
+		PlayerData playerdata = playermap.get(name);
 
 		//初見かどうかの判定
 		if(player.hasPlayedBefore()){
