@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.task;
 
 
 import java.util.ArrayList;
