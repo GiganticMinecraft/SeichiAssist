@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,12 +11,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class HalfHourTaskRunnable extends BukkitRunnable{
 	private HashMap<String,PlayerData> playermap = SeichiAssist.playermap;
 	SeichiAssist plugin = SeichiAssist.plugin;
+
 	public HalfHourTaskRunnable() {
 	}
 
@@ -30,7 +34,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			Player player = plugin.getServer().getPlayer(name);
 			MineBlock mineblock  = playerdata.halfhourblock;
 			if(player != null){
-				mineblock.after = Util.calcMineBlock(player);
+				mineblock.after = MineBlock.calcMineBlock(player);
 				mineblock.setIncrease();
 				mineblock.before = mineblock.after;
 			}else{
@@ -42,8 +46,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			}
 		}
 
-
-		if(count < 3){
+		if(count < 3 && !SeichiAssist.DEBUG){
 			return;
 		}
 

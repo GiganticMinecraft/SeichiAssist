@@ -85,4 +85,7 @@ public class Util {
 	public static String getName(Player p) {
 		return p.getName().toLowerCase();
 	}
+	public static String getName(String name) {
+		return name.toLowerCase();
+	}
 }

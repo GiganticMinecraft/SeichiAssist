@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.task;
 
 
 import java.util.ArrayList;
@@ -13,7 +13,12 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.Level;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.EffectData;
+import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class MinuteTaskRunnable extends BukkitRunnable{
@@ -22,7 +27,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
-	MinuteTaskRunnable() {
+	public MinuteTaskRunnable() {
 	}
 
 	@Override
@@ -59,15 +64,18 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//player型を再取得
 			Player player = plugin.getServer().getPlayer(name);
+
 			//Rankを設定
-			player.setDisplayName(Util.calcplayerRank(player));
+			Level.updata(player);
+
+
 			if(SeichiAssist.DEBUG){
 				Util.sendEveryMessage(name + "のランク処理完了");
 			}
 
 			//独自effect量計算
 			//統計を抜き出し
-			playerdata.minuteblock.after = Util.calcMineBlock(player);
+			playerdata.minuteblock.after = MineBlock.calcMineBlock(player);
 
 			//１分前の統計からの増減を取得
 			playerdata.minuteblock.setIncrease();
