@@ -5,35 +5,11 @@ import java.math.BigDecimal;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 public class Util {
-	//統計の総ブロック破壊数を出力する。
-	public static int calcMineBlock(Player player){
-		return  (int)player.getStatistic(Statistic.MINE_BLOCK, Material.STONE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.NETHERRACK)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.NETHER_BRICK)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.DIRT)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GRAVEL)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LOG)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LOG_2)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GRASS)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.COAL_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.IRON_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.GOLD_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.DIAMOND_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.LAPIS_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.EMERALD_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.REDSTONE_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.SAND)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.SANDSTONE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.QUARTZ_ORE)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.END_BRICKS)
-				  + (int)player.getStatistic(Statistic.MINE_BLOCK, Material.ENDER_STONE);
-	}
 	public static ItemStack getskull(){
 		ItemStack skull;
 		SkullMeta skullmeta;
@@ -78,5 +54,38 @@ public class Util {
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.playSound(player.getLocation(), str, a, b);
 		}
+	}
+
+	public static String toTimeString(int _second) {
+		int second = _second;
+		int minute = 0;
+		int hour = 0;
+		String time = "";
+		while(second >= 60){
+			second -=60;
+			minute++;
+		}
+		while(minute >= 60){
+			minute -= 60;
+			hour++;
+		}
+		if(hour != 0){
+			time = hour + "時間";
+		}
+		if(minute != 0){
+			time = time + minute + "分";
+		}
+		if(second != 0){
+			time = time + second + "秒";
+		}
+		return time;
+	}
+
+	//プレイヤーネームを格納（toLowerCaseで全て小文字にする。)
+	public static String getName(Player p) {
+		return p.getName().toLowerCase();
+	}
+	public static String getName(String name) {
+		return name.toLowerCase();
 	}
 }

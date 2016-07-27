@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,13 +11,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Util;
+import com.github.unchama.seichiassist.data.MineBlock;
+import com.github.unchama.seichiassist.data.PlayerData;
+
 public class HalfHourTaskRunnable extends BukkitRunnable{
-	private HashMap<String,PlayerData> playermap;
-	Player player;
-	SeichiAssist plugin;
-	PlayerData playerdata;
-	private int count;
-	private int all;
+	private HashMap<String,PlayerData> playermap = SeichiAssist.playermap;
+	SeichiAssist plugin = SeichiAssist.plugin;
 
 	public HalfHourTaskRunnable() {
 	}
@@ -25,31 +27,26 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
-		playermap = SeichiAssist.playermap;
-		plugin = SeichiAssist.plugin;
-		count = 0;
-		all = 0;
+		int count = 0;
+		int all = 0;
 		for (String name : playermap.keySet()){
-			playerdata = playermap.get(name);
-			player = playerdata.player;
+			PlayerData playerdata = playermap.get(name);
+			Player player = plugin.getServer().getPlayer(name);
 			MineBlock mineblock  = playerdata.halfhourblock;
 			if(player != null){
-				mineblock.after = Util.calcMineBlock(player);
-				mineblock.increase = mineblock.after - mineblock.before;
+				mineblock.after = MineBlock.calcMineBlock(player);
+				mineblock.setIncrease();
 				mineblock.before = mineblock.after;
-			}{
+			}else{
 				mineblock.increase = 0;
 			}
-
-
 			all += mineblock.increase;
 			if(mineblock.increase >= getSendMessageAmount()){
 				count++;
 			}
 		}
 
-
-		if(count < 3){
+		if(count < 3 && !SeichiAssist.DEBUG){
 			return;
 		}
 
@@ -85,9 +82,6 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			}
 			count++;
 		}
-
-
-
 	}
 	public int getSendMessageAmount(){
 		return Config.getDefaultMineAmount()*30;

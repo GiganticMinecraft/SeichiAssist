@@ -1,12 +1,12 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.data;
 
 import org.bukkit.potion.PotionEffectType;
 
 public class EffectData {
-	PotionEffectType potioneffecttype;
-	int duration;//持続時間
-	double amplifier;//強さ
-	String string;//メッセージの内容
+	public PotionEffectType potioneffecttype;
+	public int duration;//持続時間
+	public double amplifier;//強さ
+	public String string;//メッセージの内容
 
 	EffectData(){
 		potioneffecttype = null;
@@ -16,14 +16,14 @@ public class EffectData {
 	}
 
 	//６０秒固定採掘速度固定
-	EffectData(double _amplifier,String _string){
+	public EffectData(double _amplifier,String _string){
 		potioneffecttype = PotionEffectType.FAST_DIGGING;
 		duration = 1200;
 		amplifier = _amplifier;
 		string = _string;
 
 	}
-	EffectData(int _duration,double _amplifier,String _string){
+	public EffectData(int _duration,double _amplifier,String _string){
 		potioneffecttype = PotionEffectType.FAST_DIGGING;
 		duration = _duration;
 		amplifier = _amplifier;
