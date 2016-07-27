@@ -46,7 +46,7 @@ public class Config{
 			d.effectflag = config.getBoolean(name + "effectflag");
 			d.messageflag = config.getBoolean(name + "messageflag");
 			d.gachapoint = config.getInt(name + "gachapoint");
-			d.rank = config.getInt(name + "rank");
+			d.level = config.getInt(name + "level");
 			SeichiAssist.playermap.put(name,d);
 		}
 		plugin.getLogger().info("プレイヤーデータのLoadを完了しました。");
@@ -80,5 +80,32 @@ public class Config{
 	public static int getrank(Player _player) {
 
 		return 0;
+	}
+
+	public static void savePlayerData() {
+		//プレイヤーのデータをセーブ
+		int i = 1;
+		for(String name : SeichiAssist.playermap.keySet()){
+			PlayerData d = SeichiAssist.playermap.get(name);
+			config.set("player" + i,name);
+			config.set(name + "effectflag",d.effectflag);
+			config.set(name + "messageflag",d.messageflag);
+			config.set(name + "gachapoint",d.gachapoint);
+			config.set(name + "level",d.level);
+			i++;
+		}
+		config.set("playernum",i);
+	}
+
+	public static void saveGachaData() {
+		//ガチャのデータを保存
+		int i = 1;
+		for(GachaData gachadata : SeichiAssist.gachadatalist){
+			config.set("item"+ i,gachadata.itemstack);
+			config.set("amount"+ i,gachadata.amount);
+			config.set("probability"+ i,gachadata.probability);
+			i++;
+		}
+		config.set("gachanum",i);
 	}
 }

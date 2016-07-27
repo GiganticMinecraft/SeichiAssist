@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.Rank;
+import com.github.unchama.seichiassist.Level;
 
 
 
@@ -28,8 +28,8 @@ public class PlayerData {
 	public int minespeedlv;
 	//持ってるポーションエフェクト全てを格納する．
 	public List<EffectData> effectdatalist;
-	//現在のプレイヤーのランク
-	public int rank;
+	//現在のプレイヤーレベル
+	public int level;
 	//プレイヤーが獲得可能なpassive,activeスキルの数
 	public int cangetpassiveskill;
 	public int cangetactiveskill;
@@ -50,7 +50,7 @@ public class PlayerData {
 		minespeedlv = 0;
 		minuteblock.before = 0;
 		halfhourblock.before = 0;
-		rank = 1;
+		level = 1;
 		cangetpassiveskill = 0;
 		cangetactiveskill = 0;
 		activeskills = new ArrayList<Integer>();
@@ -67,9 +67,9 @@ public class PlayerData {
 		minuteblock.before = MineBlock.calcMineBlock(p);
 		halfhourblock.before = MineBlock.calcMineBlock(p);
 		//プレイヤーのランクを計算し取得
-		int rank = Rank.calcplayerRank(p);
+		int level = Level.calcPlayerLevel(p);
 		//ランクによるディスプレイネームを設定
-		Rank.setDisplayName(rank,p);
+		Level.setDisplayName(level,p);
 
 	}
 

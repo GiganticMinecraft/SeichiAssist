@@ -38,13 +38,8 @@ public class SeichiPlayerListener implements Listener {
 		//playerのplayerdataを参照
 		PlayerData playerdata = playermap.get(name);
 
-
-		//破壊量データ(before)を設定
-		playerdata.minuteblock.before = Util.calcMineBlock(player);
-		playerdata.halfhourblock.before = Util.calcMineBlock(player);
-
-		//Rankを設定
-		player.setDisplayName(Util.calcplayerRank(player));
+		//更新したいものを更新
+		playerdata.updata(player);
 
 	}
 
