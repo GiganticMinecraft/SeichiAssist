@@ -1,10 +1,16 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.commands;
 
 import java.util.List;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Util;
+import com.github.unchama.seichiassist.data.EffectData;
+import com.github.unchama.seichiassist.data.PlayerData;
 
 public class seichiCommand implements TabExecutor {
 	SeichiAssist plugin;

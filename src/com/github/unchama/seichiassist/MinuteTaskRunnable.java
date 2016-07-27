@@ -6,11 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.github.unchama.seichiassist.data.EffectData;
+import com.github.unchama.seichiassist.data.PlayerData;
 
 public class MinuteTaskRunnable extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.plugin;
@@ -29,9 +33,12 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		for (String name: playermap.keySet()){
 			//playerdataを取得
 			PlayerData playerdata = playermap.get(name);
-
+			if(SeichiAssist.DEBUG){
+				Util.sendEveryMessage(name + "の１分間の処理を実行");
+			}
 			//ここからエフェクト関係の処理
 			List<EffectData> tmplist = new ArrayList<EffectData>();
+
 			//エフェクトデータの持続時間を1200tick引いて、０以下のものを削除
 			for(EffectData ed : playerdata.effectdatalist){
 				ed.duration -= 1200;
@@ -44,12 +51,19 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			}
 
 			if(plugin.getServer().getPlayer(name) == null){
+				if(SeichiAssist.DEBUG){
+					Util.sendEveryMessage(name + "は不在により処理中止");
+				}
 				continue;
 			}
 
 			//player型を再取得
 			Player player = plugin.getServer().getPlayer(name);
-
+			//Rankを設定
+			player.setDisplayName(Util.calcplayerRank(player));
+			if(SeichiAssist.DEBUG){
+				Util.sendEveryMessage(name + "のランク処理完了");
+			}
 
 			//独自effect量計算
 			//統計を抜き出し
@@ -93,6 +107,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				}else{
 					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, minespeedlv, false, false), true);
 				}
+				playerdata.minespeedlv = minespeedlv;
 			}
 
 			//プレイヤーにメッセージ送信
@@ -107,7 +122,9 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 					player.sendMessage("-------------------------------------------------------------");
 				}
 			}
-
+			if(SeichiAssist.DEBUG){
+				Util.sendEveryMessage(name + "のエフェクト処理が成功");
+			}
 			//ガチャ券付与の処理
 
 			//ガチャポイントに合算
@@ -118,7 +135,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				playerdata.gachapoint -= Config.getGachaPresentInterval();
 				if(!player.getInventory().contains(skull) && Util.isPlayerInventryEmpty(player)){
 					Util.dropItem(player,skull);
-					player.sendMessage("あなたの"+ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "地べたに置いたわよ忘れるんじゃないよ");
+					player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が下に落ちました。右クリックで使えるゾ");
 				}else{
 					Util.addItem(player,skull);
 					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー");
@@ -129,10 +147,10 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				}
 			}
 			playerdata.lastgachapoint = playerdata.gachapoint;
+			if(SeichiAssist.DEBUG){
+				Util.sendEveryMessage(name + "のガチャ処理が成功");
+			}
 
-
-			//Rankを設定
-			player.setDisplayName(Util.calcplayerRank(player));
 		}
 	}
 }

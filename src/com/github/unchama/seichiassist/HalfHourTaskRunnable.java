@@ -11,6 +11,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.github.unchama.seichiassist.data.MineBlock;
+import com.github.unchama.seichiassist.data.PlayerData;
+
 public class HalfHourTaskRunnable extends BukkitRunnable{
 	private HashMap<String,PlayerData> playermap = SeichiAssist.playermap;
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -24,22 +27,18 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		int all = 0;
 		for (String name : playermap.keySet()){
 			PlayerData playerdata = playermap.get(name);
-			if(plugin.getServer().getPlayer(name) == null){
-				continue;
+			Player player = plugin.getServer().getPlayer(name);
+			MineBlock mineblock  = playerdata.halfhourblock;
+			if(player != null){
+				mineblock.after = Util.calcMineBlock(player);
+				mineblock.setIncrease();
+				mineblock.before = mineblock.after;
 			}else{
-				Player player = plugin.getServer().getPlayer(name);
-				MineBlock mineblock  = playerdata.halfhourblock;
-				if(player != null){
-					mineblock.after = Util.calcMineBlock(player);
-					mineblock.increase = mineblock.after - mineblock.before;
-					mineblock.before = mineblock.after;
-				}else{
-					mineblock.increase = 0;
-				}
-				all += mineblock.increase;
-				if(mineblock.increase >= getSendMessageAmount()){
-					count++;
-				}
+				mineblock.increase = 0;
+			}
+			all += mineblock.increase;
+			if(mineblock.increase >= getSendMessageAmount()){
+				count++;
 			}
 		}
 

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.listener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +13,11 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Util;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.PlayerData;
 
 public class SeichiPlayerListener implements Listener {
 	HashMap<String,PlayerData> playermap;
@@ -33,10 +38,7 @@ public class SeichiPlayerListener implements Listener {
 		//playerのplayerdataを参照
 		PlayerData playerdata = playermap.get(name);
 
-		//初見かどうかの判定
-		if(player.hasPlayedBefore()){
-			playerdata.firstjoinflag = true;
-		}
+
 		//破壊量データ(before)を設定
 		playerdata.minuteblock.before = Util.calcMineBlock(player);
 		playerdata.halfhourblock.before = Util.calcMineBlock(player);
