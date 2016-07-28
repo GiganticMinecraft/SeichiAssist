@@ -50,7 +50,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				tmplist.add(ed);
 			}
 			for(EffectData ed : tmplist){
-				if(ed.duration <= 0){
+				if(ed.duration <= 60){
 					playerdata.effectdatalist.remove(ed);
 				}
 			}

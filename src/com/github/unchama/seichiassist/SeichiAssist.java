@@ -18,7 +18,9 @@ import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.listener.SeichiPlayerListener;
+import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.listener.PlayerJoinListener;
+import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 
@@ -26,7 +28,7 @@ import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 public class SeichiAssist extends JavaPlugin{
 	public static SeichiAssist plugin;
 	private HashMap<String, TabExecutor> commandlist;
-	public static Boolean DEBUG = false;
+	public static Boolean DEBUG = true;
 
 
 	//起動するタスクリスト
@@ -77,7 +79,9 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("level",new levelCommand(plugin));
 
 		//リスナーの登録
-		getServer().getPluginManager().registerEvents(new SeichiPlayerListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerRightClickListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
 
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){

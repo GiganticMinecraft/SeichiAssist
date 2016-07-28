@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.data;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import com.github.unchama.seichiassist.SeichiAssist;
 
 public class GachaData {
 	//アイテムデータ格納
@@ -18,5 +21,20 @@ public class GachaData {
 		itemstack = _itemstack;
 		probability = _probability;
 		amount = _amount;
+	}
+
+	public static GachaData runGacha() {
+		double sum = 1.0;
+		double rand = 0.0;
+
+		rand = Math.random();
+
+		for (GachaData gachadata : SeichiAssist.gachadatalist) {
+		    sum -= gachadata.probability;
+		    if (sum <= rand) {
+                return gachadata;
+            }
+		}
+		return new GachaData(new ItemStack(Material.BAKED_POTATO,1),1.0,1);
 	}
 }

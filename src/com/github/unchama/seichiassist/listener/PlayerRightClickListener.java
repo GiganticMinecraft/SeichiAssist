@@ -11,7 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
@@ -19,31 +18,8 @@ import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 
-public class SeichiPlayerListener implements Listener {
+public class PlayerRightClickListener implements Listener {
 	HashMap<String,PlayerData> playermap;
-
-	//プレイヤーがjoinした時に実行
-	@EventHandler
-	public void onplayerJoinEvent(PlayerJoinEvent event){
-		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
-		playermap = SeichiAssist.playermap;
-
-
-		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
-		if(!playermap.containsKey(name)){
-			playermap.put(name, new PlayerData());
-		}
-
-		//playerのplayerdataを参照
-		PlayerData playerdata = playermap.get(name);
-
-		//更新したいものを更新
-		playerdata.updata(player);
-
-	}
-
-
 	//プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
 	@EventHandler
 	public void onPlayerRightClickEvent(PlayerInteractEvent event){
@@ -70,7 +46,7 @@ public class SeichiPlayerListener implements Listener {
 					player.getInventory().getItemInMainHand().setAmount(amount - 1);
 					}
 				//ガチャ実行
-				present = runGacha();
+				present = GachaData.runGacha();
 				present.itemstack.setAmount(present.amount);
 				probability = present.probability;
 				String str = ChatColor.RED + "プレゼントが下に落ちました。";
@@ -92,20 +68,5 @@ public class SeichiPlayerListener implements Listener {
 			}
 		}
 
-	}
-
-	private GachaData runGacha() {
-		double sum = 1.0;
-		double rand = 0.0;
-
-		rand = Math.random();
-
-		for (GachaData gachadata : SeichiAssist.gachadatalist) {
-		    sum -= gachadata.probability;
-		    if (sum <= rand) {
-                return gachadata;
-            }
-		}
-		return new GachaData(new ItemStack(Material.BAKED_POTATO,1),1.0,1);
 	}
 }
