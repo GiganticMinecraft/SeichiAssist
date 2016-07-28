@@ -81,7 +81,7 @@ public class SeichiPlayerListener implements Listener {
 				present = runGacha();
 				present.itemstack.setAmount(present.amount);
 				probability = present.probability;
-				String str = ChatColor.RED + "プレゼントが下に落ちました。";
+				String str = ChatColor.RED + "プレゼントがドロップしました。";
 				Util.dropItem(player, present.itemstack);
 				if(probability < 0.001){
 					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 2);

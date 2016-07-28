@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.Level;
+import com.github.unchama.seichiassist.Util;
 
 
 
@@ -37,6 +41,8 @@ public class PlayerData {
 	public List<Integer> activeskills;
 	//プレイヤーの持つパッシブスキル番号を格納する．
 	public List<Integer> passiveskills;
+	//詫び券をあげる数
+	public int numofsorryforbug;
 
 
 	public PlayerData(){
@@ -58,6 +64,7 @@ public class PlayerData {
 		minespeedlv = 0;
 		minuteblock.before = 0;
 		halfhourblock.before = 0;
+		numofsorryforbug = 0;
 
 	}
 
@@ -71,6 +78,19 @@ public class PlayerData {
 		//ランクによるディスプレイネームを設定
 		Level.setDisplayName(level,p);
 
+
+
+	}
+	public void giveSorryForBug(Player p){
+		//詫び券の配布
+				ItemStack skull = Util.getskull();
+				if(numofsorryforbug != 0){
+					skull.setAmount(numofsorryforbug);
+					Util.dropItem(p,skull);
+					p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+					p.sendMessage("不具合のお詫びとして"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が" +numofsorryforbug+ "ドロップしました。");
+				}
+				numofsorryforbug = 0;
 	}
 
 }

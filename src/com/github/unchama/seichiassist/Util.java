@@ -34,7 +34,7 @@ public class Util {
 		BigDecimal bi = new BigDecimal(String.valueOf(d));
 		return bi.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
 	}
-	public static boolean isPlayerInventryEmpty(Player player){
+	public static boolean isPlayerInventryNoEmpty(Player player){
 		return (player.getInventory().firstEmpty()== -1);
 	}
 	public static void dropItem(Player player,ItemStack itemstack){

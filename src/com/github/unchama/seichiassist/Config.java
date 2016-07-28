@@ -47,6 +47,7 @@ public class Config{
 			d.messageflag = config.getBoolean(name + "messageflag");
 			d.gachapoint = config.getInt(name + "gachapoint");
 			d.level = config.getInt(name + "level");
+			d.numofsorryforbug = config.getInt(name + "numofsorryforbug");
 			SeichiAssist.playermap.put(name,d);
 		}
 		plugin.getLogger().info("プレイヤーデータのLoadを完了しました。");
@@ -92,6 +93,7 @@ public class Config{
 			config.set(name + "messageflag",d.messageflag);
 			config.set(name + "gachapoint",d.gachapoint);
 			config.set(name + "level",d.level);
+			config.set(name + "numofsorryforbug", d.numofsorryforbug);
 			i++;
 		}
 		config.set("playernum",i);
