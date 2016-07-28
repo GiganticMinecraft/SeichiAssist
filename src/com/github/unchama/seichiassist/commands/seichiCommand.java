@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
@@ -32,6 +33,13 @@ public class seichiCommand implements TabExecutor {
 			SeichiAssist.gachadatalist.clear();
 			Config.reloadConfig();
 			sender.sendMessage("SeichiAssistのconfig.ymlをリロードしました。");
+			return true;
+		}else if(args[0].equals("bug")){
+			Player player = (Player)sender;
+			if(args.length != 2){
+				sender.sendMessage("/seichi bug 2 で全ての登録されているプレイヤーに詫び券(ガチャ券）を2枚配布します。");
+			}
+			addSorryForBug(sender,Util.toInt(args[1]));
 			return true;
 		}else if(args.length > 0){
 			//seichi player duration(ticks) amplifier で登録できるようにする。
@@ -95,5 +103,12 @@ public class seichiCommand implements TabExecutor {
 			return true;
 		}
 		return false;
+	}
+	private void addSorryForBug(CommandSender sender,int num) {
+		for(String name : SeichiAssist.playermap.keySet()){
+			PlayerData playerdata = SeichiAssist.playermap.get(name);
+			playerdata.numofsorryforbug += num;
+			sender.sendMessage(num+"個のガチャ券をお詫びとして" + name + "のデータに更新しました");
+		}
 	}
 }

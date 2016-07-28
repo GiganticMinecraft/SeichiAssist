@@ -100,6 +100,7 @@ public class SeichiAssist extends JavaPlugin{
 
 			//更新したいデータを更新
 			playerdata.updata(p);
+			playerdata.giveSorryForBug(p);
 
 		}
 

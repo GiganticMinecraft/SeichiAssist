@@ -67,6 +67,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//Rankを設定
 			Level.updata(player);
+			//詫び券の配布
+			playerdata.giveSorryForBug(player);
 
 
 			if(SeichiAssist.DEBUG){
@@ -141,10 +143,10 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			ItemStack skull = Util.getskull();
 			if(playerdata.gachapoint >= Config.getGachaPresentInterval()){
 				playerdata.gachapoint -= Config.getGachaPresentInterval();
-				if(!player.getInventory().contains(skull) && Util.isPlayerInventryEmpty(player)){
+				if(!player.getInventory().contains(skull) && Util.isPlayerInventryNoEmpty(player)){
 					Util.dropItem(player,skull);
 					player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が下に落ちました。右クリックで使えるゾ");
+					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました。右クリックで使えるゾ");
 				}else{
 					Util.addItem(player,skull);
 					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー");
