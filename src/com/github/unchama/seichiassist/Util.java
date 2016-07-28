@@ -3,9 +3,6 @@ package com.github.unchama.seichiassist;
 import java.math.BigDecimal;
 import java.util.Random;
 
-import net.coreprotect.CoreProtect;
-import net.coreprotect.CoreProtectAPI;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -18,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.Plugin;
 
 public class Util {
 	static private FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
@@ -146,25 +142,5 @@ public class Util {
 		// 配列を返す
 		return colors;
 	}
-	public static CoreProtectAPI getCoreProtect() {
-		Plugin plugin = SeichiAssist.plugin.getServer().getPluginManager().getPlugin("CoreProtect");
 
-		// Check that CoreProtect is loaded
-		if (plugin == null || !(plugin instanceof CoreProtect)) {
-		    return null;
-		}
-
-		// Check that the API is enabled
-		CoreProtectAPI CoreProtect = ((CoreProtect)plugin).getAPI();
-		if (CoreProtect.isEnabled()==false){
-		    return null;
-		}
-
-		// Check that a compatible version of the API is loaded
-		if (CoreProtect.APIVersion() < 4){
-		    return null;
-		}
-
-		return CoreProtect;
-		}
 }

@@ -46,6 +46,7 @@ public class PlayerRightClickListener implements Listener {
 					player.getInventory().getItemInMainHand().setAmount(amount - 1);
 					}
 				//ガチャ実行
+
 				present = GachaData.runGacha();
 				present.itemstack.setAmount(present.amount);
 				probability = present.probability;

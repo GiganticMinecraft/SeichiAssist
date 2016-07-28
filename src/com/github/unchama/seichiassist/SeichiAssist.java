@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -30,7 +31,7 @@ public class SeichiAssist extends JavaPlugin{
 	private HashMap<String, TabExecutor> commandlist;
 	public static Boolean DEBUG = true;
 
-
+	Random rand = new java.util.Random();
 	//起動するタスクリスト
 	private List<BukkitTask> tasklist = new ArrayList<BukkitTask>();
 
@@ -141,6 +142,7 @@ public class SeichiAssist extends JavaPlugin{
 		saveConfig();
 		getLogger().info("SeichiPlugin is Disabled!");
 	}
+
 
 }
 
