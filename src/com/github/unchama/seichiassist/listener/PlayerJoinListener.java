@@ -31,6 +31,7 @@ public class PlayerJoinListener implements Listener {
 
 		//更新したいものを更新
 		playerdata.updata(player);
+		playerdata.giveSorryForBug(player);
 
 	}
 

@@ -5,7 +5,6 @@ import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
@@ -35,7 +34,6 @@ public class seichiCommand implements TabExecutor {
 			sender.sendMessage("SeichiAssistのconfig.ymlをリロードしました。");
 			return true;
 		}else if(args[0].equals("bug")){
-			Player player = (Player)sender;
 			if(args.length != 2){
 				sender.sendMessage("/seichi bug 2 で全ての登録されているプレイヤーに詫び券(ガチャ券）を2枚配布します。");
 			}

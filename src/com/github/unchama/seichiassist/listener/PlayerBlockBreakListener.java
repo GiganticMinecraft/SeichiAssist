@@ -19,7 +19,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Util;
 
 public class PlayerBlockBreakListener implements Listener {
 	//ブロックが壊された時に実行
@@ -74,9 +73,6 @@ public class PlayerBlockBreakListener implements Listener {
 	public static short calcDurability(int enchantmentLevel) {
 		double rand = Math.random();
 		double probability = 1.0 / (enchantmentLevel + 1.0);
-		Util.sendEveryMessage("enchantmentLevel:"+enchantmentLevel);
-		Util.sendEveryMessage("probability:"+probability);
-
 		if(probability <=  rand ){
 			return 0;
 		}

@@ -11,11 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-<<<<<<< HEAD:src/com/github/unchama/seichiassist/listener/PlayerRightClickListener.java
-=======
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
->>>>>>> refs/remotes/origin/master:src/com/github/unchama/seichiassist/listener/SeichiPlayerListener.java
 import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
