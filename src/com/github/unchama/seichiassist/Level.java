@@ -31,7 +31,10 @@ public class Level{
 			//レベルアップ時の花火の打ち上げ
 			Location loc = player.getLocation();
 			Util.launchFireWorks(loc);
-			
+			String lvmessage = Config.getLvMessage(i);
+			if(!(lvmessage.isEmpty())){
+				player.sendMessage(ChatColor.AQUA+Config.getLvMessage(i));
+			}
 			i++;
 		}
 

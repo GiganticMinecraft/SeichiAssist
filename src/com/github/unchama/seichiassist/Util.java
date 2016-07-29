@@ -20,6 +20,8 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+
 public class Util {
 	static private FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
 		FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST,
@@ -166,5 +168,15 @@ public class Util {
 		}
 
 		return CoreProtect;
-		}
+	}
+	public static WorldGuardPlugin getWorldGuard() {
+		Plugin plugin = SeichiAssist.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+
+	    // WorldGuard may not be loaded
+	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+	        return null; // Maybe you want throw an exception instead
+	    }
+
+	    return (WorldGuardPlugin) plugin;
+	}
 }

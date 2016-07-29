@@ -65,12 +65,8 @@ public class PlayerData {
 		minuteblock.before = MineBlock.calcMineBlock(p);
 		halfhourblock.before = MineBlock.calcMineBlock(p);
 		//プレイヤーのランクを計算し取得
-		int level = Level.calcPlayerLevel(p);
-		//ランクによるディスプレイネームを設定
-		Level.setDisplayName(level,p);
-
-
-
+		Level.updata(p);
+		//アクティブスキルの使用可否
 	}
 	public void giveSorryForBug(Player p){
 		//詫び券の配布
