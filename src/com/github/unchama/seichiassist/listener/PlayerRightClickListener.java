@@ -93,12 +93,18 @@ public class PlayerRightClickListener implements Listener {
 		Player player = event.getPlayer();
 		Action action = event.getAction();
 		EquipmentSlot equipmentslot = event.getHand();
-
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
 					return;
 				}
+				if(action.equals(Action.RIGHT_CLICK_BLOCK)){
+					Material cmaterial = event.getClickedBlock().getType();
+					if(SeichiAssist.cancelledmateriallist.contains(cmaterial)){
+						return;
+					}
+				}
+
 				PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
 				if(playerdata.level < Config.getActiveMinelevel()){
 					return;

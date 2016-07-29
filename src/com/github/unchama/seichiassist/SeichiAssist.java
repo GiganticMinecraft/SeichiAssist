@@ -60,7 +60,7 @@ public class SeichiAssist extends JavaPlugin{
 			4339062));
 	public static final List<Material> materiallist = new ArrayList<Material>(Arrays.asList(
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
-			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
+			,Material.GRAVEL,Material.LOG,Material.LOG_2
 			,Material.COAL_ORE,Material.IRON_ORE,Material.GOLD_ORE,Material.DIAMOND_ORE
 			,Material.LAPIS_ORE,Material.EMERALD_ORE,Material.REDSTONE_ORE,Material.SAND
 			,Material.SANDSTONE,Material.QUARTZ_ORE,Material.END_BRICKS,Material.ENDER_STONE
@@ -68,6 +68,11 @@ public class SeichiAssist extends JavaPlugin{
 			));
 	public static final List<Material> breakmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE
+			));
+	public static final List<Material> cancelledmateriallist = new ArrayList<Material>(Arrays.asList(
+			Material.CHEST,Material.ENDER_CHEST,Material.TRAPPED_CHEST,Material.ANVIL,Material.ARMOR_STAND
+			,Material.BEACON,Material.BIRCH_DOOR,Material.BIRCH_FENCE_GATE,Material.BIRCH_WOOD_STAIRS
+			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
 			));
 
 

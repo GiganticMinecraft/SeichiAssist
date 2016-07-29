@@ -51,7 +51,9 @@ public class PlayerBlockBreakListener implements Listener {
 		}else{
 			return;
 		}
-
+		if(SeichiAssist.DEBUG){
+			player.sendMessage("ブロックブレイクイベントが呼び出されました");
+		}
 
 		Block block = event.getBlock();
 		Material material = block.getType();
@@ -112,36 +114,12 @@ public class PlayerBlockBreakListener implements Listener {
 
 			short d = tool.getDurability();
 			tool.setDurability((short)(d + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY))));
-			player.incrementStatistic(Statistic.MINE_BLOCK, Material.STONE);
+			player.incrementStatistic(Statistic.MINE_BLOCK, material);
 			Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
 			if(!success){
 				player.sendMessage("coreprotectに保存できませんでした。");
 			}
 		}
-/*
-		event.setExpToDrop(10);
-		Location loc = block.getLocation();
-		for(double y = loc.getY()-1.0;y<=loc.getY()+1;y++){
-			for(double x = loc.getX()-1.0;x<=loc.getX()+1;x++){
-				for(double z = loc.getZ() -1.0;z<=loc.getZ()+1;z++){
-					Location breakloc = new Location(loc.getWorld(), x, y, z);
-					Block breakblock = breakloc.getBlock();
-					if(breakblock.getType().equals(Material.STONE)){
-						breakblock.breakNaturally();
-						breakblock.getWorld().playEffect(breakloc, Effect.STEP_SOUND,Material.STONE);
-						@SuppressWarnings("deprecation")
-						boolean success = CoreProtect.logRemoval(player.getName().toLowerCase(), breakloc, breakblock.getType(),breakblock.getState().getData().getData());
-						if(success = false){
-							player.sendMessage("保存に失敗しました。");
-						}else{
-							player.sendMessage("保存" + breakblock.getState().getData().getData());
-						}
-					}
-				}
-			}
-		}
-		*/
-
 	}
 
 	public static int calcExpDrop(int blockexpdrop,PlayerData playerdata) {
