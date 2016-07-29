@@ -93,8 +93,11 @@ public class PlayerRightClickListener implements Listener {
 		Player player = event.getPlayer();
 		Action action = event.getAction();
 		EquipmentSlot equipmentslot = event.getHand();
+		PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
+			if(!player.isSneaking()){
+				return;
+			}else if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
 					return;
 				}
@@ -104,8 +107,6 @@ public class PlayerRightClickListener implements Listener {
 						return;
 					}
 				}
-
-				PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
 				if(playerdata.level < Config.getActiveMinelevel()){
 					return;
 				}
@@ -117,6 +118,13 @@ public class PlayerRightClickListener implements Listener {
 				}
 				player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 
+			}else if(player.getInventory().getItemInMainHand().getType().equals(Material.AIR)){
+				playerdata.effectflag = !playerdata.effectflag;
+				if (playerdata.effectflag){
+					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
+				}else{
+					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:OFF");
+				}
 			}
 		}
 	}

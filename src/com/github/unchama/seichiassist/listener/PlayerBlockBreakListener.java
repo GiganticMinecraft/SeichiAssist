@@ -5,13 +5,11 @@ import net.coreprotect.CoreProtectAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -61,9 +59,8 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 		//壊されたブロックのみの処理
-		int blockexpdrop = event.getExpToDrop();
+		expman.changeExp(calcExpDrop(playerdata));
 		//パッシブスキル[dropexp]の処理
-		event.setExpToDrop(calcExpDrop(blockexpdrop,playerdata));
 		if(!playerdata.activemineflag){
 			return;
 		}
@@ -87,11 +84,9 @@ public class PlayerBlockBreakListener implements Listener {
 				player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
 				return;
 			}
-			Location breakloc = breakblock.getLocation();
-			ExperienceOrb orb = breakloc.getWorld().spawn(breakloc, ExperienceOrb.class);
 			breakblock.breakNaturally();
 			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,breakblock.getType());
-			for(int i = 1; i<3 ; i++){
+			for(int i = 1; i<2 ; i++){
 				breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.EXPLOSION, (byte)0);
 			}
 			// Effect.ENDER_SIGNALこれかっこいい
@@ -106,11 +101,9 @@ public class PlayerBlockBreakListener implements Listener {
 			// Effect.SMOKE　黒いすすを噴き出してる
 			// Effect.HAPPY_VILLAGER 緑のパーティクル　けっこう長く残る
 			// Effect.INSTANT_SPELL かなりいい白いパーティクル
-
-
-
-			orb.setExperience(calcExpDrop(blockexpdrop,playerdata));
-			expman.changeExp(-3);
+			//expman.changeExp(calcExpDrop(playerdata));
+			//orb.setExperience(calcExpDrop(blockexpdrop,playerdata));
+			expman.changeExp(-1);
 
 			short d = tool.getDurability();
 			tool.setDurability((short)(d + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY))));
@@ -122,18 +115,14 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 	}
 
-	public static int calcExpDrop(int blockexpdrop,PlayerData playerdata) {
-
+	public static int calcExpDrop(PlayerData playerdata) {
+		double rand = Math.random();
 		if(playerdata.level < Config.getDropExplevel()){
-			return blockexpdrop;
-		}else{
-			if(blockexpdrop == 0 ){
-				return 1;
-			}else{
-				return (int)(blockexpdrop * 1.3);
-			}
+			return 0;
+		}else if (rand < 0.2){
+			return 1;
 		}
-
+		return 0;
 	}
 
 	public static short calcDurability(int enchantmentLevel) {
