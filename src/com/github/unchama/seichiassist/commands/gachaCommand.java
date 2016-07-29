@@ -76,6 +76,7 @@ public class gachaCommand implements TabExecutor{
 
 
 
+
 	private void Gachaadd(Player player,double probability) {
 		GachaData gachadata = new GachaData();
 		PlayerInventory inventory = player.getInventory();

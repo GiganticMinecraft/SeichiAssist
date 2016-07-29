@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
@@ -50,10 +51,13 @@ public class SeichiPlayerListener implements Listener {
 		Player player = event.getPlayer();
 		Action action = event.getAction();
 		ItemStack itemstack = event.getItem();
+		EquipmentSlot equipmentslot = event.getHand();
+
 		GachaData present = new GachaData();
 		int amount = 0;
 		Double probability = 0.0;
 		List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
+
 
 		if(action.equals(Action.RIGHT_CLICK_AIR)){
 			if(itemstack.getType().equals(Material.SKULL_ITEM)){
@@ -61,19 +65,23 @@ public class SeichiPlayerListener implements Listener {
 					player.sendMessage("ガチャが設定されていません");
 					return;
 				}
-				amount = player.getInventory().getItemInMainHand().getAmount();
+				amount = itemstack.getAmount();
 				if (amount == 1) {
 					// がちゃ券を1枚使うので、プレイヤーの手を素手にする
-					player.getInventory().setItemInMainHand(null);
-					} else {
-					// プレイヤーが持っているガチャ券を1枚減らす
-					player.getInventory().getItemInMainHand().setAmount(amount - 1);
+					if(equipmentslot.equals(EquipmentSlot.HAND)){
+						player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+					}else if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+						player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
 					}
+				} else {
+					// プレイヤーが持っているガチャ券を1枚減らす
+					itemstack.setAmount(itemstack.getAmount()-1);
+				}
 				//ガチャ実行
 				present = runGacha();
 				present.itemstack.setAmount(present.amount);
 				probability = present.probability;
-				String str = ChatColor.RED + "プレゼントが下に落ちました。";
+				String str = ChatColor.RED + "プレゼントがドロップしました。";
 				Util.dropItem(player, present.itemstack);
 				if(probability < 0.001){
 					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 2);
