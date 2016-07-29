@@ -34,8 +34,8 @@ public class levelCommand implements TabExecutor{
 					Level.setLevel(name,1);
 					sender.sendMessage(name+"のレベルを" + Level.getLevel(name) + "に設定しました");
 					Level.reloadLevel(name);
-					return true;
 				}
+				return true;
 			}
 		return false;
 	}

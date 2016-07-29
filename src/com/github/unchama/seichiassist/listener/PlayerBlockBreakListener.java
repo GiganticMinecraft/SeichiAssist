@@ -2,14 +2,17 @@ package com.github.unchama.seichiassist.listener;
 
 import net.coreprotect.CoreProtectAPI;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +20,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import com.github.unchama.seichiassist.ExperienceManager;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -28,6 +32,7 @@ public class PlayerBlockBreakListener implements Listener {
 	@EventHandler
 	public void onPlayerBlockBreakEvent(BlockBreakEvent event){
 		Player player = event.getPlayer();
+		ExperienceManager expman = new ExperienceManager(player);
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
 			return;
 		}
@@ -40,10 +45,17 @@ public class PlayerBlockBreakListener implements Listener {
 		if(!SeichiAssist.materiallist.contains(material)){
 			return;
 		}
-		//指定したブロックのみの処理
-		player.giveExp(17);
-
+		//壊されたブロックのみの処理
+		int blockexpdrop = event.getExpToDrop();
+		//int expdrop = (int)(blockexpdrop + (blockexpdrop * 0.3) + 1);
+		event.setExpToDrop(calcExpDrop(blockexpdrop,playerdata.dropexpprobability));
 		if(!playerdata.activemineflag){
+			return;
+		}
+		if(player.getLevel()==0 && player.getExp()<3){
+			if(SeichiAssist.DEBUG){
+				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
+			}
 			return;
 		}
 		//以下アクティブスキルで壊されるブロックの処理
@@ -52,11 +64,14 @@ public class PlayerBlockBreakListener implements Listener {
 		BlockState blockstate = breakblock.getState();
 		byte data = blockstate.getData().getData();
 		if(breakblock.getType().equals(material)){
+			Location breakloc = breakblock.getLocation();
+			ExperienceOrb orb = breakloc.getWorld().spawn(breakloc, ExperienceOrb.class);
 			breakblock.breakNaturally();
 			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,Material.STONE);
 			breakblock.getWorld().playSound(breakblock.getLocation(), Sound.ENTITY_IRONGOLEM_ATTACK,1,1);
-			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.WITCH_MAGIC, data);
-			//player.setExp((float)(player.getExp()-1.5));
+			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.WITCH_MAGIC, (byte)0);
+			orb.setExperience(calcExpDrop(blockexpdrop,playerdata.dropexpprobability));
+			expman.changeExp(-3);
 
 			short d = tool.getDurability();
 			tool.setDurability((short)(d + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY))));
@@ -89,6 +104,20 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 		}
 		*/
+
+	}
+
+	public static int calcExpDrop(int blockexpdrop,double probability) {
+		double rand = Math.random();
+		if(probability <=  rand){
+			return blockexpdrop;
+		}else{
+			if(blockexpdrop == 0 ){
+				return 1;
+			}else{
+				return (int)(blockexpdrop * 1.3);
+			}
+		}
 
 	}
 

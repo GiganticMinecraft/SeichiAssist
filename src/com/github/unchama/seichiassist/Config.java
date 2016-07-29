@@ -48,6 +48,7 @@ public class Config{
 			d.gachapoint = config.getInt(name + "gachapoint");
 			d.level = config.getInt(name + "level");
 			d.numofsorryforbug = config.getInt(name + "numofsorryforbug");
+			d.dropexpprobability = config.getDouble(name + "dropexpprobability");
 			SeichiAssist.playermap.put(name,d);
 		}
 		plugin.getLogger().info("プレイヤーデータのLoadを完了しました。");
@@ -94,6 +95,7 @@ public class Config{
 			config.set(name + "gachapoint",d.gachapoint);
 			config.set(name + "level",d.level);
 			config.set(name + "numofsorryforbug", d.numofsorryforbug);
+			config.set(name + "dropexpprobability",d.dropexpprobability);
 			i++;
 		}
 		config.set("playernum",i);
