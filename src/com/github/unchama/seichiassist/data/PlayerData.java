@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -34,15 +33,10 @@ public class PlayerData {
 	public List<EffectData> effectdatalist;
 	//現在のプレイヤーレベル
 	public int level;
-	//プレイヤーが獲得可能なpassive,activeスキルの数
-	public int cangetpassiveskill;
-	public int cangetactiveskill;
-	//プレイヤーの持つアクティブスキル番号を格納する.
-	public List<Integer> activeskills;
-	//プレイヤーの持つパッシブスキル番号を格納する．
-	public List<Integer> passiveskills;
 	//詫び券をあげる数
 	public int numofsorryforbug;
+	//採掘用アクティブスキルのフラグ
+	public boolean activemineflag;
 
 
 	public PlayerData(){
@@ -57,14 +51,11 @@ public class PlayerData {
 		minuteblock.before = 0;
 		halfhourblock.before = 0;
 		level = 1;
-		cangetpassiveskill = 0;
-		cangetactiveskill = 0;
-		activeskills = new ArrayList<Integer>();
-		passiveskills = new ArrayList<Integer>(Arrays.asList(0,1));
 		minespeedlv = 0;
 		minuteblock.before = 0;
 		halfhourblock.before = 0;
 		numofsorryforbug = 0;
+		activemineflag = false;
 
 	}
 
