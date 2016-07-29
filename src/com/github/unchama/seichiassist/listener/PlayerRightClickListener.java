@@ -37,7 +37,7 @@ public class PlayerRightClickListener implements Listener {
 
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-			if(itemstack.getType().equals(Material.SKULL_ITEM)){
+			if(event.getMaterial().equals(Material.SKULL_ITEM)){
 				SkullMeta skullmeta = (SkullMeta) itemstack.getItemMeta();
 				if(!skullmeta.hasOwner()){
 					return;
@@ -86,5 +86,26 @@ public class PlayerRightClickListener implements Listener {
 			}
 		}
 	}
+	@EventHandler
+	public void onPlayerRightClickActiveSkillEvent(PlayerInteractEvent event){
+		Player player = event.getPlayer();
+		Action action = event.getAction();
 
+		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+			if(event.getMaterial().equals(Material.DIAMOND_PICKAXE)){
+				PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
+				if(playerdata.level < 20 && !SeichiAssist.DEBUG){
+					return;
+				}
+				playerdata.activemineflag = !playerdata.activemineflag;
+				if(playerdata.activemineflag){
+					player.sendMessage(ChatColor.GOLD + "2段採掘スキル:ON");
+				}else{
+					player.sendMessage(ChatColor.GOLD + "2段採掘スキル：OFF");
+				}
+				player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
+
+			}
+		}
+	}
 }

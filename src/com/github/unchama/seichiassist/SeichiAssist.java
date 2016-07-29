@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -57,12 +58,15 @@ public class SeichiAssist extends JavaPlugin{
 			2116248,2306256,2511464,2733088,2954712,//60
 			3176336,3397960,3619584,3841208,4080561,
 			4339062));
+	public static final List<Material> materiallist = new ArrayList<Material>(Arrays.asList(
+			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
+			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
+			,Material.COAL_ORE,Material.IRON_ORE,Material.GOLD_ORE,Material.DIAMOND_ORE
+			,Material.LAPIS_ORE,Material.EMERALD_ORE,Material.REDSTONE_ORE,Material.SAND
+			,Material.SANDSTONE,Material.QUARTZ_ORE,Material.END_BRICKS,Material.ENDER_STONE
+			,Material.ICE,Material.PACKED_ICE
+			));
 
-	//パッシブスキルが獲得できるレベルのリスト
-	public static final List<Integer> passiveskillgetlevel = Arrays.asList(3);
-
-	//アクティブスキルが獲得できるレベルのリスト
-	public static final List<Integer> activeskillgetlevel = Arrays.asList(4);
 
 	@Override
 	public void onEnable(){

@@ -17,9 +17,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Util;
+import com.github.unchama.seichiassist.data.PlayerData;
 
 public class PlayerBlockBreakListener implements Listener {
+
 	//ブロックが壊された時に実行
 	@SuppressWarnings("deprecation")
 	@EventHandler
@@ -28,18 +31,33 @@ public class PlayerBlockBreakListener implements Listener {
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
 			return;
 		}
+		PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
+
 		PlayerInventory inventory = player.getInventory();
 		ItemStack tool = inventory.getItemInMainHand();
 		Block block = event.getBlock();
+		Material material = block.getType();
+		if(!SeichiAssist.materiallist.contains(material)){
+			return;
+		}
+		//指定したブロックのみの処理
+		player.giveExp(17);
+
+		if(!playerdata.activemineflag){
+			return;
+		}
+		//以下アクティブスキルで壊されるブロックの処理
 		CoreProtectAPI CoreProtect = Util.getCoreProtect();
 		Block breakblock = block.getWorld().getBlockAt(block.getX(),block.getY() + 1, block.getZ());
 		BlockState blockstate = breakblock.getState();
 		byte data = blockstate.getData().getData();
-		if(breakblock.getType().equals(Material.STONE)){
+		if(breakblock.getType().equals(material)){
 			breakblock.breakNaturally();
 			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,Material.STONE);
 			breakblock.getWorld().playSound(breakblock.getLocation(), Sound.ENTITY_IRONGOLEM_ATTACK,1,1);
 			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.WITCH_MAGIC, data);
+			//player.setExp((float)(player.getExp()-1.5));
+
 			short d = tool.getDurability();
 			tool.setDurability((short)(d + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY))));
 			player.incrementStatistic(Statistic.MINE_BLOCK, Material.STONE);
