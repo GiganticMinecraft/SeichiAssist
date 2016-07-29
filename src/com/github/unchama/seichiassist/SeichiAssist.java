@@ -30,7 +30,7 @@ import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 public class SeichiAssist extends JavaPlugin{
 	public static SeichiAssist plugin;
 	private HashMap<String, TabExecutor> commandlist;
-	public static Boolean DEBUG = true;
+	public static Boolean DEBUG = false;
 
 	Random rand = new java.util.Random();
 	//起動するタスクリスト
