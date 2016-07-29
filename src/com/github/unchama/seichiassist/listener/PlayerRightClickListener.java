@@ -15,6 +15,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.GachaData;
@@ -43,20 +44,21 @@ public class PlayerRightClickListener implements Listener {
 					return;
 				}
 				if(skullmeta.getOwner().equals("unchama")){
+					//設置をキャンセル
+					event.setCancelled(true);
+					if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+						return;
+					}
 					if(gachadatalist.isEmpty()){
 						player.sendMessage("ガチャが設定されていません");
 						return;
 					}
-					//設置をキャンセル
-					event.setCancelled(true);
+
+
 					amount = itemstack.getAmount();
 					if (amount == 1) {
 						// がちゃ券を1枚使うので、プレイヤーの手を素手にする
-						if(equipmentslot.equals(EquipmentSlot.HAND)){
-							player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-						}else if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
-							player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
-						}
+						player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 					} else {
 						// プレイヤーが持っているガチャ券を1枚減らす
 						itemstack.setAmount(itemstack.getAmount()-1);
@@ -90,11 +92,15 @@ public class PlayerRightClickListener implements Listener {
 	public void onPlayerRightClickActiveSkillEvent(PlayerInteractEvent event){
 		Player player = event.getPlayer();
 		Action action = event.getAction();
+		EquipmentSlot equipmentslot = event.getHand();
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-			if(event.getMaterial().equals(Material.DIAMOND_PICKAXE)){
+			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
+				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+					return;
+				}
 				PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
-				if(playerdata.level < 20 && !SeichiAssist.DEBUG){
+				if(playerdata.level < Config.getActiveMinelevel()){
 					return;
 				}
 				playerdata.activemineflag = !playerdata.activemineflag;
@@ -108,4 +114,5 @@ public class PlayerRightClickListener implements Listener {
 			}
 		}
 	}
+
 }

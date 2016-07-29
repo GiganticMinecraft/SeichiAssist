@@ -37,8 +37,6 @@ public class PlayerData {
 	public int numofsorryforbug;
 	//採掘用アクティブスキルのフラグ
 	public boolean activemineflag;
-	//採掘で出る経験値が増える確率
-	public double dropexpprobability;
 
 
 	public PlayerData(){
@@ -58,7 +56,6 @@ public class PlayerData {
 		halfhourblock.before = 0;
 		numofsorryforbug = 0;
 		activemineflag = false;
-		dropexpprobability = 0;
 
 	}
 
@@ -69,6 +66,7 @@ public class PlayerData {
 		halfhourblock.before = MineBlock.calcMineBlock(p);
 		//プレイヤーのランクを計算し取得
 		Level.updata(p);
+		//アクティブスキルの使用可否
 	}
 	public void giveSorryForBug(Player p){
 		//詫び券の配布

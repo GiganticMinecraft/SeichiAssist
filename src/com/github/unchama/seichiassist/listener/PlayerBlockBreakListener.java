@@ -7,7 +7,6 @@ import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -20,6 +19,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.ExperienceManager;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Util;
@@ -32,6 +32,7 @@ public class PlayerBlockBreakListener implements Listener {
 	@EventHandler
 	public void onPlayerBlockBreakEvent(BlockBreakEvent event){
 		Player player = event.getPlayer();
+
 		ExperienceManager expman = new ExperienceManager(player);
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
 			return;
@@ -39,7 +40,19 @@ public class PlayerBlockBreakListener implements Listener {
 		PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
 
 		PlayerInventory inventory = player.getInventory();
-		ItemStack tool = inventory.getItemInMainHand();
+		//メインハンドかオフハンドか取得
+		ItemStack mainhanditem = inventory.getItemInMainHand();
+		ItemStack offhanditem = inventory.getItemInOffHand();
+		ItemStack tool;
+		if(SeichiAssist.breakmateriallist.contains(mainhanditem.getType())){
+			tool = mainhanditem;
+		}else if(SeichiAssist.breakmateriallist.contains(offhanditem.getType())){
+			tool = offhanditem;
+		}else{
+			return;
+		}
+
+
 		Block block = event.getBlock();
 		Material material = block.getType();
 		if(!SeichiAssist.materiallist.contains(material)){
@@ -47,12 +60,12 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 		//壊されたブロックのみの処理
 		int blockexpdrop = event.getExpToDrop();
-		//int expdrop = (int)(blockexpdrop + (blockexpdrop * 0.3) + 1);
-		event.setExpToDrop(calcExpDrop(blockexpdrop,playerdata.dropexpprobability));
+		//パッシブスキル[dropexp]の処理
+		event.setExpToDrop(calcExpDrop(blockexpdrop,playerdata));
 		if(!playerdata.activemineflag){
 			return;
 		}
-		if(player.getLevel()==0 && player.getExp()<3){
+		if(player.getLevel()==0 && !expman.hasExp(3)){
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 			}
@@ -60,17 +73,41 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 		//以下アクティブスキルで壊されるブロックの処理
 		CoreProtectAPI CoreProtect = Util.getCoreProtect();
-		Block breakblock = block.getWorld().getBlockAt(block.getX(),block.getY() + 1, block.getZ());
+		Block breakblock = block.getRelative(0,1,0);
 		BlockState blockstate = breakblock.getState();
 		byte data = blockstate.getData().getData();
-		if(breakblock.getType().equals(material)){
+		if(SeichiAssist.DEBUG){
+			player.sendMessage("blocktype"+block.getType().toString());
+			player.sendMessage("breakblocktype"+breakblock.getType().toString());
+		}
+		if(breakblock.getType().equals(material)|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))){
+			if(!Util.getWorldGuard().canBuild(player, breakblock.getLocation())){
+				player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
+				return;
+			}
 			Location breakloc = breakblock.getLocation();
 			ExperienceOrb orb = breakloc.getWorld().spawn(breakloc, ExperienceOrb.class);
 			breakblock.breakNaturally();
-			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,Material.STONE);
-			breakblock.getWorld().playSound(breakblock.getLocation(), Sound.ENTITY_IRONGOLEM_ATTACK,1,1);
-			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.WITCH_MAGIC, (byte)0);
-			orb.setExperience(calcExpDrop(blockexpdrop,playerdata.dropexpprobability));
+			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,breakblock.getType());
+			for(int i = 1; i<3 ; i++){
+				breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.EXPLOSION, (byte)0);
+			}
+			// Effect.ENDER_SIGNALこれかっこいい
+			// Effect.EXPLOSION 範囲でかい
+			// Effect.WITCH_MAGIC 小さい　紫
+			// Effect.SPELL かわいい
+			// Effect.WITHER_SHOOT 音だけ、結構うるさい
+			// Effect.WITHER_BREAK_BLOCK これまた音だけ　うるせえ
+			// Effect.COLOURED_DUST エフェクトちっちゃすぎ
+			// Effect.LARGE_SMOKE EXPLOSIONの黒版
+			// Effect.MOBSPAWNER_FLAMES 火の演出　すき
+			// Effect.SMOKE　黒いすすを噴き出してる
+			// Effect.HAPPY_VILLAGER 緑のパーティクル　けっこう長く残る
+			// Effect.INSTANT_SPELL かなりいい白いパーティクル
+
+
+
+			orb.setExperience(calcExpDrop(blockexpdrop,playerdata));
 			expman.changeExp(-3);
 
 			short d = tool.getDurability();
@@ -107,9 +144,9 @@ public class PlayerBlockBreakListener implements Listener {
 
 	}
 
-	public static int calcExpDrop(int blockexpdrop,double probability) {
-		double rand = Math.random();
-		if(probability <=  rand){
+	public static int calcExpDrop(int blockexpdrop,PlayerData playerdata) {
+
+		if(playerdata.level < Config.getDropExplevel()){
 			return blockexpdrop;
 		}else{
 			if(blockexpdrop == 0 ){
