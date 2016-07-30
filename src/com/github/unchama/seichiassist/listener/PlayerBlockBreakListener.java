@@ -64,7 +64,7 @@ public class PlayerBlockBreakListener implements Listener {
 		if(!playerdata.activemineflag){
 			return;
 		}
-		if(player.getLevel()==0 && !expman.hasExp(3)){
+		if(player.getLevel()==0 && !expman.hasExp(1)){
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 			}
