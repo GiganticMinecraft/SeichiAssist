@@ -30,7 +30,7 @@ import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 public class SeichiAssist extends JavaPlugin{
 	public static SeichiAssist plugin;
 	private HashMap<String, TabExecutor> commandlist;
-	public static Boolean DEBUG = true;
+	public static Boolean DEBUG = false;
 
 	Random rand = new java.util.Random();
 	//起動するタスクリスト
@@ -44,7 +44,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	//ranklvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
-			15,49,106,198,333,
+			0,15,49,106,198,333,
 			705,1265,2105,3347,4589,
 			5831,7073,8315,9557,11047,
 			12835,14980,17554,20642,24347,
@@ -68,6 +68,11 @@ public class SeichiAssist extends JavaPlugin{
 			));
 	public static final List<Material> breakmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE
+			));
+	public static final List<Material> cancelledmateriallist = new ArrayList<Material>(Arrays.asList(
+			Material.CHEST,Material.ENDER_CHEST,Material.TRAPPED_CHEST,Material.ANVIL,Material.ARMOR_STAND
+			,Material.BEACON,Material.BIRCH_DOOR,Material.BIRCH_FENCE_GATE,Material.BIRCH_WOOD_STAIRS
+			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
 			));
 
 

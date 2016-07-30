@@ -93,24 +93,59 @@ public class PlayerRightClickListener implements Listener {
 		Player player = event.getPlayer();
 		Action action = event.getAction();
 		EquipmentSlot equipmentslot = event.getHand();
-
+		PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
+			if(!player.isSneaking()){
+				return;
+			}else if(SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInMainHand().getType())){
+
 				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+					//設置をキャンセル
+					event.setCancelled(true);
 					return;
 				}
-				PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
+				if(action.equals(Action.RIGHT_CLICK_BLOCK)){
+					Material cmaterial = event.getClickedBlock().getType();
+					if(SeichiAssist.cancelledmateriallist.contains(cmaterial)){
+						return;
+					}
+				}
+
 				if(playerdata.level < Config.getActiveMinelevel()){
 					return;
 				}
 				playerdata.activemineflag = !playerdata.activemineflag;
 				if(playerdata.activemineflag){
-					player.sendMessage(ChatColor.GOLD + "2段採掘スキル:ON");
+					player.sendMessage(ChatColor.GOLD + "デュアルブレイク:ON");
 				}else{
-					player.sendMessage(ChatColor.GOLD + "2段採掘スキル：OFF");
+					player.sendMessage(ChatColor.GOLD + "デュアルブレイク：OFF");
 				}
 				player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 
+			}
+		}
+	}
+	@EventHandler
+	public void onPlayerRightClickEffectEvent(PlayerInteractEvent event){
+		Player player = event.getPlayer();
+		Action action = event.getAction();
+		EquipmentSlot equipmentslot = event.getHand();
+		PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
+		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+			if(!player.isSneaking()){
+				return;
+			}else if(player.getInventory().getItemInMainHand().getType().equals(Material.AIR)){
+				//設置をキャンセル
+				event.setCancelled(true);
+				if(equipmentslot.equals(EquipmentSlot.OFF_HAND) && action.equals(Action.RIGHT_CLICK_BLOCK)){
+					return;
+				}
+				playerdata.effectflag = !playerdata.effectflag;
+				if (playerdata.effectflag){
+					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
+				}else{
+					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:OFF");
+				}
 			}
 		}
 	}
