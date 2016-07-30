@@ -44,7 +44,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	//ranklvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
-			15,49,106,198,333,
+			0,15,49,106,198,333,
 			705,1265,2105,3347,4589,
 			5831,7073,8315,9557,11047,
 			12835,14980,17554,20642,24347,
