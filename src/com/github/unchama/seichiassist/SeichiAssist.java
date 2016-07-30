@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -18,7 +20,9 @@ import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.listener.SeichiPlayerListener;
+import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.listener.PlayerJoinListener;
+import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 
@@ -28,7 +32,7 @@ public class SeichiAssist extends JavaPlugin{
 	private HashMap<String, TabExecutor> commandlist;
 	public static Boolean DEBUG = false;
 
-
+	Random rand = new java.util.Random();
 	//起動するタスクリスト
 	private List<BukkitTask> tasklist = new ArrayList<BukkitTask>();
 
@@ -40,7 +44,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	//ranklvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
-			15,49,106,198,333,
+			0,15,49,106,198,333,
 			705,1265,2105,3347,4589,
 			5831,7073,8315,9557,11047,
 			12835,14980,17554,20642,24347,
@@ -54,12 +58,23 @@ public class SeichiAssist extends JavaPlugin{
 			2116248,2306256,2511464,2733088,2954712,//60
 			3176336,3397960,3619584,3841208,4080561,
 			4339062));
+	public static final List<Material> materiallist = new ArrayList<Material>(Arrays.asList(
+			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
+			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
+			,Material.COAL_ORE,Material.IRON_ORE,Material.GOLD_ORE,Material.DIAMOND_ORE
+			,Material.LAPIS_ORE,Material.EMERALD_ORE,Material.REDSTONE_ORE,Material.SAND
+			,Material.SANDSTONE,Material.QUARTZ_ORE,Material.END_BRICKS,Material.ENDER_STONE
+			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN
+			));
+	public static final List<Material> breakmateriallist = new ArrayList<Material>(Arrays.asList(
+			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE
+			));
+	public static final List<Material> cancelledmateriallist = new ArrayList<Material>(Arrays.asList(
+			Material.CHEST,Material.ENDER_CHEST,Material.TRAPPED_CHEST,Material.ANVIL,Material.ARMOR_STAND
+			,Material.BEACON,Material.BIRCH_DOOR,Material.BIRCH_FENCE_GATE,Material.BIRCH_WOOD_STAIRS
+			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
+			));
 
-	//パッシブスキルが獲得できるレベルのリスト
-	public static final List<Integer> passiveskillgetlevel = Arrays.asList(3);
-
-	//アクティブスキルが獲得できるレベルのリスト
-	public static final List<Integer> activeskillgetlevel = Arrays.asList(4);
 
 	@Override
 	public void onEnable(){
@@ -77,7 +92,9 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("level",new levelCommand(plugin));
 
 		//リスナーの登録
-		getServer().getPluginManager().registerEvents(new SeichiPlayerListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerRightClickListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
 
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){
@@ -138,6 +155,7 @@ public class SeichiAssist extends JavaPlugin{
 		saveConfig();
 		getLogger().info("SeichiPlugin is Disabled!");
 	}
+
 
 }
 

@@ -18,7 +18,7 @@ public class EffectData {
 	//６０秒固定採掘速度固定
 	public EffectData(double _amplifier,String _string){
 		potioneffecttype = PotionEffectType.FAST_DIGGING;
-		duration = 1200;
+		duration = 1260;
 		amplifier = _amplifier;
 		string = _string;
 

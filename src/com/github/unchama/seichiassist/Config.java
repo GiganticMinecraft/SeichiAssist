@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist;
 import static com.github.unchama.seichiassist.Util.*;
 
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -25,6 +24,8 @@ public class Config{
 		loadGachaData();
 		loadPlayerData();
 	}
+
+
 
 	//plugin.ymlがない時にDefaultのファイルを生成
 	public void saveDefaultConfig(){
@@ -77,11 +78,13 @@ public class Config{
 	public static int getDefaultMineAmount(){
 		return toInt(config.getString("defaultmineamount"));
 	}
-
-	public static int getrank(Player _player) {
-
-		return 0;
+	public static int getActiveMinelevel(){
+		return toInt(config.getString("activeminelevel"));
 	}
+	public static int getDropExplevel(){
+		return toInt(config.getString("dropexplevel"));
+	}
+
 
 	public static void savePlayerData() {
 		//プレイヤーのデータをセーブ
@@ -109,5 +112,9 @@ public class Config{
 			i++;
 		}
 		config.set("gachanum",i);
+	}
+
+	public static String getLvMessage(int i) {
+		return config.getString("lv" + i + "message");
 	}
 }
