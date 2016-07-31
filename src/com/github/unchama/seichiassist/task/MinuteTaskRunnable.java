@@ -152,11 +152,10 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー");
 				}
 			}else{
-				if(playerdata.gachapoint != playerdata.lastgachapoint){
+				if(playerdata.minuteblock.increase != 0){
 					player.sendMessage("あと" + ChatColor.AQUA + (Config.getGachaPresentInterval()-(playerdata.gachapoint % Config.getGachaPresentInterval())) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
 				}
 			}
-			playerdata.lastgachapoint = playerdata.gachapoint;
 			if(SeichiAssist.DEBUG){
 				Util.sendEveryMessage(name + "のガチャ処理が成功");
 			}

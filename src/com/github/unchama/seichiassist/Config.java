@@ -38,6 +38,7 @@ public class Config{
 
 	private static void loadPlayerData() {
 		int num = config.getInt("playernum");
+
 		for (int i=1; i < num; i++ ) {
 			String name = config.getString("player"+i);
 			if(SeichiAssist.playermap.containsKey(name)){
@@ -84,6 +85,26 @@ public class Config{
 	public static int getDropExplevel(){
 		return toInt(config.getString("dropexplevel"));
 	}
+	public static String getDB(){
+		return config.getString("db");
+	}
+	public static String getTable() {
+		return config.getString("table");
+	}
+	public static String getID(){
+		return config.getString("id");
+	}
+	public static String getPW(){
+		return config.getString("pw");
+	}
+	public static String getURL(){
+		String url = "jdbc:mysql://";
+		url += config.getString("host");
+		if(!config.getString("port").isEmpty()){
+			url += ":" + config.getString("port");
+		}
+		return url;
+	}
 
 
 	public static void savePlayerData() {
@@ -117,4 +138,6 @@ public class Config{
 	public static String getLvMessage(int i) {
 		return config.getString("lv" + i + "message");
 	}
+
+
 }

@@ -29,8 +29,12 @@ import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 
 public class SeichiAssist extends JavaPlugin{
 	public static SeichiAssist plugin;
+	public static Boolean DEBUG = true;
+
 	private HashMap<String, TabExecutor> commandlist;
-	public static Boolean DEBUG = false;
+	private Sql sql;
+	private Config config;
+
 
 	Random rand = new java.util.Random();
 	//起動するタスクリスト
@@ -82,8 +86,13 @@ public class SeichiAssist extends JavaPlugin{
 		plugin = this;
 
 		//コンフィグ系の設定は全てConfig.javaに移動
-		new Config(this);
+		config = new Config(this);
 
+		//MySQL系の設定はすべてSql.javaに移動
+		sql = new Sql(this,Config.getURL(), Config.getDB(), Config.getTable(), Config.getID(), Config.getPW());
+		if(!sql.connect()){
+			getLogger().info("データベース接続に失敗しました。");
+		}
 		//コマンドの登録
 		commandlist = new HashMap<String, TabExecutor>();
 		commandlist.put("gacha",new gachaCommand(plugin));
