@@ -31,9 +31,9 @@ public class Level{
 			//レベルアップ時の花火の打ち上げ
 			Location loc = player.getLocation();
 			Util.launchFireWorks(loc);
-			String lvmessage = Config.getLvMessage(i);
+			String lvmessage = SeichiAssist.config.getLvMessage(i);
 			if(!(lvmessage.isEmpty())){
-				player.sendMessage(ChatColor.AQUA+Config.getLvMessage(i));
+				player.sendMessage(ChatColor.AQUA+SeichiAssist.config.getLvMessage(i));
 			}
 			i++;
 		}
@@ -57,8 +57,8 @@ public class Level{
 	}
 
 	public static void updata(Player player) {
-		int level = Level.calcPlayerLevel(player);
-		Level.setDisplayName(level, player);
+		int level = calcPlayerLevel(player);
+		setDisplayName(level, player);
 	}
 
 	public static void setLevel(String name, int level) {

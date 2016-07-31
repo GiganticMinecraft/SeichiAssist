@@ -24,10 +24,11 @@ import com.github.unchama.seichiassist.data.PlayerData;
 public class MinuteTaskRunnable extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<String,PlayerData> playermap = SeichiAssist.playermap;
-
+	private Config config = SeichiAssist.config;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public MinuteTaskRunnable() {
+
 	}
 
 	@Override
@@ -90,12 +91,12 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			double amplifier = 0;
 			String string;
 			//１分間のブロック破壊量による上昇
-			amplifier = (double) playerdata.minuteblock.increase * Config.getMinuteMineSpeed();
+			amplifier = (double) playerdata.minuteblock.increase * config.getMinuteMineSpeed();
 			string = "１分間のブロック破壊量(" + playerdata.minuteblock.increase + "個)からの上昇値:" + amplifier;
 			playerdata.effectdatalist.add(new EffectData(amplifier,string));
 
 			//プレイヤー数による上昇
-			amplifier = (double) plugin.getServer().getOnlinePlayers().size() * Config.getLoginPlayerMineSpeed();
+			amplifier = (double) plugin.getServer().getOnlinePlayers().size() * config.getLoginPlayerMineSpeed();
 			string = "プレイヤー数(" + plugin.getServer().getOnlinePlayers().size() + "人)からの上昇値:" + amplifier;
 			playerdata.effectdatalist.add(new EffectData(amplifier,string));
 
@@ -141,8 +142,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			playerdata.gachapoint += playerdata.minuteblock.increase;
 
 			ItemStack skull = Util.getskull();
-			if(playerdata.gachapoint >= Config.getGachaPresentInterval()){
-				playerdata.gachapoint -= Config.getGachaPresentInterval();
+			if(playerdata.gachapoint >= config.getGachaPresentInterval()){
+				playerdata.gachapoint -= config.getGachaPresentInterval();
 				if(!player.getInventory().contains(skull) && Util.isPlayerInventryNoEmpty(player)){
 					Util.dropItem(player,skull);
 					player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
@@ -153,7 +154,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				}
 			}else{
 				if(playerdata.minuteblock.increase != 0){
-					player.sendMessage("あと" + ChatColor.AQUA + (Config.getGachaPresentInterval()-(playerdata.gachapoint % Config.getGachaPresentInterval())) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
+					player.sendMessage("あと" + ChatColor.AQUA + (config.getGachaPresentInterval()-(playerdata.gachapoint % config.getGachaPresentInterval())) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
 				}
 			}
 			if(SeichiAssist.DEBUG){

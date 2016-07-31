@@ -32,8 +32,8 @@ public class SeichiAssist extends JavaPlugin{
 	public static Boolean DEBUG = true;
 
 	private HashMap<String, TabExecutor> commandlist;
-	private Sql sql;
-	private Config config;
+	public static Sql sql;
+	public static Config config;
 
 
 	Random rand = new java.util.Random();
@@ -87,9 +87,12 @@ public class SeichiAssist extends JavaPlugin{
 
 		//コンフィグ系の設定は全てConfig.javaに移動
 		config = new Config(this);
+		config.loadConfig();
+		config.loadGachaData();
+		config.loadPlayerData();
 
 		//MySQL系の設定はすべてSql.javaに移動
-		sql = new Sql(this,Config.getURL(), Config.getDB(), Config.getTable(), Config.getID(), Config.getPW());
+		sql = new Sql(this,config.getURL(), config.getDB(), config.getTable(), config.getID(), config.getPW());
 		if(!sql.connect()){
 			getLogger().info("データベース接続に失敗しました。");
 		}
@@ -154,10 +157,10 @@ public class SeichiAssist extends JavaPlugin{
 			task.cancel();
 		}
 
-		Config.savePlayerData();
+		config.savePlayerData();
 		getLogger().info("プレイヤーデータを保存しました。");
 
-		Config.saveGachaData();
+		config.saveGachaData();
 		getLogger().info("ガチャを保存しました．");
 
 		//configをsave
