@@ -17,7 +17,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.ExperienceManager;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Util;
@@ -117,7 +116,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 	public static int calcExpDrop(PlayerData playerdata) {
 		double rand = Math.random();
-		if(playerdata.level < Config.getDropExplevel()){
+		if(playerdata.level < SeichiAssist.config.getDropExplevel()){
 			return 0;
 		}else if (rand < 0.2){
 			return 1;

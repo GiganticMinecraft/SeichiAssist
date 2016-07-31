@@ -15,7 +15,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.GachaData;
@@ -111,7 +110,7 @@ public class PlayerRightClickListener implements Listener {
 					}
 				}
 
-				if(playerdata.level < Config.getActiveMinelevel()){
+				if(playerdata.level < SeichiAssist.config.getActiveMinelevel()){
 					return;
 				}
 				playerdata.activemineflag = !playerdata.activemineflag;

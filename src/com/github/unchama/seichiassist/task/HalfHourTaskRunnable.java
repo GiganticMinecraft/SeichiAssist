@@ -11,7 +11,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.MineBlock;
@@ -84,6 +83,6 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		}
 	}
 	public int getSendMessageAmount(){
-		return Config.getDefaultMineAmount()*30;
+		return SeichiAssist.config.getDefaultMineAmount()*30;
 	}
 }

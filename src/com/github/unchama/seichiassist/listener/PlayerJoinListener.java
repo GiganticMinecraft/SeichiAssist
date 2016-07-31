@@ -7,7 +7,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 
@@ -22,7 +21,7 @@ public class PlayerJoinListener implements Listener {
 		playermap = SeichiAssist.playermap;
 		if(!player.hasPlayedBefore()){
 			//初見さんへのメッセージ文
-			player.sendMessage(Config.getLvMessage(1));
+			player.sendMessage(SeichiAssist.config.getLvMessage(1));
 		}
 		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
 		if(!playermap.containsKey(name)){

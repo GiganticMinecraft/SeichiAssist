@@ -8,21 +8,23 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class Config{
-	public static FileConfiguration config;
-	public static SeichiAssist plugin;
-	public Config(SeichiAssist _plugin){
+	private FileConfiguration config;
+	private SeichiAssist plugin;
+
+	//コンストラクタ
+	Config(SeichiAssist _plugin){
 		plugin = _plugin;
 		saveDefaultConfig();
-		config = getConfig();
-		loadGachaData();
-		loadPlayerData();
-	}
 
-	public static void reloadConfig(){
+	}
+	//コンフィグのロード
+	public void loadConfig(){
+		config = getConfig();
+
+	}
+	public void reloadConfig(){
 		plugin.reloadConfig();
 		config = getConfig();
-		loadGachaData();
-		loadPlayerData();
 	}
 
 
@@ -32,11 +34,11 @@ public class Config{
 		plugin.saveDefaultConfig();
 	}
 	//plugin.ymlファイルからの読み込み
-	public static FileConfiguration getConfig(){
+	public FileConfiguration getConfig(){
 		return plugin.getConfig();
 	}
 
-	private static void loadPlayerData() {
+	public void loadPlayerData() {
 		int num = config.getInt("playernum");
 
 		for (int i=1; i < num; i++ ) {
@@ -55,7 +57,7 @@ public class Config{
 		plugin.getLogger().info("プレイヤーデータのLoadを完了しました。");
 	}
 	//plugin.ymlファイルからガチャデータの読み込み
-	public static void loadGachaData(){
+	public void loadGachaData(){
 		int num = config.getInt("gachanum");
 		for (int i=1; i < num; i++ ) {
 			GachaData gachadata = new GachaData();
@@ -67,37 +69,37 @@ public class Config{
 		plugin.getLogger().info("ガチャデータのLoadを完了しました。");
 	}
 
-	public static double getMinuteMineSpeed(){
+	public double getMinuteMineSpeed(){
 		return toDouble(config.getString("minutespeedamount"));
 	}
-	public static double getLoginPlayerMineSpeed(){
+	public double getLoginPlayerMineSpeed(){
 		return toDouble(config.getString("onlineplayersamount"));
 	}
-	public static int getGachaPresentInterval(){
+	public int getGachaPresentInterval(){
 		return toInt(config.getString("presentinterval"));
 	}
-	public static int getDefaultMineAmount(){
+	public int getDefaultMineAmount(){
 		return toInt(config.getString("defaultmineamount"));
 	}
-	public static int getActiveMinelevel(){
+	public int getActiveMinelevel(){
 		return toInt(config.getString("activeminelevel"));
 	}
-	public static int getDropExplevel(){
+	public int getDropExplevel(){
 		return toInt(config.getString("dropexplevel"));
 	}
-	public static String getDB(){
+	public String getDB(){
 		return config.getString("db");
 	}
-	public static String getTable() {
+	public String getTable() {
 		return config.getString("table");
 	}
-	public static String getID(){
+	public String getID(){
 		return config.getString("id");
 	}
-	public static String getPW(){
+	public String getPW(){
 		return config.getString("pw");
 	}
-	public static String getURL(){
+	public String getURL(){
 		String url = "jdbc:mysql://";
 		url += config.getString("host");
 		if(!config.getString("port").isEmpty()){
@@ -107,7 +109,7 @@ public class Config{
 	}
 
 
-	public static void savePlayerData() {
+	public void savePlayerData() {
 		//プレイヤーのデータをセーブ
 		int i = 1;
 		for(String name : SeichiAssist.playermap.keySet()){
@@ -123,7 +125,7 @@ public class Config{
 		config.set("playernum",i);
 	}
 
-	public static void saveGachaData() {
+	public void saveGachaData() {
 		//ガチャのデータを保存
 		int i = 1;
 		for(GachaData gachadata : SeichiAssist.gachadatalist){
@@ -135,7 +137,7 @@ public class Config{
 		config.set("gachanum",i);
 	}
 
-	public static String getLvMessage(int i) {
+	public String getLvMessage(int i) {
 		return config.getString("lv" + i + "message");
 	}
 

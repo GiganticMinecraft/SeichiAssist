@@ -6,7 +6,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 
-import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.EffectData;
@@ -30,7 +29,7 @@ public class seichiCommand implements TabExecutor {
 			String[] args) {
 		if(args.length == 0){
 			SeichiAssist.gachadatalist.clear();
-			Config.reloadConfig();
+			SeichiAssist.config.reloadConfig();
 			sender.sendMessage("SeichiAssistのconfig.ymlをリロードしました。");
 			return true;
 		}else if(args[0].equals("bug")){
