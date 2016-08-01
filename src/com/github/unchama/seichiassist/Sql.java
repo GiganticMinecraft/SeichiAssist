@@ -60,11 +60,11 @@ public class Sql{
 			plugin.getLogger().info("データベース接続に失敗しました");
 			return false;
 		}
-		if(!createTable(SeichiAssist.PLAYERDATA_TABLENAME)){
+		if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
 			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
 			return false;
 		}
-		if(!createTable(SeichiAssist.GACHADATA_TABLENAME)){
+		if(!createGachaDataTable(SeichiAssist.GACHADATA_TABLENAME)){
 			plugin.getLogger().info("gachadataテーブル作成に失敗しました");
 			return false;
 		}
@@ -117,7 +117,41 @@ public class Sql{
 	 * @param table テーブル名
 	 * @return 成否
 	 */
-	public boolean createTable(String table){
+	public boolean createPlayerDataTable(String table){
+		if(table==null){
+			return false;
+		}
+		//テーブルが存在しないときテーブルを新規作成
+		String command =
+				"CREATE TABLE IF NOT EXISTS " + table +
+				"(name varchar(30) unique," +
+				"uuid varchar(128) unique)";
+		if(!putCommand(command)){
+			return false;
+		}
+		//必要なcolumnを随時追加
+		command =
+				"alter table " + table +
+				" add column if not exists effectflag boolean default true" +
+				",add column if not exists messageflag boolean default false" +
+				",add column if not exists gachapoint int default 0" +
+				",add column if not exists lastgachapoint int default 0" +
+				",add column if not exists level int default 1" +
+				",add column if not exists numofsorryforbug int default 0" +
+				",add column if not exists minutebefore int default 0" +
+				",add column if not exists minuteafter int default 0" +
+				",add column if not exists minuteincrease int default 0" +
+				",add column if not exists halfbefore int default 0" +
+				",add column if not exists halfafter int default 0" +
+				",add column if not exists halfincrease int default 0" +
+				",add column if not exists minespeedlv int default 0" +
+				",add column if not exists level int default 0" +
+				",add column if not exists activemineflag boolean default false" +
+				",add column if not exists lastminespeedlv int default 0" +
+				"";
+		return putCommand(command);
+	}
+	public boolean createGachaDataTable(String table){
 		if(table==null){
 			return false;
 		}
