@@ -33,6 +33,7 @@ public class SeichiAssist extends JavaPlugin{
 	public static Boolean DEBUG = true;
 
 	public static String PLAYERDATA_TABLENAME = "playerdata";
+	public static String GACHADATA_TABLENAME = "gachadata";
 
 	private HashMap<String, TabExecutor> commandlist;
 	public Sql sql;

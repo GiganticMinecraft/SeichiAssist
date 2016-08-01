@@ -60,8 +60,12 @@ public class Sql{
 			plugin.getLogger().info("データベース接続に失敗しました");
 			return false;
 		}
-		if(!createTable("playerdata")){
+		if(!createTable(SeichiAssist.PLAYERDATA_TABLENAME)){
 			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
+			return false;
+		}
+		if(!createTable(SeichiAssist.GACHADATA_TABLENAME)){
+			plugin.getLogger().info("gachadataテーブル作成に失敗しました");
 			return false;
 		}
 		return true;

@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.GachaData;
 
 public class gachaCommand implements TabExecutor{
@@ -31,6 +32,8 @@ public class gachaCommand implements TabExecutor{
 			String label, String[] args) {
 		Player player = (Player) sender;
 
+		//sqlを開く
+		Sql sql = SeichiAssist.plugin.sql;
 
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("このコマンドはゲーム内から実行してください。");
@@ -44,6 +47,7 @@ public class gachaCommand implements TabExecutor{
 			}
 			double probability = toDouble(args[1]);
 			Gachaadd(player,probability);
+
 			return true;
 		}else if(args[0].equalsIgnoreCase("remove")){
 			if(args.length != 2){
