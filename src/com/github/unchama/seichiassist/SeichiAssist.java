@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -29,18 +30,25 @@ import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 
 public class SeichiAssist extends JavaPlugin{
 	public static SeichiAssist plugin;
+	public static Boolean DEBUG = true;
+
+	public static String PLAYERDATA_TABLENAME = "playerdata";
+	public static String GACHADATA_TABLENAME = "gachadata";
+
 	private HashMap<String, TabExecutor> commandlist;
-	public static Boolean DEBUG = false;
+	public Sql sql;
+	public static Config config;
+
 
 	Random rand = new java.util.Random();
 	//起動するタスクリスト
 	private List<BukkitTask> tasklist = new ArrayList<BukkitTask>();
 
-	//playerに依存するデータマップ
-	public static final HashMap<String,PlayerData> playermap = new HashMap<String,PlayerData>();
-
 	//Gachadataに依存するデータリスト
 	public static final List<GachaData> gachadatalist = new ArrayList<GachaData>();
+
+	//Playerdataに依存するデータリスト
+	public static final HashMap<UUID,PlayerData> playermap = new HashMap<UUID,PlayerData>();
 
 	//ranklvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
@@ -82,8 +90,15 @@ public class SeichiAssist extends JavaPlugin{
 		plugin = this;
 
 		//コンフィグ系の設定は全てConfig.javaに移動
-		new Config(this);
+		config = new Config(this);
+		config.loadConfig();
+		config.loadGachaData();
 
+		//MySQL系の設定はすべてSql.javaに移動
+		sql = new Sql(this,config.getURL(), config.getDB(), config.getID(), config.getPW());
+		if(!sql.connect()){
+			getLogger().info("データベース接続に失敗しました。");
+		}
 		//コマンドの登録
 		commandlist = new HashMap<String, TabExecutor>();
 		commandlist.put("gacha",new gachaCommand(plugin));
@@ -98,22 +113,17 @@ public class SeichiAssist extends JavaPlugin{
 
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){
+			UUID uuid = p.getUniqueId();
+			PlayerData playerdata = new PlayerData(p);
 			//名前を取得
 			String name = Util.getName(p);
-
-			//保存データに一致する名前があるか検索
-			if(!playermap.containsKey(name)){
-				//ないときは新しく作成
-				playermap.put(name, new PlayerData());
-			}
-
-			//プレイヤーの保存データplayerdataを参照
-			PlayerData playerdata = playermap.get(name);
-
-			//更新したいデータを更新
-			playerdata.updata(p);
-			playerdata.giveSorryForBug(p);
-
+			//データに行を追加
+			sql.insertname(SeichiAssist.PLAYERDATA_TABLENAME,name, uuid);
+			//プレイヤーマップにプレイヤーを追加
+			playermap.put(p.getUniqueId(),playerdata);
+			//データの初期設定
+			playerdata.updata();
+			playerdata.giveSorryForBug();
 		}
 
 		getLogger().info("SeichiPlugin is Enabled!");
@@ -144,12 +154,10 @@ public class SeichiAssist extends JavaPlugin{
 		for(BukkitTask task:tasklist){
 			task.cancel();
 		}
-
-		Config.savePlayerData();
-		getLogger().info("プレイヤーデータを保存しました。");
-
-		Config.saveGachaData();
+		config.saveGachaData();
 		getLogger().info("ガチャを保存しました．");
+
+		sql.disconnect();
 
 		//configをsave
 		saveConfig();
