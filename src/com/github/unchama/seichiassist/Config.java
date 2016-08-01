@@ -22,6 +22,7 @@ public class Config{
 		config = getConfig();
 
 	}
+	//コンフィグのリロード
 	public void reloadConfig(){
 		plugin.reloadConfig();
 		config = getConfig();
@@ -37,7 +38,7 @@ public class Config{
 	public FileConfiguration getConfig(){
 		return plugin.getConfig();
 	}
-
+	//プレイヤーデータのロード
 	public void loadPlayerData() {
 		int num = config.getInt("playernum");
 

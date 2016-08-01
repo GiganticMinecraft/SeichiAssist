@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.UUID;
 
 //MySQL操作関数
@@ -16,9 +15,8 @@ public class Sql{
 	private Statement stmt = null;
 	private ResultSet rs = null;
 	public static String exc;
-	private HashMap<String, String> commands;
 
-
+	//コンストラクタ
 	Sql(SeichiAssist plugin ,String url, String db, String table, String id, String pw){
 		this.plugin = plugin;
 		this.url = url;
@@ -26,9 +24,6 @@ public class Sql{
 		this.id = id;
 		this.pw = pw;
 		this.table = table;
-
-		commands = new HashMap<String, String>();
-
 	}
 	/**
 	 * 接続関数
@@ -153,9 +148,57 @@ public class Sql{
 		}
 		return true;
 	}
-	public boolean select(String name,String key){
-		//
+	//playerdataをロードする。
+	public boolean loadPlayerData(){
 		return true;
+	}
+	//選んだｷｰの値を取得できる（boolean)
+	public boolean selectboolean(String name,String key){
+		String command;
+		boolean flag = false;
+		//command:
+		//SELECT key from playerdata where name = 'uma'
+		command = "select " + key
+				+ " as flag from " + table
+				+ " where name = '" + name
+				+ "'";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				   flag = rs.getBoolean("flag");
+				  }
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return false;
+		}
+ 		if(SeichiAssist.DEBUG){
+ 			plugin.getLogger().info("key"+"の値:" + flag);
+ 		}
+		return flag;
+	}
+	//選んだｷｰの値を取得できる（int)
+	public int selectint(String name,String key){
+		String command;
+		int num = 0;
+		//command:
+		//SELECT key from playerdata where name = 'uma'
+		command = "select " + key
+				+ " as num from " + table
+				+ " where name = '" + name
+				+ "'";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				   num = rs.getInt("num");
+				  }
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return 0;
+		}
+ 		if(SeichiAssist.DEBUG){
+ 			plugin.getLogger().info("key"+"の値:" + num);
+ 		}
+		return num;
 	}
 	/**
 	 * データの挿入・更新(playername)
