@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.data.MineBlock;
-import com.github.unchama.seichiassist.data.PlayerData;
 
 public class Level{
 
@@ -16,30 +15,31 @@ public class Level{
 		String name = Util.getName(player);
 		//プレイヤーの統計値を取得
 		int mines = 0;
+		//sqlを開く
+		Sql sql = SeichiAssist.plugin.sql;
 		mines = MineBlock.calcMineBlock(player);
-		//プレイヤーのデータを取得
-		PlayerData playerdata = SeichiAssist.playermap.get(name);
-
 		//現在のランクの次を取得
-		int i = playerdata.level + 1;
+		int i = sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "level") + 1;
 
 		//ランクが上がらなくなるまで処理
 		while(SeichiAssist.levellist.get(i).intValue() <= mines){
-			playerdata.level = i;
 			//レベルアップ時のメッセージ
-			player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
-			//レベルアップ時の花火の打ち上げ
-			Location loc = player.getLocation();
-			Util.launchFireWorks(loc);
-			String lvmessage = Config.getLvMessage(i);
-			if(!(lvmessage.isEmpty())){
-				player.sendMessage(ChatColor.AQUA+Config.getLvMessage(i));
+			if(!SeichiAssist.DEBUG){
+				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
+				//レベルアップ時の花火の打ち上げ
+				Location loc = player.getLocation();
+				Util.launchFireWorks(loc);
+				String lvmessage = SeichiAssist.config.getLvMessage(i);
+				if(!(lvmessage.isEmpty())){
+					player.sendMessage(ChatColor.AQUA+SeichiAssist.config.getLvMessage(i));
+				}
 			}
 			i++;
 		}
+		sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"level", i-1, name);
 
 
-		return playerdata.level;
+		return i-1;
 	}
 
 
@@ -57,23 +57,27 @@ public class Level{
 	}
 
 	public static void updata(Player player) {
-		int level = Level.calcPlayerLevel(player);
-		Level.setDisplayName(level, player);
+		int level = calcPlayerLevel(player);
+		setDisplayName(level, player);
 	}
 
 	public static void setLevel(String name, int level) {
-		PlayerData playerdata = SeichiAssist.playermap.get(name);
-		playerdata.level = level;
+		//sqlを開く
+		Sql sql = SeichiAssist.plugin.sql;
+		sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"level", level, name);
 	}
 	public static int getLevel(String name) {
-		PlayerData playerdata = SeichiAssist.playermap.get(name);
-		return playerdata.level;
+		//sqlを開く
+		Sql sql = SeichiAssist.plugin.sql;
+		return sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "level");
 	}
 
 	public static void reloadLevel(String name) {
+		//sqlを開く
+		Sql sql = SeichiAssist.plugin.sql;
 		for(Player p : SeichiAssist.plugin.getServer().getOnlinePlayers()){
 			if(Util.getName(p).equals(name)){
-				int level = SeichiAssist.playermap.get(name).level;
+				int level = sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "level");
 				setDisplayName(level,p);
 			}
 		}

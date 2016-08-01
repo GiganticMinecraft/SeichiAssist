@@ -15,14 +15,17 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class PlayerRightClickListener implements Listener {
 	HashMap<String,PlayerData> playermap;
+	//sqlを開く
+	Sql sql = SeichiAssist.plugin.sql;
+
 	//プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
 	@EventHandler
 	public void onPlayerRightClickGachaEvent(PlayerInteractEvent event){
@@ -91,14 +94,17 @@ public class PlayerRightClickListener implements Listener {
 	@EventHandler
 	public void onPlayerRightClickActiveSkillEvent(PlayerInteractEvent event){
 		Player player = event.getPlayer();
+		String name = Util.getName(player);
 		Action action = event.getAction();
 		EquipmentSlot equipmentslot = event.getHand();
-		PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			if(!player.isSneaking()){
 				return;
-			}else if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
+			}else if(SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInMainHand().getType())){
+
 				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+					//設置をキャンセル
+					event.setCancelled(true);
 					return;
 				}
 				if(action.equals(Action.RIGHT_CLICK_BLOCK)){
@@ -107,24 +113,45 @@ public class PlayerRightClickListener implements Listener {
 						return;
 					}
 				}
-				if(playerdata.level < Config.getActiveMinelevel()){
+
+				if(sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "level") < SeichiAssist.config.getActiveMinelevel()){
 					return;
 				}
-				playerdata.activemineflag = !playerdata.activemineflag;
-				if(playerdata.activemineflag){
-					player.sendMessage(ChatColor.GOLD + "2段採掘スキル:ON");
+
+				Boolean activemineflag = !sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "activemineflag");
+
+				if(activemineflag){
+					player.sendMessage(ChatColor.GOLD + "デュアルブレイク:ON");
 				}else{
-					player.sendMessage(ChatColor.GOLD + "2段採掘スキル：OFF");
+					player.sendMessage(ChatColor.GOLD + "デュアルブレイク：OFF");
 				}
 				player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-
+				sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"activemineflag", activemineflag, name);
+			}
+		}
+	}
+	@EventHandler
+	public void onPlayerRightClickEffectEvent(PlayerInteractEvent event){
+		Player player = event.getPlayer();
+		String name = Util.getName(player);
+		Action action = event.getAction();
+		EquipmentSlot equipmentslot = event.getHand();
+		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+			if(!player.isSneaking()){
+				return;
 			}else if(player.getInventory().getItemInMainHand().getType().equals(Material.AIR)){
-				playerdata.effectflag = !playerdata.effectflag;
-				if (playerdata.effectflag){
+				//設置をキャンセル
+				event.setCancelled(true);
+				if(equipmentslot.equals(EquipmentSlot.OFF_HAND) && action.equals(Action.RIGHT_CLICK_BLOCK)){
+					return;
+				}
+				boolean effectflag = !sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "effectflag");
+				if (effectflag){
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
 				}else{
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:OFF");
 				}
+				sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"effectflag", effectflag, name);
 			}
 		}
 	}
