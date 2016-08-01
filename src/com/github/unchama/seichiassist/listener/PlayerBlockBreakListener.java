@@ -19,23 +19,23 @@ import org.bukkit.inventory.PlayerInventory;
 
 import com.github.unchama.seichiassist.ExperienceManager;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.Util;
-import com.github.unchama.seichiassist.data.PlayerData;
 
 public class PlayerBlockBreakListener implements Listener {
-
+	Sql sql = SeichiAssist.plugin.sql;
 	//ブロックが壊された時に実行
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerBlockBreakEvent(BlockBreakEvent event){
 		Player player = event.getPlayer();
+		String name = Util.getName(player);
+
 
 		ExperienceManager expman = new ExperienceManager(player);
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
 			return;
 		}
-		PlayerData playerdata = SeichiAssist.playermap.get(Util.getName(player));
-
 		PlayerInventory inventory = player.getInventory();
 		//メインハンドかオフハンドか取得
 		ItemStack mainhanditem = inventory.getItemInMainHand();
@@ -58,9 +58,9 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 		//壊されたブロックのみの処理
-		expman.changeExp(calcExpDrop(playerdata));
+		expman.changeExp(calcExpDrop(name));
 		//パッシブスキル[dropexp]の処理
-		if(!playerdata.activemineflag){
+		if(!sql.selectboolean(name, "activemineflag")){
 			return;
 		}
 		if(player.getLevel()==0 && !expman.hasExp(1)){
@@ -114,9 +114,9 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 	}
 
-	public static int calcExpDrop(PlayerData playerdata) {
+	public int calcExpDrop(String name) {
 		double rand = Math.random();
-		if(playerdata.level < SeichiAssist.config.getDropExplevel()){
+		if(sql.selectint(name, "level") < SeichiAssist.config.getDropExplevel()){
 			return 0;
 		}else if (rand < 0.2){
 			return 1;

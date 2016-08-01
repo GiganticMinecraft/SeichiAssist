@@ -5,7 +5,6 @@ import static com.github.unchama.seichiassist.Util.*;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
 
 public class Config{
 	private FileConfiguration config;
@@ -37,25 +36,6 @@ public class Config{
 	//plugin.ymlファイルからの読み込み
 	public FileConfiguration getConfig(){
 		return plugin.getConfig();
-	}
-	//プレイヤーデータのロード
-	public void loadPlayerData() {
-		int num = config.getInt("playernum");
-
-		for (int i=1; i < num; i++ ) {
-			String name = config.getString("player"+i);
-			if(SeichiAssist.playermap.containsKey(name)){
-				continue;
-			}
-			PlayerData d = new PlayerData();
-			d.effectflag = config.getBoolean(name + "effectflag");
-			d.messageflag = config.getBoolean(name + "messageflag");
-			d.gachapoint = config.getInt(name + "gachapoint");
-			d.level = config.getInt(name + "level");
-			d.numofsorryforbug = config.getInt(name + "numofsorryforbug");
-			SeichiAssist.playermap.put(name,d);
-		}
-		plugin.getLogger().info("プレイヤーデータのLoadを完了しました。");
 	}
 	//plugin.ymlファイルからガチャデータの読み込み
 	public void loadGachaData(){
@@ -107,23 +87,6 @@ public class Config{
 			url += ":" + config.getString("port");
 		}
 		return url;
-	}
-
-
-	public void savePlayerData() {
-		//プレイヤーのデータをセーブ
-		int i = 1;
-		for(String name : SeichiAssist.playermap.keySet()){
-			PlayerData d = SeichiAssist.playermap.get(name);
-			config.set("player" + i,name);
-			config.set(name + "effectflag",d.effectflag);
-			config.set(name + "messageflag",d.messageflag);
-			config.set(name + "gachapoint",d.gachapoint);
-			config.set(name + "level",d.level);
-			config.set(name + "numofsorryforbug", d.numofsorryforbug);
-			i++;
-		}
-		config.set("playernum",i);
 	}
 
 	public void saveGachaData() {

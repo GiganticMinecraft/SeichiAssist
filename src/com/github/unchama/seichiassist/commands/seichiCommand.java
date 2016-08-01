@@ -1,18 +1,24 @@
 package com.github.unchama.seichiassist.commands;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class seichiCommand implements TabExecutor {
 	SeichiAssist plugin;
+	Sql sql = SeichiAssist.plugin.sql;
 
 	public seichiCommand(SeichiAssist _plugin){
 		plugin = _plugin;
@@ -44,9 +50,14 @@ public class seichiCommand implements TabExecutor {
 				sender.sendMessage("/seichi unchama 1200 10.0 のように、player名と持続時間（ticks:１秒＝20tick)、上昇値(小数点以下ok)を入力してください。");
 				return true;
 			}
-			String pname = args[0].toLowerCase();
-			if(!pname.equalsIgnoreCase("all")){
-				if(!SeichiAssist.playermap.containsKey(pname)){
+			String name = Util.getName(args[0]);
+			Player player = plugin.getServer().getPlayer(name);
+			if(player == null){
+				sender.sendMessage("指定されたプレイヤーは一度も鯖に接続していないか存在しません。");
+				return true;
+			}
+			if(!name.equalsIgnoreCase("all")){
+				if(!sql.isExists(name)){
 					sender.sendMessage("指定されたプレイヤーは一度も鯖に接続していません。");
 					return true;
 				}
@@ -62,15 +73,15 @@ public class seichiCommand implements TabExecutor {
 						message = "投票からの上昇値:" + amplifier;
 					}else if(num == 1){
 						//どらげないたいむの時のメッセージ
-						message  = "ドラゲナイタイム（対象："+ pname +"）からの上昇値:" + amplifier;
+						message  = "ドラゲナイタイム（対象："+ name +"）からの上昇値:" + amplifier;
 					}
 				}else{
 					//引数が３つの場合
-					message = "外部（対象："+ pname +"）からの上昇値:" + amplifier;
+					message = "外部（対象："+ name +"）からの上昇値:" + amplifier;
 
 				}
-				sender.sendMessage(pname + "に上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました。");
-				PlayerData playerdata = SeichiAssist.playermap.get(pname);
+				sender.sendMessage(name + "に上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました。");
+				PlayerData playerdata = SeichiAssist.playermap.get(name);
 				playerdata.effectdatalist.add(new EffectData(duration,amplifier,message));
 			}else{
 				int duration = Util.toInt(args[1]);
@@ -91,8 +102,9 @@ public class seichiCommand implements TabExecutor {
 					//引数が３つの場合
 					message = "外部からの上昇値（対象：全員）:" + amplifier;
 				}
-				for(String pn : SeichiAssist.playermap.keySet()){
-					PlayerData playerdata = SeichiAssist.playermap.get(pn);
+
+				for(UUID uuid : SeichiAssist.playermap.keySet()){
+					PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 					playerdata.effectdatalist.add(new EffectData(duration,amplifier,message));
 				}
 				sender.sendMessage("全てのプレイヤーに上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました。");
@@ -102,10 +114,24 @@ public class seichiCommand implements TabExecutor {
 		return false;
 	}
 	private void addSorryForBug(CommandSender sender,int num) {
-		for(String name : SeichiAssist.playermap.keySet()){
-			PlayerData playerdata = SeichiAssist.playermap.get(name);
-			playerdata.numofsorryforbug += num;
-			sender.sendMessage(num+"個のガチャ券をお詫びとして" + name + "のデータに更新しました");
+		ResultSet rs = sql.getTable();
+		if(rs == null){
+			Util.sendEveryMessage("テーブル取得に失敗しました。");
+			return ;
+		}
+		try {
+			while (rs.next()){
+				String name = rs.getString("name");
+				int numofsorryforbug = sql.selectint(name, "numofsorryforbug");
+				numofsorryforbug += num;
+				sql.insert("numofsorryforbug", numofsorryforbug, name);
+				sender.sendMessage(num+"個のガチャ券をお詫びとして" + name + "のデータに更新しました");
+			}
+		} catch (SQLException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+			Util.sendEveryMessage("ガチャ券配布の計算に失敗しました。");
+			return;
 		}
 	}
 }
