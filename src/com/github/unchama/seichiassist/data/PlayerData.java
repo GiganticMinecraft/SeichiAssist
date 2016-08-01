@@ -55,6 +55,9 @@ public class PlayerData {
 
 
 	public void updata() {
+		if(SeichiAssist.DEBUG){
+			SeichiAssist.plugin.getLogger().info("アップデート");
+		}
 		String name = Util.getName(player);
 		//破壊量データ(before)を設定
 		sql.insert("minutebefore",MineBlock.calcMineBlock(player),name);

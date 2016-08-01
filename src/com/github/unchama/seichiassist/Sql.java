@@ -5,6 +5,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 //MySQL操作関数
@@ -140,6 +144,7 @@ public class Sql{
 				",add column if not exists minespeedlv int default 0" +
 				",add column if not exists level int default 0" +
 				",add column if not exists activemineflag boolean default false" +
+				",add column if not exists lastminespeedlv int default 0" +
 				"";
 		return putCommand(command);
 	}
@@ -147,25 +152,20 @@ public class Sql{
 	//選んだｷｰの値を取得できる（boolean)
 	public boolean selectboolean(String name,String key){
 		String command;
-		boolean flag = false;
+		Boolean flag = false;
 		//command:
 		//SELECT key from playerdata where name = 'uma'
-		command = "select " + key
-				+ " as flag from " + table
+		command = "select * from " + table
 				+ " where name = '" + name
 				+ "'";
  		try{
 			rs = stmt.executeQuery(command);
 			while (rs.next()) {
 				   flag = rs.getBoolean(key);
-				  }
+				   }
 		} catch (SQLException e) {
 			exc = e.getMessage();
-			return false;
 		}
- 		if(SeichiAssist.DEBUG){
- 			plugin.getLogger().info("key"+"の値:" + flag);
- 		}
 		return flag;
 	}
 
@@ -175,8 +175,7 @@ public class Sql{
 		int num = 0;
 		//command:
 		//SELECT key from playerdata where name = 'uma'
-		command = "select " + key
-				+ " as num from " + table
+		command = "select * from " + table
 				+ " where name = '" + name
 				+ "'";
  		try{
@@ -184,16 +183,11 @@ public class Sql{
 			while (rs.next()) {
 				   num = rs.getInt(key);
 				  }
-			if(SeichiAssist.DEBUG){
-				plugin.getLogger().info("key:" + key + "の値"+num+"を取得しました");
-			}
+			rs.close();
 		} catch (SQLException e) {
 			exc = e.getMessage();
 			return 0;
 		}
- 		if(SeichiAssist.DEBUG){
- 			plugin.getLogger().info("key"+"の値:" + num);
- 		}
 		return num;
 	}
 	//選んだｷｰの値を取得できる（string)
@@ -202,8 +196,7 @@ public class Sql{
 			String str = null;
 			//command:
 			//SELECT key from playerdata where name = 'uma'
-			command = "select " + key
-					+ " as string from " + table
+			command = "select * from " + table
 					+ " where name = '" + name
 					+ "'";
 	 		try{
@@ -211,6 +204,7 @@ public class Sql{
 				while (rs.next()) {
 					   str = rs.getString(key);
 					  }
+				rs.close();
 			} catch (SQLException e) {
 				exc = e.getMessage();
 				return null;
@@ -233,7 +227,6 @@ public class Sql{
 		String command = "";
  		String struuid = uuid.toString();
  		int count = -1;
-
  		//command:
  		//select count(*) from playerdata where uuid = 'struuid'
  		command = "select count(*) as count from " + table
@@ -243,6 +236,7 @@ public class Sql{
 			while (rs.next()) {
 				   count = rs.getInt("count");
 				  }
+			rs.close();
 		} catch (SQLException e) {
 			exc = e.getMessage();
 			return false;
@@ -250,7 +244,7 @@ public class Sql{
  		if(SeichiAssist.DEBUG){
  			plugin.getLogger().info("countの値:" + count);
  		}
-
+ 		command = "";
  		if(count == 0){
  			//insert into playerdata (name,uuid) VALUES('unchima','UNCHAMA')
  			command = "insert into " + table
@@ -259,7 +253,7 @@ public class Sql{
  		}else if(count == 1){
  			//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
  			command = "update " + table
- 					+ "set name = '" + name
+ 					+ " set name = '" + name
  					+ "' where uuid like '" + struuid + "'";
  		}else{
  			return false;
@@ -284,8 +278,8 @@ public class Sql{
 		//insert into @table(@key, uuid) values('@s', '@struuid')
 		// on duplicate key update @key='@s'
 		command = "insert into " +  table +
-				"(name," + key + ") values('" +
-				name + "', '" + s + "')" +
+				" (name," + key + ") values('" +
+				name + "','" + s + "')" +
 				" on duplicate key update " + key + "='" + s + "'";
 
 		return putCommand(command);
@@ -302,13 +296,14 @@ public class Sql{
 	 */
 	public boolean insert(String key, int num, String name){
 		String command = "";
+ 		String nums = String.valueOf(num);
 		//command:
 		//insert into @table(@key, uuid) values('@s', '@struuid')
-		// on duplicate key update @key='@s'
+		// on duplicate key update @key=num
 		command = "insert into " +  table +
-				"(name," + key + ") values('" +
-				name + "', " + num + ")" +
-				" on duplicate key update " + key + "= " + num;
+				" (name," + key + ") values('" +
+				name + "'," + nums + ")" +
+				" on duplicate key update " + key + "= " + nums + "";
 
 		return putCommand(command);
 	}
@@ -323,31 +318,20 @@ public class Sql{
 	 * @param uuid キャラのuuid
 	 * @return 成否
 	 */
-	public boolean insert(String key, boolean flag, String name){
+	public boolean insert(String key, Boolean flag, String name){
 		String command = "";
+		String flags = Boolean.toString(flag);
 
 		//command:
 		//insert into @table(@key, uuid) values('@s', '@struuid')
 		// on duplicate key update @key='@s'
 		command = "insert into " +  table +
-				"(name," + key + ") values('" +
-				name + "', " + flag + ")" +
-				" on duplicate key update " + key + "= " + flag;
+				" (name," + key + ") values('" +
+				name + "'," + flags + ")" +
+				" on duplicate key update " + key + " = " + flags + "";
 
 		return putCommand(command);
 	}
-
-
-	/*プレイヤーのuuidを検索し、なかったら行を追加する
-	 * SELECT COUNT(*) FROM テーブル名 WHERE UUIDのカラム名  = "UUID代入"
-	 * 上記のsql文でcountの返り血が0ならば、新規行作成insert
-	 * uuidとプレイヤーネームを照合し、プレイヤーネームが違ってたら書き換えて(update)あげないといけない
-	 * UPDATE テーブル名 SET カラム名playername=(新しいplayername) WHERE カラム名uuid=(uuid)
-	 * playername で検索をかけて中の値を取得または更新
-	 * select flag from テーブル名 WHERE playername = "プレイヤーの名前";
-	 * update テーブル名 set flag = (newflagの値) WHERE Playername = "プレイヤーの名前";
-	 * alter table test add column if not exists start int DEFAULT 1
-	 */
 	/**
 	 * コマンド出力関数
 	 * @param command コマンド内容
@@ -384,25 +368,29 @@ public class Sql{
 	    }
 	    return true;
 	}
-	//全ての表を1行ずつ取得する。
-	public ResultSet getTable() {
+	//全ての表の名前を1行ずつ取得する。
+	public List<String> getNameList() {
 		String command;
+		List<String> namelist = new ArrayList<String>();
 		//command:
 		//SELECT * from playerdata
 		command = "select * from " + table;
  		try{
 			rs = stmt.executeQuery(command);
-
+			while(rs.next()){
+				namelist.add(rs.getString("name"));
+			}
 		} catch (SQLException e) {
 			exc = e.getMessage();
 			return null;
 		}
- 		return rs;
+ 		return namelist;
 	}
 	//与えられたｷｰを降順に最初の３つのみ取得する。
 	//SELECT * FROM `playerdata` order by gachapoint desc limit 3
-	public ResultSet getRanking(String key, int num){
+	public Map<String,Integer> getRanking(String key, int num){
 		String command;
+		Map<String,Integer> ranking = new HashMap<String,Integer>();
 		//command:
 		//SELECT * FROM `playerdata` order by gachapoint desc limit 3
 		command = "select * from " + table
@@ -410,12 +398,15 @@ public class Sql{
 				+ " desc limit " + num;
  		try{
 			rs = stmt.executeQuery(command);
+			while(rs.next()){
+				ranking.put(rs.getString("name"),rs.getInt("halfincrease"));
+			}
 
 		} catch (SQLException e) {
 			exc = e.getMessage();
 			return null;
 		}
- 		return rs;
+ 		return ranking;
 	}
 	//指定されたプレイヤー名が存在するか検索する。
 	public boolean isExists(String name){

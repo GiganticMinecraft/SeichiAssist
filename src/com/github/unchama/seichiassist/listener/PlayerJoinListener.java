@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 
 public class PlayerJoinListener implements Listener {
 	HashMap<UUID,PlayerData> playermap;
-	
+
 
 	//プレイヤーがjoinした時に実行
 	@EventHandler
@@ -31,7 +31,7 @@ public class PlayerJoinListener implements Listener {
 			player.sendMessage(SeichiAssist.config.getLvMessage(1));
 		}
 		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
-		if(!playermap.containsKey(name)){
+		if(!playermap.containsKey(player.getUniqueId())){
 			playermap.put(player.getUniqueId(), playerdata);
 			if(SeichiAssist.DEBUG){
 				player.sendMessage("あたらしくプレイヤーデータを作成しました。");

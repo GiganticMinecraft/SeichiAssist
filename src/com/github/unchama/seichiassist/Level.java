@@ -18,7 +18,6 @@ public class Level{
 		//sqlを開く
 		Sql sql = SeichiAssist.plugin.sql;
 		mines = MineBlock.calcMineBlock(player);
-
 		//現在のランクの次を取得
 		int i = sql.selectint(name, "level") + 1;
 
@@ -27,15 +26,15 @@ public class Level{
 			//レベルアップ時のメッセージ
 			if(!SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
-			//レベルアップ時の花火の打ち上げ
-			Location loc = player.getLocation();
-			Util.launchFireWorks(loc);
-			String lvmessage = SeichiAssist.config.getLvMessage(i);
-			if(!(lvmessage.isEmpty())){
-				player.sendMessage(ChatColor.AQUA+SeichiAssist.config.getLvMessage(i));
+				//レベルアップ時の花火の打ち上げ
+				Location loc = player.getLocation();
+				Util.launchFireWorks(loc);
+				String lvmessage = SeichiAssist.config.getLvMessage(i);
+				if(!(lvmessage.isEmpty())){
+					player.sendMessage(ChatColor.AQUA+SeichiAssist.config.getLvMessage(i));
+				}
 			}
 			i++;
-			}
 		}
 		sql.insert("level", i-1, name);
 

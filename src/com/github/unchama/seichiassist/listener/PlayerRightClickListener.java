@@ -117,7 +117,9 @@ public class PlayerRightClickListener implements Listener {
 				if(sql.selectint(name, "level") < SeichiAssist.config.getActiveMinelevel()){
 					return;
 				}
-				boolean activemineflag = !sql.selectboolean(name, "activemineflag");
+
+				Boolean activemineflag = !sql.selectboolean(name, "activemineflag");
+
 				if(activemineflag){
 					player.sendMessage(ChatColor.GOLD + "デュアルブレイク:ON");
 				}else{

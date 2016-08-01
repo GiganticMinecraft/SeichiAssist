@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
@@ -114,24 +112,13 @@ public class seichiCommand implements TabExecutor {
 		return false;
 	}
 	private void addSorryForBug(CommandSender sender,int num) {
-		ResultSet rs = sql.getTable();
-		if(rs == null){
-			Util.sendEveryMessage("テーブル取得に失敗しました。");
-			return ;
+		List<String> namelist = sql.getNameList();
+		for(String name : namelist){
+			int numofsorryforbug = sql.selectint(name, "numofsorryforbug");
+			numofsorryforbug += num;
+			sql.insert("numofsorryforbug", numofsorryforbug, name);
+			sender.sendMessage(num+"個のガチャ券をお詫びとして" + name + "のデータに更新しました");
 		}
-		try {
-			while (rs.next()){
-				String name = rs.getString("name");
-				int numofsorryforbug = sql.selectint(name, "numofsorryforbug");
-				numofsorryforbug += num;
-				sql.insert("numofsorryforbug", numofsorryforbug, name);
-				sender.sendMessage(num+"個のガチャ券をお詫びとして" + name + "のデータに更新しました");
-			}
-		} catch (SQLException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-			Util.sendEveryMessage("ガチャ券配布の計算に失敗しました。");
-			return;
-		}
+
 	}
 }

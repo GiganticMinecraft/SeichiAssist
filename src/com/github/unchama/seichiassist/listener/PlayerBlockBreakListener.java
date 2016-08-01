@@ -31,7 +31,6 @@ public class PlayerBlockBreakListener implements Listener {
 		Player player = event.getPlayer();
 		String name = Util.getName(player);
 
-
 		ExperienceManager expman = new ExperienceManager(player);
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
 			return;
