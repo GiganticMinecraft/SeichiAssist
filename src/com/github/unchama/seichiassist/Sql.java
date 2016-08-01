@@ -92,26 +92,16 @@ public class Sql{
 		if(db==null){
 			return false;
 		}
-
-		try {
-			stmt.execute("CREATE DATABASE IF NOT EXISTS " + db
-					+ " character set utf8 collate utf8_general_ci"
-					);
-			return true;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
+		String command;
+		command = "CREATE DATABASE IF NOT EXISTS " + db
+				+ " character set utf8 collate utf8_general_ci";
+		return putCommand(command);
 	}
 
 	private boolean connectDB() {
-		try {
-			stmt.executeQuery("use " + db);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
+		String command;
+		command = "use " + db;
+		return putCommand(command);
 	}
 	/**
 	 * テーブル作成
@@ -121,15 +111,15 @@ public class Sql{
 	 * @return 成否
 	 */
 	public boolean createTable(){
+		if(table==null){
+			return false;
+		}
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
 				"CREATE TABLE IF NOT EXISTS " + table +
-				"(name varchar(30)," +
+				"(name varchar(30) unique," +
 				"uuid varchar(128) unique)";
-		try{
-			stmt.execute(command);
-		} catch (SQLException e) {
-			exc = e.getMessage();
+		if(!putCommand(command)){
 			return false;
 		}
 		//必要なcolumnを随時追加
@@ -138,20 +128,22 @@ public class Sql{
 				" add column if not exists effectflag boolean default true" +
 				",add column if not exists messageflag boolean default false" +
 				",add column if not exists gachapoint int default 0" +
+				",add column if not exists lastgachapoint int default 0" +
 				",add column if not exists level int default 1" +
-				",add column if not exists numofsorryforbug int default 0";
-		try{
-			stmt.execute(command);
-		} catch (SQLException e) {
-			exc = e.getMessage();
-			return false;
-		}
-		return true;
+				",add column if not exists numofsorryforbug int default 0" +
+				",add column if not exists minutebefore int default 0" +
+				",add column if not exists minuteafter int default 0" +
+				",add column if not exists minuteincrease int default 0" +
+				",add column if not exists halfbefore int default 0" +
+				",add column if not exists halfafter int default 0" +
+				",add column if not exists halfincrease int default 0" +
+				",add column if not exists minespeedlv int default 0" +
+				",add column if not exists level int default 0" +
+				",add column if not exists activemineflag boolean default false" +
+				"";
+		return putCommand(command);
 	}
-	//playerdataをロードする。
-	public boolean loadPlayerData(){
-		return true;
-	}
+
 	//選んだｷｰの値を取得できる（boolean)
 	public boolean selectboolean(String name,String key){
 		String command;
@@ -165,7 +157,7 @@ public class Sql{
  		try{
 			rs = stmt.executeQuery(command);
 			while (rs.next()) {
-				   flag = rs.getBoolean("flag");
+				   flag = rs.getBoolean(key);
 				  }
 		} catch (SQLException e) {
 			exc = e.getMessage();
@@ -176,6 +168,7 @@ public class Sql{
  		}
 		return flag;
 	}
+
 	//選んだｷｰの値を取得できる（int)
 	public int selectint(String name,String key){
 		String command;
@@ -189,8 +182,11 @@ public class Sql{
  		try{
 			rs = stmt.executeQuery(command);
 			while (rs.next()) {
-				   num = rs.getInt("num");
+				   num = rs.getInt(key);
 				  }
+			if(SeichiAssist.DEBUG){
+				plugin.getLogger().info("key:" + key + "の値"+num+"を取得しました");
+			}
 		} catch (SQLException e) {
 			exc = e.getMessage();
 			return 0;
@@ -200,6 +196,30 @@ public class Sql{
  		}
 		return num;
 	}
+	//選んだｷｰの値を取得できる（string)
+		public String selectstring(String name,String key){
+			String command;
+			String str = null;
+			//command:
+			//SELECT key from playerdata where name = 'uma'
+			command = "select " + key
+					+ " as string from " + table
+					+ " where name = '" + name
+					+ "'";
+	 		try{
+				rs = stmt.executeQuery(command);
+				while (rs.next()) {
+					   str = rs.getString(key);
+					  }
+			} catch (SQLException e) {
+				exc = e.getMessage();
+				return null;
+			}
+	 		if(SeichiAssist.DEBUG){
+	 			plugin.getLogger().info("key"+"の値:" + str);
+	 		}
+			return str;
+		}
 	/**
 	 * データの挿入・更新(playername)
 	 * 失敗時には変数excにエラーメッセージを格納
@@ -236,27 +256,15 @@ public class Sql{
  			command = "insert into " + table
  	 				+ " (name,uuid) values('" + name
  	 				+ "','" + struuid + "')";
- 			try{
- 				stmt.execute(command);
- 			} catch (SQLException e) {
- 				exc = e.getMessage();
- 				return false;
- 			}
  		}else if(count == 1){
  			//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
  			command = "update " + table
  					+ "set name = '" + name
- 					+ "' WHERE uuid like '" + struuid + "'";
+ 					+ "' where uuid like '" + struuid + "'";
  		}else{
  			return false;
  		}
- 		try{
-				stmt.execute(command);
-			} catch (SQLException e) {
-				exc = e.getMessage();
-				return false;
-			}
- 		return true;
+ 		return putCommand(command);
 	}
 
 	/**
@@ -269,17 +277,62 @@ public class Sql{
 	 * @param uuid キャラのuuid
 	 * @return 成否
 	 */
-	public boolean insert(String table, String key, String s, UUID uuid){
+	public boolean insert(String key, String s, String name){
 		String command = "";
-		String struuid = uuid.toString();
 
 		//command:
 		//insert into @table(@key, uuid) values('@s', '@struuid')
 		// on duplicate key update @key='@s'
 		command = "insert into " +  table +
-				"(" + key + ", uuid) values('" +
-				s + "', '" + struuid + "')" +
+				"(name," + key + ") values('" +
+				name + "', '" + s + "')" +
 				" on duplicate key update " + key + "='" + s + "'";
+
+		return putCommand(command);
+	}
+	/**
+	 * データの挿入・更新(int)
+	 * 失敗時には変数excにエラーメッセージを格納
+	 *
+	 * @param table テーブル名
+	 * @param key カラム名
+	 * @param s 挿入する文字列
+	 * @param uuid キャラのuuid
+	 * @return 成否
+	 */
+	public boolean insert(String key, int num, String name){
+		String command = "";
+		//command:
+		//insert into @table(@key, uuid) values('@s', '@struuid')
+		// on duplicate key update @key='@s'
+		command = "insert into " +  table +
+				"(name," + key + ") values('" +
+				name + "', " + num + ")" +
+				" on duplicate key update " + key + "= " + num;
+
+		return putCommand(command);
+	}
+
+	/**
+	 * データの挿入・更新(boolean)
+	 * 失敗時には変数excにエラーメッセージを格納
+	 *
+	 * @param table テーブル名
+	 * @param key カラム名
+	 * @param s 挿入する文字列
+	 * @param uuid キャラのuuid
+	 * @return 成否
+	 */
+	public boolean insert(String key, boolean flag, String name){
+		String command = "";
+
+		//command:
+		//insert into @table(@key, uuid) values('@s', '@struuid')
+		// on duplicate key update @key='@s'
+		command = "insert into " +  table +
+				"(name," + key + ") values('" +
+				name + "', " + flag + ")" +
+				" on duplicate key update " + key + "= " + flag;
 
 		return putCommand(command);
 	}
@@ -307,18 +360,11 @@ public class Sql{
 			return true;
 		} catch (SQLException e) {
 			//接続エラーの場合は、再度接続後、コマンド実行
-			java.lang.System.out.println("接続に失敗しました。再接続します。");
+			java.lang.System.out.println("接続に失敗しました。");
 			exc = e.getMessage();
-			if(!connect())return false;
 			e.printStackTrace();
-			try {
-				stmt.executeUpdate(command);
-				return true;
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -337,6 +383,67 @@ public class Sql{
 	    	}
 	    }
 	    return true;
+	}
+	//全ての表を1行ずつ取得する。
+	public ResultSet getTable() {
+		String command;
+		//command:
+		//SELECT * from playerdata
+		command = "select * from " + table;
+ 		try{
+			rs = stmt.executeQuery(command);
+
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return null;
+		}
+ 		return rs;
+	}
+	//与えられたｷｰを降順に最初の３つのみ取得する。
+	//SELECT * FROM `playerdata` order by gachapoint desc limit 3
+	public ResultSet getRanking(String key, int num){
+		String command;
+		//command:
+		//SELECT * FROM `playerdata` order by gachapoint desc limit 3
+		command = "select * from " + table
+				+ " order by " + key
+				+ " desc limit " + num;
+ 		try{
+			rs = stmt.executeQuery(command);
+
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return null;
+		}
+ 		return rs;
+	}
+	//指定されたプレイヤー名が存在するか検索する。
+	public boolean isExists(String name){
+		String command = "";
+ 		int count = -1;
+
+ 		//command:
+ 		//select count(*) from playerdata where uuid = 'struuid'
+ 		command = "select count(*) as count from " + table
+ 				+ " where name = '" + name + "'";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				   count = rs.getInt("count");
+				  }
+
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return false;
+		}
+ 		if(count == 1){
+			return true;
+		}else if (count == 0){
+			return false;
+		}else if(SeichiAssist.DEBUG){
+			Util.sendEveryMessage("countの値が2以上または、取得に失敗しています。");
+		}
+		return false;
 	}
 
 
