@@ -1,7 +1,11 @@
 package com.github.unchama.seichiassist.task;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -49,12 +53,24 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 
 		//降順にしたrsを取得
 		ranking = sql.getRanking("halfincrease", 3);
+		//Map.Entry のリストを作る
+		List<Entry<String,Integer>> entries = new ArrayList<Entry<String, Integer>>(ranking.entrySet());
 
+		//Comparator で Map.Entry の値を比較
+		Collections.sort(entries, new Comparator<Entry<String, Integer>>() {
+		    //比較関数
+		    @Override
+		    public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
+		    	Integer i1 = new Integer(o1.getValue());
+		    	Integer i2 = new Integer(o2.getValue());
+		    	return i2.compareTo(i1);//降順
+		    }
+		});
 		count = 1;
 		Util.sendEveryMessage("----------------------------------------");
 		Util.sendEveryMessage("この30分間の総破壊量は " + ChatColor.AQUA + all + ChatColor.WHITE + "個でした");
 		for(Map.Entry<String,Integer> e : ranking.entrySet()){
-				Util.sendEveryMessage("破壊量第" + count + "位は" + ChatColor.DARK_PURPLE + e.getKey()+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue() + ChatColor.WHITE + "個でした");
+				Util.sendEveryMessage("破壊量第" + count + "位は" + ChatColor.AQUA + e.getKey()+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue() + ChatColor.WHITE + "個でした");
 			count++;
 		}
 		Util.sendEveryMessage("----------------------------------------");
