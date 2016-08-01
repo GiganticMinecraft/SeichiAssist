@@ -114,11 +114,11 @@ public class PlayerRightClickListener implements Listener {
 					}
 				}
 
-				if(sql.selectint(name, "level") < SeichiAssist.config.getActiveMinelevel()){
+				if(sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "level") < SeichiAssist.config.getActiveMinelevel()){
 					return;
 				}
 
-				Boolean activemineflag = !sql.selectboolean(name, "activemineflag");
+				Boolean activemineflag = !sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "activemineflag");
 
 				if(activemineflag){
 					player.sendMessage(ChatColor.GOLD + "デュアルブレイク:ON");
@@ -126,7 +126,7 @@ public class PlayerRightClickListener implements Listener {
 					player.sendMessage(ChatColor.GOLD + "デュアルブレイク：OFF");
 				}
 				player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-				sql.insert("activemineflag", activemineflag, name);
+				sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"activemineflag", activemineflag, name);
 			}
 		}
 	}
@@ -145,13 +145,13 @@ public class PlayerRightClickListener implements Listener {
 				if(equipmentslot.equals(EquipmentSlot.OFF_HAND) && action.equals(Action.RIGHT_CLICK_BLOCK)){
 					return;
 				}
-				boolean effectflag = !sql.selectboolean(name, "effectflag");
+				boolean effectflag = !sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "effectflag");
 				if (effectflag){
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
 				}else{
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:OFF");
 				}
-				sql.insert("effectflag", effectflag, name);
+				sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"effectflag", effectflag, name);
 			}
 		}
 	}

@@ -14,20 +14,19 @@ import java.util.UUID;
 //MySQL操作関数
 public class Sql{
 	private SeichiAssist plugin;
-	private final String url, db, table, id, pw;
+	private final String url, db, id, pw;
 	private Connection con = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
 	public static String exc;
 
 	//コンストラクタ
-	Sql(SeichiAssist plugin ,String url, String db, String table, String id, String pw){
+	Sql(SeichiAssist plugin ,String url, String db, String id, String pw){
 		this.plugin = plugin;
 		this.url = url;
 		this.db = db;
 		this.id = id;
 		this.pw = pw;
-		this.table = table;
 	}
 	/**
 	 * 接続関数
@@ -61,8 +60,8 @@ public class Sql{
 			plugin.getLogger().info("データベース接続に失敗しました");
 			return false;
 		}
-		if(!createTable()){
-			plugin.getLogger().info("テーブル作成に失敗しました");
+		if(!createTable("playerdata")){
+			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
 			return false;
 		}
 		return true;
@@ -114,7 +113,7 @@ public class Sql{
 	 * @param table テーブル名
 	 * @return 成否
 	 */
-	public boolean createTable(){
+	public boolean createTable(String table){
 		if(table==null){
 			return false;
 		}
@@ -150,7 +149,7 @@ public class Sql{
 	}
 
 	//選んだｷｰの値を取得できる（boolean)
-	public boolean selectboolean(String name,String key){
+	public boolean selectboolean(String table,String name,String key){
 		String command;
 		Boolean flag = false;
 		//command:
@@ -170,7 +169,7 @@ public class Sql{
 	}
 
 	//選んだｷｰの値を取得できる（int)
-	public int selectint(String name,String key){
+	public int selectint(String table,String name,String key){
 		String command;
 		int num = 0;
 		//command:
@@ -191,7 +190,7 @@ public class Sql{
 		return num;
 	}
 	//選んだｷｰの値を取得できる（string)
-		public String selectstring(String name,String key){
+		public String selectstring(String table,String name,String key){
 			String command;
 			String str = null;
 			//command:
@@ -223,7 +222,7 @@ public class Sql{
 	 * @param uuid キャラのuuid
 	 * @return 成否
 	 */
-	public boolean insertname(String name,UUID uuid){
+	public boolean insertname(String table,String name,UUID uuid){
 		String command = "";
  		String struuid = uuid.toString();
  		int count = -1;
@@ -271,7 +270,7 @@ public class Sql{
 	 * @param uuid キャラのuuid
 	 * @return 成否
 	 */
-	public boolean insert(String key, String s, String name){
+	public boolean insert(String table,String key, String s, String name){
 		String command = "";
 
 		//command:
@@ -294,7 +293,7 @@ public class Sql{
 	 * @param uuid キャラのuuid
 	 * @return 成否
 	 */
-	public boolean insert(String key, int num, String name){
+	public boolean insert(String table,String key, int num, String name){
 		String command = "";
  		String nums = String.valueOf(num);
 		//command:
@@ -318,7 +317,7 @@ public class Sql{
 	 * @param uuid キャラのuuid
 	 * @return 成否
 	 */
-	public boolean insert(String key, Boolean flag, String name){
+	public boolean insert(String table,String key, Boolean flag, String name){
 		String command = "";
 		String flags = Boolean.toString(flag);
 
@@ -369,7 +368,7 @@ public class Sql{
 	    return true;
 	}
 	//全ての表の名前を1行ずつ取得する。
-	public List<String> getNameList() {
+	public List<String> getNameList(String table) {
 		String command;
 		List<String> namelist = new ArrayList<String>();
 		//command:
@@ -388,7 +387,7 @@ public class Sql{
 	}
 	//与えられたｷｰを降順に最初の３つのみ取得する。
 	//SELECT * FROM `playerdata` order by gachapoint desc limit 3
-	public Map<String,Integer> getRanking(String key, int num){
+	public Map<String,Integer> getRanking(String table,String key, int num){
 		String command;
 		Map<String,Integer> ranking = new HashMap<String,Integer>();
 		//command:
@@ -409,7 +408,7 @@ public class Sql{
  		return ranking;
 	}
 	//指定されたプレイヤー名が存在するか検索する。
-	public boolean isExists(String name){
+	public boolean isExists(String table,String name){
 		String command = "";
  		int count = -1;
 

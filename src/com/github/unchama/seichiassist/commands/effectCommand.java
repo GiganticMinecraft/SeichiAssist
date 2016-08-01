@@ -34,25 +34,25 @@ public class effectCommand implements TabExecutor {
 		}else if(args.length == 0){
 			Player player = (Player)sender;
 			String name = Util.getName(player);
-			boolean effectflag = !sql.selectboolean(name, "effectflag");
+			boolean effectflag = !sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "effectflag");
 			if (effectflag){
 				sender.sendMessage("採掘速度上昇効果をONにしました。");
 			}else{
 				sender.sendMessage("採掘速度上昇効果をOFFにしました。ONに戻したい時は再度コマンドを実行します。");
 			}
-			sql.insert("effectflag", effectflag, name);
+			sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"effectflag", effectflag, name);
 			return true;
 		}else if(args.length == 1){
 			if(args[0].equalsIgnoreCase("smart")){
 				Player player = (Player)sender;
 				String name = Util.getName(player);
-				boolean messageflag = !sql.selectboolean(name, "messageflag");
+				boolean messageflag = !sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "messageflag");
 				if (messageflag){
 					sender.sendMessage("内訳の表示をONにしました。OFFに戻したい時は再度コマンドを実行します。");
 				}else{
 					sender.sendMessage("内訳の表示をOFFにしました。");
 				}
-				sql.insert("messageflag", messageflag, name);
+				sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"messageflag", messageflag, name);
 				return true;
 			}
 		}

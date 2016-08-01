@@ -39,7 +39,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	public void run() {
 		playermap = SeichiAssist.playermap;
 		plugin = SeichiAssist.plugin;
-		namelist = sql.getNameList();
+		namelist = sql.getNameList(SeichiAssist.PLAYERDATA_TABLENAME);
 		if(SeichiAssist.DEBUG){
 			Util.sendEveryMessage("プレイヤーの１分間の処理を実行");
 		}
@@ -49,7 +49,12 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		for(String name : namelist){
 			Player player = plugin.getServer().getPlayer(name);
 			//プレイヤーのオンラインオフラインに関係なく処理
-			PlayerData playerdata = playermap.get(UUID.fromString(sql.selectstring(name, "uuid")));
+			UUID uuid = UUID.fromString(sql.selectstring(SeichiAssist.PLAYERDATA_TABLENAME,name, "uuid"));
+			if(!playermap.containsKey(uuid)){
+				Util.sendEveryMessage(name + "はサーバーリロード後、まだ一度も入っていないので処理中止");
+				continue;
+			}
+			PlayerData playerdata = playermap.get(uuid);
 			//ここからエフェクト関係の処理
 			List<EffectData> tmplist = new ArrayList<EffectData>();
 
@@ -84,10 +89,10 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			int increase = 0;
 
 			int after = MineBlock.calcMineBlock(player);
-			sql.insert("minuteafter",after, name);
-			increase = sql.selectint(name, "minuteafter")-sql.selectint(name, "minutebefore");
-			sql.insert("minuteincrease",increase, name);
-			sql.insert("minutebefore",after, name);
+			sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"minuteafter",after, name);
+			increase = sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "minuteafter")-sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "minutebefore");
+			sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"minuteincrease",increase, name);
+			sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"minutebefore",after, name);
 
 
 			double amplifier = 0;
@@ -107,7 +112,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			double sum = 0;
 			int maxduration = 0;
 			int minespeedlv = 0;
-			if(sql.selectboolean(name, "effectflag")){
+			if(sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "effectflag")){
 				for(EffectData ed :playerdata.effectdatalist){
 					sum += ed.amplifier;
 					if(maxduration < ed.duration){
@@ -121,11 +126,11 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, minespeedlv, false, false), true);
 				}
 			}
-			sql.insert("minespeedlv", minespeedlv, name);
+			sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"minespeedlv", minespeedlv, name);
 			//プレイヤーにメッセージ送信
-			if(sql.selectint(name, "lastminespeedlv") != minespeedlv || sql.selectboolean(name, "messageflag")){//前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
+			if(sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "lastminespeedlv") != minespeedlv || sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "messageflag")){//前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
 				player.sendMessage(ChatColor.YELLOW + "★" + ChatColor.WHITE + "採掘速度上昇レベルが" + ChatColor.YELLOW + (minespeedlv+1) + ChatColor.WHITE +"になりました。");
-				if(sql.selectboolean(name, "messageflag")){
+				if(sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "messageflag")){
 					player.sendMessage("----------------------------内訳-----------------------------");
 					for(EffectData ed : playerdata.effectdatalist){
 						player.sendMessage(ed.string + "(持続時間:" + Util.toTimeString(ed.duration/20) + ")");
@@ -133,14 +138,14 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 					player.sendMessage("-------------------------------------------------------------");
 				}
 			}
-			sql.insert("lastminespeedlv", minespeedlv, name);
+			sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"lastminespeedlv", minespeedlv, name);
 			if(SeichiAssist.DEBUG){
 				Util.sendEveryMessage(name + "のエフェクト処理が成功");
 			}
 			//ガチャ券付与の処理
 
 			//ガチャポイントに合算
-			int gachapoint = sql.selectint(name, "gachapoint") + increase;
+			int gachapoint = sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "gachapoint") + increase;
 
 			ItemStack skull = Util.getskull();
 			if(gachapoint >= config.getGachaPresentInterval()){
@@ -158,7 +163,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 					player.sendMessage("あと" + ChatColor.AQUA + (config.getGachaPresentInterval()-(gachapoint % config.getGachaPresentInterval())) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
 				}
 			}
-			sql.insert("gachapoint", gachapoint, name);
+			sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"gachapoint", gachapoint, name);
 			if(SeichiAssist.DEBUG){
 				Util.sendEveryMessage(name + "のガチャ処理が成功");
 			}

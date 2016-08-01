@@ -32,6 +32,8 @@ public class SeichiAssist extends JavaPlugin{
 	public static SeichiAssist plugin;
 	public static Boolean DEBUG = true;
 
+	public static String PLAYERDATA_TABLENAME = "playerdata";
+
 	private HashMap<String, TabExecutor> commandlist;
 	public Sql sql;
 	public static Config config;
@@ -92,7 +94,7 @@ public class SeichiAssist extends JavaPlugin{
 		config.loadGachaData();
 
 		//MySQL系の設定はすべてSql.javaに移動
-		sql = new Sql(this,config.getURL(), config.getDB(), config.getTable(), config.getID(), config.getPW());
+		sql = new Sql(this,config.getURL(), config.getDB(), config.getID(), config.getPW());
 		if(!sql.connect()){
 			getLogger().info("データベース接続に失敗しました。");
 		}
@@ -115,7 +117,7 @@ public class SeichiAssist extends JavaPlugin{
 			//名前を取得
 			String name = Util.getName(p);
 			//データに行を追加
-			sql.insertname(name, uuid);
+			sql.insertname(SeichiAssist.PLAYERDATA_TABLENAME,name, uuid);
 			//プレイヤーマップにプレイヤーを追加
 			playermap.put(p.getUniqueId(),playerdata);
 			//データの初期設定

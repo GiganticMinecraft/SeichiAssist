@@ -37,7 +37,7 @@ public class PlayerJoinListener implements Listener {
 				player.sendMessage("あたらしくプレイヤーデータを作成しました。");
 			}
 		}
-		sql.insertname(name,player.getUniqueId());
+		sql.insertname(SeichiAssist.PLAYERDATA_TABLENAME,name,player.getUniqueId());
 
 		//更新したいものを更新
 		playerdata.updata();

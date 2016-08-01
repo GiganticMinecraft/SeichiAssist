@@ -59,7 +59,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//壊されたブロックのみの処理
 		expman.changeExp(calcExpDrop(name));
 		//パッシブスキル[dropexp]の処理
-		if(!sql.selectboolean(name, "activemineflag")){
+		if(!sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "activemineflag")){
 			return;
 		}
 		if(player.getLevel()==0 && !expman.hasExp(1)){
@@ -115,7 +115,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 	public int calcExpDrop(String name) {
 		double rand = Math.random();
-		if(sql.selectint(name, "level") < SeichiAssist.config.getDropExplevel()){
+		if(sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "level") < SeichiAssist.config.getDropExplevel()){
 			return 0;
 		}else if (rand < 0.2){
 			return 1;

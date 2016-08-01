@@ -55,7 +55,7 @@ public class seichiCommand implements TabExecutor {
 				return true;
 			}
 			if(!name.equalsIgnoreCase("all")){
-				if(!sql.isExists(name)){
+				if(!sql.isExists(SeichiAssist.PLAYERDATA_TABLENAME,name)){
 					sender.sendMessage("指定されたプレイヤーは一度も鯖に接続していません。");
 					return true;
 				}
@@ -112,11 +112,11 @@ public class seichiCommand implements TabExecutor {
 		return false;
 	}
 	private void addSorryForBug(CommandSender sender,int num) {
-		List<String> namelist = sql.getNameList();
+		List<String> namelist = sql.getNameList(SeichiAssist.PLAYERDATA_TABLENAME);
 		for(String name : namelist){
-			int numofsorryforbug = sql.selectint(name, "numofsorryforbug");
+			int numofsorryforbug = sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "numofsorryforbug");
 			numofsorryforbug += num;
-			sql.insert("numofsorryforbug", numofsorryforbug, name);
+			sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"numofsorryforbug", numofsorryforbug, name);
 			sender.sendMessage(num+"個のガチャ券をお詫びとして" + name + "のデータに更新しました");
 		}
 

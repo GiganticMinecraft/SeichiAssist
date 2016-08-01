@@ -60,8 +60,8 @@ public class PlayerData {
 		}
 		String name = Util.getName(player);
 		//破壊量データ(before)を設定
-		sql.insert("minutebefore",MineBlock.calcMineBlock(player),name);
-		sql.insert("halfbefore",MineBlock.calcMineBlock(player),name);
+		sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"minutebefore",MineBlock.calcMineBlock(player),name);
+		sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"halfbefore",MineBlock.calcMineBlock(player),name);
 		//プレイヤーのランクを計算し取得
 		Level.updata(player);
 		//アクティブスキルの使用可否
@@ -70,14 +70,14 @@ public class PlayerData {
 		String name = Util.getName(player);
 		//詫び券の配布
 		ItemStack skull = Util.getskull();
-		int numofsorryforbug = sql.selectint("numofsorryforbug", name);
+		int numofsorryforbug = sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,"numofsorryforbug", name);
 		if( numofsorryforbug != 0){
 			skull.setAmount(numofsorryforbug);
 			Util.dropItem(player,skull);
 			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
 			player.sendMessage("不具合のお詫びとして"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました。");
 		}
-		sql.insert("numofsorryforbug", 0, name);
+		sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"numofsorryforbug", 0, name);
 	}
 
 }

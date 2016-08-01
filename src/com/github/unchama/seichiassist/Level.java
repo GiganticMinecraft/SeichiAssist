@@ -19,7 +19,7 @@ public class Level{
 		Sql sql = SeichiAssist.plugin.sql;
 		mines = MineBlock.calcMineBlock(player);
 		//現在のランクの次を取得
-		int i = sql.selectint(name, "level") + 1;
+		int i = sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "level") + 1;
 
 		//ランクが上がらなくなるまで処理
 		while(SeichiAssist.levellist.get(i).intValue() <= mines){
@@ -36,7 +36,7 @@ public class Level{
 			}
 			i++;
 		}
-		sql.insert("level", i-1, name);
+		sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"level", i-1, name);
 
 
 		return i-1;
@@ -64,12 +64,12 @@ public class Level{
 	public static void setLevel(String name, int level) {
 		//sqlを開く
 		Sql sql = SeichiAssist.plugin.sql;
-		sql.insert("level", level, name);
+		sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"level", level, name);
 	}
 	public static int getLevel(String name) {
 		//sqlを開く
 		Sql sql = SeichiAssist.plugin.sql;
-		return sql.selectint(name, "level");
+		return sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "level");
 	}
 
 	public static void reloadLevel(String name) {
@@ -77,7 +77,7 @@ public class Level{
 		Sql sql = SeichiAssist.plugin.sql;
 		for(Player p : SeichiAssist.plugin.getServer().getOnlinePlayers()){
 			if(Util.getName(p).equals(name)){
-				int level = sql.selectint(name, "level");
+				int level = sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "level");
 				setDisplayName(level,p);
 			}
 		}

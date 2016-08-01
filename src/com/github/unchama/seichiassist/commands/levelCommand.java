@@ -32,10 +32,10 @@ public class levelCommand implements TabExecutor{
 				sender.sendMessage("/level resetで全員のレベル計算をリセットし、レベルアップを再度可能にします");
 				return true;
 			}
-			List<String> namelist = sql.getNameList();
+			List<String> namelist = sql.getNameList(SeichiAssist.PLAYERDATA_TABLENAME);
 
 			for(String name : namelist){
-				name = sql.selectstring(name, "name");
+				name = sql.selectstring(SeichiAssist.PLAYERDATA_TABLENAME,name, "name");
 				Level.setLevel(name,1);
 				sender.sendMessage(name+"のレベルを" + Level.getLevel(name) + "に設定しました");
 				Level.reloadLevel(name);
