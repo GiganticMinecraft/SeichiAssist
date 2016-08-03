@@ -30,7 +30,7 @@ import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 
 public class SeichiAssist extends JavaPlugin{
 	public static SeichiAssist plugin;
-	public static Boolean DEBUG = true;
+	public static Boolean DEBUG = false;
 
 	public static String PLAYERDATA_TABLENAME = "playerdata";
 	public static String GACHADATA_TABLENAME = "gachadata";
