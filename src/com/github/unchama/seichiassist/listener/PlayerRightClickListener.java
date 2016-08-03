@@ -71,7 +71,7 @@ public class PlayerRightClickListener implements Listener {
 					present = GachaData.runGacha();
 					present.itemstack.setAmount(present.amount);
 					probability = present.probability;
-					String str = ChatColor.RED + "プレゼントがドロップしました。";
+					String str = ChatColor.AQUA + "プレゼントがドロップしました。";
 					Util.dropItem(player, present.itemstack);
 					if(probability < 0.001){
 						Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 2);
@@ -151,6 +151,7 @@ public class PlayerRightClickListener implements Listener {
 				}else{
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:OFF");
 				}
+				player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 				sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"effectflag", effectflag, name);
 			}
 		}

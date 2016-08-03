@@ -107,7 +107,7 @@ public class PlayerBlockBreakListener implements Listener {
 			tool.setDurability((short)(d + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY))));
 			player.incrementStatistic(Statistic.MINE_BLOCK, material);
 			Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
-			if(!success){
+			if(!success && SeichiAssist.DEBUG){
 				player.sendMessage("coreprotectに保存できませんでした。");
 			}
 		}

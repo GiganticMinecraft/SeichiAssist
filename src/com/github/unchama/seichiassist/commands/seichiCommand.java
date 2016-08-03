@@ -3,6 +3,8 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -50,19 +52,15 @@ public class seichiCommand implements TabExecutor {
 			}
 			String name = Util.getName(args[0]);
 			Player player = plugin.getServer().getPlayer(name);
-			if(player == null){
-				sender.sendMessage("指定されたプレイヤーは一度も鯖に接続していないか存在しません。");
-				return true;
-			}
+
 			if(!name.equalsIgnoreCase("all")){
-				if(!sql.isExists(SeichiAssist.PLAYERDATA_TABLENAME,name)){
-					sender.sendMessage("指定されたプレイヤーは一度も鯖に接続していません。");
-					return true;
-				}
 				int duration = Util.toInt(args[1]);
 				double amplifier = Util.toDouble(args[2]);
 				String message = null;
-
+				if(player == null){
+					sender.sendMessage("指定されたプレイヤーは一度も鯖に接続していないか存在しません。");
+					return true;
+				}
 				if(args.length == 4){
 					//引数が４つの場合
 					int num = Util.toInt(args[3]);
@@ -78,8 +76,8 @@ public class seichiCommand implements TabExecutor {
 					message = "外部（対象："+ name +"）からの上昇値:" + amplifier;
 
 				}
-				sender.sendMessage(name + "に上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました。");
-				PlayerData playerdata = SeichiAssist.playermap.get(name);
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + name + "に上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました。");
+				PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
 				playerdata.effectdatalist.add(new EffectData(duration,amplifier,message));
 			}else{
 				int duration = Util.toInt(args[1]);
@@ -105,7 +103,7 @@ public class seichiCommand implements TabExecutor {
 					PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 					playerdata.effectdatalist.add(new EffectData(duration,amplifier,message));
 				}
-				sender.sendMessage("全てのプレイヤーに上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました。");
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + "全てのプレイヤーに上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました。");
 			}
 			return true;
 		}
@@ -117,7 +115,7 @@ public class seichiCommand implements TabExecutor {
 			int numofsorryforbug = sql.selectint(SeichiAssist.PLAYERDATA_TABLENAME,name, "numofsorryforbug");
 			numofsorryforbug += num;
 			sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"numofsorryforbug", numofsorryforbug, name);
-			sender.sendMessage(num+"個のガチャ券をお詫びとして" + name + "のデータに更新しました");
+			sender.sendMessage(ChatColor.LIGHT_PURPLE + "" + num +"個のガチャ券をお詫びとして" + name + "のデータに更新しました");
 		}
 
 	}

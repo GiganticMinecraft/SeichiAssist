@@ -75,7 +75,7 @@ public class PlayerData {
 			skull.setAmount(numofsorryforbug);
 			Util.dropItem(player,skull);
 			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			player.sendMessage("不具合のお詫びとして"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました。");
+			player.sendMessage(ChatColor.GREEN + "不具合のお詫びとして"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました。");
 		}
 		sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"numofsorryforbug", 0, name);
 	}

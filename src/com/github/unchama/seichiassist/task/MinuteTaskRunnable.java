@@ -51,7 +51,9 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//プレイヤーのオンラインオフラインに関係なく処理
 			UUID uuid = UUID.fromString(sql.selectstring(SeichiAssist.PLAYERDATA_TABLENAME,name, "uuid"));
 			if(!playermap.containsKey(uuid)){
-				Util.sendEveryMessage(name + "はサーバーリロード後、まだ一度も入っていないので処理中止");
+				if(SeichiAssist.DEBUG){
+					Util.sendEveryMessage(name + "はサーバーリロード後、まだ一度も入っていないので処理中止");
+				}
 				continue;
 			}
 			PlayerData playerdata = playermap.get(uuid);

@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.commands;
 
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -29,16 +30,16 @@ public class effectCommand implements TabExecutor {
 			String[] args) {
 		Sql sql = SeichiAssist.plugin.sql;
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("このコマンドはゲーム内から実行してください。");
+			sender.sendMessage(ChatColor.GREEN + "このコマンドはゲーム内から実行してください。");
 			return true;
 		}else if(args.length == 0){
 			Player player = (Player)sender;
 			String name = Util.getName(player);
 			boolean effectflag = !sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "effectflag");
 			if (effectflag){
-				sender.sendMessage("採掘速度上昇効果をONにしました。");
+				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
 			}else{
-				sender.sendMessage("採掘速度上昇効果をOFFにしました。ONに戻したい時は再度コマンドを実行します。");
+				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:OFF(ONに戻したい時は再度コマンドを実行します。)");
 			}
 			sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"effectflag", effectflag, name);
 			return true;
@@ -48,9 +49,9 @@ public class effectCommand implements TabExecutor {
 				String name = Util.getName(player);
 				boolean messageflag = !sql.selectboolean(SeichiAssist.PLAYERDATA_TABLENAME,name, "messageflag");
 				if (messageflag){
-					sender.sendMessage("内訳の表示をONにしました。OFFに戻したい時は再度コマンドを実行します。");
+					sender.sendMessage(ChatColor.GREEN + "内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)");
 				}else{
-					sender.sendMessage("内訳の表示をOFFにしました。");
+					sender.sendMessage(ChatColor.GREEN + "内訳表示:OFF");
 				}
 				sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"messageflag", messageflag, name);
 				return true;
