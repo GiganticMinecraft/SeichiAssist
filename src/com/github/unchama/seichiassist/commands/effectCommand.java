@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.Util;
+import com.github.unchama.seichiassist.util.Util;
 
 public class effectCommand implements TabExecutor {
 	SeichiAssist plugin;

@@ -10,8 +10,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerJoinListener implements Listener {
 	HashMap<UUID,PlayerData> playermap;

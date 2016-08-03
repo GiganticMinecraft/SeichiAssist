@@ -8,10 +8,10 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.github.unchama.seichiassist.Level;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.Util;
+import com.github.unchama.seichiassist.util.Level;
+import com.github.unchama.seichiassist.util.Util;
 
 
 

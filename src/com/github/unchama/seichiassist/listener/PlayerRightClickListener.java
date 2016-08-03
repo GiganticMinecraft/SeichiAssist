@@ -17,9 +17,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerRightClickListener implements Listener {
 	HashMap<String,PlayerData> playermap;

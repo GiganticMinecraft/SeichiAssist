@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.util;
 
 
 
@@ -6,6 +6,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.MineBlock;
 
 public class Level{

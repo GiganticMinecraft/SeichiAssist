@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.commands;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,12 +10,15 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.PlayerInventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.Util;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.BukkitSerialization;
+import com.github.unchama.seichiassist.util.Util;
 
 public class seichiCommand implements TabExecutor {
 	SeichiAssist plugin;
@@ -33,23 +37,49 @@ public class seichiCommand implements TabExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-		if(args.length == 0){
+		if(args[0].equalsIgnoreCase("reload")){
 			SeichiAssist.gachadatalist.clear();
 			SeichiAssist.config.reloadConfig();
 			sender.sendMessage("SeichiAssistのconfig.ymlをリロードしました。");
 			return true;
-		}else if(args[0].equals("bug")){
+		}else if(args[0].equalsIgnoreCase("bug")){
 			if(args.length != 2){
 				sender.sendMessage("/seichi bug 2 で全ての登録されているプレイヤーに詫び券(ガチャ券）を2枚配布します。");
 			}
 			addSorryForBug(sender,Util.toInt(args[1]));
 			return true;
-		}else if(args.length > 0){
-			//seichi player duration(ticks) amplifier で登録できるようにする。
-			if(args.length != 3 && args.length != 4){
-				sender.sendMessage("/seichi unchama 1200 10.0 のように、player名と持続時間（ticks:１秒＝20tick)、上昇値(小数点以下ok)を入力してください。");
+		}else if(args[0].equalsIgnoreCase("test")){
+			if (!(sender instanceof Player)) {
+				sender.sendMessage("このコマンドはゲーム内から実行してください。");
 				return true;
 			}
+			Player player = (Player) sender;
+			String name = Util.getName(player);
+			if(args[1].equalsIgnoreCase("set")){
+				PlayerInventory pinventory = player.getInventory();
+				Inventory inventory = SeichiAssist.plugin.getServer().createInventory(null, 9 * 3, "拡張インベントリ");
+				for(int i = 9,k = 0; i<36 ; i++,k++){
+					inventory.setItem(k, pinventory.getItem(i));
+				}
+				String string = BukkitSerialization.toBase64(inventory);
+				sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"inventory",string, name);
+			}else if(args[1].equalsIgnoreCase("get")){
+				String string = sql.selectstring(SeichiAssist.PLAYERDATA_TABLENAME, name, "inventory");
+				Inventory inventory;
+				try {
+					 inventory = BukkitSerialization.fromBase64(string);
+					 player.openInventory(inventory);
+				} catch (IOException e) {
+					// TODO 自動生成された catch ブロック
+					e.printStackTrace();
+				}
+
+			}
+			return true;
+
+		}else if(args.length == 3 || args.length == 4){
+			//seichi player duration(ticks) amplifier で登録できるようにする。
+
 			String name = Util.getName(args[0]);
 			Player player = plugin.getServer().getPlayer(name);
 
@@ -59,6 +89,7 @@ public class seichiCommand implements TabExecutor {
 				String message = null;
 				if(player == null){
 					sender.sendMessage("指定されたプレイヤーは一度も鯖に接続していないか存在しません。");
+					sender.sendMessage("/seichi unchama 1200 10.0 のように、player名と持続時間（ticks:１秒＝20tick)、上昇値(小数点以下ok)を入力してください。");
 					return true;
 				}
 				if(args.length == 4){

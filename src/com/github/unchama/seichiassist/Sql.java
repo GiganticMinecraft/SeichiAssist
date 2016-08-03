@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.Util;
+
 //MySQL操作関数
 public class Sql{
 	private SeichiAssist plugin;
@@ -148,6 +150,8 @@ public class Sql{
 				",add column if not exists level int default 0" +
 				",add column if not exists activemineflag boolean default false" +
 				",add column if not exists lastminespeedlv int default 0" +
+				",add column if not exists inventory blob default null" +
+				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
 	}
@@ -297,7 +301,6 @@ public class Sql{
  		}
  		return putCommand(command);
 	}
-
 	/**
 	 * データの挿入・更新(string)
 	 * 失敗時には変数excにエラーメッセージを格納

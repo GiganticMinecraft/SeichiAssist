@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.util;
 
 import java.math.BigDecimal;
 import java.util.Random;
@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class Util {
