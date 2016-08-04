@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.task;
 
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
@@ -18,14 +17,12 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Level;
 import com.github.unchama.seichiassist.util.Util;
 
 public class MinuteTaskRunnable extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	private Config config = SeichiAssist.config;
-	private List<String> namelist;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public MinuteTaskRunnable() {
@@ -67,8 +64,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//プレイﾔｰが必ずオンラインと分かっている処理
 			int mines = MineBlock.calcMineBlock(player);
-			//Rankを設定
-			Level.updata(player,mines);
+			//Levelを設定
+			playerdata.levelupdata(player,mines);
 			//詫び券の配布
 			playerdata.giveSorryForBug(player);
 
@@ -90,8 +87,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			playerdata.effectdatalist.add(new EffectData(amplifier,string));
 
 			//プレイヤー数による上昇
-			amplifier = (double) plugin.getServer().getOnlinePlayers().size() * config.getLoginPlayerMineSpeed();
-			string = "プレイヤー数(" + plugin.getServer().getOnlinePlayers().size() + "人)からの上昇値:" + amplifier;
+			amplifier = (double) onlinenums * config.getLoginPlayerMineSpeed();
+			string = "プレイヤー数(" + onlinenums + "人)からの上昇値:" + amplifier;
 			playerdata.effectdatalist.add(new EffectData(amplifier,string));
 
 

@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.listener.PlayerJoinListener;
@@ -123,7 +124,15 @@ public class SeichiAssist extends JavaPlugin{
 			//UUIDを取得
 			UUID uuid = p.getUniqueId();
 			//プレイヤーデータを生成
-			PlayerData playerdata = new PlayerData(p);
+			PlayerData playerdata = sql.loadPlayerData(p);
+			if(playerdata==null){
+				p.sendMessage("playerdataの読み込みエラーです。管理者に報告してください。");
+				continue;
+			}
+			//統計量を取得
+			int mines = MineBlock.calcMineBlock(p);
+			playerdata.updata(p,mines);
+			playerdata.giveSorryForBug(p);
 			//プレイヤーマップにプレイヤーを追加
 			playermap.put(uuid,playerdata);
 		}
@@ -159,6 +168,11 @@ public class SeichiAssist extends JavaPlugin{
 		config.saveGachaData();
 		getLogger().info("ガチャを保存しました．");
 
+		for(PlayerData playerdata : playermap.values()){
+			if(!sql.savePlayerData(playerdata)){
+				getLogger().info(playerdata.name + "のデータ保存に失敗しました。");
+			}
+		}
 		sql.disconnect();
 
 		//configをsave

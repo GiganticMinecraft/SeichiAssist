@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.util.Level;
 import com.github.unchama.seichiassist.util.Util;
 
 
@@ -45,6 +46,8 @@ public class PlayerData {
 	public int numofsorryforbug;
 	//採掘用アクティブスキルのフラグ
 	public boolean activemineflag;
+	//拡張インベントリ
+	public Inventory inventory;
 
 
 	public PlayerData(Player player){
@@ -63,10 +66,7 @@ public class PlayerData {
 		level = 1;
 		numofsorryforbug = 0;
 		activemineflag = false;
-		//統計量を取得
-		int mines = MineBlock.calcMineBlock(player);
-		updata(player,mines);
-		giveSorryForBug(player);
+		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*3 ,"拡張インベントリ");
 	}
 
 	//プレイヤーデータを最新の状態に更新
@@ -74,8 +74,7 @@ public class PlayerData {
 		//破壊量データ(before)を設定
 		minuteblock.before = mines;
 		halfhourblock.before = mines;
-		//プレイヤーのランクを計算し取得
-		Level.updata(player,mines);
+		levelupdata(player,mines);
 	}
 	//詫び券の配布
 	public void giveSorryForBug(Player player){
@@ -116,8 +115,61 @@ public class PlayerData {
 				}
 	}
 
+
+	//オフラインかどうか
 	public boolean isOffline() {
 		return SeichiAssist.plugin.getServer().getPlayer(name) == null;
+	}
+
+
+	//レベルを更新
+	public void levelupdata(Player player,int mines) {
+		calcPlayerLevel(player,mines);
+		setDisplayName(player);
+	}
+
+
+	//プレイヤーのレベルを指定された値に設定
+	public void setLevel(int _level) {
+		level = _level;
+	}
+
+
+	//表示される名前に整地レベルを追加
+	public void setDisplayName(Player p) {
+		String displayname;
+		if(p.isOp()){
+			//管理人の場合
+			displayname = ChatColor.RED + "<管理人>" + name + ChatColor.WHITE;
+		}
+		displayname =  "[ Lv" + level + " ]" + name;
+		p.setDisplayName(displayname);
+		p.setPlayerListName(displayname);
+	}
+
+
+	//プレイヤーレベルを計算し、更新する。
+	private void calcPlayerLevel(Player player,int mines){
+		//現在のランクの次を取得
+		int i = level + 1;
+
+		//ランクが上がらなくなるまで処理
+		while(SeichiAssist.levellist.get(i).intValue() <= mines){
+			if(!SeichiAssist.DEBUG){
+				//レベルアップ時のメッセージ
+				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
+				//レベルアップ時の花火の打ち上げ
+				Location loc = player.getLocation();
+				Util.launchFireWorks(loc);
+				String lvmessage = SeichiAssist.config.getLvMessage(i);
+				if(!(lvmessage.isEmpty())){
+					player.sendMessage(ChatColor.AQUA+lvmessage);
+				}
+			}
+
+			i++;
+		}
+		level = i-1;
 	}
 
 }
