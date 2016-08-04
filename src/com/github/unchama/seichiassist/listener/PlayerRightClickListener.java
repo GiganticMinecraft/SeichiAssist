@@ -194,4 +194,39 @@ public class PlayerRightClickListener implements Listener {
 		}
 	}
 
+	//プレイヤーの拡張インベントリを開くイベント
+	@EventHandler
+	public void onPlayerOpenInventorySkillEvent(PlayerInteractEvent event){
+		//プレイヤーを取得
+		Player player = event.getPlayer();
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//playerdataを取得
+		PlayerData playerdata = playermap.get(uuid);
+		//プレイヤーが起こしたアクションを取得
+		Action action = event.getAction();
+		//使った手を取得
+		EquipmentSlot equipmentslot = event.getHand();
+
+
+		//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
+		if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
+			return;
+		}
+		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+			if(event.getMaterial().equals(Material.ENDER_PORTAL_FRAME)){
+				//オフハンドから実行された時処理を終了
+				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+					return;
+				}
+				//設置をキャンセル
+				event.setCancelled(true);
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 0.1);
+				//インベントリを開く
+				player.openInventory(playerdata.inventory);
+			}
+		}
+	}
+
 }

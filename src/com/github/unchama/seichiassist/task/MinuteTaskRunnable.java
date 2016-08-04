@@ -47,9 +47,6 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 		}
 		//プレイヤーマップに記録されているすべてのplayerdataについての処理
 		for(PlayerData playerdata : playermap.values()){
-			//プレイヤーを取得
-			Player player = plugin.getServer().getPlayer(playerdata.uuid);
-
 			//プレイヤーのオンラインオフラインに関係なく処理
 			//エフェクトデータの持続時間を1200tick引いて、０以下のものを削除
 			playerdata.calcEffectData();
@@ -61,8 +58,11 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				}
 				continue;
 			}
-
 			//プレイﾔｰが必ずオンラインと分かっている処理
+			//プレイヤーを取得
+			Player player = plugin.getServer().getPlayer(playerdata.uuid);
+			//プレイヤー名を取得
+			String name = Util.getName(player);
 			int mines = MineBlock.calcMineBlock(player);
 			//Levelを設定
 			playerdata.levelupdata(player,mines);
@@ -151,7 +151,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//ガチャポイントに合算
 			playerdata.gachapoint += playerdata.minuteblock.increase;
 
-			ItemStack skull = Util.getskull();
+			ItemStack skull = Util.getskull(name);
 			if(playerdata.gachapoint >= config.getGachaPresentInterval()){
 				playerdata.gachapoint -= config.getGachaPresentInterval();
 				if(!player.getInventory().contains(skull) && Util.isPlayerInventryNoEmpty(player)){

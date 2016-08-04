@@ -78,7 +78,8 @@ public class PlayerData {
 	}
 	//詫び券の配布
 	public void giveSorryForBug(Player player){
-		ItemStack skull = Util.getskull();
+		String name = Util.getName(player);
+		ItemStack skull = Util.getskull(name);
 		if( numofsorryforbug != 0){
 			skull.setAmount(numofsorryforbug);
 			Util.dropItem(player,skull);

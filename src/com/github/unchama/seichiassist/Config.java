@@ -67,6 +67,9 @@ public class Config{
 	public int getDropExplevel(){
 		return Util.toInt(config.getString("dropexplevel"));
 	}
+	public int getPassivePortalInventorylevel() {
+		return Util.toInt(config.getString("passiveportalinventorylevel"));
+	}
 	public String getDB(){
 		return config.getString("db");
 	}
@@ -103,6 +106,7 @@ public class Config{
 	public String getLvMessage(int i) {
 		return config.getString("lv" + i + "message");
 	}
+
 
 
 }

@@ -37,7 +37,7 @@ public class BukkitSerialization {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-            Inventory inventory = Bukkit.getServer().createInventory(null, dataInput.readInt(),"拡張インベントリ");
+            Inventory inventory = Bukkit.getServer().createInventory(null, dataInput.readInt(),"4次元ポケット");
 
             // Read the serialized inventory
             for (int i = 0; i < inventory.getSize(); i++) {

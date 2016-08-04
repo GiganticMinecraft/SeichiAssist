@@ -6,10 +6,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -170,7 +166,7 @@ public class Sql{
 				"";
 		return putCommand(command);
 	}
-
+/*
 	//選んだｷｰの値を取得できる（boolean)
 	public boolean selectboolean(String table,String name,String key){
 		String command;
@@ -236,15 +232,9 @@ public class Sql{
 	 		}
 			return str;
 		}
-	/**
-	 * データの挿入・更新(playername)
-	 * 失敗時には変数excにエラーメッセージを格納
-	 *
-	 * @param table テーブル名
-	 * @param key カラム名
-	 * @param uuid キャラのuuid
-	 * @return 成否
-	 */
+
+	 //データの挿入・更新(playername)
+
 	public boolean insertname(String table,String name,UUID uuid){
 		String command = "";
  		String struuid = uuid.toString();
@@ -282,16 +272,9 @@ public class Sql{
  		}
  		return putCommand(command);
 	}
-	/**
-	 * データの挿入・更新(string)
-	 * 失敗時には変数excにエラーメッセージを格納
-	 *
-	 * @param table テーブル名
-	 * @param key カラム名
-	 * @param s 挿入する文字列
-	 * @param uuid キャラのuuid
-	 * @return 成否
-	 */
+
+	 //データの挿入・更新(string)
+
 	public boolean insert(String table,String key, String s, String name){
 		String command = "";
 
@@ -305,16 +288,9 @@ public class Sql{
 
 		return putCommand(command);
 	}
-	/**
-	 * データの挿入・更新(int)
-	 * 失敗時には変数excにエラーメッセージを格納
-	 *
-	 * @param table テーブル名
-	 * @param key カラム名
-	 * @param s 挿入する文字列
-	 * @param uuid キャラのuuid
-	 * @return 成否
-	 */
+
+	 //データの挿入・更新(int)
+
 	public boolean insert(String table,String key, int num, String name){
 		String command = "";
  		String nums = String.valueOf(num);
@@ -329,16 +305,9 @@ public class Sql{
 		return putCommand(command);
 	}
 
-	/**
-	 * データの挿入・更新(boolean)
-	 * 失敗時には変数excにエラーメッセージを格納
-	 *
-	 * @param table テーブル名
-	 * @param key カラム名
-	 * @param s 挿入する文字列
-	 * @param uuid キャラのuuid
-	 * @return 成否
-	 */
+
+	 //データの挿入・更新(boolean)
+
 	public boolean insert(String table,String key, Boolean flag, String name){
 		String command = "";
 		String flags = Boolean.toString(flag);
@@ -353,25 +322,9 @@ public class Sql{
 
 		return putCommand(command);
 	}
-	/**
-	 * コマンド出力関数
-	 * @param command コマンド内容
-	 * @return 成否
-	 * @throws SQLException
-	 */
-	private boolean putCommand(String command){
-		try {
-			stmt.executeUpdate(command);
-			return true;
-		} catch (SQLException e) {
-			//接続エラーの場合は、再度接続後、コマンド実行
-			java.lang.System.out.println("接続に失敗しました。");
-			exc = e.getMessage();
-			e.printStackTrace();
-			return false;
-		}
-	}
 
+
+*/
 	/**
 	 * コネクション切断処理
 	 *
@@ -389,6 +342,24 @@ public class Sql{
 	    }
 	    return true;
 	}
+	 //コマンド出力関数
+	 //@param command コマンド内容
+	 //@return 成否
+	 //@throws SQLException
+
+	private boolean putCommand(String command){
+		try {
+			stmt.executeUpdate(command);
+			return true;
+		} catch (SQLException e) {
+			//接続エラーの場合は、再度接続後、コマンド実行
+			java.lang.System.out.println("接続に失敗しました。");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+	}
+	/*
 	//全ての表の名前を1行ずつ取得する。
 	public List<String> getNameList(String table) {
 		String command;
@@ -457,6 +428,7 @@ public class Sql{
 		}
 		return false;
 	}
+	*/
 	public PlayerData loadPlayerData(Player p) {
 		String name = Util.getName(p);
 		UUID uuid = p.getUniqueId();
