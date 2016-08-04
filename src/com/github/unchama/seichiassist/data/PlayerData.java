@@ -137,12 +137,13 @@ public class PlayerData {
 
 	//表示される名前に整地レベルを追加
 	public void setDisplayName(Player p) {
-		String displayname;
+		String displayname = Util.getName(p);
 		if(p.isOp()){
 			//管理人の場合
 			displayname = ChatColor.RED + "<管理人>" + name + ChatColor.WHITE;
 		}
-		displayname =  "[ Lv" + level + " ]" + name;
+		displayname =  "[ Lv" + level + " ]" + displayname;
+
 		p.setDisplayName(displayname);
 		p.setPlayerListName(displayname);
 	}

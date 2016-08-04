@@ -76,6 +76,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			playerdata.minuteblock.after = mines;
 			//1分前(before)との差を計算し、設定
 			playerdata.minuteblock.setIncrease();
+			//現在の統計量を設定(before)
+			playerdata.minuteblock.before = mines;
 
 			//effectの大きさ
 			double amplifier = 0;
