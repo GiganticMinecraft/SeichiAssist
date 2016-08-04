@@ -32,6 +32,8 @@ public class PlayerJoinListener implements Listener {
 			playerdata = sql.loadPlayerData(player);
 			//playermapに追加
 			playermap.put(player.getUniqueId(), playerdata);
+		}else{
+			playerdata = playermap.get(uuid);
 		}
 		//統計量を取得
 		int mines = MineBlock.calcMineBlock(player);
