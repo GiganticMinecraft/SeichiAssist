@@ -26,7 +26,6 @@ import com.github.unchama.seichiassist.listener.PlayerJoinListener;
 import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
-import com.github.unchama.seichiassist.util.Util;
 
 
 public class SeichiAssist extends JavaPlugin{
@@ -121,17 +120,12 @@ public class SeichiAssist extends JavaPlugin{
 
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){
+			//UUIDを取得
 			UUID uuid = p.getUniqueId();
+			//プレイヤーデータを生成
 			PlayerData playerdata = new PlayerData(p);
-			//名前を取得
-			String name = Util.getName(p);
-			//データに行を追加
-			sql.insertname(SeichiAssist.PLAYERDATA_TABLENAME,name, uuid);
 			//プレイヤーマップにプレイヤーを追加
-			playermap.put(p.getUniqueId(),playerdata);
-			//データの初期設定
-			playerdata.updata();
-			playerdata.giveSorryForBug();
+			playermap.put(uuid,playerdata);
 		}
 
 		getLogger().info("SeichiPlugin is Enabled!");
