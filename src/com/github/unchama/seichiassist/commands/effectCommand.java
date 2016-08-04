@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -80,6 +81,7 @@ public class effectCommand implements TabExecutor {
 				ItemStack itemstack = Util.getInventoryOpenItem(name);
 				Util.dropItem(player, itemstack);
 				sender.sendMessage(ChatColor.AQUA + "あなたの4次元ポケットがドロップしました。");
+				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
 				return true;
 			}
 		}
