@@ -5,8 +5,10 @@ import java.util.UUID;
 import net.coreprotect.CoreProtectAPI;
 
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
@@ -18,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.material.Dye;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -55,6 +58,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//壊されるブロックを取得
 		Block block = event.getBlock();
+		Location centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
 		//ブロックのタイプを取得
 		Material material = block.getType();
 		//ブロックタイプがmateriallistに登録されていなければ処理終了
@@ -133,9 +137,13 @@ public class PlayerBlockBreakListener implements Listener {
 				player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
 				return;
 			}
-			//あたかもプレイヤーが壊したかのようなエフェクトを表示させ、ドロップさせる（音なし）
-			breakblock.breakNaturally();
-			//壊した時の音を再生
+			//アイテムをドロップさせる
+			breakblock.getWorld().dropItemNaturally(centerofblock,dropItemOnTool(breakblock,tool));
+			//ブロックを空気に変える
+			breakblock.setType(Material.AIR);
+
+
+			//あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
 			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,breakblock.getType());
 			//壊した時に白いエフェクトが出るように設定
 			for(int i = 1; i<2 ; i++){
@@ -170,6 +178,103 @@ public class PlayerBlockBreakListener implements Listener {
 			//プレイヤーの統計を１増やす
 			player.incrementStatistic(Statistic.MINE_BLOCK, material);
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private ItemStack dropItemOnTool(Block breakblock, ItemStack tool) {
+		ItemStack dropitem = null;
+		Material dropmaterial;
+		Material breakmaterial = breakblock.getType();
+		int fortunelevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+        int bonus = (int) (Math.random() * ((fortunelevel + 2)) - 1);
+        if (bonus <= 1) {
+            bonus = 1;
+        }
+        if(SeichiAssist.DEBUG){
+        	 Util.sendEveryMessage("bonus値:" + bonus);
+        }
+
+		int silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH);
+		if(silktouch > 0){
+			//シルクタッチの処理
+			dropitem = new ItemStack(breakmaterial);
+		}else if(fortunelevel > 0 && SeichiAssist.luckmateriallist.contains(breakmaterial)){
+			//幸運の処理
+			switch(breakmaterial){
+				case COAL_ORE:
+					dropmaterial = Material.COAL;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case DIAMOND_ORE:
+					dropmaterial = Material.DIAMOND;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case LAPIS_ORE:
+					Dye dye = new Dye();
+					dye.setColor(DyeColor.BLUE);
+					dropitem = dye.toItemStack(bonus);
+					break;
+				case EMERALD_ORE:
+					dropmaterial = Material.EMERALD;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case REDSTONE_ORE:
+					dropmaterial = Material.REDSTONE;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case QUARTZ_ORE:
+					dropmaterial = Material.QUARTZ;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				default:
+					break;
+			}
+		}else{
+			//シルク幸運なしの処理
+			switch(breakmaterial){
+				case COAL_ORE:
+					dropmaterial = Material.COAL;
+					dropitem = new ItemStack(dropmaterial);
+					break;
+				case DIAMOND_ORE:
+					dropmaterial = Material.DIAMOND;
+					dropitem = new ItemStack(dropmaterial);
+					break;
+				case LAPIS_ORE:
+					Dye dye = new Dye();
+					dye.setColor(DyeColor.BLUE);
+					dropitem = dye.toItemStack();
+					break;
+				case EMERALD_ORE:
+					dropmaterial = Material.EMERALD;
+					dropitem = new ItemStack(dropmaterial);
+					break;
+				case REDSTONE_ORE:
+					dropmaterial = Material.REDSTONE;
+					dropitem = new ItemStack(dropmaterial);
+					break;
+				case QUARTZ_ORE:
+					dropmaterial = Material.QUARTZ;
+					dropitem = new ItemStack(dropmaterial);
+					break;
+				case STONE:
+					//Material.STONEの処理
+					if(breakblock.getData() == 0){
+						//焼き石の処理
+						dropmaterial = Material.COBBLESTONE;
+						dropitem = new ItemStack(dropmaterial);
+					}else{
+						//他の石の処理
+						dropitem = new ItemStack(breakmaterial);
+					}
+					break;
+				default:
+					//breakblcokのままのアイテムスタックを保存
+					dropitem = new ItemStack(breakmaterial);
+					break;
+			}
+		}
+		return dropitem;
 	}
 
 	//追加経験値の設定

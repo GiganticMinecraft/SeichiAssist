@@ -154,9 +154,8 @@ public class PlayerData {
 	private void calcPlayerLevel(Player player,int mines){
 		//現在のランクの次を取得
 		int i = level + 1;
-
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.levellist.get(i).intValue() <= mines){
+		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= 100){
 			if(!SeichiAssist.DEBUG){
 				//レベルアップ時のメッセージ
 				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
@@ -168,7 +167,6 @@ public class PlayerData {
 					player.sendMessage(ChatColor.AQUA+lvmessage);
 				}
 			}
-
 			i++;
 		}
 		level = i-1;
