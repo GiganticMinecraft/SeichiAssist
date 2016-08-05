@@ -81,8 +81,6 @@ public class PlayerBlockBreakListener implements Listener {
 		boolean mainhandtoolflag = SeichiAssist.breakmateriallist.contains(mainhanditem.getType());
 		//オフハンドにツールがあるか
 		boolean offhandtoolflag = SeichiAssist.breakmateriallist.contains(offhanditem.getType());
-		//両手にツールがあるか
-		boolean doubletoolflag = mainhandtoolflag && offhandtoolflag;
 		//壊されるブロックの取得
 		Block breakblock = block.getRelative(0,1,0);
 		//壊されるブロックの状態を取得
@@ -103,10 +101,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//もし壊されるブロックがもともとのブロックと同じ種類だった場合アクティブスキル発動
 		if(breakblock.getType().equals(material)|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))){
 			//両手の時処理を終了
-			if(doubletoolflag){
-				player.sendMessage("両手でツールを持った状態でアクティブスキルを発動することはできません。");
-				return;
-			}else if(mainhandtoolflag){
+			if(mainhandtoolflag){
 				//メインハンドの時
 				tool = mainhanditem;
 			}else if(offhandtoolflag){
