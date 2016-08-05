@@ -53,7 +53,7 @@ public class SeichiAssist extends JavaPlugin{
 	//Playerdataに依存するデータリスト
 	public static final HashMap<UUID,PlayerData> playermap = new HashMap<UUID,PlayerData>();
 
-	//ranklvの閾値
+	//lvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
 			0,15,49,106,198,333,
 			705,1265,2105,3347,4589,
@@ -83,6 +83,10 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.LAPIS_ORE,Material.EMERALD_ORE,Material.REDSTONE_ORE,Material.SAND
 			,Material.SANDSTONE,Material.QUARTZ_ORE,Material.END_BRICKS,Material.ENDER_STONE
 			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN
+			));
+	public static final List<Material> luckmateriallist = new ArrayList<Material>(Arrays.asList(
+			Material.COAL_ORE,Material.DIAMOND_ORE,Material.LAPIS_ORE,Material.EMERALD_ORE,
+			Material.REDSTONE_ORE,Material.QUARTZ_ORE
 			));
 	public static final List<Material> breakmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE

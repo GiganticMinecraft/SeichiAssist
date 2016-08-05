@@ -169,11 +169,12 @@ public class seichiCommand implements TabExecutor {
 		}
 		return false;
 	}
-	private void addSorryForBug(CommandSender sender,int num) {;
+	private void addSorryForBug(CommandSender sender,int num) {
 		for(PlayerData playerdata : SeichiAssist.playermap.values()){
 			playerdata.numofsorryforbug += num;
 			sender.sendMessage(ChatColor.LIGHT_PURPLE + "" + num +"個のガチャ券をお詫びとして" + playerdata.name + "のデータに更新しました");
 		}
+
 
 	}
 }
