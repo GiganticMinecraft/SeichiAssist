@@ -1,10 +1,9 @@
 package com.github.unchama.seichiassist;
 
-import static com.github.unchama.seichiassist.Util.*;
-
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class Config{
 	private FileConfiguration config;
@@ -51,22 +50,25 @@ public class Config{
 	}
 
 	public double getMinuteMineSpeed(){
-		return toDouble(config.getString("minutespeedamount"));
+		return Util.toDouble(config.getString("minutespeedamount"));
 	}
 	public double getLoginPlayerMineSpeed(){
-		return toDouble(config.getString("onlineplayersamount"));
+		return Util.toDouble(config.getString("onlineplayersamount"));
 	}
 	public int getGachaPresentInterval(){
-		return toInt(config.getString("presentinterval"));
+		return Util.toInt(config.getString("presentinterval"));
 	}
 	public int getDefaultMineAmount(){
-		return toInt(config.getString("defaultmineamount"));
+		return Util.toInt(config.getString("defaultmineamount"));
 	}
 	public int getActiveMinelevel(){
-		return toInt(config.getString("activeminelevel"));
+		return Util.toInt(config.getString("activeminelevel"));
 	}
 	public int getDropExplevel(){
-		return toInt(config.getString("dropexplevel"));
+		return Util.toInt(config.getString("dropexplevel"));
+	}
+	public int getPassivePortalInventorylevel() {
+		return Util.toInt(config.getString("passiveportalinventorylevel"));
 	}
 	public String getDB(){
 		return config.getString("db");
@@ -104,6 +106,7 @@ public class Config{
 	public String getLvMessage(int i) {
 		return config.getString("lv" + i + "message");
 	}
+
 
 
 }

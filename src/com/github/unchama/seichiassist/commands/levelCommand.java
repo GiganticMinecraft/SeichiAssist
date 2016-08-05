@@ -5,14 +5,13 @@ import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.Level;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.data.PlayerData;
 
 public class levelCommand implements TabExecutor{
 	public SeichiAssist plugin;
-	Sql sql = SeichiAssist.plugin.sql;
 
 
 	public levelCommand(SeichiAssist plugin){
@@ -27,20 +26,29 @@ public class levelCommand implements TabExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 	String label, String[] args) {
+
+
 		if(args[0].equalsIgnoreCase("reset")){
+			//コマンドがlevel reset だった時の処理
+
+			//level reset より多い引数を指定した場合
 			if(args.length != 1){
 				sender.sendMessage("/level resetで全員のレベル計算をリセットし、レベルアップを再度可能にします");
 				return true;
 			}
-			List<String> namelist = sql.getNameList(SeichiAssist.PLAYERDATA_TABLENAME);
-
-			for(String name : namelist){
-				name = sql.selectstring(SeichiAssist.PLAYERDATA_TABLENAME,name, "name");
-				Level.setLevel(name,1);
-				sender.sendMessage(name+"のレベルを" + Level.getLevel(name) + "に設定しました");
-				Level.reloadLevel(name);
+			//すべてのプレイヤーデータについて処理
+			for(PlayerData playerdata:SeichiAssist.playermap.values()){
+				//整地レベルを1に設定
+				playerdata.setLevel(1);
+				//メッセージ送信
+				sender.sendMessage(playerdata.name+"のレベルを" + playerdata.level + "に設定しました");
+				//プレイヤーがオンラインの時表示名を変更
+				if(!playerdata.isOffline()){
+					Player player = SeichiAssist.plugin.getServer().getPlayer(playerdata.name);
+					playerdata.setDisplayName(player);
+				}
 			}
-
+			return true;
 		}
 		return false;
 	}

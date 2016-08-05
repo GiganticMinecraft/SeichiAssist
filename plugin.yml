@@ -1,6 +1,6 @@
 name: SeichiAssist
 main: com.github.unchama.seichiassist.SeichiAssist
-version: 0.2.3
+version: 0.2.6
 
 commands:
   gacha:
@@ -10,7 +10,7 @@ commands:
       permission-message: You don't have <permission>
   seichi:
       description: This is a seichi command.
-      usage: /<command> <playername/bug> <duration(tick)> <amplifier(double)>
+      usage: /<command> <playername/bug/test> <duration(tick)/get/set> <amplifier(double)>
       permission: multiseichiplugin.seichi
       permission-message: You don't have <permission>
   ef:

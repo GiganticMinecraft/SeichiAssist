@@ -1,15 +1,18 @@
 package com.github.unchama.seichiassist;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+
+import org.bukkit.entity.Player;
+
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.BukkitSerialization;
+import com.github.unchama.seichiassist.util.Util;
 
 //MySQL操作関数
 public class Sql{
@@ -62,10 +65,6 @@ public class Sql{
 		}
 		if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
 			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
-			return false;
-		}
-		if(!createGachaDataTable(SeichiAssist.GACHADATA_TABLENAME)){
-			plugin.getLogger().info("gachadataテーブル作成に失敗しました");
 			return false;
 		}
 		return true;
@@ -134,20 +133,12 @@ public class Sql{
 				"alter table " + table +
 				" add column if not exists effectflag boolean default true" +
 				",add column if not exists messageflag boolean default false" +
+				",add column if not exists activemineflag boolean default false" +
 				",add column if not exists gachapoint int default 0" +
-				",add column if not exists lastgachapoint int default 0" +
 				",add column if not exists level int default 1" +
 				",add column if not exists numofsorryforbug int default 0" +
-				",add column if not exists minutebefore int default 0" +
-				",add column if not exists minuteafter int default 0" +
-				",add column if not exists minuteincrease int default 0" +
-				",add column if not exists halfbefore int default 0" +
-				",add column if not exists halfafter int default 0" +
-				",add column if not exists halfincrease int default 0" +
-				",add column if not exists minespeedlv int default 0" +
-				",add column if not exists level int default 0" +
-				",add column if not exists activemineflag boolean default false" +
-				",add column if not exists lastminespeedlv int default 0" +
+				",add column if not exists inventory blob default null" +
+				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
 	}
@@ -168,24 +159,14 @@ public class Sql{
 				"alter table " + table +
 				" add column if not exists effectflag boolean default true" +
 				",add column if not exists messageflag boolean default false" +
+				",add column if not exists activemineflag boolean default false" +
 				",add column if not exists gachapoint int default 0" +
-				",add column if not exists lastgachapoint int default 0" +
 				",add column if not exists level int default 1" +
 				",add column if not exists numofsorryforbug int default 0" +
-				",add column if not exists minutebefore int default 0" +
-				",add column if not exists minuteafter int default 0" +
-				",add column if not exists minuteincrease int default 0" +
-				",add column if not exists halfbefore int default 0" +
-				",add column if not exists halfafter int default 0" +
-				",add column if not exists halfincrease int default 0" +
-				",add column if not exists minespeedlv int default 0" +
-				",add column if not exists level int default 0" +
-				",add column if not exists activemineflag boolean default false" +
-				",add column if not exists lastminespeedlv int default 0" +
 				"";
 		return putCommand(command);
 	}
-
+/*
 	//選んだｷｰの値を取得できる（boolean)
 	public boolean selectboolean(String table,String name,String key){
 		String command;
@@ -251,15 +232,9 @@ public class Sql{
 	 		}
 			return str;
 		}
-	/**
-	 * データの挿入・更新(playername)
-	 * 失敗時には変数excにエラーメッセージを格納
-	 *
-	 * @param table テーブル名
-	 * @param key カラム名
-	 * @param uuid キャラのuuid
-	 * @return 成否
-	 */
+
+	 //データの挿入・更新(playername)
+
 	public boolean insertname(String table,String name,UUID uuid){
 		String command = "";
  		String struuid = uuid.toString();
@@ -298,16 +273,8 @@ public class Sql{
  		return putCommand(command);
 	}
 
-	/**
-	 * データの挿入・更新(string)
-	 * 失敗時には変数excにエラーメッセージを格納
-	 *
-	 * @param table テーブル名
-	 * @param key カラム名
-	 * @param s 挿入する文字列
-	 * @param uuid キャラのuuid
-	 * @return 成否
-	 */
+	 //データの挿入・更新(string)
+
 	public boolean insert(String table,String key, String s, String name){
 		String command = "";
 
@@ -321,16 +288,9 @@ public class Sql{
 
 		return putCommand(command);
 	}
-	/**
-	 * データの挿入・更新(int)
-	 * 失敗時には変数excにエラーメッセージを格納
-	 *
-	 * @param table テーブル名
-	 * @param key カラム名
-	 * @param s 挿入する文字列
-	 * @param uuid キャラのuuid
-	 * @return 成否
-	 */
+
+	 //データの挿入・更新(int)
+
 	public boolean insert(String table,String key, int num, String name){
 		String command = "";
  		String nums = String.valueOf(num);
@@ -345,16 +305,9 @@ public class Sql{
 		return putCommand(command);
 	}
 
-	/**
-	 * データの挿入・更新(boolean)
-	 * 失敗時には変数excにエラーメッセージを格納
-	 *
-	 * @param table テーブル名
-	 * @param key カラム名
-	 * @param s 挿入する文字列
-	 * @param uuid キャラのuuid
-	 * @return 成否
-	 */
+
+	 //データの挿入・更新(boolean)
+
 	public boolean insert(String table,String key, Boolean flag, String name){
 		String command = "";
 		String flags = Boolean.toString(flag);
@@ -369,25 +322,9 @@ public class Sql{
 
 		return putCommand(command);
 	}
-	/**
-	 * コマンド出力関数
-	 * @param command コマンド内容
-	 * @return 成否
-	 * @throws SQLException
-	 */
-	private boolean putCommand(String command){
-		try {
-			stmt.executeUpdate(command);
-			return true;
-		} catch (SQLException e) {
-			//接続エラーの場合は、再度接続後、コマンド実行
-			java.lang.System.out.println("接続に失敗しました。");
-			exc = e.getMessage();
-			e.printStackTrace();
-			return false;
-		}
-	}
 
+
+*/
 	/**
 	 * コネクション切断処理
 	 *
@@ -405,6 +342,24 @@ public class Sql{
 	    }
 	    return true;
 	}
+	 //コマンド出力関数
+	 //@param command コマンド内容
+	 //@return 成否
+	 //@throws SQLException
+
+	private boolean putCommand(String command){
+		try {
+			stmt.executeUpdate(command);
+			return true;
+		} catch (SQLException e) {
+			//接続エラーの場合は、再度接続後、コマンド実行
+			java.lang.System.out.println("接続に失敗しました。");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+	}
+	/*
 	//全ての表の名前を1行ずつ取得する。
 	public List<String> getNameList(String table) {
 		String command;
@@ -472,6 +427,124 @@ public class Sql{
 			Util.sendEveryMessage("countの値が2以上または、取得に失敗しています。");
 		}
 		return false;
+	}
+	*/
+	public PlayerData loadPlayerData(Player p) {
+		String name = Util.getName(p);
+		UUID uuid = p.getUniqueId();
+		String struuid = uuid.toString().toLowerCase();
+		String command = "";
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+ 		int count = -1;
+ 		//uuidがsqlデータ内に存在するか検索
+ 		//command:
+ 		//select count(*) from playerdata where uuid = 'struuid'
+ 		command = "select count(*) as count from " + table
+ 				+ " where uuid = '" + struuid + "'";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				   count = rs.getInt("count");
+				  }
+			rs.close();
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return null;
+		}
+
+ 		if(count == 0){
+ 			//uuidが存在しない時の処理
+
+ 			//新しくuuidとnameを設定し行を作成
+ 			//insert into playerdata (name,uuid) VALUES('unchima','UNCHAMA')
+ 			command = "insert into " + table
+ 	 				+ " (name,uuid) values('" + name
+ 	 				+ "','" + struuid + "')";
+ 			try{
+ 				stmt.executeUpdate(command);
+ 			} catch (SQLException e) {
+ 				exc = e.getMessage();
+ 				return null;
+ 			}
+ 			//PlayerDataを新規作成
+ 			return new PlayerData(p);
+
+ 		}else if(count == 1){
+ 			//uuidが存在するときの処理
+
+ 			if(SeichiAssist.DEBUG){
+ 				p.sendMessage("sqlにデータが保存されています。");
+ 			}
+ 			//playernameをアップデート
+ 			//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
+ 			command = "update " + table
+ 					+ " set name = '" + name
+ 					+ "' where uuid like '" + struuid + "'";
+ 			try{
+ 				stmt.executeUpdate(command);
+ 			} catch (SQLException e) {
+ 				exc = e.getMessage();
+ 				return null;
+ 			}
+ 			if(SeichiAssist.DEBUG){
+ 				p.sendMessage("プレイヤーネームを更新しました。");
+ 			}
+ 			//PlayerDataを新規作成
+ 			PlayerData playerdata = new PlayerData(p);
+
+ 			//sqlデータから得られた値で更新
+
+ 			command = "select * from " + table
+ 					+ " where uuid like '" + struuid + "'";
+ 			try{
+ 				rs = stmt.executeQuery(command);
+ 				while (rs.next()) {
+ 	 				playerdata.effectflag = rs.getBoolean("effectflag");
+ 	 				playerdata.messageflag = rs.getBoolean("messageflag");
+ 	 				playerdata.activemineflag = rs.getBoolean("activemineflag");
+ 	 				playerdata.gachapoint = rs.getInt("gachapoint");
+ 	 				playerdata.level = rs.getInt("level");
+ 	 				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
+ 	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
+ 				  }
+ 				rs.close();
+ 			} catch (SQLException | IOException e) {
+ 				exc = e.getMessage();
+ 				return null;
+ 			}
+ 			if(SeichiAssist.DEBUG){
+ 				p.sendMessage("sqlデータで更新しました。");
+ 			}
+ 			//更新したplayerdataを返す
+ 			return playerdata;
+ 		}else{
+ 			return null;
+ 		}
+	}
+	public boolean savePlayerData(PlayerData playerdata) {
+		//引数のplayerdataを元にsqlにデータを送信
+
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "";
+		String struuid = playerdata.uuid.toString();
+
+		command = "update " + table
+				+ " set"
+				+ " effectflag = " + Boolean.toString(playerdata.effectflag)
+				+ ",messageflag = " + Boolean.toString(playerdata.messageflag)
+				+ ",activemineflag = " + Boolean.toString(playerdata.activemineflag)
+				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
+				+ ",level = " + Integer.toString(playerdata.level)
+				+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug)
+				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
+				+ " where uuid like '" + struuid + "'";
+		try{
+				stmt.executeUpdate(command);
+			} catch (SQLException e) {
+				exc = e.getMessage();
+				return false;
+			}
+		return true;
 	}
 
 
