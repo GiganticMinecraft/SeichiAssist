@@ -138,7 +138,7 @@ public class PlayerBlockBreakListener implements Listener {
 				player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
 				return;
 			}
-			//あたかもプレイヤーが壊したかのようなエフェクトを表示（音なし）
+			//あたかもプレイヤーが壊したかのようなエフェクトを表示させ、ドロップさせる（音なし）
 			breakblock.breakNaturally();
 			//壊した時の音を再生
 			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,breakblock.getType());
@@ -148,7 +148,7 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 			// Effect.ENDER_SIGNALこれかっこいい
 			// Effect.EXPLOSION 範囲でかい
-			// Effect.WITCH_MAGIC 小さい　紫
+			// Effect.WITCH_MAGIC 小さい 紫
 			// Effect.SPELL かわいい
 			// Effect.WITHER_SHOOT 音だけ、結構うるさい
 			// Effect.WITHER_BREAK_BLOCK これまた音だけ　うるせえ
