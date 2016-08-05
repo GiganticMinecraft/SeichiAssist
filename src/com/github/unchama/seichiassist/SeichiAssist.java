@@ -53,7 +53,7 @@ public class SeichiAssist extends JavaPlugin{
 	//Playerdataに依存するデータリスト
 	public static final HashMap<UUID,PlayerData> playermap = new HashMap<UUID,PlayerData>();
 
-	//ranklvの閾値
+	//lvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
 			0,15,49,106,198,333,
 			705,1265,2105,3347,4589,
