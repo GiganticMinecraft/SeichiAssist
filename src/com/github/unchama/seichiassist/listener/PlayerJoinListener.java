@@ -10,39 +10,40 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.Util;
+import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class PlayerJoinListener implements Listener {
-	HashMap<UUID,PlayerData> playermap;
-
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	Sql sql = SeichiAssist.plugin.sql;
 
 	//プレイヤーがjoinした時に実行
 	@EventHandler
 	public void onplayerJoinEvent(PlayerJoinEvent event){
-		//sqlを開く
-		Sql sql = SeichiAssist.plugin.sql;
+		//ジョインしたplayerを取得
 		Player player = event.getPlayer();
-		PlayerData playerdata = new PlayerData(player);
-		String name = Util.getName(player);
-		playermap = SeichiAssist.playermap;
+		//プレイヤーのuuidを取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータを宣言
+		PlayerData playerdata = null;
+		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
+		if(!playermap.containsKey(uuid)){
+			//新しいplayerdataを作成
+			playerdata = sql.loadPlayerData(player);
+			//playermapに追加
+			playermap.put(player.getUniqueId(), playerdata);
+		}else{
+			playerdata = playermap.get(uuid);
+		}
+		//統計量を取得
+		int mines = MineBlock.calcMineBlock(player);
+		playerdata.updata(player,mines);
+		playerdata.giveSorryForBug(player);
+		//初見さんへの処理
 		if(!player.hasPlayedBefore()){
 			//初見さんへのメッセージ文
 			player.sendMessage(SeichiAssist.config.getLvMessage(1));
 		}
-		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
-		if(!playermap.containsKey(player.getUniqueId())){
-			playermap.put(player.getUniqueId(), playerdata);
-			if(SeichiAssist.DEBUG){
-				player.sendMessage("あたらしくプレイヤーデータを作成しました。");
-			}
-		}
-		sql.insertname(SeichiAssist.PLAYERDATA_TABLENAME,name,player.getUniqueId());
-
-		//更新したいものを更新
-		playerdata.updata();
-		playerdata.giveSorryForBug();
-
 	}
 
 }

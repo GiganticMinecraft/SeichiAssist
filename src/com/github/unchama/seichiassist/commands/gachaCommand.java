@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.commands;
 
-import static com.github.unchama.seichiassist.Util.*;
-
 import java.util.List;
 
 import org.bukkit.command.Command;
@@ -11,8 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class gachaCommand implements TabExecutor{
 	public SeichiAssist plugin;
@@ -30,31 +28,32 @@ public class gachaCommand implements TabExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String label, String[] args) {
-		Player player = (Player) sender;
-
-		//sqlを開く
-		Sql sql = SeichiAssist.plugin.sql;
 
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("このコマンドはゲーム内から実行してください。");
 			return true;
-		}else if(args.length == 0){
+		}
+
+
+
+		Player player = (Player) sender;
+
+		if(args.length == 0){
 			return false;
 		}else if(args[0].equalsIgnoreCase("add")){
 			if(args.length != 2){
 				sender.sendMessage("/gacha add 0.05  のように、追加したいアイテムの出現確率を入力してください。");
 				return true;
 			}
-			double probability = toDouble(args[1]);
+			double probability = Util.toDouble(args[1]);
 			Gachaadd(player,probability);
-
 			return true;
 		}else if(args[0].equalsIgnoreCase("remove")){
 			if(args.length != 2){
 				sender.sendMessage("/gacha remove 2 のように、削除したいリスト番号を入力してください");
 				return true;
 			}
-			int num = toInt(args[1]);
+			int num = Util.toInt(args[1]);
 			Gacharemove(player,num);
 			return true;
 		}else if(args[0].equalsIgnoreCase("list")){
