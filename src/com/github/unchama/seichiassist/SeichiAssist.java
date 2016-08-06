@@ -23,8 +23,8 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
 import com.github.unchama.seichiassist.listener.PlayerJoinListener;
-import com.github.unchama.seichiassist.listener.PlayerPortalInventoryListener;
 import com.github.unchama.seichiassist.listener.PlayerQuitListener;
 import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
@@ -82,21 +82,23 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.COAL_ORE,Material.IRON_ORE,Material.GOLD_ORE,Material.DIAMOND_ORE
 			,Material.LAPIS_ORE,Material.EMERALD_ORE,Material.REDSTONE_ORE,Material.SAND
 			,Material.SANDSTONE,Material.QUARTZ_ORE,Material.END_BRICKS,Material.ENDER_STONE
-			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN
+			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN,Material.MAGMA
 			));
 	public static final List<Material> luckmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.COAL_ORE,Material.DIAMOND_ORE,Material.LAPIS_ORE,Material.EMERALD_ORE,
-			Material.REDSTONE_ORE,Material.QUARTZ_ORE
+			Material.REDSTONE_ORE,Material.QUARTZ_ORE,Material.GRAVEL
 			));
 	public static final List<Material> breakmateriallist = new ArrayList<Material>(Arrays.asList(
-			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE
+			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE,
+			Material.WOOD_PICKAXE,Material.WOOD_AXE,Material.WOOD_SPADE,
+			Material.IRON_PICKAXE,Material.IRON_AXE,Material.IRON_SPADE,
+			Material.GOLD_PICKAXE,Material.GOLD_AXE,Material.GOLD_SPADE
 			));
 	public static final List<Material> cancelledmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.CHEST,Material.ENDER_CHEST,Material.TRAPPED_CHEST,Material.ANVIL,Material.ARMOR_STAND
 			,Material.BEACON,Material.BIRCH_DOOR,Material.BIRCH_FENCE_GATE,Material.BIRCH_WOOD_STAIRS
 			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
 			));
-
 
 	@Override
 	public void onEnable(){
@@ -125,7 +127,7 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerRightClickListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
-		getServer().getPluginManager().registerEvents(new PlayerPortalInventoryListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), this);
 
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){

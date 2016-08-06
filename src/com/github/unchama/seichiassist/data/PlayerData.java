@@ -44,10 +44,12 @@ public class PlayerData {
 	public int level;
 	//詫び券をあげる数
 	public int numofsorryforbug;
-	//採掘用アクティブスキルのフラグ
-	public boolean activemineflag;
+	//採掘用アクティブスキルのフラグ 0:なし 1:上破壊 2:下破壊
+	public int activemineflagnum;
 	//拡張インベントリ
 	public Inventory inventory;
+	//アクティブスキル番号を格納
+	public int activenum;
 
 
 	public PlayerData(Player player){
@@ -65,8 +67,9 @@ public class PlayerData {
 		effectdatalist = new ArrayList<EffectData>();
 		level = 1;
 		numofsorryforbug = 0;
-		activemineflag = false;
+		activemineflagnum = 0;
 		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*3 ,"拡張インベントリ");
+		activenum = 1;
 	}
 
 	//プレイヤーデータを最新の状態に更新

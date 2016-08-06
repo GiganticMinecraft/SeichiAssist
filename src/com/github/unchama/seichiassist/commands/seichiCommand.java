@@ -30,8 +30,9 @@ public class seichiCommand implements TabExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-
-		if(args[0].equalsIgnoreCase("load")){
+		if(args.length == 0){
+			return false;
+		}else if(args[0].equalsIgnoreCase("load")){
 			//seichi load と入力したとき
 			SeichiAssist.gachadatalist.clear();
 			SeichiAssist.config.reloadConfig();
