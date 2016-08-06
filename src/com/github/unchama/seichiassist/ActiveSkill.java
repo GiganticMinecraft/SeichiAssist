@@ -5,6 +5,10 @@ public enum ActiveSkill{
 	DUALBREAK(1,"デュアルブレイク"),
 	TRIALBREAK(2,"トリアルブレイク"),
 	EXPLOSION(3,"エクスプロージョン"),
+	THUNDERSTORM(4,"サンダーストーム"),
+	ILLUSION(5,"イリュージョン"),
+	METEO(6,"メテオ"),
+	GRAVITY(7,"グラビティ"),
 	;
 
 	private int num;

@@ -74,6 +74,11 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 
+		//外枠のクリック処理なら終了
+		if(event.getClickedInventory() == null){
+			return;
+		}
+
 		//インベントリ名が以下の時処理
 		if(topinventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキル選択")){
 			event.setCancelled(true);
@@ -114,7 +119,55 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}
+			}else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
+				if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
+
+				}else if(playerdata.level >= config.getThunderStormlevel() && playerdata.activenum != ActiveSkill.THUNDERSTORM.getNum()){
+					playerdata.activenum = ActiveSkill.THUNDERSTORM.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:サンダーストーム");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}/*else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
+				if(playerdata.activenum == ActiveSkill.ILLUSION.getNum()){
+
+				}else if(playerdata.level >= config.getIllusionlevel() && playerdata.activenum != ActiveSkill.ILLUSION.getNum()){
+					playerdata.activenum = ActiveSkill.ILLUSION.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:イリュージョン");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}else if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
+				if(playerdata.activenum == ActiveSkill.METEO.getNum()){
+
+				}else if(playerdata.level >= config.getMeteolevel() && playerdata.activenum != ActiveSkill.METEO.getNum()){
+					playerdata.activenum = ActiveSkill.METEO.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:メテオ");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
+				if(playerdata.activenum == ActiveSkill.GRAVITY.getNum()){
+
+				}else if(playerdata.level >= config.getGravitylevel() && playerdata.activenum != ActiveSkill.GRAVITY.getNum()){
+					playerdata.activenum = ActiveSkill.GRAVITY.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:グラビティ");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}*/
 		}
 	}
 	//プレイヤーがアクティブスキル選択インベントリを閉じた時に実行

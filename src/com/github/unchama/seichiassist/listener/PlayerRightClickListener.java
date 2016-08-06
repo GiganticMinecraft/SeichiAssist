@@ -163,7 +163,7 @@ public class PlayerRightClickListener implements Listener {
 						break;
 					}
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-				}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
+				}else if(playerdata.activenum >= ActiveSkill.EXPLOSION.getNum()){
 					activemineflagnum = (playerdata.activemineflagnum + 1) % 2;
 					switch (activemineflagnum){
 					case 0:
@@ -267,7 +267,7 @@ public class PlayerRightClickListener implements Listener {
 												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：2");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(12,itemstack);
+				inventory.setItem(11,itemstack);
 
 
 				itemstack = new ItemStack(Material.GOLD_ORE,1);
@@ -278,7 +278,66 @@ public class PlayerRightClickListener implements Listener {
 												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：5");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(12,itemstack);
+
+
+				itemstack = new ItemStack(Material.REDSTONE_ORE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
+				itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サンダーストーム");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊×5"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getThunderStormlevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：20");
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(13,itemstack);
+
+
+				itemstack = new ItemStack(Material.LAPIS_ORE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
+				itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "イリュージョン");
+				/*lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "17×17×17マス(r300)破壊"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getIllusionlevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：50");
+												*/
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
+									, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getIllusionlevel()
+									, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：50");
+
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(14,itemstack);
+
+
+				itemstack = new ItemStack(Material.EMERALD_ORE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
+				itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ");
+				/*lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊×10×5"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getMeteolevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：200");*/
+
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getMeteolevel()
+				, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：200");
+
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(15,itemstack);
+
+
+				itemstack = new ItemStack(Material.DIAMOND_ORE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
+				itemmeta.setDisplayName(ChatColor.DARK_GRAY + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "グラビティ");
+				/*lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "16×16×256マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getGravitylevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：2000");*/
+
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getGravitylevel()
+				, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：2000");
+
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(16,itemstack);
 
 
 

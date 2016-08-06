@@ -68,8 +68,8 @@ public class Util {
 		BigDecimal bi = new BigDecimal(String.valueOf(d));
 		return bi.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
 	}
-	public static boolean isPlayerInventryNoEmpty(Player player){
-		return (player.getInventory().firstEmpty()== -1);
+	public static boolean isPlayerInventryFill(Player player){
+		return (player.getInventory().firstEmpty() == -1);
 	}
 	public static void dropItem(Player player,ItemStack itemstack){
 		player.getWorld().dropItemNaturally(player.getLocation(), itemstack);
@@ -130,6 +130,7 @@ public class Util {
 		FireworkMeta meta = firework.getFireworkMeta();
 		Builder effect = FireworkEffect.builder();
 		Random rand = new Random();
+
 		// 形状をランダムに決める
 		effect.with(types[rand.nextInt(types.length)]);
 
@@ -196,5 +197,22 @@ public class Util {
 	    }
 
 	    return (WorldGuardPlugin) plugin;
+	}
+	public static boolean containsGacha(Player player) {
+		org.bukkit.inventory.ItemStack[] inventory = player.getInventory().getStorageContents();
+		Material material;
+		SkullMeta skullmeta;
+		for (int i = 0; i < inventory.length; i++) {
+			material = inventory[i].getType();
+			if(material.equals(Material.SKULL_ITEM)){
+				skullmeta = (SkullMeta)inventory[i].getItemMeta();
+				if(skullmeta.hasOwner()){
+					if(skullmeta.getOwner().equals("unchama")){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }
