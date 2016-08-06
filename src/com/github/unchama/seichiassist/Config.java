@@ -71,6 +71,18 @@ public class Config{
 	public int getExplosionlevel(){
 		return Util.toInt(config.getString("explosionlevel"));
 	}
+	public int getThunderStormlevel() {
+		return Util.toInt(config.getString("thunderstormlevel"));
+	}
+	public int getIllusionlevel() {
+		return Util.toInt(config.getString("illusionlevel"));
+	}
+	public int getMeteolevel() {
+		return Util.toInt(config.getString("meteolevel"));
+	}
+	public int getGravitylevel() {
+		return Util.toInt(config.getString("gravitylevel"));
+	}
 	public int getDropExplevel(){
 		return Util.toInt(config.getString("dropexplevel"));
 	}
@@ -113,6 +125,8 @@ public class Config{
 	public String getLvMessage(int i) {
 		return config.getString("lv" + i + "message");
 	}
+
+
 
 
 

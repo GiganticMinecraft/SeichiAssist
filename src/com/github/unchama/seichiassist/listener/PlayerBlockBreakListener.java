@@ -24,15 +24,15 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.Dye;
 
 import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.task.ThunderStormTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	private Config config = SeichiAssist.config;
+	private SeichiAssist plugin = SeichiAssist.plugin;
 	//アクティブスキルの実行
 	@EventHandler
 	public void onPlayerActiveSkillEvent(BlockBreakEvent event){
@@ -69,7 +69,8 @@ public class PlayerBlockBreakListener implements Listener {
 
 		playerdata = SeichiAssist.playermap.get(uuid);
 		//passiveskill[追加経験値獲得]処理実行
-		expman.changeExp(calcExpDrop(playerdata));
+		int exp = calcExpDrop(playerdata);
+		expman.changeExp(exp);
 
 
 
@@ -108,9 +109,24 @@ public class PlayerBlockBreakListener implements Listener {
 			TrialBreak(player,block,tool,expman);
 		}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
 			Explosion(player,block,tool,expman);
+		}else if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
+			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,4);
+		}else if(playerdata.activenum == ActiveSkill.ILLUSION.getNum()){
+			//new IllusionTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,3);
+			//expman.changeExp(-exp);
+		}else if(playerdata.activenum == ActiveSkill.METEO.getNum()){
+			Meteo(player,block,tool,expman);
 		}
 
 	}
+
+	private void Meteo(Player player, Block block, ItemStack tool,
+			ExperienceManager expman) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+
 
 	private void Explosion(Player player,Block block,ItemStack tool,ExperienceManager expman) {
 		//プレイヤーの足のy座標を取得
@@ -207,7 +223,6 @@ public class PlayerBlockBreakListener implements Listener {
 					if(breakblock.getType().equals(material)
 							|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
 							|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
-						//アクティブスキルを発動するとき、プレイヤーの経験値レベルが０で経験値を１ももっていない場合処理を終了
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
 							if(canBreak(player, breakblock)){
 								//アクティブスキル発動
@@ -219,6 +234,9 @@ public class PlayerBlockBreakListener implements Listener {
 				}
 
 			}
+		}
+		if(count>0){
+			block.getWorld().createExplosion(explosionloc, 0, false);
 		}
 
 		if(count>22){
@@ -232,7 +250,6 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(count>2){
 			expman.changeExp(-1);
 		}else if(count>0){
-			block.getWorld().createExplosion(explosionloc, 0, false);
 		}
 	}
 
@@ -308,7 +325,7 @@ public class PlayerBlockBreakListener implements Listener {
 				if(breakblock.getType().equals(material)
 						|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
 						|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
-					//アクティブスキルを発動するとき、プレイヤーの経験値レベルが０で経験値を１ももっていない場合処理を終了
+
 					if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
 						if(canBreak(player, breakblock)){
 							//アクティブスキル発動
@@ -338,7 +355,7 @@ public class PlayerBlockBreakListener implements Listener {
 				if(breakblock.getType().equals(material)
 						|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
 						|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
-					//アクティブスキルを発動するとき、プレイヤーの経験値レベルが０で経験値を１ももっていない場合処理を終了
+
 					if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
 						if(canBreak(player, breakblock)){
 							//アクティブスキル発動
@@ -407,18 +424,18 @@ public class PlayerBlockBreakListener implements Listener {
 				if(canBreak(player, breakblock)){
 					//アクティブスキル発動
 					BreakBlock(player, breakblock, centerofblock, tool);
-					//アクティブスキル発動のために経験値消費
 					//壊した時に白いエフェクトが出るように設定
 					for(int i = 1; i<2 ; i++){
 						breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.EXPLOSION, (byte)0);
 					}
+					//アクティブスキル発動のために経験値消費
 					expman.changeExp(-1);
 				}
 			}
 		}
 	}
 	//他のプラグインの影響があってもブロックを破壊できるのか
-	private boolean canBreak(Player player ,Block breakblock) {
+	public static boolean canBreak(Player player ,Block breakblock) {
 		//壊されるブロックの状態を取得
 		BlockState blockstate = breakblock.getState();
 		//壊されるブロックのデータを取得
@@ -443,7 +460,7 @@ public class PlayerBlockBreakListener implements Listener {
 		return true;
 	}
 
-	private void BreakBlock(Player player,Block breakblock,Location centerofblock,ItemStack tool) {
+	public static void BreakBlock(Player player,Block breakblock,Location centerofblock,ItemStack tool) {
 
 		Material material = breakblock.getType();
 
@@ -473,17 +490,15 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//ツールの耐久値を取得
 		short d = tool.getDurability();
-
 		//耐久力エンチャントに応じて耐久値を減らす
 		tool.setDurability((short)(d + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY))));
-
 		//プレイヤーの統計を１増やす
 		player.incrementStatistic(Statistic.MINE_BLOCK, material);
 
 	}
 
 	@SuppressWarnings("deprecation")
-	private ItemStack dropItemOnTool(Block breakblock, ItemStack tool) {
+	public static ItemStack dropItemOnTool(Block breakblock, ItemStack tool) {
 		ItemStack dropitem = null;
 		Material dropmaterial;
 		Material breakmaterial = breakblock.getType();
@@ -492,11 +507,14 @@ public class PlayerBlockBreakListener implements Listener {
         if (bonus <= 1) {
             bonus = 1;
         }
+        byte b = breakblock.getData();
+        b &= 0x03;
+
 
 		int silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH);
 		if(silktouch > 0){
 			//シルクタッチの処理
-			dropitem = new ItemStack(breakmaterial);
+			dropitem = new ItemStack(breakmaterial,1,b);
 		}else if(fortunelevel > 0 && SeichiAssist.luckmateriallist.contains(breakmaterial)){
 			//幸運の処理
 			switch(breakmaterial){
@@ -568,7 +586,7 @@ public class PlayerBlockBreakListener implements Listener {
 						dropitem = new ItemStack(dropmaterial);
 					}else{
 						//他の石の処理
-						dropitem = new ItemStack(breakmaterial);
+						dropitem = new ItemStack(breakmaterial,1,b);
 					}
 					break;
 				case GRASS:
@@ -578,7 +596,7 @@ public class PlayerBlockBreakListener implements Listener {
 					break;
 				default:
 					//breakblcokのままのアイテムスタックを保存
-					dropitem = new ItemStack(breakmaterial);
+					dropitem = new ItemStack(breakmaterial,1,b);
 					break;
 			}
 		}
@@ -586,11 +604,11 @@ public class PlayerBlockBreakListener implements Listener {
 	}
 
 	//追加経験値の設定
-	private int calcExpDrop(PlayerData playerdata) {
+	public static int calcExpDrop(PlayerData playerdata) {
 		//０～１のランダムな値を取得
 		double rand = Math.random();
 		//もし追加経験値を獲得できるレベルまで達していない時は０を返す
-		if(playerdata.level < config.getDropExplevel()){
+		if(playerdata.level < SeichiAssist.config.getDropExplevel()){
 			return 0;
 		}else if (rand < 0.2){
 			//２０％の確率で１を返す
