@@ -35,9 +35,9 @@ public class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);;
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		skull.setDurability((short) 3);
-		skullmeta.setDisplayName("ガチャ券");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者:" + name);
 		skullmeta.setLore(lore);
@@ -48,7 +48,7 @@ public class Util {
 	public static ItemStack getInventoryOpenItem(String name){
 		ItemStack endframe = new ItemStack(Material.ENDER_PORTAL_FRAME,1);
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ENDER_PORTAL_FRAME);
-		itemmeta.setDisplayName("4次元ポケット");
+		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで開けます"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者:" + name);
 		itemmeta.setLore(lore);

@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist.listener;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,9 +15,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -24,7 +30,7 @@ import com.github.unchama.seichiassist.util.Util;
 public class PlayerRightClickListener implements Listener {
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
-
+	private Config config = SeichiAssist.config;
 	//プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
 	@EventHandler
 	public void onPlayerRightClickGachaEvent(PlayerInteractEvent event){
@@ -115,7 +121,7 @@ public class PlayerRightClickListener implements Listener {
 		EquipmentSlot equipmentslot = event.getHand();
 
 		//アクティブスキルを発動できるレベルに達していない場合処理終了
-		if( playerdata.level < SeichiAssist.config.getActiveMinelevel()){
+		if( playerdata.level < SeichiAssist.config.getDualBreaklevel()){
 			return;
 		}
 
@@ -141,18 +147,42 @@ public class PlayerRightClickListener implements Listener {
 						return;
 					}
 				}
-				Boolean activemineflag = !playerdata.activemineflag;
+				int activemineflagnum = 0;
 
-				if(activemineflag){
-					player.sendMessage(ChatColor.GOLD + "デュアルブレイク:ON");
-				}else{
-					player.sendMessage(ChatColor.GOLD + "デュアルブレイク：OFF");
+				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum() || playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
+					activemineflagnum = (playerdata.activemineflagnum + 1) % 3;
+					switch (activemineflagnum){
+					case 0:
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + "：OFF");
+						break;
+					case 1:
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + ":ON-Above(上向き）");
+						break;
+					case 2:
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + ":ON-Under(下向き）");
+						break;
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
+				}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
+					activemineflagnum = (playerdata.activemineflagnum + 1) % 2;
+					switch (activemineflagnum){
+					case 0:
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + "：OFF");
+						break;
+					case 1:
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + ":ON");
+						break;
+					case 2:
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + ":ON");
+						break;
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 				}
-				player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-				playerdata.activemineflag = activemineflag;
+				playerdata.activemineflagnum = activemineflagnum;
 			}
 		}
 	}
+
 	@EventHandler
 	public void onPlayerEffectToggleEvent(PlayerInteractEvent event){
 		//プレイヤーを取得
@@ -168,17 +198,13 @@ public class PlayerRightClickListener implements Listener {
 
 
 
-		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-			//スニーク状態ではない時処理終了
-			if(!player.isSneaking()){
-				return;
-			}else if(player.getInventory().getItemInMainHand().getType().equals(Material.AIR)){
-				//メインハンドが素手なら処理
+		if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
+			//左クリックの処理
+			if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)){
+				//メインハンドに棒を持っているときの処理
 
-				//設置をキャンセル
-				event.setCancelled(true);
-				//オフハンドのアクション実行時、もしactionがRIGHTCLICKBLOCKなら処理終了todo:そもそもAIRだけにすればいいね
-				if(equipmentslot.equals(EquipmentSlot.OFF_HAND) && action.equals(Action.RIGHT_CLICK_BLOCK)){
+				//オフハンドのアクション実行時処理を終了
+				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
 					return;
 				}
 				//エフェクトフラグを取得
@@ -193,7 +219,75 @@ public class PlayerRightClickListener implements Listener {
 			}
 		}
 	}
+	@EventHandler
+	public void onPlayerActiveSkillUIEvent(PlayerInteractEvent event){
+		//プレイヤーを取得
+		Player player = event.getPlayer();
+		//プレイヤーが起こしたアクションを取得
+		Action action = event.getAction();
+		//アクションを起こした手を取得
+		EquipmentSlot equipmentslot = event.getHand();
+		//プレイヤーデータ
 
+
+		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+			//右クリックの処理
+			if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)){
+				//メインハンドに棒を持っているときの処理
+
+				//オフハンドのアクション実行時処理を終了
+				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+					return;
+				}
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+
+				Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキル選択");
+				ItemStack itemstack;
+				ItemMeta itemmeta;
+				List<String> lore;
+
+				itemstack = new ItemStack(Material.COAL_ORE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
+
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "デュアルブレイク");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "1×2マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getDualBreaklevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：1");
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(10,itemstack);
+
+
+				itemstack = new ItemStack(Material.IRON_ORE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
+				itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トリアルブレイク");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×2マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル："  + config.getTrialBreaklevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：2");
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(12,itemstack);
+
+
+				itemstack = new ItemStack(Material.GOLD_ORE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
+				itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getExplosionlevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：5");
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(14,itemstack);
+
+
+
+
+
+				player.openInventory(inventory);
+			}
+		}
+	}
 	//プレイヤーの拡張インベントリを開くイベント
 	@EventHandler
 	public void onPlayerOpenInventorySkillEvent(PlayerInteractEvent event){
@@ -228,5 +322,7 @@ public class PlayerRightClickListener implements Listener {
 			}
 		}
 	}
+
+
 
 }

@@ -24,6 +24,7 @@ public class Config{
 	public void reloadConfig(){
 		plugin.reloadConfig();
 		config = getConfig();
+		loadGachaData();
 	}
 
 
@@ -61,8 +62,14 @@ public class Config{
 	public int getDefaultMineAmount(){
 		return Util.toInt(config.getString("defaultmineamount"));
 	}
-	public int getActiveMinelevel(){
-		return Util.toInt(config.getString("activeminelevel"));
+	public int getDualBreaklevel(){
+		return Util.toInt(config.getString("dualbreaklevel"));
+	}
+	public int getTrialBreaklevel(){
+		return Util.toInt(config.getString("trialbreaklevel"));
+	}
+	public int getExplosionlevel(){
+		return Util.toInt(config.getString("explosionlevel"));
 	}
 	public int getDropExplevel(){
 		return Util.toInt(config.getString("dropexplevel"));

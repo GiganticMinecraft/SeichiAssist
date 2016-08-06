@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.listener;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import net.coreprotect.CoreProtectAPI;
@@ -22,25 +23,25 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.Dye;
 
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerBlockBreakListener implements Listener {
-	Player player;
-	String name;
-	UUID uuid;
-	PlayerData playerdata;
-
-
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	private Config config = SeichiAssist.config;
 	//アクティブスキルの実行
 	@EventHandler
 	public void onPlayerActiveSkillEvent(BlockBreakEvent event){
+		Player player;
+		UUID uuid;
+		PlayerData playerdata;
+
 		//実行したプレイヤーを取得
 		player = event.getPlayer();
-		//プレイヤー名を取得
-		name = Util.getName(player);
 		//UUIDを取得
 		uuid = player.getUniqueId();
 
@@ -58,7 +59,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//壊されるブロックを取得
 		Block block = event.getBlock();
-		Location centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
+
 		//ブロックのタイプを取得
 		Material material = block.getType();
 		//ブロックタイプがmateriallistに登録されていなければ処理終了
@@ -68,12 +69,16 @@ public class PlayerBlockBreakListener implements Listener {
 
 		playerdata = SeichiAssist.playermap.get(uuid);
 		//passiveskill[追加経験値獲得]処理実行
-		expman.changeExp(calcExpDrop());
+		expman.changeExp(calcExpDrop(playerdata));
+
+
+
 
 		//アクティブスキルフラグがオフの時処理を終了
-		if(!playerdata.activemineflag){
+		if(playerdata.activemineflagnum == 0){
 			return;
 		}
+
 		//プレイヤーインベントリを取得
 		PlayerInventory inventory = player.getInventory();
 		//メインハンドとオフハンドを取得
@@ -85,16 +90,299 @@ public class PlayerBlockBreakListener implements Listener {
 		boolean mainhandtoolflag = SeichiAssist.breakmateriallist.contains(mainhanditem.getType());
 		//オフハンドにツールがあるか
 		boolean offhandtoolflag = SeichiAssist.breakmateriallist.contains(offhanditem.getType());
+
+		if(mainhandtoolflag){
+			//メインハンドの時
+			tool = mainhanditem;
+		}else if(offhandtoolflag){
+			//サブハンドの時
+			return;
+		}else{
+			//どちらにももっていない時処理を終了
+			return;
+		}
+
+		if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
+			DualBreak(player,block,tool,expman);
+		}else if(playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
+			TrialBreak(player,block,tool,expman);
+		}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
+			Explosion(player,block,tool,expman);
+		}
+
+	}
+
+	private void Explosion(Player player,Block block,ItemStack tool,ExperienceManager expman) {
+		//プレイヤーの足のy座標を取得
+		int playerlocy = player.getLocation().getBlockY() - 1 ;
+		//プレイヤーの向いている方角を取得
+		String dir = getCardinalDirection(player);
+		//元ブロックのマテリアルを取得
+		Material material = block.getType();
+		//元ブロックの真ん中の位置を取得
+		Location centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
+
+		//壊されるブロックの宣言
+		Block breakblock;
+		int startx = 0;
+		int starty = -1;
+		int startz = 0;
+		int endx = 0;
+		int endy = +1;
+		int endz = 0;
+		Location explosionloc = null;
+
+		switch (dir){
+			case "N":
+				//北を向いているとき
+				startx = -1;
+				startz = -2;
+				endx = 1;
+				endz = 0;
+				explosionloc = centerofblock.add(0, 0, -1);
+				break;
+			case "E":
+				//東を向いているとき
+				startx = 0;
+				startz = -1;
+				endx = 2;
+				endz = 1;
+				explosionloc = centerofblock.add(1, 0, 0);
+				break;
+			case "S":
+				//南を向いているとき
+				startx = -1;
+				startz = 0;
+				endx = 1;
+				endz = 2;
+				explosionloc = centerofblock.add(0, 0, 1);
+				break;
+			case "W":
+				//西を向いているとき
+				startx = -2;
+				startz = -1;
+				endx = 0;
+				endz = 1;
+				explosionloc = centerofblock.add(-1, 0, 0);
+				break;
+			case "U":
+				//上を向いているとき
+				startx = -1;
+				starty = 0;
+				startz = -1;
+				endx = 1;
+				endy = 2;
+				endz = 1;
+				explosionloc = centerofblock.add(0, 1, 0);
+				break;
+			case "D":
+				//下を向いているとき
+				startx = -1;
+				starty = -2;
+				startz = -1;
+				endx = 1;
+				endy = 0;
+				endz = 1;
+				explosionloc = centerofblock.add(0, -1, 0);
+				break;
+		}
+
+		if(player.getLevel() == 0 && !expman.hasExp(5)){
+			//デバッグ用
+			if(SeichiAssist.DEBUG){
+				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
+			}
+			return;
+		}
+
+		int count = 0;
+		for(int x = startx ; x <= endx ; x++){
+			for(int z = startz ; z <= endz ; z++){
+				for(int y = starty; y <= endy ; y++){
+					if(x==0&&y==0&&z==0){
+						continue;
+					}
+					breakblock = block.getRelative(x, y, z);
+					//もし壊されるブロックがもともとのブロックと同じ種類だった場合
+					if(breakblock.getType().equals(material)
+							|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
+							|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
+						//アクティブスキルを発動するとき、プレイヤーの経験値レベルが０で経験値を１ももっていない場合処理を終了
+						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
+							if(canBreak(player, breakblock)){
+								//アクティブスキル発動
+								BreakBlock(player, breakblock, centerofblock, tool);
+								count ++;
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		if(count>22){
+			expman.changeExp(-5);
+		}else if(count>17){
+			expman.changeExp(-4);
+		}else if(count>12){
+			expman.changeExp(-3);
+		}else if(count>7){
+			expman.changeExp(-2);
+		}else if(count>2){
+			expman.changeExp(-1);
+		}else if(count>0){
+			block.getWorld().createExplosion(explosionloc, 0, false);
+		}
+	}
+
+	private void TrialBreak(Player player,Block block,ItemStack tool,ExperienceManager expman) {
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//playerdataを取得
+		PlayerData playerdata = playermap.get(uuid);
+		//プレイヤーの足のy座標を取得
+		int playerlocy = player.getLocation().getBlockY() - 1 ;
+		//プレイヤーの向いている方角を取得
+		String dir = getCardinalDirection(player);
+		//元ブロックのマテリアルを取得
+		Material material = block.getType();
+		//元ブロックの真ん中の位置を取得
+		Location centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
+
+		//壊されるブロックの宣言
+		Block breakblock;
+		int startx = 0;
+		int starty = playerdata.activemineflagnum == 1 ? 1:-1;
+		int startz = 0;
+		int endx = 0;
+		int endy = 0;
+		int endz = 0;
+
+		switch (dir){
+			case "N":
+				//北を向いているとき
+				startx = -1;
+				startz = 0;
+				endx = 1;
+				endz = 0;
+				break;
+			case "E":
+				//東を向いているとき
+				startx = 0;
+				startz = -1;
+				endx = 0;
+				endz = 1;
+				break;
+			case "S":
+				//南を向いているとき
+				startx = -1;
+				startz = 0;
+				endx = 1;
+				endz = 0;
+				break;
+			case "W":
+				//西を向いているとき
+				startx = 0;
+				startz = -1;
+				endx = 0;
+				endz = 1;
+				break;
+		}
+
+		if(player.getLevel() == 0 && !expman.hasExp(2)){
+			//デバッグ用
+			if(SeichiAssist.DEBUG){
+				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
+			}
+			return;
+		}
+
+		int count = 0;
+		for(int x = startx ; x <= endx ; x++){
+			for(int z = startz ; z <= endz ; z++){
+				//startyの処理
+				breakblock = block.getRelative(x, starty, z);
+
+				//もし壊されるブロックがもともとのブロックと同じ種類だった場合アクティブスキル発動
+				if(breakblock.getType().equals(material)
+						|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
+						|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
+					//アクティブスキルを発動するとき、プレイヤーの経験値レベルが０で経験値を１ももっていない場合処理を終了
+					if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
+						if(canBreak(player, breakblock)){
+							//アクティブスキル発動
+							BreakBlock(player, breakblock, centerofblock, tool);
+							//壊した時に白いエフェクトが出るように設定
+							for(int i = 1; i<2 ; i++){
+								breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.LARGE_SMOKE, (byte)0);
+							}
+							count ++;
+						}
+					}
+
+				}
+				//endyの処理
+				if(x==0&&z==0){
+					continue;
+				}
+
+				breakblock = block.getRelative(x, endy, z);
+				//デバッグ用
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("blocktype"+block.getType().toString());
+					player.sendMessage("breakblocktype"+breakblock.getType().toString());
+				}
+
+				//もし壊されるブロックがもともとのブロックと同じ種類だった場合アクティブスキル発動
+				if(breakblock.getType().equals(material)
+						|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
+						|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
+					//アクティブスキルを発動するとき、プレイヤーの経験値レベルが０で経験値を１ももっていない場合処理を終了
+					if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
+						if(canBreak(player, breakblock)){
+							//アクティブスキル発動
+							BreakBlock(player, breakblock, centerofblock, tool);
+							//壊した時に白いエフェクトが出るように設定
+							for(int i = 1; i<2 ; i++){
+								breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.LARGE_SMOKE, (byte)0);
+							}
+							count ++;
+						}
+					}
+
+				}
+			}
+		}
+		if(count>3){
+			expman.changeExp(-2);
+		}else if(count>0){
+			expman.changeExp(-1);
+
+		}
+	}
+
+	private void DualBreak(Player player,Block block,ItemStack tool,ExperienceManager expman) {
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//playerdataを取得
+		PlayerData playerdata = playermap.get(uuid);
+		//プレイヤーの足元のy座標を取得
+		int playerlocy = player.getLocation().getBlockY() - 1 ;
+
+		//元ブロックのマテリアルを取得
+		Material material = block.getType();
+		//元ブロックの真ん中の位置を取得
+		Location centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
 		//壊されるブロックの取得
-		Block breakblock = block.getRelative(0,1,0);
-		//壊されるブロックの状態を取得
-		BlockState blockstate = breakblock.getState();
-		//壊されるブロックのデータを取得
-		@SuppressWarnings("deprecation")
-		byte data = blockstate.getData().getData();
-
-
-
+		Block breakblock = null;
+		if(playerdata.activemineflagnum == 1){
+			breakblock = block.getRelative(0,1,0);
+		}else if(playerdata.activemineflagnum == 2){
+			breakblock = block.getRelative(0,-1,0);
+		}else {
+			return;
+		}
 
 		//デバッグ用
 		if(SeichiAssist.DEBUG){
@@ -103,18 +391,9 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		//もし壊されるブロックがもともとのブロックと同じ種類だった場合アクティブスキル発動
-		if(breakblock.getType().equals(material)|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))){
-			//両手の時処理を終了
-			if(mainhandtoolflag){
-				//メインハンドの時
-				tool = mainhanditem;
-			}else if(offhandtoolflag){
-				//サブハンドの時
-				tool = offhanditem;
-			}else{
-				//どちらにももっていない時処理を終了
-				return;
-			}
+		if(breakblock.getType().equals(material)
+				|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
+				|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
 			//アクティブスキルを発動するとき、プレイヤーの経験値レベルが０で経験値を１ももっていない場合処理を終了
 			if(player.getLevel()==0 && !expman.hasExp(1)){
 				//デバッグ用
@@ -123,61 +402,84 @@ public class PlayerBlockBreakListener implements Listener {
 				}
 				return;
 			}
-			//壊されるブロックがワールドガード範囲だった場合処理を終了
-			if(!Util.getWorldGuard().canBuild(player, breakblock.getLocation())){
-				player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
-				return;
+
+			if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
+				if(canBreak(player, breakblock)){
+					//アクティブスキル発動
+					BreakBlock(player, breakblock, centerofblock, tool);
+					//アクティブスキル発動のために経験値消費
+					//壊した時に白いエフェクトが出るように設定
+					for(int i = 1; i<2 ; i++){
+						breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.EXPLOSION, (byte)0);
+					}
+					expman.changeExp(-1);
+				}
 			}
-			//コアプロテクトのクラスを取得
-			CoreProtectAPI CoreProtect = Util.getCoreProtect();
-			//破壊ログを設定
-			Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
-			//もし失敗したらプレイヤーに報告し処理を終了
-			if(!success){
-				player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
-				return;
-			}
-			//アイテムをドロップさせる
-			breakblock.getWorld().dropItemNaturally(centerofblock,dropItemOnTool(breakblock,tool));
-			//ブロックを空気に変える
-			breakblock.setType(Material.AIR);
-
-
-			//あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
-			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,breakblock.getType());
-			//壊した時に白いエフェクトが出るように設定
-			for(int i = 1; i<2 ; i++){
-				breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.EXPLOSION, (byte)0);
-			}
-			// Effect.ENDER_SIGNALこれかっこいい
-			// Effect.EXPLOSION 範囲でかい
-			// Effect.WITCH_MAGIC 小さい 紫
-			// Effect.SPELL かわいい
-			// Effect.WITHER_SHOOT 音だけ、結構うるさい
-			// Effect.WITHER_BREAK_BLOCK これまた音だけ　うるせえ
-			// Effect.COLOURED_DUST エフェクトちっちゃすぎ
-			// Effect.LARGE_SMOKE EXPLOSIONの黒版
-			// Effect.MOBSPAWNER_FLAMES 火の演出　すき
-			// Effect.SMOKE　黒いすすを噴き出してる
-			// Effect.HAPPY_VILLAGER 緑のパーティクル　けっこう長く残る
-			// Effect.INSTANT_SPELL かなりいい白いパーティクル
-			//expman.changeExp(calcExpDrop(playerdata));
-			//orb.setExperience(calcExpDrop(blockexpdrop,playerdata));
-
-			//アクティブスキル発動のために経験値消費
-			expman.changeExp(-1);
-
-			//ツールの耐久値を取得
-			short d = tool.getDurability();
-			//耐久力エンチャントに応じて耐久値を減らす
-			tool.setDurability((short)(d + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY))));
-			//todo:幸運エンチャントに応じてドロップ量を設定
-
-			//todo:シルクエンチャントに応じてドロップするアイテムを設定
-
-			//プレイヤーの統計を１増やす
-			player.incrementStatistic(Statistic.MINE_BLOCK, material);
 		}
+	}
+	//他のプラグインの影響があってもブロックを破壊できるのか
+	private boolean canBreak(Player player ,Block breakblock) {
+		//壊されるブロックの状態を取得
+		BlockState blockstate = breakblock.getState();
+		//壊されるブロックのデータを取得
+		@SuppressWarnings("deprecation")
+		byte data = blockstate.getData().getData();
+
+
+		//壊されるブロックがワールドガード範囲だった場合処理を終了
+		if(!Util.getWorldGuard().canBuild(player, breakblock.getLocation())){
+			player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
+			return false;
+		}
+		//コアプロテクトのクラスを取得
+		CoreProtectAPI CoreProtect = Util.getCoreProtect();
+		//破壊ログを設定
+		Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
+		//もし失敗したらプレイヤーに報告し処理を終了
+		if(!success){
+			player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
+			return false;
+		}
+		return true;
+	}
+
+	private void BreakBlock(Player player,Block breakblock,Location centerofblock,ItemStack tool) {
+
+		Material material = breakblock.getType();
+
+
+		//アイテムをドロップさせる
+		breakblock.getWorld().dropItemNaturally(centerofblock,dropItemOnTool(breakblock,tool));
+		//ブロックを空気に変える
+		breakblock.setType(Material.AIR);
+
+		//あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
+		breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,breakblock.getType());
+
+		// Effect.ENDER_SIGNALこれかっこいい
+		// Effect.EXPLOSION 範囲でかい
+		// Effect.WITCH_MAGIC 小さい 紫
+		// Effect.SPELL かわいい
+		// Effect.WITHER_SHOOT 音だけ、結構うるさい
+		// Effect.WITHER_BREAK_BLOCK これまた音だけ　うるせえ
+		// Effect.COLOURED_DUST エフェクトちっちゃすぎ
+		// Effect.LARGE_SMOKE EXPLOSIONの黒版
+		// Effect.MOBSPAWNER_FLAMES 火の演出　すき
+		// Effect.SMOKE　黒いすすを噴き出してる
+		// Effect.HAPPY_VILLAGER 緑のパーティクル　けっこう長く残る
+		// Effect.INSTANT_SPELL かなりいい白いパーティクル
+		//expman.changeExp(calcExpDrop(playerdata));
+		//orb.setExperience(calcExpDrop(blockexpdrop,playerdata));
+
+		//ツールの耐久値を取得
+		short d = tool.getDurability();
+
+		//耐久力エンチャントに応じて耐久値を減らす
+		tool.setDurability((short)(d + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY))));
+
+		//プレイヤーの統計を１増やす
+		player.incrementStatistic(Statistic.MINE_BLOCK, material);
+
 	}
 
 	@SuppressWarnings("deprecation")
@@ -189,9 +491,6 @@ public class PlayerBlockBreakListener implements Listener {
         int bonus = (int) (Math.random() * ((fortunelevel + 2)) - 1);
         if (bonus <= 1) {
             bonus = 1;
-        }
-        if(SeichiAssist.DEBUG){
-        	 Util.sendEveryMessage("bonus値:" + bonus);
         }
 
 		int silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH);
@@ -224,6 +523,10 @@ public class PlayerBlockBreakListener implements Listener {
 					break;
 				case QUARTZ_ORE:
 					dropmaterial = Material.QUARTZ;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case GRAVEL:
+					dropmaterial = Material.FLINT;
 					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
 				default:
@@ -268,6 +571,11 @@ public class PlayerBlockBreakListener implements Listener {
 						dropitem = new ItemStack(breakmaterial);
 					}
 					break;
+				case GRASS:
+					//芝生の処理
+					dropmaterial = Material.DIRT;
+					dropitem = new ItemStack(dropmaterial);
+					break;
 				default:
 					//breakblcokのままのアイテムスタックを保存
 					dropitem = new ItemStack(breakmaterial);
@@ -278,11 +586,11 @@ public class PlayerBlockBreakListener implements Listener {
 	}
 
 	//追加経験値の設定
-	private int calcExpDrop() {
+	private int calcExpDrop(PlayerData playerdata) {
 		//０～１のランダムな値を取得
 		double rand = Math.random();
 		//もし追加経験値を獲得できるレベルまで達していない時は０を返す
-		if(playerdata.level < SeichiAssist.config.getDropExplevel()){
+		if(playerdata.level < config.getDropExplevel()){
 			return 0;
 		}else if (rand < 0.2){
 			//２０％の確率で１を返す
@@ -300,5 +608,30 @@ public class PlayerBlockBreakListener implements Listener {
 		return 1;
 	}
 
+	public static String getCardinalDirection(Player player) {
+		double rotation = (player.getLocation().getYaw() + 180) % 360;
+		Location loc = player.getLocation();
+		float pitch = loc.getPitch();
+		if (rotation < 0) {
+		rotation += 360.0;
+		}
 
+		if(pitch <= -30){
+			return "U";
+		}else if(pitch >= 25){
+			return "D";
+		}else if (0 <= rotation && rotation < 45.0) {
+			return "N";
+		}else if (45.0 <= rotation && rotation < 135.0) {
+			return "E";
+		}else if (135.0 <= rotation && rotation < 225.0) {
+			return "S";
+		}else if (225.0 <= rotation && rotation < 315.0) {
+			return "W";
+		}else if (315.0 <= rotation && rotation < 360.0) {
+		return "N";
+		} else {
+		return null;
+		}
+	}
 }
