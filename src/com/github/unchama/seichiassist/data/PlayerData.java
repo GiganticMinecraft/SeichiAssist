@@ -144,9 +144,13 @@ public class PlayerData {
 		String displayname = Util.getName(p);
 		if(p.isOp()){
 			//管理人の場合
-			displayname = ChatColor.RED + "<管理人>" + name + ChatColor.WHITE;
+			displayname = ChatColor.RED + "<管理人>" + name;
 		}
-		displayname =  "[ Lv" + level + " ]" + displayname;
+		if(level == 101){
+			displayname =  ChatColor.GOLD + "[ GOD ]" + displayname + ChatColor.WHITE;
+		}else{
+			displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
+		}
 
 		p.setDisplayName(displayname);
 		p.setPlayerListName(displayname);
@@ -158,7 +162,7 @@ public class PlayerData {
 		//現在のランクの次を取得
 		int i = level + 1;
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= 100){
+		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= 101){
 			if(!SeichiAssist.DEBUG){
 				//レベルアップ時のメッセージ
 				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");

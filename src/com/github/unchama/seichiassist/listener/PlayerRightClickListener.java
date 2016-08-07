@@ -294,14 +294,10 @@ public class PlayerRightClickListener implements Listener {
 
 				itemstack = new ItemStack(Material.LAPIS_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
-				itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "イリュージョン");
-				/*lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "17×17×17マス(r300)破壊"
-												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getIllusionlevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：50");
-												*/
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
-									, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getIllusionlevel()
-									, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：50");
+				itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×5マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getBlizzardlevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：40");
 
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -311,13 +307,9 @@ public class PlayerRightClickListener implements Listener {
 				itemstack = new ItemStack(Material.EMERALD_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
 				itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ");
-				/*lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊×10×5"
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "9*9*7マス破壊"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getMeteolevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：200");*/
-
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getMeteolevel()
-				, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：200");
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：70");
 
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);

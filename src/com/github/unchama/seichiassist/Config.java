@@ -74,8 +74,8 @@ public class Config{
 	public int getThunderStormlevel() {
 		return Util.toInt(config.getString("thunderstormlevel"));
 	}
-	public int getIllusionlevel() {
-		return Util.toInt(config.getString("illusionlevel"));
+	public int getBlizzardlevel() {
+		return Util.toInt(config.getString("blizzardlevel"));
 	}
 	public int getMeteolevel() {
 		return Util.toInt(config.getString("meteolevel"));
@@ -83,8 +83,23 @@ public class Config{
 	public int getGravitylevel() {
 		return Util.toInt(config.getString("gravitylevel"));
 	}
-	public int getDropExplevel(){
-		return Util.toInt(config.getString("dropexplevel"));
+	public int getDropExplevel1() {
+		return Util.toInt(config.getString("dropexplevel1"));
+	}
+	public int getDropExplevel2() {
+		return Util.toInt(config.getString("dropexplevel2"));
+	}
+	public int getDropExplevel3() {
+		return Util.toInt(config.getString("dropexplevel3"));
+	}
+	public int getDropExplevel4() {
+		return Util.toInt(config.getString("dropexplevel4"));
+	}
+	public int getDropExplevel5() {
+		return Util.toInt(config.getString("dropexplevel5"));
+	}
+	public int getDropExplevel6() {
+		return Util.toInt(config.getString("dropexplevel6"));
 	}
 	public int getPassivePortalInventorylevel() {
 		return Util.toInt(config.getString("passiveportalinventorylevel"));
@@ -125,6 +140,8 @@ public class Config{
 	public String getLvMessage(int i) {
 		return config.getString("lv" + i + "message");
 	}
+
+
 
 
 

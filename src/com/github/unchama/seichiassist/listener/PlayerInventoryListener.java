@@ -131,12 +131,12 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}/*else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
-				if(playerdata.activenum == ActiveSkill.ILLUSION.getNum()){
+			}else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
+				if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
 
-				}else if(playerdata.level >= config.getIllusionlevel() && playerdata.activenum != ActiveSkill.ILLUSION.getNum()){
-					playerdata.activenum = ActiveSkill.ILLUSION.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:イリュージョン");
+				}else if(playerdata.level >= config.getBlizzardlevel() && playerdata.activenum != ActiveSkill.BLIZZARD.getNum()){
+					playerdata.activenum = ActiveSkill.BLIZZARD.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ブリザード");
 					playerdata.activemineflagnum = 1;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}else{
@@ -155,7 +155,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
+			}/*else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
 				if(playerdata.activenum == ActiveSkill.GRAVITY.getNum()){
 
 				}else if(playerdata.level >= config.getGravitylevel() && playerdata.activenum != ActiveSkill.GRAVITY.getNum()){

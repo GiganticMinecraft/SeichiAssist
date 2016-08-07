@@ -56,7 +56,10 @@ public class ThunderStormTaskRunnable extends BukkitRunnable{
 			int endy = +1;
 			int endz = 0;
 			Location explosionloc = null;
-			player.sendMessage("" + thundernum);
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("" + thundernum);
+			}
+
 			switch (dir){
 				case "N":
 					//北を向いているとき
@@ -132,12 +135,18 @@ public class ThunderStormTaskRunnable extends BukkitRunnable{
 						//もし壊されるブロックがもともとのブロックと同じ種類だった場合
 						if(breakblock.getType().equals(material)
 								|| (material.equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
-								|| (material.equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
+								|| (material.equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
+								|| breakblock.getType().equals(Material.LAVA)
+								){
 							if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
 								if(PlayerBlockBreakListener.canBreak(player, breakblock)){
-									//アクティブスキル発動
-									PlayerBlockBreakListener.BreakBlock(player, breakblock, centerofblock, tool);
-									count ++;
+									if(breakblock.getType().equals(Material.LAVA)){
+										breakblock.setType(Material.AIR);
+									}else{
+										//アクティブスキル発動
+										PlayerBlockBreakListener.BreakBlock(player, breakblock, centerofblock, tool,false);
+										count ++;
+									}
 								}
 							}
 						}
@@ -146,7 +155,7 @@ public class ThunderStormTaskRunnable extends BukkitRunnable{
 				}
 			}
 			if(count > 0){
-				block.getWorld().strikeLightningEffect(explosionloc);
+				block.getWorld().spigot().strikeLightningEffect(explosionloc,true);
 				block.getWorld().createExplosion(explosionloc, 0, false);
 			}
 
