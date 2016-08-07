@@ -1,12 +1,15 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.util;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Builder;
@@ -17,25 +20,40 @@ import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class Util {
 	static private FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
 		FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST,
 		FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR, };
-	public static ItemStack getskull(){
+	public static ItemStack getskull(String name){
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = (SkullMeta) skull.getItemMeta();
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		skull.setDurability((short) 3);
-		skullmeta.setDisplayName("ガチャ券");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者:" + name);
+		skullmeta.setLore(lore);
 		skullmeta.setOwner("unchama");
 		skull.setItemMeta(skullmeta);
 		return skull;
+	}
+	public static ItemStack getInventoryOpenItem(String name){
+		ItemStack endframe = new ItemStack(Material.ENDER_PORTAL_FRAME,1);
+		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ENDER_PORTAL_FRAME);
+		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで開けます"
+										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者:" + name);
+		itemmeta.setLore(lore);
+		endframe.setItemMeta(itemmeta);
+		return endframe;
 	}
 	public static int getOnlinePlayer(){
 		return Bukkit.getOnlinePlayers().size();
@@ -50,8 +68,8 @@ public class Util {
 		BigDecimal bi = new BigDecimal(String.valueOf(d));
 		return bi.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
 	}
-	public static boolean isPlayerInventryNoEmpty(Player player){
-		return (player.getInventory().firstEmpty()== -1);
+	public static boolean isPlayerInventryFill(Player player){
+		return (player.getInventory().firstEmpty() == -1);
 	}
 	public static void dropItem(Player player,ItemStack itemstack){
 		player.getWorld().dropItemNaturally(player.getLocation(), itemstack);
@@ -112,6 +130,7 @@ public class Util {
 		FireworkMeta meta = firework.getFireworkMeta();
 		Builder effect = FireworkEffect.builder();
 		Random rand = new Random();
+
 		// 形状をランダムに決める
 		effect.with(types[rand.nextInt(types.length)]);
 
@@ -178,5 +197,22 @@ public class Util {
 	    }
 
 	    return (WorldGuardPlugin) plugin;
+	}
+	public static boolean containsGacha(Player player) {
+		org.bukkit.inventory.ItemStack[] inventory = player.getInventory().getStorageContents();
+		Material material;
+		SkullMeta skullmeta;
+		for (int i = 0; i < inventory.length; i++) {
+			material = inventory[i].getType();
+			if(material.equals(Material.SKULL_ITEM)){
+				skullmeta = (SkullMeta)inventory[i].getItemMeta();
+				if(skullmeta.hasOwner()){
+					if(skullmeta.getOwner().equals("unchama")){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }

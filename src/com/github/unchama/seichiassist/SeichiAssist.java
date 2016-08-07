@@ -20,9 +20,12 @@ import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
 import com.github.unchama.seichiassist.listener.PlayerJoinListener;
+import com.github.unchama.seichiassist.listener.PlayerQuitListener;
 import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
@@ -30,7 +33,7 @@ import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 
 public class SeichiAssist extends JavaPlugin{
 	public static SeichiAssist plugin;
-	public static Boolean DEBUG = true;
+	public static Boolean DEBUG = false;
 
 	public static String PLAYERDATA_TABLENAME = "playerdata";
 	public static String GACHADATA_TABLENAME = "gachadata";
@@ -50,7 +53,7 @@ public class SeichiAssist extends JavaPlugin{
 	//Playerdataに依存するデータリスト
 	public static final HashMap<UUID,PlayerData> playermap = new HashMap<UUID,PlayerData>();
 
-	//ranklvの閾値
+	//lvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
 			0,15,49,106,198,333,
 			705,1265,2105,3347,4589,
@@ -62,27 +65,40 @@ public class SeichiAssist extends JavaPlugin{
 			262817,295841,335469,383022,434379,
 			489844,549746,614440,684309,759767,
 			841261,929274,1024328,1126986,1237856,
-			1357595,1486913,1626576,1777412,1940314,
-			2116248,2306256,2511464,2733088,2954712,//60
-			3176336,3397960,3619584,3841208,4080561,
-			4339062));
+			1362856,1487856,1612856,1737856,1862856,
+			1987856,2112856,2237856,2362856,2487856,
+			2637856,2787856,2937856,3087856,3237856,
+			3387856,3537856,3687856,3837856,3987856,
+			4162856,4337856,4512856,4687856,4862856,
+			5037856,5212856,5387856,5562856,5737856,
+			5937856,6137856,6337856,6537856,6737856,
+			6937856,7137856,7337856,7537856,7737856,
+			7962856,8187856,8412856,8637856,8862856,
+			9087856,9312856,9537856,9762856,10000000//100
+			));
 	public static final List<Material> materiallist = new ArrayList<Material>(Arrays.asList(
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
 			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
 			,Material.COAL_ORE,Material.IRON_ORE,Material.GOLD_ORE,Material.DIAMOND_ORE
 			,Material.LAPIS_ORE,Material.EMERALD_ORE,Material.REDSTONE_ORE,Material.SAND
 			,Material.SANDSTONE,Material.QUARTZ_ORE,Material.END_BRICKS,Material.ENDER_STONE
-			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN
+			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN,Material.MAGMA
+			));
+	public static final List<Material> luckmateriallist = new ArrayList<Material>(Arrays.asList(
+			Material.COAL_ORE,Material.DIAMOND_ORE,Material.LAPIS_ORE,Material.EMERALD_ORE,
+			Material.REDSTONE_ORE,Material.QUARTZ_ORE,Material.GRAVEL
 			));
 	public static final List<Material> breakmateriallist = new ArrayList<Material>(Arrays.asList(
-			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE
+			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE,
+			Material.WOOD_PICKAXE,Material.WOOD_AXE,Material.WOOD_SPADE,
+			Material.IRON_PICKAXE,Material.IRON_AXE,Material.IRON_SPADE,
+			Material.GOLD_PICKAXE,Material.GOLD_AXE,Material.GOLD_SPADE
 			));
 	public static final List<Material> cancelledmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.CHEST,Material.ENDER_CHEST,Material.TRAPPED_CHEST,Material.ANVIL,Material.ARMOR_STAND
 			,Material.BEACON,Material.BIRCH_DOOR,Material.BIRCH_FENCE_GATE,Material.BIRCH_WOOD_STAIRS
 			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
 			));
-
 
 	@Override
 	public void onEnable(){
@@ -108,22 +124,27 @@ public class SeichiAssist extends JavaPlugin{
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerRightClickListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), this);
 
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){
+			//UUIDを取得
 			UUID uuid = p.getUniqueId();
-			PlayerData playerdata = new PlayerData(p);
-			//名前を取得
-			String name = Util.getName(p);
-			//データに行を追加
-			sql.insertname(SeichiAssist.PLAYERDATA_TABLENAME,name, uuid);
+			//プレイヤーデータを生成
+			PlayerData playerdata = sql.loadPlayerData(p);
+			if(playerdata==null){
+				p.sendMessage("playerdataの読み込みエラーです。管理者に報告してください。");
+				continue;
+			}
+			//統計量を取得
+			int mines = MineBlock.calcMineBlock(p);
+			playerdata.updata(p,mines);
+			playerdata.giveSorryForBug(p);
 			//プレイヤーマップにプレイヤーを追加
-			playermap.put(p.getUniqueId(),playerdata);
-			//データの初期設定
-			playerdata.updata();
-			playerdata.giveSorryForBug();
+			playermap.put(uuid,playerdata);
 		}
 
 		getLogger().info("SeichiPlugin is Enabled!");
@@ -157,6 +178,11 @@ public class SeichiAssist extends JavaPlugin{
 		config.saveGachaData();
 		getLogger().info("ガチャを保存しました．");
 
+		for(PlayerData playerdata : playermap.values()){
+			if(!sql.savePlayerData(playerdata)){
+				getLogger().info(playerdata.name + "のデータ保存に失敗しました。");
+			}
+		}
 		sql.disconnect();
 
 		//configをsave
