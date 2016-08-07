@@ -506,7 +506,7 @@ public class Sql{
  	 				playerdata.activemineflagnum = rs.getInt("activemineflagnum");
  	 				playerdata.activenum = rs.getInt("activenum");
  	 				playerdata.gachapoint = rs.getInt("gachapoint");
- 	 				playerdata.messageflag = rs.getBoolean("gachaflag");
+ 	 				playerdata.gachaflag = rs.getBoolean("gachaflag");
  	 				playerdata.level = rs.getInt("level");
  	 				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
  	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());

@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -84,9 +85,14 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 
+
+
 		//インベントリ名が以下の時処理
 		if(topinventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メニュー")){
 			event.setCancelled(true);
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
 			PlayerData playerdata = playermap.get(uuid);
 			if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
 				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
