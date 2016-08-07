@@ -34,6 +34,8 @@ public class PlayerData {
 	public int gachapoint;
 	//最後のガチャポイントデータ
 	public int lastgachapoint;
+	//ガチャ受け取りフラグ
+	public boolean gachaflag;
 	//今回の採掘速度上昇レベルを格納
 	public int minespeedlv;
 	//前回の採掘速度上昇レベルを格納
@@ -62,6 +64,7 @@ public class PlayerData {
 		halfhourblock = new MineBlock();
 		gachapoint = 0;
 		lastgachapoint = 0;
+		gachaflag = true;
 		minespeedlv = 0;
 		lastminespeedlv = 0;
 		effectdatalist = new ArrayList<EffectData>();

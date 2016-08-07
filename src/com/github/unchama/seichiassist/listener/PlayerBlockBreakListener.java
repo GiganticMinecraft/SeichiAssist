@@ -630,18 +630,24 @@ public class PlayerBlockBreakListener implements Listener {
 				return 0;
 			}
 		}else if (playerdata.level < 28){
-			//１
-			return SeichiAssist.config.getDropExplevel2();
+			//60%で１
+			if(rand < 0.6){
+				return SeichiAssist.config.getDropExplevel2();
+			}else{
+				return 0;
+			}
+
 		}else if (playerdata.level < 38){
-			//3
+			//1
 			return SeichiAssist.config.getDropExplevel3();
 		}else if (playerdata.level < 48){
-			//6
+			//2
 			return SeichiAssist.config.getDropExplevel4();
 		}else if (playerdata.level < 58){
-			//12
+			//3
 			return SeichiAssist.config.getDropExplevel5();
 		}else{
+			//4
 			return SeichiAssist.config.getDropExplevel6();
 		}
 	}

@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,6 +17,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -24,6 +26,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -223,11 +226,14 @@ public class PlayerRightClickListener implements Listener {
 	public void onPlayerActiveSkillUIEvent(PlayerInteractEvent event){
 		//プレイヤーを取得
 		Player player = event.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
 		//プレイヤーが起こしたアクションを取得
 		Action action = event.getAction();
 		//アクションを起こした手を取得
 		EquipmentSlot equipmentslot = event.getHand();
 		//プレイヤーデータ
+		PlayerData playerdata = playermap.get(uuid);
 
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
@@ -242,14 +248,40 @@ public class PlayerRightClickListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 
-				Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキル選択");
+				Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メニュー");
 				ItemStack itemstack;
 				ItemMeta itemmeta;
+				SkullMeta skullmeta;
 				List<String> lore;
+
+
+				itemstack = new ItemStack(Material.SKULL_ITEM,1);
+				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+				itemstack.setDurability((short) 3);
+				skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
+				, ChatColor.RESET + "" +  ChatColor.AQUA + "破壊したブロック数:" + MineBlock.calcMineBlock(player)
+						);
+
+				skullmeta.setLore(lore);
+				skullmeta.setOwner(playerdata.name);
+				itemstack.setItemMeta(skullmeta);
+				inventory.setItem(0,itemstack);
+
+				itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキル選択");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.YELLOW + "選択するとアクティブスキルがONになります");
+				itemmeta.setLore(lore);
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(9,itemstack);
 
 				itemstack = new ItemStack(Material.COAL_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
-
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "デュアルブレイク");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "1×2マス破壊"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getDualBreaklevel()
@@ -261,6 +293,7 @@ public class PlayerRightClickListener implements Listener {
 
 				itemstack = new ItemStack(Material.IRON_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トリアルブレイク");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×2マス破壊"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル："  + config.getTrialBreaklevel()
@@ -272,6 +305,7 @@ public class PlayerRightClickListener implements Listener {
 
 				itemstack = new ItemStack(Material.GOLD_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getExplosionlevel()
@@ -283,6 +317,7 @@ public class PlayerRightClickListener implements Listener {
 
 				itemstack = new ItemStack(Material.REDSTONE_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サンダーストーム");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊×5"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getThunderStormlevel()
@@ -294,6 +329,7 @@ public class PlayerRightClickListener implements Listener {
 
 				itemstack = new ItemStack(Material.LAPIS_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×5マス破壊"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getBlizzardlevel()
@@ -306,6 +342,7 @@ public class PlayerRightClickListener implements Listener {
 
 				itemstack = new ItemStack(Material.EMERALD_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "9*9*7マス破壊"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getMeteolevel()
@@ -318,6 +355,7 @@ public class PlayerRightClickListener implements Listener {
 
 				itemstack = new ItemStack(Material.DIAMOND_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.DARK_GRAY + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "グラビティ");
 				/*lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "16×16×256マス破壊"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getGravitylevel()
@@ -332,7 +370,49 @@ public class PlayerRightClickListener implements Listener {
 				inventory.setItem(16,itemstack);
 
 
+				itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキル選択");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.YELLOW + "選択するとアクティブスキルがONになります");
+				itemmeta.setLore(lore);
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(17,itemstack);
 
+
+				itemstack = new ItemStack(Material.SKULL_ITEM,1);
+				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+				itemstack.setDurability((short) 3);
+				skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガチャ券を受け取る");
+				int gachaget = (int) playerdata.gachapoint/1000;
+				if(gachaget != 0){
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + gachaget + "枚"
+					, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
+				}else{
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません"
+					, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
+				}
+				skullmeta.setLore(lore);
+				skullmeta.setOwner("unchama");
+				itemstack.setItemMeta(skullmeta);
+				inventory.setItem(27,itemstack);
+
+				itemstack = new ItemStack(Material.STONE_BUTTON,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_BUTTON);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "受け取り方法");
+				if(playerdata.gachaflag){
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "毎分受け取っています"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							);
+				}else {
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "毎分受け取っていません"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							);
+				}
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(28,itemstack);
 
 
 				player.openInventory(inventory);
