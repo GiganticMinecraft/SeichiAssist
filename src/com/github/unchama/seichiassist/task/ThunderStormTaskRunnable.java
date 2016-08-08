@@ -13,6 +13,10 @@ import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 
 public class ThunderStormTaskRunnable extends BukkitRunnable{
+	/*
+	private SeichiAssist plugin = SeichiAssist.plugin;
+	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
+	*/
 	private Player player;
 	private Block block;
 	private ItemStack tool;
@@ -22,8 +26,10 @@ public class ThunderStormTaskRunnable extends BukkitRunnable{
 	private String dir;
 	private Material material;
 	private Location centerofblock;
+	private boolean firsttimeflag;
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public ThunderStormTaskRunnable(Player player,Block block,ItemStack tool, ExperienceManager expman) {
+		firsttimeflag = true;
 		this.player = player;
 		this.block = block;
 		this.tool = tool;
@@ -42,6 +48,21 @@ public class ThunderStormTaskRunnable extends BukkitRunnable{
 	}
 	@Override
 	public void run() {
+
+		if(firsttimeflag){
+			/*
+			//クールダウン生成
+			playermap = SeichiAssist.playermap;
+			PlayerData playerdata = playermap.get(player.getUniqueId());
+			playerdata.skillcanbreakflag = false;
+			new CoolDownTaskRunnable(player).runTaskLater(plugin,20);
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("クールダウン生成");
+			}
+			*/
+			firsttimeflag = false;
+		}
+
 		if(thundernum > 4){
 			cancel();
 		}else{
@@ -115,7 +136,7 @@ public class ThunderStormTaskRunnable extends BukkitRunnable{
 					break;
 			}
 
-			if(!expman.hasExp(4)){
+			if(!expman.hasExp(16)){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -160,13 +181,13 @@ public class ThunderStormTaskRunnable extends BukkitRunnable{
 			}
 
 			if(count>21){
-				expman.changeExp(-4);
+				expman.changeExp(-16);
 			}else if(count>14){
-				expman.changeExp(-3);
+				expman.changeExp(-12);
 			}else if(count>7){
-				expman.changeExp(-2);
+				expman.changeExp(-8);
 			}else if(count>0){
-				expman.changeExp(-1);
+				expman.changeExp(-4);
 			}
 		}
 	}

@@ -52,6 +52,8 @@ public class PlayerData {
 	public Inventory inventory;
 	//アクティブスキル番号を格納
 	public int activenum;
+	//スキルクールダウン用フラグ
+	public boolean skillcanbreakflag;
 
 
 	public PlayerData(Player player){
@@ -73,6 +75,7 @@ public class PlayerData {
 		activemineflagnum = 0;
 		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*3 ,"拡張インベントリ");
 		activenum = 1;
+		skillcanbreakflag = true;
 	}
 
 	//プレイヤーデータを最新の状態に更新

@@ -297,7 +297,7 @@ public class PlayerRightClickListener implements Listener {
 				itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トリアルブレイク");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×2マス破壊"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル："  + config.getTrialBreaklevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：2");
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：4");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(11,itemstack);
@@ -309,7 +309,7 @@ public class PlayerRightClickListener implements Listener {
 				itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getExplosionlevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：5");
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：10");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(12,itemstack);
@@ -320,8 +320,9 @@ public class PlayerRightClickListener implements Listener {
 				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サンダーストーム");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊×5"
+												, ChatColor.RESET + "" +  ChatColor.GRAY + "クールダウン：2秒"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getThunderStormlevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：20");
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：80");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(13,itemstack);
@@ -332,8 +333,9 @@ public class PlayerRightClickListener implements Listener {
 				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×5マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.GRAY + "クールダウン：2秒"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getBlizzardlevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：40");
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：240");
 
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -345,8 +347,9 @@ public class PlayerRightClickListener implements Listener {
 				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "9*9*7マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.GRAY + "クールダウン：2秒"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getMeteolevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：70");
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：560");
 
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);

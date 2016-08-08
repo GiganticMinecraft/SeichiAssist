@@ -15,6 +15,10 @@ import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 
 public class BlizzardTaskRunnable extends BukkitRunnable{
+	/*
+	private SeichiAssist plugin = SeichiAssist.plugin;
+	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
+	*/
 	private Player player;
 	private Block block;
 	private ItemStack tool;
@@ -24,6 +28,7 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 	private String dir;
 	private Material material;
 	private Location centerofblock;
+	private boolean firsttimeflag;
 	//壊されるブロックの宣言
 	Block breakblock;
 	int startx;
@@ -34,6 +39,7 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 	int endz;
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public BlizzardTaskRunnable(Player player,Block block,ItemStack tool, ExperienceManager expman) {
+		firsttimeflag = true;
 		this.player = player;
 		this.block = block;
 		this.tool = tool;
@@ -50,7 +56,19 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 	}
 	@Override
 	public void run() {
-
+		if(firsttimeflag){
+			/*
+			//クールダウン生成
+			playermap = SeichiAssist.playermap;
+			PlayerData playerdata = playermap.get(player.getUniqueId());
+			playerdata.skillcanbreakflag = false;
+			new CoolDownTaskRunnable(player).runTaskLater(plugin,20);
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("クールダウン生成");
+			}
+			*/
+			firsttimeflag = false;
+		}
 		if(frozenflag){
 			cancel();
 			for(int x = startx ; x <= endx ; x++){
@@ -133,7 +151,7 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 					break;
 			}
 
-			if(!expman.hasExp(40)){
+			if(!expman.hasExp(240)){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -181,8 +199,8 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 			}
 
 			int max = 240;
-			int exp = 40;
-			for(int n = max ; n > 0 ; n -= 6){
+			int exp = 240;
+			for(int n = max ; n > 0 ; n -= 1){
 				if(count > n){
 					expman.changeExp(-exp);
 					break;

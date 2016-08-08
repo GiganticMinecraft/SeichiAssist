@@ -27,6 +27,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.BlizzardTaskRunnable;
+import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.MeteoTaskRunnable;
 import com.github.unchama.seichiassist.task.ThunderStormTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -120,11 +121,50 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
 			Explosion(player,block,tool,expman);
 		}else if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
-			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
+			//クールダウン中は発動しない
+			if(playerdata.skillcanbreakflag){
+				new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
+				//クールダウン生成
+				playerdata.skillcanbreakflag = false;
+				new CoolDownTaskRunnable(player).runTaskLater(plugin,40);
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン生成");
+				}
+			}else{
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン中につき発動不可");
+				}
+			}
 		}else if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
+			//クールダウン中は発動しない
+			if(playerdata.skillcanbreakflag){
 			new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
+			//クールダウン生成
+			playerdata.skillcanbreakflag = false;
+			new CoolDownTaskRunnable(player).runTaskLater(plugin,40);
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("クールダウン生成");
+			}
+			}else{
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン中につき発動不可");
+				}
+			}
 		}else if(playerdata.activenum == ActiveSkill.METEO.getNum()){
+			//クールダウン中は発動しない
+			if(playerdata.skillcanbreakflag){
 			new MeteoTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,10,10);
+			//クールダウン生成
+			playerdata.skillcanbreakflag = false;
+			new CoolDownTaskRunnable(player).runTaskLater(plugin,40);
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("クールダウン生成");
+			}
+			}else{
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン中につき発動不可");
+				}
+			}
 		}
 
 	}
@@ -205,7 +245,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 		}
 
-		if(player.getLevel() == 0 && !expman.hasExp(5)){
+		if(player.getLevel() == 0 && !expman.hasExp(10)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -248,15 +288,15 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		if(count>22){
-			expman.changeExp(-5);
+			expman.changeExp(-10);
 		}else if(count>17){
-			expman.changeExp(-4);
+			expman.changeExp(-8);
 		}else if(count>12){
-			expman.changeExp(-3);
+			expman.changeExp(-6);
 		}else if(count>7){
-			expman.changeExp(-2);
+			expman.changeExp(-4);
 		}else if(count>2){
-			expman.changeExp(-1);
+			expman.changeExp(-2);
 		}else if(count>0){
 		}
 	}
@@ -315,7 +355,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 		}
 
-		if(player.getLevel() == 0 && !expman.hasExp(2)){
+		if(player.getLevel() == 0 && !expman.hasExp(4)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -380,9 +420,9 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 		}
 		if(count>3){
-			expman.changeExp(-2);
+			expman.changeExp(-4);
 		}else if(count>0){
-			expman.changeExp(-1);
+			expman.changeExp(-2);
 
 		}
 	}

@@ -19,6 +19,10 @@ import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 
 public class MeteoTaskRunnable extends BukkitRunnable{
+	/*
+	private SeichiAssist plugin = SeichiAssist.plugin;
+	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
+	*/
 	private Player player;
 	private Block block;
 	private ItemStack tool;
@@ -29,6 +33,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 	private Material material;
 	private Location centerofblock;
 	private boolean sneakflag;
+	private boolean firsttimeflag;
 	//壊されるブロックの宣言
 	Block breakblock;
 	int startx;
@@ -39,6 +44,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 	int endz;
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public MeteoTaskRunnable(Player player,Block block,ItemStack tool, ExperienceManager expman) {
+		firsttimeflag = true;
 		this.player = player;
 		this.block = block;
 		this.tool = tool;
@@ -55,6 +61,21 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 	}
 	@Override
 	public void run() {
+
+		if(firsttimeflag){
+			/*
+			//クールダウン生成
+			playermap = SeichiAssist.playermap;
+			PlayerData playerdata = playermap.get(player.getUniqueId());
+			playerdata.skillcanbreakflag = false;
+			new CoolDownTaskRunnable(player).runTaskLater(plugin,20);
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("クールダウン生成");
+			}
+			*/
+			firsttimeflag = false;
+		}
+
 		if(meteoflag){
 			cancel();
 			startx = 0;
@@ -155,7 +176,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 					break;
 			}
 
-			if(!expman.hasExp(70)){
+			if(!expman.hasExp(560)){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -203,8 +224,8 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 			}
 
 			int max = 560;
-			int exp = 70;
-			for(int n = max ; n > 0 ; n -= 8){
+			int exp = 560;
+			for(int n = max ; n > 0 ; n -= 1){
 				if(count > n){
 					expman.changeExp(-exp);
 					break;
