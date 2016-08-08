@@ -433,24 +433,24 @@ public class PlayerRightClickListener implements Listener {
 		//使った手を取得
 		EquipmentSlot equipmentslot = event.getHand();
 
-
-		//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
-		if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
-			return;
-		}
-		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-			if(event.getMaterial().equals(Material.ENDER_PORTAL_FRAME)){
-				//設置をキャンセル
-				event.setCancelled(true);
-				//オフハンドから実行された時処理を終了
-				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
-					return;
-				}
-				//開く音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 0.1);
-				//インベントリを開く
-				player.openInventory(playerdata.inventory);
+		if(event.getMaterial().equals(Material.ENDER_PORTAL_FRAME)){
+			//設置をキャンセル
+			event.setCancelled(true);
+			//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
+			if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
+				player.sendMessage(ChatColor.GREEN + "4次元ポケットを入手するには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です。");
+				return;
 			}
+			if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+					//オフハンドから実行された時処理を終了
+					if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+						return;
+					}
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 0.1);
+					//インベントリを開く
+					player.openInventory(playerdata.inventory);
+		}
 		}
 	}
 
