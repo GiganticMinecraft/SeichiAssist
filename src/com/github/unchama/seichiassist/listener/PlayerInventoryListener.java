@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.listener;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
@@ -14,15 +16,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -79,9 +85,14 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 
+
+
 		//インベントリ名が以下の時処理
-		if(topinventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキル選択")){
+		if(topinventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メニュー")){
 			event.setCancelled(true);
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
 			PlayerData playerdata = playermap.get(uuid);
 			if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
 				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
@@ -131,12 +142,12 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}/*else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
-				if(playerdata.activenum == ActiveSkill.ILLUSION.getNum()){
+			}else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
+				if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
 
-				}else if(playerdata.level >= config.getIllusionlevel() && playerdata.activenum != ActiveSkill.ILLUSION.getNum()){
-					playerdata.activenum = ActiveSkill.ILLUSION.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:イリュージョン");
+				}else if(playerdata.level >= config.getBlizzardlevel() && playerdata.activenum != ActiveSkill.BLIZZARD.getNum()){
+					playerdata.activenum = ActiveSkill.BLIZZARD.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ブリザード");
 					playerdata.activemineflagnum = 1;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}else{
@@ -155,7 +166,54 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
+			}else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("unchama")){
+				ItemStack skull = Util.getskull(Util.getName(player));
+				int count = 0;
+				while(playerdata.gachapoint >= config.getGachaPresentInterval()){
+					playerdata.gachapoint -= config.getGachaPresentInterval();
+					if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+						Util.addItem(player,skull);
+					}else{
+						Util.dropItem(player,skull);
+					}
+					count++;
+				}
+				//プレイヤーデータを更新
+				playerdata.lastgachapoint = playerdata.gachapoint;
+
+				if(count > 0){
+					player.sendMessage(ChatColor.GOLD + "ガチャ券" + count + "枚" + ChatColor.WHITE + "プレゼントフォーユー");
+					player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+				}
+
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません"
+						, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
+				itemmeta.setLore(lore);
+				itemstackcurrent.setItemMeta(itemmeta);
+
+			}else if(itemstackcurrent.getType().equals(Material.STONE_BUTTON)){
+				playerdata.gachaflag = !playerdata.gachaflag;
+				if(playerdata.gachaflag){
+					player.sendMessage(ChatColor.GREEN + "毎分のガチャ券受け取り:ON");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "毎分受け取っています"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							);
+					itemmeta.setLore(lore);
+					itemstackcurrent.setItemMeta(itemmeta);
+				}else{
+					player.sendMessage(ChatColor.RED + "毎分のガチャ券受け取り:OFF");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1, 1);
+					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "毎分受け取っていません"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							);
+					itemmeta.setLore(lore);
+					itemstackcurrent.setItemMeta(itemmeta);
+				}
+			}/*else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
 				if(playerdata.activenum == ActiveSkill.GRAVITY.getNum()){
 
 				}else if(playerdata.level >= config.getGravitylevel() && playerdata.activenum != ActiveSkill.GRAVITY.getNum()){
@@ -184,7 +242,7 @@ public class PlayerInventoryListener implements Listener {
 		if(inventory.getSize() != 36){
 			return;
 		}
-		if(inventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキル選択")){
+		if(inventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メニュー")){
 			Player player = (Player)he;
 			PlayerInventory pinventory = player.getInventory();
 			ItemStack itemstack = pinventory.getItemInMainHand();

@@ -22,6 +22,7 @@ import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.listener.EntityListener;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
 import com.github.unchama.seichiassist.listener.PlayerJoinListener;
@@ -74,7 +75,7 @@ public class SeichiAssist extends JavaPlugin{
 			5937856,6137856,6337856,6537856,6737856,
 			6937856,7137856,7337856,7537856,7737856,
 			7962856,8187856,8412856,8637856,8862856,
-			9087856,9312856,9537856,9762856,10000000//100
+			9087856,9312856,9537856,9762856,10000000//GOD
 			));
 	public static final List<Material> materiallist = new ArrayList<Material>(Arrays.asList(
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
@@ -82,7 +83,7 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.COAL_ORE,Material.IRON_ORE,Material.GOLD_ORE,Material.DIAMOND_ORE
 			,Material.LAPIS_ORE,Material.EMERALD_ORE,Material.REDSTONE_ORE,Material.SAND
 			,Material.SANDSTONE,Material.QUARTZ_ORE,Material.END_BRICKS,Material.ENDER_STONE
-			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN,Material.MAGMA
+			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN,Material.MAGMA,Material.SOUL_SAND
 			));
 	public static final List<Material> luckmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.COAL_ORE,Material.DIAMOND_ORE,Material.LAPIS_ORE,Material.EMERALD_ORE,
@@ -128,6 +129,7 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerRightClickListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), this);
+		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){

@@ -34,6 +34,8 @@ public class PlayerData {
 	public int gachapoint;
 	//最後のガチャポイントデータ
 	public int lastgachapoint;
+	//ガチャ受け取りフラグ
+	public boolean gachaflag;
 	//今回の採掘速度上昇レベルを格納
 	public int minespeedlv;
 	//前回の採掘速度上昇レベルを格納
@@ -62,6 +64,7 @@ public class PlayerData {
 		halfhourblock = new MineBlock();
 		gachapoint = 0;
 		lastgachapoint = 0;
+		gachaflag = true;
 		minespeedlv = 0;
 		lastminespeedlv = 0;
 		effectdatalist = new ArrayList<EffectData>();
@@ -144,9 +147,13 @@ public class PlayerData {
 		String displayname = Util.getName(p);
 		if(p.isOp()){
 			//管理人の場合
-			displayname = ChatColor.RED + "<管理人>" + name + ChatColor.WHITE;
+			displayname = ChatColor.RED + "<管理人>" + name;
 		}
-		displayname =  "[ Lv" + level + " ]" + displayname;
+		if(level == 101){
+			displayname =  ChatColor.GOLD + "[ GOD ]" + displayname + ChatColor.WHITE;
+		}else{
+			displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
+		}
 
 		p.setDisplayName(displayname);
 		p.setPlayerListName(displayname);
@@ -158,7 +165,7 @@ public class PlayerData {
 		//現在のランクの次を取得
 		int i = level + 1;
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= 100){
+		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= 101){
 			if(!SeichiAssist.DEBUG){
 				//レベルアップ時のメッセージ
 				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");

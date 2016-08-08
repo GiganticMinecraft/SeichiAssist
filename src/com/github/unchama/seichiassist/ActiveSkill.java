@@ -6,7 +6,7 @@ public enum ActiveSkill{
 	TRIALBREAK(2,"トリアルブレイク"),
 	EXPLOSION(3,"エクスプロージョン"),
 	THUNDERSTORM(4,"サンダーストーム"),
-	ILLUSION(5,"イリュージョン"),
+	BLIZZARD(5,"ブリザード"),
 	METEO(6,"メテオ"),
 	GRAVITY(7,"グラビティ"),
 	;

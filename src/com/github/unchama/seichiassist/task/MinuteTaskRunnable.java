@@ -152,7 +152,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			playerdata.gachapoint += playerdata.minuteblock.increase;
 
 			ItemStack skull = Util.getskull(name);
-			if(playerdata.gachapoint >= config.getGachaPresentInterval()){
+			if(playerdata.gachapoint >= config.getGachaPresentInterval() && playerdata.gachaflag){
 				playerdata.gachapoint -= config.getGachaPresentInterval();
 				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
 					Util.addItem(player,skull);
