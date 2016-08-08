@@ -176,7 +176,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 					break;
 			}
 
-			if(!expman.hasExp(560)){
+			if(!expman.hasExp(100)){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -223,9 +223,9 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 				}
 			}
 
-			int max = 560;
-			int exp = 560;
-			for(int n = max ; n > 0 ; n -= 1){
+			int max = 500;
+			int exp = 100;
+			for(int n = max ; n > 0 ; n -= 5){
 				if(count > n){
 					expman.changeExp(-exp);
 					break;
@@ -241,7 +241,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 			if(player.isSneaking()){
 				sneakflag = true;
 			}
-			if(!expman.hasExp(70)){
+			if(!expman.hasExp(100)){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");

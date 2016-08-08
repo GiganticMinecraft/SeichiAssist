@@ -136,7 +136,7 @@ public class ThunderStormTaskRunnable extends BukkitRunnable{
 					break;
 			}
 
-			if(!expman.hasExp(16)){
+			if(!expman.hasExp(6)){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -181,13 +181,13 @@ public class ThunderStormTaskRunnable extends BukkitRunnable{
 			}
 
 			if(count>21){
-				expman.changeExp(-16);
+				expman.changeExp(-6);
 			}else if(count>14){
-				expman.changeExp(-12);
+				expman.changeExp(-6);
 			}else if(count>7){
-				expman.changeExp(-8);
-			}else if(count>0){
 				expman.changeExp(-4);
+			}else if(count>0){
+				expman.changeExp(-2);
 			}
 		}
 	}

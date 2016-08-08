@@ -151,7 +151,7 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 					break;
 			}
 
-			if(!expman.hasExp(240)){
+			if(!expman.hasExp(70)){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -198,9 +198,9 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 				block.getWorld().playSound(centerofblock, Sound.ENTITY_POLAR_BEAR_AMBIENT, 1, (float) 1.2);
 			}
 
-			int max = 240;
-			int exp = 240;
-			for(int n = max ; n > 0 ; n -= 1){
+			int max = 210;
+			int exp = 70;
+			for(int n = max ; n > 0 ; n -= 3){
 				if(count > n){
 					expman.changeExp(-exp);
 					break;

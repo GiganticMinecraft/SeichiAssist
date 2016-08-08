@@ -11,6 +11,7 @@ import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -123,14 +124,16 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
 			//クールダウン中は発動しない
 			if(playerdata.skillcanbreakflag){
+				//スキル発動部分
 				new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
 				//クールダウン生成
 				playerdata.skillcanbreakflag = false;
-				new CoolDownTaskRunnable(player).runTaskLater(plugin,40);
+				new CoolDownTaskRunnable(player).runTaskLater(plugin,60);
 				if(SeichiAssist.DEBUG){
 					player.sendMessage("クールダウン生成");
 				}
 			}else{
+				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
 				if(SeichiAssist.DEBUG){
 					player.sendMessage("クールダウン中につき発動不可");
 				}
@@ -138,14 +141,16 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
 			//クールダウン中は発動しない
 			if(playerdata.skillcanbreakflag){
-			new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
-			//クールダウン生成
-			playerdata.skillcanbreakflag = false;
-			new CoolDownTaskRunnable(player).runTaskLater(plugin,40);
-			if(SeichiAssist.DEBUG){
-				player.sendMessage("クールダウン生成");
-			}
+				//スキル発動部分
+				new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
+				//クールダウン生成
+				playerdata.skillcanbreakflag = false;
+				new CoolDownTaskRunnable(player).runTaskLater(plugin,80);
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン生成");
+				}
 			}else{
+				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
 				if(SeichiAssist.DEBUG){
 					player.sendMessage("クールダウン中につき発動不可");
 				}
@@ -153,14 +158,18 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(playerdata.activenum == ActiveSkill.METEO.getNum()){
 			//クールダウン中は発動しない
 			if(playerdata.skillcanbreakflag){
-			new MeteoTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,10,10);
-			//クールダウン生成
-			playerdata.skillcanbreakflag = false;
-			new CoolDownTaskRunnable(player).runTaskLater(plugin,40);
-			if(SeichiAssist.DEBUG){
-				player.sendMessage("クールダウン生成");
-			}
+				//スキル発動部分
+				new MeteoTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,10,10);
+				//スキル発動音を鳴らす
+				player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1, 1);
+				//クールダウン生成
+				playerdata.skillcanbreakflag = false;
+				new CoolDownTaskRunnable(player).runTaskLater(plugin,100);
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン生成");
+				}
 			}else{
+				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
 				if(SeichiAssist.DEBUG){
 					player.sendMessage("クールダウン中につき発動不可");
 				}
@@ -245,7 +254,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 		}
 
-		if(player.getLevel() == 0 && !expman.hasExp(10)){
+		if(player.getLevel() == 0 && !expman.hasExp(8)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -288,7 +297,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		if(count>22){
-			expman.changeExp(-10);
+			expman.changeExp(-8);
 		}else if(count>17){
 			expman.changeExp(-8);
 		}else if(count>12){
@@ -355,7 +364,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 		}
 
-		if(player.getLevel() == 0 && !expman.hasExp(4)){
+		if(player.getLevel() == 0 && !expman.hasExp(3)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -420,7 +429,7 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 		}
 		if(count>3){
-			expman.changeExp(-4);
+			expman.changeExp(-3);
 		}else if(count>0){
 			expman.changeExp(-2);
 
