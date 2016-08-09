@@ -97,9 +97,10 @@ public class PlayerRightClickListener implements Listener {
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！！！！！Gigantic☆大当たり！" + str);
 						Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！\n" + ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
 					}else if(present.probability < 0.01){
-						Util.sendEverySound(Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
+						//ver 0.3.1以降 大当たり時の全体通知を削除
+						// Util.sendEverySound(Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！！大当たり！" + str);
-						Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
+						// Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
 					}else if(present.probability < 0.1){
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！" + str);
 					}else{
