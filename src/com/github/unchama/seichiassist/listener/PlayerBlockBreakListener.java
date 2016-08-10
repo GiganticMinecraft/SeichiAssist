@@ -128,7 +128,7 @@ public class PlayerBlockBreakListener implements Listener {
 				new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
 				//クールダウン生成
 				playerdata.skillcanbreakflag = false;
-				new CoolDownTaskRunnable(player).runTaskLater(plugin,60);
+				new CoolDownTaskRunnable(player).runTaskLater(plugin,40);
 				if(SeichiAssist.DEBUG){
 					player.sendMessage("クールダウン生成");
 				}
@@ -145,7 +145,7 @@ public class PlayerBlockBreakListener implements Listener {
 				new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
 				//クールダウン生成
 				playerdata.skillcanbreakflag = false;
-				new CoolDownTaskRunnable(player).runTaskLater(plugin,80);
+				new CoolDownTaskRunnable(player).runTaskLater(plugin,50);
 				if(SeichiAssist.DEBUG){
 					player.sendMessage("クールダウン生成");
 				}
@@ -164,7 +164,7 @@ public class PlayerBlockBreakListener implements Listener {
 				player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1, 1);
 				//クールダウン生成
 				playerdata.skillcanbreakflag = false;
-				new CoolDownTaskRunnable(player).runTaskLater(plugin,100);
+				new CoolDownTaskRunnable(player).runTaskLater(plugin,60);
 				if(SeichiAssist.DEBUG){
 					player.sendMessage("クールダウン生成");
 				}
@@ -254,7 +254,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 		}
 
-		if(player.getLevel() == 0 && !expman.hasExp(8)){
+		if(player.getLevel() == 0 && !expman.hasExp(10)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -297,15 +297,15 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		if(count>22){
-			expman.changeExp(-8);
+			expman.changeExp(-10);
 		}else if(count>17){
-			expman.changeExp(-8);
+			expman.changeExp(-9);
 		}else if(count>12){
-			expman.changeExp(-6);
+			expman.changeExp(-8);
 		}else if(count>7){
-			expman.changeExp(-4);
+			expman.changeExp(-6);
 		}else if(count>2){
-			expman.changeExp(-2);
+			expman.changeExp(-4);
 		}else if(count>0){
 		}
 	}

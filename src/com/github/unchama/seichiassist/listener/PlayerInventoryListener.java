@@ -213,7 +213,50 @@ public class PlayerInventoryListener implements Listener {
 					itemmeta.setLore(lore);
 					itemstackcurrent.setItemMeta(itemmeta);
 				}
-			}/*else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
+			}else if(itemstackcurrent.getType().equals(Material.DIAMOND_PICKAXE)){
+				// ver0.3.2 採掘速度上昇効果トグル
+				playerdata.effectflag = !playerdata.effectflag;
+				if(playerdata.effectflag){
+					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "ON"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							);
+					itemmeta.setLore(lore);
+					itemstackcurrent.setItemMeta(itemmeta);
+				}else{
+					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1, 1);
+					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "OFF"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							);
+					itemmeta.setLore(lore);
+					itemstackcurrent.setItemMeta(itemmeta);
+				}
+			}else if(itemstackcurrent.getType().equals(Material.BOOKSHELF)){
+				// spawnコマンド実行
+				player.chat("/spawn");
+			}else if(itemstackcurrent.getType().equals(Material.BED)){
+				// sethomeコマンド実行
+				player.chat("/sethome");
+			}else if(itemstackcurrent.getType().equals(Material.COMPASS)){
+				// homeコマンド実行
+				player.chat("/home");
+			}else if(itemstackcurrent.getType().equals(Material.ENDER_PORTAL_FRAME)){
+				//ver0.3.2 四次元ポケットを開く
+				//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
+				if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
+					player.sendMessage(ChatColor.GREEN + "4次元ポケットを開くには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です。");
+					return;
+				}
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 0.1);
+				//インベントリを開く
+				player.openInventory(playerdata.inventory);
+			}
+				/*else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
 				if(playerdata.activenum == ActiveSkill.GRAVITY.getNum()){
 
 				}else if(playerdata.level >= config.getGravitylevel() && playerdata.activenum != ActiveSkill.GRAVITY.getNum()){
