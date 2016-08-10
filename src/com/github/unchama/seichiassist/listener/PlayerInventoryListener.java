@@ -244,6 +244,22 @@ public class PlayerInventoryListener implements Listener {
 			}else if(itemstackcurrent.getType().equals(Material.COMPASS)){
 				// homeコマンド実行
 				player.chat("/home");
+			}
+			/*
+			else if(itemstackcurrent.getType().equals(Material.NETHER_STAR)){
+				// hubコマンド実行
+				player.chat("/hub");
+			}
+			*/
+			else if(itemstackcurrent.getType().equals(Material.BOOK)){
+				// wikiリンク表示
+				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "http://seichi.click");
+			}else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
+				// 投票リンク表示
+				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "https://goo.gl/FjeEsY");
+			}else if(itemstackcurrent.getType().equals(Material.PAPER)){
+				// 運営方針とルールリンク表示
+				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "http://seichi.click/d/%b1%bf%b1%c4%ca%fd%bf%cb%a4%c8%a5%eb%a1%bc%a5%eb");
 			}else if(itemstackcurrent.getType().equals(Material.ENDER_PORTAL_FRAME)){
 				//ver0.3.2 四次元ポケットを開く
 				//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了

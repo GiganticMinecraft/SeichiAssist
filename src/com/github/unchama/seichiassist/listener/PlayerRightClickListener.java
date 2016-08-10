@@ -186,6 +186,7 @@ public class PlayerRightClickListener implements Listener {
 		}
 	}
 
+	/* ver0.3.2 左クリックトグル無効化
 	@EventHandler
 	public void onPlayerEffectToggleEvent(PlayerInteractEvent event){
 		//プレイヤーを取得
@@ -222,6 +223,8 @@ public class PlayerRightClickListener implements Listener {
 			}
 		}
 	}
+	*/
+
 	@EventHandler
 	public void onPlayerActiveSkillUIEvent(PlayerInteractEvent event){
 		//プレイヤーを取得
@@ -291,8 +294,10 @@ public class PlayerRightClickListener implements Listener {
 				itemstack = new ItemStack(Material.BOOKSHELF,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOKSHELF);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スポーンワールドへワープ");
-				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "メインワールド、資源ワールド、整地ワールド間を移動する時に使います"
-						, ChatColor.RESET + "" + ChatColor.GRAY + "建築はメインワールド、資材集めは資源ワールド、整地は整地ワールドを利用しましょう"
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "・メインワールド"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "・資源ワールド"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "・整地ワールド"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "間を移動する時に使います"
 						, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -330,6 +335,68 @@ public class PlayerRightClickListener implements Listener {
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(4,itemstack);
 
+				/* hubコマンドはbungeecordに送信しないといけないらいく、このままだと機能しない
+				// ver0.3.2 hubコマンド
+				itemstack = new ItemStack(Material.NETHER_STAR,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ロビーサーバーに移動");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "ログインすると最初にいる所です"
+						, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると移動します"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(7,itemstack);
+				*/
+
+				// ver0.3.2 wikiページ表示
+				itemstack = new ItemStack(Material.BOOK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "公式Wikiにアクセス");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(35,itemstack);
+
+				// ver0.3.2 投票ページ表示
+				itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票ページにアクセス");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "投票すると様々な特典があります！1日1回投票出来ます"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(34,itemstack);
+
+				// ver0.3.2 運営方針とルールページを表示
+				itemstack = new ItemStack(Material.PAPER,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営方針とルールを確認");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "当鯖で遊ぶ前に確認してネ！"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(33,itemstack);
+
+				// ver0.3.2 コマンドリファレンスを表示
+				itemstack = new ItemStack(Material.PAPER,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "コマンドリファレンス");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "当鯖で遊ぶ前に確認してネ！"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(33,itemstack);
+
+
+
 
 				/*
 				itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
@@ -351,7 +418,7 @@ public class PlayerRightClickListener implements Listener {
 												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getDualBreaklevel()
 												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：1"
-												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとこのスキルをアクティブにします");
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(9,itemstack);
@@ -365,7 +432,7 @@ public class PlayerRightClickListener implements Listener {
 												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル："  + config.getTrialBreaklevel()
 												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：3"
-												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとこのスキルをアクティブにします");
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(10,itemstack);
@@ -379,7 +446,7 @@ public class PlayerRightClickListener implements Listener {
 												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getExplosionlevel()
 												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：10"
-												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとこのスキルをアクティブにします");
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(11,itemstack);
@@ -393,7 +460,7 @@ public class PlayerRightClickListener implements Listener {
 												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2秒"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getThunderStormlevel()
 												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：30"
-												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとこのスキルをアクティブにします");
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(12,itemstack);
@@ -407,7 +474,7 @@ public class PlayerRightClickListener implements Listener {
 												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.5秒"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getBlizzardlevel()
 												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：70"
-												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとこのスキルをアクティブにします");
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -422,7 +489,7 @@ public class PlayerRightClickListener implements Listener {
 												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：3秒"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getMeteolevel()
 												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：100"
-												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとこのスキルをアクティブにします");
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
