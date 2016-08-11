@@ -152,15 +152,15 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			playerdata.gachapoint += playerdata.minuteblock.increase;
 
 			ItemStack skull = Util.getskull(name);
-			if(playerdata.gachapoint >= config.getGachaPresentInterval()){
+			if(playerdata.gachapoint >= config.getGachaPresentInterval() && playerdata.gachaflag){
 				playerdata.gachapoint -= config.getGachaPresentInterval();
-				if(!player.getInventory().contains(skull) && Util.isPlayerInventryNoEmpty(player)){
+				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+					Util.addItem(player,skull);
+					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー");
+				}else{
 					Util.dropItem(player,skull);
 					player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
 					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました。右クリックで使えるゾ");
-				}else{
-					Util.addItem(player,skull);
-					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー");
 				}
 			}else{
 				if(playerdata.minuteblock.increase != 0){

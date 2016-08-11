@@ -133,11 +133,14 @@ public class Sql{
 				"alter table " + table +
 				" add column if not exists effectflag boolean default true" +
 				",add column if not exists messageflag boolean default false" +
-				",add column if not exists activemineflag boolean default false" +
+				",add column if not exists activemineflagnum int default 0" +
+				",add column if not exists activenum int default 1" +
 				",add column if not exists gachapoint int default 0" +
+				",add column if not exists gachaflag boolean default true" +
 				",add column if not exists level int default 1" +
 				",add column if not exists numofsorryforbug int default 0" +
 				",add column if not exists inventory blob default null" +
+				",add column if not exists rgnum int default 0" +
 				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
@@ -501,10 +504,13 @@ public class Sql{
  				while (rs.next()) {
  	 				playerdata.effectflag = rs.getBoolean("effectflag");
  	 				playerdata.messageflag = rs.getBoolean("messageflag");
- 	 				playerdata.activemineflag = rs.getBoolean("activemineflag");
+ 	 				playerdata.activemineflagnum = rs.getInt("activemineflagnum");
+ 	 				playerdata.activenum = rs.getInt("activenum");
  	 				playerdata.gachapoint = rs.getInt("gachapoint");
+ 	 				playerdata.gachaflag = rs.getBoolean("gachaflag");
  	 				playerdata.level = rs.getInt("level");
  	 				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
+ 	 				playerdata.rgnum = rs.getInt("rgnum");
  	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  				  }
  				rs.close();
@@ -532,10 +538,13 @@ public class Sql{
 				+ " set"
 				+ " effectflag = " + Boolean.toString(playerdata.effectflag)
 				+ ",messageflag = " + Boolean.toString(playerdata.messageflag)
-				+ ",activemineflag = " + Boolean.toString(playerdata.activemineflag)
+				+ ",activemineflagnum = " + Integer.toString(playerdata.activemineflagnum)
+				+ ",activenum = " + Integer.toString(playerdata.activenum)
 				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
+				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
 				+ ",level = " + Integer.toString(playerdata.level)
 				+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug)
+				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
 				+ " where uuid like '" + struuid + "'";
 		try{
