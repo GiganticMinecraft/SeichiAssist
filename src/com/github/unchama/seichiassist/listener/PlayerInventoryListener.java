@@ -106,7 +106,9 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}else if(itemstackcurrent.getType().equals(Material.IRON_ORE)){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.IRON_ORE)){
 				if(playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
 
 				}else if(playerdata.level >= config.getTrialBreaklevel() && playerdata.activenum != ActiveSkill.TRIALBREAK.getNum()){
@@ -118,7 +120,9 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}else if(itemstackcurrent.getType().equals(Material.GOLD_ORE)){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.GOLD_ORE)){
 				if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
 
 				}else if(playerdata.level >= config.getExplosionlevel() && playerdata.activenum != ActiveSkill.EXPLOSION.getNum()){
@@ -130,7 +134,9 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
 				if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
 
 				}else if(playerdata.level >= config.getThunderStormlevel() && playerdata.activenum != ActiveSkill.THUNDERSTORM.getNum()){
@@ -142,7 +148,9 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
 				if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
 
 				}else if(playerdata.level >= config.getBlizzardlevel() && playerdata.activenum != ActiveSkill.BLIZZARD.getNum()){
@@ -154,7 +162,9 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}else if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
 				if(playerdata.activenum == ActiveSkill.METEO.getNum()){
 
 				}else if(playerdata.level >= config.getMeteolevel() && playerdata.activenum != ActiveSkill.METEO.getNum()){
@@ -166,7 +176,9 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("unchama")){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("unchama")){
 				ItemStack skull = Util.getskull(Util.getName(player));
 				int count = 0;
 				while(playerdata.gachapoint >= config.getGachaPresentInterval()){
@@ -191,8 +203,9 @@ public class PlayerInventoryListener implements Listener {
 						, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
 				itemmeta.setLore(lore);
 				itemstackcurrent.setItemMeta(itemmeta);
+			}
 
-			}else if(itemstackcurrent.getType().equals(Material.STONE_BUTTON)){
+			else if(itemstackcurrent.getType().equals(Material.STONE_BUTTON)){
 				playerdata.gachaflag = !playerdata.gachaflag;
 				if(playerdata.gachaflag){
 					player.sendMessage(ChatColor.GREEN + "毎分のガチャ券受け取り:ON");
@@ -213,7 +226,9 @@ public class PlayerInventoryListener implements Listener {
 					itemmeta.setLore(lore);
 					itemstackcurrent.setItemMeta(itemmeta);
 				}
-			}else if(itemstackcurrent.getType().equals(Material.DIAMOND_PICKAXE)){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.DIAMOND_PICKAXE)){
 				// ver0.3.2 採掘速度上昇効果トグル
 				playerdata.effectflag = !playerdata.effectflag;
 				if(playerdata.effectflag){
@@ -235,32 +250,81 @@ public class PlayerInventoryListener implements Listener {
 					itemmeta.setLore(lore);
 					itemstackcurrent.setItemMeta(itemmeta);
 				}
-			}else if(itemstackcurrent.getType().equals(Material.BOOKSHELF)){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.BEACON)){
 				// spawnコマンド実行
 				player.chat("/spawn");
-			}else if(itemstackcurrent.getType().equals(Material.BED)){
+				player.closeInventory();
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.BED)){
 				// sethomeコマンド実行
 				player.chat("/sethome");
-			}else if(itemstackcurrent.getType().equals(Material.COMPASS)){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.COMPASS)){
 				// homeコマンド実行
 				player.chat("/home");
+				player.closeInventory();
 			}
-			/*
+
+			else if(itemstackcurrent.getType().equals(Material.WOOD_AXE)){
+				// wand召喚
+				player.chat("//wand");
+				player.closeInventory();
+				player.sendMessage(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "保護のかけ方\n"
+						+ ChatColor.RESET + "" +  ChatColor.GREEN + "①召喚された斧を手に持ちます\n"
+						+ ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック\n"
+						+ ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック\n"
+						+ ChatColor.RESET + "" +  ChatColor.GREEN + "③メニューの「保護領域の申請」ボタンをクリック\n"
+						+ ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard"
+						);
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.GOLD_AXE)){
+				// 保護の設定
+				player.closeInventory();
+				player.chat("//expand vert");
+				player.chat("/rg claim " + player.getName() + "_" + playerdata.rgnum);
+				playerdata.rgnum += 1;
+				player.chat("//sel");
+			}
+
+
 			else if(itemstackcurrent.getType().equals(Material.NETHER_STAR)){
 				// hubコマンド実行
-				player.chat("/hub");
+				// player.chat("/hub");
+				player.closeInventory();
+				player.sendMessage(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "Tキーを押して/hubと入力してEnterキーを押してください");
 			}
-			*/
+
+
 			else if(itemstackcurrent.getType().equals(Material.BOOK)){
 				// wikiリンク表示
 				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "http://seichi.click");
-			}else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
+				player.closeInventory();
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
 				// 投票リンク表示
 				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "https://goo.gl/FjeEsY");
-			}else if(itemstackcurrent.getType().equals(Material.PAPER)){
+				player.closeInventory();
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.PAPER)){
 				// 運営方針とルールリンク表示
 				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "http://seichi.click/d/%b1%bf%b1%c4%ca%fd%bf%cb%a4%c8%a5%eb%a1%bc%a5%eb");
-			}else if(itemstackcurrent.getType().equals(Material.ENDER_PORTAL_FRAME)){
+				player.closeInventory();
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.MAP)){
+				// 鯖マップリンク表示
+				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "http://mc.seichi.click:8123");
+				player.closeInventory();
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.ENDER_PORTAL_FRAME)){
 				//ver0.3.2 四次元ポケットを開く
 				//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
 				if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
@@ -272,7 +336,9 @@ public class PlayerInventoryListener implements Listener {
 				//インベントリを開く
 				player.openInventory(playerdata.inventory);
 			}
-				/*else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
+
+			/*
+			else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
 				if(playerdata.activenum == ActiveSkill.GRAVITY.getNum()){
 
 				}else if(playerdata.level >= config.getGravitylevel() && playerdata.activenum != ActiveSkill.GRAVITY.getNum()){
@@ -284,7 +350,9 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
-			}*/
+			}
+			*/
+
 		}
 	}
 	//プレイヤーがアクティブスキル選択インベントリを閉じた時に実行

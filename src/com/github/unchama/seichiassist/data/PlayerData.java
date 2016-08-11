@@ -54,6 +54,8 @@ public class PlayerData {
 	public int activenum;
 	//スキルクールダウン用フラグ
 	public boolean skillcanbreakflag;
+	//ワールドガード保護自動設定用
+	public int rgnum;
 
 
 	public PlayerData(Player player){
@@ -76,6 +78,7 @@ public class PlayerData {
 		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*3 ,"拡張インベントリ");
 		activenum = 1;
 		skillcanbreakflag = true;
+		rgnum = 0;
 	}
 
 	//プレイヤーデータを最新の状態に更新

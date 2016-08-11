@@ -61,8 +61,11 @@ public class PlayerRightClickListener implements Listener {
 				}
 				//ownerがうんちゃまの時の処理
 				if(skullmeta.getOwner().equals("unchama")){
-					//設置をキャンセル
-					event.setCancelled(true);
+
+					//うんちゃま以外は設置をキャンセル
+					if(!player.getName().equals("unchama")){
+						event.setCancelled(true);
+					}
 
 					//オフハンドから実行された時処理を終了
 					if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
@@ -290,19 +293,6 @@ public class PlayerRightClickListener implements Listener {
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(1,itemstack);
 
-				// ver0.3.2 /spawnコマンド実行
-				itemstack = new ItemStack(Material.BOOKSHELF,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOKSHELF);
-				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スポーンワールドへワープ");
-				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "・メインワールド"
-						, ChatColor.RESET + "" + ChatColor.GRAY + "・資源ワールド"
-						, ChatColor.RESET + "" + ChatColor.GRAY + "・整地ワールド"
-						, ChatColor.RESET + "" + ChatColor.GRAY + "間を移動する時に使います"
-						, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします");
-				itemmeta.setLore(lore);
-				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(8,itemstack);
-
 				// ver0.3.2 四次元ポケットOPEN
 				itemstack = new ItemStack(Material.ENDER_PORTAL_FRAME,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ENDER_PORTAL_FRAME);
@@ -314,16 +304,6 @@ public class PlayerRightClickListener implements Listener {
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(2,itemstack);
 
-				// ver0.3.2 sethomeコマンド
-				itemstack = new ItemStack(Material.BED,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BED);
-				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在位置をホームポイントに設定");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると設定されます"
-						);
-				itemmeta.setLore(lore);
-				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(5,itemstack);
-
 				// ver0.3.2 homeコマンド
 				itemstack = new ItemStack(Material.COMPASS,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
@@ -333,27 +313,87 @@ public class PlayerRightClickListener implements Listener {
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(3,itemstack);
+
+				// ver0.3.2 sethomeコマンド
+				itemstack = new ItemStack(Material.BED,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BED);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在位置をホームポイントに設定");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると設定されます"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(4,itemstack);
 
-				/* hubコマンドはbungeecordに送信しないといけないらいく、このままだと機能しない
+
+				// ver0.3.2 //wandコマンド
+				itemstack = new ItemStack(Material.WOOD_AXE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD_AXE);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護設定用の木の斧を召喚");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると召喚されます"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※インベントリが満杯だと受け取れません"
+						, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "保護のかけ方"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "①召喚された斧を手に持ちます"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "③メニューの「保護領域の申請」ボタンをクリック"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(5,itemstack);
+
+				// ver0.3.2 保護設定コマンド
+				itemstack = new ItemStack(Material.GOLD_AXE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_AXE);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護領域の申請");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "木の斧で2か所クリックした後"
+						, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "このボタンをクリック！"
+						, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "A newregion has been claimed..."
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "と出れば、保護の設定が完了しています"
+						, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "赤色"+ ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "で別の英文が出た場合"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "保護の設定に失敗しています"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "別の保護と被ってないか等ご確認の上"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "始めからやり直してください"
+						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "設定した保護の変更や削除はコマンドを使用します"
+						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "詳しくは公式Wikiを参照下さい"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(6,itemstack);
+
+
 				// ver0.3.2 hubコマンド
 				itemstack = new ItemStack(Material.NETHER_STAR,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
-				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ロビーサーバーに移動");
-				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "ログインすると最初にいる所です"
-						, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると移動します"
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ロビーサーバーへ移動");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると移動します"
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(7,itemstack);
-				*/
+
+				// ver0.3.2 /spawnコマンド実行
+				itemstack = new ItemStack(Material.BEACON,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEACON);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スポーンワールドへワープ");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "・メインワールド"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "・資源ワールド"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "・整地ワールド"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "間を移動する時に使います"
+						, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします");
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(8,itemstack);
+
+
+
 
 				// ver0.3.2 wikiページ表示
 				itemstack = new ItemStack(Material.BOOK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "公式Wikiにアクセス");
 				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
-						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してからそのURLをクリックしてください"
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -365,7 +405,7 @@ public class PlayerRightClickListener implements Listener {
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票ページにアクセス");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "投票すると様々な特典があります！1日1回投票出来ます"
 						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
-						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押しからてそのURLをクリックしてください"
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -377,28 +417,29 @@ public class PlayerRightClickListener implements Listener {
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営方針とルールを確認");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "当鯖で遊ぶ前に確認してネ！"
 						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
-						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してからそのURLをクリックしてください"
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(33,itemstack);
 
-				// ver0.3.2 コマンドリファレンスを表示
-				itemstack = new ItemStack(Material.PAPER,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
-				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "コマンドリファレンス");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "当鯖で遊ぶ前に確認してネ！"
+				// ver0.3.2 鯖Mapを表示
+				itemstack = new ItemStack(Material.MAP,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MAP);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "鯖Mapを見る");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "webブラウザから鯖Mapを閲覧出来ます"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "他人の居場所や保護の場所を確認出来ます"
 						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
-						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してからそのURLをクリックしてください"
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(33,itemstack);
+				inventory.setItem(32,itemstack);
 
 
 
 
-				/*
+				/* 一番左のピッケル装飾コメントアウト ver0.3.2
 				itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
 				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -558,6 +599,10 @@ public class PlayerRightClickListener implements Listener {
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(28,itemstack);
+
+
+
+
 
 
 				player.openInventory(inventory);
