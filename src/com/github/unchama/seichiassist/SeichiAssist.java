@@ -246,6 +246,12 @@ public class SeichiAssist extends JavaPlugin{
 				getLogger().info(playerdata.name + "のデータ保存に失敗しました。");
 			}
 		}
+		for(GachaData gachadata : gachadatalist){
+			if(!sql.saveGachaData(gachadata)){
+				getLogger().info(gachadata.itemstack.getType() + "のデータ保存に失敗しました。");
+			}
+		}
+
 		sql.disconnect();
 
 		//configをsave

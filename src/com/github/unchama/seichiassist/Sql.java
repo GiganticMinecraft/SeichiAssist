@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
+import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
@@ -152,21 +153,16 @@ public class Sql{
 		}
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
-				"CREATE TABLE IF NOT EXISTS " + table +
-				"(name varchar(30) unique," +
-				"uuid varchar(128) unique)";
+				"CREATE TABLE IF NOT EXISTS " + table;
 		if(!putCommand(command)){
 			return false;
 		}
 		//必要なcolumnを随時追加
 		command =
 				"alter table " + table +
-				" add column if not exists effectflag boolean default true" +
-				",add column if not exists messageflag boolean default false" +
-				",add column if not exists activemineflag boolean default false" +
-				",add column if not exists gachapoint int default 0" +
-				",add column if not exists level int default 1" +
-				",add column if not exists numofsorryforbug int default 0" +
+				" add column if not exists probability double default 0.0" +
+				",add column if not exists amount int default 0" +
+				",add column if not exists itemstack blob default null" +
 				"";
 		return putCommand(command);
 	}
@@ -557,6 +553,24 @@ public class Sql{
 				return false;
 			}
 		return true;
+	}
+	public boolean saveGachaData(GachaData gachadata){
+		String table = SeichiAssist.GACHADATA_TABLENAME;
+		String command = "";
+
+		command = "update " + table
+				+ " set"
+				+ " probability = " + Integer.toString(gachadata.probability)
+				+ ",amount = " + Integer.toString(gachadata.amount)
+				+ ",itemstack = '" + BukkitSerialization.toBase64(gachadata.itemstack) + "'";
+		try{
+				stmt.executeUpdate(command);
+			} catch (SQLException e) {
+				exc = e.getMessage();
+				return false;
+			}
+		return true;
+
 	}
 
 
