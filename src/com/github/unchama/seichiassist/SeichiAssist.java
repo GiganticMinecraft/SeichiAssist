@@ -54,6 +54,9 @@ public class SeichiAssist extends JavaPlugin{
 	//Playerdataに依存するデータリスト
 	public static final HashMap<UUID,PlayerData> playermap = new HashMap<UUID,PlayerData>();
 
+	//総採掘量ランキング表示用データリスト
+	public static List<Integer> ranklist = new ArrayList<Integer>();
+
 	//lvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
 			0,15,49,106,198,//5
@@ -209,6 +212,9 @@ public class SeichiAssist extends JavaPlugin{
 			//プレイヤーマップにプレイヤーを追加
 			playermap.put(uuid,playerdata);
 		}
+
+		//ランキングデータをセット
+		ranklist = sql.setRanking();
 
 		getLogger().info("SeichiPlugin is Enabled!");
 

@@ -267,10 +267,11 @@ public class PlayerRightClickListener implements Listener {
 				skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
+						, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level + 1).intValue() - MineBlock.calcMineBlock(player))
 						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "1ブロック破壊ごとに10%の確率で"
 						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + DisplayPassiveExp(playerdata) + "の経験値を獲得します"
 						, ChatColor.RESET + "" +  ChatColor.AQUA + "破壊したブロック数:" + MineBlock.calcMineBlock(player)
-						, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level + 1).intValue() - MineBlock.calcMineBlock(player))
+						, ChatColor.RESET + "" +  ChatColor.AQUA + "ランキング：" + PlayerData.calcPlayerRank(player) + "位" + ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "(" + SeichiAssist.ranklist.size() +"人中)"
 						);
 
 				skullmeta.setLore(lore);

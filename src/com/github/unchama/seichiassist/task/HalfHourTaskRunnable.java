@@ -18,6 +18,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class HalfHourTaskRunnable extends BukkitRunnable{
+	List<Integer> ranklist = SeichiAssist.ranklist;
 	SeichiAssist plugin = SeichiAssist.plugin;
 	Sql sql = SeichiAssist.plugin.sql;
 
@@ -27,6 +28,8 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
+		//ランキングデータをセット
+		ranklist = sql.setRanking();
 		//カウント値を０に設定
 		int count = 0;
 		//30分間の全プレイヤーの採掘量をallに格納

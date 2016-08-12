@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -559,5 +561,25 @@ public class Sql{
 		return true;
 	}
 
+	//ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
+	public List<Integer> setRanking() {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		List<Integer> ranklist = new ArrayList<Integer>();
+
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select totalbreaknum from " + table
+				+ " where 1 order by " + table + ".totalbreaknum desc";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				ranklist.add(rs.getInt(1));
+				  }
+			rs.close();
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return null;
+		}
+ 		return ranklist;
+	}
 
 }
