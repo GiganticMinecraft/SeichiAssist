@@ -133,7 +133,7 @@ public class PlayerBlockBreakListener implements Listener {
 					player.sendMessage("クールダウン生成");
 				}
 			}else{
-				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
+				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 				if(SeichiAssist.DEBUG){
 					player.sendMessage("クールダウン中につき発動不可");
 				}
@@ -150,7 +150,7 @@ public class PlayerBlockBreakListener implements Listener {
 					player.sendMessage("クールダウン生成");
 				}
 			}else{
-				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
+				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 				if(SeichiAssist.DEBUG){
 					player.sendMessage("クールダウン中につき発動不可");
 				}
@@ -169,7 +169,7 @@ public class PlayerBlockBreakListener implements Listener {
 					player.sendMessage("クールダウン生成");
 				}
 			}else{
-				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
+				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 				if(SeichiAssist.DEBUG){
 					player.sendMessage("クールダウン中につき発動不可");
 				}
