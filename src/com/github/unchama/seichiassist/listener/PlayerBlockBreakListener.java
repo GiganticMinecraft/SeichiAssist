@@ -28,7 +28,6 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.BlizzardTaskRunnable;
-import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.MeteoTaskRunnable;
 import com.github.unchama.seichiassist.task.ThunderStormTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -48,6 +47,8 @@ public class PlayerBlockBreakListener implements Listener {
 		player = event.getPlayer();
 		//UUIDを取得
 		uuid = player.getUniqueId();
+		//UUIDを基にプレイヤーデータ取得
+		playerdata = SeichiAssist.playermap.get(uuid);
 
 		//経験値変更用のクラスを設定
 		ExperienceManager expman = new ExperienceManager(player);
@@ -71,24 +72,43 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-		playerdata = SeichiAssist.playermap.get(uuid);
-
+		/*
 		//ブロックタイプがPACKED_ICEの時blizzardスキルを発動中であれば終了
 		if(material.equals(Material.PACKED_ICE) && playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
 			event.setCancelled(true);
 			return;
 		}
+		*/
+
+		//特定スキル発動中は処理を終了
+		if(playerdata.skillflag){
+			//ブロック破壊もさせない
+			event.setCancelled(true);
+			return;
+		}
+
+		//他人の保護がかかっている場合は処理を終了
+		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
+			return;
+		}
 
 
+		//これ以前の終了処理はパッシブの追加経験値はもらえません
 		//passiveskill[追加経験値獲得]処理実行
 		int exp = calcExpDrop(playerdata);
 		expman.changeExp(exp);
-
-
+		//これ以降の終了処理は経験値はもらえます
 
 
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activemineflagnum == 0){
+			return;
+		}
+
+		//クールダウンタイム中は処理を終了
+		if(!playerdata.skillcanbreakflag){
+			//SEを再生
+			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
 
@@ -104,6 +124,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//オフハンドにツールがあるか
 		boolean offhandtoolflag = SeichiAssist.breakmateriallist.contains(offhanditem.getType());
 
+		//場合分け
 		if(mainhandtoolflag){
 			//メインハンドの時
 			tool = mainhanditem;
@@ -115,6 +136,8 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
+
+		//アクティブスキルを発動させる処理
 		if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
 			DualBreak(player,block,tool,expman);
 		}else if(playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
@@ -122,60 +145,12 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
 			Explosion(player,block,tool,expman);
 		}else if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
-			//クールダウン中は発動しない
-			if(playerdata.skillcanbreakflag){
-				//スキル発動部分
-				new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
-				//クールダウン生成
-				playerdata.skillcanbreakflag = false;
-				new CoolDownTaskRunnable(player).runTaskLater(plugin,40);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン生成");
-				}
-			}else{
-				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン中につき発動不可");
-				}
-			}
+			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
 		}else if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
-			//クールダウン中は発動しない
-			if(playerdata.skillcanbreakflag){
-				//スキル発動部分
-				new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
-				//クールダウン生成
-				playerdata.skillcanbreakflag = false;
-				new CoolDownTaskRunnable(player).runTaskLater(plugin,50);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン生成");
-				}
-			}else{
-				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン中につき発動不可");
-				}
-			}
+			new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
 		}else if(playerdata.activenum == ActiveSkill.METEO.getNum()){
-			//クールダウン中は発動しない
-			if(playerdata.skillcanbreakflag){
-				//スキル発動部分
-				new MeteoTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,10,10);
-				//スキル発動音を鳴らす
-				player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1, 1);
-				//クールダウン生成
-				playerdata.skillcanbreakflag = false;
-				new CoolDownTaskRunnable(player).runTaskLater(plugin,60);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン生成");
-				}
-			}else{
-				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン中につき発動不可");
-				}
-			}
+			new MeteoTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,10,10);
 		}
-
 	}
 
 

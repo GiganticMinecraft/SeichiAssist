@@ -58,6 +58,8 @@ public class PlayerData {
 	public int rgnum;
 	//ランキング算出用トータル破壊ブロック
 	public int totalbreaknum;
+	//スキル発動中だけtrueになるフラグ
+	public boolean skillflag;
 
 
 	public PlayerData(Player player){
@@ -82,6 +84,7 @@ public class PlayerData {
 		skillcanbreakflag = true;
 		rgnum = 0;
 		totalbreaknum = MineBlock.calcMineBlock(player);
+		skillflag = false;
 	}
 
 	//プレイヤーデータを最新の状態に更新

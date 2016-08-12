@@ -1,12 +1,15 @@
 package com.github.unchama.seichiassist.task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LargeFireball;
 import org.bukkit.entity.Player;
@@ -15,14 +18,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 
 public class MeteoTaskRunnable extends BukkitRunnable{
-	/*
 	private SeichiAssist plugin = SeichiAssist.plugin;
-	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	*/
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	UUID uuid;
+	PlayerData playerdata;
 	private Player player;
 	private Block block;
 	private ItemStack tool;
@@ -33,7 +37,6 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 	private Material material;
 	private Location centerofblock;
 	private boolean sneakflag;
-	private boolean firsttimeflag;
 	//壊されるブロックの宣言
 	Block breakblock;
 	int startx;
@@ -44,7 +47,6 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 	int endz;
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public MeteoTaskRunnable(Player player,Block block,ItemStack tool, ExperienceManager expman) {
-		firsttimeflag = true;
 		this.player = player;
 		this.block = block;
 		this.tool = tool;
@@ -58,25 +60,22 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 		material = block.getType();
 		//元ブロックの真ん中の位置を取得
 		centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
+		//UUIDを取得
+		uuid = player.getUniqueId();
+		//playerdataを取得
+		playerdata = playermap.get(uuid);
+		//フラグ立てとく
+		playerdata.skillflag = true;
+		//メテオ発射音を鳴らす
+		player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1, 1);
+		//クールダウンタイム生成
+		new CoolDownTaskRunnable(player).runTaskLater(plugin,60);
 	}
 	@Override
 	public void run() {
-
-		if(firsttimeflag){
-			/*
-			//クールダウン生成
-			playermap = SeichiAssist.playermap;
-			PlayerData playerdata = playermap.get(player.getUniqueId());
-			playerdata.skillcanbreakflag = false;
-			new CoolDownTaskRunnable(player).runTaskLater(plugin,20);
-			if(SeichiAssist.DEBUG){
-				player.sendMessage("クールダウン生成");
-			}
-			*/
-			firsttimeflag = false;
-		}
-
 		if(meteoflag){
+			//フラグ折っとく
+			playerdata.skillflag = false;
 			cancel();
 			startx = 0;
 			starty = -1;
@@ -237,7 +236,6 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 
 		}else{
 			meteoflag = true;
-
 			if(player.isSneaking()){
 				sneakflag = true;
 			}
@@ -247,6 +245,8 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 				}
 				cancel();
+				//フラグ折っとく
+				playerdata.skillflag = false;
 				return;
 			}
 			//blockの位置を取得
