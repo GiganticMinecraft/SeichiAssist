@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,6 +25,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -59,8 +61,11 @@ public class PlayerRightClickListener implements Listener {
 				}
 				//ownerがうんちゃまの時の処理
 				if(skullmeta.getOwner().equals("unchama")){
-					//設置をキャンセル
-					event.setCancelled(true);
+
+					//うんちゃま以外は設置をキャンセル
+					if(!player.getName().equals("unchama")){
+						event.setCancelled(true);
+					}
 
 					//オフハンドから実行された時処理を終了
 					if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
@@ -94,9 +99,10 @@ public class PlayerRightClickListener implements Listener {
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！！！！！Gigantic☆大当たり！" + str);
 						Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！\n" + ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
 					}else if(present.probability < 0.01){
-						Util.sendEverySound(Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
+						//ver 0.3.1以降 大当たり時の全体通知を削除
+						// Util.sendEverySound(Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！！大当たり！" + str);
-						Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
+						// Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
 					}else if(present.probability < 0.1){
 						player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！" + str);
 					}else{
@@ -183,6 +189,7 @@ public class PlayerRightClickListener implements Listener {
 		}
 	}
 
+	/* ver0.3.2 左クリックトグル無効化
 	@EventHandler
 	public void onPlayerEffectToggleEvent(PlayerInteractEvent event){
 		//プレイヤーを取得
@@ -219,15 +226,20 @@ public class PlayerRightClickListener implements Listener {
 			}
 		}
 	}
+	*/
+
 	@EventHandler
 	public void onPlayerActiveSkillUIEvent(PlayerInteractEvent event){
 		//プレイヤーを取得
 		Player player = event.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
 		//プレイヤーが起こしたアクションを取得
 		Action action = event.getAction();
 		//アクションを起こした手を取得
 		EquipmentSlot equipmentslot = event.getHand();
 		//プレイヤーデータ
+		PlayerData playerdata = playermap.get(uuid);
 
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
@@ -242,90 +254,292 @@ public class PlayerRightClickListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 
-				Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキル選択");
+				Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メニュー");
 				ItemStack itemstack;
 				ItemMeta itemmeta;
+				SkullMeta skullmeta;
 				List<String> lore;
+
+
+				itemstack = new ItemStack(Material.SKULL_ITEM,1);
+				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+				itemstack.setDurability((short) 3);
+				skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
+				, ChatColor.RESET + "" +  ChatColor.AQUA + "破壊したブロック数:" + MineBlock.calcMineBlock(player)
+				, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level + 1).intValue() - MineBlock.calcMineBlock(player))
+						);
+
+				skullmeta.setLore(lore);
+				skullmeta.setOwner(playerdata.name);
+				itemstack.setItemMeta(skullmeta);
+				inventory.setItem(0,itemstack);
+
+				// ver0.3.2 採掘速度上昇トグル
+				itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "採掘速度上昇効果");
+				if(playerdata.effectflag){
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "ON"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							);
+				}else {
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "OFF"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							);
+				}
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(1,itemstack);
+
+				// ver0.3.2 四次元ポケットOPEN
+				itemstack = new ItemStack(Material.ENDER_PORTAL_FRAME,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ENDER_PORTAL_FRAME);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "四次元ポケットを開く");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると開きます"
+						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(2,itemstack);
+
+				// ver0.3.2 homeコマンド
+				itemstack = new ItemStack(Material.COMPASS,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームポイントにワープ");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "予め設定したホームポイントにワープできます"
+						, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(3,itemstack);
+
+				// ver0.3.2 sethomeコマンド
+				itemstack = new ItemStack(Material.BED,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BED);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在位置をホームポイントに設定");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると設定されます"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(4,itemstack);
+
+
+				// ver0.3.2 //wandコマンド
+				itemstack = new ItemStack(Material.WOOD_AXE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD_AXE);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護設定用の木の斧を召喚");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると召喚されます"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※インベントリが満杯だと受け取れません"
+						, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "保護のかけ方"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "①召喚された斧を手に持ちます"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "③メニューの「保護領域の申請」ボタンをクリック"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(5,itemstack);
+
+				// ver0.3.2 保護設定コマンド
+				itemstack = new ItemStack(Material.GOLD_AXE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_AXE);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護領域の申請");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "木の斧で2か所クリックした後"
+						, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "このボタンをクリック！"
+						, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "A newregion has been claimed..."
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "と出れば、保護の設定が完了しています"
+						, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "赤色"+ ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "で別の英文が出た場合"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "保護の設定に失敗しています"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "別の保護と被ってないか等ご確認の上"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "始めからやり直してください"
+						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "設定した保護の変更や削除はコマンドを使用します"
+						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "詳しくは公式Wikiを参照下さい"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(6,itemstack);
+
+
+				// ver0.3.2 hubコマンド
+				itemstack = new ItemStack(Material.NETHER_STAR,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ロビーサーバーへ移動");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると移動します"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(7,itemstack);
+
+				// ver0.3.2 /spawnコマンド実行
+				itemstack = new ItemStack(Material.BEACON,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEACON);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スポーンワールドへワープ");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "・メインワールド"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "・資源ワールド"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "・整地ワールド"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "間を移動する時に使います"
+						, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします");
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(8,itemstack);
+
+
+
+
+				// ver0.3.2 wikiページ表示
+				itemstack = new ItemStack(Material.BOOK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "公式Wikiにアクセス");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してからそのURLをクリックしてください"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(35,itemstack);
+
+				// ver0.3.2 投票ページ表示
+				itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票ページにアクセス");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "投票すると様々な特典があります！1日1回投票出来ます"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押しからてそのURLをクリックしてください"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(34,itemstack);
+
+				// ver0.3.2 運営方針とルールページを表示
+				itemstack = new ItemStack(Material.PAPER,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営方針とルールを確認");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "当鯖で遊ぶ前に確認してネ！"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してからそのURLをクリックしてください"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(33,itemstack);
+
+				// ver0.3.2 鯖Mapを表示
+				itemstack = new ItemStack(Material.MAP,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MAP);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "鯖Mapを見る");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "webブラウザから鯖Mapを閲覧出来ます"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "他人の居場所や保護の場所を確認出来ます"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してからそのURLをクリックしてください"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(32,itemstack);
+
+
+
+
+				/* 一番左のピッケル装飾コメントアウト ver0.3.2
+				itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキル選択");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.YELLOW + "選択するとアクティブスキルがONになります");
+				itemmeta.setLore(lore);
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(9,itemstack);
+				*/
 
 				itemstack = new ItemStack(Material.COAL_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
-
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "デュアルブレイク");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "1×2マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getDualBreaklevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：1");
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：1"
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(9,itemstack);
+
+
+				itemstack = new ItemStack(Material.IRON_ORE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トリアルブレイク");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×2マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル："  + config.getTrialBreaklevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：3"
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(10,itemstack);
 
 
-				itemstack = new ItemStack(Material.IRON_ORE,1);
+				itemstack = new ItemStack(Material.GOLD_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
-				itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トリアルブレイク");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×2マス破壊"
-												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル："  + config.getTrialBreaklevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：2");
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getExplosionlevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：10"
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(11,itemstack);
 
 
-				itemstack = new ItemStack(Material.GOLD_ORE,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
-				itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊"
-												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getExplosionlevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：5");
+				itemstack = new ItemStack(Material.REDSTONE_ORE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サンダーストーム");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊×5"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2秒"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getThunderStormlevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：30"
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(12,itemstack);
 
 
-				itemstack = new ItemStack(Material.REDSTONE_ORE,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
-				itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サンダーストーム");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊×5"
-												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getThunderStormlevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：20");
+				itemstack = new ItemStack(Material.LAPIS_ORE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×5マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.5秒"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getBlizzardlevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：70"
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
+
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(13,itemstack);
 
 
-				itemstack = new ItemStack(Material.LAPIS_ORE,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
-				itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "イリュージョン");
-				/*lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "17×17×17マス(r300)破壊"
-												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getIllusionlevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：50");
-												*/
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
-									, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getIllusionlevel()
-									, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：50");
+				itemstack = new ItemStack(Material.EMERALD_ORE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "9*9*7マス破壊"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：3秒"
+												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getMeteolevel()
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：100"
+												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(14,itemstack);
 
 
-				itemstack = new ItemStack(Material.EMERALD_ORE,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
-				itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ");
-				/*lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊×10×5"
-												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getMeteolevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：200");*/
-
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getMeteolevel()
-				, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：200");
-
-				itemmeta.setLore(lore);
-				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(15,itemstack);
-
-
 				itemstack = new ItemStack(Material.DIAMOND_ORE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.DARK_GRAY + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "グラビティ");
 				/*lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "16×16×256マス破壊"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getGravitylevel()
@@ -333,11 +547,59 @@ public class PlayerRightClickListener implements Listener {
 
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getGravitylevel()
-				, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：2000");
+				, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???");
 
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(16,itemstack);
+				inventory.setItem(15,itemstack);
+
+
+				/* 一番右のピッケル装飾コメントアウト ver0.3.2
+				itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキル選択");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.YELLOW + "選択するとアクティブスキルがONになります");
+				itemmeta.setLore(lore);
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(17,itemstack);
+				*/
+
+
+				int gachaget = (int) playerdata.gachapoint/1000;
+				itemstack = new ItemStack(Material.SKULL_ITEM,gachaget);
+				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+				itemstack.setDurability((short) 3);
+				skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガチャ券を受け取る");
+				if(gachaget != 0){
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + gachaget + "枚"
+					, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
+				}else{
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません"
+					, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
+				}
+				skullmeta.setLore(lore);
+				skullmeta.setOwner("unchama");
+				itemstack.setItemMeta(skullmeta);
+				inventory.setItem(27,itemstack);
+
+				itemstack = new ItemStack(Material.STONE_BUTTON,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_BUTTON);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "受け取り方法");
+				if(playerdata.gachaflag){
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "毎分受け取っています"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							);
+				}else {
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "毎分受け取っていません"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							);
+				}
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(28,itemstack);
+
 
 
 
@@ -361,24 +623,24 @@ public class PlayerRightClickListener implements Listener {
 		//使った手を取得
 		EquipmentSlot equipmentslot = event.getHand();
 
-
-		//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
-		if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
-			return;
-		}
-		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-			if(event.getMaterial().equals(Material.ENDER_PORTAL_FRAME)){
-				//設置をキャンセル
-				event.setCancelled(true);
-				//オフハンドから実行された時処理を終了
-				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
-					return;
-				}
-				//開く音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 0.1);
-				//インベントリを開く
-				player.openInventory(playerdata.inventory);
+		if(event.getMaterial().equals(Material.ENDER_PORTAL_FRAME)){
+			//設置をキャンセル
+			event.setCancelled(true);
+			//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
+			if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
+				player.sendMessage(ChatColor.GREEN + "4次元ポケットを入手するには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です。");
+				return;
 			}
+			if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+					//オフハンドから実行された時処理を終了
+					if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+						return;
+					}
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 0.1);
+					//インベントリを開く
+					player.openInventory(playerdata.inventory);
+		}
 		}
 	}
 

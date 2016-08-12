@@ -11,6 +11,7 @@ import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -26,6 +27,9 @@ import org.bukkit.material.Dye;
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.task.BlizzardTaskRunnable;
+import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
+import com.github.unchama.seichiassist.task.MeteoTaskRunnable;
 import com.github.unchama.seichiassist.task.ThunderStormTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
@@ -68,6 +72,14 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		playerdata = SeichiAssist.playermap.get(uuid);
+
+		//ブロックタイプがPACKED_ICEの時blizzardスキルを発動中であれば終了
+		if(material.equals(Material.PACKED_ICE) && playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
+			event.setCancelled(true);
+			return;
+		}
+
+
 		//passiveskill[追加経験値獲得]処理実行
 		int exp = calcExpDrop(playerdata);
 		expman.changeExp(exp);
@@ -110,22 +122,61 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
 			Explosion(player,block,tool,expman);
 		}else if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
-			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,4);
-		}else if(playerdata.activenum == ActiveSkill.ILLUSION.getNum()){
-			//new IllusionTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,3);
-			//expman.changeExp(-exp);
+			//クールダウン中は発動しない
+			if(playerdata.skillcanbreakflag){
+				//スキル発動部分
+				new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
+				//クールダウン生成
+				playerdata.skillcanbreakflag = false;
+				new CoolDownTaskRunnable(player).runTaskLater(plugin,40);
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン生成");
+				}
+			}else{
+				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン中につき発動不可");
+				}
+			}
+		}else if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
+			//クールダウン中は発動しない
+			if(playerdata.skillcanbreakflag){
+				//スキル発動部分
+				new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
+				//クールダウン生成
+				playerdata.skillcanbreakflag = false;
+				new CoolDownTaskRunnable(player).runTaskLater(plugin,50);
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン生成");
+				}
+			}else{
+				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン中につき発動不可");
+				}
+			}
 		}else if(playerdata.activenum == ActiveSkill.METEO.getNum()){
-			Meteo(player,block,tool,expman);
+			//クールダウン中は発動しない
+			if(playerdata.skillcanbreakflag){
+				//スキル発動部分
+				new MeteoTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,10,10);
+				//スキル発動音を鳴らす
+				player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1, 1);
+				//クールダウン生成
+				playerdata.skillcanbreakflag = false;
+				new CoolDownTaskRunnable(player).runTaskLater(plugin,60);
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン生成");
+				}
+			}else{
+				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("クールダウン中につき発動不可");
+				}
+			}
 		}
 
 	}
-
-	private void Meteo(Player player, Block block, ItemStack tool,
-			ExperienceManager expman) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
 
 
 	private void Explosion(Player player,Block block,ItemStack tool,ExperienceManager expman) {
@@ -203,7 +254,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 		}
 
-		if(player.getLevel() == 0 && !expman.hasExp(5)){
+		if(player.getLevel() == 0 && !expman.hasExp(10)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -222,12 +273,18 @@ public class PlayerBlockBreakListener implements Listener {
 					//もし壊されるブロックがもともとのブロックと同じ種類だった場合
 					if(breakblock.getType().equals(material)
 							|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
-							|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
+							|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
+							|| breakblock.getType().equals(Material.LAVA)
+							){
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
 							if(canBreak(player, breakblock)){
-								//アクティブスキル発動
-								BreakBlock(player, breakblock, centerofblock, tool);
-								count ++;
+								if(breakblock.getType().equals(Material.LAVA)){
+									breakblock.setType(Material.AIR);
+								}else{
+									//アクティブスキル発動
+									BreakBlock(player, breakblock, centerofblock, tool,false);
+									count ++;
+								}
 							}
 						}
 					}
@@ -240,15 +297,15 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		if(count>22){
-			expman.changeExp(-5);
+			expman.changeExp(-10);
 		}else if(count>17){
-			expman.changeExp(-4);
+			expman.changeExp(-9);
 		}else if(count>12){
-			expman.changeExp(-3);
+			expman.changeExp(-8);
 		}else if(count>7){
-			expman.changeExp(-2);
+			expman.changeExp(-6);
 		}else if(count>2){
-			expman.changeExp(-1);
+			expman.changeExp(-4);
 		}else if(count>0){
 		}
 	}
@@ -307,7 +364,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 		}
 
-		if(player.getLevel() == 0 && !expman.hasExp(2)){
+		if(player.getLevel() == 0 && !expman.hasExp(3)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -329,10 +386,10 @@ public class PlayerBlockBreakListener implements Listener {
 					if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
 						if(canBreak(player, breakblock)){
 							//アクティブスキル発動
-							BreakBlock(player, breakblock, centerofblock, tool);
+							BreakBlock(player, breakblock, centerofblock, tool,true);
 							//壊した時に白いエフェクトが出るように設定
-							for(int i = 1; i<2 ; i++){
-								breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.LARGE_SMOKE, (byte)0);
+							for(int i = 1; i<3 ; i++){
+								breakblock.getWorld().playEffect(breakblock.getLocation().add(0.5,0.5,0.5), Effect.INSTANT_SPELL, (byte)0);
 							}
 							count ++;
 						}
@@ -359,10 +416,10 @@ public class PlayerBlockBreakListener implements Listener {
 					if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
 						if(canBreak(player, breakblock)){
 							//アクティブスキル発動
-							BreakBlock(player, breakblock, centerofblock, tool);
-							//壊した時に白いエフェクトが出るように設定
-							for(int i = 1; i<2 ; i++){
-								breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.LARGE_SMOKE, (byte)0);
+							BreakBlock(player, breakblock, centerofblock, tool,true);
+							//壊した時に黒いエフェクトが出るように設定
+							for(int i = 1; i<4 ; i++){
+								breakblock.getWorld().playEffect(breakblock.getLocation().add(0.5,0.5,0.5), Effect.INSTANT_SPELL, (byte)0);
 							}
 							count ++;
 						}
@@ -372,9 +429,9 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 		}
 		if(count>3){
-			expman.changeExp(-2);
+			expman.changeExp(-3);
 		}else if(count>0){
-			expman.changeExp(-1);
+			expman.changeExp(-2);
 
 		}
 	}
@@ -423,10 +480,10 @@ public class PlayerBlockBreakListener implements Listener {
 			if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
 				if(canBreak(player, breakblock)){
 					//アクティブスキル発動
-					BreakBlock(player, breakblock, centerofblock, tool);
+					BreakBlock(player, breakblock, centerofblock, tool,true);
 					//壊した時に白いエフェクトが出るように設定
 					for(int i = 1; i<2 ; i++){
-						breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.EXPLOSION, (byte)0);
+						breakblock.getWorld().playEffect(breakblock.getLocation().add(0.5,0.5,0.5), Effect.EXPLOSION, (byte)0);
 					}
 					//アクティブスキル発動のために経験値消費
 					expman.changeExp(-1);
@@ -460,18 +517,22 @@ public class PlayerBlockBreakListener implements Listener {
 		return true;
 	}
 
-	public static void BreakBlock(Player player,Block breakblock,Location centerofblock,ItemStack tool) {
+	public static void BreakBlock(Player player,Block breakblock,Location centerofblock,ItemStack tool,Boolean stepflag) {
 
 		Material material = breakblock.getType();
 
 
 		//アイテムをドロップさせる
 		breakblock.getWorld().dropItemNaturally(centerofblock,dropItemOnTool(breakblock,tool));
+
 		//ブロックを空気に変える
 		breakblock.setType(Material.AIR);
 
-		//あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
-		breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,breakblock.getType());
+		if(stepflag){
+			//あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
+			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,material);
+		}
+
 
 		// Effect.ENDER_SIGNALこれかっこいい
 		// Effect.EXPLOSION 範囲でかい
@@ -608,13 +669,36 @@ public class PlayerBlockBreakListener implements Listener {
 		//０～１のランダムな値を取得
 		double rand = Math.random();
 		//もし追加経験値を獲得できるレベルまで達していない時は０を返す
-		if(playerdata.level < SeichiAssist.config.getDropExplevel()){
+		if(playerdata.level < 8){
 			return 0;
-		}else if (rand < 0.2){
-			//２０％の確率で１を返す
-			return 1;
-		}//８０％の確率で０を返す
-		return 0;
+		}else if (playerdata.level < 18){
+			//20%で１
+			if(rand < 0.2){
+				return SeichiAssist.config.getDropExplevel1();
+			}else{
+				return 0;
+			}
+		}else if (playerdata.level < 28){
+			//60%で１
+			if(rand < 0.6){
+				return SeichiAssist.config.getDropExplevel2();
+			}else{
+				return 0;
+			}
+
+		}else if (playerdata.level < 38){
+			//1
+			return SeichiAssist.config.getDropExplevel3();
+		}else if (playerdata.level < 48){
+			//2
+			return SeichiAssist.config.getDropExplevel4();
+		}else if (playerdata.level < 58){
+			//3
+			return SeichiAssist.config.getDropExplevel5();
+		}else{
+			//4
+			return SeichiAssist.config.getDropExplevel6();
+		}
 	}
 
 	public static short calcDurability(int enchantmentLevel) {
