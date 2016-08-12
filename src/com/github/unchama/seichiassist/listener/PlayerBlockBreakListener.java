@@ -73,19 +73,8 @@ public class PlayerBlockBreakListener implements Listener {
 
 		playerdata = SeichiAssist.playermap.get(uuid);
 
-		/*
 		//ブロックタイプがPACKED_ICEの時blizzardスキルを発動中であれば終了
 		if(material.equals(Material.PACKED_ICE) && playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
-			//クールダウン発動中のみ
-			if(!playerdata.skillcanbreakflag){
-				event.setCancelled(true);
-				return;
-			}
-		}
-		*/
-
-		// クールダウン中はブロックを破壊出来ない
-		if(!playerdata.skillcanbreakflag){
 			event.setCancelled(true);
 			return;
 		}
