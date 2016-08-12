@@ -56,6 +56,8 @@ public class PlayerData {
 	public boolean skillcanbreakflag;
 	//ワールドガード保護自動設定用
 	public int rgnum;
+	//ランキング算出用トータル破壊ブロック
+	public int totalbreaknum;
 
 
 	public PlayerData(Player player){
@@ -79,6 +81,7 @@ public class PlayerData {
 		activenum = 1;
 		skillcanbreakflag = true;
 		rgnum = 0;
+		totalbreaknum = MineBlock.calcMineBlock(player);
 	}
 
 	//プレイヤーデータを最新の状態に更新

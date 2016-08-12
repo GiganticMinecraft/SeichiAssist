@@ -15,12 +15,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -33,6 +31,8 @@ import com.github.unchama.seichiassist.util.Util;
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private Config config = SeichiAssist.config;
+
+	/*
 	//プレイヤーが4次元ポケットを閉じた時に実行
 	@EventHandler
 	public void onPlayerPortalCloseEvent(InventoryCloseEvent event){
@@ -57,6 +57,8 @@ public class PlayerInventoryListener implements Listener {
 			}
 		}
 	}
+	*/
+
 	@EventHandler
 	public void onPlayerClickActiveSkillSellectEvent(InventoryClickEvent event){
 		ItemStack itemstackcurrent = event.getCurrentItem();
@@ -88,7 +90,7 @@ public class PlayerInventoryListener implements Listener {
 
 
 		//インベントリ名が以下の時処理
-		if(topinventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メニュー")){
+		if(topinventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "木の棒メニュー")){
 			event.setCancelled(true);
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -278,17 +280,39 @@ public class PlayerInventoryListener implements Listener {
 						+ ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック\n"
 						+ ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック\n"
 						+ ChatColor.RESET + "" +  ChatColor.GREEN + "③メニューの「保護領域の申請」ボタンをクリック\n"
-						+ ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard"
+						+ ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard"
 						);
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.GOLD_AXE)){
 				// 保護の設定
+
+				/*
+				if(!WGBukkit.getPlugin().canBuild(player, player.getLocation())){
+					player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "別の保護と被ってます");
+					return;
+				}
+				*/
 				player.closeInventory();
+				player.sendMessage(ChatColor.DARK_GRAY + "木の斧で選択されている範囲で保護の設定を行います…");
+						player.sendMessage(ChatColor.DARK_GRAY + "(//expand vert→/rg claim " + player.getName() + "_" + playerdata.rgnum + "→//cel)");
 				player.chat("//expand vert");
 				player.chat("/rg claim " + player.getName() + "_" + playerdata.rgnum);
 				playerdata.rgnum += 1;
 				player.chat("//sel");
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.STONE_AXE)){
+				// 保護リストの表示
+				player.closeInventory();
+				player.sendMessage(ChatColor.DARK_GRAY + "現在の保護の一覧を表示します…(/rg list)");
+				player.sendMessage(ChatColor.DARK_GRAY + "複数ページある場合は"
+				+ ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "" + ChatColor.UNDERLINE + "/rg list ページ名"
+				+ ChatColor.RESET + "" +  ChatColor.DARK_GRAY + " で2ページ目以降を開いてください"
+				);
+				player.chat("/rg list");
+				player.sendMessage(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "" + ChatColor.UNDERLINE + "/rg remove 保護名"
+				+ ChatColor.RESET + "" +  ChatColor.DARK_GRAY + " で保護の削除が出来ます");
 			}
 
 
@@ -296,7 +320,7 @@ public class PlayerInventoryListener implements Listener {
 				// hubコマンド実行
 				// player.chat("/hub");
 				player.closeInventory();
-				player.sendMessage(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "Tキーを押して/hubと入力してEnterキーを押してください");
+				player.sendMessage(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "Tキーを押して/hubと入力してEnterキーを押してください");
 			}
 
 
@@ -308,7 +332,7 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
 				// 投票リンク表示
-				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "https://goo.gl/FjeEsY");
+				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/seichi.click/vote");
 				player.closeInventory();
 			}
 
@@ -321,6 +345,15 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.MAP)){
 				// 鯖マップリンク表示
 				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "http://mc.seichi.click:8123");
+				player.closeInventory();
+
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.SIGN)){
+				// 掲示板リンク表示
+				player.sendMessage(ChatColor.DARK_GRAY + "開いたら下の方までスクロールしてください\n"
+						+ ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/seichi.click"
+						);
 				player.closeInventory();
 			}
 
@@ -355,6 +388,8 @@ public class PlayerInventoryListener implements Listener {
 
 		}
 	}
+
+	/*
 	//プレイヤーがアクティブスキル選択インベントリを閉じた時に実行
 	@EventHandler
 	public void onPlayerActiveSkillSellectCloseEvent(InventoryCloseEvent event){
@@ -369,7 +404,7 @@ public class PlayerInventoryListener implements Listener {
 		if(inventory.getSize() != 36){
 			return;
 		}
-		if(inventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メニュー")){
+		if(inventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "木の棒メニュー")){
 			Player player = (Player)he;
 			PlayerInventory pinventory = player.getInventory();
 			ItemStack itemstack = pinventory.getItemInMainHand();
@@ -379,6 +414,8 @@ public class PlayerInventoryListener implements Listener {
 			}
 		}
 	}
+	*/
+
 
 /*バグ確認のため未実装
 	//インベントリに4次元ポケットを入れられないようにする。

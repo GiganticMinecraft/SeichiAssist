@@ -141,6 +141,7 @@ public class Sql{
 				",add column if not exists numofsorryforbug int default 0" +
 				",add column if not exists inventory blob default null" +
 				",add column if not exists rgnum int default 0" +
+				",add column if not exists totalbreaknum int default 0" +
 				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
@@ -511,6 +512,7 @@ public class Sql{
  	 				playerdata.level = rs.getInt("level");
  	 				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
  	 				playerdata.rgnum = rs.getInt("rgnum");
+ 	 				// playerdata.totalbreaknum = rs.getInt("totalbreaknum");
  	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  				  }
  				rs.close();
@@ -545,6 +547,7 @@ public class Sql{
 				+ ",level = " + Integer.toString(playerdata.level)
 				+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug)
 				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
+				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
 				+ " where uuid like '" + struuid + "'";
 		try{

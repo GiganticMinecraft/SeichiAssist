@@ -179,6 +179,7 @@ public class PlayerBlockBreakListener implements Listener {
 	}
 
 
+	//スキル「エクスプロージョン」
 	private void Explosion(Player player,Block block,ItemStack tool,ExperienceManager expman) {
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
@@ -254,7 +255,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 		}
 
-		if(player.getLevel() == 0 && !expman.hasExp(10)){
+		if(player.getLevel() == 0 && !expman.hasExp(15)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -297,15 +298,15 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		if(count>22){
-			expman.changeExp(-10);
+			expman.changeExp(-15);
 		}else if(count>17){
-			expman.changeExp(-9);
+			expman.changeExp(-12);
 		}else if(count>12){
-			expman.changeExp(-8);
+			expman.changeExp(-9);
 		}else if(count>7){
 			expman.changeExp(-6);
 		}else if(count>2){
-			expman.changeExp(-4);
+			expman.changeExp(-3);
 		}else if(count>0){
 		}
 	}
@@ -668,36 +669,26 @@ public class PlayerBlockBreakListener implements Listener {
 	public static int calcExpDrop(PlayerData playerdata) {
 		//０～１のランダムな値を取得
 		double rand = Math.random();
-		//もし追加経験値を獲得できるレベルまで達していない時は０を返す
-		if(playerdata.level < 8){
-			return 0;
-		}else if (playerdata.level < 18){
-			//20%で１
-			if(rand < 0.2){
+		//10%の確率で経験値付与
+		if(rand < 0.1){
+			//Lv8未満は獲得経験値ゼロ、それ以上はレベルに応じて経験値付与
+			if(playerdata.level < 8){
+				return 0;
+			}else if (playerdata.level < 18){
 				return SeichiAssist.config.getDropExplevel1();
-			}else{
-				return 0;
-			}
-		}else if (playerdata.level < 28){
-			//60%で１
-			if(rand < 0.6){
+			}else if (playerdata.level < 28){
 				return SeichiAssist.config.getDropExplevel2();
+			}else if (playerdata.level < 38){
+				return SeichiAssist.config.getDropExplevel3();
+			}else if (playerdata.level < 48){
+				return SeichiAssist.config.getDropExplevel4();
+			}else if (playerdata.level < 58){
+				return SeichiAssist.config.getDropExplevel5();
 			}else{
-				return 0;
+				return SeichiAssist.config.getDropExplevel6();
 			}
-
-		}else if (playerdata.level < 38){
-			//1
-			return SeichiAssist.config.getDropExplevel3();
-		}else if (playerdata.level < 48){
-			//2
-			return SeichiAssist.config.getDropExplevel4();
-		}else if (playerdata.level < 58){
-			//3
-			return SeichiAssist.config.getDropExplevel5();
 		}else{
-			//4
-			return SeichiAssist.config.getDropExplevel6();
+			return 0;
 		}
 	}
 

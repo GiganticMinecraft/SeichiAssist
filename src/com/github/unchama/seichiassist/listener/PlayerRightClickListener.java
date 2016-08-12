@@ -254,7 +254,7 @@ public class PlayerRightClickListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 
-				Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メニュー");
+				Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "木の棒メニュー");
 				ItemStack itemstack;
 				ItemMeta itemmeta;
 				SkullMeta skullmeta;
@@ -267,8 +267,10 @@ public class PlayerRightClickListener implements Listener {
 				skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
-				, ChatColor.RESET + "" +  ChatColor.AQUA + "破壊したブロック数:" + MineBlock.calcMineBlock(player)
-				, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level + 1).intValue() - MineBlock.calcMineBlock(player))
+						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "1ブロック破壊ごとに10%の確率で"
+						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + DisplayPassiveExp(playerdata) + "の経験値を獲得します"
+						, ChatColor.RESET + "" +  ChatColor.AQUA + "破壊したブロック数:" + MineBlock.calcMineBlock(player)
+						, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level + 1).intValue() - MineBlock.calcMineBlock(player))
 						);
 
 				skullmeta.setLore(lore);
@@ -277,16 +279,30 @@ public class PlayerRightClickListener implements Listener {
 				inventory.setItem(0,itemstack);
 
 				// ver0.3.2 採掘速度上昇トグル
+				/*
+				String msg[] = null;
+				int i = 0;
+				for(EffectData ed : playerdata.effectdatalist){
+					msg[i] = (ed.string);
+					msg[i+1] = ("(持続時間:" + Util.toTimeString(ed.duration/20) + ")");
+					i += 2;
+				}
+				*/
+				//ボタン表示部分
 				itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "採掘速度上昇効果");
 				if(playerdata.effectflag){
 					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "ON"
 							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "" + ChatColor.UNDERLINE + "/ef smart"
+							, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "で効果の内訳を表示できます"
 							);
 				}else {
 					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "OFF"
 							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "" + ChatColor.UNDERLINE + "/ef smart"
+							, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "で効果の内訳を表示できます"
 							);
 				}
 				itemmeta.setLore(lore);
@@ -302,7 +318,7 @@ public class PlayerRightClickListener implements Listener {
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(2,itemstack);
+				inventory.setItem(21,itemstack);
 
 				// ver0.3.2 homeコマンド
 				itemstack = new ItemStack(Material.COMPASS,1);
@@ -313,7 +329,7 @@ public class PlayerRightClickListener implements Listener {
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(3,itemstack);
+				inventory.setItem(18,itemstack);
 
 				// ver0.3.2 sethomeコマンド
 				itemstack = new ItemStack(Material.BED,1);
@@ -323,7 +339,7 @@ public class PlayerRightClickListener implements Listener {
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(4,itemstack);
+				inventory.setItem(19,itemstack);
 
 
 				// ver0.3.2 //wandコマンド
@@ -336,30 +352,43 @@ public class PlayerRightClickListener implements Listener {
 						, ChatColor.RESET + "" +  ChatColor.GREEN + "①召喚された斧を手に持ちます"
 						, ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック"
 						, ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック"
-						, ChatColor.RESET + "" +  ChatColor.GREEN + "③メニューの「保護領域の申請」ボタンをクリック"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "③メニューの「" + ChatColor.RESET + "" +  ChatColor.YELLOW + "保護領域の申請" + ChatColor.RESET + "" +  ChatColor.GREEN + "」ボタンをクリック"
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(5,itemstack);
+				inventory.setItem(3,itemstack);
 
 				// ver0.3.2 保護設定コマンド
 				itemstack = new ItemStack(Material.GOLD_AXE,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_AXE);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護領域の申請");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "木の斧で2か所クリックした後"
-						, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "このボタンをクリック！"
-						, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "A newregion has been claimed..."
+						, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "このボタンをクリック"
+						, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "A new region has been claimed"
+						, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
 						, ChatColor.RESET + "" +  ChatColor.GREEN + "と出れば、保護の設定が完了しています"
-						, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "赤色"+ ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "で別の英文が出た場合"
+						, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "赤色で別の英文が出た場合"
 						, ChatColor.RESET + "" +  ChatColor.GREEN + "保護の設定に失敗しています"
 						, ChatColor.RESET + "" +  ChatColor.GREEN + "別の保護と被ってないか等ご確認の上"
 						, ChatColor.RESET + "" +  ChatColor.GREEN + "始めからやり直してください"
-						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "設定した保護の変更や削除はコマンドを使用します"
-						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "詳しくは公式Wikiを参照下さい"
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(6,itemstack);
+				inventory.setItem(4,itemstack);
+
+				// ver0.3.2 保護リスト表示
+				itemstack = new ItemStack(Material.STONE_AXE,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_AXE);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護リストを表示");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると表示"
+						, ChatColor.RESET + "" +  ChatColor.GRAY + "現在あなたが保護している"
+						, ChatColor.RESET + "" +  ChatColor.GRAY + "土地の一覧を表示します"
+						, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "/rg remove 保護名"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "で保護の削除が出来ます"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(5,itemstack);
 
 
 				// ver0.3.2 hubコマンド
@@ -436,6 +465,19 @@ public class PlayerRightClickListener implements Listener {
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(32,itemstack);
 
+				// ver0.3.2 掲示板を表示
+				itemstack = new ItemStack(Material.SIGN,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SIGN);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "掲示板を見る");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "管理人へのお問い合わせは"
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "掲示板に書き込みをｵﾈｶﾞｲｼナス"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄にURLが表示されますので"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してからそのURLをクリックしてください"
+						);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(31,itemstack);
+
 
 
 
@@ -462,7 +504,7 @@ public class PlayerRightClickListener implements Listener {
 												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(9,itemstack);
+				inventory.setItem(10,itemstack);
 
 
 				itemstack = new ItemStack(Material.IRON_ORE,1);
@@ -476,7 +518,7 @@ public class PlayerRightClickListener implements Listener {
 												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(10,itemstack);
+				inventory.setItem(11,itemstack);
 
 
 				itemstack = new ItemStack(Material.GOLD_ORE,1);
@@ -486,11 +528,11 @@ public class PlayerRightClickListener implements Listener {
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
 												, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getExplosionlevel()
-												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：10"
+												, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：15"
 												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(11,itemstack);
+				inventory.setItem(12,itemstack);
 
 
 				itemstack = new ItemStack(Material.REDSTONE_ORE,1);
@@ -504,7 +546,7 @@ public class PlayerRightClickListener implements Listener {
 												, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(12,itemstack);
+				inventory.setItem(13,itemstack);
 
 
 				itemstack = new ItemStack(Material.LAPIS_ORE,1);
@@ -519,7 +561,7 @@ public class PlayerRightClickListener implements Listener {
 
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(13,itemstack);
+				inventory.setItem(14,itemstack);
 
 
 				itemstack = new ItemStack(Material.EMERALD_ORE,1);
@@ -534,7 +576,7 @@ public class PlayerRightClickListener implements Listener {
 
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(14,itemstack);
+				inventory.setItem(15,itemstack);
 
 
 				itemstack = new ItemStack(Material.DIAMOND_ORE,1);
@@ -551,7 +593,7 @@ public class PlayerRightClickListener implements Listener {
 
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(15,itemstack);
+				inventory.setItem(16,itemstack);
 
 
 				/* 一番右のピッケル装飾コメントアウト ver0.3.2
@@ -640,10 +682,27 @@ public class PlayerRightClickListener implements Listener {
 					player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 0.1);
 					//インベントリを開く
 					player.openInventory(playerdata.inventory);
-		}
+			}
 		}
 	}
-
+	//パッシブスキルの獲得量表示
+	public static int DisplayPassiveExp(PlayerData playerdata) {
+		if(playerdata.level < 8){
+			return 0;
+		}else if (playerdata.level < 18){
+			return SeichiAssist.config.getDropExplevel1();
+		}else if (playerdata.level < 28){
+			return SeichiAssist.config.getDropExplevel2();
+		}else if (playerdata.level < 38){
+			return SeichiAssist.config.getDropExplevel3();
+		}else if (playerdata.level < 48){
+			return SeichiAssist.config.getDropExplevel4();
+		}else if (playerdata.level < 58){
+			return SeichiAssist.config.getDropExplevel5();
+		}else{
+			return SeichiAssist.config.getDropExplevel6();
+		}
+	}
 
 
 }
