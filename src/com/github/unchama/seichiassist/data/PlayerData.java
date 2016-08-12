@@ -203,7 +203,7 @@ public class PlayerData {
 		while(SeichiAssist.ranklist.get(i).intValue() >= t){
 			i++;
 		}
-		return i+1;
+		return i;
 	}
 
 }
