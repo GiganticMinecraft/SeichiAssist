@@ -273,6 +273,11 @@ public class PlayerRightClickListener implements Listener {
 						, ChatColor.RESET + "" +  ChatColor.AQUA + "破壊したブロック数:" + MineBlock.calcMineBlock(player)
 						, ChatColor.RESET + "" +  ChatColor.AQUA + "ランキング：" + PlayerData.calcPlayerRank(player) + "位" + ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "(" + SeichiAssist.ranklist.size() +"人中)"
 						);
+				/*
+				if(PlayerData.calcPlayerRank(player) > 1){
+					lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + (PlayerData.calcPlayerRank(player)-1) + "位との差：" + (SeichiAssist.ranklist.get(PlayerData.calcPlayerRank(player)-2).intValue() - MineBlock.calcMineBlock(player)));
+				}
+				*/
 
 				skullmeta.setLore(lore);
 				skullmeta.setOwner(playerdata.name);
