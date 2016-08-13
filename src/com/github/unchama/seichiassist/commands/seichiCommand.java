@@ -32,13 +32,6 @@ public class seichiCommand implements TabExecutor {
 			String[] args) {
 		if(args.length == 0){
 			return false;
-		}else if(args[0].equalsIgnoreCase("load")){
-			//seichi load と入力したとき
-			SeichiAssist.gachadatalist.clear();
-			SeichiAssist.config.reloadConfig();
-			sender.sendMessage("SeichiAssistのconfig.ymlを強制的にロードしました。");
-			return true;
-
 
 		}else if(args[0].equalsIgnoreCase("bug")){
 			//seichi bug と入力したとき

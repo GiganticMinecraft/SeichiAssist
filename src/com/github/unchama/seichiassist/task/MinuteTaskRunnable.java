@@ -165,7 +165,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました。右クリックで使えるゾ");
 				}
 			}else{
-				if(playerdata.minuteblock.increase != 0){
+				if(playerdata.minuteblock.increase != 0 && playerdata.gachaflag){
 					player.sendMessage("あと" + ChatColor.AQUA + (config.getGachaPresentInterval()-(playerdata.gachapoint % config.getGachaPresentInterval())) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
 				}
 			}

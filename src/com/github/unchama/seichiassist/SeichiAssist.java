@@ -247,8 +247,6 @@ public class SeichiAssist extends JavaPlugin{
 		for(BukkitTask task:tasklist){
 			task.cancel();
 		}
-		config.saveGachaData();
-		getLogger().info("ガチャを保存しました．");
 
 		for(PlayerData playerdata : playermap.values()){
 			if(!sql.savePlayerData(playerdata)){
@@ -258,7 +256,10 @@ public class SeichiAssist extends JavaPlugin{
 		sql.disconnect();
 
 		//configをsave
+		getLogger().info("disable時はサーバーに登録されているガチャ景品データ、及び各設定値を使ってconfig.ymlを置き換えます");
+		config.saveGachaData();
 		saveConfig();
+		getLogger().info("ガチャデータ、及び各設定値をconfig.ymlに保存しました");
 		getLogger().info("SeichiPlugin is Disabled!");
 	}
 
