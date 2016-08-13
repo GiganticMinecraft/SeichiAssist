@@ -141,7 +141,8 @@ public class gachaCommand implements TabExecutor{
 		GachaData gachadata = new GachaData();
 		PlayerInventory inventory = player.getInventory();
 		gachadata.itemstack = inventory.getItemInMainHand();
-		gachadata.amount = inventory.getItemInMainHand().getAmount();
+		//gachadata.amount = inventory.getItemInMainHand().getAmount();
+		gachadata.amount = 1;
 		gachadata.probability = probability;
 
 		SeichiAssist.gachadatalist.add(gachadata);
