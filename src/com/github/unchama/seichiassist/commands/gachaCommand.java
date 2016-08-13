@@ -41,6 +41,17 @@ public class gachaCommand implements TabExecutor{
 
 		if(args.length == 0){
 			return false;
+		}else if(args[0].equalsIgnoreCase("mente")){
+				//menteフラグ反転処理
+
+				//メッセージフラグを反転
+				SeichiAssist.gachamente = !SeichiAssist.gachamente;
+				if (SeichiAssist.gachamente){
+					sender.sendMessage(ChatColor.GREEN + "ガチャシステムを一時停止しました");
+				}else{
+					sender.sendMessage(ChatColor.GREEN + "ガチャシステムを再開しました");
+				}
+				return true;
 		}else if(args[0].equalsIgnoreCase("reload")){
 			//gacha load と入力したとき
 			sender.sendMessage("現在サーバーに登録されているガチャ景品リスト、その他各設定値を最新のconfig.ymlのデータを使って置き換えます");

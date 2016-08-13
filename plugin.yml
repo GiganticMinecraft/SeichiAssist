@@ -5,7 +5,7 @@ version: 0.3.6
 commands:
   gacha:
       description: This is a gacha command.
-      usage: /<command> <add/list/remove/setamount/setprob/move/clear/save/reload>
+      usage: /<command> <mente/add/list/remove/setamount/setprob/move/clear/save/reload>
       permission: multiseichiplugin.seichi
       permission-message: You don't have <permission>
   seichi:

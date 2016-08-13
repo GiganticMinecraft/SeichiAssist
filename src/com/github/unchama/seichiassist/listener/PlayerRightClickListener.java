@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -62,9 +63,20 @@ public class PlayerRightClickListener implements Listener {
 				//ownerがうんちゃまの時の処理
 				if(skullmeta.getOwner().equals("unchama")){
 
-					//うんちゃま以外は設置をキャンセル
-					if(!player.getName().equals("unchama")){
-						event.setCancelled(true);
+					//もしサバイバルでなければ処理を終了
+					if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+						return;
+					}
+
+					//これ以前のフラグに引っかかると設置できる
+					//設置キャンセル
+					event.setCancelled(true);
+					//これより下のフラグに引っかかると設置できない
+
+					//ガチャシステムメンテナンス中は処理を終了
+					if(SeichiAssist.gachamente){
+						player.sendMessage("現在ガチャシステムはメンテナンス中です。\nしばらく経ってからもう一度お試しください");
+						return;
 					}
 
 					//オフハンドから実行された時処理を終了
