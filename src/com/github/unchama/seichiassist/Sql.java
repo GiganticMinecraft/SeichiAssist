@@ -144,6 +144,7 @@ public class Sql{
 				",add column if not exists inventory blob default null" +
 				",add column if not exists rgnum int default 0" +
 				",add column if not exists totalbreaknum int default 0" +
+				",add column if not exists lastquit datetime default null" +
 				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
@@ -551,6 +552,7 @@ public class Sql{
 				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
 				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
+				+ ",lastquit = cast( now() as datetime )"
 				+ " where uuid like '" + struuid + "'";
 		try{
 				stmt.executeUpdate(command);
