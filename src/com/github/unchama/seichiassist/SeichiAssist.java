@@ -195,6 +195,9 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 
+		//mysqlの値でplayermapを初期化する
+		//playermap = sql.loadAllPlayerData();
+
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){
 			//UUIDを取得
