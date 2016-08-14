@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
@@ -26,6 +27,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerInventoryListener implements Listener {
@@ -72,6 +74,8 @@ public class PlayerInventoryListener implements Listener {
 		}
 		Player player = (Player)he;
 		UUID uuid = player.getUniqueId();
+		//経験値変更用のクラスを設定
+		ExperienceManager expman = new ExperienceManager(player);
 		//インベントリが存在しない時終了
 		if(topinventory == null){
 			return;
@@ -90,7 +94,7 @@ public class PlayerInventoryListener implements Listener {
 
 
 		//インベントリ名が以下の時処理
-		if(topinventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "木の棒メニュー")){
+		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "木の棒メニュー")){
 			event.setCancelled(true);
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -180,6 +184,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 			}
 
+			//溜まったガチャ券をインベントリへ
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("unchama")){
 				ItemStack skull = Util.getskull(Util.getName(player));
 				int count = 0;
@@ -205,6 +210,34 @@ public class PlayerInventoryListener implements Listener {
 						, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
 				itemmeta.setLore(lore);
 				itemstackcurrent.setItemMeta(itemmeta);
+			}
+
+			//経験値を消費してプレイヤーの頭を召喚
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_Villager")){
+				//経験値変更用のクラスを設定
+				//経験値が足りなかったら処理を終了
+				if(!expman.hasExp(10000)){
+					player.sendMessage(ChatColor.RED + "必要な経験値が足りません");
+					return;
+				}
+				//経験値消費
+				expman.changeExp(-10000);
+
+				//プレイヤーの頭作成
+				ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1);
+				SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+				skull.setDurability((short) 3);
+				skullmeta.setOwner(player.getName());
+				skull.setItemMeta(skullmeta);
+
+				//渡すか、落とすか
+				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+					Util.addItem(player,skull);
+				}else{
+					Util.dropItem(player,skull);
+				}
+				player.sendMessage(ChatColor.GOLD + "経験値10000を消費して自分の頭を召喚しました");
+				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.STONE_BUTTON)){
@@ -237,8 +270,13 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "ON"
+					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在ONになっています"
 							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
+							, ChatColor.RESET + "" +  ChatColor.GRAY + "現在の接続人数と過去1分間の採掘量に応じて"
+							, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度が変化するシステムです"
+							, ChatColor.RESET + "" +  ChatColor.GRAY + "" + ChatColor.UNDERLINE + "/ef smart"
+							, ChatColor.RESET + "" +  ChatColor.GRAY + "で効果の内訳を表示できます"
 							);
 					itemmeta.setLore(lore);
 					itemstackcurrent.setItemMeta(itemmeta);
@@ -246,8 +284,13 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1, 1);
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "OFF"
+					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "現在OFFになっています"
 							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+							, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
+							, ChatColor.RESET + "" +  ChatColor.GRAY + "現在の接続人数と過去1分間の採掘量に応じて"
+							, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度が変化するシステムです"
+							, ChatColor.RESET + "" +  ChatColor.GRAY + "" + ChatColor.UNDERLINE + "/ef smart"
+							, ChatColor.RESET + "" +  ChatColor.GRAY + "で効果の内訳を表示できます"
 							);
 					itemmeta.setLore(lore);
 					itemstackcurrent.setItemMeta(itemmeta);
@@ -294,8 +337,8 @@ public class PlayerInventoryListener implements Listener {
 				}
 				*/
 				player.closeInventory();
-				player.sendMessage(ChatColor.DARK_GRAY + "木の斧で選択されている範囲で保護の設定を行います…");
-						player.sendMessage(ChatColor.DARK_GRAY + "(//expand vert→/rg claim " + player.getName() + "_" + playerdata.rgnum + "→//cel)");
+				player.sendMessage(ChatColor.GRAY + "木の斧で選択されている範囲で保護の設定を行います…");
+						player.sendMessage(ChatColor.GRAY + "(//expand vert→/rg claim " + player.getName() + "_" + playerdata.rgnum + "→//cel)");
 				player.chat("//expand vert");
 				player.chat("/rg claim " + player.getName() + "_" + playerdata.rgnum);
 				playerdata.rgnum += 1;
@@ -305,14 +348,14 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.STONE_AXE)){
 				// 保護リストの表示
 				player.closeInventory();
-				player.sendMessage(ChatColor.DARK_GRAY + "現在の保護の一覧を表示します…(/rg list)");
-				player.sendMessage(ChatColor.DARK_GRAY + "複数ページある場合は"
-				+ ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "" + ChatColor.UNDERLINE + "/rg list ページ名"
-				+ ChatColor.RESET + "" +  ChatColor.DARK_GRAY + " で2ページ目以降を開いてください"
+				player.sendMessage(ChatColor.GRAY + "現在の保護の一覧を表示します…(/rg list)");
+				player.sendMessage(ChatColor.GRAY + "複数ページある場合は"
+				+ ChatColor.RESET + "" +  ChatColor.GRAY + "" + ChatColor.UNDERLINE + "/rg list ページNo"
+				+ ChatColor.RESET + "" +  ChatColor.GRAY + " で2ページ目以降を開いてください"
 				);
 				player.chat("/rg list");
-				player.sendMessage(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "" + ChatColor.UNDERLINE + "/rg remove 保護名"
-				+ ChatColor.RESET + "" +  ChatColor.DARK_GRAY + " で保護の削除が出来ます");
+				player.sendMessage(ChatColor.RESET + "" +  ChatColor.GRAY + "" + ChatColor.UNDERLINE + "/rg remove 保護名"
+				+ ChatColor.RESET + "" +  ChatColor.GRAY + " で保護の削除が出来ます");
 			}
 
 
@@ -320,7 +363,7 @@ public class PlayerInventoryListener implements Listener {
 				// hubコマンド実行
 				// player.chat("/hub");
 				player.closeInventory();
-				player.sendMessage(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "Tキーを押して/hubと入力してEnterキーを押してください");
+				player.sendMessage(ChatColor.RESET + "" +  ChatColor.GRAY + "Tキーを押して/hubと入力してEnterキーを押してください");
 			}
 
 

@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -143,6 +145,7 @@ public class Sql{
 				",add column if not exists inventory blob default null" +
 				",add column if not exists rgnum int default 0" +
 				",add column if not exists totalbreaknum int default 0" +
+				",add column if not exists lastquit datetime default null" +
 				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
@@ -429,6 +432,50 @@ public class Sql{
 		return false;
 	}
 	*/
+
+	/*
+	//sqlから全員分引っ張ってくる処理(未実装)
+	@SuppressWarnings("null")
+	public HashMap<UUID,PlayerData> loadAllPlayerData(){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		HashMap<UUID,PlayerData> allplayerdatalist = new HashMap<UUID,PlayerData>();
+
+		String command = "select * from " + table;
+		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				//プレイヤーのuuidを取得
+				String struuid = rs.getString("uuid");
+				UUID uuid = UUID.fromString(struuid);
+
+				//プレイヤーデータを宣言
+				PlayerData playerdata = new PlayerData(Player);
+				//playerdataに格納する情報を取得
+				playerdata.effectflag = rs.getBoolean("effectflag");
+				playerdata.messageflag = rs.getBoolean("messageflag");
+				playerdata.activemineflagnum = rs.getInt("activemineflagnum");
+				playerdata.activenum = rs.getInt("activenum");
+				playerdata.gachapoint = rs.getInt("gachapoint");
+				playerdata.gachaflag = rs.getBoolean("gachaflag");
+				playerdata.level = rs.getInt("level");
+				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
+				playerdata.rgnum = rs.getInt("rgnum");
+ 				// playerdata.totalbreaknum = rs.getInt("totalbreaknum");
+				// playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
+
+				//取得したやつをallplayerdatalistにput
+				allplayerdatalist.put(uuid, playerdata);
+			  }
+			rs.close();
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return null;
+		}
+		return allplayerdatalist;
+
+	}
+	*/
+
 	public PlayerData loadPlayerData(Player p) {
 		String name = Util.getName(p);
 		UUID uuid = p.getUniqueId();
@@ -545,6 +592,7 @@ public class Sql{
 				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
 				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
+				+ ",lastquit = cast( now() as datetime )"
 				+ " where uuid like '" + struuid + "'";
 		try{
 				stmt.executeUpdate(command);
@@ -573,5 +621,25 @@ public class Sql{
 
 	}
 
+	//ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
+	public List<Integer> setRanking() {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		List<Integer> ranklist = new ArrayList<Integer>();
+
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select totalbreaknum from " + table
+				+ " where 1 order by " + table + ".totalbreaknum desc";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				ranklist.add(rs.getInt(1));
+				  }
+			rs.close();
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return null;
+		}
+ 		return ranklist;
+	}
 
 }
