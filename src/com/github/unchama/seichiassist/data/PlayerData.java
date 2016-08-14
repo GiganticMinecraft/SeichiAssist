@@ -96,15 +96,37 @@ public class PlayerData {
 	}
 	//詫び券の配布
 	public void giveSorryForBug(Player player){
+		ItemStack skull = Util.getskull(Util.getName(player));
+		int count = 0;
+		while(numofsorryforbug >= 1){
+			numofsorryforbug -= 1;
+			if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+				Util.addItem(player,skull);
+			}else{
+				Util.dropItem(player,skull);
+			}
+			count++;
+		}
+		//詫びガチャ関数初期化
+		numofsorryforbug = 0;
+
+		if(count > 0){
+			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+			player.sendMessage(ChatColor.GREEN + "不具合のお詫びとして"+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました");
+		}
+
+
+		/*
 		String name = Util.getName(player);
 		ItemStack skull = Util.getskull(name);
 		if( numofsorryforbug != 0){
 			skull.setAmount(numofsorryforbug);
 			Util.dropItem(player,skull);
 			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			player.sendMessage(ChatColor.GREEN + "不具合のお詫びとして"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました。");
+			player.sendMessage(ChatColor.GREEN + "不具合のお詫びとして"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました");
 		}
 		numofsorryforbug = 0;
+		*/
 	}
 
 	//エフェクトデータのdurationを60秒引く
