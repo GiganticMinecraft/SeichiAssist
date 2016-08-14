@@ -1,5 +1,8 @@
 package com.github.unchama.seichiassist.task;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -11,14 +14,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 
 public class BlizzardTaskRunnable extends BukkitRunnable{
-	/*
 	private SeichiAssist plugin = SeichiAssist.plugin;
-	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	*/
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	UUID uuid;
+	PlayerData playerdata;
 	private Player player;
 	private Block block;
 	private ItemStack tool;
@@ -28,7 +32,6 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 	private String dir;
 	private Material material;
 	private Location centerofblock;
-	private boolean firsttimeflag;
 	//壊されるブロックの宣言
 	Block breakblock;
 	int startx;
@@ -39,7 +42,6 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 	int endz;
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public BlizzardTaskRunnable(Player player,Block block,ItemStack tool, ExperienceManager expman) {
-		firsttimeflag = true;
 		this.player = player;
 		this.block = block;
 		this.tool = tool;
@@ -53,23 +55,20 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 		material = block.getType();
 		//元ブロックの真ん中の位置を取得
 		centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
+		//UUIDを取得
+		uuid = player.getUniqueId();
+		//playerdataを取得
+		playerdata = playermap.get(uuid);
+		//フラグ立てとく
+		playerdata.skillflag = true;
+		//クールダウンタイム生成
+		new CoolDownTaskRunnable(player).runTaskLater(plugin,50);
 	}
 	@Override
 	public void run() {
-		if(firsttimeflag){
-			/*
-			//クールダウン生成
-			playermap = SeichiAssist.playermap;
-			PlayerData playerdata = playermap.get(player.getUniqueId());
-			playerdata.skillcanbreakflag = false;
-			new CoolDownTaskRunnable(player).runTaskLater(plugin,20);
-			if(SeichiAssist.DEBUG){
-				player.sendMessage("クールダウン生成");
-			}
-			*/
-			firsttimeflag = false;
-		}
 		if(frozenflag){
+			//フラグ折る
+			playerdata.skillflag = false;
 			cancel();
 			for(int x = startx ; x <= endx ; x++){
 				for(int z = startz ; z <= endz ; z++){
@@ -157,6 +156,8 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 				}
 				cancel();
+				//フラグ折る
+				playerdata.skillflag = false;
 				return;
 			}
 

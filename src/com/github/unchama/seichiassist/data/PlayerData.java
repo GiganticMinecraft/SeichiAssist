@@ -56,6 +56,10 @@ public class PlayerData {
 	public boolean skillcanbreakflag;
 	//ワールドガード保護自動設定用
 	public int rgnum;
+	//ランキング算出用トータル破壊ブロック
+	public int totalbreaknum;
+	//スキル発動中だけtrueになるフラグ
+	public boolean skillflag;
 
 
 	public PlayerData(Player player){
@@ -79,6 +83,8 @@ public class PlayerData {
 		activenum = 1;
 		skillcanbreakflag = true;
 		rgnum = 0;
+		totalbreaknum = MineBlock.calcMineBlock(player);
+		skillflag = false;
 	}
 
 	//プレイヤーデータを最新の状態に更新
@@ -186,6 +192,18 @@ public class PlayerData {
 			i++;
 		}
 		level = i-1;
+	}
+
+	//現在の採掘量順位を表示する
+	public static int calcPlayerRank(Player player){
+		//ランク用関数
+		int i = 0;
+		int t = MineBlock.calcMineBlock(player);
+		//ランクが上がらなくなるまで処理
+		while(SeichiAssist.ranklist.get(i).intValue() > t){
+			i++;
+		}
+		return i+1;
 	}
 
 }

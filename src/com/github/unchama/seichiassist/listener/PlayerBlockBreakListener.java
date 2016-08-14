@@ -28,7 +28,6 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.BlizzardTaskRunnable;
-import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.MeteoTaskRunnable;
 import com.github.unchama.seichiassist.task.ThunderStormTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -48,6 +47,8 @@ public class PlayerBlockBreakListener implements Listener {
 		player = event.getPlayer();
 		//UUIDを取得
 		uuid = player.getUniqueId();
+		//UUIDを基にプレイヤーデータ取得
+		playerdata = SeichiAssist.playermap.get(uuid);
 
 		//経験値変更用のクラスを設定
 		ExperienceManager expman = new ExperienceManager(player);
@@ -71,24 +72,43 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-		playerdata = SeichiAssist.playermap.get(uuid);
-
+		/*
 		//ブロックタイプがPACKED_ICEの時blizzardスキルを発動中であれば終了
 		if(material.equals(Material.PACKED_ICE) && playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
 			event.setCancelled(true);
 			return;
 		}
+		*/
+
+		//特定スキル発動中は処理を終了
+		if(playerdata.skillflag){
+			//ブロック破壊もさせない
+			event.setCancelled(true);
+			return;
+		}
+
+		//他人の保護がかかっている場合は処理を終了
+		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
+			return;
+		}
 
 
+		//これ以前の終了処理はパッシブの追加経験値はもらえません
 		//passiveskill[追加経験値獲得]処理実行
 		int exp = calcExpDrop(playerdata);
 		expman.changeExp(exp);
-
-
+		//これ以降の終了処理は経験値はもらえます
 
 
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activemineflagnum == 0){
+			return;
+		}
+
+		//クールダウンタイム中は処理を終了
+		if(!playerdata.skillcanbreakflag){
+			//SEを再生
+			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
 
@@ -104,6 +124,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//オフハンドにツールがあるか
 		boolean offhandtoolflag = SeichiAssist.breakmateriallist.contains(offhanditem.getType());
 
+		//場合分け
 		if(mainhandtoolflag){
 			//メインハンドの時
 			tool = mainhanditem;
@@ -115,6 +136,8 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
+
+		//アクティブスキルを発動させる処理
 		if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
 			DualBreak(player,block,tool,expman);
 		}else if(playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
@@ -122,63 +145,16 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
 			Explosion(player,block,tool,expman);
 		}else if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
-			//クールダウン中は発動しない
-			if(playerdata.skillcanbreakflag){
-				//スキル発動部分
-				new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
-				//クールダウン生成
-				playerdata.skillcanbreakflag = false;
-				new CoolDownTaskRunnable(player).runTaskLater(plugin,40);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン生成");
-				}
-			}else{
-				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン中につき発動不可");
-				}
-			}
+			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
 		}else if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
-			//クールダウン中は発動しない
-			if(playerdata.skillcanbreakflag){
-				//スキル発動部分
-				new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
-				//クールダウン生成
-				playerdata.skillcanbreakflag = false;
-				new CoolDownTaskRunnable(player).runTaskLater(plugin,50);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン生成");
-				}
-			}else{
-				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン中につき発動不可");
-				}
-			}
+			new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
 		}else if(playerdata.activenum == ActiveSkill.METEO.getNum()){
-			//クールダウン中は発動しない
-			if(playerdata.skillcanbreakflag){
-				//スキル発動部分
-				new MeteoTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,10,10);
-				//スキル発動音を鳴らす
-				player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1, 1);
-				//クールダウン生成
-				playerdata.skillcanbreakflag = false;
-				new CoolDownTaskRunnable(player).runTaskLater(plugin,60);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン生成");
-				}
-			}else{
-				player.playSound(player.getLocation(), Sound.ITEM_FLINTANDSTEEL_USE, (float)0.5, 1);
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("クールダウン中につき発動不可");
-				}
-			}
+			new MeteoTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,10,10);
 		}
-
 	}
 
 
+	//スキル「エクスプロージョン」
 	private void Explosion(Player player,Block block,ItemStack tool,ExperienceManager expman) {
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
@@ -254,7 +230,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 		}
 
-		if(player.getLevel() == 0 && !expman.hasExp(10)){
+		if(player.getLevel() == 0 && !expman.hasExp(15)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -297,15 +273,15 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		if(count>22){
-			expman.changeExp(-10);
+			expman.changeExp(-15);
 		}else if(count>17){
-			expman.changeExp(-9);
+			expman.changeExp(-12);
 		}else if(count>12){
-			expman.changeExp(-8);
+			expman.changeExp(-9);
 		}else if(count>7){
 			expman.changeExp(-6);
 		}else if(count>2){
-			expman.changeExp(-4);
+			expman.changeExp(-3);
 		}else if(count>0){
 		}
 	}
@@ -668,36 +644,26 @@ public class PlayerBlockBreakListener implements Listener {
 	public static int calcExpDrop(PlayerData playerdata) {
 		//０～１のランダムな値を取得
 		double rand = Math.random();
-		//もし追加経験値を獲得できるレベルまで達していない時は０を返す
-		if(playerdata.level < 8){
-			return 0;
-		}else if (playerdata.level < 18){
-			//20%で１
-			if(rand < 0.2){
+		//10%の確率で経験値付与
+		if(rand < 0.1){
+			//Lv8未満は獲得経験値ゼロ、それ以上はレベルに応じて経験値付与
+			if(playerdata.level < 8){
+				return 0;
+			}else if (playerdata.level < 18){
 				return SeichiAssist.config.getDropExplevel1();
-			}else{
-				return 0;
-			}
-		}else if (playerdata.level < 28){
-			//60%で１
-			if(rand < 0.6){
+			}else if (playerdata.level < 28){
 				return SeichiAssist.config.getDropExplevel2();
+			}else if (playerdata.level < 38){
+				return SeichiAssist.config.getDropExplevel3();
+			}else if (playerdata.level < 48){
+				return SeichiAssist.config.getDropExplevel4();
+			}else if (playerdata.level < 58){
+				return SeichiAssist.config.getDropExplevel5();
 			}else{
-				return 0;
+				return SeichiAssist.config.getDropExplevel6();
 			}
-
-		}else if (playerdata.level < 38){
-			//1
-			return SeichiAssist.config.getDropExplevel3();
-		}else if (playerdata.level < 48){
-			//2
-			return SeichiAssist.config.getDropExplevel4();
-		}else if (playerdata.level < 58){
-			//3
-			return SeichiAssist.config.getDropExplevel5();
 		}else{
-			//4
-			return SeichiAssist.config.getDropExplevel6();
+			return 0;
 		}
 	}
 

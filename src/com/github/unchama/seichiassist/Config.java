@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class Config{
-	private FileConfiguration config;
+	private static FileConfiguration config;
 	private SeichiAssist plugin;
 
 	//コンストラクタ
@@ -27,6 +27,11 @@ public class Config{
 		loadGachaData();
 	}
 
+	//コンフィグのセーブ
+	public void saveConfig(){
+		plugin.saveConfig();
+	}
+
 
 
 	//plugin.ymlがない時にDefaultのファイルを生成
@@ -40,14 +45,16 @@ public class Config{
 	//plugin.ymlファイルからガチャデータの読み込み
 	public void loadGachaData(){
 		int num = config.getInt("gachanum");
-		for (int i=1; i < num; i++ ) {
+		int i;
+		for (i=1; i <= num; i++ ) {
 			GachaData gachadata = new GachaData();
 			gachadata.itemstack = config.getItemStack("item" + i);
 			gachadata.amount = config.getInt("amount" + i);
 			gachadata.probability = config.getDouble("probability" + i);
 			SeichiAssist.gachadatalist.add(gachadata);
+			//plugin.getLogger().info(i + "番目のガチャデータロード完了");
 		}
-		plugin.getLogger().info("ガチャデータのLoadを完了しました。");
+		plugin.getLogger().info("合計" + (i-1) + "個のガチャデータのLoadを完了しました");
 	}
 
 	public double getMinuteMineSpeed(){
@@ -134,7 +141,7 @@ public class Config{
 			config.set("probability"+ i,gachadata.probability);
 			i++;
 		}
-		config.set("gachanum",i);
+		config.set("gachanum",i-1);
 	}
 
 	public String getLvMessage(int i) {

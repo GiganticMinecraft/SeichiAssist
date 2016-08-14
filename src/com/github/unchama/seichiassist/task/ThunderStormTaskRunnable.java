@@ -13,8 +13,8 @@ import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 
 public class ThunderStormTaskRunnable extends BukkitRunnable{
-	/*
 	private SeichiAssist plugin = SeichiAssist.plugin;
+	/*
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	*/
 	private Player player;
@@ -43,7 +43,8 @@ public class ThunderStormTaskRunnable extends BukkitRunnable{
 		material = block.getType();
 		//元ブロックの真ん中の位置を取得
 		centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
-
+		//クールダウンタイム生成
+		new CoolDownTaskRunnable(player).runTaskLater(plugin,40);
 
 	}
 	@Override

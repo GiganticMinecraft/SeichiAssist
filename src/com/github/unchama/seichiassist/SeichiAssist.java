@@ -35,6 +35,8 @@ import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 public class SeichiAssist extends JavaPlugin{
 	public static SeichiAssist plugin;
 	public static Boolean DEBUG = false;
+	//ガチャシステムのメンテナンスフラグ
+	public static Boolean gachamente = false;
 
 	public static String PLAYERDATA_TABLENAME = "playerdata";
 	public static String GACHADATA_TABLENAME = "gachadata";
@@ -53,6 +55,9 @@ public class SeichiAssist extends JavaPlugin{
 
 	//Playerdataに依存するデータリスト
 	public static final HashMap<UUID,PlayerData> playermap = new HashMap<UUID,PlayerData>();
+
+	//総採掘量ランキング表示用データリスト
+	public static List<Integer> ranklist = new ArrayList<Integer>();
 
 	//lvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
@@ -192,6 +197,9 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 
+		//mysqlの値でplayermapを初期化する
+		//playermap = sql.loadAllPlayerData();
+
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){
 			//UUIDを取得
@@ -209,6 +217,9 @@ public class SeichiAssist extends JavaPlugin{
 			//プレイヤーマップにプレイヤーを追加
 			playermap.put(uuid,playerdata);
 		}
+
+		//ランキングデータをセット
+		ranklist = sql.setRanking();
 
 		getLogger().info("SeichiPlugin is Enabled!");
 
@@ -238,8 +249,6 @@ public class SeichiAssist extends JavaPlugin{
 		for(BukkitTask task:tasklist){
 			task.cancel();
 		}
-		config.saveGachaData();
-		getLogger().info("ガチャを保存しました．");
 
 		for(PlayerData playerdata : playermap.values()){
 			if(!sql.savePlayerData(playerdata)){
@@ -249,7 +258,10 @@ public class SeichiAssist extends JavaPlugin{
 		sql.disconnect();
 
 		//configをsave
+		getLogger().info("disable時はサーバーに登録されているガチャ景品データ、及び各設定値を使ってconfig.ymlを置き換えます");
+		config.saveGachaData();
 		saveConfig();
+		getLogger().info("ガチャデータ、及び各設定値をconfig.ymlに保存しました");
 		getLogger().info("SeichiPlugin is Disabled!");
 	}
 
