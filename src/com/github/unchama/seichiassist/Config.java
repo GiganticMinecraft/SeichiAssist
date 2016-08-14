@@ -21,11 +21,12 @@ public class Config{
 
 	}
 	//コンフィグのリロード
+
 	public void reloadConfig(){
 		plugin.reloadConfig();
 		config = getConfig();
-		loadGachaData();
 	}
+
 
 	//コンフィグのセーブ
 	public void saveConfig(){
@@ -42,6 +43,7 @@ public class Config{
 	public FileConfiguration getConfig(){
 		return plugin.getConfig();
 	}
+
 	//plugin.ymlファイルからガチャデータの読み込み
 	public void loadGachaData(){
 		int num = config.getInt("gachanum");
@@ -56,6 +58,7 @@ public class Config{
 		}
 		plugin.getLogger().info("合計" + (i-1) + "個のガチャデータのLoadを完了しました");
 	}
+
 
 	public double getMinuteMineSpeed(){
 		return Util.toDouble(config.getString("minutespeedamount"));
@@ -132,6 +135,7 @@ public class Config{
 		return url;
 	}
 
+	/*
 	public void saveGachaData() {
 		//ガチャのデータを保存
 		int i = 1;
@@ -143,10 +147,12 @@ public class Config{
 		}
 		config.set("gachanum",i-1);
 	}
+	*/
 
 	public String getLvMessage(int i) {
 		return config.getString("lv" + i + "message");
 	}
+
 
 
 

@@ -175,13 +175,22 @@ public class SeichiAssist extends JavaPlugin{
 		//コンフィグ系の設定は全てConfig.javaに移動
 		config = new Config(this);
 		config.loadConfig();
-		config.loadGachaData();
+		//plugin.ymlからガチャデータ読み込み
+		//config.loadGachaData();
 
 		//MySQL系の設定はすべてSql.javaに移動
 		sql = new Sql(this,config.getURL(), config.getDB(), config.getID(), config.getPW());
 		if(!sql.connect()){
-			getLogger().info("データベース接続に失敗しました。");
+			getLogger().info("データベース初期処理にエラーが発生しました");
 		}
+
+		//mysqlからガチャデータ読み込み
+		if(!sql.loadGachaData()){
+			getLogger().info("ガチャデータのロードに失敗しました");
+		}else{
+
+		}getLogger().info("ガチャデータのロードに成功しました");
+
 		//コマンドの登録
 		commandlist = new HashMap<String, TabExecutor>();
 		commandlist.put("gacha",new gachaCommand(plugin));
@@ -252,23 +261,25 @@ public class SeichiAssist extends JavaPlugin{
 
 		for(PlayerData playerdata : playermap.values()){
 			if(!sql.savePlayerData(playerdata)){
-				getLogger().info(playerdata.name + "のデータ保存に失敗しました。");
+				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
 			}
 		}
-		for(GachaData gachadata : gachadatalist){
-			if(!sql.saveGachaData(gachadata)){
-				getLogger().info(gachadata.itemstack.getType() + "のデータ保存に失敗しました。");
-			}
+		if(!sql.saveGachaData()){
+			getLogger().info("ガチャデータ保存に失敗しました");
+		}else{
+			getLogger().info("ガチャデータ保存に成功しました");
 		}
 
-		sql.disconnect();
+		if(!sql.disconnect()){
+			getLogger().info("データベース切断に失敗しました");
+		}
 
 		//configをsave
-		getLogger().info("disable時はサーバーに登録されているガチャ景品データ、及び各設定値を使ってconfig.ymlを置き換えます");
-		config.saveGachaData();
-		saveConfig();
-		getLogger().info("ガチャデータ、及び各設定値をconfig.ymlに保存しました");
-		getLogger().info("SeichiPlugin is Disabled!");
+		//getLogger().info("disable時はサーバーに登録されているガチャ景品データ、及び各設定値を使ってconfig.ymlを置き換えます");
+		//config.saveGachaData();
+		//saveConfig();
+		//getLogger().info("ガチャデータ、及び各設定値をconfig.ymlに保存しました");
+		//getLogger().info("SeichiPlugin is Disabled!");
 	}
 
 

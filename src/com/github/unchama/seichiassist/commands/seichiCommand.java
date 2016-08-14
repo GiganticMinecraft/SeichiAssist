@@ -33,6 +33,12 @@ public class seichiCommand implements TabExecutor {
 		if(args.length == 0){
 			return false;
 
+		}else if(args[0].equalsIgnoreCase("reload")){
+			//gacha reload
+			SeichiAssist.config.reloadConfig();
+			sender.sendMessage("config.ymlの設定値を再読み込みしました");
+			return true;
+
 		}else if(args[0].equalsIgnoreCase("bug")){
 			//seichi bug と入力したとき
 			if(args.length != 2){
