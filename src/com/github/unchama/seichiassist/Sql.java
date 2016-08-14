@@ -696,5 +696,31 @@ public class Sql{
 		}
  		return ranklist;
 	}
+	//プレイヤーレベル全リセット
+	public boolean resetAllPlayerLevel(){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "update " + table
+				+ " set level = 1";
+		try{
+				stmt.executeUpdate(command);
+			} catch (SQLException e) {
+				exc = e.getMessage();
+				return false;
+			}
+		return true;
+	}
+	//詫びガチャの配布
+	public boolean addAllPlayerBug(int amount){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "update " + table
+				+ " set numofsorryforbug = numofsorryforbug + " + amount;
+		try{
+				stmt.executeUpdate(command);
+			} catch (SQLException e) {
+				exc = e.getMessage();
+				return false;
+			}
+		return true;
+	}
 
 }
