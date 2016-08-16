@@ -25,6 +25,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class Util {
@@ -198,6 +199,12 @@ public class Util {
 
 	    return (WorldGuardPlugin) plugin;
 	}
+	public static WorldEditPlugin getWorldEdit() {
+        Plugin pl = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
+        if(pl instanceof WorldEditPlugin)
+            return (WorldEditPlugin)pl;
+        else return null;
+    }
 	public static boolean containsGacha(Player player) {
 		org.bukkit.inventory.ItemStack[] inventory = player.getInventory().getStorageContents();
 		Material material;

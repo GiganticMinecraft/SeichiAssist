@@ -111,6 +111,18 @@ public class Config{
 	public int getDropExplevel6() {
 		return Util.toInt(config.getString("dropexplevel6"));
 	}
+	public int getDropExplevel7() {
+		return Util.toInt(config.getString("dropexplevel7"));
+	}
+	public int getDropExplevel8() {
+		return Util.toInt(config.getString("dropexplevel8"));
+	}
+	public int getDropExplevel9() {
+		return Util.toInt(config.getString("dropexplevel9"));
+	}
+	public int getDropExplevel10() {
+		return Util.toInt(config.getString("dropexplevel10"));
+	}
 	public int getPassivePortalInventorylevel() {
 		return Util.toInt(config.getString("passiveportalinventorylevel"));
 	}
