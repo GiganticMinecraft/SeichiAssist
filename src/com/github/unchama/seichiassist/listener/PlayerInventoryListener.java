@@ -299,7 +299,7 @@ public class PlayerInventoryListener implements Listener {
 				lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
 						, ChatColor.RESET + "" +  ChatColor.GRAY + "現在の接続人数と過去1分間の採掘量に応じて"
 						, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度が変化するシステムです"
-						, ChatColor.RESET + "" +  ChatColor.GOLD + "現在の採掘速度上昇Lv：" + playerdata.minespeedlv+1
+						, ChatColor.RESET + "" +  ChatColor.GOLD + "現在の採掘速度上昇Lv：" + (playerdata.minespeedlv+1)
 						, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "上昇量の内訳"
 						));
 				for(EffectData ed : playerdata.effectdatalist){
@@ -380,12 +380,18 @@ public class PlayerInventoryListener implements Listener {
 				player.closeInventory();
 				player.sendMessage(ChatColor.GRAY + "現在の保護の一覧を表示します…(/rg list -p " + player.getName() + ")");
 				player.sendMessage(ChatColor.GRAY + "複数ページある場合は"
-				+ ChatColor.RESET + "" +  ChatColor.GRAY + "" + ChatColor.UNDERLINE + "/rg list -p " + player.getName() + " ページNo"
-				+ ChatColor.RESET + "" +  ChatColor.GRAY + " で2ページ目以降を開いてください"
+				+ ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg list -p " + player.getName() + " ページNo\n"
+				+ ChatColor.RESET + "" +  ChatColor.GRAY + "で2ページ目以降を開いてください"
 				);
+				player.sendMessage(ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg remove 保護名\n"
+				+ ChatColor.RESET + "" +  ChatColor.GRAY + "で保護の削除が出来ます");
+				player.sendMessage(ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg addmember 保護名 プレイヤー名\n"
+						+ ChatColor.RESET + "" +  ChatColor.GRAY + "で該当保護にメンバーを追加出来ます");
+				player.sendMessage(ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg removemember 保護名 プレイヤー名\n"
+						+ ChatColor.RESET + "" +  ChatColor.GRAY + "で該当保護のメンバーを削除出来ます");
+				player.sendMessage(ChatColor.DARK_GREEN + "その他コマンドはWikiで確認して下さい→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard");
+
 				player.chat("/rg list -p " + player.getName());
-				player.sendMessage(ChatColor.RESET + "" +  ChatColor.GRAY + "" + ChatColor.UNDERLINE + "/rg remove 保護名"
-				+ ChatColor.RESET + "" +  ChatColor.GRAY + " で保護の削除が出来ます");
 			}
 
 

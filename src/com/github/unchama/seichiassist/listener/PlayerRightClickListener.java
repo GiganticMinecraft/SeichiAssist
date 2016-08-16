@@ -331,7 +331,7 @@ public class PlayerRightClickListener implements Listener {
 						Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
 						, ChatColor.RESET + "" +  ChatColor.GRAY + "現在の接続人数と過去1分間の採掘量に応じて"
 						, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度が変化するシステムです"
-						, ChatColor.RESET + "" +  ChatColor.GOLD + "現在の採掘速度上昇Lv：" + playerdata.minespeedlv+1
+						, ChatColor.RESET + "" +  ChatColor.GOLD + "現在の採掘速度上昇Lv：" + (playerdata.minespeedlv+1)
 						, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "上昇量の内訳"
 						));
 				for(EffectData ed : playerdata.effectdatalist){
@@ -483,6 +483,11 @@ public class PlayerRightClickListener implements Listener {
 						, ChatColor.RESET + "" +  ChatColor.GRAY + "土地の一覧を表示します"
 						, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg remove 保護名"
 						, ChatColor.RESET + "" +  ChatColor.GRAY + "で保護の削除が出来ます"
+						, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg addmember 保護名 プレイヤー名"
+						, ChatColor.RESET + "" +  ChatColor.GRAY + "で該当保護にメンバーを追加出来ます"
+						, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg removemember 保護名 プレイヤー名"
+						, ChatColor.RESET + "" +  ChatColor.GRAY + "で該当保護のメンバーを削除出来ます"
+						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "その他のコマンドはWikiで確認して下さい"
 						);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
