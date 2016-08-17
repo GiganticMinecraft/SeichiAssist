@@ -15,7 +15,7 @@ commands:
       permission-message: You don't have <permission>
   ef:
       description: This is a Effect toggle command.
-      usage: /<command> <smart>
+      usage: /<command> <smart/dr/demo>
       permission: multiseichiplugin.ef
       permission-message: You don't have <permission>
   level:
