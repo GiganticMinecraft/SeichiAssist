@@ -485,6 +485,31 @@ public class Sql{
 	}
 	*/
 
+	/* mysqlのプレイヤーネーム更新処理
+	public boolean updatePlayerName(Player p){
+		String name = Util.getName(p);
+		UUID uuid = p.getUniqueId();
+		String struuid = uuid.toString().toLowerCase();
+		String command = "";
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		//playernameをアップデート
+		//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
+		command = "update " + table
+				+ " set name = '" + name
+				+ "' where uuid like '" + struuid + "'";
+		try{
+			stmt.executeUpdate(command);
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return false;
+		}
+		if(SeichiAssist.DEBUG){
+			p.sendMessage("sqlのプレイヤーネームを更新しました。");
+		}
+		return true;
+	}
+	*/
+	
 	public PlayerData loadPlayerData(Player p) {
 		String name = Util.getName(p);
 		UUID uuid = p.getUniqueId();
@@ -527,10 +552,10 @@ public class Sql{
 
  		}else if(count == 1){
  			//uuidが存在するときの処理
-
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlにデータが保存されています。");
  			}
+ 			
  			//playernameをアップデート
  			//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
  			command = "update " + table
@@ -543,8 +568,9 @@ public class Sql{
  				return null;
  			}
  			if(SeichiAssist.DEBUG){
- 				p.sendMessage("プレイヤーネームを更新しました。");
+ 				p.sendMessage("sqlのプレイヤーネームを更新しました。");
  			}
+ 			
  			//PlayerDataを新規作成
  			PlayerData playerdata = new PlayerData(p);
 

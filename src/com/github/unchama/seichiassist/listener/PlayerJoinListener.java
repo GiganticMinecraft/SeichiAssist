@@ -31,10 +31,23 @@ public class PlayerJoinListener implements Listener {
 			//新しいplayerdataを作成
 			playerdata = sql.loadPlayerData(player);
 			//playermapに追加
-			playermap.put(player.getUniqueId(), playerdata);
+			playermap.put(uuid, playerdata);
 		}else{
 			playerdata = playermap.get(uuid);
+			//もし名前変更されていたら
+			if(!player.getName().equals(playerdata.name)){
+				//すでにあるプレイヤーデータの名前を更新しておく
+				playerdata.name = player.getName();
+				playermap.put(uuid, playerdata);
+				//mysqlのプレイヤーデータの名前も更新しておく
+				/* プラグインリロード時の処理とかぶるためコメントアウト
+				if(sql.updatePlayerName(player)){
+					player.sendMessage("mysqlのMinecraftID更新に失敗,管理者に報告してください");
+				}
+				*/
+			}
 		}
+
 		//統計量を取得
 		int mines = MineBlock.calcMineBlock(player);
 		playerdata.updata(player,mines);
