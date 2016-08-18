@@ -146,6 +146,40 @@ public class gachaCommand implements TabExecutor{
 			}
 			Gachaclear(player);
 			return true;
+		}else if (args[0].equalsIgnoreCase("demo")){
+			if(args.length != 2){
+				sender.sendMessage("/gacha demo 10000  のように、試行したい回数を入力して下さい");
+				return true;
+			}
+			int n = Util.toInt(args[1]);
+			//ガチャ券をn回試行してみる処理
+			int i = 0;
+			double p = 0.0;
+			int gigantic = 0;
+			int big = 0;
+			int regular = 0;
+			int potato = 0;
+			while(n > i){
+				p = runGachaDemo();
+				if(p < 0.001){
+					gigantic ++;
+				}else if(p < 0.01){
+					big ++;
+				}else if(p < 0.1){
+					regular ++;
+				}else{
+					potato ++;
+				}
+				i++;
+			}
+			sender.sendMessage(
+					ChatColor.AQUA + "" + ChatColor.BOLD + "ガチャ券" + i + "回試行結果\n"
+					+ ChatColor.RESET + "ギガンティック："+ gigantic +"回("+ ((double)gigantic/(double)i*100.0) +"%)\n"
+					+ "大当たり："+ big +"回("+ ((double)big/(double)i*100.0) +"%)\n"
+					+ "当たり："+ regular +"回("+ ((double)regular/(double)i*100.0) +"%)\n"
+					+ "ハズレ："+ potato +"回("+ ((double)potato/(double)i*100.0) +"%)\n"
+					);
+			return true;
 		}
 
 		return false;
@@ -229,6 +263,19 @@ public class gachaCommand implements TabExecutor{
 		player.sendMessage("/gacha saveかプラグインをリロードするとmysqlのデータも全削除されます");
 		player.sendMessage("削除を取り消すには/gacha reloadコマンドを実行します");
 	}
+	private double runGachaDemo() {
+		double sum = 1.0;
+		double rand = 0.0;
 
+		rand = Math.random();
+
+		for (GachaData gachadata : SeichiAssist.gachadatalist) {
+		    sum -= gachadata.probability;
+		    if (sum <= rand) {
+                return gachadata.probability;
+            }
+		}
+		return 1.0;
+	}
 
 }

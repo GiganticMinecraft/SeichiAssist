@@ -87,23 +87,14 @@ public class effectCommand implements TabExecutor {
 				return true;
 
 			}else if (args[0].equalsIgnoreCase("demo")){
-				/*
-				if(args.length != 2){
-					sender.sendMessage("/gacha demo 10000  のように、試行したい回数を入力して下さい");
-					return true;
-				}
-				*/
-				/*
-				int n = Util.toInt(args[1]);
-				*/
-				//ガチャ券を1万回試行してみる処理
+				//ガチャ券を1000回試行してみる処理
 				int i = 0;
 				double p = 0.0;
 				int gigantic = 0;
 				int big = 0;
 				int regular = 0;
 				int potato = 0;
-				while(100000 > i){
+				while(1000 > i){
 					p = runGachaDemo();
 					if(p < 0.001){
 						gigantic ++;
