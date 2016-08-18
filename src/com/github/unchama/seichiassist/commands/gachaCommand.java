@@ -152,6 +152,10 @@ public class gachaCommand implements TabExecutor{
 				return true;
 			}
 			int n = Util.toInt(args[1]);
+			if(n > 1000000){
+				sender.sendMessage("100万回以上は指定出来ません");
+				return true;
+			}
 			//ガチャ券をn回試行してみる処理
 			int i = 0;
 			double p = 0.0;
