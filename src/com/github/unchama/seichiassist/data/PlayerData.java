@@ -183,11 +183,7 @@ public class PlayerData {
 			//管理人の場合
 			displayname = ChatColor.RED + "<管理人>" + name;
 		}
-		if(level == 101){
-			displayname =  ChatColor.GOLD + "[ GOD ]" + displayname + ChatColor.WHITE;
-		}else{
-			displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
-		}
+		displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
 
 		p.setDisplayName(displayname);
 		p.setPlayerListName(displayname);
@@ -199,7 +195,7 @@ public class PlayerData {
 		//現在のランクの次を取得
 		int i = level + 1;
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= 101){
+		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= SeichiAssist.levellist.size()){
 			if(!SeichiAssist.DEBUG){
 				//レベルアップ時のメッセージ
 				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
