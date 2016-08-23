@@ -136,10 +136,12 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
+		/*
 		//耐久値がマイナスの時処理を終了
 		if(tool.getDurability() > tool.getType().getMaxDurability()){
 			return;
 		}
+		*/
 
 		//アクティブスキルを発動させる処理
 		if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
