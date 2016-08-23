@@ -88,7 +88,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			if(count == 1){
 				Util.sendEveryMessage("破壊量第1位は" + ChatColor.DARK_PURPLE + e.getValue().name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}else if(count == 2){
-				Util.sendEveryMessage("破壊量第2位は" + ChatColor.DARK_BLUE + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
+				Util.sendEveryMessage("破壊量第2位は" + ChatColor.BLUE + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}else if(count == 3){
 				Util.sendEveryMessage("破壊量第3位は" + ChatColor.DARK_AQUA + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}

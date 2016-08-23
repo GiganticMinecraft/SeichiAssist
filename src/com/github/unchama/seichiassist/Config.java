@@ -162,7 +162,9 @@ public class Config{
 	*/
 
 	public String getLvMessage(int i) {
-		return config.getString("lv" + i + "message");
+		String str;
+		str = config.getString("lv" + i + "message","");
+		return str;
 	}
 
 

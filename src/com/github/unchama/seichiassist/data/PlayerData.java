@@ -196,17 +196,17 @@ public class PlayerData {
 		int i = level + 1;
 		//ランクが上がらなくなるまで処理
 		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= SeichiAssist.levellist.size()){
-			if(!SeichiAssist.DEBUG){
-				//レベルアップ時のメッセージ
-				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
-				//レベルアップ時の花火の打ち上げ
-				Location loc = player.getLocation();
-				Util.launchFireWorks(loc);
-				String lvmessage = SeichiAssist.config.getLvMessage(i);
-				if(!(lvmessage.isEmpty())){
-					player.sendMessage(ChatColor.AQUA+lvmessage);
-				}
+
+			//レベルアップ時のメッセージ
+			player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
+			//レベルアップ時の花火の打ち上げ
+			Location loc = player.getLocation();
+			Util.launchFireWorks(loc);
+			String lvmessage = SeichiAssist.config.getLvMessage(i);
+			if(!(lvmessage.isEmpty())){
+				player.sendMessage(ChatColor.AQUA+lvmessage);
 			}
+
 			i++;
 		}
 		level = i-1;

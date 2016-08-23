@@ -136,6 +136,10 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
+		//耐久値がマイナスの時処理を終了
+		if(tool.getDurability() > tool.getType().getMaxDurability()){
+			return;
+		}
 
 		//アクティブスキルを発動させる処理
 		if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
@@ -529,6 +533,7 @@ public class PlayerBlockBreakListener implements Listener {
 		short d = tool.getDurability();
 		//耐久力エンチャントに応じて耐久値を減らす
 		tool.setDurability((short)(d + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY))));
+
 		//プレイヤーの統計を１増やす
 		player.incrementStatistic(Statistic.MINE_BLOCK, material);
 
