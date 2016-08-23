@@ -6,10 +6,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
+import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
@@ -67,6 +71,12 @@ public class Sql{
 			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
 			return false;
 		}
+
+		if(!createGachaDataTable(SeichiAssist.GACHADATA_TABLENAME)){
+			plugin.getLogger().info("gachadataテーブル作成に失敗しました");
+			return false;
+		}
+
 		return true;
 	}
 
@@ -141,6 +151,8 @@ public class Sql{
 				",add column if not exists numofsorryforbug int default 0" +
 				",add column if not exists inventory blob default null" +
 				",add column if not exists rgnum int default 0" +
+				",add column if not exists totalbreaknum int default 0" +
+				",add column if not exists lastquit datetime default null" +
 				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
@@ -152,20 +164,17 @@ public class Sql{
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
 				"CREATE TABLE IF NOT EXISTS " + table +
-				"(name varchar(30) unique," +
-				"uuid varchar(128) unique)";
+				"(id int auto_increment unique,"
+				+ "amount int(11))";
 		if(!putCommand(command)){
 			return false;
 		}
 		//必要なcolumnを随時追加
 		command =
 				"alter table " + table +
-				" add column if not exists effectflag boolean default true" +
-				",add column if not exists messageflag boolean default false" +
-				",add column if not exists activemineflag boolean default false" +
-				",add column if not exists gachapoint int default 0" +
-				",add column if not exists level int default 1" +
-				",add column if not exists numofsorryforbug int default 0" +
+				" add column if not exists probability double default 0.0" +
+				//",add column if not exists amount int default 0" +
+				",add column if not exists itemstack blob default null" +
 				"";
 		return putCommand(command);
 	}
@@ -432,6 +441,75 @@ public class Sql{
 		return false;
 	}
 	*/
+
+	/*
+	//sqlから全員分引っ張ってくる処理(未実装)
+	@SuppressWarnings("null")
+	public HashMap<UUID,PlayerData> loadAllPlayerData(){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		HashMap<UUID,PlayerData> allplayerdatalist = new HashMap<UUID,PlayerData>();
+
+		String command = "select * from " + table;
+		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				//プレイヤーのuuidを取得
+				String struuid = rs.getString("uuid");
+				UUID uuid = UUID.fromString(struuid);
+
+				//プレイヤーデータを宣言
+				PlayerData playerdata = new PlayerData(Player);
+				//playerdataに格納する情報を取得
+				playerdata.effectflag = rs.getBoolean("effectflag");
+				playerdata.messageflag = rs.getBoolean("messageflag");
+				playerdata.activemineflagnum = rs.getInt("activemineflagnum");
+				playerdata.activenum = rs.getInt("activenum");
+				playerdata.gachapoint = rs.getInt("gachapoint");
+				playerdata.gachaflag = rs.getBoolean("gachaflag");
+				playerdata.level = rs.getInt("level");
+				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
+				playerdata.rgnum = rs.getInt("rgnum");
+ 				// playerdata.totalbreaknum = rs.getInt("totalbreaknum");
+				// playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
+
+				//取得したやつをallplayerdatalistにput
+				allplayerdatalist.put(uuid, playerdata);
+			  }
+			rs.close();
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return null;
+		}
+		return allplayerdatalist;
+
+	}
+	*/
+
+	/* mysqlのプレイヤーネーム更新処理
+	public boolean updatePlayerName(Player p){
+		String name = Util.getName(p);
+		UUID uuid = p.getUniqueId();
+		String struuid = uuid.toString().toLowerCase();
+		String command = "";
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		//playernameをアップデート
+		//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
+		command = "update " + table
+				+ " set name = '" + name
+				+ "' where uuid like '" + struuid + "'";
+		try{
+			stmt.executeUpdate(command);
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return false;
+		}
+		if(SeichiAssist.DEBUG){
+			p.sendMessage("sqlのプレイヤーネームを更新しました。");
+		}
+		return true;
+	}
+	*/
+	
 	public PlayerData loadPlayerData(Player p) {
 		String name = Util.getName(p);
 		UUID uuid = p.getUniqueId();
@@ -474,10 +552,10 @@ public class Sql{
 
  		}else if(count == 1){
  			//uuidが存在するときの処理
-
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlにデータが保存されています。");
  			}
+ 			
  			//playernameをアップデート
  			//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
  			command = "update " + table
@@ -490,8 +568,9 @@ public class Sql{
  				return null;
  			}
  			if(SeichiAssist.DEBUG){
- 				p.sendMessage("プレイヤーネームを更新しました。");
+ 				p.sendMessage("sqlのプレイヤーネームを更新しました。");
  			}
+ 			
  			//PlayerDataを新規作成
  			PlayerData playerdata = new PlayerData(p);
 
@@ -511,6 +590,7 @@ public class Sql{
  	 				playerdata.level = rs.getInt("level");
  	 				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
  	 				playerdata.rgnum = rs.getInt("rgnum");
+ 	 				// playerdata.totalbreaknum = rs.getInt("totalbreaknum");
  	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  				  }
  				rs.close();
@@ -545,7 +625,9 @@ public class Sql{
 				+ ",level = " + Integer.toString(playerdata.level)
 				+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug)
 				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
+				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
+				+ ",lastquit = cast( now() as datetime )"
 				+ " where uuid like '" + struuid + "'";
 		try{
 				stmt.executeUpdate(command);
@@ -555,6 +637,116 @@ public class Sql{
 			}
 		return true;
 	}
+	//ガチャデータロード
+	public boolean loadGachaData(){
+		String table = SeichiAssist.GACHADATA_TABLENAME;
+		List<GachaData> gachadatalist = new ArrayList<GachaData>();
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select * from " + table;
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				GachaData gachadata = new GachaData();
+				Inventory inventory = BukkitSerialization.fromBase64(rs.getString("itemstack").toString());
+				gachadata.itemstack = (inventory.getItem(0));
+				gachadata.amount = rs.getInt("amount");
+				gachadata.probability = rs.getDouble("probability");
+				gachadatalist.add(gachadata);
+				  }
+			rs.close();
+		} catch (SQLException | IOException e) {
+			exc = e.getMessage();
+			return false;
+		}
+ 		SeichiAssist.gachadatalist.clear();
+ 		for(GachaData gachadata : gachadatalist){
+ 			SeichiAssist.gachadatalist.add(gachadata);
+ 		}
+ 		return true;
 
+	}
+
+	//ガチャデータセーブ
+	public boolean saveGachaData(){
+		String table = SeichiAssist.GACHADATA_TABLENAME;
+		//まずmysqlのガチャテーブルを初期化(中身全削除)
+		String command = "truncate table " + table;
+		try{
+				stmt.executeUpdate(command);
+			} catch (SQLException e) {
+				exc = e.getMessage();
+				return false;
+			}
+		//int i = 1;
+		//次に現在のgachadatalistでmysqlを更新
+		for(GachaData gachadata : SeichiAssist.gachadatalist){
+			//Inventory作ってガチャのitemstackに突っ込む
+			Inventory inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*3 ,"拡張インベントリ");
+			inventory.setItem(0,gachadata.itemstack);
+
+			command = "insert into " + table + " (probability,amount,itemstack)"
+					+ " values"
+					+ "(" + Double.toString(gachadata.probability)
+					+ "," + Integer.toString(gachadata.amount)
+					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
+					+ ")";
+			try{
+					stmt.executeUpdate(command);
+				} catch (SQLException e) {
+					exc = e.getMessage();
+					return false;
+				}
+			//i++;
+		}
+		return true;
+	}
+
+
+	//ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
+	public List<Integer> setRanking() {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		List<Integer> ranklist = new ArrayList<Integer>();
+
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select totalbreaknum from " + table
+				+ " where 1 order by " + table + ".totalbreaknum desc";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				ranklist.add(rs.getInt(1));
+				  }
+			rs.close();
+		} catch (SQLException e) {
+			exc = e.getMessage();
+			return null;
+		}
+ 		return ranklist;
+	}
+	//プレイヤーレベル全リセット
+	public boolean resetAllPlayerLevel(){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "update " + table
+				+ " set level = 1";
+		try{
+				stmt.executeUpdate(command);
+			} catch (SQLException e) {
+				exc = e.getMessage();
+				return false;
+			}
+		return true;
+	}
+	//詫びガチャの配布
+	public boolean addAllPlayerBug(int amount){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "update " + table
+				+ " set numofsorryforbug = numofsorryforbug + " + amount;
+		try{
+				stmt.executeUpdate(command);
+			} catch (SQLException e) {
+				exc = e.getMessage();
+				return false;
+			}
+		return true;
+	}
 
 }

@@ -10,12 +10,14 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class seichiCommand implements TabExecutor {
 	SeichiAssist plugin;
+	Sql sql = SeichiAssist.plugin.sql;
 
 	public seichiCommand(SeichiAssist _plugin){
 		plugin = _plugin;
@@ -32,19 +34,19 @@ public class seichiCommand implements TabExecutor {
 			String[] args) {
 		if(args.length == 0){
 			return false;
-		}else if(args[0].equalsIgnoreCase("load")){
-			//seichi load と入力したとき
-			SeichiAssist.gachadatalist.clear();
-			SeichiAssist.config.reloadConfig();
-			sender.sendMessage("SeichiAssistのconfig.ymlを強制的にロードしました。");
-			return true;
 
+		}else if(args[0].equalsIgnoreCase("reload")){
+			//gacha reload
+			SeichiAssist.config.reloadConfig();
+			sender.sendMessage("config.ymlの設定値を再読み込みしました");
+			return true;
 
 		}else if(args[0].equalsIgnoreCase("bug")){
 			//seichi bug と入力したとき
 			if(args.length != 2){
 				//引数が２でない時の処理
 				sender.sendMessage("/seichi bug 2 で全ての登録されているプレイヤーに詫び券(ガチャ券）を2枚配布します。");
+				return true;
 			}
 			//全てのプレイヤーに詫び券を設定
 			addSorryForBug(sender,Util.toInt(args[1]));
@@ -175,7 +177,11 @@ public class seichiCommand implements TabExecutor {
 			playerdata.numofsorryforbug += num;
 			sender.sendMessage(ChatColor.LIGHT_PURPLE + "" + num +"個のガチャ券をお詫びとして" + playerdata.name + "のデータに更新しました");
 		}
-
-
+		//MySqlの値も処理
+		if(!sql.addAllPlayerBug(num)){
+			sender.sendMessage("mysqlに保存されている全プレイヤーへの詫びガチャの加算に失敗しました");
+		}else{
+			sender.sendMessage("mysqlに保存されている全プレイヤーへ詫びガチャを加算しました");
+		}
 	}
 }

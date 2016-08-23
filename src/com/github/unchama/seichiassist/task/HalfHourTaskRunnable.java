@@ -27,6 +27,8 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
+		//ランキングデータをセット
+		SeichiAssist.ranklist = sql.setRanking();
 		//カウント値を０に設定
 		int count = 0;
 		//30分間の全プレイヤーの採掘量をallに格納
