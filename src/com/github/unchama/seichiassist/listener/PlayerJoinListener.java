@@ -51,7 +51,7 @@ public class PlayerJoinListener implements Listener {
 		//統計量を取得
 		int mines = MineBlock.calcMineBlock(player);
 		playerdata.updata(player,mines);
-		playerdata.giveSorryForBug(player);
+		playerdata.NotifySorryForBug(player);
 		//初見さんへの処理
 		if(!player.hasPlayedBefore()){
 			//初見さんへのメッセージ文

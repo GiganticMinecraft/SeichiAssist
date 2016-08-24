@@ -383,6 +383,10 @@ public class MenuInventoryData {
 	public static Inventory getMenuData2(Player p){
 		//プレイヤーを取得
 		Player player = p.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//経験値変更用のクラスを設定
 		ExperienceManager expman = new ExperienceManager(player);
 
@@ -428,6 +432,29 @@ public class MenuInventoryData {
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
+
+		//運営からの詫びガチャ配布ボタン
+		int numofsorryforbug = (int) playerdata.numofsorryforbug;
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営チームからのガチャ券を受け取る");
+		if(numofsorryforbug != 0){
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "不具合やイベント等により"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "運営チームから配布されるガチャ券は"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンから受け取れます"
+					, ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + numofsorryforbug + "枚");
+		}else{
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "不具合やイベント等により"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "運営チームから配布されるガチャ券は"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンから受け取れます"
+					, ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません");
+		}
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("whitecat_haru");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(16,itemstack);
+
 
 		// ゴミ箱を開く
 		itemstack = new ItemStack(Material.BUCKET,1);

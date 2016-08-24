@@ -125,12 +125,12 @@ public class seichiCommand implements TabExecutor {
 					message = "外部（対象："+ name +"）からの上昇値:" + amplifier;
 
 				}
-				//メッセージ送信
-				sender.sendMessage(ChatColor.LIGHT_PURPLE + name + "に上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました。");
 				//プレイヤーデータを取得
 				PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
 				//エフェクトデータリストにこの効果を追加
 				playerdata.effectdatalist.add(new EffectData(duration,amplifier,message));
+				//メッセージ送信
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + name + "に上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました。");
 			}else{
 				//player名がallだった時の処理
 

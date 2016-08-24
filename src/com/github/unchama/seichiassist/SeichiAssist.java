@@ -221,7 +221,7 @@ public class SeichiAssist extends JavaPlugin{
 			//統計量を取得
 			int mines = MineBlock.calcMineBlock(p);
 			playerdata.updata(p,mines);
-			playerdata.giveSorryForBug(p);
+			playerdata.NotifySorryForBug(p);
 			//プレイヤーマップにプレイヤーを追加
 			playermap.put(uuid,playerdata);
 		}

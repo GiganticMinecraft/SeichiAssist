@@ -240,6 +240,21 @@ public class PlayerInventoryListener implements Listener {
 				itemstackcurrent.setItemMeta(itemmeta);
 			}
 
+			//詫びガチャ券をインベントリへ
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("whitecat_haru")){
+
+				playerdata.giveSorryForBug(player);
+
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "不具合やイベント等により"
+						, ChatColor.RESET + "" +  ChatColor.GRAY + "運営チームから配布されるガチャ券は"
+						, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンから受け取れます"
+						, ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません");
+				itemmeta.setLore(lore);
+				itemstackcurrent.setItemMeta(itemmeta);
+			}
+
+
 			//経験値を消費してプレイヤーの頭を召喚
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_Villager")){
 				//経験値変更用のクラスを設定

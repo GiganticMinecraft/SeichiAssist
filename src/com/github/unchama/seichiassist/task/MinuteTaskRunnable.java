@@ -66,8 +66,6 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			int mines = MineBlock.calcMineBlock(player);
 			//Levelを設定
 			playerdata.levelupdata(player,mines);
-			//詫び券の配布
-			playerdata.giveSorryForBug(player);
 			//ランキング表示用総整地量を更新
 			playerdata.totalbreaknum = MineBlock.calcMineBlock(player);
 

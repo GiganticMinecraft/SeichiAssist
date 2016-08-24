@@ -112,21 +112,15 @@ public class PlayerData {
 
 		if(count > 0){
 			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			player.sendMessage(ChatColor.GREEN + "不具合のお詫びとして"+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました");
+			player.sendMessage(ChatColor.GREEN + "運営チームから"+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
 		}
+	}
 
-
-		/*
-		String name = Util.getName(player);
-		ItemStack skull = Util.getskull(name);
-		if( numofsorryforbug != 0){
-			skull.setAmount(numofsorryforbug);
-			Util.dropItem(player,skull);
-			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			player.sendMessage(ChatColor.GREEN + "不具合のお詫びとして"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました");
+	//詫びガチャの通知
+	public void NotifySorryForBug(Player player){
+		if(numofsorryforbug > 0){
+			player.sendMessage(ChatColor.GREEN + "運営チームから"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が届いています！\n木の棒メニューから受け取ってください。");
 		}
-		numofsorryforbug = 0;
-		*/
 	}
 
 	//エフェクトデータのdurationを60秒引く
