@@ -65,7 +65,8 @@ public class MenuInventoryData {
 
 		//採掘速度上昇効果のトグルボタン
 		itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
-		itemstack.setItemMeta(DisplayEffect(playerdata));
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
+		itemstack.setItemMeta(DisplayEffect(playerdata,itemmeta));
 		inventory.setItem(1,itemstack);
 
 		// ver0.3.2 四次元ポケットOPEN
@@ -540,15 +541,15 @@ public class MenuInventoryData {
 		return inventory;
 	}
 
-	public static ItemMeta DisplayEffect(PlayerData playerdata){
+	public static ItemMeta DisplayEffect(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<String>();
-		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "採掘速度上昇効果");
 		if(playerdata.effectflag){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在ONです");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
 		}else{
+			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
 			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "現在OFFです");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
 		}

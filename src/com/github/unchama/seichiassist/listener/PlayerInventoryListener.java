@@ -314,7 +314,8 @@ public class PlayerInventoryListener implements Listener {
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
 				}
-				itemstackcurrent.setItemMeta(MenuInventoryData.DisplayEffect(playerdata));
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.DisplayEffect(playerdata,itemmeta));
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.WHEAT)){
