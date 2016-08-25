@@ -10,8 +10,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerJoinListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -49,7 +49,7 @@ public class PlayerJoinListener implements Listener {
 		}
 
 		//統計量を取得
-		int mines = MineBlock.calcMineBlock(player);
+		int mines = Util.calcMineBlock(player);
 		playerdata.updata(player,mines);
 		playerdata.NotifySorryForBug(player);
 		//初見さんへの処理

@@ -5,12 +5,12 @@ version: 0.3.11
 commands:
   gacha:
       description: This is a gacha command.
-      usage: /<command> <mente/add/list/remove/setamount/setprob/move/clear/save/reload>
+      usage: /<command> <mente/add/list/remove/setamount/setprob/move/clear/save/reload/demo>
       permission: multiseichiplugin.seichi
       permission-message: You don't have <permission>
   seichi:
       description: This is a seichi command.
-      usage: /<command> <reload/playername/bug> <duration(tick)/get/set> <amplifier(double)>
+      usage: /<command> <reload/playername/bug/debugmode> <duration(tick)/get/set> <amplifier(double)>
       permission: multiseichiplugin.seichi
       permission-message: You don't have <permission>
   ef:

@@ -147,20 +147,6 @@ public class Config{
 		return url;
 	}
 
-	/*
-	public void saveGachaData() {
-		//ガチャのデータを保存
-		int i = 1;
-		for(GachaData gachadata : SeichiAssist.gachadatalist){
-			config.set("item"+ i,gachadata.itemstack);
-			config.set("amount"+ i,gachadata.amount);
-			config.set("probability"+ i,gachadata.probability);
-			i++;
-		}
-		config.set("gachanum",i-1);
-	}
-	*/
-
 	public String getLvMessage(int i) {
 		String str;
 		str = config.getString("lv" + i + "message","");

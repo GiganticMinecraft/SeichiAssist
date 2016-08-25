@@ -40,6 +40,20 @@ public class seichiCommand implements TabExecutor {
 			SeichiAssist.config.reloadConfig();
 			sender.sendMessage("config.ymlの設定値を再読み込みしました");
 			return true;
+		}else if(args[0].equalsIgnoreCase("debugmode")){
+			//debugフラグ反転処理
+
+			//メッセージフラグを反転
+			SeichiAssist.DEBUG = !SeichiAssist.DEBUG;
+			if (SeichiAssist.DEBUG){
+				sender.sendMessage(ChatColor.GREEN + "デバッグモードを有効にしました");
+			}else{
+				sender.sendMessage(ChatColor.GREEN + "デバッグモードを無効にしました");
+			}
+			plugin.stopAllTaskRunnable();
+			plugin.startTaskRunnable();
+
+			return true;
 
 		}else if(args[0].equalsIgnoreCase("bug")){
 			//seichi bug と入力したとき
@@ -52,37 +66,6 @@ public class seichiCommand implements TabExecutor {
 			addSorryForBug(sender,Util.toInt(args[1]));
 			return true;
 
-
-		/*}else if(args[0].equalsIgnoreCase("test")){
-			//DEBUG用コマンド
-			if (!(sender instanceof Player)) {
-				sender.sendMessage("このコマンドはゲーム内から実行してください。");
-				return true;
-			}
-			Player player = (Player) sender;
-			String name = Util.getName(player);
-			if(args[1].equalsIgnoreCase("set")){
-				PlayerInventory pinventory = player.getInventory();
-				Inventory inventory = SeichiAssist.plugin.getServer().createInventory(null, 9 * 3, "拡張インベントリ");
-				for(int i = 9,k = 0; i<36 ; i++,k++){
-					inventory.setItem(k, pinventory.getItem(i));
-				}
-				String string = BukkitSerialization.toBase64(inventory);
-				sql.insert(SeichiAssist.PLAYERDATA_TABLENAME,"inventory",string, name);
-			}else if(args[1].equalsIgnoreCase("get")){
-				String string = sql.selectstring(SeichiAssist.PLAYERDATA_TABLENAME, name, "inventory");
-				Inventory inventory;
-				try {
-					 inventory = BukkitSerialization.fromBase64(string);
-					 player.openInventory(inventory);
-				} catch (IOException e) {
-					// TODO 自動生成された catch ブロック
-					e.printStackTrace();
-				}
-
-			}
-			return true;
-*/
 		}else if(args.length == 3 || args.length == 4){
 			//seichi player duration(ticks) amplifier で登録できるようにする。
 			//プレイヤー名を取得

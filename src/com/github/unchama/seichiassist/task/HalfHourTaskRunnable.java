@@ -13,7 +13,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -28,7 +27,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 	@Override
 	public void run() {
 		//ランキングデータをセット
-		SeichiAssist.ranklist = sql.setRanking();
+		sql.setRanking();
 		//カウント値を０に設定
 		int count = 0;
 		//30分間の全プレイヤーの採掘量をallに格納
@@ -42,7 +41,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			//プレイヤーがオンラインの時の処理
 			if(player != null){
 				//現在の統計量を取得
-				int mines = MineBlock.calcMineBlock(player);
+				int mines = Util.calcMineBlock(player);
 				//現在の統計量を設定(after)
 				playerdata.halfhourblock.after = mines;
 				//前回との差を計算し設定(increase)

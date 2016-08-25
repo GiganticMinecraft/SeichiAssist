@@ -15,7 +15,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.EffectData;
-import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -63,11 +62,11 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			Player player = plugin.getServer().getPlayer(playerdata.uuid);
 			//プレイヤー名を取得
 			String name = Util.getName(player);
-			int mines = MineBlock.calcMineBlock(player);
+			int mines = Util.calcMineBlock(player);
 			//Levelを設定
 			playerdata.levelupdata(player,mines);
 			//ランキング表示用総整地量を更新
-			playerdata.totalbreaknum = MineBlock.calcMineBlock(player);
+			playerdata.totalbreaknum = Util.calcMineBlock(player);
 
 			if(SeichiAssist.DEBUG){
 				Util.sendEveryMessage(playerdata.name + "のランク処理完了");

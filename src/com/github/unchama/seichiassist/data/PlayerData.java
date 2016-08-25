@@ -83,7 +83,7 @@ public class PlayerData {
 		activenum = 1;
 		skillcanbreakflag = true;
 		rgnum = 0;
-		totalbreaknum = MineBlock.calcMineBlock(player);
+		totalbreaknum = Util.calcMineBlock(player);
 		skillflag = false;
 	}
 
@@ -158,9 +158,9 @@ public class PlayerData {
 
 
 	//レベルを更新
-	public void levelupdata(Player player,int mines) {
-		calcPlayerLevel(player,mines);
-		setDisplayName(player);
+	public void levelupdata(Player p,int mines) {
+		calcPlayerLevel(p,mines);
+		setDisplayName(p);
 	}
 
 
@@ -185,37 +185,25 @@ public class PlayerData {
 
 
 	//プレイヤーレベルを計算し、更新する。
-	private void calcPlayerLevel(Player player,int mines){
+	private void calcPlayerLevel(Player p,int mines){
 		//現在のランクの次を取得
 		int i = level + 1;
 		//ランクが上がらなくなるまで処理
 		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= SeichiAssist.levellist.size()){
 
 			//レベルアップ時のメッセージ
-			player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
+			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
 			//レベルアップ時の花火の打ち上げ
-			Location loc = player.getLocation();
+			Location loc = p.getLocation();
 			Util.launchFireWorks(loc);
 			String lvmessage = SeichiAssist.config.getLvMessage(i);
 			if(!(lvmessage.isEmpty())){
-				player.sendMessage(ChatColor.AQUA+lvmessage);
+				p.sendMessage(ChatColor.AQUA+lvmessage);
 			}
 
 			i++;
 		}
 		level = i-1;
-	}
-
-	//現在の採掘量順位を表示する
-	public static int calcPlayerRank(Player player){
-		//ランク用関数
-		int i = 0;
-		int t = MineBlock.calcMineBlock(player);
-		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.ranklist.get(i).intValue() > t){
-			i++;
-		}
-		return i+1;
 	}
 
 }

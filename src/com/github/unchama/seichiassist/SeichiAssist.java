@@ -20,7 +20,6 @@ import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.listener.EntityListener;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
@@ -30,16 +29,19 @@ import com.github.unchama.seichiassist.listener.PlayerQuitListener;
 import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
+import com.github.unchama.seichiassist.util.Util;
 
 
 public class SeichiAssist extends JavaPlugin{
+
 	public static SeichiAssist plugin;
+	//デバッグフラグ
 	public static Boolean DEBUG = false;
 	//ガチャシステムのメンテナンスフラグ
 	public static Boolean gachamente = false;
 
-	public static String PLAYERDATA_TABLENAME = "playerdata";
-	public static String GACHADATA_TABLENAME = "gachadata";
+	public static final String PLAYERDATA_TABLENAME = "playerdata";
+	public static final String GACHADATA_TABLENAME = "gachadata";
 
 	private HashMap<String, TabExecutor> commandlist;
 	public Sql sql;
@@ -57,7 +59,7 @@ public class SeichiAssist extends JavaPlugin{
 	public static final HashMap<UUID,PlayerData> playermap = new HashMap<UUID,PlayerData>();
 
 	//総採掘量ランキング表示用データリスト
-	public static List<Integer> ranklist = new ArrayList<Integer>();
+	public static final List<Integer> ranklist = new ArrayList<Integer>();
 
 	//lvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
@@ -186,9 +188,7 @@ public class SeichiAssist extends JavaPlugin{
 		//mysqlからガチャデータ読み込み
 		if(!sql.loadGachaData()){
 			getLogger().info("ガチャデータのロードに失敗しました");
-		}else{
-
-		}getLogger().info("ガチャデータのロードに成功しました");
+		}
 
 		//コマンドの登録
 		commandlist = new HashMap<String, TabExecutor>();
@@ -219,7 +219,7 @@ public class SeichiAssist extends JavaPlugin{
 				continue;
 			}
 			//統計量を取得
-			int mines = MineBlock.calcMineBlock(p);
+			int mines = Util.calcMineBlock(p);
 			playerdata.updata(p,mines);
 			playerdata.NotifySorryForBug(p);
 			//プレイヤーマップにプレイヤーを追加
@@ -227,25 +227,16 @@ public class SeichiAssist extends JavaPlugin{
 		}
 
 		//ランキングデータをセット
-		ranklist = sql.setRanking();
-
-		getLogger().info("SeichiPlugin is Enabled!");
-
-
-		//一定時間おきに処理を実行するタスク
-		//３０分おき
-		if(DEBUG){
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,500));
-		}else{
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
+		if(!sql.setRanking()){
+			getLogger().info("ランキングデータの作成に失敗しました");
 		}
-		//１分おき
-		if(DEBUG){
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,300));
-		}else{
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
-		}
+
+		//タスクスタート
+		startTaskRunnable();
+
+		getLogger().info("SeichiAssist is Enabled!");
 	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
 		return commandlist.get(cmd.getName()).onCommand(sender, cmd, label, args);
@@ -254,9 +245,7 @@ public class SeichiAssist extends JavaPlugin{
 	@Override
 	public void onDisable(){
 		//全てのタスクをキャンセル
-		for(BukkitTask task:tasklist){
-			task.cancel();
-		}
+		stopAllTaskRunnable();
 
 		for(PlayerData playerdata : playermap.values()){
 			if(!sql.savePlayerData(playerdata)){
@@ -265,20 +254,34 @@ public class SeichiAssist extends JavaPlugin{
 		}
 		if(!sql.saveGachaData()){
 			getLogger().info("ガチャデータ保存に失敗しました");
-		}else{
-			getLogger().info("ガチャデータ保存に成功しました");
 		}
 
 		if(!sql.disconnect()){
 			getLogger().info("データベース切断に失敗しました");
 		}
 
-		//configをsave
-		//getLogger().info("disable時はサーバーに登録されているガチャ景品データ、及び各設定値を使ってconfig.ymlを置き換えます");
-		//config.saveGachaData();
-		//saveConfig();
-		//getLogger().info("ガチャデータ、及び各設定値をconfig.ymlに保存しました");
-		//getLogger().info("SeichiPlugin is Disabled!");
+		getLogger().info("SeichiPlugin is Disabled!");
+	}
+
+	public void startTaskRunnable(){
+		//一定時間おきに処理を実行するタスク
+		if(DEBUG){
+			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,500));
+		}else{
+			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
+		}
+
+		if(DEBUG){
+			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,300));
+		}else{
+			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
+		}
+	}
+
+	public void stopAllTaskRunnable(){
+		for(BukkitTask task:tasklist){
+			task.cancel();
+		}
 	}
 
 

@@ -365,7 +365,7 @@ public class Sql{
 			return true;
 		} catch (SQLException e) {
 			//接続エラーの場合は、再度接続後、コマンド実行
-			java.lang.System.out.println("接続に失敗しました。");
+			java.lang.System.out.println("接続に失敗しました");
 			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
@@ -509,7 +509,7 @@ public class Sql{
 		return true;
 	}
 	*/
-	
+
 	public PlayerData loadPlayerData(Player p) {
 		String name = Util.getName(p);
 		UUID uuid = p.getUniqueId();
@@ -555,7 +555,7 @@ public class Sql{
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlにデータが保存されています。");
  			}
- 			
+
  			//playernameをアップデート
  			//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
  			command = "update " + table
@@ -570,7 +570,7 @@ public class Sql{
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlのプレイヤーネームを更新しました。");
  			}
- 			
+
  			//PlayerDataを新規作成
  			PlayerData playerdata = new PlayerData(p);
 
@@ -590,7 +590,6 @@ public class Sql{
  	 				playerdata.level = rs.getInt("level");
  	 				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
  	 				playerdata.rgnum = rs.getInt("rgnum");
- 	 				// playerdata.totalbreaknum = rs.getInt("totalbreaknum");
  	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  				  }
  				rs.close();
@@ -703,9 +702,10 @@ public class Sql{
 
 
 	//ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
-	public List<Integer> setRanking() {
+	public boolean setRanking() {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		List<Integer> ranklist = new ArrayList<Integer>();
+		List<Integer> ranklist = SeichiAssist.ranklist;
+		ranklist.clear();
 
 		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
 		String command = "select totalbreaknum from " + table
@@ -718,9 +718,9 @@ public class Sql{
 			rs.close();
 		} catch (SQLException e) {
 			exc = e.getMessage();
-			return null;
+			return false;
 		}
- 		return ranklist;
+ 		return true;
 	}
 	//プレイヤーレベル全リセット
 	public boolean resetAllPlayerLevel(){

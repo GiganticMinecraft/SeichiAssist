@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.listener;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +10,6 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -28,7 +26,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -290,17 +287,17 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "毎分のガチャ券受け取り:ON");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "毎分受け取っています"
-							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "毎分受け取ります"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変更"
 							);
 					itemmeta.setLore(lore);
 					itemstackcurrent.setItemMeta(itemmeta);
 				}else{
-					player.sendMessage(ChatColor.RED + "毎分のガチャ券受け取り:OFF");
+					player.sendMessage(ChatColor.RED + "毎分のガチャ券受け取り:OFF\nガチャ券受け取りボタンを押すともらえます");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1, 1);
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "毎分受け取っていません"
-							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "後でまとめて受け取ります"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変更"
 							);
 					itemmeta.setLore(lore);
 					itemstackcurrent.setItemMeta(itemmeta);
@@ -310,34 +307,14 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND_PICKAXE)){
 				// ver0.3.2 採掘速度上昇効果トグル
 				playerdata.effectflag = !playerdata.effectflag;
-				List<String> lore = new ArrayList<String>();
-				lore.clear();
-				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				if(playerdata.effectflag){
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
-					itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-					lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在ONになっています");
-					lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFFにします");
-				}else {
+				}else{
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
-					itemmeta.removeEnchant(Enchantment.DIG_SPEED);
-					lore.add(ChatColor.RESET + "" +  ChatColor.RED + "現在OFFになっています");
-					lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでONにします");
 				}
-				lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
-						, ChatColor.RESET + "" +  ChatColor.GRAY + "現在の接続人数と過去1分間の採掘量に応じて"
-						, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度が変化するシステムです"
-						, ChatColor.RESET + "" +  ChatColor.GOLD + "現在の採掘速度上昇Lv：" + (playerdata.minespeedlv+1)
-						, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "上昇量の内訳"
-						));
-				for(EffectData ed : playerdata.effectdatalist){
-					lore.add(ed.string + "(残" + Util.toTimeString(ed.duration/20) + ")");
-				}
-				itemmeta.setLore(lore);
-				itemstackcurrent.setItemMeta(itemmeta);
-				lore.clear();
+				itemstackcurrent.setItemMeta(MenuInventoryData.DisplayEffect(playerdata));
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.WHEAT)){
@@ -380,7 +357,7 @@ public class PlayerInventoryListener implements Listener {
 						+ ChatColor.RESET + "" +  ChatColor.GREEN + "①召喚された斧を手に持ちます\n"
 						+ ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック\n"
 						+ ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック\n"
-						+ ChatColor.RESET + "" +  ChatColor.GREEN + "③メニューの「" + ChatColor.RESET + "" +  ChatColor.YELLOW + "保護領域の申請(金の斧)" + ChatColor.RESET + "" +  ChatColor.GREEN + "」ボタンをクリック\n"
+						+ ChatColor.RESET + "" +  ChatColor.GREEN + "④メニューの" + ChatColor.RESET + "" +  ChatColor.YELLOW + "金の斧" + ChatColor.RESET + "" +  ChatColor.GREEN + "をクリック\n"
 						+ ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard"
 						);
 			}
