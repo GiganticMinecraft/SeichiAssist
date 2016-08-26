@@ -133,8 +133,11 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.COMPASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームポイントにワープ");
-		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "予め設定したホームポイントにワープできます"
-				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします"
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "あらかじめ設定した"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "ホームポイントにワープします"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "うまく機能しない時は"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "再接続してみてください"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでワープ"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -143,8 +146,11 @@ public class MenuInventoryData {
 		// ver0.3.2 sethomeコマンド
 		itemstack = new ItemStack(Material.BED,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BED);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在位置をホームポイントに設定");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると設定されます"
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームポイントを設定");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "現在位置をホームポイント"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "として設定します"
+				, ChatColor.RESET + "" + ChatColor.	DARK_GRAY + "※上書きされます"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで設定"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -561,7 +567,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "上昇量の内訳"
 				));
 		for(EffectData ed : playerdata.effectdatalist){
-			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "" + ed.string/* + "(残" + Util.toTimeString(ed.duration/20) + ")"*/);
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "" + ed.EDtoString(ed.id,ed.duration,ed.amplifier));
 		}
 		itemmeta.setLore(lore);
 		return itemmeta;

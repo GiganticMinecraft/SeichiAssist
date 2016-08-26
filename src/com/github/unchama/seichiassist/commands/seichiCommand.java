@@ -67,7 +67,7 @@ public class seichiCommand implements TabExecutor {
 			return true;
 
 		}else if(args.length == 3 || args.length == 4){
-			//seichi player duration(ticks) amplifier で登録できるようにする。
+			//seichi player duration(ticks) amplifier id で登録できるようにする。
 			//プレイヤー名を取得
 			String name = Util.getName(args[0]);
 			//プレイヤーをサーバーから取得
@@ -81,7 +81,7 @@ public class seichiCommand implements TabExecutor {
 				//effect値を取得
 				double amplifier = Util.toDouble(args[2]);
 				//メッセージを設定
-				String message = null;
+				int id = 0;
 
 				if(player == null){
 					//プレイヤーが取得できなかったとき
@@ -95,25 +95,33 @@ public class seichiCommand implements TabExecutor {
 					//numを取得
 					int num = Util.toInt(args[3]);
 					if(num == 0){
-						//numが０の時
-						//投票の時のメッセージ
-						message = "投票からの上昇値:" + amplifier;
+						id = 0;
 					}else if(num == 1){
-						//numが１の時
-						//どらげないたいむの時のメッセージ
-						message  = "ドラゲナイタイム（対象："+ name +"）からの上昇値:" + amplifier;
+						id = 1;
+					}else if(num == 2){
+						id = 2;
+					}else if(num == 3){
+						id = 3;
+					}else if(num == 4){
+						id = 4;
+					}else if(num == 5){
+						id = 5;
+					}else{
+						id = 5;
+						sender.sendMessage("不明なidが指定されているので、プレイヤーへの説明文には\n「コマンド入力による上昇値」と表示されます");
 					}
 				}else{
-					//引数が３つの場合
-					message = "外部（対象："+ name +"）からの上昇値:" + amplifier;
-
+					//引数が3つの場合
+					id = 5;
+					sender.sendMessage("idが指定されていないので、プレイヤーへの説明文には\n「コマンド入力による上昇値」と表示されます");
 				}
+
 				//プレイヤーデータを取得
 				PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
 				//エフェクトデータリストにこの効果を追加
-				playerdata.effectdatalist.add(new EffectData(duration,amplifier,message));
+				playerdata.effectdatalist.add(new EffectData(duration,amplifier,id));
 				//メッセージ送信
-				sender.sendMessage(ChatColor.LIGHT_PURPLE + name + "に上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました。");
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + name + "に上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました");
 			}else{
 				//player名がallだった時の処理
 
@@ -123,33 +131,41 @@ public class seichiCommand implements TabExecutor {
 				//effect値を取得
 				double amplifier = Util.toDouble(args[2]);
 				//メッセージを格納
-				String message = null;
+				int id = 0;
 
 				if(args.length == 4){
 					//引数が４つの場合
 					//numを取得
 					int num = Util.toInt(args[3]);
 					if(num == 0){
-						//numが０の時
-						sender.sendMessage("投票値を全員に付与することはできません。ドラゲナイタイムのフラグは1です。");
-						return true;
+						id = 0;
 					}else if(num == 1){
-						//numが１の時
-						//どらげないたいむの時のメッセージ
-						message  = "ドラゲナイタイム（対象：全員）からの上昇値:" + amplifier;
+						id = 1;
+					}else if(num == 2){
+						id = 2;
+					}else if(num == 3){
+						id = 3;
+					}else if(num == 4){
+						id = 4;
+					}else if(num == 5){
+						id = 5;
+					}else{
+						id = 5;
+						sender.sendMessage("不明なidが指定されているので、プレイヤーへの説明文には\n「コマンド入力による上昇値」と表示されます");
 					}
 				}else{
-					//引数が３つの場合
-					message = "外部からの上昇値（対象：全員）:" + amplifier;
+					//引数が3つの場合
+					id = 5;
+					sender.sendMessage("idが指定されていないので、プレイヤーへの説明文には\n「コマンド入力による上昇値」と表示されます");
 				}
 
 				//全てのプレイヤーデータについて処理
 				for(PlayerData playerdata: SeichiAssist.playermap.values()){
 					//エフェクトデータリストにこの効果を追加
-					playerdata.effectdatalist.add(new EffectData(duration,amplifier,message));
+					playerdata.effectdatalist.add(new EffectData(duration,amplifier,id));
 				}
 				//メッセージ送信
-				sender.sendMessage(ChatColor.LIGHT_PURPLE + "全てのプレイヤーに上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました。");
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + "全てのプレイヤーに上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました");
 			}
 			return true;
 		}

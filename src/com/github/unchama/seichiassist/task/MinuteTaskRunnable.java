@@ -81,16 +81,13 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//effectの大きさ
 			double amplifier = 0;
 			//effectのメッセージ
-			String string;
 			//１分間のブロック破壊量による上昇
 			amplifier = (double) playerdata.minuteblock.increase * config.getMinuteMineSpeed();
-			string = "１分間のブロック破壊量(" + playerdata.minuteblock.increase + "個)からの上昇値:" + amplifier;
-			playerdata.effectdatalist.add(new EffectData(amplifier,string));
+			playerdata.effectdatalist.add(new EffectData(amplifier,2));
 
 			//プレイヤー数による上昇
 			amplifier = (double) onlinenums * config.getLoginPlayerMineSpeed();
-			string = "プレイヤー数(" + onlinenums + "人)からの上昇値:" + amplifier;
-			playerdata.effectdatalist.add(new EffectData(amplifier,string));
+			playerdata.effectdatalist.add(new EffectData(amplifier,1));
 
 
 			//effect追加の処理
@@ -128,11 +125,11 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//プレイヤーにメッセージ送信
 			if(playerdata.lastminespeedlv != minespeedlv || playerdata.messageflag){//前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
-				player.sendMessage(ChatColor.YELLOW + "★" + ChatColor.WHITE + "採掘速度上昇レベルが" + ChatColor.YELLOW + (minespeedlv+1) + ChatColor.WHITE +"になりました。");
+				player.sendMessage(ChatColor.YELLOW + "★" + ChatColor.WHITE + "採掘速度上昇レベルが" + ChatColor.YELLOW + (minespeedlv+1) + ChatColor.WHITE +"になりました");
 				if(playerdata.messageflag){
 					player.sendMessage("----------------------------内訳-----------------------------");
 					for(EffectData ed : playerdata.effectdatalist){
-						player.sendMessage(ed.string + "(持続時間:" + Util.toTimeString(ed.duration/20) + ")");
+						player.sendMessage(ChatColor.RESET + "" +  ChatColor.RED + "" + ed.EDtoString(ed.id,ed.duration,ed.amplifier));
 					}
 					player.sendMessage("-------------------------------------------------------------");
 				}

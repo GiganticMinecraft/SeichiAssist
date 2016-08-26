@@ -293,7 +293,8 @@ public class PlayerInventoryListener implements Listener {
 					itemmeta.setLore(lore);
 					itemstackcurrent.setItemMeta(itemmeta);
 				}else{
-					player.sendMessage(ChatColor.RED + "毎分のガチャ券受け取り:OFF\nガチャ券受け取りボタンを押すともらえます");
+					player.sendMessage(ChatColor.RED + "毎分のガチャ券受け取り:OFF");
+					player.sendMessage(ChatColor.GREEN + "ガチャ券受け取りボタンを押すともらえます");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1, 1);
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "後でまとめて受け取ります"
@@ -320,40 +321,40 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType().equals(Material.WHEAT)){
 				// farmassist toggleコマンド実行
-				player.chat("/farmassist toggle");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("/farmassist toggle");
 			}
 			else if(itemstackcurrent.getType().equals(Material.LOG)){
 				// treeassist toggleコマンド実行
-				player.chat("/treeassist toggle");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("/treeassist toggle");
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.BEACON)){
 				// spawnコマンド実行
-				player.chat("/spawn");
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("/spawn");
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.BED)){
 				// sethomeコマンド実行
-				player.chat("/sethome");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("/sethome");
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.COMPASS)){
 				// homeコマンド実行
-				player.chat("/home");
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("/home");
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.WOOD_AXE)){
 				// wand召喚
-				player.chat("//wand");
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("//wand");
 				player.sendMessage(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "保護のかけ方\n"
 						+ ChatColor.RESET + "" +  ChatColor.GREEN + "①召喚された斧を手に持ちます\n"
 						+ ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック\n"
@@ -386,20 +387,13 @@ public class PlayerInventoryListener implements Listener {
 				// 保護リストの表示
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
-				player.sendMessage(ChatColor.GRAY + "現在の保護の一覧を表示します…(/rg list -p " + player.getName() + ")");
-				player.sendMessage(ChatColor.GRAY + "複数ページある場合は"
-				+ ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg list -p " + player.getName() + " ページNo\n"
-				+ ChatColor.RESET + "" +  ChatColor.GRAY + "で2ページ目以降を開いてください"
-				);
-				player.sendMessage(ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg remove 保護名\n"
-				+ ChatColor.RESET + "" +  ChatColor.GRAY + "で保護の削除が出来ます");
-				player.sendMessage(ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg addmember 保護名 プレイヤー名\n"
-						+ ChatColor.RESET + "" +  ChatColor.GRAY + "で該当保護にメンバーを追加出来ます");
-				player.sendMessage(ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg removemember 保護名 プレイヤー名\n"
-						+ ChatColor.RESET + "" +  ChatColor.GRAY + "で該当保護のメンバーを削除出来ます");
-				player.sendMessage(ChatColor.DARK_GREEN + "その他コマンドはWikiで確認して下さい→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard");
+				player.sendMessage(ChatColor.GRAY + "現在の保護の一覧を表示します…(/rg list\n"
+				+ ChatColor.GRAY + "複数ページある場合は\n"
+				+ ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg list ページNo\n"
+				+ ChatColor.RESET + "" +  ChatColor.GRAY + "で2ページ目以降を開いてください\n"
+				+ ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard");
 
-				player.chat("/rg list -p " + player.getName());
+				player.chat("/rg list");
 			}
 
 
