@@ -65,43 +65,47 @@ public class PlayerInventoryListener implements Listener {
 
 	@EventHandler
 	public void onPlayerClickActiveSkillSellectEvent(InventoryClickEvent event){
-		ItemStack itemstackcurrent = event.getCurrentItem();
-		InventoryView view = event.getView();
-		Inventory topinventory = view.getTopInventory();
-		HumanEntity he = view.getPlayer();
-
-		//インベントリを開けたのがプレイヤーではない時終了
-		if(!he.getType().equals(EntityType.PLAYER)){
-			return;
-		}
-		Player player = (Player)he;
-		UUID uuid = player.getUniqueId();
-		//経験値変更用のクラスを設定
-		ExperienceManager expman = new ExperienceManager(player);
-		//インベントリが存在しない時終了
-		if(topinventory == null){
-			return;
-		}
-
-		//インベントリサイズが36でない時終了
-		if(topinventory.getSize() != 36){
-			return;
-		}
-
 		//外枠のクリック処理なら終了
 		if(event.getClickedInventory() == null){
 			return;
 		}
 
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
 
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが36でない時終了
+		if(topinventory.getSize() != 36){
+			return;
+		}
 
 		//インベントリ名が以下の時処理
 		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "木の棒メニュー")){
 			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
 			}
+
+			Player player = (Player)he;
+			UUID uuid = player.getUniqueId();
 			PlayerData playerdata = playermap.get(uuid);
+			//経験値変更用のクラスを設定
+			ExperienceManager expman = new ExperienceManager(player);
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
 
 			//ページ変更処理
 			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
@@ -116,7 +120,7 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 
-			if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
+			else if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
 				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					player.sendMessage(ChatColor.YELLOW + "既に選択されています");

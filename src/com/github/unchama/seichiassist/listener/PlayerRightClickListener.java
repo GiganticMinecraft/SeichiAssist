@@ -34,18 +34,14 @@ public class PlayerRightClickListener implements Listener {
 		Player player = event.getPlayer();
 		//プレイヤーが起こしたアクションを取得
 		Action action = event.getAction();
-		//プレイヤーが起こした対象のitemstackを取得
-		ItemStack itemstack = event.getItem();
-		//使った手を取得
-		EquipmentSlot equipmentslot = event.getHand();
 
 
 
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			if(event.getMaterial().equals(Material.SKULL_ITEM)){
-				//プレゼント用ガチャデータ作成
-				GachaData present;
+				//プレイヤーが起こした対象のitemstackを取得
+				ItemStack itemstack = event.getItem();
 				//対象スカルのskullmetaを取得
 				SkullMeta skullmeta = (SkullMeta) itemstack.getItemMeta();
 
@@ -71,14 +67,17 @@ public class PlayerRightClickListener implements Listener {
 						player.sendMessage("現在ガチャシステムはメンテナンス中です。\nしばらく経ってからもう一度お試しください");
 						return;
 					}
-
-					//オフハンドから実行された時処理を終了
-					if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
-						return;
-					}
 					//ガチャデータが設定されていない場合
 					if(gachadatalist.isEmpty()){
 						player.sendMessage("ガチャが設定されていません");
+						return;
+					}
+
+					//使った手を取得
+					EquipmentSlot equipmentslot = event.getHand();
+
+					//オフハンドから実行された時処理を終了
+					if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
 						return;
 					}
 					//持っているガチャ券を減らす処理
@@ -89,6 +88,8 @@ public class PlayerRightClickListener implements Listener {
 						// プレイヤーが持っているガチャ券を1枚減らす
 						itemstack.setAmount(itemstack.getAmount()-1);
 					}
+					//プレゼント用ガチャデータ作成
+					GachaData present;
 					//ガチャ実行
 					present = GachaData.runGacha();
 					//ガチャデータのitemstackの数を再設定（バグのため）
