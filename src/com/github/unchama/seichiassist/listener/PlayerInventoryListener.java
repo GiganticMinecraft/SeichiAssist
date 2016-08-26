@@ -231,9 +231,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-				List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません"
-						, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
-				itemmeta.setLore(lore);
+				itemmeta.setLore(MenuInventoryData.GachaGetButtonLore(playerdata));
 				itemstackcurrent.setItemMeta(itemmeta);
 			}
 
@@ -316,7 +314,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
 				}
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-				itemstackcurrent.setItemMeta(MenuInventoryData.DisplayEffect(playerdata,itemmeta));
+				itemstackcurrent.setItemMeta(MenuInventoryData.EFButtonMeta(playerdata,itemmeta));
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.WHEAT)){
@@ -373,9 +371,6 @@ public class PlayerInventoryListener implements Listener {
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					return;
 				}
-				player.sendMessage(ChatColor.GRAY + "木の斧で選択されている範囲で保護の設定を行います…");
-				player.sendMessage(ChatColor.GRAY + "(Y座標は自動で全域保護されます)");
-						player.sendMessage(ChatColor.GRAY + "(//expand vert→/rg claim " + player.getName() + "_" + playerdata.rgnum + "→//sel)");
 				player.chat("//expand vert");
 				player.chat("/rg claim " + player.getName() + "_" + playerdata.rgnum);
 				playerdata.rgnum += 1;
@@ -387,9 +382,7 @@ public class PlayerInventoryListener implements Listener {
 				// 保護リストの表示
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
-				player.sendMessage(ChatColor.GRAY + "現在の保護の一覧を表示します…(/rg list\n"
-				+ ChatColor.GRAY + "複数ページある場合は\n"
-				+ ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg list ページNo\n"
+				player.sendMessage(ChatColor.GRAY + "複数ページある場合は " + ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg list ページNo\n"
 				+ ChatColor.RESET + "" +  ChatColor.GRAY + "で2ページ目以降を開いてください\n"
 				+ ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard");
 

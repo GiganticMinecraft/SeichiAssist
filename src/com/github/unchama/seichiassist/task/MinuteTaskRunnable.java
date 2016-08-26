@@ -66,7 +66,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//Levelを設定
 			playerdata.levelupdata(player,mines);
 			//ランキング表示用総整地量を更新
-			playerdata.totalbreaknum = Util.calcMineBlock(player);
+			playerdata.totalbreaknum = mines;
 
 			if(SeichiAssist.DEBUG){
 				Util.sendEveryMessage(playerdata.name + "のランク処理完了");
@@ -77,6 +77,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			playerdata.minuteblock.setIncrease();
 			//現在の統計量を設定(before)
 			playerdata.minuteblock.before = mines;
+
 
 			//effectの大きさ
 			double amplifier = 0;
@@ -91,16 +92,15 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 
 			//effect追加の処理
-			//合計effect量
-			double sum = 0;
-			//最大持続時間
-			int maxduration = 0;
 			//実際に適用されるeffect量
 			int minespeedlv = 0;
 
-
 			//effectflag=trueの時のみ実行
 			if(playerdata.effectflag){
+				//合計effect量
+				double sum = 0;
+				//最大持続時間
+				int maxduration = 0;
 				//effectdatalistにある全てのeffectについて計算
 				for(EffectData ed :playerdata.effectdatalist){
 					//effect量を加算
@@ -147,8 +147,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//ガチャポイントに合算
 			playerdata.gachapoint += playerdata.minuteblock.increase;
 
-			ItemStack skull = Util.getskull(name);
 			if(playerdata.gachapoint >= config.getGachaPresentInterval() && playerdata.gachaflag){
+				ItemStack skull = Util.getskull(name);
 				playerdata.gachapoint -= config.getGachaPresentInterval();
 				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
 					Util.addItem(player,skull);

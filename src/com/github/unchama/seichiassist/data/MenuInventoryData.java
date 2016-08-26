@@ -39,7 +39,6 @@ public class MenuInventoryData {
 
 
 		int prank = Util.calcPlayerRank(player);
-		int pblock = Util.calcMineBlock(player);
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
@@ -47,16 +46,19 @@ public class MenuInventoryData {
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ");
 		lore.clear();
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
-				, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level + 1).intValue() - pblock)
+				, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level + 1).intValue() - playerdata.totalbreaknum)
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "パッシブスキル効果："
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "1ブロック破壊ごとに10%の確率で"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + DisplayPassiveExp(playerdata) + "の経験値を獲得します"
-				, ChatColor.RESET + "" +  ChatColor.AQUA + "破壊したブロック数:" + pblock
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "1ブロック整地ごとに"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "10%の確率で"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + DisplayPassiveExp(playerdata) + "の経験値を獲得"
+				, ChatColor.RESET + "" +  ChatColor.AQUA + "総整地量:" + playerdata.totalbreaknum
 				, ChatColor.RESET + "" +  ChatColor.GOLD + "ランキング：" + prank + "位" + ChatColor.RESET + "" +  ChatColor.GRAY + "(" + SeichiAssist.ranklist.size() +"人中)"
+
 				));
 		if(prank > 1){
-			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + (prank-1) + "位との差：" + (SeichiAssist.ranklist.get(prank-2).intValue() - pblock));
+			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + (prank-1) + "位との差：" + (SeichiAssist.ranklist.get(prank-2).intValue() - playerdata.totalbreaknum));
 		}
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※1分毎に更新");
 
 		skullmeta.setLore(lore);
 		skullmeta.setOwner(playerdata.name);
@@ -66,7 +68,8 @@ public class MenuInventoryData {
 		//採掘速度上昇効果のトグルボタン
 		itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
-		itemstack.setItemMeta(DisplayEffect(playerdata,itemmeta));
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "採掘速度上昇効果");
+		itemstack.setItemMeta(EFButtonMeta(playerdata,itemmeta));
 		inventory.setItem(1,itemstack);
 
 		// ver0.3.2 四次元ポケットOPEN
@@ -93,6 +96,13 @@ public class MenuInventoryData {
 			lore.addAll(Arrays.asList(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "範囲指定されてません"
 					, ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "先に木の斧で2か所クリックしてネ"
 					, ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
+					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "A new region has been claimed"
+					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "と出れば、保護の設定が完了しています"
+					, ChatColor.RESET + "" +  ChatColor.RED + "赤色で別の英文が出た場合"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "保護の設定に失敗しています"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "別の保護と被ってないか等ご確認の上"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "始めからやり直してください"
 					));
 		}else{
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -319,19 +329,12 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(16,itemstack);
 
-		int gachaget = (int) playerdata.gachapoint/1000;
+		//ガチャ券受け取りボタン
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガチャ券を受け取る");
-		if(gachaget != 0){
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + gachaget + "枚"
-			, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
-		}else{
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません"
-			, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
-		}
-		skullmeta.setLore(lore);
+		skullmeta.setLore(GachaGetButtonLore(playerdata));
 		skullmeta.setOwner("unchama");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
@@ -547,9 +550,9 @@ public class MenuInventoryData {
 		return inventory;
 	}
 
-	public static ItemMeta DisplayEffect(PlayerData playerdata,ItemMeta itemmeta){
+	// 採掘速度トグルボタン
+	public static ItemMeta EFButtonMeta(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<String>();
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "採掘速度上昇効果");
 		if(playerdata.effectflag){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在ONです");
@@ -560,7 +563,8 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
 		}
 		lore.addAll(
-				Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
+				Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※反映まで最大1分かかります"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "接続人数と1分間の採掘量に応じて"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度が変化するシステムです"
 				, ChatColor.RESET + "" +  ChatColor.GOLD + "現在の採掘速度上昇Lv：" + (playerdata.minespeedlv+1)
@@ -571,6 +575,20 @@ public class MenuInventoryData {
 		}
 		itemmeta.setLore(lore);
 		return itemmeta;
+	}
+
+	// ガチャ券受け取りボタン
+	public static List<String> GachaGetButtonLore(PlayerData playerdata){
+		List<String> lore = new ArrayList<String>();
+		int gachaget = (int) playerdata.gachapoint/1000;
+		if(gachaget != 0){
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + gachaget + "枚"
+			, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
+		}else{
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません"
+			, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
+		}
+		return lore;
 	}
 
 
