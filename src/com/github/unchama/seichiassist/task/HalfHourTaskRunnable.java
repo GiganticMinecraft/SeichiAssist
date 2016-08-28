@@ -37,7 +37,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		//playermapに入っているすべてのプレイヤーデータについて処理
 		for(PlayerData playerdata:SeichiAssist.playermap.values()){
 			//プレイヤー型を取得
-			Player player = plugin.getServer().getPlayer(playerdata.name);
+			Player player = plugin.getServer().getPlayer(playerdata.uuid);
 			//プレイヤーがオンラインの時の処理
 			if(player != null){
 				//現在の統計量を取得

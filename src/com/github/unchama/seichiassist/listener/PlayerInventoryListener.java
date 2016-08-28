@@ -22,10 +22,13 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -312,9 +315,40 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.effectflag = !playerdata.effectflag;
 				if(playerdata.effectflag){
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+
+					//effect追加の処理
+					//実際に適用されるeffect量
+					int minespeedlv = 0;
+					//合計effect量
+					double sum = 0;
+					//最大持続時間
+					int maxduration = 0;
+					//effectdatalistにある全てのeffectについて計算
+					for(EffectData ed :playerdata.effectdatalist){
+						//effect量を加算
+						sum += ed.amplifier;
+						//持続時間の最大値を取得
+						if(maxduration < ed.duration){
+							maxduration = ed.duration;
+						}
+					}
+					//実際のeffect値をsum-1の切り捨て整数値に設定
+					minespeedlv = (int)(sum - 1);
+
+					//実際のeffect値が0より小さいときはeffectを適用しない
+					if(minespeedlv < 0){
+						player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
+					}else{
+						player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, minespeedlv, false, false), true);
+					}
+
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
 				}else{
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+
+					//現在の採掘速度上昇効果を削除する
+					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
+
 					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
 				}
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
@@ -451,8 +485,25 @@ public class PlayerInventoryListener implements Listener {
 				}
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 0.1);
+
+				//アイテム消失を防ぐ為、現在のサイズよりも四次元ポケットサイズが大きくなる場合のみ拡張処理する
+				if(playerdata.inventory.getSize() < playerdata.getPocketSize()){
+					//現在の四次元ポケットの中身を取得
+					ItemStack[] item = playerdata.inventory.getContents();
+					//新しいサイズの四次元ポケットを作成
+					Inventory newsizepocket = Bukkit.getServer().createInventory(null,playerdata.getPocketSize(),ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
+					//for文で一個ずつ新しいサイズのポケットに入れてく
+					int i = 0;
+		            for (ItemStack m : item) {
+		                newsizepocket.setItem(i, m);
+		                i++;
+		            }
+		            //出来たら置き換える
+		            playerdata.inventory = newsizepocket;
+				}
 				//インベントリを開く
 				player.openInventory(playerdata.inventory);
+
 
 			}
 

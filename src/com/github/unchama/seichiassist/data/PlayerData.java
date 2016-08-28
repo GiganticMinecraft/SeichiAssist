@@ -79,7 +79,7 @@ public class PlayerData {
 		level = 1;
 		numofsorryforbug = 0;
 		activemineflagnum = 0;
-		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*3 ,"拡張インベントリ");
+		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 		activenum = 1;
 		skillcanbreakflag = true;
 		rgnum = 0;
@@ -119,6 +119,7 @@ public class PlayerData {
 	//詫びガチャの通知
 	public void NotifySorryForBug(Player player){
 		if(numofsorryforbug > 0){
+			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
 			player.sendMessage(ChatColor.GREEN + "運営チームから"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が届いています！\n木の棒メニューから受け取ってください。");
 		}
 	}
@@ -204,6 +205,48 @@ public class PlayerData {
 			i++;
 		}
 		level = i-1;
+	}
+	//パッシブスキルの獲得量表示
+	public int dispPassiveExp() {
+		if(level < 8){
+			return 0;
+		}else if (level < 18){
+			return SeichiAssist.config.getDropExplevel1();
+		}else if (level < 28){
+			return SeichiAssist.config.getDropExplevel2();
+		}else if (level < 38){
+			return SeichiAssist.config.getDropExplevel3();
+		}else if (level < 48){
+			return SeichiAssist.config.getDropExplevel4();
+		}else if (level < 58){
+			return SeichiAssist.config.getDropExplevel5();
+		}else if (level < 68){
+			return SeichiAssist.config.getDropExplevel6();
+		}else if (level < 78){
+			return SeichiAssist.config.getDropExplevel7();
+		}else if (level < 88){
+			return SeichiAssist.config.getDropExplevel8();
+		}else if (level < 98){
+			return SeichiAssist.config.getDropExplevel9();
+		}else{
+			return SeichiAssist.config.getDropExplevel10();
+		}
+	}
+	//四次元ポケットのサイズを取得
+	public int getPocketSize() {
+		if (level < 26){
+			return 9*3;
+		}else if (level < 36){
+			return 9*3;
+		}else if (level < 46){
+			return 9*3;
+		}else if (level < 56){
+			return 9*4;
+		}else if (level < 66){
+			return 9*5;
+		}else{
+			return 9*6;
+		}
 	}
 
 }

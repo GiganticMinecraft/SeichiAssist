@@ -50,7 +50,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "パッシブスキル効果："
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "1ブロック整地ごとに"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "10%の確率で"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + DisplayPassiveExp(playerdata) + "の経験値を獲得"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + playerdata.dispPassiveExp() + "の経験値を獲得"
 				, ChatColor.RESET + "" +  ChatColor.AQUA + "総整地量:" + playerdata.totalbreaknum
 				, ChatColor.RESET + "" +  ChatColor.GOLD + "ランキング：" + prank + "位" + ChatColor.RESET + "" +  ChatColor.GRAY + "(" + SeichiAssist.ranklist.size() +"人中)"
 
@@ -80,6 +80,7 @@ public class MenuInventoryData {
 		if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です");
 		}else{
+			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "ポケットサイズ:" + playerdata.inventory.getSize() + "スタック");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックすると開きます");
 		}
 		itemmeta.setLore(lore);
@@ -138,6 +139,41 @@ public class MenuInventoryData {
 		skullmeta.setOwner("MHF_ArrowRight");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(35,itemstack);
+
+		//運営からの詫びガチャ配布ボタン
+		int numofsorryforbug = (int) playerdata.numofsorryforbug;
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る");
+		if(numofsorryforbug != 0){
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "不具合やイベント等により"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "運営チームから配布されるガチャ券は"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンから受け取れます"
+					, ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + numofsorryforbug + "枚");
+		}else{
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "不具合やイベント等により"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "運営チームから配布されるガチャ券は"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンから受け取れます"
+					, ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません");
+		}
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("whitecat_haru");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(29,itemstack);
+
+
+		// ゴミ箱を開く
+		itemstack = new ItemStack(Material.BUCKET,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BUCKET);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ゴミ箱を開く");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "不用品の大量処分にドウゾ！"
+				, ChatColor.RESET + "" + ChatColor.RED + "復活しないので取扱注意"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(23,itemstack);
 
 		// ver0.3.2 homeコマンド
 		itemstack = new ItemStack(Material.COMPASS,1);
@@ -339,6 +375,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
 
+		//ガチャ券受け取り方法選択ボタン
 		itemstack = new ItemStack(Material.STONE_BUTTON,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_BUTTON);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガチャ券受け取り方法");
@@ -361,10 +398,6 @@ public class MenuInventoryData {
 	public static Inventory getMenuData2(Player p){
 		//プレイヤーを取得
 		Player player = p.getPlayer();
-		//UUID取得
-		UUID uuid = player.getUniqueId();
-		//プレイヤーデータ
-		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//経験値変更用のクラスを設定
 		ExperienceManager expman = new ExperienceManager(player);
 
@@ -392,7 +425,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_Villager");
 		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(14,itemstack);
+		inventory.setItem(12,itemstack);
 
 		/*
 		 * ここまでadd.loreに変更済み
@@ -411,40 +444,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
 
-		//運営からの詫びガチャ配布ボタン
-		int numofsorryforbug = (int) playerdata.numofsorryforbug;
-		itemstack = new ItemStack(Material.SKULL_ITEM,1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る");
-		if(numofsorryforbug != 0){
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "不具合やイベント等により"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "運営チームから配布されるガチャ券は"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンから受け取れます"
-					, ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + numofsorryforbug + "枚");
-		}else{
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "不具合やイベント等により"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "運営チームから配布されるガチャ券は"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンから受け取れます"
-					, ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません");
-		}
-		skullmeta.setLore(lore);
-		skullmeta.setOwner("whitecat_haru");
-		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(16,itemstack);
 
-
-		// ゴミ箱を開く
-		itemstack = new ItemStack(Material.BUCKET,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BUCKET);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ゴミ箱を開く");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "不用品の大量処分にドウゾ！"
-				, ChatColor.RESET + "" + ChatColor.RED + "復活しないので取扱注意"
-				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
-				);
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(12,itemstack);
 
 		// farmassist toggleコマンド
 		itemstack = new ItemStack(Material.WHEAT,1);
@@ -563,8 +563,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
 		}
 		lore.addAll(
-				Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※反映まで最大1分かかります"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
+				Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "接続人数と1分間の採掘量に応じて"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度が変化するシステムです"
 				, ChatColor.RESET + "" +  ChatColor.GOLD + "現在の採掘速度上昇Lv：" + (playerdata.minespeedlv+1)
@@ -589,33 +588,5 @@ public class MenuInventoryData {
 			, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
 		}
 		return lore;
-	}
-
-
-	//パッシブスキルの獲得量表示
-	private static int DisplayPassiveExp(PlayerData playerdata) {
-		if(playerdata.level < 8){
-			return 0;
-		}else if (playerdata.level < 18){
-			return SeichiAssist.config.getDropExplevel1();
-		}else if (playerdata.level < 28){
-			return SeichiAssist.config.getDropExplevel2();
-		}else if (playerdata.level < 38){
-			return SeichiAssist.config.getDropExplevel3();
-		}else if (playerdata.level < 48){
-			return SeichiAssist.config.getDropExplevel4();
-		}else if (playerdata.level < 58){
-			return SeichiAssist.config.getDropExplevel5();
-		}else if (playerdata.level < 68){
-			return SeichiAssist.config.getDropExplevel6();
-		}else if (playerdata.level < 78){
-			return SeichiAssist.config.getDropExplevel7();
-		}else if (playerdata.level < 88){
-			return SeichiAssist.config.getDropExplevel8();
-		}else if (playerdata.level < 98){
-			return SeichiAssist.config.getDropExplevel9();
-		}else{
-			return SeichiAssist.config.getDropExplevel10();
-		}
 	}
 }

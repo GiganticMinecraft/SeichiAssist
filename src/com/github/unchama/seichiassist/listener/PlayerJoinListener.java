@@ -35,16 +35,10 @@ public class PlayerJoinListener implements Listener {
 		}else{
 			playerdata = playermap.get(uuid);
 			//もし名前変更されていたら
-			if(!player.getName().equals(playerdata.name)){
+			if(!Util.getName(player).equals(playerdata.name)){
 				//すでにあるプレイヤーデータの名前を更新しておく
-				playerdata.name = player.getName();
+				playerdata.name = Util.getName(player);
 				playermap.put(uuid, playerdata);
-				//mysqlのプレイヤーデータの名前も更新しておく
-				/* プラグインリロード時の処理とかぶるためコメントアウト
-				if(sql.updatePlayerName(player)){
-					player.sendMessage("mysqlのMinecraftID更新に失敗,管理者に報告してください");
-				}
-				*/
 			}
 		}
 

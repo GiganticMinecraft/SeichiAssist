@@ -556,7 +556,8 @@ public class Sql{
  				p.sendMessage("sqlにデータが保存されています。");
  			}
 
- 			//playernameをアップデート
+ 			/*
+ 			//playernameをアップデート→廃止、ログアウト時にプレイヤーネームを更新するようにした
  			//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
  			command = "update " + table
  					+ " set name = '" + name
@@ -570,6 +571,7 @@ public class Sql{
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlのプレイヤーネームを更新しました。");
  			}
+ 			*/
 
  			//PlayerDataを新規作成
  			PlayerData playerdata = new PlayerData(p);
@@ -607,15 +609,16 @@ public class Sql{
  		}
 	}
 	public boolean savePlayerData(PlayerData playerdata) {
-		//引数のplayerdataを元にsqlにデータを送信
+		//引数のplayerdataをsqlにデータを送信
 
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "";
 		String struuid = playerdata.uuid.toString();
+		String command = "";
 
 		command = "update " + table
 				+ " set"
-				+ " effectflag = " + Boolean.toString(playerdata.effectflag)
+				+ " name = '" + playerdata.name + "'"
+				+ ",effectflag = " + Boolean.toString(playerdata.effectflag)
 				+ ",messageflag = " + Boolean.toString(playerdata.messageflag)
 				+ ",activemineflagnum = " + Integer.toString(playerdata.activemineflagnum)
 				+ ",activenum = " + Integer.toString(playerdata.activenum)

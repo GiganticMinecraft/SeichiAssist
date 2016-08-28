@@ -247,11 +247,26 @@ public class SeichiAssist extends JavaPlugin{
 		//全てのタスクをキャンセル
 		stopAllTaskRunnable();
 
+		/*
+		for(Player p : getServer().getOnlinePlayers()){
+			//UUIDを取得
+			UUID uuid = p.getUniqueId();
+			PlayerData playerdata = playermap.get(uuid);
+			if(!sql.savePlayerData(playerdata)){
+				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
+			}
+
+		}
+		*/
+
+
 		for(PlayerData playerdata : playermap.values()){
 			if(!sql.savePlayerData(playerdata)){
 				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
 			}
 		}
+
+
 		if(!sql.saveGachaData()){
 			getLogger().info("ガチャデータ保存に失敗しました");
 		}
