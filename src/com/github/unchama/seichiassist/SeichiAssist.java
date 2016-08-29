@@ -25,6 +25,7 @@ import com.github.unchama.seichiassist.listener.EntityListener;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
 import com.github.unchama.seichiassist.listener.PlayerJoinListener;
+import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
 import com.github.unchama.seichiassist.listener.PlayerQuitListener;
 import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
@@ -204,6 +205,7 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerPickupItemListener(), this);
 
 		//mysqlの値でplayermapを初期化する
 		//playermap = sql.loadAllPlayerData();

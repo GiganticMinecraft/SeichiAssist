@@ -90,6 +90,9 @@ public class PlayerInventoryListener implements Listener {
 		if(topinventory.getSize() != 36){
 			return;
 		}
+		Player player = (Player)he;
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
 
 		//インベントリ名が以下の時処理
 		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "木の棒メニュー")){
@@ -100,9 +103,6 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 
-			Player player = (Player)he;
-			UUID uuid = player.getUniqueId();
-			PlayerData playerdata = playermap.get(uuid);
 			//経験値変更用のクラスを設定
 			ExperienceManager expman = new ExperienceManager(player);
 
@@ -120,6 +120,17 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}else if(itemstackcurrent.getType().equals(Material.CHEST)){
+				//レベルが足りない場合処理終了
+				if( playerdata.level < SeichiAssist.config.getMineStacklevel()){
+					player.sendMessage(ChatColor.GREEN + "整地レベルが"+SeichiAssist.config.getMineStacklevel()+ "以上必要です");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					return;
+				}
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMenu(player));
 				return;
 			}
 
@@ -540,6 +551,146 @@ public class PlayerInventoryListener implements Listener {
 			}
 			*/
 
+		}else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			if(itemstackcurrent.getType().equals(Material.IRON_PICKAXE)){
+				// 対象ブロック自動スタック機能トグル
+				playerdata.minestackflag = !playerdata.minestackflag;
+				if(playerdata.minestackflag){
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.GREEN + "対象ブロック自動スタック機能:ON");
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.sendMessage(ChatColor.RED + "対象ブロック自動スタック機能:OFF");
+				}
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.MineStackToggleMeta(playerdata,itemmeta));
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.DIRT)){
+				if(playerdata.minestack.dirt >= 64){
+					playerdata.minestack.dirt -= 64;
+					ItemStack itemstack = new ItemStack(Material.DIRT,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.GRAVEL)){
+				if(playerdata.minestack.gravel >= 64){
+					playerdata.minestack.gravel -= 64;
+					ItemStack itemstack = new ItemStack(Material.GRAVEL,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.COBBLESTONE)){
+				if(playerdata.minestack.cobblestone >= 64){
+					playerdata.minestack.cobblestone -= 64;
+					ItemStack itemstack = new ItemStack(Material.COBBLESTONE,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.STONE)){
+				if(playerdata.minestack.stone >= 64){
+					playerdata.minestack.stone -= 64;
+					ItemStack itemstack = new ItemStack(Material.STONE,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+			else if(itemstackcurrent.getType().equals(Material.SAND)){
+				if(playerdata.minestack.sand >= 64){
+					playerdata.minestack.sand -= 64;
+					ItemStack itemstack = new ItemStack(Material.SAND,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+			else if(itemstackcurrent.getType().equals(Material.SANDSTONE)){
+				if(playerdata.minestack.sandstone >= 64){
+					playerdata.minestack.sandstone -= 64;
+					ItemStack itemstack = new ItemStack(Material.SANDSTONE,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+			else if(itemstackcurrent.getType().equals(Material.NETHERRACK)){
+				if(playerdata.minestack.netherrack >= 64){
+					playerdata.minestack.netherrack -= 64;
+					ItemStack itemstack = new ItemStack(Material.NETHERRACK,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+			else if(itemstackcurrent.getType().equals(Material.ENDER_STONE)){
+				if(playerdata.minestack.ender_stone >= 64){
+					playerdata.minestack.ender_stone -= 64;
+					ItemStack itemstack = new ItemStack(Material.ENDER_STONE,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
 		}
 	}
 

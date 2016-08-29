@@ -11,10 +11,12 @@ public class MineStack {
 	public int lapis_ore;
 	public int emerald_ore;
 	public int sand;
-	public int end_bricks;
+	public int sandstone;
 	public int ender_stone;
 	public int obsidian;
-	
+	public int cobblestone;
+	public int netherrack;
+
 	public MineStack(){
 		stone = 0;
 		dirt = 0;
@@ -26,9 +28,11 @@ public class MineStack {
 		lapis_ore = 0;
 		emerald_ore = 0;
 		sand = 0;
-		end_bricks = 0;
+		sandstone = 0;
 		ender_stone = 0;
 		obsidian = 0;
+		cobblestone = 0;
+		netherrack = 0;
 	}
 }
 /*

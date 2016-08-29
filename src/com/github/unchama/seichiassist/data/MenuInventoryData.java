@@ -137,6 +137,24 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
 
+		// MineStackを開く
+		itemstack = new ItemStack(Material.CHEST,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHEST);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack機能");
+		lore.clear();
+		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "説明しよう!MineStack機能とは!"
+				, ChatColor.RESET + "" + "主要ブロックを無限にスタック出来る!"
+				, ChatColor.RESET + "" + "スタックしたアイテムはここから取り出せるゾ!"
+				));
+		if( playerdata.level < SeichiAssist.config.getMineStacklevel()){
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "整地レベルが"+SeichiAssist.config.getMineStacklevel()+ "以上必要です");
+		}else{
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで開く");
+		}
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(24,itemstack);
+
 		/*
 		 * ここまでadd.loreに変更済み
 		 * 以下ボタンにadd.lore使う場合は追加行より上をすべてadd.loreに変更しないとエラー吐きます
@@ -164,7 +182,6 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(29,itemstack);
 
-
 		// ゴミ箱を開く
 		itemstack = new ItemStack(Material.BUCKET,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BUCKET);
@@ -175,7 +192,7 @@ public class MenuInventoryData {
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(24,itemstack);
+		inventory.setItem(26,itemstack);
 
 		// ver0.3.2 homeコマンド
 		itemstack = new ItemStack(Material.COMPASS,1);
@@ -400,6 +417,7 @@ public class MenuInventoryData {
 	public static Inventory getMenuData2(Player p){
 		//プレイヤーを取得
 		Player player = p.getPlayer();
+
 		//経験値変更用のクラスを設定
 		ExperienceManager expman = new ExperienceManager(player);
 
@@ -445,7 +463,6 @@ public class MenuInventoryData {
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
-
 
 
 		// farmassist toggleコマンド
@@ -608,5 +625,132 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません");
 		}
 		return lore;
+	}
+
+	public static Inventory getMineStackMenu(Player p){
+		//プレイヤーを取得
+		Player player = p.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		List<String> lore = new ArrayList<String>();
+		int material = 0;
+
+		//MineStack機能のトグルボタン
+		itemstack = new ItemStack(Material.IRON_PICKAXE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_PICKAXE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "対象ブロック自動スタック機能");
+		itemstack.setItemMeta(MineStackToggleMeta(playerdata,itemmeta));
+		inventory.setItem(0,itemstack);
+
+		//dirt
+		material = playerdata.minestack.dirt;
+		itemstack = new ItemStack(Material.DIRT,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIRT);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "DIRT");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(1,itemstack);
+
+		//gravel
+		material = playerdata.minestack.gravel;
+		itemstack = new ItemStack(Material.GRAVEL,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRAVEL);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "GRAVEL");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(2,itemstack);
+
+		//cobblestone
+		material = playerdata.minestack.cobblestone;
+		itemstack = new ItemStack(Material.COBBLESTONE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COBBLESTONE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "COBBLESTONE");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(3,itemstack);
+
+		//stone
+		material = playerdata.minestack.stone;
+		itemstack = new ItemStack(Material.STONE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "STONE");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(4,itemstack);
+
+		//sand
+		material = playerdata.minestack.sand;
+		itemstack = new ItemStack(Material.SAND,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SAND);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "SAND");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(5,itemstack);
+
+		//sandstone
+		material = playerdata.minestack.sandstone;
+		itemstack = new ItemStack(Material.SANDSTONE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SANDSTONE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "SANDSTONE");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(6,itemstack);
+
+		//sandstone
+		material = playerdata.minestack.netherrack;
+		itemstack = new ItemStack(Material.NETHERRACK,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHERRACK);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "NETHERRACK");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(7,itemstack);
+
+		//ender_stone
+		material = playerdata.minestack.ender_stone;
+		itemstack = new ItemStack(Material.ENDER_STONE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ENDER_STONE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ENDER_STONE");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(8,itemstack);
+
+		return inventory;
+	}
+	// MineStackトグルボタン
+	public static ItemMeta MineStackToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
+		List<String> lore = new ArrayList<String>();
+		if(playerdata.minestackflag){
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在ONです");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
+		}else{
+			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "現在OFFです");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
+		}
+		itemmeta.setLore(lore);
+		return itemmeta;
 	}
 }

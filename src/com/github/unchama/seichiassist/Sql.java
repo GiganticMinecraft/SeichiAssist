@@ -142,6 +142,7 @@ public class Sql{
 		command =
 				"alter table " + table +
 				" add column if not exists effectflag boolean default true" +
+				",add column if not exists minestackflag boolean default true" +
 				",add column if not exists messageflag boolean default false" +
 				",add column if not exists activemineflagnum int default 0" +
 				",add column if not exists activenum int default 1" +
@@ -153,6 +154,14 @@ public class Sql{
 				",add column if not exists rgnum int default 0" +
 				",add column if not exists totalbreaknum int default 0" +
 				",add column if not exists lastquit datetime default null" +
+				",add column if not exists stack_dirt int default 0" +
+				",add column if not exists stack_gravel int default 0" +
+				",add column if not exists stack_cobblestone int default 0" +
+				",add column if not exists stack_stone int default 0" +
+				",add column if not exists stack_sand int default 0" +
+				",add column if not exists stack_sandstone int default 0" +
+				",add column if not exists stack_netherrack int default 0" +
+				",add column if not exists stack_ender_stone int default 0" +
 				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
@@ -584,6 +593,7 @@ public class Sql{
  				rs = stmt.executeQuery(command);
  				while (rs.next()) {
  	 				playerdata.effectflag = rs.getBoolean("effectflag");
+ 	 				playerdata.minestackflag = rs.getBoolean("minestackflag");
  	 				playerdata.messageflag = rs.getBoolean("messageflag");
  	 				playerdata.activemineflagnum = rs.getInt("activemineflagnum");
  	 				playerdata.activenum = rs.getInt("activenum");
@@ -592,6 +602,14 @@ public class Sql{
  	 				playerdata.level = rs.getInt("level");
  	 				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
  	 				playerdata.rgnum = rs.getInt("rgnum");
+ 	 				playerdata.minestack.dirt = rs.getInt("stack_dirt");
+ 	 				playerdata.minestack.gravel = rs.getInt("stack_gravel");
+ 	 				playerdata.minestack.cobblestone = rs.getInt("stack_cobblestone");
+ 	 				playerdata.minestack.stone = rs.getInt("stack_stone");
+ 	 				playerdata.minestack.sand = rs.getInt("stack_sand");
+ 	 				playerdata.minestack.sandstone = rs.getInt("stack_sandstone");
+ 	 				playerdata.minestack.netherrack = rs.getInt("stack_netherrack");
+ 	 				playerdata.minestack.ender_stone = rs.getInt("stack_ender_stone");
  	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  				  }
  				rs.close();
@@ -619,6 +637,7 @@ public class Sql{
 				+ " set"
 				+ " name = '" + playerdata.name + "'"
 				+ ",effectflag = " + Boolean.toString(playerdata.effectflag)
+				+ ",minestackflag = " + Boolean.toString(playerdata.minestackflag)
 				+ ",messageflag = " + Boolean.toString(playerdata.messageflag)
 				+ ",activemineflagnum = " + Integer.toString(playerdata.activemineflagnum)
 				+ ",activenum = " + Integer.toString(playerdata.activenum)
@@ -627,6 +646,16 @@ public class Sql{
 				+ ",level = " + Integer.toString(playerdata.level)
 				+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug)
 				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
+
+				+ ",stack_dirt = " + Integer.toString(playerdata.minestack.dirt)
+				+ ",stack_gravel = " + Integer.toString(playerdata.minestack.gravel)
+				+ ",stack_cobblestone = " + Integer.toString(playerdata.minestack.cobblestone)
+				+ ",stack_stone = " + Integer.toString(playerdata.minestack.stone)
+				+ ",stack_sand = " + Integer.toString(playerdata.minestack.sand)
+				+ ",stack_sandstone = " + Integer.toString(playerdata.minestack.sandstone)
+				+ ",stack_netherrack = " + Integer.toString(playerdata.minestack.netherrack)
+				+ ",stack_ender_stone = " + Integer.toString(playerdata.minestack.ender_stone)
+
 				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
 				+ ",lastquit = cast( now() as datetime )"
