@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.commands;
 
 import java.util.List;
+import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -8,6 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
@@ -43,9 +45,19 @@ public class seichiCommand implements TabExecutor {
 			sender.sendMessage(ChatColor.RED + "/seichi debugmode");
 			sender.sendMessage("デバッグモードのON,OFFを切り替えます");
 			sender.sendMessage(ChatColor.RED + "/seichi <playername/all> <duration(tick)> <amplifier(double)> <id>");
-			sender.sendMessage("指定されたプレイヤーに採掘速度上昇効果を付与します\nall指定で全プレイヤー対象");
+			sender.sendMessage("指定されたプレイヤーに採掘速度上昇効果を付与します");
+			sender.sendMessage("all指定で全プレイヤー対象");
 			sender.sendMessage("idを指定すると上昇値に説明文を付加出来ます。指定なしだと5が入ります");
-			sender.sendMessage("id=0 不明な上昇値\nid=1 接続人数から\nid=2 採掘量から\nid=3 ドラゲナイタイムから\nid=4 投票から\nid=5 コマンド入力から(イベントや不具合等)");
+			sender.sendMessage("id=0 不明な上昇値");
+			sender.sendMessage("id=1 接続人数から");
+			sender.sendMessage("id=2 採掘量から");
+			sender.sendMessage("id=3 ドラゲナイタイムから");
+			sender.sendMessage("id=4 投票から");
+			sender.sendMessage("id=5 コマンド入力から(イベントや不具合等)");
+			sender.sendMessage(ChatColor.RED + "/seichi openpocket <プレイヤー名>");
+			sender.sendMessage("対象プレイヤーの四次元ポケットを開く");
+			sender.sendMessage("編集結果はオンラインのプレイヤーにのみ反映されます");
+
 			/*
 			 * id=0 不明な上昇値
 			 * id=1 接続人数から
@@ -75,6 +87,64 @@ public class seichiCommand implements TabExecutor {
 			plugin.startTaskRunnable();
 
 			return true;
+		}else if(args[0].equalsIgnoreCase("openpocket")){
+			//seichi openpocket <playername>
+			if(args.length != 2){
+				//引数が2じゃない時の処理
+				sender.sendMessage(ChatColor.RED + "/seichi openpocket <プレイヤー名>");
+				sender.sendMessage("対象プレイヤーの四次元ポケットを開く");
+				sender.sendMessage("編集結果はオンラインのプレイヤーにのみ反映されます");
+				return true;
+			}else{
+				//引数が2の時の処理
+
+				/*
+				 * コンソールからのコマンドは処理しない - ここから
+				 */
+				if (!(sender instanceof Player)) {
+					sender.sendMessage("このコマンドはゲーム内から実行してください");
+					return true;
+				}
+				Player player = (Player) sender;
+				/*
+				 * ここまで
+				 */
+
+				//対象プレイヤー名を取得
+				String name = Util.getName(args[1]);
+				//対象プレイヤーをサーバーから取得
+				Player targetplayer = plugin.getServer().getPlayer(name);
+				if(targetplayer != null){
+					//対象プレイヤーがオンラインの時の処理
+					//対象プレイヤーのuuid取得
+					UUID uuid = targetplayer.getUniqueId();
+					//対象プレイヤーのplayerdata取得
+					PlayerData targetplayerdata = SeichiAssist.playermap.get(uuid);
+					//playerdataが取得できなかった場合処理終了
+					if(targetplayerdata == null){
+						sender.sendMessage(name + "はオンラインですが、何故かplayerdataが見つかりませんでした(要報告)");
+						return true;
+					}
+					player.openInventory(targetplayerdata.inventory);
+					return true;
+				}else{
+					//対象プレイヤーがオフラインの時の処理
+					sender.sendMessage(ChatColor.RED + "対象プレイヤーはオフラインです。編集結果は反映されません");
+					//プレイヤーがオフラインの時の処理
+					@SuppressWarnings("deprecation")
+					UUID uuid = plugin.getServer().getOfflinePlayer(name).getUniqueId();
+					//mysqlからinventory持ってくる
+					Inventory inventory = sql.selectInventory(uuid);
+					//inventoryが取得できなかった場合処理終了
+					if(inventory == null){
+						sender.sendMessage("mysqlからインベントリを取得できませんでした");
+						return true;
+					}
+					player.openInventory(inventory);
+					return true;
+				}
+			}
+
 
 		}else if(args.length == 3 || args.length == 4){
 			//seichi player duration(ticks) amplifier id で登録できるようにする。

@@ -60,6 +60,8 @@ public class PlayerData {
 	public int totalbreaknum;
 	//スキル発動中だけtrueになるフラグ
 	public boolean skillflag;
+	//MineStack
+	//public MineStack minestack;
 
 
 	public PlayerData(Player player){
@@ -85,6 +87,7 @@ public class PlayerData {
 		rgnum = 0;
 		totalbreaknum = Util.calcMineBlock(player);
 		skillflag = false;
+		//minestack = new MineStack();
 	}
 
 	//プレイヤーデータを最新の状態に更新

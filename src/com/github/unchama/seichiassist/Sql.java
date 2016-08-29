@@ -769,4 +769,24 @@ public class Sql{
 		return true;
 	}
 
+	//指定プレイヤーの四次元ポケットの中身取得
+	public Inventory selectInventory(UUID uuid){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = uuid.toString();
+		Inventory inventory = null;
+		String command = "select inventory from " + table
+					+ " where uuid like '" + struuid + "'";
+			try{
+				rs = stmt.executeQuery(command);
+				while (rs.next()) {
+	 				inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
+				  }
+				rs.close();
+			} catch (SQLException | IOException e) {
+				exc = e.getMessage();
+				return null;
+			}
+		return inventory;
+	}
+
 }
