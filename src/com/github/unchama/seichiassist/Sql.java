@@ -639,6 +639,8 @@ public class Sql{
 			}
 		return true;
 	}
+
+
 	//ガチャデータロード
 	public boolean loadGachaData(){
 		String table = SeichiAssist.GACHADATA_TABLENAME;
@@ -738,11 +740,26 @@ public class Sql{
 			}
 		return true;
 	}
-	//詫びガチャの配布
+	//全員に詫びガチャの配布
 	public boolean addAllPlayerBug(int amount){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "update " + table
 				+ " set numofsorryforbug = numofsorryforbug + " + amount;
+		try{
+				stmt.executeUpdate(command);
+			} catch (SQLException e) {
+				exc = e.getMessage();
+				return false;
+			}
+		return true;
+	}
+	//指定されたプレイヤーにガチャ券を送信する
+	public boolean addPlayerBug(UUID uuid,int num) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = uuid.toString();
+		String command = "update " + table
+				+ " set numofsorryforbug = numofsorryforbug + " + num
+				+ " where uuid like '" + struuid + "'";
 		try{
 				stmt.executeUpdate(command);
 			} catch (SQLException e) {

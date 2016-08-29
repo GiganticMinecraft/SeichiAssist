@@ -126,6 +126,9 @@ public class Config{
 	public int getPassivePortalInventorylevel() {
 		return Util.toInt(config.getString("passiveportalinventorylevel"));
 	}
+	public int getDokodemoEnderlevel() {
+		return Util.toInt(config.getString("dokodemoenderlevel"));
+	}
 	public String getDB(){
 		return config.getString("db");
 	}

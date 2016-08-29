@@ -81,11 +81,25 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です");
 		}else{
 			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "ポケットサイズ:" + playerdata.inventory.getSize() + "スタック");
-			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックすると開きます");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで開く");
 		}
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(21,itemstack);
+
+		// どこでもエンダーチェスト
+				itemstack = new ItemStack(Material.ENDER_CHEST,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ENDER_CHEST);
+				itemmeta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "どこでもエンダーチェスト");
+				lore.clear();
+				if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
+					lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "整地レベルが"+SeichiAssist.config.getDokodemoEnderlevel()+ "以上必要です");
+				}else{
+					lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで開く");
+				}
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(22,itemstack);
 
 		// ver0.3.2 保護設定コマンド
 		itemstack = new ItemStack(Material.GOLD_AXE,1);
@@ -141,23 +155,11 @@ public class MenuInventoryData {
 		inventory.setItem(35,itemstack);
 
 		//運営からの詫びガチャ配布ボタン
-		int numofsorryforbug = (int) playerdata.numofsorryforbug;
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る");
-		if(numofsorryforbug != 0){
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "不具合やイベント等により"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "運営チームから配布されるガチャ券は"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンから受け取れます"
-					, ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + numofsorryforbug + "枚");
-		}else{
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "不具合やイベント等により"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "運営チームから配布されるガチャ券は"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンから受け取れます"
-					, ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません");
-		}
-		skullmeta.setLore(lore);
+		skullmeta.setLore(SorryGachaGetButtonLore(playerdata));
 		skullmeta.setOwner("whitecat_haru");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(29,itemstack);
@@ -173,7 +175,7 @@ public class MenuInventoryData {
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(23,itemstack);
+		inventory.setItem(24,itemstack);
 
 		// ver0.3.2 homeコマンド
 		itemstack = new ItemStack(Material.COMPASS,1);
@@ -586,6 +588,24 @@ public class MenuInventoryData {
 		}else{
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません"
 			, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
+		}
+		return lore;
+	}
+
+	//運営ガチャ券受け取りボタン
+	public static List<String> SorryGachaGetButtonLore(PlayerData playerdata){
+		List<String> lore = new ArrayList<String>();
+		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "運営からのガチャ券を受け取ります"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "以下の場合に配布されます"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "・各種不具合のお詫びとして"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "・イベント景品として"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "・投票ボーナスとして"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "・各種謝礼として"));
+		int gachaget = playerdata.numofsorryforbug;
+		if(gachaget != 0){
+			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + gachaget + "枚");
+		}else{
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません");
 		}
 		return lore;
 	}

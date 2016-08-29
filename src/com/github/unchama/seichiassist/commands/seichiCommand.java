@@ -35,6 +35,27 @@ public class seichiCommand implements TabExecutor {
 		if(args.length == 0){
 			return false;
 
+		}else if(args[0].equalsIgnoreCase("help")){
+
+			sender.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD +"[コマンドリファレンス]");
+			sender.sendMessage(ChatColor.RED + "/seichi reload");
+			sender.sendMessage("config.ymlの設定値を再読み込みします");
+			sender.sendMessage(ChatColor.RED + "/seichi debugmode");
+			sender.sendMessage("デバッグモードのON,OFFを切り替えます");
+			sender.sendMessage(ChatColor.RED + "/seichi <playername/all> <duration(tick)> <amplifier(double)> <id>");
+			sender.sendMessage("指定されたプレイヤーに採掘速度上昇効果を付与します\nall指定で全プレイヤー対象");
+			sender.sendMessage("idを指定すると上昇値に説明文を付加出来ます。指定なしだと5が入ります");
+			sender.sendMessage("id=0 不明な上昇値\nid=1 接続人数から\nid=2 採掘量から\nid=3 ドラゲナイタイムから\nid=4 投票から\nid=5 コマンド入力から(イベントや不具合等)");
+			/*
+			 * id=0 不明な上昇値
+			 * id=1 接続人数から
+			 * id=2 採掘量から
+			 * id=3 ドラゲナイタイムから
+			 * id=4 投票から
+			 * id=5 コマンド入力から(イベントや不具合等)
+			 */
+			return true;
+
 		}else if(args[0].equalsIgnoreCase("reload")){
 			//gacha reload
 			SeichiAssist.config.reloadConfig();
@@ -55,17 +76,6 @@ public class seichiCommand implements TabExecutor {
 
 			return true;
 
-		}else if(args[0].equalsIgnoreCase("bug")){
-			//seichi bug と入力したとき
-			if(args.length != 2){
-				//引数が２でない時の処理
-				sender.sendMessage("/seichi bug 2 で全ての登録されているプレイヤーに詫び券(ガチャ券）を2枚配布します。");
-				return true;
-			}
-			//全てのプレイヤーに詫び券を設定
-			addSorryForBug(sender,Util.toInt(args[1]));
-			return true;
-
 		}else if(args.length == 3 || args.length == 4){
 			//seichi player duration(ticks) amplifier id で登録できるようにする。
 			//プレイヤー名を取得
@@ -73,47 +83,45 @@ public class seichiCommand implements TabExecutor {
 			//プレイヤーをサーバーから取得
 			Player player = plugin.getServer().getPlayer(name);
 
+			//メッセージを設定
+			int id = 0;
+			if(args.length == 4){
+				//引数が４つの場合
+				//numを取得
+				int num = Util.toInt(args[3]);
+				if(num == 0){
+					id = 0;
+				}else if(num == 1){
+					id = 1;
+				}else if(num == 2){
+					id = 2;
+				}else if(num == 3){
+					id = 3;
+				}else if(num == 4){
+					id = 4;
+				}else if(num == 5){
+					id = 5;
+				}else{
+					id = 5;
+					sender.sendMessage("不明なidが指定されているので、プレイヤーへの説明文には\n「コマンド入力による上昇値」と表示されます");
+				}
+			}else{
+				//引数が3つの場合
+				id = 5;
+				sender.sendMessage("idが指定されていないので、プレイヤーへの説明文には\n「コマンド入力による上昇値」と表示されます");
+			}
+			//持続時間を取得
+			int duration = Util.toInt(args[1]);
+			//effect値を取得
+			double amplifier = Util.toDouble(args[2]);
+
 			if(!name.equalsIgnoreCase("all")){
 				//プレイヤー名がallでない時の処理
 
-				//持続時間を取得
-				int duration = Util.toInt(args[1]);
-				//effect値を取得
-				double amplifier = Util.toDouble(args[2]);
-				//メッセージを設定
-				int id = 0;
-
 				if(player == null){
 					//プレイヤーが取得できなかったとき
-					sender.sendMessage("指定されたプレイヤーは一度も鯖に接続していないか存在しません。");
-					sender.sendMessage("/seichi unchama 1200 10.0 のように、player名と持続時間（ticks:１秒＝20tick)、上昇値(小数点以下ok)を入力してください。");
+					sender.sendMessage("指定されたプレイヤーはオンラインでは無いか、存在しません");
 					return true;
-				}
-
-				if(args.length == 4){
-					//引数が４つの場合
-					//numを取得
-					int num = Util.toInt(args[3]);
-					if(num == 0){
-						id = 0;
-					}else if(num == 1){
-						id = 1;
-					}else if(num == 2){
-						id = 2;
-					}else if(num == 3){
-						id = 3;
-					}else if(num == 4){
-						id = 4;
-					}else if(num == 5){
-						id = 5;
-					}else{
-						id = 5;
-						sender.sendMessage("不明なidが指定されているので、プレイヤーへの説明文には\n「コマンド入力による上昇値」と表示されます");
-					}
-				}else{
-					//引数が3つの場合
-					id = 5;
-					sender.sendMessage("idが指定されていないので、プレイヤーへの説明文には\n「コマンド入力による上昇値」と表示されます");
 				}
 
 				//プレイヤーデータを取得
@@ -124,40 +132,6 @@ public class seichiCommand implements TabExecutor {
 				sender.sendMessage(ChatColor.LIGHT_PURPLE + name + "に上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました");
 			}else{
 				//player名がallだった時の処理
-
-
-				//持続時間を取得
-				int duration = Util.toInt(args[1]);
-				//effect値を取得
-				double amplifier = Util.toDouble(args[2]);
-				//メッセージを格納
-				int id = 0;
-
-				if(args.length == 4){
-					//引数が４つの場合
-					//numを取得
-					int num = Util.toInt(args[3]);
-					if(num == 0){
-						id = 0;
-					}else if(num == 1){
-						id = 1;
-					}else if(num == 2){
-						id = 2;
-					}else if(num == 3){
-						id = 3;
-					}else if(num == 4){
-						id = 4;
-					}else if(num == 5){
-						id = 5;
-					}else{
-						id = 5;
-						sender.sendMessage("不明なidが指定されているので、プレイヤーへの説明文には\n「コマンド入力による上昇値」と表示されます");
-					}
-				}else{
-					//引数が3つの場合
-					id = 5;
-					sender.sendMessage("idが指定されていないので、プレイヤーへの説明文には\n「コマンド入力による上昇値」と表示されます");
-				}
 
 				//全てのプレイヤーデータについて処理
 				for(PlayerData playerdata: SeichiAssist.playermap.values()){
@@ -170,17 +144,5 @@ public class seichiCommand implements TabExecutor {
 			return true;
 		}
 		return false;
-	}
-	private void addSorryForBug(CommandSender sender,int num) {
-		for(PlayerData playerdata : SeichiAssist.playermap.values()){
-			playerdata.numofsorryforbug += num;
-			sender.sendMessage(ChatColor.LIGHT_PURPLE + "" + num +"個のガチャ券をお詫びとして" + playerdata.name + "のデータに更新しました");
-		}
-		//MySqlの値も処理
-		if(!sql.addAllPlayerBug(num)){
-			sender.sendMessage("mysqlに保存されている全プレイヤーへの詫びガチャの加算に失敗しました");
-		}else{
-			sender.sendMessage("mysqlに保存されている全プレイヤーへ詫びガチャを加算しました");
-		}
 	}
 }

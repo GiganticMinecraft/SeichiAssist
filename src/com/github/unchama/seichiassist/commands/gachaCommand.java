@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.commands;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -12,6 +13,7 @@ import org.bukkit.inventory.PlayerInventory;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class gachaCommand implements TabExecutor{
@@ -43,6 +45,110 @@ public class gachaCommand implements TabExecutor{
 
 		if(args.length == 0){
 			return false;
+		}else if(args[0].equalsIgnoreCase("help")){
+
+			sender.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD +"[コマンドリファレンス]");
+			sender.sendMessage(ChatColor.RED + "/gacha mente");
+			sender.sendMessage("メンテモードのON,OFF切り替え。ONだとガチャが引けなくなる");
+			sender.sendMessage(ChatColor.RED + "/gacha give <all/プレイヤー名> <個数>");
+			sender.sendMessage("ガチャ券配布コマンドです。allを指定すると全員に配布します");
+			sender.sendMessage(ChatColor.RED + "/gacha add <確率>");
+			sender.sendMessage("現在のメインハンドをガチャリストに追加。確率は1.0までで指定");
+			sender.sendMessage(ChatColor.RED + "/gacha list");
+			sender.sendMessage("現在のガチャリストを表示");
+			sender.sendMessage(ChatColor.RED + "/gacha remove <番号>");
+			sender.sendMessage("リスト該当番号のガチャ景品を削除");
+			sender.sendMessage(ChatColor.RED + "/gacha setamount <番号> <個数>");
+			sender.sendMessage("リスト該当番号のガチャ景品の個数変更。64まで");
+			sender.sendMessage(ChatColor.RED + "/gacha setprob <番号> <確率>");
+			sender.sendMessage("リスト該当番号のガチャ景品の確率変更");
+			sender.sendMessage(ChatColor.RED + "/gacha move <番号> <移動先番号>");
+			sender.sendMessage("リスト該当番号のガチャ景品の並び替えを行う");
+			sender.sendMessage(ChatColor.RED + "/gacha clear");
+			sender.sendMessage("ガチャリストを全消去する。取扱注意");
+			sender.sendMessage(ChatColor.RED + "/gacha save");
+			sender.sendMessage("コマンドによるガチャリストへの変更をmysqlに送信");
+			sender.sendMessage(ChatColor.DARK_GRAY + "※onDisable時と同じ処理");
+			sender.sendMessage(ChatColor.RED + "/gacha reload");
+			sender.sendMessage("ガチャリストをmysqlから読み込む");
+			sender.sendMessage(ChatColor.DARK_GRAY + "※onEnable時と同じ処理");
+			sender.sendMessage(ChatColor.RED + "/gacha demo <回数>");
+			sender.sendMessage("現在のガチャリストで指定回数試行し結果を表示。100万回まで");
+
+			return true;
+
+		}else if(args[0].equalsIgnoreCase("give")){
+			//gacha give と入力したとき
+			//[2]:プレイヤー名/all
+			//[3]:個数
+			if(args.length != 3){
+				//引数が3でない時の処理
+				sender.sendMessage(ChatColor.RED + "/gacha give <all/プレイヤー名> <個数>");
+				sender.sendMessage("ガチャ券配布コマンドです。allを指定すると全員に配布します");
+				return true;
+			}else{
+				//引数が3の時の処理
+
+				//プレイヤー名を取得
+				String name = Util.getName(args[1]);
+				//個数取得
+				int num = Util.toInt(args[2]);
+
+				if(!name.equalsIgnoreCase("all")){
+					//プレイヤー名がallでない時の処理
+					//プレイヤーオンライン時はplayerdataに直接反映、オフライン時はsqlに送信(結果をsenderへ)
+
+					//対象プレイヤーをサーバーから取得
+					Player targetplayer = plugin.getServer().getPlayer(name);
+					if(targetplayer != null){
+						//プレイヤーがオンラインの時の処理
+						//uuid取得
+						UUID uuid = targetplayer.getUniqueId();
+						//playerdata取得
+						PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+						//playerdataが取得できなかった場合処理終了
+						if(playerdata == null){
+							sender.sendMessage(name + "はオンラインですが、何故かplayerdataが見つかりませんでした(要報告)");
+							return true;
+						}
+						playerdata.numofsorryforbug += num;
+						//同時にプレイヤーにお知らせ
+						playerdata.NotifySorryForBug(targetplayer);
+						sender.sendMessage(name + "にガチャ券を" + num + "枚配布しました。オンラインの為通知もしました");
+						return true;
+					}else{
+						sender.sendMessage(name + "はオフラインなので");
+						sender.sendMessage("playerdataとmysqlデータ双方にガチャ券データを書き込みます");
+						sender.sendMessage("追加するガチャ券:" + num + "枚");
+						//プレイヤーがオフラインの時の処理
+						@SuppressWarnings("deprecation")
+						UUID uuid = plugin.getServer().getOfflinePlayer(name).getUniqueId();
+						//playerdata取得
+						PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+						//playerdataが取得できた場合は書き込んでおく
+						if(playerdata != null){
+							playerdata.numofsorryforbug += num;
+							sender.sendMessage("・playerdataへの書き込み成功");
+						}else{
+							sender.sendMessage("・playerdataは見つかりませんでした");
+						}
+						//mysqlにも書き込んどく
+						if(!sql.addPlayerBug(uuid,num)){
+							sender.sendMessage("・mysqlへの書き込み失敗");
+						}else{
+							sender.sendMessage("・mysqlへの書き込み成功");
+						}
+						return true;
+
+					}
+
+				}else{
+					//プレイヤー名がallの時の処理(全員に配布)
+					addSorryForBug(sender,Util.toInt(args[2]));
+					return true;
+				}
+			}
+
 		}else if(args[0].equalsIgnoreCase("mente")){
 				//menteフラグ反転処理
 
@@ -280,6 +386,30 @@ public class gachaCommand implements TabExecutor{
             }
 		}
 		return 1.0;
+	}
+	private void addSorryForBug(CommandSender sender,int num) {
+		for(PlayerData playerdata : SeichiAssist.playermap.values()){
+			//オンラインプレイヤーに対しての追加処理
+			//プレイヤーがオフラインの時処理を終了、次のプレイヤーへ
+			if(playerdata.isOffline()){
+				if(SeichiAssist.DEBUG){
+					Util.sendEveryMessage(playerdata.name + "は不在により処理中止");
+				}
+				continue;
+			}
+			//プレイヤー型を取得
+			Player player = plugin.getServer().getPlayer(playerdata.uuid);
+			playerdata.numofsorryforbug += num;
+			//プレイヤーにお知らせしちゃう
+			playerdata.NotifySorryForBug(player);
+			sender.sendMessage(ChatColor.LIGHT_PURPLE + "" + num +"個のガチャ券をお詫びとして" + playerdata.name + "のデータに更新しました");
+		}
+		//MySqlの値も処理
+		if(!sql.addAllPlayerBug(num)){
+			sender.sendMessage("mysqlへのガチャの加算に失敗しました");
+		}else{
+			sender.sendMessage("mysqlに保存されている全プレイヤーへガチャ券" + num +"枚を加算しました");
+		}
 	}
 
 }

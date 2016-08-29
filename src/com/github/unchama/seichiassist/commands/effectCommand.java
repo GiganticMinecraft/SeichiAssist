@@ -73,6 +73,7 @@ public class effectCommand implements TabExecutor {
 				playerdata.messageflag = messageflag;
 				return true;
 
+
 			}else if (args[0].equalsIgnoreCase("dr")){
 				//ef dr の時の処理
 				//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
@@ -85,6 +86,7 @@ public class effectCommand implements TabExecutor {
 				sender.sendMessage(ChatColor.AQUA + "あなたの4次元ポケットがドロップしました。");
 				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
 				return true;
+
 
 			}else if (args[0].equalsIgnoreCase("demo")){
 				//ガチャ券を1000回試行してみる処理

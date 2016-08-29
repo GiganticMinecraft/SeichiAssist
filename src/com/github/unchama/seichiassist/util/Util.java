@@ -122,6 +122,7 @@ public class Util {
 		return p.getName().toLowerCase();
 	}
 	public static String getName(String name) {
+		//小文字にしてるだけだよ
 		return name.toLowerCase();
 	}
 	public static void launchFireWorks(Location loc) {

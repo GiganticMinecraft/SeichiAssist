@@ -248,11 +248,7 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.giveSorryForBug(player);
 
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-				List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "不具合やイベント等により"
-						, ChatColor.RESET + "" +  ChatColor.GRAY + "運営チームから配布されるガチャ券は"
-						, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンから受け取れます"
-						, ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません");
-				itemmeta.setLore(lore);
+				itemmeta.setLore(MenuInventoryData.SorryGachaGetButtonLore(playerdata));
 				itemstackcurrent.setItemMeta(itemmeta);
 			}
 
@@ -477,15 +473,16 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType().equals(Material.ENDER_PORTAL_FRAME)){
 				//ver0.3.2 四次元ポケットを開く
-				//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
+				//レベルが足りない場合処理終了
 				if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
-					player.sendMessage(ChatColor.GREEN + "4次元ポケットを開くには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です。");
+					player.sendMessage(ChatColor.GREEN + "4次元ポケットを開くには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					return;
 				}
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 0.1);
 
+				//レベルに応じたポケットサイズ変更処理
 				//アイテム消失を防ぐ為、現在のサイズよりも四次元ポケットサイズが大きくなる場合のみ拡張処理する
 				if(playerdata.inventory.getSize() < playerdata.getPocketSize()){
 					//現在の四次元ポケットの中身を取得
@@ -503,9 +500,21 @@ public class PlayerInventoryListener implements Listener {
 				}
 				//インベントリを開く
 				player.openInventory(playerdata.inventory);
-
-
 			}
+
+
+			else if(itemstackcurrent.getType().equals(Material.ENDER_CHEST)){
+				//レベルが足りない場合処理終了
+				if( playerdata.level < SeichiAssist.config.getDokodemoEnderlevel()){
+					player.sendMessage(ChatColor.GREEN + "整地レベルが"+SeichiAssist.config.getDokodemoEnderlevel()+ "以上必要です");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					return;
+				}
+				//どこでもエンダーチェストを開く
+				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 1.0);
+				player.openInventory(player.getEnderChest());
+			}
+
 
 			else if(itemstackcurrent.getType().equals(Material.BUCKET)){
 				//ゴミ箱を開く
