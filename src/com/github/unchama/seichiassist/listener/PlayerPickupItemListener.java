@@ -82,18 +82,3 @@ public class PlayerPickupItemListener implements Listener {
 		item.remove();
 	}
 }
-/*
-stone = 0;
-dirt = 0;
-gravel = 0;
-coal_ore = 0;
-iron_ore = 0;
-gord_ore = 0;
-diamond_ore = 0;
-lapis_ore = 0;
-emerald_ore = 0;
-sand = 0;
-end_bricks = 0;
-ender_stone = 0;
-obsidian = 0;
-*/

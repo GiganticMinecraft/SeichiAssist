@@ -232,7 +232,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "①召喚された斧を手に持ちます"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック"
-				, ChatColor.RESET + "" +  ChatColor.GREEN + "④メニューの" + ChatColor.RESET + "" +  ChatColor.YELLOW + "木の斧" + ChatColor.RESET + "" +  ChatColor.GREEN + "をクリック"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "④メニューの" + ChatColor.RESET + "" +  ChatColor.YELLOW + "金の斧" + ChatColor.RESET + "" +  ChatColor.GREEN + "をクリック"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
