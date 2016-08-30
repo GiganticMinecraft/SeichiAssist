@@ -659,6 +659,17 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(1,itemstack);
 
+		//grass
+		material = playerdata.minestack.grass;
+		itemstack = new ItemStack(Material.GRASS,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "GRASS");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(2,itemstack);
+
 		//gravel
 		material = playerdata.minestack.gravel;
 		itemstack = new ItemStack(Material.GRAVEL,1);
@@ -668,7 +679,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(2,itemstack);
+		inventory.setItem(3,itemstack);
 
 		//cobblestone
 		material = playerdata.minestack.cobblestone;
@@ -679,7 +690,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(3,itemstack);
+		inventory.setItem(4,itemstack);
 
 		//stone
 		material = playerdata.minestack.stone;
@@ -690,7 +701,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(4,itemstack);
+		inventory.setItem(5,itemstack);
 
 		//sand
 		material = playerdata.minestack.sand;
@@ -701,7 +712,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(5,itemstack);
+		inventory.setItem(6,itemstack);
 
 		//sandstone
 		material = playerdata.minestack.sandstone;
@@ -712,9 +723,9 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(6,itemstack);
+		inventory.setItem(7,itemstack);
 
-		//sandstone
+		//netherrack
 		material = playerdata.minestack.netherrack;
 		itemstack = new ItemStack(Material.NETHERRACK,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHERRACK);
@@ -723,7 +734,51 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(7,itemstack);
+		inventory.setItem(8,itemstack);
+
+		//soul_sand
+		material = playerdata.minestack.soul_sand;
+		itemstack = new ItemStack(Material.SOUL_SAND,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SOUL_SAND);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "SOUL_SAND");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(9,itemstack);
+
+		//quartz
+		material = playerdata.minestack.quartz;
+		itemstack = new ItemStack(Material.QUARTZ,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.QUARTZ);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "QUARTZ");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(10,itemstack);
+
+		//quartz_ore
+		material = playerdata.minestack.quartz_ore;
+		itemstack = new ItemStack(Material.QUARTZ_ORE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.QUARTZ_ORE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "QUARTZ_ORE");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(11,itemstack);
+
+		//magma
+		material = playerdata.minestack.magma;
+		itemstack = new ItemStack(Material.MAGMA,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MAGMA);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MAGMA");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + material +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(12,itemstack);
 
 		//ender_stone
 		material = playerdata.minestack.ender_stone;
@@ -734,7 +789,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(8,itemstack);
+		inventory.setItem(13,itemstack);
 
 		return inventory;
 	}

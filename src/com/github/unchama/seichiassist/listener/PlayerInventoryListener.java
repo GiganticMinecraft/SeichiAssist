@@ -576,6 +576,7 @@ public class PlayerInventoryListener implements Listener {
 				itemstackcurrent.setItemMeta(MenuInventoryData.MineStackToggleMeta(playerdata,itemmeta));
 			}
 
+			//dirt
 			else if(itemstackcurrent.getType().equals(Material.DIRT)){
 				if(playerdata.minestack.dirt >= 64){
 					playerdata.minestack.dirt -= 64;
@@ -591,6 +592,23 @@ public class PlayerInventoryListener implements Listener {
 				}
 			}
 
+			//grass
+			else if(itemstackcurrent.getType().equals(Material.GRASS)){
+				if(playerdata.minestack.grass >= 64){
+					playerdata.minestack.grass -= 64;
+					ItemStack itemstack = new ItemStack(Material.GRASS,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+
+			//gravel
 			else if(itemstackcurrent.getType().equals(Material.GRAVEL)){
 				if(playerdata.minestack.gravel >= 64){
 					playerdata.minestack.gravel -= 64;
@@ -606,6 +624,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 			}
 
+			//cobblestone
 			else if(itemstackcurrent.getType().equals(Material.COBBLESTONE)){
 				if(playerdata.minestack.cobblestone >= 64){
 					playerdata.minestack.cobblestone -= 64;
@@ -621,6 +640,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 			}
 
+			//stone
 			else if(itemstackcurrent.getType().equals(Material.STONE)){
 				if(playerdata.minestack.stone >= 64){
 					playerdata.minestack.stone -= 64;
@@ -635,6 +655,8 @@ public class PlayerInventoryListener implements Listener {
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 				}
 			}
+
+			//sand
 			else if(itemstackcurrent.getType().equals(Material.SAND)){
 				if(playerdata.minestack.sand >= 64){
 					playerdata.minestack.sand -= 64;
@@ -649,6 +671,8 @@ public class PlayerInventoryListener implements Listener {
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 				}
 			}
+
+			//sandstone
 			else if(itemstackcurrent.getType().equals(Material.SANDSTONE)){
 				if(playerdata.minestack.sandstone >= 64){
 					playerdata.minestack.sandstone -= 64;
@@ -663,6 +687,8 @@ public class PlayerInventoryListener implements Listener {
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 				}
 			}
+
+			//netherrack
 			else if(itemstackcurrent.getType().equals(Material.NETHERRACK)){
 				if(playerdata.minestack.netherrack >= 64){
 					playerdata.minestack.netherrack -= 64;
@@ -677,6 +703,72 @@ public class PlayerInventoryListener implements Listener {
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 				}
 			}
+
+			//soul_sand
+			else if(itemstackcurrent.getType().equals(Material.SOUL_SAND)){
+				if(playerdata.minestack.soul_sand >= 64){
+					playerdata.minestack.soul_sand -= 64;
+					ItemStack itemstack = new ItemStack(Material.SOUL_SAND,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+
+			//quartz
+			else if(itemstackcurrent.getType().equals(Material.QUARTZ)){
+				if(playerdata.minestack.quartz >= 64){
+					playerdata.minestack.quartz -= 64;
+					ItemStack itemstack = new ItemStack(Material.QUARTZ,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+
+			//quartz_ore
+			else if(itemstackcurrent.getType().equals(Material.QUARTZ_ORE)){
+				if(playerdata.minestack.quartz_ore >= 64){
+					playerdata.minestack.quartz_ore -= 64;
+					ItemStack itemstack = new ItemStack(Material.QUARTZ_ORE,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+
+			//magma
+			else if(itemstackcurrent.getType().equals(Material.MAGMA)){
+				if(playerdata.minestack.magma >= 64){
+					playerdata.minestack.magma -= 64;
+					ItemStack itemstack = new ItemStack(Material.MAGMA,64);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+
+			//ender_stone
 			else if(itemstackcurrent.getType().equals(Material.ENDER_STONE)){
 				if(playerdata.minestack.ender_stone >= 64){
 					playerdata.minestack.ender_stone -= 64;

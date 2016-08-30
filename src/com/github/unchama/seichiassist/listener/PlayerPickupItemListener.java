@@ -59,6 +59,21 @@ public class PlayerPickupItemListener implements Listener {
 			case ENDER_STONE:
 				playerdata.minestack.ender_stone += item.getItemStack().getAmount();
 				break;
+			case GRASS:
+				playerdata.minestack.grass += item.getItemStack().getAmount();
+				break;
+			case QUARTZ:
+				playerdata.minestack.quartz += item.getItemStack().getAmount();
+				break;
+			case QUARTZ_ORE:
+				playerdata.minestack.quartz_ore += item.getItemStack().getAmount();
+				break;
+			case SOUL_SAND:
+				playerdata.minestack.soul_sand += item.getItemStack().getAmount();
+				break;
+			case MAGMA:
+				playerdata.minestack.magma += item.getItemStack().getAmount();
+				break;
 			default:
 				return;
 		}

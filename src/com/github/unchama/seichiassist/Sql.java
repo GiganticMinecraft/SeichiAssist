@@ -162,6 +162,11 @@ public class Sql{
 				",add column if not exists stack_sandstone int default 0" +
 				",add column if not exists stack_netherrack int default 0" +
 				",add column if not exists stack_ender_stone int default 0" +
+				",add column if not exists stack_grass int default 0" +
+				",add column if not exists stack_quartz int default 0" +
+				",add column if not exists stack_quartz_ore int default 0" +
+				",add column if not exists stack_soul_sand int default 0" +
+				",add column if not exists stack_magma int default 0" +
 				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
@@ -610,6 +615,11 @@ public class Sql{
  	 				playerdata.minestack.sandstone = rs.getInt("stack_sandstone");
  	 				playerdata.minestack.netherrack = rs.getInt("stack_netherrack");
  	 				playerdata.minestack.ender_stone = rs.getInt("stack_ender_stone");
+ 	 				playerdata.minestack.grass = rs.getInt("stack_grass");
+ 	 				playerdata.minestack.quartz = rs.getInt("stack_quartz");
+ 	 				playerdata.minestack.quartz_ore = rs.getInt("stack_quartz_ore");
+ 	 				playerdata.minestack.soul_sand = rs.getInt("stack_soul_sand");
+ 	 				playerdata.minestack.magma = rs.getInt("stack_magma");
  	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  				  }
  				rs.close();
@@ -655,6 +665,11 @@ public class Sql{
 				+ ",stack_sandstone = " + Integer.toString(playerdata.minestack.sandstone)
 				+ ",stack_netherrack = " + Integer.toString(playerdata.minestack.netherrack)
 				+ ",stack_ender_stone = " + Integer.toString(playerdata.minestack.ender_stone)
+				+ ",stack_grass = " + Integer.toString(playerdata.minestack.grass)
+				+ ",stack_quartz = " + Integer.toString(playerdata.minestack.quartz)
+				+ ",stack_quartz_ore = " + Integer.toString(playerdata.minestack.quartz_ore)
+				+ ",stack_soul_sand = " + Integer.toString(playerdata.minestack.soul_sand)
+				+ ",stack_magma = " + Integer.toString(playerdata.minestack.magma)
 
 				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
