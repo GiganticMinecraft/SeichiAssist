@@ -204,6 +204,8 @@ public class Sql{
 				",add column if not exists stack_soul_sand int default 0" +
 				",add column if not exists stack_magma int default 0" +
 				",add column if not exists playtick int default 0" +
+				",add column if not exists killlogflag boolean default false" +
+				",add column if not exists pvpflag boolean default false" +
 				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
@@ -300,6 +302,7 @@ public class Sql{
  			try{
  				rs = stmt.executeQuery(command);
  				while (rs.next()) {
+ 					//各種数値
  	 				playerdata.effectflag = rs.getBoolean("effectflag");
  	 				playerdata.minestackflag = rs.getBoolean("minestackflag");
  	 				playerdata.messageflag = rs.getBoolean("messageflag");
@@ -310,6 +313,11 @@ public class Sql{
  	 				playerdata.level = rs.getInt("level");
  	 				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
  	 				playerdata.rgnum = rs.getInt("rgnum");
+ 	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
+ 	 				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
+ 	 				playerdata.pvpflag = rs.getBoolean("pvpflag");
+
+ 	 				//MineStack機能の数値
  	 				playerdata.minestack.dirt = rs.getInt("stack_dirt");
  	 				playerdata.minestack.gravel = rs.getInt("stack_gravel");
  	 				playerdata.minestack.cobblestone = rs.getInt("stack_cobblestone");
@@ -323,7 +331,6 @@ public class Sql{
  	 				playerdata.minestack.quartz_ore = rs.getInt("stack_quartz_ore");
  	 				playerdata.minestack.soul_sand = rs.getInt("stack_soul_sand");
  	 				playerdata.minestack.magma = rs.getInt("stack_magma");
- 	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  				  }
  				rs.close();
  			} catch (SQLException | IOException e) {
@@ -370,6 +377,8 @@ public class Sql{
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
 				+ ",playtick = " + Integer.toString(playerdata.playtick)
 				+ ",lastquit = cast( now() as datetime )"
+				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
+				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
 
 				//MineStack機能の数値更新処理
 				+ ",stack_dirt = " + Integer.toString(playerdata.minestack.dirt)

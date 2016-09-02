@@ -362,6 +362,34 @@ public class PlayerInventoryListener implements Listener {
 				itemstackcurrent.setItemMeta(MenuInventoryData.EFButtonMeta(playerdata,itemmeta));
 			}
 
+			else if(itemstackcurrent.getType().equals(Material.FLINT_AND_STEEL)){
+				// 死亡メッセージ表示トグル
+				playerdata.dispkilllogflag = !playerdata.dispkilllogflag;
+				if(playerdata.dispkilllogflag){
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.GREEN + "死亡メッセージ:表示");
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.sendMessage(ChatColor.RED + "死亡メッセージ:隠す");
+				}
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.dispKillLogToggleMeta(playerdata,itemmeta));
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.IRON_SWORD)){
+				// 死亡メッセージ表示トグル
+				playerdata.pvpflag = !playerdata.pvpflag;
+				if(playerdata.pvpflag){
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.GREEN + "PvP:ON");
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.sendMessage(ChatColor.RED + "PvP:OFF");
+				}
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.dispPvPToggleMeta(playerdata,itemmeta));
+			}
+
 			else if(itemstackcurrent.getType().equals(Material.WHEAT)){
 				// farmassist toggleコマンド実行
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);

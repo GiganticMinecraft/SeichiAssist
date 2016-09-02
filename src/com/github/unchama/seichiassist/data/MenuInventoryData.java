@@ -418,6 +418,11 @@ public class MenuInventoryData {
 		//プレイヤーを取得
 		Player player = p.getPlayer();
 
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+
 		//経験値変更用のクラスを設定
 		ExperienceManager expman = new ExperienceManager(player);
 
@@ -446,6 +451,20 @@ public class MenuInventoryData {
 		skullmeta.setOwner("MHF_Villager");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(12,itemstack);
+
+		//死亡メッセージ表示のトグルボタン
+		itemstack = new ItemStack(Material.FLINT_AND_STEEL,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.FLINT_AND_STEEL);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "死亡メッセージ表示切替");
+		itemstack.setItemMeta(dispKillLogToggleMeta(playerdata,itemmeta));
+		inventory.setItem(14,itemstack);
+
+		//死亡メッセージ表示のトグルボタン
+		itemstack = new ItemStack(Material.IRON_SWORD,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_SWORD);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "PvP切替");
+		itemstack.setItemMeta(dispPvPToggleMeta(playerdata,itemmeta));
+		inventory.setItem(15,itemstack);
 
 		/*
 		 * ここまでadd.loreに変更済み
@@ -803,6 +822,38 @@ public class MenuInventoryData {
 		}else{
 			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
 			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "現在OFFです");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
+		}
+		itemmeta.setLore(lore);
+		return itemmeta;
+	}
+
+	// 死亡メッセージ表示トグルボタン
+	public static ItemMeta dispKillLogToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
+		List<String> lore = new ArrayList<String>();
+		if(playerdata.dispkilllogflag){
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "表示する");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで隠す");
+		}else{
+			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "隠す");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで表示する");
+		}
+		itemmeta.setLore(lore);
+		return itemmeta;
+	}
+
+	// PvPトグルボタン
+	public static ItemMeta dispPvPToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
+		List<String> lore = new ArrayList<String>();
+		if(playerdata.pvpflag){
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "ON(ONの相手とPvPが可能)");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
+		}else{
+			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "OFF(全てのPvPを無効化)");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
 		}
 		itemmeta.setLore(lore);

@@ -66,6 +66,10 @@ public class PlayerData {
 	public boolean minestackflag;
 	//プレイ時間
 	public int playtick;
+	//キルログ表示トグル
+	public boolean dispkilllogflag;
+	//PvPトグル
+	public boolean pvpflag;
 
 
 
@@ -95,6 +99,8 @@ public class PlayerData {
 		minestack = new MineStack();
 		minestackflag = true;
 		playtick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
+		dispkilllogflag = false;
+		pvpflag = false;
 	}
 
 	//プレイヤーデータを最新の状態に更新
