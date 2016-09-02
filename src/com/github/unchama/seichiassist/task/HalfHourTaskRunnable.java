@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import com.github.unchama.seichiassist.util.Util;
 public class HalfHourTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
 	Sql sql = SeichiAssist.plugin.sql;
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 
 	public HalfHourTaskRunnable() {
 	}
@@ -26,6 +28,15 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
+		//現在オンラインのプレイヤーのプレイヤーデータを送信
+		for(Player p : plugin.getServer().getOnlinePlayers()){
+			//UUIDを取得
+			UUID uuid = p.getUniqueId();
+			PlayerData playerdata = playermap.get(uuid);
+			if(!sql.savePlayerData(playerdata)){
+				plugin.getLogger().info(playerdata.name + "のデータ保存に失敗しました");
+			}
+		}
 		//ランキングデータをセット
 		sql.setRanking();
 		//カウント値を０に設定

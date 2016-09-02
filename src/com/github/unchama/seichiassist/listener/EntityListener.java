@@ -61,7 +61,7 @@ public class EntityListener implements Listener {
 
 	private Entity getAttacker(final EntityDamageByEntityEvent event) {
 		if (event.getDamager() instanceof Projectile)
-			return (Player) ((Projectile) event.getDamager()).getShooter();
+			return (Entity) ((Projectile) event.getDamager()).getShooter();
 		return event.getDamager();
 	}
 

@@ -242,7 +242,7 @@ public class SeichiAssist extends JavaPlugin{
 		//全てのタスクをキャンセル
 		stopAllTaskRunnable();
 
-		/*
+
 		for(Player p : getServer().getOnlinePlayers()){
 			//UUIDを取得
 			UUID uuid = p.getUniqueId();
@@ -250,16 +250,17 @@ public class SeichiAssist extends JavaPlugin{
 			if(!sql.savePlayerData(playerdata)){
 				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
 			}
-
 		}
-		*/
 
 
+
+		/*
 		for(PlayerData playerdata : playermap.values()){
 			if(!sql.savePlayerData(playerdata)){
 				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
 			}
 		}
+		*/
 
 
 		if(!sql.saveGachaData()){
