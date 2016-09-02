@@ -133,7 +133,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
 			Explosion(player,block,tool,expman);
 		}else if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
-			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
+			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,4);
 		}else if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
 			new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
 		}else if(playerdata.activenum == ActiveSkill.METEO.getNum()){

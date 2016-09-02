@@ -329,9 +329,9 @@ public class MenuInventoryData {
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サンダーストーム");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊×5"
-										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2秒"
+										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1秒"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getThunderStormlevel()
-										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：30"
+										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：40"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -343,7 +343,7 @@ public class MenuInventoryData {
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×5マス破壊"
-										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.5秒"
+										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.5秒"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getBlizzardlevel()
 										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：70"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
@@ -358,7 +358,7 @@ public class MenuInventoryData {
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "9*9*7マス破壊"
-										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：3秒"
+										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.5秒"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getMeteolevel()
 										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：100"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
