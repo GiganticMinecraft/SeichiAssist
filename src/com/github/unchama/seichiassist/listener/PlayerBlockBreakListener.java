@@ -39,21 +39,34 @@ public class PlayerBlockBreakListener implements Listener {
 	//アクティブスキルの実行
 	@EventHandler
 	public void onPlayerActiveSkillEvent(BlockBreakEvent event){
-		Player player;
-		UUID uuid;
-		PlayerData playerdata;
-
 		//実行したプレイヤーを取得
-		player = event.getPlayer();
-		//UUIDを取得
-		uuid = player.getUniqueId();
-		//UUIDを基にプレイヤーデータ取得
-		playerdata = SeichiAssist.playermap.get(uuid);
-
-		//経験値変更用のクラスを設定
-		ExperienceManager expman = new ExperienceManager(player);
+		Player player = event.getPlayer();
 		//もしサバイバルでなければ処理を終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+			return;
+		}
+
+		//壊されるブロックを取得
+		Block block = event.getBlock();
+		//他人の保護がかかっている場合は処理を終了
+		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
+			return;
+		}
+		//ブロックのタイプを取得
+		Material material = block.getType();
+		//ブロックタイプがmateriallistに登録されていなければ処理終了
+		if(!SeichiAssist.materiallist.contains(material)){
+			return;
+		}
+
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//UUIDを基にプレイヤーデータ取得
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//特定スキル発動中は処理を終了
+		if(playerdata.skillflag){
+			//ブロック破壊もさせない
+			event.setCancelled(true);
 			return;
 		}
 
@@ -62,43 +75,13 @@ public class PlayerBlockBreakListener implements Listener {
 			player.sendMessage("ブロックブレイクイベントが呼び出されました");
 		}
 
-		//壊されるブロックを取得
-		Block block = event.getBlock();
-
-		//ブロックのタイプを取得
-		Material material = block.getType();
-		//ブロックタイプがmateriallistに登録されていなければ処理終了
-		if(!SeichiAssist.materiallist.contains(material)){
-			return;
-		}
-
-		/*
-		//ブロックタイプがPACKED_ICEの時blizzardスキルを発動中であれば終了
-		if(material.equals(Material.PACKED_ICE) && playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
-			event.setCancelled(true);
-			return;
-		}
-		*/
-
-		//特定スキル発動中は処理を終了
-		if(playerdata.skillflag){
-			//ブロック破壊もさせない
-			event.setCancelled(true);
-			return;
-		}
-
-		//他人の保護がかかっている場合は処理を終了
-		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
-			return;
-		}
-
-
 		//これ以前の終了処理はパッシブの追加経験値はもらえません
+		//経験値変更用のクラスを設定
+		ExperienceManager expman = new ExperienceManager(player);
 		//passiveskill[追加経験値獲得]処理実行
 		int exp = calcExpDrop(playerdata);
 		expman.changeExp(exp);
 		//これ以降の終了処理は経験値はもらえます
-
 
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activemineflagnum == 0){
@@ -133,6 +116,11 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}else{
 			//どちらにももっていない時処理を終了
+			return;
+		}
+
+		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
+		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
 			return;
 		}
 
@@ -529,6 +517,7 @@ public class PlayerBlockBreakListener implements Listener {
 		short d = tool.getDurability();
 		//耐久力エンチャントに応じて耐久値を減らす
 		tool.setDurability((short)(d + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY))));
+
 		//プレイヤーの統計を１増やす
 		player.incrementStatistic(Statistic.MINE_BLOCK, material);
 

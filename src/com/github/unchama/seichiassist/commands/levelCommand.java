@@ -52,7 +52,7 @@ public class levelCommand implements TabExecutor{
 			}
 			//MySqlの値も処理
 			if(!sql.resetAllPlayerLevel()){
-				sender.sendMessage("mysqlに保存されている全プレイヤーのレベルの初期化に失敗しました");
+				sender.sendMessage("mysqlのレベルの初期化に失敗しました");
 			}else{
 				sender.sendMessage("mysqlに保存されている全プレイヤーのレベルを初期化しました");
 			}

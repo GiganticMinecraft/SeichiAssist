@@ -10,8 +10,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerJoinListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -35,23 +35,17 @@ public class PlayerJoinListener implements Listener {
 		}else{
 			playerdata = playermap.get(uuid);
 			//もし名前変更されていたら
-			if(!player.getName().equals(playerdata.name)){
+			if(!Util.getName(player).equals(playerdata.name)){
 				//すでにあるプレイヤーデータの名前を更新しておく
-				playerdata.name = player.getName();
+				playerdata.name = Util.getName(player);
 				playermap.put(uuid, playerdata);
-				//mysqlのプレイヤーデータの名前も更新しておく
-				/* プラグインリロード時の処理とかぶるためコメントアウト
-				if(sql.updatePlayerName(player)){
-					player.sendMessage("mysqlのMinecraftID更新に失敗,管理者に報告してください");
-				}
-				*/
 			}
 		}
 
 		//統計量を取得
-		int mines = MineBlock.calcMineBlock(player);
+		int mines = Util.calcMineBlock(player);
 		playerdata.updata(player,mines);
-		playerdata.giveSorryForBug(player);
+		playerdata.NotifySorryForBug(player);
 		//初見さんへの処理
 		if(!player.hasPlayedBefore()){
 			//初見さんへのメッセージ文

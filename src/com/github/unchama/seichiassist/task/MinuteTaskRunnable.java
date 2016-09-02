@@ -15,7 +15,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.EffectData;
-import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -63,13 +62,11 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			Player player = plugin.getServer().getPlayer(playerdata.uuid);
 			//プレイヤー名を取得
 			String name = Util.getName(player);
-			int mines = MineBlock.calcMineBlock(player);
+			int mines = Util.calcMineBlock(player);
 			//Levelを設定
 			playerdata.levelupdata(player,mines);
-			//詫び券の配布
-			playerdata.giveSorryForBug(player);
 			//ランキング表示用総整地量を更新
-			playerdata.totalbreaknum = MineBlock.calcMineBlock(player);
+			playerdata.totalbreaknum = mines;
 
 			if(SeichiAssist.DEBUG){
 				Util.sendEveryMessage(playerdata.name + "のランク処理完了");
@@ -81,32 +78,29 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//現在の統計量を設定(before)
 			playerdata.minuteblock.before = mines;
 
+
 			//effectの大きさ
 			double amplifier = 0;
 			//effectのメッセージ
-			String string;
 			//１分間のブロック破壊量による上昇
 			amplifier = (double) playerdata.minuteblock.increase * config.getMinuteMineSpeed();
-			string = "１分間のブロック破壊量(" + playerdata.minuteblock.increase + "個)からの上昇値:" + amplifier;
-			playerdata.effectdatalist.add(new EffectData(amplifier,string));
+			playerdata.effectdatalist.add(new EffectData(amplifier,2));
 
 			//プレイヤー数による上昇
 			amplifier = (double) onlinenums * config.getLoginPlayerMineSpeed();
-			string = "プレイヤー数(" + onlinenums + "人)からの上昇値:" + amplifier;
-			playerdata.effectdatalist.add(new EffectData(amplifier,string));
+			playerdata.effectdatalist.add(new EffectData(amplifier,1));
 
 
 			//effect追加の処理
-			//合計effect量
-			double sum = 0;
-			//最大持続時間
-			int maxduration = 0;
 			//実際に適用されるeffect量
 			int minespeedlv = 0;
 
-
 			//effectflag=trueの時のみ実行
 			if(playerdata.effectflag){
+				//合計effect量
+				double sum = 0;
+				//最大持続時間
+				int maxduration = 0;
 				//effectdatalistにある全てのeffectについて計算
 				for(EffectData ed :playerdata.effectdatalist){
 					//effect量を加算
@@ -131,11 +125,11 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//プレイヤーにメッセージ送信
 			if(playerdata.lastminespeedlv != minespeedlv || playerdata.messageflag){//前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
-				player.sendMessage(ChatColor.YELLOW + "★" + ChatColor.WHITE + "採掘速度上昇レベルが" + ChatColor.YELLOW + (minespeedlv+1) + ChatColor.WHITE +"になりました。");
+				player.sendMessage(ChatColor.YELLOW + "★" + ChatColor.WHITE + "採掘速度上昇レベルが" + ChatColor.YELLOW + (minespeedlv+1) + ChatColor.WHITE +"になりました");
 				if(playerdata.messageflag){
 					player.sendMessage("----------------------------内訳-----------------------------");
 					for(EffectData ed : playerdata.effectdatalist){
-						player.sendMessage(ed.string + "(持続時間:" + Util.toTimeString(ed.duration/20) + ")");
+						player.sendMessage(ChatColor.RESET + "" +  ChatColor.RED + "" + ed.EDtoString(ed.id,ed.duration,ed.amplifier));
 					}
 					player.sendMessage("-------------------------------------------------------------");
 				}
@@ -153,8 +147,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//ガチャポイントに合算
 			playerdata.gachapoint += playerdata.minuteblock.increase;
 
-			ItemStack skull = Util.getskull(name);
 			if(playerdata.gachapoint >= config.getGachaPresentInterval() && playerdata.gachaflag){
+				ItemStack skull = Util.getskull(name);
 				playerdata.gachapoint -= config.getGachaPresentInterval();
 				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
 					Util.addItem(player,skull);

@@ -142,6 +142,7 @@ public class Sql{
 		command =
 				"alter table " + table +
 				" add column if not exists effectflag boolean default true" +
+				",add column if not exists minestackflag boolean default true" +
 				",add column if not exists messageflag boolean default false" +
 				",add column if not exists activemineflagnum int default 0" +
 				",add column if not exists activenum int default 1" +
@@ -153,6 +154,19 @@ public class Sql{
 				",add column if not exists rgnum int default 0" +
 				",add column if not exists totalbreaknum int default 0" +
 				",add column if not exists lastquit datetime default null" +
+				",add column if not exists stack_dirt int default 0" +
+				",add column if not exists stack_gravel int default 0" +
+				",add column if not exists stack_cobblestone int default 0" +
+				",add column if not exists stack_stone int default 0" +
+				",add column if not exists stack_sand int default 0" +
+				",add column if not exists stack_sandstone int default 0" +
+				",add column if not exists stack_netherrack int default 0" +
+				",add column if not exists stack_ender_stone int default 0" +
+				",add column if not exists stack_grass int default 0" +
+				",add column if not exists stack_quartz int default 0" +
+				",add column if not exists stack_quartz_ore int default 0" +
+				",add column if not exists stack_soul_sand int default 0" +
+				",add column if not exists stack_magma int default 0" +
 				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
@@ -365,7 +379,7 @@ public class Sql{
 			return true;
 		} catch (SQLException e) {
 			//接続エラーの場合は、再度接続後、コマンド実行
-			java.lang.System.out.println("接続に失敗しました。");
+			java.lang.System.out.println("接続に失敗しました");
 			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
@@ -509,7 +523,7 @@ public class Sql{
 		return true;
 	}
 	*/
-	
+
 	public PlayerData loadPlayerData(Player p) {
 		String name = Util.getName(p);
 		UUID uuid = p.getUniqueId();
@@ -555,8 +569,9 @@ public class Sql{
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlにデータが保存されています。");
  			}
- 			
- 			//playernameをアップデート
+
+ 			/*
+ 			//playernameをアップデート→廃止、ログアウト時にプレイヤーネームを更新するようにした
  			//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
  			command = "update " + table
  					+ " set name = '" + name
@@ -570,7 +585,8 @@ public class Sql{
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlのプレイヤーネームを更新しました。");
  			}
- 			
+ 			*/
+
  			//PlayerDataを新規作成
  			PlayerData playerdata = new PlayerData(p);
 
@@ -582,6 +598,7 @@ public class Sql{
  				rs = stmt.executeQuery(command);
  				while (rs.next()) {
  	 				playerdata.effectflag = rs.getBoolean("effectflag");
+ 	 				playerdata.minestackflag = rs.getBoolean("minestackflag");
  	 				playerdata.messageflag = rs.getBoolean("messageflag");
  	 				playerdata.activemineflagnum = rs.getInt("activemineflagnum");
  	 				playerdata.activenum = rs.getInt("activenum");
@@ -590,7 +607,19 @@ public class Sql{
  	 				playerdata.level = rs.getInt("level");
  	 				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
  	 				playerdata.rgnum = rs.getInt("rgnum");
- 	 				// playerdata.totalbreaknum = rs.getInt("totalbreaknum");
+ 	 				playerdata.minestack.dirt = rs.getInt("stack_dirt");
+ 	 				playerdata.minestack.gravel = rs.getInt("stack_gravel");
+ 	 				playerdata.minestack.cobblestone = rs.getInt("stack_cobblestone");
+ 	 				playerdata.minestack.stone = rs.getInt("stack_stone");
+ 	 				playerdata.minestack.sand = rs.getInt("stack_sand");
+ 	 				playerdata.minestack.sandstone = rs.getInt("stack_sandstone");
+ 	 				playerdata.minestack.netherrack = rs.getInt("stack_netherrack");
+ 	 				playerdata.minestack.ender_stone = rs.getInt("stack_ender_stone");
+ 	 				playerdata.minestack.grass = rs.getInt("stack_grass");
+ 	 				playerdata.minestack.quartz = rs.getInt("stack_quartz");
+ 	 				playerdata.minestack.quartz_ore = rs.getInt("stack_quartz_ore");
+ 	 				playerdata.minestack.soul_sand = rs.getInt("stack_soul_sand");
+ 	 				playerdata.minestack.magma = rs.getInt("stack_magma");
  	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  				  }
  				rs.close();
@@ -608,15 +637,17 @@ public class Sql{
  		}
 	}
 	public boolean savePlayerData(PlayerData playerdata) {
-		//引数のplayerdataを元にsqlにデータを送信
+		//引数のplayerdataをsqlにデータを送信
 
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "";
 		String struuid = playerdata.uuid.toString();
+		String command = "";
 
 		command = "update " + table
 				+ " set"
-				+ " effectflag = " + Boolean.toString(playerdata.effectflag)
+				+ " name = '" + playerdata.name + "'"
+				+ ",effectflag = " + Boolean.toString(playerdata.effectflag)
+				+ ",minestackflag = " + Boolean.toString(playerdata.minestackflag)
 				+ ",messageflag = " + Boolean.toString(playerdata.messageflag)
 				+ ",activemineflagnum = " + Integer.toString(playerdata.activemineflagnum)
 				+ ",activenum = " + Integer.toString(playerdata.activenum)
@@ -625,6 +656,21 @@ public class Sql{
 				+ ",level = " + Integer.toString(playerdata.level)
 				+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug)
 				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
+
+				+ ",stack_dirt = " + Integer.toString(playerdata.minestack.dirt)
+				+ ",stack_gravel = " + Integer.toString(playerdata.minestack.gravel)
+				+ ",stack_cobblestone = " + Integer.toString(playerdata.minestack.cobblestone)
+				+ ",stack_stone = " + Integer.toString(playerdata.minestack.stone)
+				+ ",stack_sand = " + Integer.toString(playerdata.minestack.sand)
+				+ ",stack_sandstone = " + Integer.toString(playerdata.minestack.sandstone)
+				+ ",stack_netherrack = " + Integer.toString(playerdata.minestack.netherrack)
+				+ ",stack_ender_stone = " + Integer.toString(playerdata.minestack.ender_stone)
+				+ ",stack_grass = " + Integer.toString(playerdata.minestack.grass)
+				+ ",stack_quartz = " + Integer.toString(playerdata.minestack.quartz)
+				+ ",stack_quartz_ore = " + Integer.toString(playerdata.minestack.quartz_ore)
+				+ ",stack_soul_sand = " + Integer.toString(playerdata.minestack.soul_sand)
+				+ ",stack_magma = " + Integer.toString(playerdata.minestack.magma)
+
 				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
 				+ ",lastquit = cast( now() as datetime )"
@@ -637,6 +683,8 @@ public class Sql{
 			}
 		return true;
 	}
+
+
 	//ガチャデータロード
 	public boolean loadGachaData(){
 		String table = SeichiAssist.GACHADATA_TABLENAME;
@@ -703,9 +751,10 @@ public class Sql{
 
 
 	//ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
-	public List<Integer> setRanking() {
+	public boolean setRanking() {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		List<Integer> ranklist = new ArrayList<Integer>();
+		List<Integer> ranklist = SeichiAssist.ranklist;
+		ranklist.clear();
 
 		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
 		String command = "select totalbreaknum from " + table
@@ -718,9 +767,9 @@ public class Sql{
 			rs.close();
 		} catch (SQLException e) {
 			exc = e.getMessage();
-			return null;
+			return false;
 		}
- 		return ranklist;
+ 		return true;
 	}
 	//プレイヤーレベル全リセット
 	public boolean resetAllPlayerLevel(){
@@ -735,7 +784,7 @@ public class Sql{
 			}
 		return true;
 	}
-	//詫びガチャの配布
+	//全員に詫びガチャの配布
 	public boolean addAllPlayerBug(int amount){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "update " + table
@@ -747,6 +796,41 @@ public class Sql{
 				return false;
 			}
 		return true;
+	}
+	//指定されたプレイヤーにガチャ券を送信する
+	public boolean addPlayerBug(UUID uuid,int num) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = uuid.toString();
+		String command = "update " + table
+				+ " set numofsorryforbug = numofsorryforbug + " + num
+				+ " where uuid like '" + struuid + "'";
+		try{
+				stmt.executeUpdate(command);
+			} catch (SQLException e) {
+				exc = e.getMessage();
+				return false;
+			}
+		return true;
+	}
+
+	//指定プレイヤーの四次元ポケットの中身取得
+	public Inventory selectInventory(UUID uuid){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = uuid.toString();
+		Inventory inventory = null;
+		String command = "select inventory from " + table
+					+ " where uuid like '" + struuid + "'";
+			try{
+				rs = stmt.executeQuery(command);
+				while (rs.next()) {
+	 				inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
+				  }
+				rs.close();
+			} catch (SQLException | IOException e) {
+				exc = e.getMessage();
+				return null;
+			}
+		return inventory;
 	}
 
 }
