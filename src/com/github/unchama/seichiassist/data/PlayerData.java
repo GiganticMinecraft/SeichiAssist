@@ -64,6 +64,8 @@ public class PlayerData {
 	public MineStack minestack;
 	//MineStackFlag
 	public boolean minestackflag;
+	//プレイ時間
+	public int playtick;
 
 
 
@@ -92,6 +94,7 @@ public class PlayerData {
 		skillflag = false;
 		minestack = new MineStack();
 		minestackflag = true;
+		playtick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
 	}
 
 	//プレイヤーデータを最新の状態に更新
@@ -213,30 +216,31 @@ public class PlayerData {
 		}
 		level = i-1;
 	}
+
 	//パッシブスキルの獲得量表示
 	public int dispPassiveExp() {
 		if(level < 8){
 			return 0;
 		}else if (level < 18){
-			return SeichiAssist.config.getDropExplevel1();
+			return SeichiAssist.config.getDropExplevel(1);
 		}else if (level < 28){
-			return SeichiAssist.config.getDropExplevel2();
+			return SeichiAssist.config.getDropExplevel(2);
 		}else if (level < 38){
-			return SeichiAssist.config.getDropExplevel3();
+			return SeichiAssist.config.getDropExplevel(3);
 		}else if (level < 48){
-			return SeichiAssist.config.getDropExplevel4();
+			return SeichiAssist.config.getDropExplevel(4);
 		}else if (level < 58){
-			return SeichiAssist.config.getDropExplevel5();
+			return SeichiAssist.config.getDropExplevel(5);
 		}else if (level < 68){
-			return SeichiAssist.config.getDropExplevel6();
+			return SeichiAssist.config.getDropExplevel(6);
 		}else if (level < 78){
-			return SeichiAssist.config.getDropExplevel7();
+			return SeichiAssist.config.getDropExplevel(7);
 		}else if (level < 88){
-			return SeichiAssist.config.getDropExplevel8();
+			return SeichiAssist.config.getDropExplevel(8);
 		}else if (level < 98){
-			return SeichiAssist.config.getDropExplevel9();
+			return SeichiAssist.config.getDropExplevel(9);
 		}else{
-			return SeichiAssist.config.getDropExplevel10();
+			return SeichiAssist.config.getDropExplevel(10);
 		}
 	}
 	//四次元ポケットのサイズを取得
@@ -255,5 +259,4 @@ public class PlayerData {
 			return 9*6;
 		}
 	}
-
 }

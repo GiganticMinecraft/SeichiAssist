@@ -3,12 +3,14 @@ package com.github.unchama.seichiassist.listener;
 import java.util.UUID;
 
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -34,45 +36,50 @@ public class PlayerPickupItemListener implements Listener {
 		}
 
 		Item item = event.getItem();
-		switch(item.getItemStack().getType()){
+		ItemStack itemstack = item.getItemStack();
+		int amount = itemstack.getAmount();
+		Material material = itemstack.getType();
+
+
+		switch(material){
 			case STONE:
-				playerdata.minestack.stone += item.getItemStack().getAmount();
+				playerdata.minestack.stone += amount;
 				break;
 			case COBBLESTONE:
-				playerdata.minestack.cobblestone += item.getItemStack().getAmount();
+				playerdata.minestack.cobblestone += amount;
 				break;
 			case DIRT:
-				playerdata.minestack.dirt += item.getItemStack().getAmount();
+				playerdata.minestack.dirt += amount;
 				break;
 			case GRAVEL:
-				playerdata.minestack.gravel += item.getItemStack().getAmount();
+				playerdata.minestack.gravel += amount;
 				break;
 			case SAND:
-				playerdata.minestack.sand += item.getItemStack().getAmount();
+				playerdata.minestack.sand += amount;
 				break;
 			case SANDSTONE:
-				playerdata.minestack.sandstone += item.getItemStack().getAmount();
+				playerdata.minestack.sandstone += amount;
 				break;
 			case NETHERRACK:
-				playerdata.minestack.netherrack += item.getItemStack().getAmount();
+				playerdata.minestack.netherrack += amount;
 				break;
 			case ENDER_STONE:
-				playerdata.minestack.ender_stone += item.getItemStack().getAmount();
+				playerdata.minestack.ender_stone += amount;
 				break;
 			case GRASS:
-				playerdata.minestack.grass += item.getItemStack().getAmount();
+				playerdata.minestack.grass += amount;
 				break;
 			case QUARTZ:
-				playerdata.minestack.quartz += item.getItemStack().getAmount();
+				playerdata.minestack.quartz += amount;
 				break;
 			case QUARTZ_ORE:
-				playerdata.minestack.quartz_ore += item.getItemStack().getAmount();
+				playerdata.minestack.quartz_ore += amount;
 				break;
 			case SOUL_SAND:
-				playerdata.minestack.soul_sand += item.getItemStack().getAmount();
+				playerdata.minestack.soul_sand += amount;
 				break;
 			case MAGMA:
-				playerdata.minestack.magma += item.getItemStack().getAmount();
+				playerdata.minestack.magma += amount;
 				break;
 			default:
 				return;

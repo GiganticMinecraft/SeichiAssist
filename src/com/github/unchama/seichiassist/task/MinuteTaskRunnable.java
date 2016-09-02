@@ -67,6 +67,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			playerdata.levelupdata(player,mines);
 			//ランキング表示用総整地量を更新
 			playerdata.totalbreaknum = mines;
+			//総プレイ時間更新
+			playerdata.playtick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
 
 			if(SeichiAssist.DEBUG){
 				Util.sendEveryMessage(playerdata.name + "のランク処理完了");

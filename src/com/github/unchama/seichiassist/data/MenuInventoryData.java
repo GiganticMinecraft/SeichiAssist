@@ -53,11 +53,11 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.GRAY + playerdata.dispPassiveExp() + "の経験値を獲得"
 				, ChatColor.RESET + "" +  ChatColor.AQUA + "総整地量:" + playerdata.totalbreaknum
 				, ChatColor.RESET + "" +  ChatColor.GOLD + "ランキング：" + prank + "位" + ChatColor.RESET + "" +  ChatColor.GRAY + "(" + SeichiAssist.ranklist.size() +"人中)"
-
 				));
 		if(prank > 1){
 			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + (prank-1) + "位との差：" + (SeichiAssist.ranklist.get(prank-2).intValue() - playerdata.totalbreaknum));
 		}
+		lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "総ログイン時間：" + Util.toTimeString(Util.toTickSecond(playerdata.playtick)));
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※1分毎に更新");
 
 		skullmeta.setLore(lore);

@@ -131,20 +131,8 @@ public class SeichiAssist extends JavaPlugin{
 			71265000,72265000,73265000,74265000,75265000,//190
 			76415000,77565000,78715000,79865000,81015000,//195
 			82165000,83315000,84465000,85615000,87115000//200
-
-
-			/* ver0.3.0以前の経験値テーブル
-			2487856,2637856,2787856,2937856,3087856,//65
-			3237856,3387856,3537856,3687856,3837856,//70
-			3987856,4162856,4337856,4512856,4687856,//75
-			4862856,5037856,5212856,5387856,5562856,//80
-			5737856,5937856,6137856,6337856,6537856,//85
-			6737856,6937856,7137856,7337856,7537856,//90
-			7737856,7962856,8187856,8412856,8637856,//95
-			8862856,9087856,9312856,9537856,9762856,//100
-			10000000//GOD
-			*/
 			));
+
 	public static final List<Material> materiallist = new ArrayList<Material>(Arrays.asList(
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
 			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
@@ -177,8 +165,6 @@ public class SeichiAssist extends JavaPlugin{
 		//コンフィグ系の設定は全てConfig.javaに移動
 		config = new Config(this);
 		config.loadConfig();
-		//plugin.ymlからガチャデータ読み込み
-		//config.loadGachaData();
 
 		//MySQL系の設定はすべてSql.javaに移動
 		sql = new Sql(this,config.getURL(), config.getDB(), config.getID(), config.getPW());
@@ -277,7 +263,7 @@ public class SeichiAssist extends JavaPlugin{
 			getLogger().info("データベース切断に失敗しました");
 		}
 
-		getLogger().info("SeichiPlugin is Disabled!");
+		getLogger().info("SeichiAssist is Disabled!");
 	}
 
 	public void startTaskRunnable(){

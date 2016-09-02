@@ -92,6 +92,10 @@ public class Util {
 		}
 	}
 
+	public static int toTickSecond(int _tick){
+		return _tick/20;
+	}
+
 	public static String toTimeString(int _second) {
 		int second = _second;
 		int minute = 0;
@@ -111,9 +115,11 @@ public class Util {
 		if(minute != 0){
 			time = time + minute + "分";
 		}
+		/*
 		if(second != 0){
 			time = time + second + "秒";
 		}
+		*/
 		return time;
 	}
 
