@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.listener;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -61,6 +62,17 @@ public class PlayerJoinListener implements Listener {
 		Player player = event.getPlayer();
 		//プレイヤーのuuidを取得
 		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ作成
+		PlayerData playerdata = sql.loadPlayerData(player);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataの作成に失敗しました。管理者に報告してください");
+			return;
+		}
+		//playermapに追加
+		playermap.put(uuid, playerdata);
+
+		/* マルチサーバー対応の為の修正
 		//プレイヤーデータを宣言
 		PlayerData playerdata = null;
 		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
@@ -78,6 +90,7 @@ public class PlayerJoinListener implements Listener {
 				playerdata.name = Util.getName(player);
 			}
 		}
+		*/
 
 		//統計量を取得
 		int mines = Util.calcMineBlock(player);

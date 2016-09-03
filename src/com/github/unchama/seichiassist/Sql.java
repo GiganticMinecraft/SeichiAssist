@@ -279,7 +279,7 @@ public class Sql{
  			}
 
  			/*
- 			//playernameをアップデート→廃止、ログアウト時にプレイヤーネームを更新するようにした
+ 			//playernameをアップデート→廃止、savePlayerData時にプレイヤーネームを更新するようにした
  			//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
  			command = "update " + table
  					+ " set name = '" + name
@@ -344,7 +344,7 @@ public class Sql{
  				return null;
  			}
  			if(SeichiAssist.DEBUG){
- 				p.sendMessage("sqlデータで更新しました。");
+ 				p.sendMessage("sqlデータで更新しました");
  			}
  			//更新したplayerdataを返す
  			return playerdata;

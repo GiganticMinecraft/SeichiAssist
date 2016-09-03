@@ -29,6 +29,9 @@ public class PlayerQuitListener implements Listener {
 		if(!sql.savePlayerData(playerdata)){
 			Bukkit.getLogger().info(playerdata.name + "のデータ保存に失敗しました。");
 		}
+		//マルチサーバー対応の為の処理
+		//不要なplayerdataを削除
+		playermap.remove(uuid);
 
 	}
 

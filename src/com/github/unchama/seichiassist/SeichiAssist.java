@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -209,16 +210,17 @@ public class SeichiAssist extends JavaPlugin{
 			UUID uuid = p.getUniqueId();
 			//プレイヤーデータを生成
 			PlayerData playerdata = sql.loadPlayerData(p);
-			if(playerdata==null){
-				p.sendMessage("playerdataの読み込みエラーです。管理者に報告してください。");
+			if(playerdata == null){
+				p.sendMessage(ChatColor.RED + "playerdataの作成に失敗しました。管理者に報告してください");
+				getLogger().info(ChatColor.RED + "playerdataの作成に失敗しました");
 				continue;
 			}
+			//プレイヤーマップにプレイヤーを追加
+			playermap.put(uuid,playerdata);
 			//統計量を取得
 			int mines = Util.calcMineBlock(p);
 			playerdata.updata(p,mines);
 			playerdata.NotifySorryForBug(p);
-			//プレイヤーマップにプレイヤーを追加
-			playermap.put(uuid,playerdata);
 		}
 
 		//ランキングデータをセット
@@ -263,9 +265,11 @@ public class SeichiAssist extends JavaPlugin{
 		*/
 
 
+		/* マルチサーバー対応の為コメントアウト
 		if(!sql.saveGachaData()){
 			getLogger().info("ガチャデータ保存に失敗しました");
 		}
+		*/
 
 		if(!sql.disconnect()){
 			getLogger().info("データベース切断に失敗しました");
