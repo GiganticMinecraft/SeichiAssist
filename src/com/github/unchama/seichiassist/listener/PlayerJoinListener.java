@@ -38,7 +38,6 @@ public class PlayerJoinListener implements Listener {
 			if(!Util.getName(player).equals(playerdata.name)){
 				//すでにあるプレイヤーデータの名前を更新しておく
 				playerdata.name = Util.getName(player);
-				playermap.put(uuid, playerdata);
 			}
 		}
 
