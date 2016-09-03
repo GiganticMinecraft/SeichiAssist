@@ -140,6 +140,8 @@ public class ThunderStormTaskRunnable extends BukkitRunnable{
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 				}
 				cancel();
+				//フラグ折る
+				playerdata.skillflag = false;
 				return;
 			}
 
