@@ -170,7 +170,7 @@ public class PlayerData {
 
 	//オフラインかどうか
 	public boolean isOffline() {
-		return SeichiAssist.plugin.getServer().getPlayer(name) == null;
+		return SeichiAssist.plugin.getServer().getPlayer(uuid) == null;
 	}
 
 
