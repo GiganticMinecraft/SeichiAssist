@@ -13,18 +13,17 @@ public class Config{
 	Config(SeichiAssist _plugin){
 		plugin = _plugin;
 		saveDefaultConfig();
-
 	}
+
 	//コンフィグのロード
 	public void loadConfig(){
 		config = getConfig();
-
 	}
+
 	//コンフィグのリロード
 	public void reloadConfig(){
 		plugin.reloadConfig();
 		config = getConfig();
-		loadGachaData();
 	}
 
 	//コンフィグのセーブ
@@ -32,16 +31,16 @@ public class Config{
 		plugin.saveConfig();
 	}
 
-
-
 	//plugin.ymlがない時にDefaultのファイルを生成
 	public void saveDefaultConfig(){
 		plugin.saveDefaultConfig();
 	}
+
 	//plugin.ymlファイルからの読み込み
 	public FileConfiguration getConfig(){
 		return plugin.getConfig();
 	}
+
 	//plugin.ymlファイルからガチャデータの読み込み
 	public void loadGachaData(){
 		int num = config.getInt("gachanum");
@@ -56,6 +55,7 @@ public class Config{
 		}
 		plugin.getLogger().info("合計" + (i-1) + "個のガチャデータのLoadを完了しました");
 	}
+
 
 	public double getMinuteMineSpeed(){
 		return Util.toDouble(config.getString("minutespeedamount"));
@@ -90,26 +90,19 @@ public class Config{
 	public int getGravitylevel() {
 		return Util.toInt(config.getString("gravitylevel"));
 	}
-	public int getDropExplevel1() {
-		return Util.toInt(config.getString("dropexplevel1"));
+
+	public int getDropExplevel(int i){
+		return Util.toInt(config.getString("dropexplevel" + i,""));
 	}
-	public int getDropExplevel2() {
-		return Util.toInt(config.getString("dropexplevel2"));
-	}
-	public int getDropExplevel3() {
-		return Util.toInt(config.getString("dropexplevel3"));
-	}
-	public int getDropExplevel4() {
-		return Util.toInt(config.getString("dropexplevel4"));
-	}
-	public int getDropExplevel5() {
-		return Util.toInt(config.getString("dropexplevel5"));
-	}
-	public int getDropExplevel6() {
-		return Util.toInt(config.getString("dropexplevel6"));
-	}
+
 	public int getPassivePortalInventorylevel() {
 		return Util.toInt(config.getString("passiveportalinventorylevel"));
+	}
+	public int getDokodemoEnderlevel() {
+		return Util.toInt(config.getString("dokodemoenderlevel"));
+	}
+	public int getMineStacklevel(int i) {
+		return Util.toInt(config.getString("minestacklevel" + i,""));
 	}
 	public String getDB(){
 		return config.getString("db");
@@ -132,26 +125,9 @@ public class Config{
 		return url;
 	}
 
-	public void saveGachaData() {
-		//ガチャのデータを保存
-		int i = 1;
-		for(GachaData gachadata : SeichiAssist.gachadatalist){
-			config.set("item"+ i,gachadata.itemstack);
-			config.set("amount"+ i,gachadata.amount);
-			config.set("probability"+ i,gachadata.probability);
-			i++;
-		}
-		config.set("gachanum",i-1);
-	}
-
 	public String getLvMessage(int i) {
-		return config.getString("lv" + i + "message");
+		return config.getString("lv" + i + "message","");
 	}
-
-
-
-
-
 
 
 }

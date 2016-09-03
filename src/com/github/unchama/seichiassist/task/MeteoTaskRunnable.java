@@ -69,7 +69,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 		//メテオ発射音を鳴らす
 		player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1, 1);
 		//クールダウンタイム生成
-		new CoolDownTaskRunnable(player).runTaskLater(plugin,60);
+		new CoolDownTaskRunnable(player).runTaskLater(plugin,50);
 	}
 	@Override
 	public void run() {

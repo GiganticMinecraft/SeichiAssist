@@ -62,7 +62,7 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 		//フラグ立てとく
 		playerdata.skillflag = true;
 		//クールダウンタイム生成
-		new CoolDownTaskRunnable(player).runTaskLater(plugin,50);
+		new CoolDownTaskRunnable(player).runTaskLater(plugin,30);
 	}
 	@Override
 	public void run() {

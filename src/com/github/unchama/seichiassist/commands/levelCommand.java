@@ -8,10 +8,12 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class levelCommand implements TabExecutor{
 	public SeichiAssist plugin;
+	Sql sql = SeichiAssist.plugin.sql;
 
 
 	public levelCommand(SeichiAssist plugin){
@@ -47,6 +49,12 @@ public class levelCommand implements TabExecutor{
 					Player player = SeichiAssist.plugin.getServer().getPlayer(playerdata.name);
 					playerdata.setDisplayName(player);
 				}
+			}
+			//MySqlの値も処理
+			if(!sql.resetAllPlayerLevel()){
+				sender.sendMessage("mysqlのレベルの初期化に失敗しました");
+			}else{
+				sender.sendMessage("mysqlに保存されている全プレイヤーのレベルを初期化しました");
 			}
 			return true;
 		}

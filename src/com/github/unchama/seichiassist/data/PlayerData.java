@@ -60,6 +60,17 @@ public class PlayerData {
 	public int totalbreaknum;
 	//スキル発動中だけtrueになるフラグ
 	public boolean skillflag;
+	//MineStack
+	public MineStack minestack;
+	//MineStackFlag
+	public boolean minestackflag;
+	//プレイ時間
+	public int playtick;
+	//キルログ表示トグル
+	public boolean dispkilllogflag;
+	//PvPトグル
+	public boolean pvpflag;
+
 
 
 	public PlayerData(Player player){
@@ -79,12 +90,17 @@ public class PlayerData {
 		level = 1;
 		numofsorryforbug = 0;
 		activemineflagnum = 0;
-		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*3 ,"拡張インベントリ");
+		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 		activenum = 1;
 		skillcanbreakflag = true;
 		rgnum = 0;
-		totalbreaknum = MineBlock.calcMineBlock(player);
+		totalbreaknum = Util.calcMineBlock(player);
 		skillflag = false;
+		minestack = new MineStack();
+		minestackflag = true;
+		playtick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
+		dispkilllogflag = false;
+		pvpflag = false;
 	}
 
 	//プレイヤーデータを最新の状態に更新
@@ -96,15 +112,32 @@ public class PlayerData {
 	}
 	//詫び券の配布
 	public void giveSorryForBug(Player player){
-		String name = Util.getName(player);
-		ItemStack skull = Util.getskull(name);
-		if( numofsorryforbug != 0){
-			skull.setAmount(numofsorryforbug);
-			Util.dropItem(player,skull);
-			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			player.sendMessage(ChatColor.GREEN + "不具合のお詫びとして"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました。");
+		ItemStack skull = Util.getskull(Util.getName(player));
+		int count = 0;
+		while(numofsorryforbug >= 1){
+			numofsorryforbug -= 1;
+			if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+				Util.addItem(player,skull);
+			}else{
+				Util.dropItem(player,skull);
+			}
+			count++;
 		}
+		//詫びガチャ関数初期化
 		numofsorryforbug = 0;
+
+		if(count > 0){
+			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+			player.sendMessage(ChatColor.GREEN + "運営チームから"+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
+		}
+	}
+
+	//詫びガチャの通知
+	public void NotifySorryForBug(Player player){
+		if(numofsorryforbug > 0){
+			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+			player.sendMessage(ChatColor.GREEN + "運営チームから"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が届いています！\n木の棒メニューから受け取ってください。");
+		}
 	}
 
 	//エフェクトデータのdurationを60秒引く
@@ -142,9 +175,9 @@ public class PlayerData {
 
 
 	//レベルを更新
-	public void levelupdata(Player player,int mines) {
-		calcPlayerLevel(player,mines);
-		setDisplayName(player);
+	public void levelupdata(Player p,int mines) {
+		calcPlayerLevel(p,mines);
+		setDisplayName(p);
 	}
 
 
@@ -161,11 +194,7 @@ public class PlayerData {
 			//管理人の場合
 			displayname = ChatColor.RED + "<管理人>" + name;
 		}
-		if(level == 101){
-			displayname =  ChatColor.GOLD + "[ GOD ]" + displayname + ChatColor.WHITE;
-		}else{
-			displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
-		}
+		displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
 
 		p.setDisplayName(displayname);
 		p.setPlayerListName(displayname);
@@ -173,37 +202,67 @@ public class PlayerData {
 
 
 	//プレイヤーレベルを計算し、更新する。
-	private void calcPlayerLevel(Player player,int mines){
+	private void calcPlayerLevel(Player p,int mines){
 		//現在のランクの次を取得
 		int i = level + 1;
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= 101){
-			if(!SeichiAssist.DEBUG){
-				//レベルアップ時のメッセージ
-				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
-				//レベルアップ時の花火の打ち上げ
-				Location loc = player.getLocation();
-				Util.launchFireWorks(loc);
-				String lvmessage = SeichiAssist.config.getLvMessage(i);
-				if(!(lvmessage.isEmpty())){
-					player.sendMessage(ChatColor.AQUA+lvmessage);
-				}
+		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= SeichiAssist.levellist.size()){
+
+			//レベルアップ時のメッセージ
+			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
+			//レベルアップ時の花火の打ち上げ
+			Location loc = p.getLocation();
+			Util.launchFireWorks(loc);
+			String lvmessage = SeichiAssist.config.getLvMessage(i);
+			if(!(lvmessage.isEmpty())){
+				p.sendMessage(ChatColor.AQUA+lvmessage);
 			}
+
 			i++;
 		}
 		level = i-1;
 	}
 
-	//現在の採掘量順位を表示する
-	public static int calcPlayerRank(Player player){
-		//ランク用関数
-		int i = 0;
-		int t = MineBlock.calcMineBlock(player);
-		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.ranklist.get(i).intValue() > t){
-			i++;
+	//パッシブスキルの獲得量表示
+	public int dispPassiveExp() {
+		if(level < 8){
+			return 0;
+		}else if (level < 18){
+			return SeichiAssist.config.getDropExplevel(1);
+		}else if (level < 28){
+			return SeichiAssist.config.getDropExplevel(2);
+		}else if (level < 38){
+			return SeichiAssist.config.getDropExplevel(3);
+		}else if (level < 48){
+			return SeichiAssist.config.getDropExplevel(4);
+		}else if (level < 58){
+			return SeichiAssist.config.getDropExplevel(5);
+		}else if (level < 68){
+			return SeichiAssist.config.getDropExplevel(6);
+		}else if (level < 78){
+			return SeichiAssist.config.getDropExplevel(7);
+		}else if (level < 88){
+			return SeichiAssist.config.getDropExplevel(8);
+		}else if (level < 98){
+			return SeichiAssist.config.getDropExplevel(9);
+		}else{
+			return SeichiAssist.config.getDropExplevel(10);
 		}
-		return i+1;
 	}
-
+	//四次元ポケットのサイズを取得
+	public int getPocketSize() {
+		if (level < 26){
+			return 9*3;
+		}else if (level < 36){
+			return 9*3;
+		}else if (level < 46){
+			return 9*3;
+		}else if (level < 56){
+			return 9*4;
+		}else if (level < 66){
+			return 9*5;
+		}else{
+			return 9*6;
+		}
+	}
 }

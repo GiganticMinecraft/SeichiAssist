@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -13,13 +14,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class HalfHourTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
 	Sql sql = SeichiAssist.plugin.sql;
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 
 	public HalfHourTaskRunnable() {
 	}
@@ -27,8 +28,17 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
+		//現在オンラインのプレイヤーのプレイヤーデータを送信
+		for(Player p : plugin.getServer().getOnlinePlayers()){
+			//UUIDを取得
+			UUID uuid = p.getUniqueId();
+			PlayerData playerdata = playermap.get(uuid);
+			if(!sql.savePlayerData(playerdata)){
+				plugin.getLogger().info(playerdata.name + "のデータ保存に失敗しました");
+			}
+		}
 		//ランキングデータをセット
-		SeichiAssist.ranklist = sql.setRanking();
+		sql.setRanking();
 		//カウント値を０に設定
 		int count = 0;
 		//30分間の全プレイヤーの採掘量をallに格納
@@ -38,11 +48,11 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		//playermapに入っているすべてのプレイヤーデータについて処理
 		for(PlayerData playerdata:SeichiAssist.playermap.values()){
 			//プレイヤー型を取得
-			Player player = plugin.getServer().getPlayer(playerdata.name);
+			Player player = plugin.getServer().getPlayer(playerdata.uuid);
 			//プレイヤーがオンラインの時の処理
 			if(player != null){
 				//現在の統計量を取得
-				int mines = MineBlock.calcMineBlock(player);
+				int mines = Util.calcMineBlock(player);
 				//現在の統計量を設定(after)
 				playerdata.halfhourblock.after = mines;
 				//前回との差を計算し設定(increase)
@@ -88,7 +98,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			if(count == 1){
 				Util.sendEveryMessage("破壊量第1位は" + ChatColor.DARK_PURPLE + e.getValue().name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}else if(count == 2){
-				Util.sendEveryMessage("破壊量第2位は" + ChatColor.DARK_BLUE + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
+				Util.sendEveryMessage("破壊量第2位は" + ChatColor.BLUE + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}else if(count == 3){
 				Util.sendEveryMessage("破壊量第3位は" + ChatColor.DARK_AQUA + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}

@@ -22,13 +22,18 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.EffectData;
+import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
+import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -63,123 +68,161 @@ public class PlayerInventoryListener implements Listener {
 
 	@EventHandler
 	public void onPlayerClickActiveSkillSellectEvent(InventoryClickEvent event){
-		ItemStack itemstackcurrent = event.getCurrentItem();
-		InventoryView view = event.getView();
-		Inventory topinventory = view.getTopInventory();
-		HumanEntity he = view.getPlayer();
-
-		//インベントリを開けたのがプレイヤーではない時終了
-		if(!he.getType().equals(EntityType.PLAYER)){
-			return;
-		}
-		Player player = (Player)he;
-		UUID uuid = player.getUniqueId();
-		//経験値変更用のクラスを設定
-		ExperienceManager expman = new ExperienceManager(player);
-		//インベントリが存在しない時終了
-		if(topinventory == null){
-			return;
-		}
-
-		//インベントリサイズが36でない時終了
-		if(topinventory.getSize() != 36){
-			return;
-		}
-
 		//外枠のクリック処理なら終了
 		if(event.getClickedInventory() == null){
 			return;
 		}
 
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
 
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが36でない時終了
+		if(topinventory.getSize() != 36){
+			return;
+		}
+		Player player = (Player)he;
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
 
 		//インベントリ名が以下の時処理
 		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "木の棒メニュー")){
 			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
 			}
-			PlayerData playerdata = playermap.get(uuid);
-			if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
-				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
 
+			//経験値変更用のクラスを設定
+			ExperienceManager expman = new ExperienceManager(player);
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData2(player));
+				return;
+			}else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}else if(itemstackcurrent.getType().equals(Material.CHEST)){
+				//レベルが足りない場合処理終了
+				if( playerdata.level < SeichiAssist.config.getMineStacklevel(1)){
+					player.sendMessage(ChatColor.GREEN + "整地レベルが"+SeichiAssist.config.getMineStacklevel(1)+ "以上必要です");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					return;
+				}
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMenu(player));
+				return;
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
+				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 				}else if(playerdata.level >= config.getDualBreaklevel()){
 					playerdata.activenum = ActiveSkill.DUALBREAK.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:デュアルブレイク");
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:デュアルブレイク  が選択されました");
+					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
 					playerdata.activemineflagnum = 1;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}else{
-					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.IRON_ORE)){
 				if(playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
-
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 				}else if(playerdata.level >= config.getTrialBreaklevel() && playerdata.activenum != ActiveSkill.TRIALBREAK.getNum()){
 					playerdata.activenum = ActiveSkill.TRIALBREAK.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:トリアルブレイク");
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:トリアルブレイク が選択されました");
+					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
+
 					playerdata.activemineflagnum = 1;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}else{
-					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.GOLD_ORE)){
 				if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
-
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 				}else if(playerdata.level >= config.getExplosionlevel() && playerdata.activenum != ActiveSkill.EXPLOSION.getNum()){
 					playerdata.activenum = ActiveSkill.EXPLOSION.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:エクスプロージョン");
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:エクスプロージョン が選択されました");
 					playerdata.activemineflagnum = 1;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}else{
-					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
 				if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
-
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 				}else if(playerdata.level >= config.getThunderStormlevel() && playerdata.activenum != ActiveSkill.THUNDERSTORM.getNum()){
 					playerdata.activenum = ActiveSkill.THUNDERSTORM.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:サンダーストーム");
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:サンダーストーム が選択されました");
 					playerdata.activemineflagnum = 1;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}else{
-					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
 				if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
-
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 				}else if(playerdata.level >= config.getBlizzardlevel() && playerdata.activenum != ActiveSkill.BLIZZARD.getNum()){
 					playerdata.activenum = ActiveSkill.BLIZZARD.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ブリザード");
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ブリザード が選択されました");
 					playerdata.activemineflagnum = 1;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}else{
-					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
 				if(playerdata.activenum == ActiveSkill.METEO.getNum()){
-
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 				}else if(playerdata.level >= config.getMeteolevel() && playerdata.activenum != ActiveSkill.METEO.getNum()){
 					playerdata.activenum = ActiveSkill.METEO.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:メテオ");
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:メテオ が選択されました");
 					playerdata.activemineflagnum = 1;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}else{
-					player.sendMessage(ChatColor.GREEN + "必要整地レベルが足りません。");
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
 			}
@@ -206,11 +249,20 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-				List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません"
-						, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
-				itemmeta.setLore(lore);
+				itemmeta.setLore(MenuInventoryData.GachaGetButtonLore(playerdata));
 				itemstackcurrent.setItemMeta(itemmeta);
 			}
+
+			//詫びガチャ券をインベントリへ
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("whitecat_haru")){
+
+				playerdata.giveSorryForBug(player);
+
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemmeta.setLore(MenuInventoryData.SorryGachaGetButtonLore(playerdata));
+				itemstackcurrent.setItemMeta(itemmeta);
+			}
+
 
 			//経験値を消費してプレイヤーの頭を召喚
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_Villager")){
@@ -218,6 +270,7 @@ public class PlayerInventoryListener implements Listener {
 				//経験値が足りなかったら処理を終了
 				if(!expman.hasExp(10000)){
 					player.sendMessage(ChatColor.RED + "必要な経験値が足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					return;
 				}
 				//経験値消費
@@ -246,17 +299,18 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "毎分のガチャ券受け取り:ON");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "毎分受け取っています"
-							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "毎分受け取ります"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変更"
 							);
 					itemmeta.setLore(lore);
 					itemstackcurrent.setItemMeta(itemmeta);
 				}else{
 					player.sendMessage(ChatColor.RED + "毎分のガチャ券受け取り:OFF");
+					player.sendMessage(ChatColor.GREEN + "ガチャ券受け取りボタンを押すともらえます");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1, 1);
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "毎分受け取っていません"
-							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
+					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "後でまとめて受け取ります"
+							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変更"
 							);
 					itemmeta.setLore(lore);
 					itemstackcurrent.setItemMeta(itemmeta);
@@ -267,95 +321,145 @@ public class PlayerInventoryListener implements Listener {
 				// ver0.3.2 採掘速度上昇効果トグル
 				playerdata.effectflag = !playerdata.effectflag;
 				if(playerdata.effectflag){
-					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在ONになっています"
-							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
-							, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
-							, ChatColor.RESET + "" +  ChatColor.GRAY + "現在の接続人数と過去1分間の採掘量に応じて"
-							, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度が変化するシステムです"
-							, ChatColor.RESET + "" +  ChatColor.GRAY + "" + ChatColor.UNDERLINE + "/ef smart"
-							, ChatColor.RESET + "" +  ChatColor.GRAY + "で効果の内訳を表示できます"
-							);
-					itemmeta.setLore(lore);
-					itemstackcurrent.setItemMeta(itemmeta);
+
+					//effect追加の処理
+					//実際に適用されるeffect量
+					int minespeedlv = 0;
+					//合計effect量
+					double sum = 0;
+					//最大持続時間
+					int maxduration = 0;
+					//effectdatalistにある全てのeffectについて計算
+					for(EffectData ed :playerdata.effectdatalist){
+						//effect量を加算
+						sum += ed.amplifier;
+						//持続時間の最大値を取得
+						if(maxduration < ed.duration){
+							maxduration = ed.duration;
+						}
+					}
+					//実際のeffect値をsum-1の切り捨て整数値に設定
+					minespeedlv = (int)(sum - 1);
+
+					//実際のeffect値が0より小さいときはeffectを適用しない
+					if(minespeedlv < 0){
+						player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
+					}else{
+						player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, minespeedlv, false, false), true);
+					}
+
+					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
 				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+
+					//現在の採掘速度上昇効果を削除する
+					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
+
 					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1, 1);
-					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "現在OFFになっています"
-							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると変更できます"
-							, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
-							, ChatColor.RESET + "" +  ChatColor.GRAY + "現在の接続人数と過去1分間の採掘量に応じて"
-							, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度が変化するシステムです"
-							, ChatColor.RESET + "" +  ChatColor.GRAY + "" + ChatColor.UNDERLINE + "/ef smart"
-							, ChatColor.RESET + "" +  ChatColor.GRAY + "で効果の内訳を表示できます"
-							);
-					itemmeta.setLore(lore);
-					itemstackcurrent.setItemMeta(itemmeta);
 				}
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.EFButtonMeta(playerdata,itemmeta));
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.FLINT_AND_STEEL)){
+				// 死亡メッセージ表示トグル
+				playerdata.dispkilllogflag = !playerdata.dispkilllogflag;
+				if(playerdata.dispkilllogflag){
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.GREEN + "死亡メッセージ:表示");
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.sendMessage(ChatColor.RED + "死亡メッセージ:隠す");
+				}
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.dispKillLogToggleMeta(playerdata,itemmeta));
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.IRON_SWORD)){
+				// 死亡メッセージ表示トグル
+				playerdata.pvpflag = !playerdata.pvpflag;
+				if(playerdata.pvpflag){
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.GREEN + "PvP:ON");
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.sendMessage(ChatColor.RED + "PvP:OFF");
+				}
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.dispPvPToggleMeta(playerdata,itemmeta));
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.WHEAT)){
+				// farmassist toggleコマンド実行
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("/farmassist toggle");
+			}
+			else if(itemstackcurrent.getType().equals(Material.LOG)){
+				// treeassist toggleコマンド実行
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("/treeassist toggle");
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.BEACON)){
 				// spawnコマンド実行
-				player.chat("/spawn");
 				player.closeInventory();
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("/spawn");
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.BED)){
 				// sethomeコマンド実行
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.chat("/sethome");
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.COMPASS)){
 				// homeコマンド実行
-				player.chat("/home");
 				player.closeInventory();
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("/home");
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.WOOD_AXE)){
 				// wand召喚
-				player.chat("//wand");
 				player.closeInventory();
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("//wand");
 				player.sendMessage(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "保護のかけ方\n"
 						+ ChatColor.RESET + "" +  ChatColor.GREEN + "①召喚された斧を手に持ちます\n"
 						+ ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック\n"
 						+ ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック\n"
-						+ ChatColor.RESET + "" +  ChatColor.GREEN + "③メニューの「保護領域の申請」ボタンをクリック\n"
+						+ ChatColor.RESET + "" +  ChatColor.GREEN + "④メニューの" + ChatColor.RESET + "" +  ChatColor.YELLOW + "金の斧" + ChatColor.RESET + "" +  ChatColor.GREEN + "をクリック\n"
 						+ ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard"
 						);
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.GOLD_AXE)){
 				// 保護の設定
-
-				/*
-				if(!WGBukkit.getPlugin().canBuild(player, player.getLocation())){
-					player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "別の保護と被ってます");
+				player.closeInventory();
+				Selection selection = Util.getWorldEdit().getSelection(player);
+				if (selection == null) {
+					player.sendMessage(ChatColor.RED + "先に木の斧で範囲を指定してからこのボタンを押してください");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					return;
 				}
-				*/
-				player.closeInventory();
-				player.sendMessage(ChatColor.GRAY + "木の斧で選択されている範囲で保護の設定を行います…");
-						player.sendMessage(ChatColor.GRAY + "(//expand vert→/rg claim " + player.getName() + "_" + playerdata.rgnum + "→//cel)");
 				player.chat("//expand vert");
 				player.chat("/rg claim " + player.getName() + "_" + playerdata.rgnum);
 				playerdata.rgnum += 1;
 				player.chat("//sel");
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.STONE_AXE)){
 				// 保護リストの表示
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
-				player.sendMessage(ChatColor.GRAY + "現在の保護の一覧を表示します…(/rg list)");
-				player.sendMessage(ChatColor.GRAY + "複数ページある場合は"
-				+ ChatColor.RESET + "" +  ChatColor.GRAY + "" + ChatColor.UNDERLINE + "/rg list ページNo"
-				+ ChatColor.RESET + "" +  ChatColor.GRAY + " で2ページ目以降を開いてください"
-				);
+				player.sendMessage(ChatColor.GRAY + "複数ページある場合は " + ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg list ページNo\n"
+				+ ChatColor.RESET + "" +  ChatColor.GRAY + "で2ページ目以降を開いてください\n"
+				+ ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard");
+
 				player.chat("/rg list");
-				player.sendMessage(ChatColor.RESET + "" +  ChatColor.GRAY + "" + ChatColor.UNDERLINE + "/rg remove 保護名"
-				+ ChatColor.RESET + "" +  ChatColor.GRAY + " で保護の削除が出来ます");
 			}
 
 
@@ -363,6 +467,7 @@ public class PlayerInventoryListener implements Listener {
 				// hubコマンド実行
 				// player.chat("/hub");
 				player.closeInventory();
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.sendMessage(ChatColor.RESET + "" +  ChatColor.GRAY + "Tキーを押して/hubと入力してEnterキーを押してください");
 			}
 
@@ -370,24 +475,28 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.BOOK)){
 				// wikiリンク表示
 				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "http://seichi.click");
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
 				// 投票リンク表示
 				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/seichi.click/vote");
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.PAPER)){
 				// 運営方針とルールリンク表示
 				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "http://seichi.click/d/%b1%bf%b1%c4%ca%fd%bf%cb%a4%c8%a5%eb%a1%bc%a5%eb");
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.MAP)){
 				// 鯖マップリンク表示
 				player.sendMessage(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "http://mc.seichi.click:8123");
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 
 			}
@@ -397,20 +506,61 @@ public class PlayerInventoryListener implements Listener {
 				player.sendMessage(ChatColor.DARK_GRAY + "開いたら下の方までスクロールしてください\n"
 						+ ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/seichi.click"
 						);
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.ENDER_PORTAL_FRAME)){
 				//ver0.3.2 四次元ポケットを開く
-				//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
+				//レベルが足りない場合処理終了
 				if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
-					player.sendMessage(ChatColor.GREEN + "4次元ポケットを開くには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です。");
+					player.sendMessage(ChatColor.GREEN + "4次元ポケットを開くには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					return;
 				}
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 0.1);
+
+				//レベルに応じたポケットサイズ変更処理
+				//アイテム消失を防ぐ為、現在のサイズよりも四次元ポケットサイズが大きくなる場合のみ拡張処理する
+				if(playerdata.inventory.getSize() < playerdata.getPocketSize()){
+					//現在の四次元ポケットの中身を取得
+					ItemStack[] item = playerdata.inventory.getContents();
+					//新しいサイズの四次元ポケットを作成
+					Inventory newsizepocket = Bukkit.getServer().createInventory(null,playerdata.getPocketSize(),ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
+					//for文で一個ずつ新しいサイズのポケットに入れてく
+					int i = 0;
+		            for (ItemStack m : item) {
+		                newsizepocket.setItem(i, m);
+		                i++;
+		            }
+		            //出来たら置き換える
+		            playerdata.inventory = newsizepocket;
+				}
 				//インベントリを開く
 				player.openInventory(playerdata.inventory);
+			}
+
+
+			else if(itemstackcurrent.getType().equals(Material.ENDER_CHEST)){
+				//レベルが足りない場合処理終了
+				if( playerdata.level < SeichiAssist.config.getDokodemoEnderlevel()){
+					player.sendMessage(ChatColor.GREEN + "整地レベルが"+SeichiAssist.config.getDokodemoEnderlevel()+ "以上必要です");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					return;
+				}
+				//どこでもエンダーチェストを開く
+				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 1.0);
+				player.openInventory(player.getEnderChest());
+			}
+
+
+			else if(itemstackcurrent.getType().equals(Material.BUCKET)){
+				//ゴミ箱を開く
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 1.5);
+				//インベントリを開く
+				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.RED + "" + ChatColor.BOLD + "ゴミ箱(取扱注意)"));
 			}
 
 			/*
@@ -429,7 +579,127 @@ public class PlayerInventoryListener implements Listener {
 			}
 			*/
 
+		}else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			if(itemstackcurrent.getType().equals(Material.IRON_PICKAXE)){
+				// 対象ブロック自動スタック機能トグル
+				playerdata.minestackflag = !playerdata.minestackflag;
+				if(playerdata.minestackflag){
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.GREEN + "対象ブロック自動スタック機能:ON");
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.sendMessage(ChatColor.RED + "対象ブロック自動スタック機能:OFF");
+				}
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.MineStackToggleMeta(playerdata,itemmeta));
+			}
+
+			//dirt
+			else if(itemstackcurrent.getType().equals(Material.DIRT)){
+				playerdata.minestack.dirt = giveMineStack(player,playerdata.minestack.dirt,Material.DIRT);
+			}
+
+			//grass
+			else if(itemstackcurrent.getType().equals(Material.GRASS)){
+				playerdata.minestack.grass = giveMineStack(player,playerdata.minestack.grass,Material.GRASS);
+			}
+
+			//gravel
+			else if(itemstackcurrent.getType().equals(Material.GRAVEL)){
+				playerdata.minestack.gravel = giveMineStack(player,playerdata.minestack.gravel,Material.GRAVEL);
+			}
+
+			//cobblestone
+			else if(itemstackcurrent.getType().equals(Material.COBBLESTONE)){
+				playerdata.minestack.cobblestone = giveMineStack(player,playerdata.minestack.cobblestone,Material.COBBLESTONE);
+			}
+
+			//stone
+			else if(itemstackcurrent.getType().equals(Material.STONE)){
+				playerdata.minestack.stone = giveMineStack(player,playerdata.minestack.stone,Material.STONE);
+			}
+
+			//sand
+			else if(itemstackcurrent.getType().equals(Material.SAND)){
+				playerdata.minestack.sand = giveMineStack(player,playerdata.minestack.sand,Material.SAND);
+			}
+
+			//sandstone
+			else if(itemstackcurrent.getType().equals(Material.SANDSTONE)){
+				playerdata.minestack.sandstone = giveMineStack(player,playerdata.minestack.sandstone,Material.SANDSTONE);
+			}
+
+			//netherrack
+			else if(itemstackcurrent.getType().equals(Material.NETHERRACK)){
+				playerdata.minestack.netherrack = giveMineStack(player,playerdata.minestack.netherrack,Material.NETHERRACK);
+			}
+
+			//soul_sand
+			else if(itemstackcurrent.getType().equals(Material.SOUL_SAND)){
+				playerdata.minestack.soul_sand = giveMineStack(player,playerdata.minestack.soul_sand,Material.SOUL_SAND);
+			}
+
+			//magma
+			else if(itemstackcurrent.getType().equals(Material.MAGMA)){
+				playerdata.minestack.magma = giveMineStack(player,playerdata.minestack.magma,Material.MAGMA);
+			}
+
+			//ender_stone
+			else if(itemstackcurrent.getType().equals(Material.ENDER_STONE)){
+				playerdata.minestack.ender_stone = giveMineStack(player,playerdata.minestack.ender_stone,Material.ENDER_STONE);
+			}
+
+			//coal
+			else if(itemstackcurrent.getType().equals(Material.COAL)){
+				playerdata.minestack.coal = giveMineStack(player,playerdata.minestack.coal,Material.COAL);
+			}
+
+			//coal_ore
+			else if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
+				playerdata.minestack.coal_ore = giveMineStack(player,playerdata.minestack.coal_ore,Material.COAL_ORE);
+			}
+
+			//iron_ore
+			else if(itemstackcurrent.getType().equals(Material.IRON_ORE)){
+				playerdata.minestack.iron_ore = giveMineStack(player,playerdata.minestack.iron_ore,Material.IRON_ORE);
+			}
+
+			//quartz
+			else if(itemstackcurrent.getType().equals(Material.QUARTZ)){
+				playerdata.minestack.quartz = giveMineStack(player,playerdata.minestack.quartz,Material.QUARTZ);
+			}
+
+			//quartz_ore
+			else if(itemstackcurrent.getType().equals(Material.QUARTZ_ORE)){
+				playerdata.minestack.quartz_ore = giveMineStack(player,playerdata.minestack.quartz_ore,Material.QUARTZ_ORE);
+			}
 		}
+	}
+
+	private int giveMineStack(Player player,int minestack,Material type){
+		if(minestack >= 64){
+			minestack -= 64;
+			ItemStack itemstack = new ItemStack(type,64);
+			if(!Util.isPlayerInventryFill(player)){
+				Util.addItem(player,itemstack);
+			}else{
+				Util.dropItem(player,itemstack);
+			}
+			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+		}else{
+			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+		}
+		return minestack;
 	}
 
 	/*

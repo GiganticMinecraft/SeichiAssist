@@ -39,21 +39,34 @@ public class PlayerBlockBreakListener implements Listener {
 	//アクティブスキルの実行
 	@EventHandler
 	public void onPlayerActiveSkillEvent(BlockBreakEvent event){
-		Player player;
-		UUID uuid;
-		PlayerData playerdata;
-
 		//実行したプレイヤーを取得
-		player = event.getPlayer();
-		//UUIDを取得
-		uuid = player.getUniqueId();
-		//UUIDを基にプレイヤーデータ取得
-		playerdata = SeichiAssist.playermap.get(uuid);
-
-		//経験値変更用のクラスを設定
-		ExperienceManager expman = new ExperienceManager(player);
+		Player player = event.getPlayer();
 		//もしサバイバルでなければ処理を終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+			return;
+		}
+
+		//壊されるブロックを取得
+		Block block = event.getBlock();
+		//他人の保護がかかっている場合は処理を終了
+		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
+			return;
+		}
+		//ブロックのタイプを取得
+		Material material = block.getType();
+		//ブロックタイプがmateriallistに登録されていなければ処理終了
+		if(!SeichiAssist.materiallist.contains(material)){
+			return;
+		}
+
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//UUIDを基にプレイヤーデータ取得
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//特定スキル発動中は処理を終了
+		if(playerdata.skillflag){
+			//ブロック破壊もさせない
+			event.setCancelled(true);
 			return;
 		}
 
@@ -62,43 +75,13 @@ public class PlayerBlockBreakListener implements Listener {
 			player.sendMessage("ブロックブレイクイベントが呼び出されました");
 		}
 
-		//壊されるブロックを取得
-		Block block = event.getBlock();
-
-		//ブロックのタイプを取得
-		Material material = block.getType();
-		//ブロックタイプがmateriallistに登録されていなければ処理終了
-		if(!SeichiAssist.materiallist.contains(material)){
-			return;
-		}
-
-		/*
-		//ブロックタイプがPACKED_ICEの時blizzardスキルを発動中であれば終了
-		if(material.equals(Material.PACKED_ICE) && playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
-			event.setCancelled(true);
-			return;
-		}
-		*/
-
-		//特定スキル発動中は処理を終了
-		if(playerdata.skillflag){
-			//ブロック破壊もさせない
-			event.setCancelled(true);
-			return;
-		}
-
-		//他人の保護がかかっている場合は処理を終了
-		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
-			return;
-		}
-
-
 		//これ以前の終了処理はパッシブの追加経験値はもらえません
+		//経験値変更用のクラスを設定
+		ExperienceManager expman = new ExperienceManager(player);
 		//passiveskill[追加経験値獲得]処理実行
 		int exp = calcExpDrop(playerdata);
 		expman.changeExp(exp);
 		//これ以降の終了処理は経験値はもらえます
-
 
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activemineflagnum == 0){
@@ -136,6 +119,11 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
+		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
+		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
+			return;
+		}
+
 
 		//アクティブスキルを発動させる処理
 		if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
@@ -145,7 +133,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
 			Explosion(player,block,tool,expman);
 		}else if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
-			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
+			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,4);
 		}else if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
 			new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
 		}else if(playerdata.activenum == ActiveSkill.METEO.getNum()){
@@ -529,6 +517,7 @@ public class PlayerBlockBreakListener implements Listener {
 		short d = tool.getDurability();
 		//耐久力エンチャントに応じて耐久値を減らす
 		tool.setDurability((short)(d + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY))));
+
 		//プレイヤーの統計を１増やす
 		player.incrementStatistic(Statistic.MINE_BLOCK, material);
 
@@ -650,17 +639,25 @@ public class PlayerBlockBreakListener implements Listener {
 			if(playerdata.level < 8){
 				return 0;
 			}else if (playerdata.level < 18){
-				return SeichiAssist.config.getDropExplevel1();
+				return SeichiAssist.config.getDropExplevel(1);
 			}else if (playerdata.level < 28){
-				return SeichiAssist.config.getDropExplevel2();
+				return SeichiAssist.config.getDropExplevel(2);
 			}else if (playerdata.level < 38){
-				return SeichiAssist.config.getDropExplevel3();
+				return SeichiAssist.config.getDropExplevel(3);
 			}else if (playerdata.level < 48){
-				return SeichiAssist.config.getDropExplevel4();
+				return SeichiAssist.config.getDropExplevel(4);
 			}else if (playerdata.level < 58){
-				return SeichiAssist.config.getDropExplevel5();
+				return SeichiAssist.config.getDropExplevel(5);
+			}else if (playerdata.level < 68){
+				return SeichiAssist.config.getDropExplevel(6);
+			}else if (playerdata.level < 78){
+				return SeichiAssist.config.getDropExplevel(7);
+			}else if (playerdata.level < 88){
+				return SeichiAssist.config.getDropExplevel(8);
+			}else if (playerdata.level < 98){
+				return SeichiAssist.config.getDropExplevel(9);
 			}else{
-				return SeichiAssist.config.getDropExplevel6();
+				return SeichiAssist.config.getDropExplevel(10);
 			}
 		}else{
 			return 0;

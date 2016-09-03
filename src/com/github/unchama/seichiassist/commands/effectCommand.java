@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -71,6 +72,8 @@ public class effectCommand implements TabExecutor {
 				//反転したフラグで更新
 				playerdata.messageflag = messageflag;
 				return true;
+
+
 			}else if (args[0].equalsIgnoreCase("dr")){
 				//ef dr の時の処理
 				//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
@@ -83,9 +86,53 @@ public class effectCommand implements TabExecutor {
 				sender.sendMessage(ChatColor.AQUA + "あなたの4次元ポケットがドロップしました。");
 				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
 				return true;
+
+
+			}else if (args[0].equalsIgnoreCase("demo")){
+				//ガチャ券を1000回試行してみる処理
+				int i = 0;
+				double p = 0.0;
+				int gigantic = 0;
+				int big = 0;
+				int regular = 0;
+				int potato = 0;
+				while(1000 > i){
+					p = runGachaDemo();
+					if(p < 0.001){
+						gigantic ++;
+					}else if(p < 0.01){
+						big ++;
+					}else if(p < 0.1){
+						regular ++;
+					}else{
+						potato ++;
+					}
+					i++;
+				}
+				sender.sendMessage(
+						ChatColor.AQUA + "" + ChatColor.BOLD + "ガチャ券" + i + "回試行結果\n"
+						+ ChatColor.RESET + "ギガンティック："+ gigantic +"回("+ ((double)gigantic/(double)i*100.0) +"%)\n"
+						+ "大当たり："+ big +"回("+ ((double)big/(double)i*100.0) +"%)\n"
+						+ "当たり："+ regular +"回("+ ((double)regular/(double)i*100.0) +"%)\n"
+						+ "ハズレ："+ potato +"回("+ ((double)potato/(double)i*100.0) +"%)\n"
+						);
+				return true;
 			}
 		}
 		return false;
 	}
+	private double runGachaDemo() {
+		double sum = 1.0;
+		double rand = 0.0;
 
+		rand = Math.random();
+
+		for (GachaData gachadata : SeichiAssist.gachadatalist) {
+		    sum -= gachadata.probability;
+		    if (sum <= rand) {
+                return gachadata.probability;
+            }
+		}
+		return 1.0;
+	}
 }

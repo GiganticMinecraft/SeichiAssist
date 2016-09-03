@@ -20,26 +20,30 @@ import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.MineBlock;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.listener.EntityListener;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
 import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
 import com.github.unchama.seichiassist.listener.PlayerJoinListener;
+import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
 import com.github.unchama.seichiassist.listener.PlayerQuitListener;
 import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
+import com.github.unchama.seichiassist.util.Util;
 
 
 public class SeichiAssist extends JavaPlugin{
+
 	public static SeichiAssist plugin;
+	//デバッグフラグ
 	public static Boolean DEBUG = false;
 	//ガチャシステムのメンテナンスフラグ
 	public static Boolean gachamente = false;
 
-	public static String PLAYERDATA_TABLENAME = "playerdata";
-	public static String GACHADATA_TABLENAME = "gachadata";
+	public static final String PLAYERDATA_TABLENAME = "playerdata";
+	public static final String GACHADATA_TABLENAME = "gachadata";
 
 	private HashMap<String, TabExecutor> commandlist;
 	public Sql sql;
@@ -57,7 +61,12 @@ public class SeichiAssist extends JavaPlugin{
 	public static final HashMap<UUID,PlayerData> playermap = new HashMap<UUID,PlayerData>();
 
 	//総採掘量ランキング表示用データリスト
-	public static List<Integer> ranklist = new ArrayList<Integer>();
+	public static final List<Integer> ranklist = new ArrayList<Integer>();
+
+	/*
+	//総採掘量表示用int
+	public static int allplayerbreakblockint;
+	*/
 
 	//lvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
@@ -76,73 +85,60 @@ public class SeichiAssist extends JavaPlugin{
 			新経験値テーブル
 			51-60→125,000
 			61-70→175,000
-			71-80→250,000
-			81-90→330,000
-			91-100→420,000
-			これで51-100の累計が1300万
-			(毎日14.5万掘り続けて3か月ペース)
-			(毎日21.5万掘り続けて2か月ペース)
-			(毎日43.3万掘り続けて1か月ペース)
+			71-80→220,000
+			81-90→280,000
+			91-99→360,000
+			99-100→800,000
 			 */
 
-			1237856,1362856,1487856,1612856,1737856,//55
-			1862856,1987856,2112856,2237856,2362856,//60
-			2537856,2712856,2887856,3062856,3237856,//65
-			3412856,3587856,3762856,3937856,4112856,//70
-			4362856,4612856,4862856,5112856,5362856,//75
-			5612856,5862856,6112856,6362856,6612856,//80
-			6942856,7272856,7602856,7932856,8262856,//85
-			8592856,8922856,9252856,9582856,9912856,//90
-			10332856,10752856,11172856,11592856,12012856,//95
-			12432856,12852856,13272856,13692856,14112856//100
+			1250000,1375000,1500000,1625000,1750000,//55
+			1875000,2000000,2125000,2250000,2375000,//60
+			2550000,2725000,2900000,3075000,3250000,//65
+			3425000,3600000,3775000,3950000,4125000,//70
+			4345000,4565000,4785000,5005000,5225000,//75
+			5445000,5665000,5885000,6105000,6325000,//80
+			6605000,6885000,7165000,7445000,7725000,//85
+			8005000,8285000,8565000,8845000,9125000,//90
+			9485000,9845000,10205000,10565000,10925000,//95
+			11285000,11645000,12005000,12365000,13165000,//100
 
 			/*
-			新経験値テーブル(案)
-			100-110→500,000
-			110-120→600,000
-			120-130→710,000
-			130-140→830,000
-			140-150→960,000
-			150-160→1,110,000
-			160-170→1,265,000
-			170-180→1,430,000
-			180-190→1,610,000
-			190-200→1,800,000
+			新経験値テーブル(仮)
+			100-110→450,000
+			110-120→490,000
+			120-130→540,000
+			130-140→590,000
+			140-150→660,000
+			150-160→740,000
+			160-170→820,000
+			170-180→920,000
+			180-190→1,000,000
+			190-199→1,150,000
+			199-200→1,500,000
 			 */
 
-			//105
-			//110
-			//115
-			//120
-			//125
-			//130
-			//135
-			//140
-			//145
-			//150
-			//155
-			//160
-			//165
-			//170
-			//175
-			//180
-			//185
-			//190
-			//195
-			//200
-
-			/* ver0.3.0以前の経験値テーブル
-			2487856,2637856,2787856,2937856,3087856,//65
-			3237856,3387856,3537856,3687856,3837856,//70
-			3987856,4162856,4337856,4512856,4687856,//75
-			4862856,5037856,5212856,5387856,5562856,//80
-			5737856,5937856,6137856,6337856,6537856,//85
-			6737856,6937856,7137856,7337856,7537856,//90
-			7737856,7962856,8187856,8412856,8637856,//95
-			8862856,9087856,9312856,9537856,9762856,//100
-			10000000//GOD
-			*/
+			13615000,14065000,14515000,14965000,15415000,//105
+			15865000,16315000,16765000,17215000,17665000,//110
+			18155000,18645000,19135000,19625000,20115000,//115
+			20605000,21095000,21585000,22075000,22565000,//120
+			23105000,23645000,24185000,24725000,25265000,//125
+			25805000,26345000,26885000,27245000,27965000,//130
+			28555000,29145000,29735000,30325000,30915000,//135
+			31505000,32095000,32685000,33275000,33865000,//140
+			34525000,35185000,35845000,36505000,37165000,//145
+			37825000,38485000,39145000,39805000,40465000,//150
+			41205000,41945000,42685000,43425000,44165000,//155
+			44905000,45645000,46385000,47125000,47865000,//160
+			48685000,49505000,50325000,51145000,51965000,//165
+			52785000,53605000,54425000,55245000,56065000,//170
+			56985000,57905000,58825000,59745000,60665000,//175
+			61585000,62505000,63425000,64345000,65265000,//180
+			66265000,67265000,68265000,69265000,70265000,//185
+			71265000,72265000,73265000,74265000,75265000,//190
+			76415000,77565000,78715000,79865000,81015000,//195
+			82165000,83315000,84465000,85615000,87115000//200
 			));
+
 	public static final List<Material> materiallist = new ArrayList<Material>(Arrays.asList(
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
 			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
@@ -175,13 +171,18 @@ public class SeichiAssist extends JavaPlugin{
 		//コンフィグ系の設定は全てConfig.javaに移動
 		config = new Config(this);
 		config.loadConfig();
-		config.loadGachaData();
 
 		//MySQL系の設定はすべてSql.javaに移動
 		sql = new Sql(this,config.getURL(), config.getDB(), config.getID(), config.getPW());
 		if(!sql.connect()){
-			getLogger().info("データベース接続に失敗しました。");
+			getLogger().info("データベース初期処理にエラーが発生しました");
 		}
+
+		//mysqlからガチャデータ読み込み
+		if(!sql.loadGachaData()){
+			getLogger().info("ガチャデータのロードに失敗しました");
+		}
+
 		//コマンドの登録
 		commandlist = new HashMap<String, TabExecutor>();
 		commandlist.put("gacha",new gachaCommand(plugin));
@@ -196,6 +197,8 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerPickupItemListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
 
 		//mysqlの値でplayermapを初期化する
 		//playermap = sql.loadAllPlayerData();
@@ -211,33 +214,24 @@ public class SeichiAssist extends JavaPlugin{
 				continue;
 			}
 			//統計量を取得
-			int mines = MineBlock.calcMineBlock(p);
+			int mines = Util.calcMineBlock(p);
 			playerdata.updata(p,mines);
-			playerdata.giveSorryForBug(p);
+			playerdata.NotifySorryForBug(p);
 			//プレイヤーマップにプレイヤーを追加
 			playermap.put(uuid,playerdata);
 		}
 
 		//ランキングデータをセット
-		ranklist = sql.setRanking();
-
-		getLogger().info("SeichiPlugin is Enabled!");
-
-
-		//一定時間おきに処理を実行するタスク
-		//３０分おき
-		if(DEBUG){
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,500));
-		}else{
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
+		if(!sql.setRanking()){
+			getLogger().info("ランキングデータの作成に失敗しました");
 		}
-		//１分おき
-		if(DEBUG){
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,300));
-		}else{
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
-		}
+
+		//タスクスタート
+		startTaskRunnable();
+
+		getLogger().info("SeichiAssist is Enabled!");
 	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
 		return commandlist.get(cmd.getName()).onCommand(sender, cmd, label, args);
@@ -246,23 +240,59 @@ public class SeichiAssist extends JavaPlugin{
 	@Override
 	public void onDisable(){
 		//全てのタスクをキャンセル
+		stopAllTaskRunnable();
+
+
+		for(Player p : getServer().getOnlinePlayers()){
+			//UUIDを取得
+			UUID uuid = p.getUniqueId();
+			PlayerData playerdata = playermap.get(uuid);
+			if(!sql.savePlayerData(playerdata)){
+				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
+			}
+		}
+
+
+
+		/*
+		for(PlayerData playerdata : playermap.values()){
+			if(!sql.savePlayerData(playerdata)){
+				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
+			}
+		}
+		*/
+
+
+		if(!sql.saveGachaData()){
+			getLogger().info("ガチャデータ保存に失敗しました");
+		}
+
+		if(!sql.disconnect()){
+			getLogger().info("データベース切断に失敗しました");
+		}
+
+		getLogger().info("SeichiAssist is Disabled!");
+	}
+
+	public void startTaskRunnable(){
+		//一定時間おきに処理を実行するタスク
+		if(DEBUG){
+			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,500));
+		}else{
+			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
+		}
+
+		if(DEBUG){
+			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,300));
+		}else{
+			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
+		}
+	}
+
+	public void stopAllTaskRunnable(){
 		for(BukkitTask task:tasklist){
 			task.cancel();
 		}
-
-		for(PlayerData playerdata : playermap.values()){
-			if(!sql.savePlayerData(playerdata)){
-				getLogger().info(playerdata.name + "のデータ保存に失敗しました。");
-			}
-		}
-		sql.disconnect();
-
-		//configをsave
-		getLogger().info("disable時はサーバーに登録されているガチャ景品データ、及び各設定値を使ってconfig.ymlを置き換えます");
-		config.saveGachaData();
-		saveConfig();
-		getLogger().info("ガチャデータ、及び各設定値をconfig.ymlに保存しました");
-		getLogger().info("SeichiPlugin is Disabled!");
 	}
 
 
