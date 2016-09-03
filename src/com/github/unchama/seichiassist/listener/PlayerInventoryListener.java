@@ -116,12 +116,16 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData2(player));
 				return;
-			}else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 				return;
-			}else if(itemstackcurrent.getType().equals(Material.CHEST)){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.CHEST)){
 				//レベルが足りない場合処理終了
 				if( playerdata.level < SeichiAssist.config.getMineStacklevel(1)){
 					player.sendMessage(ChatColor.GREEN + "整地レベルが"+SeichiAssist.config.getMineStacklevel(1)+ "以上必要です");
@@ -141,98 +145,6 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 
-			else if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
-				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getDualBreaklevel()){
-					playerdata.activenum = ActiveSkill.DUALBREAK.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:デュアルブレイク  が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.IRON_ORE)){
-				if(playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getTrialBreaklevel() && playerdata.activenum != ActiveSkill.TRIALBREAK.getNum()){
-					playerdata.activenum = ActiveSkill.TRIALBREAK.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:トリアルブレイク が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.GOLD_ORE)){
-				if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getExplosionlevel() && playerdata.activenum != ActiveSkill.EXPLOSION.getNum()){
-					playerdata.activenum = ActiveSkill.EXPLOSION.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:エクスプロージョン が選択されました");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
-				if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getThunderStormlevel() && playerdata.activenum != ActiveSkill.THUNDERSTORM.getNum()){
-					playerdata.activenum = ActiveSkill.THUNDERSTORM.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:サンダーストーム が選択されました");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
-				if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getBlizzardlevel() && playerdata.activenum != ActiveSkill.BLIZZARD.getNum()){
-					playerdata.activenum = ActiveSkill.BLIZZARD.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ブリザード が選択されました");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
-				if(playerdata.activenum == ActiveSkill.METEO.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getMeteolevel() && playerdata.activenum != ActiveSkill.METEO.getNum()){
-					playerdata.activenum = ActiveSkill.METEO.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:メテオ が選択されました");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
-			}
 
 			//溜まったガチャ券をインベントリへ
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("unchama")){
@@ -586,6 +498,123 @@ public class PlayerInventoryListener implements Listener {
 			}
 			*/
 
+		}else if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキル選択")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
+				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getDualBreaklevel()){
+					playerdata.activenum = ActiveSkill.DUALBREAK.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:デュアルブレイク  が選択されました");
+					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.IRON_ORE)){
+				if(playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getTrialBreaklevel() && playerdata.activenum != ActiveSkill.TRIALBREAK.getNum()){
+					playerdata.activenum = ActiveSkill.TRIALBREAK.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:トリアルブレイク が選択されました");
+					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
+
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.GOLD_ORE)){
+				if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getExplosionlevel() && playerdata.activenum != ActiveSkill.EXPLOSION.getNum()){
+					playerdata.activenum = ActiveSkill.EXPLOSION.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:エクスプロージョン が選択されました");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
+				if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getThunderStormlevel() && playerdata.activenum != ActiveSkill.THUNDERSTORM.getNum()){
+					playerdata.activenum = ActiveSkill.THUNDERSTORM.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:サンダーストーム が選択されました");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
+				if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getBlizzardlevel() && playerdata.activenum != ActiveSkill.BLIZZARD.getNum()){
+					playerdata.activenum = ActiveSkill.BLIZZARD.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ブリザード が選択されました");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
+				if(playerdata.activenum == ActiveSkill.METEO.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getMeteolevel() && playerdata.activenum != ActiveSkill.METEO.getNum()){
+					playerdata.activenum = ActiveSkill.METEO.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:メテオ が選択されました");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+
+
+
+
+
 		}else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack")){
 			event.setCancelled(true);
 
@@ -597,6 +626,14 @@ public class PlayerInventoryListener implements Listener {
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+
 			if(itemstackcurrent.getType().equals(Material.IRON_PICKAXE)){
 				// 対象ブロック自動スタック機能トグル
 				playerdata.minestackflag = !playerdata.minestackflag;

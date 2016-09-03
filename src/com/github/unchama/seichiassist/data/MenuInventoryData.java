@@ -290,12 +290,12 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.ENCHANTED_BOOK,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ENCHANTED_BOOK);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スキル選択");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "整地がしやすくなる便利なシステムです。"
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地スキルブック");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "整地に便利なスキルを使用できるゾ"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでスキル一覧を開く");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(2,itemstack);
+		inventory.setItem(13,itemstack);
 
 		//ガチャ券受け取りボタン
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -509,7 +509,7 @@ public class MenuInventoryData {
 		//プレイヤーデータ
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "木の棒メニュー");
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキル選択");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
@@ -925,6 +925,18 @@ public class MenuInventoryData {
 		setMineStackButton(inventory, playerdata.minestack.quartz, Material.QUARTZ, v10, 15);
 
 		setMineStackButton(inventory, playerdata.minestack.quartz_ore, Material.QUARTZ_ORE, v10, 16);
+
+		// 1ページ目を開く
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ");
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowLeft");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(27,itemstack);
 
 		return inventory;
 	}

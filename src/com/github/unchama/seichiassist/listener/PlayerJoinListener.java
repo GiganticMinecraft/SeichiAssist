@@ -33,6 +33,10 @@ public class PlayerJoinListener implements Listener {
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent e) {
 		if ((e.getResult().equals(PlayerLoginEvent.Result.KICK_FULL))) {
+			if(e.getPlayer().hasPermission("SeichiAssist.fullstay")){
+				e.allow();
+				return;
+			}
 			for(Player p : plugin.getServer().getOnlinePlayers()){
 				if(p.hasPermission("SeichiAssist.fullstay")){
 					continue;
