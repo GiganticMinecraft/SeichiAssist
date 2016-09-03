@@ -70,6 +70,10 @@ public class PlayerData {
 	public boolean dispkilllogflag;
 	//PvPトグル
 	public boolean pvpflag;
+	//現在座標
+	public Location loc;
+	//放置時間
+	public int idletime;
 
 
 
@@ -101,6 +105,8 @@ public class PlayerData {
 		playtick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
 		dispkilllogflag = false;
 		pvpflag = false;
+		loc = null;
+		idletime = 0;
 	}
 
 	//プレイヤーデータを最新の状態に更新
@@ -183,9 +189,17 @@ public class PlayerData {
 		String displayname = Util.getName(p);
 		if(p.isOp()){
 			//管理人の場合
-			displayname = ChatColor.RED + "<管理人>" + name;
+			if(idletime >= 3){
+				displayname = ChatColor.DARK_GRAY + "<管理人>" + name;
+			}else{
+				displayname = ChatColor.RED + "<管理人>" + name;
+			}
 		}
 		displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
+
+		if(idletime >= 3){
+			displayname = ChatColor.DARK_GRAY + displayname;
+		}
 
 		p.setDisplayName(displayname);
 		p.setPlayerListName(displayname);

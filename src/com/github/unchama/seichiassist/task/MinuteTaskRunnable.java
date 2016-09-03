@@ -60,6 +60,21 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//プレイﾔｰが必ずオンラインと分かっている処理
 			//プレイヤーを取得
 			Player player = plugin.getServer().getPlayer(playerdata.uuid);
+
+			//放置判定
+			if(player.getLocation().equals(playerdata.loc)){
+				playerdata.idletime ++;
+				if(SeichiAssist.DEBUG){
+					Util.sendEveryMessage(playerdata.name + "のidletime加算" + playerdata.idletime);
+				}
+			}else{
+				playerdata.loc = player.getLocation();
+				playerdata.idletime = 0;
+				if(SeichiAssist.DEBUG){
+					Util.sendEveryMessage(playerdata.name + "のidletimeリセット");
+				}
+			}
+
 			//プレイヤー名を取得
 			String name = Util.getName(player);
 			int mines = Util.calcMineBlock(player);
