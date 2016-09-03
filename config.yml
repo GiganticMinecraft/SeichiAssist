@@ -26,7 +26,16 @@ dropexplevel9: '94'
 dropexplevel10: '114'
 passiveportalinventorylevel: '16'
 dokodemoenderlevel: '25'
-minestacklevel: '32'
+minestacklevel1: '12'
+minestacklevel2: '17'
+minestacklevel3: '22'
+minestacklevel4: '27'
+minestacklevel5: '32'
+minestacklevel6: '37'
+minestacklevel7: '42'
+minestacklevel8: '47'
+minestacklevel9: '52'
+minestacklevel10: '57'
 lv1message: "整地鯖では整地をするとレベルが上がり、様々な恩恵が受けられます。\n初めての方は整地ワールドで掘ってレベルを上げてみましょう！\n木の棒を右クリックしてメニューを開き右上のビーコンボタンをクリック！"
 lv2message: "おめでとうございます！最初のレベルアップです！\nレベル8に到達すると整地するだけで経験値がもらえるようになります。"
 lv3message: "やけに早く掘れる気がする…？それは仕様です＾＾\n整地鯖では接続人数や採掘量に応じて採掘速度にブーストが掛かります。"

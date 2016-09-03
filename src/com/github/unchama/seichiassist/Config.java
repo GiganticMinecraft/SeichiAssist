@@ -101,8 +101,8 @@ public class Config{
 	public int getDokodemoEnderlevel() {
 		return Util.toInt(config.getString("dokodemoenderlevel"));
 	}
-	public int getMineStacklevel() {
-		return Util.toInt(config.getString("minestacklevel"));
+	public int getMineStacklevel(int i) {
+		return Util.toInt(config.getString("minestacklevel" + i,""));
 	}
 	public String getDB(){
 		return config.getString("db");

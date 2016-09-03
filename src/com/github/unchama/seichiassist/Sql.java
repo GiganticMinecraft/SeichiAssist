@@ -203,6 +203,9 @@ public class Sql{
 				",add column if not exists stack_quartz_ore int default 0" +
 				",add column if not exists stack_soul_sand int default 0" +
 				",add column if not exists stack_magma int default 0" +
+				",add column if not exists stack_coal int default 0" +
+				",add column if not exists stack_coal_ore int default 0" +
+				",add column if not exists stack_iron_ore int default 0" +
 				",add column if not exists playtick int default 0" +
 				",add column if not exists killlogflag boolean default false" +
 				",add column if not exists pvpflag boolean default false" +
@@ -331,6 +334,9 @@ public class Sql{
  	 				playerdata.minestack.quartz_ore = rs.getInt("stack_quartz_ore");
  	 				playerdata.minestack.soul_sand = rs.getInt("stack_soul_sand");
  	 				playerdata.minestack.magma = rs.getInt("stack_magma");
+ 	 				playerdata.minestack.coal = rs.getInt("stack_coal");
+ 	 				playerdata.minestack.coal_ore = rs.getInt("stack_coal_ore");
+ 	 				playerdata.minestack.iron_ore = rs.getInt("stack_iron_ore");
  				  }
  				rs.close();
  			} catch (SQLException | IOException e) {
@@ -394,6 +400,9 @@ public class Sql{
 				+ ",stack_quartz_ore = " + Integer.toString(playerdata.minestack.quartz_ore)
 				+ ",stack_soul_sand = " + Integer.toString(playerdata.minestack.soul_sand)
 				+ ",stack_magma = " + Integer.toString(playerdata.minestack.magma)
+				+ ",stack_coal = " + Integer.toString(playerdata.minestack.coal)
+				+ ",stack_coal_ore = " + Integer.toString(playerdata.minestack.coal_ore)
+				+ ",stack_iron_ore = " + Integer.toString(playerdata.minestack.iron_ore)
 
 				+ " where uuid like '" + struuid + "'";
 

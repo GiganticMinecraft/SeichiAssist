@@ -15,6 +15,9 @@ public class MineStack {
 	public int quartz_ore;
 	public int soul_sand;
 	public int magma;
+	public int coal_ore;
+	public int iron_ore;
+	public int coal;
 
 	public MineStack(){
 		stone = 0;
@@ -31,5 +34,8 @@ public class MineStack {
 		quartz_ore = 0;
 		soul_sand = 0;
 		magma = 0;
+		coal_ore = 0;
+		iron_ore = 0;
+		coal = 0;
 	}
 }
