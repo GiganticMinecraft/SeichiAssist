@@ -319,6 +319,7 @@ public class Sql{
  	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  	 				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
  	 				playerdata.pvpflag = rs.getBoolean("pvpflag");
+ 	 				playerdata.totalbreaknum = rs.getInt("totalbreaknum");
 
  	 				//MineStack機能の数値
  	 				playerdata.minestack.dirt = rs.getInt("stack_dirt");

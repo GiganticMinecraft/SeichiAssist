@@ -52,7 +52,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			//プレイヤーがオンラインの時の処理
 			if(player != null){
 				//現在の統計量を取得
-				int mines = Util.calcMineBlock(player);
+				int mines = playerdata.totalbreaknum;
 				//現在の統計量を設定(after)
 				playerdata.halfhourblock.after = mines;
 				//前回との差を計算し設定(increase)

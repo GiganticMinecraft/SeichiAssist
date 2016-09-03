@@ -6,7 +6,9 @@ import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -56,8 +58,6 @@ public class PlayerData {
 	public boolean skillcanbreakflag;
 	//ワールドガード保護自動設定用
 	public int rgnum;
-	//ランキング算出用トータル破壊ブロック
-	public int totalbreaknum;
 	//スキル発動中だけtrueになるフラグ
 	public boolean skillflag;
 	//MineStack
@@ -74,6 +74,11 @@ public class PlayerData {
 	public Location loc;
 	//放置時間
 	public int idletime;
+
+	//トータル破壊ブロック
+	public int totalbreaknum;
+	//各統計値差分計算用配列
+	private List<Integer> staticdata;
 
 
 
@@ -98,23 +103,29 @@ public class PlayerData {
 		activenum = 1;
 		skillcanbreakflag = true;
 		rgnum = 0;
-		totalbreaknum = Util.calcMineBlock(player);
 		skillflag = false;
 		minestack = new MineStack();
 		minestackflag = true;
-		playtick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
+		playtick = 0;
 		dispkilllogflag = false;
 		pvpflag = false;
 		loc = null;
 		idletime = 0;
+		staticdata = new ArrayList<Integer>();
+
+		totalbreaknum = 0;
+		for(Material m : SeichiAssist.materiallist){
+			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
+		}
+
 	}
 
 	//プレイヤーデータを最新の状態に更新
-	public void updata(Player player,int mines) {
+	public void updata(Player player) {
 		//破壊量データ(before)を設定
-		minuteblock.before = mines;
-		halfhourblock.before = mines;
-		levelupdata(player,mines);
+		minuteblock.before = totalbreaknum;
+		halfhourblock.before = totalbreaknum;
+		levelupdata(player);
 	}
 	//詫び券の配布
 	public void giveSorryForBug(Player player){
@@ -172,8 +183,8 @@ public class PlayerData {
 
 
 	//レベルを更新
-	public void levelupdata(Player p,int mines) {
-		calcPlayerLevel(p,mines);
+	public void levelupdata(Player p) {
+		calcPlayerLevel(p);
 		setDisplayName(p);
 	}
 
@@ -211,25 +222,46 @@ public class PlayerData {
 
 
 	//プレイヤーレベルを計算し、更新する。
-	private void calcPlayerLevel(Player p,int mines){
+	private void calcPlayerLevel(Player p){
 		//現在のランクの次を取得
-		int i = level + 1;
+		int i = level;
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= SeichiAssist.levellist.size()){
+		while(SeichiAssist.levellist.get(i).intValue() <= totalbreaknum && i <= SeichiAssist.levellist.size()){
 
 			//レベルアップ時のメッセージ
-			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
+			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i)+")→Lv("+(i+1)+")】");
 			//レベルアップ時の花火の打ち上げ
 			Location loc = p.getLocation();
 			Util.launchFireWorks(loc);
-			String lvmessage = SeichiAssist.config.getLvMessage(i);
+			String lvmessage = SeichiAssist.config.getLvMessage(i+1);
 			if(!(lvmessage.isEmpty())){
 				p.sendMessage(ChatColor.AQUA+lvmessage);
 			}
 
 			i++;
 		}
-		level = i-1;
+		level = i;
+	}
+	//総破壊ブロック数を更新する
+	public void calcMineBlock(Player p){
+		int i = 0;
+		for(Material m : SeichiAssist.materiallist){
+			totalbreaknum += (p.getStatistic(Statistic.MINE_BLOCK, m) - staticdata.get(i));
+			staticdata.set(i, p.getStatistic(Statistic.MINE_BLOCK, m));
+			i++;
+		}
+	}
+
+	//現在の採掘量順位を表示する
+	public int calcPlayerRank(Player p){
+		//ランク用関数
+		int i = 0;
+		int t = totalbreaknum;
+		//ランクが上がらなくなるまで処理
+		while(SeichiAssist.ranklist.get(i).intValue() > t){
+			i++;
+		}
+		return i+1;
 	}
 
 	//パッシブスキルの獲得量表示

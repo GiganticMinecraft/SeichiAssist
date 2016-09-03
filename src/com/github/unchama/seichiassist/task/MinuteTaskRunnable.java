@@ -77,11 +77,10 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//プレイヤー名を取得
 			String name = Util.getName(player);
-			int mines = Util.calcMineBlock(player);
+			playerdata.calcMineBlock(player);
+			int mines = playerdata.totalbreaknum;
 			//Levelを設定
-			playerdata.levelupdata(player,mines);
-			//ランキング表示用総整地量を更新
-			playerdata.totalbreaknum = mines;
+			playerdata.levelupdata(player);
 			//総プレイ時間更新
 			playerdata.playtick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
 

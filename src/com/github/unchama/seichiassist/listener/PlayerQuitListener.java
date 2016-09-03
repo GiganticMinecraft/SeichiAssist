@@ -26,6 +26,8 @@ public class PlayerQuitListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ取得
 		PlayerData playerdata = playermap.get(uuid);
+		//整地量更新
+		playerdata.calcMineBlock(player);
 		if(!sql.savePlayerData(playerdata)){
 			Bukkit.getLogger().info(playerdata.name + "のデータ保存に失敗しました。");
 		}

@@ -13,7 +13,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerJoinListener implements Listener {
 	private SeichiAssist plugin = SeichiAssist.plugin;
@@ -93,8 +92,8 @@ public class PlayerJoinListener implements Listener {
 		*/
 
 		//統計量を取得
-		int mines = Util.calcMineBlock(player);
-		playerdata.updata(player,mines);
+		playerdata.calcMineBlock(player);
+		playerdata.updata(player);
 		playerdata.NotifySorryForBug(player);
 		//初見さんへの処理
 		if(!player.hasPlayedBefore()){

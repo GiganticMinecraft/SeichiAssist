@@ -32,7 +32,6 @@ import com.github.unchama.seichiassist.listener.PlayerQuitListener;
 import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
-import com.github.unchama.seichiassist.util.Util;
 
 
 public class SeichiAssist extends JavaPlugin{
@@ -218,8 +217,8 @@ public class SeichiAssist extends JavaPlugin{
 			//プレイヤーマップにプレイヤーを追加
 			playermap.put(uuid,playerdata);
 			//統計量を取得
-			int mines = Util.calcMineBlock(p);
-			playerdata.updata(p,mines);
+			playerdata.calcMineBlock(p);
+			playerdata.updata(p);
 			playerdata.NotifySorryForBug(p);
 		}
 
@@ -249,6 +248,7 @@ public class SeichiAssist extends JavaPlugin{
 			//UUIDを取得
 			UUID uuid = p.getUniqueId();
 			PlayerData playerdata = playermap.get(uuid);
+			playerdata.calcMineBlock(p);
 			if(!sql.savePlayerData(playerdata)){
 				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
 			}

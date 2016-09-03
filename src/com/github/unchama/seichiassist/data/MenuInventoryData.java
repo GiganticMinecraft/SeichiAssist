@@ -39,7 +39,7 @@ public class MenuInventoryData {
 
 
 
-		int prank = Util.calcPlayerRank(player);
+		int prank = playerdata.calcPlayerRank(player);
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
@@ -47,7 +47,7 @@ public class MenuInventoryData {
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ");
 		lore.clear();
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
-				, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level + 1).intValue() - playerdata.totalbreaknum)
+				, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum)
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "パッシブスキル効果："
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "1ブロック整地ごとに"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "10%の確率で"
