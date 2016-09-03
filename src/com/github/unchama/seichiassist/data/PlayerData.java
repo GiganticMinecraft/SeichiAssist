@@ -157,20 +157,11 @@ public class PlayerData {
 		}
 	}
 
-	//プレイヤーネームを更新
-	public void renewName(Player new_player) {
-		//現在のplayername を取得
-				String now_name = Util.getName(new_player);
-				//UUIDは同じだがplayernameが異なっているとき
-				if(!now_name.equals(name)){
-					name = now_name;
-				}
-	}
 
 
 	//オフラインかどうか
 	public boolean isOffline() {
-		return SeichiAssist.plugin.getServer().getPlayer(name) == null;
+		return SeichiAssist.plugin.getServer().getPlayer(uuid) == null;
 	}
 
 

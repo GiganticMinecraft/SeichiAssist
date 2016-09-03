@@ -133,6 +133,13 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getMineStackMenu(player));
 				return;
 			}
+			//スキルメニューを開く
+			else if(itemstackcurrent.getType().equals(Material.ENCHANTED_BOOK)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getSkillMenuData(player));
+				return;
+			}
 
 			else if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
 				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
