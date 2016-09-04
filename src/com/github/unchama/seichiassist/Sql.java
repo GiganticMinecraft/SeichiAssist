@@ -320,6 +320,7 @@ public class Sql{
  	 				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
  	 				playerdata.pvpflag = rs.getBoolean("pvpflag");
  	 				playerdata.totalbreaknum = rs.getInt("totalbreaknum");
+ 	 				playerdata.playtick = rs.getInt("playtick");
 
  	 				//MineStack機能の数値
  	 				playerdata.minestack.dirt = rs.getInt("stack_dirt");

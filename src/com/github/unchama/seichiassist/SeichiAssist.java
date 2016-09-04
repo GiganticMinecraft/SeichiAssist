@@ -32,6 +32,7 @@ import com.github.unchama.seichiassist.listener.PlayerQuitListener;
 import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
+import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
 
 
 public class SeichiAssist extends JavaPlugin{
@@ -216,10 +217,8 @@ public class SeichiAssist extends JavaPlugin{
 			}
 			//プレイヤーマップにプレイヤーを追加
 			playermap.put(uuid,playerdata);
-			//統計量を取得
-			playerdata.calcMineBlock(p);
-			playerdata.updata(p);
-			playerdata.NotifySorryForBug(p);
+			//join時とonenable時、プレイヤーデータを最新の状態に更新
+			playerdata.UpdateonJoin(p);
 		}
 
 		//ランキングデータをセット
@@ -247,8 +246,12 @@ public class SeichiAssist extends JavaPlugin{
 		for(Player p : getServer().getOnlinePlayers()){
 			//UUIDを取得
 			UUID uuid = p.getUniqueId();
+			//プレイヤーデータ取得
 			PlayerData playerdata = playermap.get(uuid);
-			playerdata.calcMineBlock(p);
+			//quit時とondisable時、プレイヤーデータを最新の状態に更新
+			playerdata.UpdateonQuit(p);
+
+			//mysqlに送信
 			if(!sql.savePlayerData(playerdata)){
 				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
 			}
@@ -281,15 +284,21 @@ public class SeichiAssist extends JavaPlugin{
 	public void startTaskRunnable(){
 		//一定時間おきに処理を実行するタスク
 		if(DEBUG){
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,500));
+			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,440,400));
 		}else{
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
+			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,36400,36000));
 		}
 
 		if(DEBUG){
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,300));
+			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,200));
 		}else{
 			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
+		}
+
+		if(DEBUG){
+			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,480,400));
+		}else{
+			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,18800,18000));
 		}
 	}
 

@@ -70,31 +70,9 @@ public class PlayerJoinListener implements Listener {
 		}
 		//playermapに追加
 		playermap.put(uuid, playerdata);
+		//join時とonenable時、プレイヤーデータを最新の状態に更新
+		playerdata.UpdateonJoin(player);
 
-		/* マルチサーバー対応の為の修正
-		//プレイヤーデータを宣言
-		PlayerData playerdata = null;
-		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
-		if(!playermap.containsKey(uuid)){
-			//新しいplayerdataを作成
-			playerdata = sql.loadPlayerData(player);
-			//playermapに追加
-			playermap.put(uuid, playerdata);
-		}else{
-			playerdata = playermap.get(uuid);
-			playerdata.idletime = 0;
-			//もし名前変更されていたら
-			if(!Util.getName(player).equals(playerdata.name)){
-				//すでにあるプレイヤーデータの名前を更新しておく
-				playerdata.name = Util.getName(player);
-			}
-		}
-		*/
-
-		//統計量を取得
-		playerdata.calcMineBlock(player);
-		playerdata.updata(player);
-		playerdata.NotifySorryForBug(player);
 		//初見さんへの処理
 		if(!player.hasPlayedBefore()){
 			//初見さんへのメッセージ文

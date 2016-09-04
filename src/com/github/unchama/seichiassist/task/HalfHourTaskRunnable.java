@@ -28,17 +28,6 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
-		//現在オンラインのプレイヤーのプレイヤーデータを送信
-		for(Player p : plugin.getServer().getOnlinePlayers()){
-			//UUIDを取得
-			UUID uuid = p.getUniqueId();
-			PlayerData playerdata = playermap.get(uuid);
-			if(!sql.savePlayerData(playerdata)){
-				plugin.getLogger().info(playerdata.name + "のデータ保存に失敗しました");
-			}
-		}
-		//ランキングデータをセット
-		sql.setRanking();
 		//カウント値を０に設定
 		int count = 0;
 		//30分間の全プレイヤーの採掘量をallに格納

@@ -64,6 +64,8 @@ public class PlayerData {
 	public MineStack minestack;
 	//MineStackFlag
 	public boolean minestackflag;
+	//プレイ時間差分計算用int
+	public int servertick;
 	//プレイ時間
 	public int playtick;
 	//キルログ表示トグル
@@ -106,6 +108,7 @@ public class PlayerData {
 		skillflag = false;
 		minestack = new MineStack();
 		minestackflag = true;
+		servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
 		playtick = 0;
 		dispkilllogflag = false;
 		pvpflag = false;
@@ -120,13 +123,23 @@ public class PlayerData {
 
 	}
 
-	//プレイヤーデータを最新の状態に更新
-	public void updata(Player player) {
+	//join時とonenable時、プレイヤーデータを最新の状態に更新
+	public void UpdateonJoin(Player player) {
 		//破壊量データ(before)を設定
 		minuteblock.before = totalbreaknum;
 		halfhourblock.before = totalbreaknum;
 		levelupdata(player);
+		NotifySorryForBug(player);
 	}
+
+	//quit時とondisable時、プレイヤーデータを最新の状態に更新
+	public void UpdateonQuit(Player player){
+		//総整地量を更新
+		calcMineBlock(player);
+		//総プレイ時間更新
+		calcPlayTick(player);
+	}
+
 	//詫び券の配布
 	public void giveSorryForBug(Player player){
 		ItemStack skull = Util.getskull(Util.getName(player));
@@ -242,14 +255,57 @@ public class PlayerData {
 		}
 		level = i;
 	}
+
+	//総プレイ時間を更新する
+	public void calcPlayTick(Player p){
+		int getservertick = p.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
+		int getincrease = getservertick - servertick;
+		servertick = getservertick;
+		if(SeichiAssist.DEBUG){
+			p.sendMessage("総プレイ時間に追加したtick:" + getincrease);
+		}
+		playtick += getincrease;
+	}
+
 	//総破壊ブロック数を更新する
 	public void calcMineBlock(Player p){
 		int i = 0;
+		double sum = 0.0;
 		for(Material m : SeichiAssist.materiallist){
-			totalbreaknum += (p.getStatistic(Statistic.MINE_BLOCK, m) - staticdata.get(i));
-			staticdata.set(i, p.getStatistic(Statistic.MINE_BLOCK, m));
+			int getstat = p.getStatistic(Statistic.MINE_BLOCK, m);
+			int getincrease = getstat - staticdata.get(i);
+			sum += calcBlockExp(m,getincrease);
+			if(SeichiAssist.DEBUG){
+				p.sendMessage("calcの値:" + calcBlockExp(m,getincrease) + "(" + m + ")");
+			}
+			staticdata.set(i, getstat);
 			i++;
 		}
+		//double値を四捨五入
+		int x = (int)( sum < 0.0 ? sum-0.5 : sum+0.5 );
+		if(SeichiAssist.DEBUG){
+			p.sendMessage("整地量に追加した値:" + x);
+		}
+		totalbreaknum += x;
+	}
+
+	//ブロック別整地数反映量の調節
+	private double calcBlockExp(Material m,int i){
+		double result = (double)i;
+		//ブロック別重み分け
+		switch(m){
+		case DIRT:
+			//DIRTとGRASSは二重カウントされているので半分に
+			result *= 0.5;
+			break;
+		case GRASS:
+			//DIRTとGRASSは二重カウントされているので半分に
+			result *= 0.5;
+			break;
+		default:
+			break;
+		}
+		return result;
 	}
 
 	//現在の採掘量順位を表示する
