@@ -47,7 +47,7 @@ public class PlayerJoinListener implements Listener {
 				if(playerdata == null){
 					p.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
 					plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[満員時キック処理]でエラー発生");
-					plugin.getLogger().warning("playerdataがありません。開発者に報告してください");
+					plugin.getLogger().warning(p.getName() + "のplayerdataがありません。開発者に報告してください");
 					continue;
 				}
 				//閾値を超えていたら追い出しを実行して処理を終了

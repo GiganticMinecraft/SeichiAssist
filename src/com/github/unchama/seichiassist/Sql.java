@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -208,6 +209,7 @@ public class Sql{
 				",add column if not exists playtick int default 0" +
 				",add column if not exists killlogflag boolean default false" +
 				",add column if not exists pvpflag boolean default false" +
+				",add column if not exists loginflag boolean default false" +
 				",add index if not exists name_index(name)" +
 				"";
 		return putCommand(command);
@@ -265,8 +267,8 @@ public class Sql{
  			//新しくuuidとnameを設定し行を作成
  			//insert into playerdata (name,uuid) VALUES('unchima','UNCHAMA')
  			command = "insert into " + table
- 	 				+ " (name,uuid) values('" + name
- 	 				+ "','" + struuid + "')";
+ 	 				+ " (name,uuid,loginflag) values('" + name
+ 	 				+ "','" + struuid+ "','true')";
  			if(!putCommand(command)){
  				return null;
  			}
@@ -279,11 +281,56 @@ public class Sql{
  				p.sendMessage("sqlにデータが保存されています。");
  			}
 
+ 			//loginflag判別処理
+ 			Boolean flag = true;
+ 			int i = 0;
+ 			//flagがfalseになるまで繰り返す
+ 			while(flag){
+	 	 		command = "select loginflag from " + table
+	 	 				+ " where uuid = '" + struuid + "'";
+	 	 		try{
+	 				rs = stmt.executeQuery(command);
+	 				while (rs.next()) {
+	 					   flag = rs.getBoolean("loginflag");
+	 					  }
+	 				rs.close();
+	 			} catch (SQLException e) {
+	 				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+	 				exc = e.getMessage();
+	 				e.printStackTrace();
+	 				return null;
+	 			}
+	 	 		if(i < 5&&flag){
+	 	 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "のloginflag=false待ち…(" + (i+1) + "回目)");
+	 	 			p.sendMessage(ChatColor.YELLOW + "PlayerDataの取得待ちです。しばらくお待ちください…");
+	 	 			//次のリクエストまで1000ms待つ
+	 	 			try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						// TODO 自動生成された catch ブロック
+						e.printStackTrace();
+					}
+	 	 		}
+	 	 		if(i > 5&&flag){
+	 	 			//諦める
+	 	 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "のloginflagがtrueの為、プレイヤーデータが取得できませんでした");
+	 	 			p.sendMessage(ChatColor.RED + "取得失敗。再接続しても改善されない場合は管理者へ報告して下さい");
+	 	 			return null;
+	 	 		}
+	 	 		i++;
+ 			}
+ 			//loginflag書き換え処理
+ 			command = "update " + table
+						+ " set loginflag = true"
+						+ " where uuid like '" + struuid + "'";
+ 			if(!putCommand(command)){
+ 				return null;
+ 			}
+
  			//PlayerDataを新規作成
  			PlayerData playerdata = new PlayerData(p);
 
- 			//sqlデータから得られた値で更新
-
+ 			//playerdataをsqlデータから得られた値で更新
  			command = "select * from " + table
  					+ " where uuid like '" + struuid + "'";
  			try{
@@ -335,6 +382,8 @@ public class Sql{
  				p.sendMessage("sqlデータで更新しました");
  			}
  			//更新したplayerdataを返す
+ 			p.sendMessage(ChatColor.GREEN + "プレイヤーデータ取得完了");
+ 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ取得完了");
  			return playerdata;
  		}else{
  			//mysqlに該当するplayerdataが2個以上ある時エラーを吐く
@@ -355,6 +404,9 @@ public class Sql{
 
 				//名前更新処理
 				+ " name = '" + playerdata.name + "'"
+
+				//ログインフラグ折る
+				+ ",loginflag = false"
 
 				//各種数値更新処理
 				+ ",effectflag = " + Boolean.toString(playerdata.effectflag)

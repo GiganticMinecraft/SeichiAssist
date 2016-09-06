@@ -36,7 +36,7 @@ public class PlayerPickupItemListener implements Listener {
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[PickupItem処理]でエラー発生");
-			plugin.getLogger().warning("playerdataがありません。開発者に報告してください");
+			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		//レベルが足りない場合処理終了

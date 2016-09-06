@@ -31,7 +31,7 @@ public class PlayerQuitListener implements Listener {
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[Quit処理]でエラー発生");
-			plugin.getLogger().warning("playerdataがありません。開発者に報告してください");
+			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		//quit時とondisable時、プレイヤーデータを最新の状態に更新

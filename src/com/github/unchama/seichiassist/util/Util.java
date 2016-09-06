@@ -78,6 +78,17 @@ public class Util {
 	public static void addItem(Player player,ItemStack itemstack){
 		player.getInventory().addItem(itemstack);
 	}
+
+	public static void sendAdminMessage(String str){
+		SeichiAssist plugin = SeichiAssist.plugin;
+		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+			if(player.hasPermission("SeichiAssist.admin")){
+				player.sendMessage(str);
+			}
+		}
+	}
+
+
 	public static void sendEveryMessage(String str){
 		SeichiAssist plugin = SeichiAssist.plugin;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {

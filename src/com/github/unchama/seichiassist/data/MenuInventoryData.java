@@ -48,10 +48,10 @@ public class MenuInventoryData {
 		lore.clear();
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
 				, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum)
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "パッシブスキル効果："
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "1ブロック整地ごとに"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "10%の確率で"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + playerdata.dispPassiveExp() + "の経験値を獲得"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "パッシブスキル効果："
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "1ブロック整地ごとに"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "10%の確率で"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + playerdata.dispPassiveExp() + "の経験値を獲得"
 				, ChatColor.RESET + "" +  ChatColor.AQUA + "総整地量:" + playerdata.totalbreaknum
 				, ChatColor.RESET + "" +  ChatColor.GOLD + "ランキング：" + prank + "位" + ChatColor.RESET + "" +  ChatColor.GRAY + "(" + SeichiAssist.ranklist.size() +"人中)"
 				));
@@ -60,6 +60,9 @@ public class MenuInventoryData {
 		}
 		lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "総ログイン時間：" + Util.toTimeString(Util.toTickSecond(playerdata.playtick)));
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※1分毎に更新");
+		lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "統計データは");
+		lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "第1,第2サバイバルサーバー間で");
+		lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "共有されます");
 
 		skullmeta.setLore(lore);
 		skullmeta.setOwner(playerdata.name);
@@ -85,6 +88,9 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "ポケットサイズ:" + playerdata.inventory.getSize() + "スタック");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで開く");
 		}
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※四次元ポケットの中身は");
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "第1,第2サバイバルサーバー間で");
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "共有されます");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(21,itemstack);
@@ -145,15 +151,19 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHEST);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack機能");
 		lore.clear();
-		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "説明しよう!MineStack機能とは!"
+		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "説明しよう!MineStackとは!"
 				, ChatColor.RESET + "" + "主要ブロックを無限にスタック出来る!"
-				, ChatColor.RESET + "" + "スタックしたアイテムはここから取り出せるゾ!"
+				, ChatColor.RESET + "" + "スタックしたアイテムは"
+				, ChatColor.RESET + "" + "ここから取り出せるゾ!"
 				));
 		if( playerdata.level < SeichiAssist.config.getMineStacklevel(1)){
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "整地レベルが"+SeichiAssist.config.getMineStacklevel(1)+ "以上必要です");
 		}else{
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで開く");
 		}
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※スタックしたブロックは");
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "第1,第2サバイバルサーバー間で");
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "共有されます");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(24,itemstack);
@@ -280,6 +290,8 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "・メインワールド"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・資源ワールド"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・整地ワールド"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "・ロビーサーバー"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "・第1,第2サバイバルサーバー"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "間を移動する時に使います"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします");
 		itemmeta.setLore(lore);
@@ -376,6 +388,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.IRON_SWORD,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_SWORD);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "PvP切替");
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemstack.setItemMeta(dispPvPToggleMeta(playerdata,itemmeta));
 		inventory.setItem(15,itemstack);
 
@@ -502,12 +515,6 @@ public class MenuInventoryData {
 	}
 	//スキルメニュー
 	public static Inventory getSkillMenuData(Player p){
-		//プレイヤーを取得
-		Player player = p.getPlayer();
-		//UUID取得
-		UUID uuid = player.getUniqueId();
-		//プレイヤーデータ
-		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 
 		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキル選択");
 		ItemStack itemstack;
@@ -880,6 +887,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.IRON_PICKAXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_PICKAXE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "対象ブロック自動スタック機能");
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemstack.setItemMeta(MineStackToggleMeta(playerdata,itemmeta));
 		inventory.setItem(0,itemstack);
 

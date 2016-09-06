@@ -30,7 +30,7 @@ public class PlayerDeathEventListener implements Listener {
 			if(playerdata == null){
 				p.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
 				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[キルログ表示処理]でエラー発生");
-				plugin.getLogger().warning("playerdataがありません。開発者に報告してください");
+				plugin.getLogger().warning(p.getName() + "のplayerdataがありません。開発者に報告してください");
 				continue;
 			}
 			//キルログ表示フラグがONのプレイヤーにのみ死亡メッセージを送信
