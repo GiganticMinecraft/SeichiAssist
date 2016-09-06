@@ -214,8 +214,8 @@ public class SeichiAssist extends JavaPlugin{
 			//念のためエラー分岐
 			if(playerdata == null){
 				p.sendMessage(ChatColor.RED + "playerdataの作成に失敗しました。管理者に報告してください");
-				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[Onenable処理]でエラー発生");
-				plugin.getLogger().warning(Util.getName(p)+ "のplayerdataの作成失敗。開発者に報告してください");
+				getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[Onenable処理]でエラー発生");
+				getLogger().warning(Util.getName(p)+ "のplayerdataの作成失敗。開発者に報告してください");
 				continue;
 			}
 			//プレイヤーマップにプレイヤーを追加
@@ -254,8 +254,8 @@ public class SeichiAssist extends JavaPlugin{
 			//念のためエラー分岐
 			if(playerdata == null){
 				p.sendMessage(ChatColor.RED + "playerdataの保存に失敗しました。管理者に報告してください");
-				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[Ondisable処理]でエラー発生");
-				plugin.getLogger().warning(Util.getName(p)+ "のplayerdataの保存失敗。開発者に報告してください");
+				getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[Ondisable処理]でエラー発生");
+				getLogger().warning(Util.getName(p)+ "のplayerdataの保存失敗。開発者に報告してください");
 				continue;
 			}
 			//quit時とondisable時、プレイヤーデータを最新の状態に更新
@@ -264,6 +264,14 @@ public class SeichiAssist extends JavaPlugin{
 			//mysqlに送信
 			if(!sql.savePlayerData(playerdata)){
 				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
+			}else{
+				getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ保存完了");
+			}
+			//ログインフラグ折る
+			if(!sql.logoutPlayerData(playerdata)){
+				getLogger().warning(playerdata.name + "のloginflag->false化に失敗しました");
+			}else{
+				getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のloginflag回収完了");
 			}
 		}
 

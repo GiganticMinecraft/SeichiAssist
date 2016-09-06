@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerJoinListener implements Listener {
 	private SeichiAssist plugin = SeichiAssist.plugin;
@@ -52,6 +53,8 @@ public class PlayerJoinListener implements Listener {
 				}
 				//閾値を超えていたら追い出しを実行して処理を終了
 				if(playerdata.idletime >= 10){
+					plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "満員の為放置プレイヤーを追い出します");
+					Util.sendEveryMessage(ChatColor.YELLOW + "満員の為放置プレイヤーを追い出します");
 					p.kickPlayer("放置プレイヤーはキックされます(満員時のみ)。再度ログインすることが可能です。");
 					e.allow();
 					return;

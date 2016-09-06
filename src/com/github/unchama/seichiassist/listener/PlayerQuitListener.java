@@ -40,6 +40,14 @@ public class PlayerQuitListener implements Listener {
 		//mysqlに送信
 		if(!sql.savePlayerData(playerdata)){
 			plugin.getLogger().warning(playerdata.name + "のデータ保存に失敗しました");
+		}else{
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + player.getName() + "のプレイヤーデータ保存完了");
+		}
+		//ログインフラグ折る
+		if(!sql.logoutPlayerData(playerdata)){
+			plugin.getLogger().warning(playerdata.name + "のloginflag->false化に失敗しました");
+		}else{
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + player.getName() + "のloginflag回収完了");
 		}
 
 		//マルチサーバー対応の為の処理

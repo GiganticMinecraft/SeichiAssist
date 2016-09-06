@@ -405,9 +405,6 @@ public class Sql{
 				//名前更新処理
 				+ " name = '" + playerdata.name + "'"
 
-				//ログインフラグ折る
-				+ ",loginflag = false"
-
 				//各種数値更新処理
 				+ ",effectflag = " + Boolean.toString(playerdata.effectflag)
 				+ ",minestackflag = " + Boolean.toString(playerdata.minestackflag)
@@ -449,6 +446,24 @@ public class Sql{
 		return putCommand(command);
 	}
 
+
+	//loginflagのフラグ折る処理(ondisable時とquit時に実行させる)
+	public boolean logoutPlayerData(PlayerData playerdata) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		String command = "";
+
+		command = "update " + table
+				+ " set"
+
+				//ログインフラグ折る
+				+ " loginflag = false"
+
+				+ " where uuid like '" + struuid + "'";
+
+		return putCommand(command);
+
+	}
 
 	//ガチャデータロード
 	public boolean loadGachaData(){
