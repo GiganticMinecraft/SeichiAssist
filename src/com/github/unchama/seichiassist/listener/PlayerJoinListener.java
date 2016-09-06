@@ -33,23 +33,40 @@ public class PlayerJoinListener implements Listener {
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent e) {
 		if ((e.getResult().equals(PlayerLoginEvent.Result.KICK_FULL))) {
-			if(e.getPlayer().hasPermission("SeichiAssist.fullstay")){
-				e.allow();
-				return;
-			}
+			//満員時、キック対象のプレイヤーを検索
 			for(Player p : plugin.getServer().getOnlinePlayers()){
 				if(p.hasPermission("SeichiAssist.fullstay")){
+					//権限持ちはスルー
 					continue;
 				}
 				//UUIDを取得
 				UUID uuid = p.getUniqueId();
+				//playerdata取得
 				PlayerData playerdata = playermap.get(uuid);
+				//念のためエラー分岐
+				if(playerdata == null){
+					p.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+					plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[満員時キック処理]でエラー発生");
+					plugin.getLogger().warning("playerdataがありません。開発者に報告してください");
+					continue;
+				}
+				//閾値を超えていたら追い出しを実行して処理を終了
 				if(playerdata.idletime >= 10){
 					p.kickPlayer("放置プレイヤーはキックされます(満員時のみ)。再度ログインすることが可能です。");
 					e.allow();
-					break;
+					return;
 				}
 			}
+			//キック対象が居なかったら…
+
+			//権限持ちはログインさせる
+			if(e.getPlayer().hasPermission("SeichiAssist.fullstay")){
+				e.allow();
+				return;
+			}
+
+			//メッセージ表示
+			e.disallow(PlayerLoginEvent.Result.KICK_FULL, "満員かつ放置プレイヤーが居なかった為入れませんでした。しばらく経ってから再度お試し下さい");
 		}
 	}
 
@@ -66,6 +83,8 @@ public class PlayerJoinListener implements Listener {
 		//念のためエラー分岐
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataの作成に失敗しました。管理者に報告してください");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[join処理]でエラー発生");
+			plugin.getLogger().warning(player.getName() + "のplayerdataの作成に失敗しました。開発者に報告してください");
 			return;
 		}
 		//playermapに追加

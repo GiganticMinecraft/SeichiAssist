@@ -33,6 +33,7 @@ import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
+import com.github.unchama.seichiassist.util.Util;
 
 
 public class SeichiAssist extends JavaPlugin{
@@ -210,9 +211,11 @@ public class SeichiAssist extends JavaPlugin{
 			UUID uuid = p.getUniqueId();
 			//プレイヤーデータを生成
 			PlayerData playerdata = sql.loadPlayerData(p);
+			//念のためエラー分岐
 			if(playerdata == null){
 				p.sendMessage(ChatColor.RED + "playerdataの作成に失敗しました。管理者に報告してください");
-				getLogger().info(ChatColor.RED + "playerdataの作成に失敗しました");
+				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[Onenable処理]でエラー発生");
+				plugin.getLogger().warning(Util.getName(p)+ "のplayerdataの作成失敗。開発者に報告してください");
 				continue;
 			}
 			//プレイヤーマップにプレイヤーを追加
@@ -248,6 +251,13 @@ public class SeichiAssist extends JavaPlugin{
 			UUID uuid = p.getUniqueId();
 			//プレイヤーデータ取得
 			PlayerData playerdata = playermap.get(uuid);
+			//念のためエラー分岐
+			if(playerdata == null){
+				p.sendMessage(ChatColor.RED + "playerdataの保存に失敗しました。管理者に報告してください");
+				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[Ondisable処理]でエラー発生");
+				plugin.getLogger().warning(Util.getName(p)+ "のplayerdataの保存失敗。開発者に報告してください");
+				continue;
+			}
 			//quit時とondisable時、プレイヤーデータを最新の状態に更新
 			playerdata.UpdateonQuit(p);
 

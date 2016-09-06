@@ -124,8 +124,7 @@ public class Sql{
 			stmt.executeUpdate(command);
 			return true;
 		} catch (SQLException e) {
-			//接続エラーの場合は、再度接続後、コマンド実行
-			java.lang.System.out.println("接続に失敗しました");
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
@@ -254,7 +253,9 @@ public class Sql{
 				  }
 			rs.close();
 		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
+			e.printStackTrace();
 			return null;
 		}
 
@@ -277,23 +278,6 @@ public class Sql{
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlにデータが保存されています。");
  			}
-
- 			/*
- 			//playernameをアップデート→廃止、savePlayerData時にプレイヤーネームを更新するようにした
- 			//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
- 			command = "update " + table
- 					+ " set name = '" + name
- 					+ "' where uuid like '" + struuid + "'";
- 			try{
- 				stmt.executeUpdate(command);
- 			} catch (SQLException e) {
- 				exc = e.getMessage();
- 				return null;
- 			}
- 			if(SeichiAssist.DEBUG){
- 				p.sendMessage("sqlのプレイヤーネームを更新しました。");
- 			}
- 			*/
 
  			//PlayerDataを新規作成
  			PlayerData playerdata = new PlayerData(p);
@@ -342,7 +326,9 @@ public class Sql{
  				  }
  				rs.close();
  			} catch (SQLException | IOException e) {
+ 				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
  				exc = e.getMessage();
+ 				e.printStackTrace();
  				return null;
  			}
  			if(SeichiAssist.DEBUG){
@@ -430,7 +416,9 @@ public class Sql{
 				  }
 			rs.close();
 		} catch (SQLException | IOException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
+			e.printStackTrace();
 			return false;
 		}
  		SeichiAssist.gachadatalist.clear();
@@ -484,7 +472,9 @@ public class Sql{
 				  }
 			rs.close();
 		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
+			e.printStackTrace();
 			return false;
 		}
  		return true;
@@ -530,7 +520,9 @@ public class Sql{
 				  }
 				rs.close();
 			} catch (SQLException | IOException e) {
+				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 				exc = e.getMessage();
+				e.printStackTrace();
 				return null;
 			}
 		return inventory;

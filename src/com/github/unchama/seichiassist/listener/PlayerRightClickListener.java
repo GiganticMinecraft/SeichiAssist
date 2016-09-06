@@ -25,6 +25,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerRightClickListener implements Listener {
+	SeichiAssist plugin = SeichiAssist.plugin;
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
 	//プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
@@ -129,6 +130,13 @@ public class PlayerRightClickListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
+			plugin.getLogger().warning("playerdataがありません。開発者に報告してください");
+			return;
+		}
 		//プレイヤーの起こしたアクションの取得
 		Action action = event.getAction();
 		//アクションを起こした手を取得
