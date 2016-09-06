@@ -133,7 +133,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
 			Explosion(player,block,tool,expman);
 		}else if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
-			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,7);
+			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,4);
 		}else if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
 			new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
 		}else if(playerdata.activenum == ActiveSkill.METEO.getNum()){
@@ -639,25 +639,25 @@ public class PlayerBlockBreakListener implements Listener {
 			if(playerdata.level < 8){
 				return 0;
 			}else if (playerdata.level < 18){
-				return SeichiAssist.config.getDropExplevel1();
+				return SeichiAssist.config.getDropExplevel(1);
 			}else if (playerdata.level < 28){
-				return SeichiAssist.config.getDropExplevel2();
+				return SeichiAssist.config.getDropExplevel(2);
 			}else if (playerdata.level < 38){
-				return SeichiAssist.config.getDropExplevel3();
+				return SeichiAssist.config.getDropExplevel(3);
 			}else if (playerdata.level < 48){
-				return SeichiAssist.config.getDropExplevel4();
+				return SeichiAssist.config.getDropExplevel(4);
 			}else if (playerdata.level < 58){
-				return SeichiAssist.config.getDropExplevel5();
+				return SeichiAssist.config.getDropExplevel(5);
 			}else if (playerdata.level < 68){
-				return SeichiAssist.config.getDropExplevel6();
+				return SeichiAssist.config.getDropExplevel(6);
 			}else if (playerdata.level < 78){
-				return SeichiAssist.config.getDropExplevel7();
+				return SeichiAssist.config.getDropExplevel(7);
 			}else if (playerdata.level < 88){
-				return SeichiAssist.config.getDropExplevel8();
+				return SeichiAssist.config.getDropExplevel(8);
 			}else if (playerdata.level < 98){
-				return SeichiAssist.config.getDropExplevel9();
+				return SeichiAssist.config.getDropExplevel(9);
 			}else{
-				return SeichiAssist.config.getDropExplevel10();
+				return SeichiAssist.config.getDropExplevel(10);
 			}
 		}else{
 			return 0;

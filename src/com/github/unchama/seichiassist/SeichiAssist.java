@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -23,6 +24,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.listener.EntityListener;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
 import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
 import com.github.unchama.seichiassist.listener.PlayerJoinListener;
 import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
@@ -30,7 +32,7 @@ import com.github.unchama.seichiassist.listener.PlayerQuitListener;
 import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
-import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
 
 
 public class SeichiAssist extends JavaPlugin{
@@ -61,6 +63,11 @@ public class SeichiAssist extends JavaPlugin{
 
 	//総採掘量ランキング表示用データリスト
 	public static final List<Integer> ranklist = new ArrayList<Integer>();
+
+	/*
+	//総採掘量表示用int
+	public static int allplayerbreakblockint;
+	*/
 
 	//lvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
@@ -131,20 +138,8 @@ public class SeichiAssist extends JavaPlugin{
 			71265000,72265000,73265000,74265000,75265000,//190
 			76415000,77565000,78715000,79865000,81015000,//195
 			82165000,83315000,84465000,85615000,87115000//200
-
-
-			/* ver0.3.0以前の経験値テーブル
-			2487856,2637856,2787856,2937856,3087856,//65
-			3237856,3387856,3537856,3687856,3837856,//70
-			3987856,4162856,4337856,4512856,4687856,//75
-			4862856,5037856,5212856,5387856,5562856,//80
-			5737856,5937856,6137856,6337856,6537856,//85
-			6737856,6937856,7137856,7337856,7537856,//90
-			7737856,7962856,8187856,8412856,8637856,//95
-			8862856,9087856,9312856,9537856,9762856,//100
-			10000000//GOD
-			*/
 			));
+
 	public static final List<Material> materiallist = new ArrayList<Material>(Arrays.asList(
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
 			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
@@ -177,8 +172,6 @@ public class SeichiAssist extends JavaPlugin{
 		//コンフィグ系の設定は全てConfig.javaに移動
 		config = new Config(this);
 		config.loadConfig();
-		//plugin.ymlからガチャデータ読み込み
-		//config.loadGachaData();
 
 		//MySQL系の設定はすべてSql.javaに移動
 		sql = new Sql(this,config.getURL(), config.getDB(), config.getID(), config.getPW());
@@ -206,6 +199,7 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerPickupItemListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
 
 		//mysqlの値でplayermapを初期化する
 		//playermap = sql.loadAllPlayerData();
@@ -216,16 +210,15 @@ public class SeichiAssist extends JavaPlugin{
 			UUID uuid = p.getUniqueId();
 			//プレイヤーデータを生成
 			PlayerData playerdata = sql.loadPlayerData(p);
-			if(playerdata==null){
-				p.sendMessage("playerdataの読み込みエラーです。管理者に報告してください。");
+			if(playerdata == null){
+				p.sendMessage(ChatColor.RED + "playerdataの作成に失敗しました。管理者に報告してください");
+				getLogger().info(ChatColor.RED + "playerdataの作成に失敗しました");
 				continue;
 			}
-			//統計量を取得
-			int mines = Util.calcMineBlock(p);
-			playerdata.updata(p,mines);
-			playerdata.NotifySorryForBug(p);
 			//プレイヤーマップにプレイヤーを追加
 			playermap.put(uuid,playerdata);
+			//join時とonenable時、プレイヤーデータを最新の状態に更新
+			playerdata.UpdateonJoin(p);
 		}
 
 		//ランキングデータをセット
@@ -249,49 +242,63 @@ public class SeichiAssist extends JavaPlugin{
 		//全てのタスクをキャンセル
 		stopAllTaskRunnable();
 
-		/*
+
 		for(Player p : getServer().getOnlinePlayers()){
 			//UUIDを取得
 			UUID uuid = p.getUniqueId();
+			//プレイヤーデータ取得
 			PlayerData playerdata = playermap.get(uuid);
+			//quit時とondisable時、プレイヤーデータを最新の状態に更新
+			playerdata.UpdateonQuit(p);
+
+			//mysqlに送信
 			if(!sql.savePlayerData(playerdata)){
 				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
 			}
-
 		}
-		*/
 
 
+
+		/*
 		for(PlayerData playerdata : playermap.values()){
 			if(!sql.savePlayerData(playerdata)){
 				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
 			}
 		}
+		*/
 
 
+		/* マルチサーバー対応の為コメントアウト
 		if(!sql.saveGachaData()){
 			getLogger().info("ガチャデータ保存に失敗しました");
 		}
+		*/
 
 		if(!sql.disconnect()){
 			getLogger().info("データベース切断に失敗しました");
 		}
 
-		getLogger().info("SeichiPlugin is Disabled!");
+		getLogger().info("SeichiAssist is Disabled!");
 	}
 
 	public void startTaskRunnable(){
 		//一定時間おきに処理を実行するタスク
 		if(DEBUG){
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,500));
+			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,440,400));
 		}else{
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,100,36000));
+			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,36400,36000));
 		}
 
 		if(DEBUG){
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,300));
+			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,200));
 		}else{
 			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
+		}
+
+		if(DEBUG){
+			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,480,400));
+		}else{
+			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,18800,18000));
 		}
 	}
 

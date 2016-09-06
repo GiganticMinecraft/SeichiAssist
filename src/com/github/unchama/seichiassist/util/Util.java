@@ -16,7 +16,6 @@ import org.bukkit.FireworkEffect.Builder;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.Statistic;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -92,6 +91,10 @@ public class Util {
 		}
 	}
 
+	public static int toTickSecond(int _tick){
+		return _tick/20;
+	}
+
 	public static String toTimeString(int _second) {
 		int second = _second;
 		int minute = 0;
@@ -111,9 +114,11 @@ public class Util {
 		if(minute != 0){
 			time = time + minute + "分";
 		}
+		/*
 		if(second != 0){
 			time = time + second + "秒";
 		}
+		*/
 		return time;
 	}
 
@@ -223,25 +228,5 @@ public class Util {
 			}
 		}
 		return false;
-	}
-	//現在の採掘量順位を表示する
-	public static int calcPlayerRank(Player p){
-		//ランク用関数
-		int i = 0;
-		int t = calcMineBlock(p);
-		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.ranklist.get(i).intValue() > t){
-			i++;
-		}
-		return i+1;
-	}
-
-	//統計の総ブロック破壊数を出力する
-	public static int calcMineBlock(Player p){
-		int sum = 0;
-		for(Material m : SeichiAssist.materiallist){
-			sum += p.getStatistic(Statistic.MINE_BLOCK, m);
-		}
-		return  sum;
 	}
 }

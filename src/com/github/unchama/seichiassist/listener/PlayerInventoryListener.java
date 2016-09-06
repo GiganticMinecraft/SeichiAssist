@@ -116,15 +116,19 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData2(player));
 				return;
-			}else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 				return;
-			}else if(itemstackcurrent.getType().equals(Material.CHEST)){
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.CHEST)){
 				//レベルが足りない場合処理終了
-				if( playerdata.level < SeichiAssist.config.getMineStacklevel()){
-					player.sendMessage(ChatColor.GREEN + "整地レベルが"+SeichiAssist.config.getMineStacklevel()+ "以上必要です");
+				if( playerdata.level < SeichiAssist.config.getMineStacklevel(1)){
+					player.sendMessage(ChatColor.GREEN + "整地レベルが"+SeichiAssist.config.getMineStacklevel(1)+ "以上必要です");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					return;
 				}
@@ -133,99 +137,14 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getMineStackMenu(player));
 				return;
 			}
-
-			else if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
-				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getDualBreaklevel()){
-					playerdata.activenum = ActiveSkill.DUALBREAK.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:デュアルブレイク  が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
+			//スキルメニューを開く
+			else if(itemstackcurrent.getType().equals(Material.ENCHANTED_BOOK)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getSkillMenuData(player));
+				return;
 			}
 
-			else if(itemstackcurrent.getType().equals(Material.IRON_ORE)){
-				if(playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getTrialBreaklevel() && playerdata.activenum != ActiveSkill.TRIALBREAK.getNum()){
-					playerdata.activenum = ActiveSkill.TRIALBREAK.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:トリアルブレイク が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.GOLD_ORE)){
-				if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getExplosionlevel() && playerdata.activenum != ActiveSkill.EXPLOSION.getNum()){
-					playerdata.activenum = ActiveSkill.EXPLOSION.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:エクスプロージョン が選択されました");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
-				if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getThunderStormlevel() && playerdata.activenum != ActiveSkill.THUNDERSTORM.getNum()){
-					playerdata.activenum = ActiveSkill.THUNDERSTORM.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:サンダーストーム が選択されました");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
-				if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getBlizzardlevel() && playerdata.activenum != ActiveSkill.BLIZZARD.getNum()){
-					playerdata.activenum = ActiveSkill.BLIZZARD.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ブリザード が選択されました");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
-				if(playerdata.activenum == ActiveSkill.METEO.getNum()){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else if(playerdata.level >= config.getMeteolevel() && playerdata.activenum != ActiveSkill.METEO.getNum()){
-					playerdata.activenum = ActiveSkill.METEO.getNum();
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:メテオ が選択されました");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}else{
-					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-				}
-			}
 
 			//溜まったガチャ券をインベントリへ
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("unchama")){
@@ -360,6 +279,34 @@ public class PlayerInventoryListener implements Listener {
 				}
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				itemstackcurrent.setItemMeta(MenuInventoryData.EFButtonMeta(playerdata,itemmeta));
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.FLINT_AND_STEEL)){
+				// 死亡メッセージ表示トグル
+				playerdata.dispkilllogflag = !playerdata.dispkilllogflag;
+				if(playerdata.dispkilllogflag){
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.GREEN + "死亡メッセージ:表示");
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.sendMessage(ChatColor.RED + "死亡メッセージ:隠す");
+				}
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.dispKillLogToggleMeta(playerdata,itemmeta));
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.IRON_SWORD)){
+				// 死亡メッセージ表示トグル
+				playerdata.pvpflag = !playerdata.pvpflag;
+				if(playerdata.pvpflag){
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.GREEN + "PvP:ON");
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.sendMessage(ChatColor.RED + "PvP:OFF");
+				}
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.dispPvPToggleMeta(playerdata,itemmeta));
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.WHEAT)){
@@ -551,6 +498,123 @@ public class PlayerInventoryListener implements Listener {
 			}
 			*/
 
+		}else if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキル選択")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
+				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getDualBreaklevel()){
+					playerdata.activenum = ActiveSkill.DUALBREAK.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:デュアルブレイク  が選択されました");
+					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.IRON_ORE)){
+				if(playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getTrialBreaklevel() && playerdata.activenum != ActiveSkill.TRIALBREAK.getNum()){
+					playerdata.activenum = ActiveSkill.TRIALBREAK.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:トリアルブレイク が選択されました");
+					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
+
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.GOLD_ORE)){
+				if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getExplosionlevel() && playerdata.activenum != ActiveSkill.EXPLOSION.getNum()){
+					playerdata.activenum = ActiveSkill.EXPLOSION.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:エクスプロージョン が選択されました");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
+				if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getThunderStormlevel() && playerdata.activenum != ActiveSkill.THUNDERSTORM.getNum()){
+					playerdata.activenum = ActiveSkill.THUNDERSTORM.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:サンダーストーム が選択されました");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
+				if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getBlizzardlevel() && playerdata.activenum != ActiveSkill.BLIZZARD.getNum()){
+					playerdata.activenum = ActiveSkill.BLIZZARD.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ブリザード が選択されました");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
+				if(playerdata.activenum == ActiveSkill.METEO.getNum()){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else if(playerdata.level >= config.getMeteolevel() && playerdata.activenum != ActiveSkill.METEO.getNum()){
+					playerdata.activenum = ActiveSkill.METEO.getNum();
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:メテオ が選択されました");
+					playerdata.activemineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}else{
+					player.sendMessage(ChatColor.RED + "必要整地レベルが足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+				}
+			}
+
+
+
+
+
+
 		}else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack")){
 			event.setCancelled(true);
 
@@ -562,6 +626,14 @@ public class PlayerInventoryListener implements Listener {
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+
 			if(itemstackcurrent.getType().equals(Material.IRON_PICKAXE)){
 				// 対象ブロック自動スタック機能トグル
 				playerdata.minestackflag = !playerdata.minestackflag;
@@ -578,212 +650,100 @@ public class PlayerInventoryListener implements Listener {
 
 			//dirt
 			else if(itemstackcurrent.getType().equals(Material.DIRT)){
-				if(playerdata.minestack.dirt >= 64){
-					playerdata.minestack.dirt -= 64;
-					ItemStack itemstack = new ItemStack(Material.DIRT,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
+				playerdata.minestack.dirt = giveMineStack(player,playerdata.minestack.dirt,Material.DIRT);
 			}
 
 			//grass
 			else if(itemstackcurrent.getType().equals(Material.GRASS)){
-				if(playerdata.minestack.grass >= 64){
-					playerdata.minestack.grass -= 64;
-					ItemStack itemstack = new ItemStack(Material.GRASS,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
+				playerdata.minestack.grass = giveMineStack(player,playerdata.minestack.grass,Material.GRASS);
 			}
 
 			//gravel
 			else if(itemstackcurrent.getType().equals(Material.GRAVEL)){
-				if(playerdata.minestack.gravel >= 64){
-					playerdata.minestack.gravel -= 64;
-					ItemStack itemstack = new ItemStack(Material.GRAVEL,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
+				playerdata.minestack.gravel = giveMineStack(player,playerdata.minestack.gravel,Material.GRAVEL);
 			}
 
 			//cobblestone
 			else if(itemstackcurrent.getType().equals(Material.COBBLESTONE)){
-				if(playerdata.minestack.cobblestone >= 64){
-					playerdata.minestack.cobblestone -= 64;
-					ItemStack itemstack = new ItemStack(Material.COBBLESTONE,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
+				playerdata.minestack.cobblestone = giveMineStack(player,playerdata.minestack.cobblestone,Material.COBBLESTONE);
 			}
 
 			//stone
 			else if(itemstackcurrent.getType().equals(Material.STONE)){
-				if(playerdata.minestack.stone >= 64){
-					playerdata.minestack.stone -= 64;
-					ItemStack itemstack = new ItemStack(Material.STONE,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
+				playerdata.minestack.stone = giveMineStack(player,playerdata.minestack.stone,Material.STONE);
 			}
 
 			//sand
 			else if(itemstackcurrent.getType().equals(Material.SAND)){
-				if(playerdata.minestack.sand >= 64){
-					playerdata.minestack.sand -= 64;
-					ItemStack itemstack = new ItemStack(Material.SAND,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
+				playerdata.minestack.sand = giveMineStack(player,playerdata.minestack.sand,Material.SAND);
 			}
 
 			//sandstone
 			else if(itemstackcurrent.getType().equals(Material.SANDSTONE)){
-				if(playerdata.minestack.sandstone >= 64){
-					playerdata.minestack.sandstone -= 64;
-					ItemStack itemstack = new ItemStack(Material.SANDSTONE,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
+				playerdata.minestack.sandstone = giveMineStack(player,playerdata.minestack.sandstone,Material.SANDSTONE);
 			}
 
 			//netherrack
 			else if(itemstackcurrent.getType().equals(Material.NETHERRACK)){
-				if(playerdata.minestack.netherrack >= 64){
-					playerdata.minestack.netherrack -= 64;
-					ItemStack itemstack = new ItemStack(Material.NETHERRACK,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
+				playerdata.minestack.netherrack = giveMineStack(player,playerdata.minestack.netherrack,Material.NETHERRACK);
 			}
 
 			//soul_sand
 			else if(itemstackcurrent.getType().equals(Material.SOUL_SAND)){
-				if(playerdata.minestack.soul_sand >= 64){
-					playerdata.minestack.soul_sand -= 64;
-					ItemStack itemstack = new ItemStack(Material.SOUL_SAND,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
-			}
-
-			//quartz
-			else if(itemstackcurrent.getType().equals(Material.QUARTZ)){
-				if(playerdata.minestack.quartz >= 64){
-					playerdata.minestack.quartz -= 64;
-					ItemStack itemstack = new ItemStack(Material.QUARTZ,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
-			}
-
-			//quartz_ore
-			else if(itemstackcurrent.getType().equals(Material.QUARTZ_ORE)){
-				if(playerdata.minestack.quartz_ore >= 64){
-					playerdata.minestack.quartz_ore -= 64;
-					ItemStack itemstack = new ItemStack(Material.QUARTZ_ORE,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
+				playerdata.minestack.soul_sand = giveMineStack(player,playerdata.minestack.soul_sand,Material.SOUL_SAND);
 			}
 
 			//magma
 			else if(itemstackcurrent.getType().equals(Material.MAGMA)){
-				if(playerdata.minestack.magma >= 64){
-					playerdata.minestack.magma -= 64;
-					ItemStack itemstack = new ItemStack(Material.MAGMA,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
+				playerdata.minestack.magma = giveMineStack(player,playerdata.minestack.magma,Material.MAGMA);
 			}
 
 			//ender_stone
 			else if(itemstackcurrent.getType().equals(Material.ENDER_STONE)){
-				if(playerdata.minestack.ender_stone >= 64){
-					playerdata.minestack.ender_stone -= 64;
-					ItemStack itemstack = new ItemStack(Material.ENDER_STONE,64);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
+				playerdata.minestack.ender_stone = giveMineStack(player,playerdata.minestack.ender_stone,Material.ENDER_STONE);
+			}
+
+			//coal
+			else if(itemstackcurrent.getType().equals(Material.COAL)){
+				playerdata.minestack.coal = giveMineStack(player,playerdata.minestack.coal,Material.COAL);
+			}
+
+			//coal_ore
+			else if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
+				playerdata.minestack.coal_ore = giveMineStack(player,playerdata.minestack.coal_ore,Material.COAL_ORE);
+			}
+
+			//iron_ore
+			else if(itemstackcurrent.getType().equals(Material.IRON_ORE)){
+				playerdata.minestack.iron_ore = giveMineStack(player,playerdata.minestack.iron_ore,Material.IRON_ORE);
+			}
+
+			//quartz
+			else if(itemstackcurrent.getType().equals(Material.QUARTZ)){
+				playerdata.minestack.quartz = giveMineStack(player,playerdata.minestack.quartz,Material.QUARTZ);
+			}
+
+			//quartz_ore
+			else if(itemstackcurrent.getType().equals(Material.QUARTZ_ORE)){
+				playerdata.minestack.quartz_ore = giveMineStack(player,playerdata.minestack.quartz_ore,Material.QUARTZ_ORE);
 			}
 		}
+	}
+
+	private int giveMineStack(Player player,int minestack,Material type){
+		if(minestack >= 64){
+			minestack -= 64;
+			ItemStack itemstack = new ItemStack(type,64);
+			if(!Util.isPlayerInventryFill(player)){
+				Util.addItem(player,itemstack);
+			}else{
+				Util.dropItem(player,itemstack);
+			}
+			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+		}else{
+			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+		}
+		return minestack;
 	}
 
 	/*

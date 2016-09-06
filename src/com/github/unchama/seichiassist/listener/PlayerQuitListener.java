@@ -25,10 +25,18 @@ public class PlayerQuitListener implements Listener {
 		//プレイヤーのuuidを取得
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ取得
-		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		PlayerData playerdata = playermap.get(uuid);
+		//quit時とondisable時、プレイヤーデータを最新の状態に更新
+		playerdata.UpdateonQuit(player);
+
+		//mysqlに送信
 		if(!sql.savePlayerData(playerdata)){
 			Bukkit.getLogger().info(playerdata.name + "のデータ保存に失敗しました。");
 		}
+
+		//マルチサーバー対応の為の処理
+		//不要なplayerdataを削除
+		playermap.remove(uuid);
 
 	}
 

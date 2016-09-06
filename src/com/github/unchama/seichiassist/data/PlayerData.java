@@ -6,7 +6,9 @@ import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -56,14 +58,29 @@ public class PlayerData {
 	public boolean skillcanbreakflag;
 	//ワールドガード保護自動設定用
 	public int rgnum;
-	//ランキング算出用トータル破壊ブロック
-	public int totalbreaknum;
 	//スキル発動中だけtrueになるフラグ
 	public boolean skillflag;
 	//MineStack
 	public MineStack minestack;
 	//MineStackFlag
 	public boolean minestackflag;
+	//プレイ時間差分計算用int
+	public int servertick;
+	//プレイ時間
+	public int playtick;
+	//キルログ表示トグル
+	public boolean dispkilllogflag;
+	//PvPトグル
+	public boolean pvpflag;
+	//現在座標
+	public Location loc;
+	//放置時間
+	public int idletime;
+
+	//トータル破壊ブロック
+	public int totalbreaknum;
+	//各統計値差分計算用配列
+	private List<Integer> staticdata;
 
 
 
@@ -88,19 +105,41 @@ public class PlayerData {
 		activenum = 1;
 		skillcanbreakflag = true;
 		rgnum = 0;
-		totalbreaknum = Util.calcMineBlock(player);
 		skillflag = false;
 		minestack = new MineStack();
 		minestackflag = true;
+		servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
+		playtick = 0;
+		dispkilllogflag = false;
+		pvpflag = false;
+		loc = null;
+		idletime = 0;
+		staticdata = new ArrayList<Integer>();
+
+		totalbreaknum = 0;
+		for(Material m : SeichiAssist.materiallist){
+			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
+		}
+
 	}
 
-	//プレイヤーデータを最新の状態に更新
-	public void updata(Player player,int mines) {
+	//join時とonenable時、プレイヤーデータを最新の状態に更新
+	public void UpdateonJoin(Player player) {
 		//破壊量データ(before)を設定
-		minuteblock.before = mines;
-		halfhourblock.before = mines;
-		levelupdata(player,mines);
+		minuteblock.before = totalbreaknum;
+		halfhourblock.before = totalbreaknum;
+		levelupdata(player);
+		NotifySorryForBug(player);
 	}
+
+	//quit時とondisable時、プレイヤーデータを最新の状態に更新
+	public void UpdateonQuit(Player player){
+		//総整地量を更新
+		calcMineBlock(player);
+		//総プレイ時間更新
+		calcPlayTick(player);
+	}
+
 	//詫び券の配布
 	public void giveSorryForBug(Player player){
 		ItemStack skull = Util.getskull(Util.getName(player));
@@ -148,26 +187,17 @@ public class PlayerData {
 		}
 	}
 
-	//プレイヤーネームを更新
-	public void renewName(Player new_player) {
-		//現在のplayername を取得
-				String now_name = Util.getName(new_player);
-				//UUIDは同じだがplayernameが異なっているとき
-				if(!now_name.equals(name)){
-					name = now_name;
-				}
-	}
 
 
 	//オフラインかどうか
 	public boolean isOffline() {
-		return SeichiAssist.plugin.getServer().getPlayer(name) == null;
+		return SeichiAssist.plugin.getServer().getPlayer(uuid) == null;
 	}
 
 
 	//レベルを更新
-	public void levelupdata(Player p,int mines) {
-		calcPlayerLevel(p,mines);
+	public void levelupdata(Player p) {
+		calcPlayerLevel(p);
 		setDisplayName(p);
 	}
 
@@ -183,9 +213,21 @@ public class PlayerData {
 		String displayname = Util.getName(p);
 		if(p.isOp()){
 			//管理人の場合
-			displayname = ChatColor.RED + "<管理人>" + name;
+			if(idletime >= 10){
+				displayname = ChatColor.DARK_GRAY + "<管理人>" + name;
+			}else if(idletime >= 3){
+				displayname = ChatColor.GRAY + "<管理人>" + name;
+			}else{
+				displayname = ChatColor.RED + "<管理人>" + name;
+			}
 		}
 		displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
+
+		if(idletime >= 10){
+			displayname = ChatColor.DARK_GRAY + displayname;
+		}else if(idletime >= 3){
+			displayname = ChatColor.GRAY + displayname;
+		}
 
 		p.setDisplayName(displayname);
 		p.setPlayerListName(displayname);
@@ -193,50 +235,115 @@ public class PlayerData {
 
 
 	//プレイヤーレベルを計算し、更新する。
-	private void calcPlayerLevel(Player p,int mines){
+	private void calcPlayerLevel(Player p){
 		//現在のランクの次を取得
-		int i = level + 1;
+		int i = level;
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.levellist.get(i).intValue() <= mines && i <= SeichiAssist.levellist.size()){
+		while(SeichiAssist.levellist.get(i).intValue() <= totalbreaknum && i <= SeichiAssist.levellist.size()){
 
 			//レベルアップ時のメッセージ
-			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i-1)+")→Lv("+i+")】");
+			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i)+")→Lv("+(i+1)+")】");
 			//レベルアップ時の花火の打ち上げ
 			Location loc = p.getLocation();
 			Util.launchFireWorks(loc);
-			String lvmessage = SeichiAssist.config.getLvMessage(i);
+			String lvmessage = SeichiAssist.config.getLvMessage(i+1);
 			if(!(lvmessage.isEmpty())){
 				p.sendMessage(ChatColor.AQUA+lvmessage);
 			}
 
 			i++;
 		}
-		level = i-1;
+		level = i;
 	}
+
+	//総プレイ時間を更新する
+	public void calcPlayTick(Player p){
+		int getservertick = p.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
+		int getincrease = getservertick - servertick;
+		servertick = getservertick;
+		if(SeichiAssist.DEBUG){
+			p.sendMessage("総プレイ時間に追加したtick:" + getincrease);
+		}
+		playtick += getincrease;
+	}
+
+	//総破壊ブロック数を更新する
+	public void calcMineBlock(Player p){
+		int i = 0;
+		double sum = 0.0;
+		for(Material m : SeichiAssist.materiallist){
+			int getstat = p.getStatistic(Statistic.MINE_BLOCK, m);
+			int getincrease = getstat - staticdata.get(i);
+			sum += calcBlockExp(m,getincrease);
+			if(SeichiAssist.DEBUG){
+				p.sendMessage("calcの値:" + calcBlockExp(m,getincrease) + "(" + m + ")");
+			}
+			staticdata.set(i, getstat);
+			i++;
+		}
+		//double値を四捨五入
+		int x = (int)( sum < 0.0 ? sum-0.5 : sum+0.5 );
+		if(SeichiAssist.DEBUG){
+			p.sendMessage("整地量に追加した値:" + x);
+		}
+		totalbreaknum += x;
+	}
+
+	//ブロック別整地数反映量の調節
+	private double calcBlockExp(Material m,int i){
+		double result = (double)i;
+		//ブロック別重み分け
+		switch(m){
+		case DIRT:
+			//DIRTとGRASSは二重カウントされているので半分に
+			result *= 0.5;
+			break;
+		case GRASS:
+			//DIRTとGRASSは二重カウントされているので半分に
+			result *= 0.5;
+			break;
+		default:
+			break;
+		}
+		return result;
+	}
+
+	//現在の採掘量順位を表示する
+	public int calcPlayerRank(Player p){
+		//ランク用関数
+		int i = 0;
+		int t = totalbreaknum;
+		//ランクが上がらなくなるまで処理
+		while(SeichiAssist.ranklist.get(i).intValue() > t){
+			i++;
+		}
+		return i+1;
+	}
+
 	//パッシブスキルの獲得量表示
 	public int dispPassiveExp() {
 		if(level < 8){
 			return 0;
 		}else if (level < 18){
-			return SeichiAssist.config.getDropExplevel1();
+			return SeichiAssist.config.getDropExplevel(1);
 		}else if (level < 28){
-			return SeichiAssist.config.getDropExplevel2();
+			return SeichiAssist.config.getDropExplevel(2);
 		}else if (level < 38){
-			return SeichiAssist.config.getDropExplevel3();
+			return SeichiAssist.config.getDropExplevel(3);
 		}else if (level < 48){
-			return SeichiAssist.config.getDropExplevel4();
+			return SeichiAssist.config.getDropExplevel(4);
 		}else if (level < 58){
-			return SeichiAssist.config.getDropExplevel5();
+			return SeichiAssist.config.getDropExplevel(5);
 		}else if (level < 68){
-			return SeichiAssist.config.getDropExplevel6();
+			return SeichiAssist.config.getDropExplevel(6);
 		}else if (level < 78){
-			return SeichiAssist.config.getDropExplevel7();
+			return SeichiAssist.config.getDropExplevel(7);
 		}else if (level < 88){
-			return SeichiAssist.config.getDropExplevel8();
+			return SeichiAssist.config.getDropExplevel(8);
 		}else if (level < 98){
-			return SeichiAssist.config.getDropExplevel9();
+			return SeichiAssist.config.getDropExplevel(9);
 		}else{
-			return SeichiAssist.config.getDropExplevel10();
+			return SeichiAssist.config.getDropExplevel(10);
 		}
 	}
 	//四次元ポケットのサイズを取得
@@ -255,5 +362,4 @@ public class PlayerData {
 			return 9*6;
 		}
 	}
-
 }

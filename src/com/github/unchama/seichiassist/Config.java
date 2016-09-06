@@ -13,32 +13,29 @@ public class Config{
 	Config(SeichiAssist _plugin){
 		plugin = _plugin;
 		saveDefaultConfig();
-
 	}
+
 	//コンフィグのロード
 	public void loadConfig(){
 		config = getConfig();
-
 	}
-	//コンフィグのリロード
 
+	//コンフィグのリロード
 	public void reloadConfig(){
 		plugin.reloadConfig();
 		config = getConfig();
 	}
-
 
 	//コンフィグのセーブ
 	public void saveConfig(){
 		plugin.saveConfig();
 	}
 
-
-
 	//plugin.ymlがない時にDefaultのファイルを生成
 	public void saveDefaultConfig(){
 		plugin.saveDefaultConfig();
 	}
+
 	//plugin.ymlファイルからの読み込み
 	public FileConfiguration getConfig(){
 		return plugin.getConfig();
@@ -93,44 +90,19 @@ public class Config{
 	public int getGravitylevel() {
 		return Util.toInt(config.getString("gravitylevel"));
 	}
-	public int getDropExplevel1() {
-		return Util.toInt(config.getString("dropexplevel1"));
+
+	public int getDropExplevel(int i){
+		return Util.toInt(config.getString("dropexplevel" + i,""));
 	}
-	public int getDropExplevel2() {
-		return Util.toInt(config.getString("dropexplevel2"));
-	}
-	public int getDropExplevel3() {
-		return Util.toInt(config.getString("dropexplevel3"));
-	}
-	public int getDropExplevel4() {
-		return Util.toInt(config.getString("dropexplevel4"));
-	}
-	public int getDropExplevel5() {
-		return Util.toInt(config.getString("dropexplevel5"));
-	}
-	public int getDropExplevel6() {
-		return Util.toInt(config.getString("dropexplevel6"));
-	}
-	public int getDropExplevel7() {
-		return Util.toInt(config.getString("dropexplevel7"));
-	}
-	public int getDropExplevel8() {
-		return Util.toInt(config.getString("dropexplevel8"));
-	}
-	public int getDropExplevel9() {
-		return Util.toInt(config.getString("dropexplevel9"));
-	}
-	public int getDropExplevel10() {
-		return Util.toInt(config.getString("dropexplevel10"));
-	}
+
 	public int getPassivePortalInventorylevel() {
 		return Util.toInt(config.getString("passiveportalinventorylevel"));
 	}
 	public int getDokodemoEnderlevel() {
 		return Util.toInt(config.getString("dokodemoenderlevel"));
 	}
-	public int getMineStacklevel() {
-		return Util.toInt(config.getString("minestacklevel"));
+	public int getMineStacklevel(int i) {
+		return Util.toInt(config.getString("minestacklevel" + i,""));
 	}
 	public String getDB(){
 		return config.getString("db");
@@ -154,16 +126,8 @@ public class Config{
 	}
 
 	public String getLvMessage(int i) {
-		String str;
-		str = config.getString("lv" + i + "message","");
-		return str;
+		return config.getString("lv" + i + "message","");
 	}
-
-
-
-
-
-
 
 
 }
