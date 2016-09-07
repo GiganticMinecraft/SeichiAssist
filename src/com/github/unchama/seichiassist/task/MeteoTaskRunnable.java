@@ -14,6 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.LargeFireball;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -73,6 +74,49 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 	}
 	@Override
 	public void run() {
+		/*
+		 * ツール所持&耐久値確認処理ここから
+		 */
+		//プレイヤーインベントリを取得
+		PlayerInventory inventory = player.getInventory();
+		//メインハンドとオフハンドを取得
+		ItemStack mainhanditem = inventory.getItemInMainHand();
+		ItemStack offhanditem = inventory.getItemInOffHand();
+		//実際に使用するツールを格納する
+		ItemStack tool = null;
+		//メインハンドにツールがあるか
+		boolean mainhandtoolflag = SeichiAssist.breakmateriallist.contains(mainhanditem.getType());
+		//オフハンドにツールがあるか
+		boolean offhandtoolflag = SeichiAssist.breakmateriallist.contains(offhanditem.getType());
+
+		//場合分け
+		if(mainhandtoolflag){
+			//メインハンドの時
+			tool = mainhanditem;
+		}else if(offhandtoolflag){
+			//サブハンドの時
+			//フラグ折る
+			playerdata.skillflag = false;
+			cancel();
+			return;
+		}else{
+			//どちらにももっていない時処理を終了
+			//フラグ折る
+			playerdata.skillflag = false;
+			cancel();
+			return;
+		}
+		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
+		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
+			//フラグ折る
+			playerdata.skillflag = false;
+			cancel();
+			return;
+		}
+		/*
+		 * ここまで
+		 */
+
 		if(meteoflag){
 			//フラグ折っとく
 			playerdata.skillflag = false;

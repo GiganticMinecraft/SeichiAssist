@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.listener;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,23 +34,42 @@ public class PlayerJoinListener implements Listener {
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent e) {
 		if ((e.getResult().equals(PlayerLoginEvent.Result.KICK_FULL))) {
-			if(e.getPlayer().hasPermission("SeichiAssist.fullstay")){
-				e.allow();
-				return;
-			}
+			//満員時、キック対象のプレイヤーを検索
 			for(Player p : plugin.getServer().getOnlinePlayers()){
 				if(p.hasPermission("SeichiAssist.fullstay")){
+					//権限持ちはスルー
 					continue;
 				}
 				//UUIDを取得
 				UUID uuid = p.getUniqueId();
+				//playerdata取得
 				PlayerData playerdata = playermap.get(uuid);
+				//念のためエラー分岐
+				if(playerdata == null){
+					p.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+					plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[満員時キック処理]でエラー発生");
+					plugin.getLogger().warning(p.getName() + "のplayerdataがありません。開発者に報告してください");
+					continue;
+				}
+				//閾値を超えていたら追い出しを実行して処理を終了
 				if(playerdata.idletime >= 10){
+					plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "満員の為放置プレイヤーを追い出します");
+					Util.sendEveryMessage(ChatColor.YELLOW + "満員の為放置プレイヤーを追い出します");
 					p.kickPlayer("放置プレイヤーはキックされます(満員時のみ)。再度ログインすることが可能です。");
 					e.allow();
-					break;
+					return;
 				}
 			}
+			//キック対象が居なかったら…
+
+			//権限持ちはログインさせる
+			if(e.getPlayer().hasPermission("SeichiAssist.fullstay")){
+				e.allow();
+				return;
+			}
+
+			//メッセージ表示
+			e.disallow(PlayerLoginEvent.Result.KICK_FULL, "満員かつ放置プレイヤーが居なかった為入れませんでした。しばらく経ってから再度お試し下さい");
 		}
 	}
 
@@ -61,28 +81,20 @@ public class PlayerJoinListener implements Listener {
 		Player player = event.getPlayer();
 		//プレイヤーのuuidを取得
 		UUID uuid = player.getUniqueId();
-		//プレイヤーデータを宣言
-		PlayerData playerdata = null;
-		//ログインしたプレイヤーのデータが残っていなかった時にPlayerData作成
-		if(!playermap.containsKey(uuid)){
-			//新しいplayerdataを作成
-			playerdata = sql.loadPlayerData(player);
-			//playermapに追加
-			playermap.put(uuid, playerdata);
-		}else{
-			playerdata = playermap.get(uuid);
-			playerdata.idletime = 0;
-			//もし名前変更されていたら
-			if(!Util.getName(player).equals(playerdata.name)){
-				//すでにあるプレイヤーデータの名前を更新しておく
-				playerdata.name = Util.getName(player);
-			}
+		//プレイヤーデータ作成
+		PlayerData playerdata = sql.loadPlayerData(player);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataの作成に失敗しました。管理者に報告してください");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[join処理]でエラー発生");
+			plugin.getLogger().warning(player.getName() + "のplayerdataの作成に失敗しました。開発者に報告してください");
+			return;
 		}
+		//playermapに追加
+		playermap.put(uuid, playerdata);
+		//join時とonenable時、プレイヤーデータを最新の状態に更新
+		playerdata.UpdateonJoin(player);
 
-		//統計量を取得
-		int mines = Util.calcMineBlock(player);
-		playerdata.updata(player,mines);
-		playerdata.NotifySorryForBug(player);
 		//初見さんへの処理
 		if(!player.hasPlayedBefore()){
 			//初見さんへのメッセージ文
