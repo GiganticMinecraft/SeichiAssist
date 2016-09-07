@@ -41,10 +41,14 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 				plugin.getLogger().info(ChatColor.RED + playerdata.name + "のデータ保存に失敗しました");
 			}
 		}
-		//ランキングデータをセット
-		sql.setRanking();
+
 		Util.sendEveryMessage(ChatColor.AQUA + "プレイヤーデータセーブ完了");
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "プレイヤーデータセーブ完了");
+
+		//ランキングデータをセット
+		if(!sql.setRanking()){
+			plugin.getLogger().info("ランキングデータの作成に失敗しました");
+		}
 	}
 
 }

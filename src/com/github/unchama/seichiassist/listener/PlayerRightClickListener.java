@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -136,10 +137,6 @@ public class PlayerRightClickListener implements Listener {
 			if(SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInMainHand().getType())){
 				//メインハンドで指定ツールを持っていた時の処理
 
-				//アクション実行がオフハンドだった時の処理終了
-				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
-					return;
-				}
 				//アクション実行されたブロックがある場合の処理
 				if(action.equals(Action.RIGHT_CLICK_BLOCK)){
 					//クリックされたブロックの種類を取得
@@ -157,7 +154,7 @@ public class PlayerRightClickListener implements Listener {
 				//念のためエラー分岐
 				if(playerdata == null){
 					player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-					plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
+					plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
 					plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 					return;
 				}
@@ -165,10 +162,15 @@ public class PlayerRightClickListener implements Listener {
 				if( playerdata.level < SeichiAssist.config.getDualBreaklevel()){
 					return;
 				}
-				/*
+
 				//設置をキャンセル
 				event.setCancelled(true);
-				*/
+
+				//アクション実行がオフハンドだった時の処理終了
+				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+					return;
+				}
+
 
 				int activemineflagnum = 0;
 
@@ -257,10 +259,10 @@ public class PlayerRightClickListener implements Listener {
 		if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)){
 			//メインハンドに棒を持っているときの処理
 
-			/*
+
 			//アクションキャンセル
 			event.setCancelled(true);
-			*/
+
 
 			if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 				//右クリックの処理
@@ -270,7 +272,11 @@ public class PlayerRightClickListener implements Listener {
 				}
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getMenuData(player));
+				Inventory inv = MenuInventoryData.getMenuData(player);
+				if(inv == null){
+					return;
+				}
+				player.openInventory(inv);
 			}
 		}
 	}

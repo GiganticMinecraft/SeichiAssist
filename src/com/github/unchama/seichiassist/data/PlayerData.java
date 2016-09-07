@@ -313,9 +313,11 @@ public class PlayerData {
 		//ランク用関数
 		int i = 0;
 		int t = totalbreaknum;
+		RankData rankdata = SeichiAssist.ranklist.get(i);
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.ranklist.get(i).intValue() > t){
+		while(rankdata.totalbreaknum > t){
 			i++;
+			rankdata = SeichiAssist.ranklist.get(i);
 		}
 		return i+1;
 	}

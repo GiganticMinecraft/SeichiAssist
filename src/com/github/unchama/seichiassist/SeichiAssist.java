@@ -22,6 +22,7 @@ import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.listener.EntityListener;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
@@ -63,12 +64,10 @@ public class SeichiAssist extends JavaPlugin{
 	public static final HashMap<UUID,PlayerData> playermap = new HashMap<UUID,PlayerData>();
 
 	//総採掘量ランキング表示用データリスト
-	public static final List<Integer> ranklist = new ArrayList<Integer>();
+	public static final List<RankData> ranklist = new ArrayList<RankData>();
 
-	/*
 	//総採掘量表示用int
 	public static int allplayerbreakblockint;
-	*/
 
 	//lvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
@@ -201,9 +200,6 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerPickupItemListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
-
-		//mysqlの値でplayermapを初期化する
-		//playermap = sql.loadAllPlayerData();
 
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){

@@ -17,6 +17,7 @@ import org.bukkit.inventory.Inventory;
 
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -211,6 +212,8 @@ public class Sql{
 				",add column if not exists pvpflag boolean default false" +
 				",add column if not exists loginflag boolean default false" +
 				",add index if not exists name_index(name)" +
+				",add index if not exists uuid_index(uuid)" +
+				",add index if not exists ranking_index(totalbreaknum)" +
 				"";
 		return putCommand(command);
 	}
@@ -301,8 +304,8 @@ public class Sql{
 	 				return null;
 	 			}
 	 	 		if(i < 5&&flag){
-	 	 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "のloginflag=false待ち…(" + (i+1) + "回目)");
-	 	 			p.sendMessage(ChatColor.YELLOW + "PlayerDataの取得待ちです。しばらくお待ちください…");
+	 	 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "のloginflag=false待機…(" + (i+1) + "回目)");
+	 	 			p.sendMessage(ChatColor.YELLOW + "PlayerDataの取得待機中。しばらくお待ちください…");
 	 	 			//次のリクエストまで1000ms待つ
 	 	 			try {
 						Thread.sleep(2000);
@@ -525,17 +528,25 @@ public class Sql{
 
 	//ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
 	public boolean setRanking() {
+		plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		List<Integer> ranklist = SeichiAssist.ranklist;
+		List<RankData> ranklist = SeichiAssist.ranklist;
 		ranklist.clear();
+		SeichiAssist.allplayerbreakblockint = 0;
 
 		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
-		String command = "select totalbreaknum from " + table
-				+ " where 1 order by " + table + ".totalbreaknum desc";
+		String command = "select name,level,totalbreaknum from " + table
+				+ " order by totalbreaknum desc";
  		try{
 			rs = stmt.executeQuery(command);
 			while (rs.next()) {
-				ranklist.add(rs.getInt(1));
+				RankData rankdata = new RankData();
+				rankdata.name = rs.getString("name");
+				rankdata.level = rs.getInt("level");
+				rankdata.totalbreaknum = rs.getInt("totalbreaknum");
+				ranklist.add(rankdata);
+				SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
 				  }
 			rs.close();
 		} catch (SQLException e) {
@@ -544,6 +555,8 @@ public class Sql{
 			e.printStackTrace();
 			return false;
 		}
+		plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+		Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
  		return true;
 	}
 
