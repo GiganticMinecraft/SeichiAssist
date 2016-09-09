@@ -60,25 +60,41 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//プレイﾔｰが必ずオンラインと分かっている処理
 			//プレイヤーを取得
 			Player player = plugin.getServer().getPlayer(playerdata.uuid);
+
+			//放置判定
+			if(player.getLocation().equals(playerdata.loc)){
+				playerdata.idletime ++;
+				if(SeichiAssist.DEBUG){
+					Util.sendEveryMessage(playerdata.name + "のidletime加算" + playerdata.idletime);
+				}
+			}else{
+				playerdata.loc = player.getLocation();
+				playerdata.idletime = 0;
+				if(SeichiAssist.DEBUG){
+					Util.sendEveryMessage(playerdata.name + "のidletimeリセット");
+				}
+			}
+
 			//プレイヤー名を取得
 			String name = Util.getName(player);
-			int mines = Util.calcMineBlock(player);
-			//Levelを設定
-			playerdata.levelupdata(player,mines);
-			//ランキング表示用総整地量を更新
-			playerdata.totalbreaknum = mines;
+			//総整地量を更新
+			playerdata.calcMineBlock(player);
+			//Levelを設定(必ず総整地量更新後に実施！)
+			playerdata.levelupdata(player);
 			//総プレイ時間更新
-			playerdata.playtick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
+			playerdata.calcPlayTick(player);
 
 			if(SeichiAssist.DEBUG){
 				Util.sendEveryMessage(playerdata.name + "のランク処理完了");
 			}
+
+			//以下の3つ、必ずこの順番で実施！(after更新→setIncrease→before更新)
 			//現在（after）の統計量を設定
-			playerdata.minuteblock.after = mines;
+			playerdata.minuteblock.after = playerdata.totalbreaknum;
 			//1分前(before)との差を計算し、設定
 			playerdata.minuteblock.setIncrease();
 			//現在の統計量を設定(before)
-			playerdata.minuteblock.before = mines;
+			playerdata.minuteblock.before = playerdata.totalbreaknum;
 
 
 			//effectの大きさ

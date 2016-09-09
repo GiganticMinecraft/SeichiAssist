@@ -63,6 +63,13 @@ public class PlayerBlockBreakListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//UUIDを基にプレイヤーデータ取得
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
+			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return;
+		}
 		//特定スキル発動中は処理を終了
 		if(playerdata.skillflag){
 			//ブロック破壊もさせない

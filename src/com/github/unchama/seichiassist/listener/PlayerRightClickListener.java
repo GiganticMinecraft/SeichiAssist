@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -25,6 +26,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerRightClickListener implements Listener {
+	SeichiAssist plugin = SeichiAssist.plugin;
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
 	//プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
@@ -34,9 +36,6 @@ public class PlayerRightClickListener implements Listener {
 		Player player = event.getPlayer();
 		//プレイヤーが起こしたアクションを取得
 		Action action = event.getAction();
-
-
-
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			if(event.getMaterial().equals(Material.SKULL_ITEM)){
@@ -125,33 +124,19 @@ public class PlayerRightClickListener implements Listener {
 	public void onPlayerActiveSkillToggleEvent(PlayerInteractEvent event){
 		//プレイヤーを取得
 		Player player = event.getPlayer();
-		//UUIDを取得
-		UUID uuid = player.getUniqueId();
-		//playerdataを取得
-		PlayerData playerdata = playermap.get(uuid);
 		//プレイヤーの起こしたアクションの取得
 		Action action = event.getAction();
 		//アクションを起こした手を取得
 		EquipmentSlot equipmentslot = event.getHand();
 
-		//アクティブスキルを発動できるレベルに達していない場合処理終了
-		if( playerdata.level < SeichiAssist.config.getDualBreaklevel()){
-			return;
-		}
-
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			//スニークしていなかったら処理終了
 			if(!player.isSneaking()){
 				return;
-			}else if(SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInMainHand().getType())){
+			}
+			if(SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInMainHand().getType())){
 				//メインハンドで指定ツールを持っていた時の処理
 
-				//アクション実行がオフハンドだった時の処理終了
-				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
-					//設置をキャンセル
-					event.setCancelled(true);
-					return;
-				}
 				//アクション実行されたブロックがある場合の処理
 				if(action.equals(Action.RIGHT_CLICK_BLOCK)){
 					//クリックされたブロックの種類を取得
@@ -161,6 +146,32 @@ public class PlayerRightClickListener implements Listener {
 						return;
 					}
 				}
+
+				//UUIDを取得
+				UUID uuid = player.getUniqueId();
+				//playerdataを取得
+				PlayerData playerdata = playermap.get(uuid);
+				//念のためエラー分岐
+				if(playerdata == null){
+					player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+					plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
+					plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+					return;
+				}
+				//アクティブスキルを発動できるレベルに達していない場合処理終了
+				if( playerdata.level < SeichiAssist.config.getDualBreaklevel()){
+					return;
+				}
+
+				//設置をキャンセル
+				event.setCancelled(true);
+
+				//アクション実行がオフハンドだった時の処理終了
+				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+					return;
+				}
+
+
 				int activemineflagnum = 0;
 
 				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum() || playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
@@ -245,18 +256,27 @@ public class PlayerRightClickListener implements Listener {
 		//アクションを起こした手を取得
 		EquipmentSlot equipmentslot = event.getHand();
 
-		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-			//右クリックの処理
-			if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)){
-				//メインハンドに棒を持っているときの処理
+		if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)){
+			//メインハンドに棒を持っているときの処理
 
+
+			//アクションキャンセル
+			event.setCancelled(true);
+
+
+			if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+				//右クリックの処理
 				//オフハンドのアクション実行時処理を終了
 				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
 					return;
 				}
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getMenuData(player));
+				Inventory inv = MenuInventoryData.getMenuData(player);
+				if(inv == null){
+					return;
+				}
+				player.openInventory(inv);
 			}
 		}
 	}
@@ -265,10 +285,6 @@ public class PlayerRightClickListener implements Listener {
 	public void onPlayerOpenInventorySkillEvent(PlayerInteractEvent event){
 		//プレイヤーを取得
 		Player player = event.getPlayer();
-		//UUIDを取得
-		UUID uuid = player.getUniqueId();
-		//playerdataを取得
-		PlayerData playerdata = playermap.get(uuid);
 		//プレイヤーが起こしたアクションを取得
 		Action action = event.getAction();
 		//使った手を取得
@@ -277,6 +293,17 @@ public class PlayerRightClickListener implements Listener {
 		if(event.getMaterial().equals(Material.ENDER_PORTAL_FRAME)){
 			//設置をキャンセル
 			event.setCancelled(true);
+			//UUIDを取得
+			UUID uuid = player.getUniqueId();
+			//playerdataを取得
+			PlayerData playerdata = playermap.get(uuid);
+			//念のためエラー分岐
+			if(playerdata == null){
+				player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[インベントリから四次元ポケットOPEN処理]でエラー発生");
+				plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+				return;
+			}
 			//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
 			if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
 				player.sendMessage(ChatColor.GREEN + "4次元ポケットを入手するには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です。");

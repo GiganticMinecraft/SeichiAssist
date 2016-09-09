@@ -60,7 +60,7 @@ public class gachaCommand implements TabExecutor{
 			sender.sendMessage("ガチャリストを全消去する。取扱注意");
 			sender.sendMessage(ChatColor.RED + "/gacha save");
 			sender.sendMessage("コマンドによるガチャリストへの変更をmysqlに送信");
-			sender.sendMessage(ChatColor.DARK_GRAY + "※onDisable時と同じ処理");
+			sender.sendMessage(ChatColor.DARK_RED + "※変更したら必ずsaveコマンドを実行(セーブされません)");
 			sender.sendMessage(ChatColor.RED + "/gacha reload");
 			sender.sendMessage("ガチャリストをmysqlから読み込む");
 			sender.sendMessage(ChatColor.DARK_GRAY + "※onEnable時と同じ処理");
@@ -110,11 +110,13 @@ public class gachaCommand implements TabExecutor{
 						return true;
 					}else{
 						sender.sendMessage(name + "はオフラインなので");
-						sender.sendMessage("playerdataとmysqlデータ双方にガチャ券データを書き込みます");
+						sender.sendMessage("mysqlデータにガチャ券データを書き込みます");
 						sender.sendMessage("追加するガチャ券:" + num + "枚");
 						//プレイヤーがオフラインの時の処理
 						@SuppressWarnings("deprecation")
 						UUID uuid = plugin.getServer().getOfflinePlayer(name).getUniqueId();
+
+						/*
 						//playerdata取得
 						PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 						//playerdataが取得できた場合は書き込んでおく
@@ -124,6 +126,8 @@ public class gachaCommand implements TabExecutor{
 						}else{
 							sender.sendMessage("・playerdataは見つかりませんでした");
 						}
+						*/
+
 						//mysqlにも書き込んどく
 						if(!sql.addPlayerBug(uuid,num)){
 							sender.sendMessage("・mysqlへの書き込み失敗");
@@ -163,7 +167,7 @@ public class gachaCommand implements TabExecutor{
 			SeichiAssist.gachadatalist.clear();
 			SeichiAssist.config.loadGachaData();
 			sender.sendMessage("config.ymlからガチャデータをロードしました");
-			sender.sendMessage("/gacha saveかプラグインをリロードするとmysqlに保存されます");
+			sender.sendMessage("/gacha saveでmysqlに保存してください");
 			return true;
 
 		}else if(args[0].equalsIgnoreCase("save")){
@@ -301,7 +305,7 @@ public class gachaCommand implements TabExecutor{
 
 		SeichiAssist.gachadatalist.add(gachadata);
 		player.sendMessage(gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + gachadata.amount + "個を確率" + gachadata.probability + "としてガチャに追加しました");
-		player.sendMessage("/gacha saveかプラグインをリロードするとmysqlに保存されます");
+		player.sendMessage("/gacha saveでmysqlに保存してください");
 	}
 	private void Gachalist(CommandSender sender){
 		int i = 1;
@@ -323,7 +327,7 @@ public class gachaCommand implements TabExecutor{
 		GachaData gachadata = SeichiAssist.gachadatalist.get(num-1);
 		SeichiAssist.gachadatalist.remove(num-1);
 		sender.sendMessage(num + "|" + gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "|" + gachadata.amount + "|" + gachadata.probability + "を削除しました");
-		sender.sendMessage("/gacha saveかプラグインをリロードするとmysqlに保存されます");
+		sender.sendMessage("/gacha saveでmysqlに保存してください");
 	}
 	private void GachaEditAmount(CommandSender sender,int num,int amount) {
 		if(num < 1 || SeichiAssist.gachadatalist.size() < num){
@@ -344,7 +348,7 @@ public class gachaCommand implements TabExecutor{
 		gachadata.probability = probability;
 		SeichiAssist.gachadatalist.set(num-1,gachadata);
 		sender.sendMessage(num + "|" + gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "の確率を" + gachadata.probability + "個に変更しました");
-		sender.sendMessage("/gacha saveかプラグインをリロードするとmysqlに保存されます");
+		sender.sendMessage("/gacha saveでmysqlに保存してください");
 	}
 	private void GachaMove(CommandSender sender,int num,int tonum) {
 		if(num < 1 || SeichiAssist.gachadatalist.size() < num){
@@ -359,12 +363,12 @@ public class gachaCommand implements TabExecutor{
 		SeichiAssist.gachadatalist.remove(num-1);
 		SeichiAssist.gachadatalist.add(tonum-1,gachadata);
 		sender.sendMessage(num + "|" + gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "をリスト番号" + tonum + "番に移動しました");
-		sender.sendMessage("/gacha saveかプラグインをリロードするとmysqlに保存されます");
+		sender.sendMessage("/gacha saveでmysqlに保存してください");
 	}
 	private void Gachaclear(CommandSender sender) {
 		SeichiAssist.gachadatalist.clear();
 		sender.sendMessage("すべて削除しました");
-		sender.sendMessage("/gacha saveかプラグインをリロードするとmysqlのデータも全削除されます");
+		sender.sendMessage("/gacha saveを実行するとmysqlのデータも全削除されます");
 		sender.sendMessage("削除を取り消すには/gacha reloadコマンドを実行します");
 	}
 	private double runGachaDemo() {

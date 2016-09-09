@@ -11,11 +11,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -124,8 +126,7 @@ public class Sql{
 			stmt.executeUpdate(command);
 			return true;
 		} catch (SQLException e) {
-			//接続エラーの場合は、再度接続後、コマンド実行
-			java.lang.System.out.println("接続に失敗しました");
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
@@ -209,7 +210,10 @@ public class Sql{
 				",add column if not exists playtick int default 0" +
 				",add column if not exists killlogflag boolean default false" +
 				",add column if not exists pvpflag boolean default false" +
+				",add column if not exists loginflag boolean default false" +
 				",add index if not exists name_index(name)" +
+				",add index if not exists uuid_index(uuid)" +
+				",add index if not exists ranking_index(totalbreaknum)" +
 				"";
 		return putCommand(command);
 	}
@@ -254,7 +258,9 @@ public class Sql{
 				  }
 			rs.close();
 		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
+			e.printStackTrace();
 			return null;
 		}
 
@@ -264,8 +270,8 @@ public class Sql{
  			//新しくuuidとnameを設定し行を作成
  			//insert into playerdata (name,uuid) VALUES('unchima','UNCHAMA')
  			command = "insert into " + table
- 	 				+ " (name,uuid) values('" + name
- 	 				+ "','" + struuid + "')";
+ 	 				+ " (name,uuid,loginflag) values('" + name
+ 	 				+ "','" + struuid+ "','true')";
  			if(!putCommand(command)){
  				return null;
  			}
@@ -278,28 +284,56 @@ public class Sql{
  				p.sendMessage("sqlにデータが保存されています。");
  			}
 
- 			/*
- 			//playernameをアップデート→廃止、ログアウト時にプレイヤーネームを更新するようにした
- 			//update playerdata set name = 'uma' WHERE uuid like 'UNCHAMA'
+ 			//loginflag判別処理
+ 			Boolean flag = true;
+ 			int i = 0;
+ 			//flagがfalseになるまで繰り返す
+ 			while(flag){
+	 	 		command = "select loginflag from " + table
+	 	 				+ " where uuid = '" + struuid + "'";
+	 	 		try{
+	 				rs = stmt.executeQuery(command);
+	 				while (rs.next()) {
+	 					   flag = rs.getBoolean("loginflag");
+	 					  }
+	 				rs.close();
+	 			} catch (SQLException e) {
+	 				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+	 				exc = e.getMessage();
+	 				e.printStackTrace();
+	 				return null;
+	 			}
+	 	 		if(i < 5&&flag){
+	 	 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "のloginflag=false待機…(" + (i+1) + "回目)");
+	 	 			p.sendMessage(ChatColor.YELLOW + "PlayerDataの取得待機中。しばらくお待ちください…");
+	 	 			//次のリクエストまで1000ms待つ
+	 	 			try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						// TODO 自動生成された catch ブロック
+						e.printStackTrace();
+					}
+	 	 		}
+	 	 		if(i > 5&&flag){
+	 	 			//諦める
+	 	 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "のloginflagがtrueの為、プレイヤーデータが取得できませんでした");
+	 	 			p.sendMessage(ChatColor.RED + "取得失敗。再接続しても改善されない場合は管理者へ報告して下さい");
+	 	 			return null;
+	 	 		}
+	 	 		i++;
+ 			}
+ 			//loginflag書き換え処理
  			command = "update " + table
- 					+ " set name = '" + name
- 					+ "' where uuid like '" + struuid + "'";
- 			try{
- 				stmt.executeUpdate(command);
- 			} catch (SQLException e) {
- 				exc = e.getMessage();
+						+ " set loginflag = true"
+						+ " where uuid like '" + struuid + "'";
+ 			if(!putCommand(command)){
  				return null;
  			}
- 			if(SeichiAssist.DEBUG){
- 				p.sendMessage("sqlのプレイヤーネームを更新しました。");
- 			}
- 			*/
 
  			//PlayerDataを新規作成
  			PlayerData playerdata = new PlayerData(p);
 
- 			//sqlデータから得られた値で更新
-
+ 			//playerdataをsqlデータから得られた値で更新
  			command = "select * from " + table
  					+ " where uuid like '" + struuid + "'";
  			try{
@@ -319,6 +353,8 @@ public class Sql{
  	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  	 				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
  	 				playerdata.pvpflag = rs.getBoolean("pvpflag");
+ 	 				playerdata.totalbreaknum = rs.getInt("totalbreaknum");
+ 	 				playerdata.playtick = rs.getInt("playtick");
 
  	 				//MineStack機能の数値
  	 				playerdata.minestack.dirt = rs.getInt("stack_dirt");
@@ -340,13 +376,17 @@ public class Sql{
  				  }
  				rs.close();
  			} catch (SQLException | IOException e) {
+ 				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
  				exc = e.getMessage();
+ 				e.printStackTrace();
  				return null;
  			}
  			if(SeichiAssist.DEBUG){
- 				p.sendMessage("sqlデータで更新しました。");
+ 				p.sendMessage("sqlデータで更新しました");
  			}
  			//更新したplayerdataを返す
+ 			p.sendMessage(ChatColor.GREEN + "プレイヤーデータ取得完了");
+ 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ取得完了");
  			return playerdata;
  		}else{
  			//mysqlに該当するplayerdataが2個以上ある時エラーを吐く
@@ -410,6 +450,24 @@ public class Sql{
 	}
 
 
+	//loginflagのフラグ折る処理(ondisable時とquit時に実行させる)
+	public boolean logoutPlayerData(PlayerData playerdata) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		String command = "";
+
+		command = "update " + table
+				+ " set"
+
+				//ログインフラグ折る
+				+ " loginflag = false"
+
+				+ " where uuid like '" + struuid + "'";
+
+		return putCommand(command);
+
+	}
+
 	//ガチャデータロード
 	public boolean loadGachaData(){
 		String table = SeichiAssist.GACHADATA_TABLENAME;
@@ -428,7 +486,9 @@ public class Sql{
 				  }
 			rs.close();
 		} catch (SQLException | IOException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
+			e.printStackTrace();
 			return false;
 		}
  		SeichiAssist.gachadatalist.clear();
@@ -468,23 +528,35 @@ public class Sql{
 
 	//ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
 	public boolean setRanking() {
+		plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		List<Integer> ranklist = SeichiAssist.ranklist;
+		List<RankData> ranklist = SeichiAssist.ranklist;
 		ranklist.clear();
+		SeichiAssist.allplayerbreakblockint = 0;
 
 		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
-		String command = "select totalbreaknum from " + table
-				+ " where 1 order by " + table + ".totalbreaknum desc";
+		String command = "select name,level,totalbreaknum from " + table
+				+ " order by totalbreaknum desc";
  		try{
 			rs = stmt.executeQuery(command);
 			while (rs.next()) {
-				ranklist.add(rs.getInt(1));
+				RankData rankdata = new RankData();
+				rankdata.name = rs.getString("name");
+				rankdata.level = rs.getInt("level");
+				rankdata.totalbreaknum = rs.getInt("totalbreaknum");
+				ranklist.add(rankdata);
+				SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
 				  }
 			rs.close();
 		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
+			e.printStackTrace();
 			return false;
 		}
+		plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+		Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
  		return true;
 	}
 
@@ -528,7 +600,9 @@ public class Sql{
 				  }
 				rs.close();
 			} catch (SQLException | IOException e) {
+				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 				exc = e.getMessage();
+				e.printStackTrace();
 				return null;
 			}
 		return inventory;

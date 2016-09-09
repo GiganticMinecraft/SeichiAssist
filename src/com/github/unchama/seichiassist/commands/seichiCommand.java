@@ -148,10 +148,6 @@ public class seichiCommand implements TabExecutor {
 
 		}else if(args.length == 3 || args.length == 4){
 			//seichi player duration(ticks) amplifier id で登録できるようにする。
-			//プレイヤー名を取得
-			String name = Util.getName(args[0]);
-			//プレイヤーをサーバーから取得
-			Player player = plugin.getServer().getPlayer(name);
 
 			//メッセージを設定
 			int id = 0;
@@ -185,17 +181,30 @@ public class seichiCommand implements TabExecutor {
 			//effect値を取得
 			double amplifier = Util.toDouble(args[2]);
 
+			//プレイヤー名をlowercaseする
+			String name = Util.getName(args[0]);
+
 			if(!name.equalsIgnoreCase("all")){
 				//プレイヤー名がallでない時の処理
 
+				//プレイヤーをサーバーから取得
+				Player player = plugin.getServer().getPlayer(name);
+
 				if(player == null){
 					//プレイヤーが取得できなかったとき
-					sender.sendMessage("指定されたプレイヤーはオンラインでは無いか、存在しません");
+					sender.sendMessage("指定されたプレイヤー(" + name + ")はオンラインでは無いか、存在しません");
 					return true;
 				}
 
 				//プレイヤーデータを取得
 				PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
+				//念のためエラー分岐
+				if(playerdata == null){
+					player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+					plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[seichiコマンドエフェクト付与処理]でエラー発生");
+					plugin.getLogger().warning("playerdataがありません。開発者に報告してください");
+					return true;
+				}
 				//エフェクトデータリストにこの効果を追加
 				playerdata.effectdatalist.add(new EffectData(duration,amplifier,id));
 				//メッセージ送信

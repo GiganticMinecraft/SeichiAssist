@@ -15,6 +15,11 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 public class BukkitSerialization {
     public static String toBase64(Inventory inventory) {
+    	if(inventory == null){
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[四次元ポケットセーブ処理]でエラー発生");
+			Bukkit.getLogger().warning("四次元ポケットのデータがnullです。開発者に報告してください");
+    		return null;
+    	}
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
@@ -36,6 +41,11 @@ public class BukkitSerialization {
     }
 
     public static Inventory fromBase64(String data) throws IOException {
+    	if(data.length() == 0|| data.equals(null)){
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[四次元ポケットロード処理]でエラー発生");
+			Bukkit.getLogger().warning("四次元ポケットのデータがnullです。開発者に報告してください");
+    		return null;
+    	}
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
@@ -47,7 +57,7 @@ public class BukkitSerialization {
             }
             dataInput.close();
             return inventory;
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | IOException e) {
             throw new IOException("Unable to decode class type.", e);
         }
     }
