@@ -120,6 +120,7 @@ public class PlayerRightClickListener implements Listener {
 			}
 		}
 	}
+	//スキル切り替えのイベント
 	@EventHandler
 	public void onPlayerActiveSkillToggleEvent(PlayerInteractEvent event){
 		//プレイヤーを取得
@@ -174,31 +175,30 @@ public class PlayerRightClickListener implements Listener {
 
 				int activemineflagnum = 0;
 
-				if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum() || playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
+				if((playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 1)
+						|| (playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 2)){
+
 					activemineflagnum = (playerdata.activemineflagnum + 1) % 3;
 					switch (activemineflagnum){
 					case 0:
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + "：OFF");
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilltype,playerdata.activeskillnum) + "：OFF");
 						break;
 					case 1:
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + ":ON-Above(上向き）");
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilltype,playerdata.activeskillnum) + ":ON-Above(上向き）");
 						break;
 					case 2:
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + ":ON-Under(下向き）");
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilltype,playerdata.activeskillnum) + ":ON-Under(下向き）");
 						break;
 					}
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-				}else if(playerdata.activenum >= ActiveSkill.EXPLOSION.getNum()){
+				}else if(playerdata.breakskill >= 3){
 					activemineflagnum = (playerdata.activemineflagnum + 1) % 2;
 					switch (activemineflagnum){
 					case 0:
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + "：OFF");
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilltype,playerdata.activeskillnum) + "：OFF");
 						break;
 					case 1:
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + ":ON");
-						break;
-					case 2:
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getStringByNum(playerdata.activenum) + ":ON");
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilltype,playerdata.activeskillnum) + ":ON");
 						break;
 					}
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
@@ -246,9 +246,9 @@ public class PlayerRightClickListener implements Listener {
 		}
 	}
 	*/
-
+	//棒メニューを開くイベント
 	@EventHandler
-	public void onPlayerActiveSkillUIEvent(PlayerInteractEvent event){
+	public void onPlayerMenuEvent(PlayerInteractEvent event){
 		//プレイヤーを取得
 		Player player = event.getPlayer();
 		//プレイヤーが起こしたアクションを取得
@@ -258,12 +258,8 @@ public class PlayerRightClickListener implements Listener {
 
 		if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)){
 			//メインハンドに棒を持っているときの処理
-
-
 			//アクションキャンセル
 			event.setCancelled(true);
-
-
 			if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 				//右クリックの処理
 				//オフハンドのアクション実行時処理を終了

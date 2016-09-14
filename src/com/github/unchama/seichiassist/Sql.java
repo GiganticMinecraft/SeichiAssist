@@ -182,7 +182,12 @@ public class Sql{
 				",add column if not exists minestackflag boolean default true" +
 				",add column if not exists messageflag boolean default false" +
 				",add column if not exists activemineflagnum int default 0" +
-				",add column if not exists activenum int default 1" +
+				",add column if not exists activeskilltype int default 0" +
+				",add column if not exists activeskillnum int default 1" +
+				",add column if not exists arrowskill int default 0" +
+				",add column if not exists multiskill int default 0" +
+				",add column if not exists breakskill int default 0" +
+				",add column if not exists condenskill int default 0" +
 				",add column if not exists gachapoint int default 0" +
 				",add column if not exists gachaflag boolean default true" +
 				",add column if not exists level int default 1" +
@@ -344,7 +349,12 @@ public class Sql{
  	 				playerdata.minestackflag = rs.getBoolean("minestackflag");
  	 				playerdata.messageflag = rs.getBoolean("messageflag");
  	 				playerdata.activemineflagnum = rs.getInt("activemineflagnum");
- 	 				playerdata.activenum = rs.getInt("activenum");
+ 	 				playerdata.activeskilltype = rs.getInt("activeskilltype");
+ 	 				playerdata.activeskillnum = rs.getInt("activeskillnum");
+ 	 				playerdata.arrowskill = rs.getInt("arrowskill");
+ 	 				playerdata.multiskill = rs.getInt("multiskill");
+ 	 				playerdata.breakskill = rs.getInt("breakskill");
+ 	 				playerdata.condenskill = rs.getInt("condenskill");
  	 				playerdata.gachapoint = rs.getInt("gachapoint");
  	 				playerdata.gachaflag = rs.getBoolean("gachaflag");
  	 				playerdata.level = rs.getInt("level");
@@ -413,7 +423,12 @@ public class Sql{
 				+ ",minestackflag = " + Boolean.toString(playerdata.minestackflag)
 				+ ",messageflag = " + Boolean.toString(playerdata.messageflag)
 				+ ",activemineflagnum = " + Integer.toString(playerdata.activemineflagnum)
-				+ ",activenum = " + Integer.toString(playerdata.activenum)
+				+ ",activenum = " + Integer.toString(playerdata.activeskilltype)
+				+ ",activenum = " + Integer.toString(playerdata.activeskillnum)
+				+ ",arrowskill = " + Integer.toString(playerdata.arrowskill)
+				+ ",multiskill = " + Integer.toString(playerdata.multiskill)
+				+ ",breakskill = " + Integer.toString(playerdata.breakskill)
+				+ ",condenskill = " + Integer.toString(playerdata.condenskill)
 				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
 				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
 				+ ",level = " + Integer.toString(playerdata.level)

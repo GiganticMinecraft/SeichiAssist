@@ -93,7 +93,7 @@ public class PlayerJoinListener implements Listener {
 		//playermapに追加
 		playermap.put(uuid, playerdata);
 		//join時とonenable時、プレイヤーデータを最新の状態に更新
-		playerdata.UpdateonJoin(player);
+		playerdata.updateonJoin(player);
 
 		//初見さんへの処理
 		if(!player.hasPlayedBefore()){

@@ -26,10 +26,8 @@ import org.bukkit.material.Dye;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.BlizzardTaskRunnable;
-import com.github.unchama.seichiassist.task.MeteoTaskRunnable;
-import com.github.unchama.seichiassist.task.ThunderStormTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -131,7 +129,16 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
+		if(playerdata.activeskilltype == ActiveSkill.ARROW.gettypenum()){
 
+		}else if(playerdata.activeskilltype == ActiveSkill.MULTI.gettypenum()){
+
+		}else if(playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum()){
+			runBreakSkill(player, playerdata.activeskillnum, block, tool, expman);
+		}else if(playerdata.activeskilltype == ActiveSkill.CONDENSE.gettypenum()){
+
+		}
+		/*
 		//アクティブスキルを発動させる処理
 		if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
 			DualBreak(player,block,tool,expman);
@@ -146,11 +153,14 @@ public class PlayerBlockBreakListener implements Listener {
 		}else if(playerdata.activenum == ActiveSkill.METEO.getNum()){
 			new MeteoTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,10,10);
 		}
+		*/
 	}
-
-
-	//スキル「エクスプロージョン」
-	private void Explosion(Player player,Block block,ItemStack tool,ExperienceManager expman) {
+//範囲破壊実行処理
+	private void runBreakSkill(Player player,int skillnum,Block block,ItemStack tool,ExperienceManager expman) {
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//playerdataを取得
+		PlayerData playerdata = playermap.get(uuid);
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
 		//プレイヤーの向いている方角を取得
@@ -162,70 +172,111 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//壊されるブロックの宣言
 		Block breakblock;
-		int startx = 0;
-		int starty = -1;
-		int startz = 0;
-		int endx = 0;
-		int endy = +1;
-		int endz = 0;
-		Location explosionloc = null;
+		Coordinate start = new Coordinate();
+		Coordinate end = new Coordinate();
 
 		switch (dir){
-			case "N":
-				//北を向いているとき
-				startx = -1;
-				startz = -2;
-				endx = 1;
-				endz = 0;
-				explosionloc = centerofblock.add(0, 0, -1);
-				break;
-			case "E":
-				//東を向いているとき
-				startx = 0;
-				startz = -1;
-				endx = 2;
-				endz = 1;
-				explosionloc = centerofblock.add(1, 0, 0);
-				break;
-			case "S":
-				//南を向いているとき
-				startx = -1;
-				startz = 0;
-				endx = 1;
-				endz = 2;
-				explosionloc = centerofblock.add(0, 0, 1);
-				break;
-			case "W":
-				//西を向いているとき
-				startx = -2;
-				startz = -1;
-				endx = 0;
-				endz = 1;
-				explosionloc = centerofblock.add(-1, 0, 0);
-				break;
-			case "U":
-				//上を向いているとき
-				startx = -1;
-				starty = 0;
-				startz = -1;
-				endx = 1;
-				endy = 2;
-				endz = 1;
-				explosionloc = centerofblock.add(0, 1, 0);
-				break;
-			case "D":
-				//下を向いているとき
-				startx = -1;
-				starty = -2;
-				startz = -1;
-				endx = 1;
-				endy = 0;
-				endz = 1;
-				explosionloc = centerofblock.add(0, -1, 0);
-				break;
+		case "N":
+			//北を向いているとき
+			if(skillnum < 3){
+				if(playerdata.activemineflagnum == 1){
+					start = new Coordinate(-(skillnum-1),0,0);
+					end = new Coordinate(skillnum-1,1,0);
+				}else if(playerdata.activemineflagnum == 2){
+					start = new Coordinate(-(skillnum-1),-1,0);
+					end = new Coordinate(skillnum-1,0,0);
+				}
+
+			}else if(skillnum == 3){
+				start = new Coordinate(-(skillnum-2),-(skillnum-2),-(skillnum-2)-1);
+				end = new Coordinate(skillnum-2,skillnum-2,(skillnum-2)-1);
+			}else{
+				start = new Coordinate(-(skillnum-2),-(skillnum-3),-(skillnum-2)-1);
+				end = new Coordinate(skillnum-2,skillnum-3,(skillnum-2)-1);
+			}
+			break;
+		case "E":
+			//東を向いているとき
+			if(skillnum < 3){
+				if(playerdata.activemineflagnum == 1){
+					start = new Coordinate(0,0,-(skillnum-1));
+					end = new Coordinate(0,1,skillnum-1);
+				}else if(playerdata.activemineflagnum == 2){
+					start = new Coordinate(0,-1,-(skillnum-1));
+					end = new Coordinate(0,0,skillnum-1);
+				}
+
+			}else if(skillnum == 3){
+				start = new Coordinate(-(skillnum-2)+1,-(skillnum-2),-(skillnum-2));
+				end = new Coordinate((skillnum-2)+1,skillnum-2,(skillnum-2));
+			}else{
+				start = new Coordinate(-(skillnum-2)+1,-(skillnum-3),-(skillnum-2));
+				end = new Coordinate((skillnum-2)+1,skillnum-3,(skillnum-2));
+			}
+			break;
+		case "S":
+			//南を向いているとき
+			if(skillnum < 3){
+				if(playerdata.activemineflagnum == 1){
+					start = new Coordinate(-(skillnum-1),0,0);
+					end = new Coordinate(skillnum-1,1,0);
+				}else if(playerdata.activemineflagnum == 2){
+					start = new Coordinate(-(skillnum-1),-1,0);
+					end = new Coordinate(skillnum-1,0,0);
+				}
+
+			}else if(skillnum == 3){
+				start = new Coordinate(-(skillnum-2),-(skillnum-2),-(skillnum-2)+1);
+				end = new Coordinate(skillnum-2,skillnum-2,(skillnum-2)+1);
+			}else{
+				start = new Coordinate(-(skillnum-2),-(skillnum-3),-(skillnum-2)+1);
+				end = new Coordinate(skillnum-2,skillnum-3,(skillnum-2)+1);
+			}
+			break;
+		case "W":
+			//西を向いているとき
+			if(skillnum < 3){
+				if(playerdata.activemineflagnum == 1){
+					start = new Coordinate(0,0,-(skillnum-1));
+					end = new Coordinate(0,1,skillnum-1);
+				}else if(playerdata.activemineflagnum == 2){
+					start = new Coordinate(0,-1,-(skillnum-1));
+					end = new Coordinate(0,0,skillnum-1);
+				}
+
+			}else if(skillnum == 3){
+				start = new Coordinate(-(skillnum-2)-1,-(skillnum-2),-(skillnum-2));
+				end = new Coordinate((skillnum-2)-1,skillnum-2,(skillnum-2));
+			}else{
+				start = new Coordinate(-(skillnum-2)-1,-(skillnum-3),-(skillnum-2));
+				end = new Coordinate((skillnum-2)-1,skillnum-3,(skillnum-2));
+			}
+			break;
+		case "U":
+			//上を向いているとき
+			if(skillnum < 3){
+			}else if(skillnum == 3){
+				start = new Coordinate(-(skillnum-2),0,-(skillnum-2));
+				end = new Coordinate((skillnum-2),2,(skillnum-2));
+			}else{
+				start = new Coordinate(-(skillnum-2),0,-(skillnum-2));
+				end = new Coordinate((skillnum-2),(skillnum-3)*2,(skillnum-2));
+			}
+			break;
+		case "D":
+			//下を向いているとき
+			if(skillnum < 3){
+			}else if(skillnum == 3){
+				start = new Coordinate(-(skillnum-2),-2,-(skillnum-2));
+				end = new Coordinate((skillnum-2),0,(skillnum-2));
+			}else{
+				start = new Coordinate(-(skillnum-2),-(skillnum-3)*2,-(skillnum-2));
+				end = new Coordinate((skillnum-2),0,(skillnum-2));
+			}
+			break;
 		}
 
-		if(player.getLevel() == 0 && !expman.hasExp(15)){
+		if(!expman.hasExp(ActiveSkill.getActiveSkillUseExp(playerdata.activeskilltype, playerdata.activeskillnum))){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
@@ -233,10 +284,11 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-		int count = 0;
-		for(int x = startx ; x <= endx ; x++){
-			for(int z = startz ; z <= endz ; z++){
-				for(int y = starty; y <= endy ; y++){
+		int breakcount = 0;
+		int lava_count = 0;
+		for(int x = start.x ; x <= end.x ; x++){
+			for(int z = start.z ; z <= end.z ; z++){
+				for(int y = start.y; y <= end.y ; y++){
 					if(x==0&&y==0&&z==0){
 						continue;
 					}
@@ -245,16 +297,19 @@ public class PlayerBlockBreakListener implements Listener {
 					if(breakblock.getType().equals(material)
 							|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
 							|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
+							|| (block.getType().equals(Material.GLOWING_REDSTONE_ORE)&&breakblock.getType().equals(Material.REDSTONE_ORE))
+							|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
 							|| breakblock.getType().equals(Material.LAVA)
 							){
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
 							if(canBreak(player, breakblock)){
-								if(breakblock.getType().equals(Material.LAVA)){
+								if(breakblock.getType().equals(Material.LAVA) && lava_count == 0){
+									lava_count++;
 									breakblock.setType(Material.AIR);
 								}else{
 									//アクティブスキル発動
-									BreakBlock(player, breakblock, centerofblock, tool,false);
-									count ++;
+									BreakBlock(player, breakblock, centerofblock, tool,true);
+									breakcount ++;
 								}
 							}
 						}
@@ -263,204 +318,10 @@ public class PlayerBlockBreakListener implements Listener {
 
 			}
 		}
-		if(count>0){
-			block.getWorld().createExplosion(explosionloc, 0, false);
-		}
-
-		if(count>22){
-			expman.changeExp(-15);
-		}else if(count>17){
-			expman.changeExp(-12);
-		}else if(count>12){
-			expman.changeExp(-9);
-		}else if(count>7){
-			expman.changeExp(-6);
-		}else if(count>2){
-			expman.changeExp(-3);
-		}else if(count>0){
-		}
-	}
-
-	private void TrialBreak(Player player,Block block,ItemStack tool,ExperienceManager expman) {
-		//UUIDを取得
-		UUID uuid = player.getUniqueId();
-		//playerdataを取得
-		PlayerData playerdata = playermap.get(uuid);
-		//プレイヤーの足のy座標を取得
-		int playerlocy = player.getLocation().getBlockY() - 1 ;
-		//プレイヤーの向いている方角を取得
-		String dir = getCardinalDirection(player);
-		//元ブロックのマテリアルを取得
-		Material material = block.getType();
-		//元ブロックの真ん中の位置を取得
-		Location centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
-
-		//壊されるブロックの宣言
-		Block breakblock;
-		int startx = 0;
-		int starty = playerdata.activemineflagnum == 1 ? 1:-1;
-		int startz = 0;
-		int endx = 0;
-		int endy = 0;
-		int endz = 0;
-
-		switch (dir){
-			case "N":
-				//北を向いているとき
-				startx = -1;
-				startz = 0;
-				endx = 1;
-				endz = 0;
-				break;
-			case "E":
-				//東を向いているとき
-				startx = 0;
-				startz = -1;
-				endx = 0;
-				endz = 1;
-				break;
-			case "S":
-				//南を向いているとき
-				startx = -1;
-				startz = 0;
-				endx = 1;
-				endz = 0;
-				break;
-			case "W":
-				//西を向いているとき
-				startx = 0;
-				startz = -1;
-				endx = 0;
-				endz = 1;
-				break;
-		}
-
-		if(player.getLevel() == 0 && !expman.hasExp(3)){
-			//デバッグ用
-			if(SeichiAssist.DEBUG){
-				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
-			}
-			return;
-		}
-
-		int count = 0;
-		for(int x = startx ; x <= endx ; x++){
-			for(int z = startz ; z <= endz ; z++){
-				//startyの処理
-				breakblock = block.getRelative(x, starty, z);
-
-				//もし壊されるブロックがもともとのブロックと同じ種類だった場合アクティブスキル発動
-				if(breakblock.getType().equals(material)
-						|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
-						|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
-
-					if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
-						if(canBreak(player, breakblock)){
-							//アクティブスキル発動
-							BreakBlock(player, breakblock, centerofblock, tool,true);
-							//壊した時に白いエフェクトが出るように設定
-							for(int i = 1; i<3 ; i++){
-								breakblock.getWorld().playEffect(breakblock.getLocation().add(0.5,0.5,0.5), Effect.INSTANT_SPELL, (byte)0);
-							}
-							count ++;
-						}
-					}
-
-				}
-				//endyの処理
-				if(x==0&&z==0){
-					continue;
-				}
-
-				breakblock = block.getRelative(x, endy, z);
-				//デバッグ用
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("blocktype"+block.getType().toString());
-					player.sendMessage("breakblocktype"+breakblock.getType().toString());
-				}
-
-				//もし壊されるブロックがもともとのブロックと同じ種類だった場合アクティブスキル発動
-				if(breakblock.getType().equals(material)
-						|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
-						|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
-
-					if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
-						if(canBreak(player, breakblock)){
-							//アクティブスキル発動
-							BreakBlock(player, breakblock, centerofblock, tool,true);
-							//壊した時に黒いエフェクトが出るように設定
-							for(int i = 1; i<4 ; i++){
-								breakblock.getWorld().playEffect(breakblock.getLocation().add(0.5,0.5,0.5), Effect.INSTANT_SPELL, (byte)0);
-							}
-							count ++;
-						}
-					}
-
-				}
-			}
-		}
-		if(count>3){
-			expman.changeExp(-3);
-		}else if(count>0){
-			expman.changeExp(-2);
-
-		}
-	}
-
-	private void DualBreak(Player player,Block block,ItemStack tool,ExperienceManager expman) {
-		//UUIDを取得
-		UUID uuid = player.getUniqueId();
-		//playerdataを取得
-		PlayerData playerdata = playermap.get(uuid);
-		//プレイヤーの足元のy座標を取得
-		int playerlocy = player.getLocation().getBlockY() - 1 ;
-
-		//元ブロックのマテリアルを取得
-		Material material = block.getType();
-		//元ブロックの真ん中の位置を取得
-		Location centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
-		//壊されるブロックの取得
-		Block breakblock = null;
-		if(playerdata.activemineflagnum == 1){
-			breakblock = block.getRelative(0,1,0);
-		}else if(playerdata.activemineflagnum == 2){
-			breakblock = block.getRelative(0,-1,0);
-		}else {
-			return;
-		}
-
-		//デバッグ用
-		if(SeichiAssist.DEBUG){
-			player.sendMessage("blocktype"+block.getType().toString());
-			player.sendMessage("breakblocktype"+breakblock.getType().toString());
-		}
-
-		//もし壊されるブロックがもともとのブロックと同じ種類だった場合アクティブスキル発動
-		if(breakblock.getType().equals(material)
-				|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
-				|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))){
-			//アクティブスキルを発動するとき、プレイヤーの経験値レベルが０で経験値を１ももっていない場合処理を終了
-			if(player.getLevel()==0 && !expman.hasExp(1)){
-				//デバッグ用
-				if(SeichiAssist.DEBUG){
-					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
-				}
-				return;
-			}
-
-			if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
-				if(canBreak(player, breakblock)){
-					//アクティブスキル発動
-					BreakBlock(player, breakblock, centerofblock, tool,true);
-					//壊した時に白いエフェクトが出るように設定
-					for(int i = 1; i<2 ; i++){
-						breakblock.getWorld().playEffect(breakblock.getLocation().add(0.5,0.5,0.5), Effect.EXPLOSION, (byte)0);
-					}
-					//アクティブスキル発動のために経験値消費
-					expman.changeExp(-1);
-				}
-			}
-		}
+		//全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 実際に破壊したブロック数
+		int useExp = ActiveSkill.getActiveSkillUseExp(playerdata.activeskilltype, playerdata.activeskillnum)
+				/(end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1) * breakcount;
+		expman.changeExp(-useExp);
 	}
 	//他のプラグインの影響があってもブロックを破壊できるのか
 	public static boolean canBreak(Player player ,Block breakblock) {
@@ -613,7 +474,7 @@ public class PlayerBlockBreakListener implements Listener {
 					break;
 				case STONE:
 					//Material.STONEの処理
-					if(breakblock.getData() == 0){
+					if(breakblock.getData() == 0x00){
 						//焼き石の処理
 						dropmaterial = Material.COBBLESTONE;
 						dropitem = new ItemStack(dropmaterial);
