@@ -280,7 +280,7 @@ public class Sql{
  			//insert into playerdata (name,uuid) VALUES('unchima','UNCHAMA')
  			command = "insert into " + table
  	 				+ " (name,uuid,loginflag) values('" + name
- 	 				+ "','" + struuid+ "','true')";
+ 	 				+ "','" + struuid+ "','1')";
  			if(!putCommand(command)){
  				return null;
  			}
