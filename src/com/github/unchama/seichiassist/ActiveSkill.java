@@ -370,10 +370,10 @@ public enum ActiveSkill{
 		case "ARROW":
 			switch(skillnum){
 			case 4:
-				cooldowntime = 0.1;
+				cooldowntime = 0.8;
 				break;
 			case 5:
-				cooldowntime = 0.75;
+				cooldowntime = 1.3;
 				break;
 			case 6:
 				cooldowntime = 1.6;
@@ -465,7 +465,7 @@ public enum ActiveSkill{
 			}
 			break;
 		}
-		return (long)cooldowntime * 20;
+		return (long)(cooldowntime * 20);
 	}
 
 	public Material getMaterial(int skilllevel) {

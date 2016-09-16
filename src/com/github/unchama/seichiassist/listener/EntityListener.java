@@ -28,6 +28,7 @@ import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.task.CondenSkillTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -43,7 +44,7 @@ public class EntityListener implements Listener {
 		Player player;
 
 
-		if(!e.hasMetadata("ArrowSkill") ) {
+		if(!e.hasMetadata("ArrowSkill")&&!e.hasMetadata("CondenSkill")) {
 			return;
 		}
 		Projectile proj = (Projectile)e;
@@ -62,8 +63,14 @@ public class EntityListener implements Listener {
 			return;
 		}
 
+
 		//壊されるブロックを取得
-		Block block = player.getWorld().getBlockAt(proj.getLocation().add(proj.getVelocity().normalize()));
+		Block block = null;
+		if(e.hasMetadata("ArrowSkill")){
+			block = player.getWorld().getBlockAt(proj.getLocation().add(proj.getVelocity().normalize()));
+		}else{
+			block = player.getWorld().getBlockAt(proj.getLocation());
+		}
 
 		//他人の保護がかかっている場合は処理を終了
 		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
@@ -73,8 +80,7 @@ public class EntityListener implements Listener {
 		Material material = block.getType();
 
 		//ブロックタイプがmateriallistに登録されていなければ処理終了
-		if(!SeichiAssist.materiallist.contains(material)){
-
+		if(!SeichiAssist.materiallist.contains(material) && e.hasMetadata("ArrowSkill")){
 			return;
 		}
 
@@ -97,20 +103,8 @@ public class EntityListener implements Listener {
 			return;
 		}
 
-
-		//これ以前の終了処理はパッシブの追加経験値はもらえません
 		//経験値変更用のクラスを設定
 		ExperienceManager expman = new ExperienceManager(player);
-		//passiveskill[追加経験値獲得]処理実行
-		int exp = Util.calcExpDrop(playerdata);
-		expman.changeExp(exp);
-		//これ以降の終了処理は経験値はもらえます
-
-		//アクティブスキルフラグがオフの時処理を終了
-		if(playerdata.activeskilldata.mineflagnum == 0){
-			return;
-		}
-
 
 		//プレイヤーインベントリを取得
 		PlayerInventory inventory = player.getInventory();
@@ -144,9 +138,14 @@ public class EntityListener implements Listener {
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
 			runArrowSkillofHitBlock(player,proj, playerdata.activeskilldata.skillnum, block, tool, expman);
-		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
-		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
-		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.CONDENSE.gettypenum()){			//runCondenSkill(player,playerdata.activeskilldata.skillnum, block, tool, expman);
+		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.CONDENSE.gettypenum()){
+			if(playerdata.activeskilldata.skillnum < 7){
+				CondenSkillTaskRunnable.runCondenSkillofExplosion(player,playerdata.activeskilldata.skillnum,block,tool,expman);
+			}else{
+				CondenSkillTaskRunnable.runCondenSkillofExplosion(player,playerdata.activeskilldata.skillnum - 3 ,block,tool,expman);
+			}
+
+			playerdata.activeskilldata.hitflag = true;
 		}
 
 		//矢を消滅させる
@@ -296,7 +295,9 @@ public class EntityListener implements Listener {
 			}
 			return;
 		}
-		player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値:" + durability);
+		if(SeichiAssist.DEBUG){
+			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値:" + durability);
+		}
 		//実際に耐久値を減らせるか判定
 		if(tool.getType().getMaxDurability() <= durability && !tool.getItemMeta().spigot().isUnbreakable()){
 			//デバッグ用
@@ -344,11 +345,9 @@ public class EntityListener implements Listener {
 	@EventHandler
 	public void onEntityExplodeEvent(EntityExplodeEvent event){
 		Entity e = event.getEntity();
-		//デバッグ用
-		if(SeichiAssist.DEBUG){
-			Util.sendEveryMessage("onEntityExplodeEventイベントが呼び出されました");
-		}
-	    if ( e instanceof Projectile && e.hasMetadata("ActiveSkill") ) {
+	    if ( e instanceof Projectile && e.hasMetadata("ArrowSkill") ) {
+	    	event.setCancelled(true);
+	    }else if( e instanceof Projectile && e.hasMetadata("CondenSkill")){
 	    	event.setCancelled(true);
 	    }
 	}
@@ -357,11 +356,9 @@ public class EntityListener implements Listener {
 	@EventHandler
 	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
 		Entity e = event.getDamager();
-		//デバッグ用
-		if(SeichiAssist.DEBUG){
-			Util.sendEveryMessage("onEntityDamageByEntityEventイベントが呼び出されました");
-		}
-	    if ( e instanceof Projectile && e.hasMetadata("ActiveSkill") ) {
+	    if ( e instanceof Projectile && e.hasMetadata("ArrowSkill") ) {
+	    	event.setCancelled(true);
+	    }else if( e instanceof Projectile && e.hasMetadata("CondenSkill")){
 	    	event.setCancelled(true);
 	    }
 	}

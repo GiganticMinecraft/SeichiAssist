@@ -938,7 +938,7 @@ public class MenuInventoryData {
 			potionmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			potionmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エビフライ・ドライブ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠3×3×3ブロック破壊"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.1秒"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.8秒"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：18"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			potionmeta.setLore(lore);
@@ -948,7 +948,7 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エビフライ・ドライブ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠3×3×3ブロック破壊"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.1秒"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.8秒"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：18"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：40"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：エクスプロージョン"
@@ -966,7 +966,7 @@ public class MenuInventoryData {
 			potionmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			potionmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホーリー・ショット");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠5×5×3ブロック破壊"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.75秒"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.3秒"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：35"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			potionmeta.setLore(lore);
@@ -976,7 +976,7 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホーリー・ショット");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠5×5×3ブロック破壊"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.75秒"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.3秒"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：35"
 											, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：50"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：エビフライ・ドライブ"

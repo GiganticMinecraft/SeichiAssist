@@ -37,6 +37,7 @@ public class PlayerBlockBreakListener implements Listener {
 	public void onPlayerActiveSkillEvent(BlockBreakEvent event){
 		//実行したプレイヤーを取得
 		Player player = event.getPlayer();
+
 		//もしサバイバルでなければ処理を終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
 			return;
@@ -132,7 +133,6 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
@@ -311,6 +311,7 @@ public class PlayerBlockBreakListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
+		playerdata.activeskilldata.blocklist.clear();
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
 		//プレイヤーの向いている方角を取得
@@ -489,7 +490,10 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 			return;
 		}
-		player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値:" + durability);
+		if(SeichiAssist.DEBUG){
+			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値:" + durability);
+		}
+
 		//実際に耐久値を減らせるか判定
 		if(tool.getType().getMaxDurability() <= durability && !tool.getItemMeta().spigot().isUnbreakable()){
 			//デバッグ用
@@ -523,7 +527,6 @@ public class PlayerBlockBreakListener implements Listener {
 			for(Block b:breaklist){
 				Util.BreakBlock(player, b, centerofblock, tool,true);
 			}
-			playerdata.activeskilldata.blocklist.clear();
 		}
 		//エフェクトが指定されているときの処理
 		else{

@@ -2,8 +2,10 @@ package com.github.unchama.seichiassist.util;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
@@ -15,6 +17,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Builder;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -32,6 +35,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.Dye;
 import org.bukkit.plugin.Plugin;
 
+import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -278,10 +282,14 @@ public class Util {
 	public static void BreakBlock(Player player,Block breakblock,Location centerofblock,ItemStack tool,Boolean stepflag) {
 
 		Material material = breakblock.getType();
+		ItemStack itemstack = dropItemOnTool(breakblock,tool);
 
 
 		//アイテムをドロップさせる
-		breakblock.getWorld().dropItemNaturally(centerofblock,dropItemOnTool(breakblock,tool));
+		if(!addItemtoMineStack(player,itemstack)){
+			breakblock.getWorld().dropItemNaturally(centerofblock,itemstack);
+		}
+
 
 		//ブロックを空気に変える
 		breakblock.setType(Material.AIR);
@@ -309,6 +317,151 @@ public class Util {
 
 	}
 
+	public static boolean addItemtoMineStack(Player player, ItemStack itemstack) {
+		SeichiAssist plugin = SeichiAssist.plugin;
+		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+		Config config = SeichiAssist.config;
+		//もしサバイバルでなければ処理を終了
+		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+			return false;
+		}
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[PickupItem処理]でエラー発生");
+			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return false;
+		}
+		//レベルが足りない場合処理終了
+		if(playerdata.level < config.getMineStacklevel(1)){
+			return false;
+		}
+		//minestackflagがfalseの時は処理を終了
+		if(!playerdata.minestackflag){
+			return false;
+		}
+
+		int amount = itemstack.getAmount();
+		Material material = itemstack.getType();
+
+		int v1 = config.getMineStacklevel(1);
+		int v2 = config.getMineStacklevel(2);
+		int v3 = config.getMineStacklevel(3);
+		int v4 = config.getMineStacklevel(4);
+		int v5 = config.getMineStacklevel(5);
+		int v6 = config.getMineStacklevel(6);
+		int v7 = config.getMineStacklevel(7);
+		int v8 = config.getMineStacklevel(8);
+		int v9 = config.getMineStacklevel(9);
+		int v10 = config.getMineStacklevel(10);
+
+
+		switch(material){
+			case DIRT:
+				if(playerdata.level < v1){
+					return false;
+				}
+				playerdata.minestack.dirt += amount;
+				break;
+			case GRASS:
+				if(playerdata.level < v1){
+					return false;
+				}
+				playerdata.minestack.grass += amount;
+				break;
+			case GRAVEL:
+				if(playerdata.level < v2){
+					return false;
+				}
+				playerdata.minestack.gravel += amount;
+				break;
+			case COBBLESTONE:
+				if(playerdata.level < v3){
+					return false;
+				}
+				playerdata.minestack.cobblestone += amount;
+				break;
+			case STONE:
+				if(playerdata.level < v3){
+					return false;
+				}
+				playerdata.minestack.stone += amount;
+				break;
+			case SAND:
+				if(playerdata.level < v4){
+					return false;
+				}
+				playerdata.minestack.sand += amount;
+				break;
+			case SANDSTONE:
+				if(playerdata.level < v4){
+					return false;
+				}
+				playerdata.minestack.sandstone += amount;
+				break;
+			case NETHERRACK:
+				if(playerdata.level < v5){
+					return false;
+				}
+				playerdata.minestack.netherrack += amount;
+				break;
+			case SOUL_SAND:
+				if(playerdata.level < v6){
+					return false;
+				}
+				playerdata.minestack.soul_sand += amount;
+				break;
+			case MAGMA:
+				if(playerdata.level < v6){
+					return false;
+				}
+				playerdata.minestack.magma += amount;
+				break;
+			case ENDER_STONE:
+				if(playerdata.level < v7){
+					return false;
+				}
+				playerdata.minestack.ender_stone += amount;
+				break;
+			case COAL:
+				if(playerdata.level < v8){
+					return false;
+				}
+				playerdata.minestack.coal += amount;
+				break;
+			case COAL_ORE:
+				if(playerdata.level < v8){
+					return false;
+				}
+				playerdata.minestack.coal_ore += amount;
+				break;
+			case IRON_ORE:
+				if(playerdata.level < v9){
+					return false;
+				}
+				playerdata.minestack.iron_ore += amount;
+				break;
+			case QUARTZ:
+				if(playerdata.level < v10){
+					return false;
+				}
+				playerdata.minestack.quartz += amount;
+				break;
+			case QUARTZ_ORE:
+				if(playerdata.level < v10){
+					return false;
+				}
+				playerdata.minestack.quartz_ore += amount;
+				break;
+			default:
+				return false;
+		}
+		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
+		return true;
+
+	}
 	@SuppressWarnings("deprecation")
 	public static ItemStack dropItemOnTool(Block breakblock, ItemStack tool) {
 		ItemStack dropitem = null;

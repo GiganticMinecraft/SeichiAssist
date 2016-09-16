@@ -36,6 +36,10 @@ public class ActiveSkillData {
 	public int effectnum;
 	//スキルで破壊されるブロック
 	public List<Block> blocklist;
+	//凝固スキルを発動する時間
+	public int explosiontime;
+	//凝固スキルを発動し何かにあたったときの処理
+	public boolean hitflag;
 
 	public ActiveSkillData(){
 		mineflagnum = 0;
@@ -49,6 +53,8 @@ public class ActiveSkillData {
 		condenskill = 0;
 		effectnum = 0;
 		blocklist = new ArrayList<Block>();
+		explosiontime = 1;
+		hitflag = false;
 	}
 	//activeskillpointをレベルに従って更新
 	public void updataActiveSkillPoint(Player player,int level) {

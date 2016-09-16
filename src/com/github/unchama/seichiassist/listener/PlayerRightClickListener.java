@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -30,6 +31,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.ArrowRemoveTaskRunnable;
+import com.github.unchama.seichiassist.task.CondenSkillTaskRunnable;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -92,14 +94,18 @@ public class PlayerRightClickListener implements Listener {
 				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
 					runArrowSkillofLaunch(player,Arrow.class);
 				}else if(playerdata.activeskilldata.skilltype == ActiveSkill.CONDENSE.gettypenum()){
-					runCondenSkill(player,Snowball.class);
+					if(playerdata.activeskilldata.skillnum < 7){
+						runCondenSkillofLaunch(player,Snowball.class);
+					}else{
+						runCondenSkillofLaunch(player,Fireball.class);
+					}
 				}
 			}
 		}
 	}
 
 
-	private <T extends org.bukkit.entity.Projectile> void runCondenSkill(Player player, Class<T> clazz) {
+	private <T extends org.bukkit.entity.Projectile> void runCondenSkillofLaunch(Player player, Class<T> clazz) {
 		//プレイヤーの位置を取得
 		Location ploc = player.getLocation();
 		//UUIDを取得
@@ -108,7 +114,12 @@ public class PlayerRightClickListener implements Listener {
 		PlayerData playerdata = playermap.get(uuid);
 
 		//発射する音を再生する.
-    	player.playSound(ploc, Sound.ENTITY_SNOWBALL_THROW, 1, 1);
+		if(playerdata.activeskilldata.skillnum < 7){
+			player.playSound(ploc, Sound.ENTITY_SNOWBALL_THROW, 1, 1);
+		}else{
+			player.playSound(ploc, Sound.ENTITY_GHAST_SHOOT, 1, 1);
+		}
+
 
     	//スキルを実行する処理
         Location loc = player.getLocation();
@@ -118,20 +129,20 @@ public class PlayerRightClickListener implements Listener {
         vec.setX(vec.getX() * k);
         vec.setY(vec.getY() * k);
         vec.setZ(vec.getZ() * k);
-        final T arrow = player.getWorld().spawn(loc, clazz);
-        arrow.setShooter(player);
-        arrow.setGravity(false);
+        final T proj = player.getWorld().spawn(loc, clazz);
+        proj.setShooter(player);
+        proj.setGravity(false);
         //読み込み方法
         /*
          * Projectile proj = event.getEntity();
 		    if ( proj instanceof Arrow && proj.hasMetadata("ArrowSkill") ) {
 		    }
          */
-        arrow.setMetadata("CondenSkill", new FixedMetadataValue(plugin, true));
-        arrow.setVelocity(vec);
+        proj.setMetadata("CondenSkill", new FixedMetadataValue(plugin, true));
+        proj.setVelocity(vec);
 
         //矢を途中で破裂させる処理
-        //new ArrowExplosionTaskRunnable((Projectile)arrow).runTaskLater(plugin,100);
+        new CondenSkillTaskRunnable((Projectile)proj).runTaskLater(plugin,playerdata.activeskilldata.explosiontime*20);
 
         //クールダウン処理
         new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.CONDENSE.getCoolDown(playerdata.activeskilldata.skillnum));
@@ -147,7 +158,7 @@ public class PlayerRightClickListener implements Listener {
 		PlayerData playerdata = playermap.get(uuid);
 
 		//発射する音を再生する.
-    	player.playSound(ploc, Sound.ENTITY_GHAST_SHOOT, 1, 1);
+    	player.playSound(ploc, Sound.ENTITY_ARROW_SHOOT, 1, 1);
 
     	//スキルを実行する処理
         Location loc = player.getLocation();
@@ -157,20 +168,20 @@ public class PlayerRightClickListener implements Listener {
         vec.setX(vec.getX() * k);
         vec.setY(vec.getY() * k);
         vec.setZ(vec.getZ() * k);
-        final T arrow = player.getWorld().spawn(loc, clazz);
-        arrow.setShooter(player);
-        arrow.setGravity(false);
+        final T proj = player.getWorld().spawn(loc, clazz);
+        proj.setShooter(player);
+        proj.setGravity(false);
         //読み込み方法
         /*
          * Projectile proj = event.getEntity();
 		    if ( proj instanceof Arrow && proj.hasMetadata("ArrowSkill") ) {
 		    }
          */
-        arrow.setMetadata("ArrowSkill", new FixedMetadataValue(plugin, true));
-        arrow.setVelocity(vec);
+        proj.setMetadata("ArrowSkill", new FixedMetadataValue(plugin, true));
+        proj.setVelocity(vec);
 
         //矢を消去する処理
-        new ArrowRemoveTaskRunnable((Projectile)arrow).runTaskLater(plugin,100);
+        new ArrowRemoveTaskRunnable((Projectile)proj).runTaskLater(plugin,100);
 
         //クールダウン処理
         new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum));

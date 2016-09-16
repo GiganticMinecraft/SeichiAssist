@@ -632,7 +632,8 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.BOOKSHELF)){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 1, (float) 0.5);
-				player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
+				player.sendMessage("未実装ナリよ");
+				//player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
 				return;
 			}
 		}
@@ -708,7 +709,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 			}
 
-
+/*
 			//ここからエフェクト開放の処理
 			if(itemstackcurrent.getType().equals(Material.BEDROCK)){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
@@ -728,8 +729,10 @@ public class PlayerInventoryListener implements Listener {
 					}
 				}
 			}
+			*/
 		}
 	}
+
 	//スキル解放の処理
 	@EventHandler
 	public void onPlayerClickActiveSkillReleaseEvent(InventoryClickEvent event){
