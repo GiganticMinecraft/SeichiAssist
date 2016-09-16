@@ -82,7 +82,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//Levelを設定(必ず総整地量更新後に実施！)
 			playerdata.updataLevel(player);
 			//activeskillpointを設定
-			playerdata.updataActiveSkillPoint(player);
+			playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 			//総プレイ時間更新
 			playerdata.calcPlayTick(player);
 

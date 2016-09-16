@@ -1,5 +1,10 @@
 package com.github.unchama.seichiassist;
 
+import org.bukkit.Material;
+import org.bukkit.potion.PotionType;
+
+import com.github.unchama.seichiassist.data.Coordinate;
+
 
 
 public enum ActiveSkill{
@@ -65,6 +70,147 @@ public enum ActiveSkill{
 	public String getLv9Name(){
 		return this.lv9name;
 	}
+	public int getRepeatTimes(int skilllevel){
+		int repeattimes = 0;
+		switch(this.toString()){
+		case "ARROW":
+			repeattimes = 1;
+			break;
+		case "MULTI":
+			switch(skilllevel){
+			case 4:
+				repeattimes = 3;
+				break;
+			case 5:
+				repeattimes = 7;
+				break;
+			case 6:
+				repeattimes = 3;
+				break;
+			case 7:
+				repeattimes = 5;
+				break;
+			case 8:
+				repeattimes = 3;
+				break;
+			case 9:
+				repeattimes = 7;
+				break;
+			}
+			break;
+		case "BREAK":
+			repeattimes = 1;
+			break;
+		case "CONDENSE":
+			repeattimes = 1;
+			break;
+		}
+		return repeattimes;
+	}
+	public Coordinate getBreakLength(int skilllevel){
+		Coordinate breaklength = new Coordinate(0,0,0);
+		switch(this.toString()){
+		case "ARROW":
+			switch(skilllevel){
+			case 4:
+				breaklength.setXYZ(3, 3, 3);
+				break;
+			case 5:
+				breaklength.setXYZ(5, 3, 5);
+				break;
+			case 6:
+				breaklength.setXYZ(7, 5, 7);
+				break;
+			case 7:
+				breaklength.setXYZ(9, 7, 9);
+				break;
+			case 8:
+				breaklength.setXYZ(11, 9, 11);
+				break;
+			case 9:
+				breaklength.setXYZ(13, 11, 13);
+				break;
+			}
+			break;
+		case "MULTI":
+			switch(skilllevel){
+			case 4:
+				breaklength.setXYZ(3, 3, 3);
+				break;
+			case 5:
+				breaklength.setXYZ(3, 3, 3);
+				break;
+			case 6:
+				breaklength.setXYZ(5, 5, 5);
+				break;
+			case 7:
+				breaklength.setXYZ(5, 5, 5);
+				break;
+			case 8:
+				breaklength.setXYZ(7, 7, 7);
+				break;
+			case 9:
+				breaklength.setXYZ(7, 7, 7);
+				break;
+			}
+			break;
+		case "BREAK":
+			switch(skilllevel){
+			case 1:
+				breaklength.setXYZ(1, 2, 1);
+				break;
+			case 2:
+				breaklength.setXYZ(3, 2, 1);
+				break;
+			case 3:
+				breaklength.setXYZ(3, 3, 3);
+				break;
+			case 4:
+				breaklength.setXYZ(5, 3, 5);
+				break;
+			case 5:
+				breaklength.setXYZ(7, 5, 7);
+				break;
+			case 6:
+				breaklength.setXYZ(9, 7, 9);
+				break;
+			case 7:
+				breaklength.setXYZ(11, 9, 11);
+				break;
+			case 8:
+				breaklength.setXYZ(13, 11, 13);
+				break;
+			case 9:
+				breaklength.setXYZ(15, 13, 15);
+				break;
+			}
+			break;
+		case "CONDENSE":
+			switch(skilllevel){
+			case 4:
+				breaklength.setXYZ(3, 3, 3);
+				break;
+			case 5:
+				breaklength.setXYZ(5, 5, 5);
+				break;
+			case 6:
+				breaklength.setXYZ(7, 7, 7);
+				break;
+			case 7:
+				breaklength.setXYZ(3, 3, 3);
+				break;
+			case 8:
+				breaklength.setXYZ(5, 5, 5);
+				break;
+			case 9:
+				breaklength.setXYZ(7, 7, 7);
+				break;
+			}
+			break;
+		}
+		return breaklength;
+	}
+	//与えられたスキル種類とレベルに応じて名前を返す
 	public static String getActiveSkillName(int typenum,int skilllevel) {
 		// 列挙定数を取得
 		ActiveSkill[] activeskill = ActiveSkill.values();
@@ -109,7 +255,6 @@ public enum ActiveSkill{
 			break;
 		}
 		return str;
-
 	}
 
 	public static int getActiveSkillUseExp(int typenum,int skilllevel) {
@@ -217,6 +362,270 @@ public enum ActiveSkill{
 			}
 		}
 		return exp;
+	}
+
+	public long getCoolDown(int skillnum) {
+		double cooldowntime = 0;
+		switch(this.toString()){
+		case "ARROW":
+			switch(skillnum){
+			case 4:
+				cooldowntime = 0.1;
+				break;
+			case 5:
+				cooldowntime = 0.75;
+				break;
+			case 6:
+				cooldowntime = 1.6;
+				break;
+			case 7:
+				cooldowntime = 2.7;
+				break;
+			case 8:
+				cooldowntime = 3.8;
+				break;
+			case 9:
+				cooldowntime = 5.5;
+				break;
+			}
+			break;
+		case "MULTI":
+			switch(skillnum){
+			case 4:
+				cooldowntime = 0.6;
+				break;
+			case 5:
+				cooldowntime = 1.4;
+				break;
+			case 6:
+				cooldowntime = 2.4;
+				break;
+			case 7:
+				cooldowntime = 3.4;
+				break;
+			case 8:
+				cooldowntime = 4.8;
+				break;
+			case 9:
+				cooldowntime = 6.8;
+				break;
+			}
+			break;
+		case "BREAK":
+			switch(skillnum){
+			case 1:
+				cooldowntime = 0;
+				break;
+			case 2:
+				cooldowntime = 0;
+				break;
+			case 3:
+				cooldowntime = 0;
+				break;
+			case 4:
+				cooldowntime = 0.7;
+				break;
+			case 5:
+				cooldowntime = 1.5;
+				break;
+			case 6:
+				cooldowntime = 2.5;
+				break;
+			case 7:
+				cooldowntime = 3.5;
+				break;
+			case 8:
+				cooldowntime = 5.0;
+				break;
+			case 9:
+				cooldowntime = 7.0;
+				break;
+			}
+			break;
+		case "CONDENSE":
+			switch(skillnum){
+			case 4:
+				cooldowntime = 0.3;
+				break;
+			case 5:
+				cooldowntime = 1.0;
+				break;
+			case 6:
+				cooldowntime = 2.0;
+				break;
+			case 7:
+				cooldowntime = 0.5;
+				break;
+			case 8:
+				cooldowntime = 1.5;
+				break;
+			case 9:
+				cooldowntime = 3.0;
+				break;
+			}
+			break;
+		}
+		return (long)cooldowntime * 20;
+	}
+
+	public Material getMaterial(int skilllevel) {
+		Material material = Material.AIR;
+		switch(this.toString()){
+		case "ARROW":
+			material = Material.TIPPED_ARROW;
+			break;
+		case "MULTI":
+			switch(skilllevel){
+			case 4:
+				material = Material.SADDLE;
+				break;
+			case 5:
+				material = Material.MINECART;
+				break;
+			case 6:
+				material = Material.STORAGE_MINECART;
+				break;
+			case 7:
+				material = Material.POWERED_MINECART;
+				break;
+			case 8:
+				material = Material.EXPLOSIVE_MINECART;
+				break;
+			case 9:
+				material = Material.HOPPER_MINECART;
+				break;
+			}
+			break;
+		case "BREAK":
+			switch(skilllevel){
+			case 1:
+				material = Material.GRASS;
+				break;
+			case 2:
+				material = Material.STONE;
+				break;
+			case 3:
+				material = Material.COAL_ORE;
+				break;
+			case 4:
+				material = Material.IRON_ORE;
+				break;
+			case 5:
+				material = Material.GOLD_ORE;
+				break;
+			case 6:
+				material = Material.REDSTONE_ORE;
+				break;
+			case 7:
+				material = Material.LAPIS_ORE;
+				break;
+			case 8:
+				material = Material.EMERALD_ORE;
+				break;
+			case 9:
+				material = Material.DIAMOND_ORE;
+				break;
+			}
+			break;
+		case "CONDENSE":
+			switch(skilllevel){
+			case 4:
+				material = Material.SNOW_BLOCK;
+				break;
+			case 5:
+				material = Material.ICE;
+				break;
+			case 6:
+				material = Material.PACKED_ICE;
+				break;
+			case 7:
+				material = Material.NETHERRACK;
+				break;
+			case 8:
+				material = Material.NETHER_BRICK;
+				break;
+			case 9:
+				material = Material.MAGMA;
+				break;
+			}
+			break;
+		}
+		return material;
+	}
+
+	public String getName(int skilllevel) {
+		String str;
+		if(typenum == 0){
+			str = "未設定";
+			return str;
+		}
+		switch(skilllevel){
+		case 0:
+			str = "未設定";
+			break;
+		case 1:
+			str = getLv1Name();
+			break;
+		case 2:
+			str = getLv2Name();
+			break;
+		case 3:
+			str = getLv3Name();
+			break;
+		case 4:
+			str = getLv4Name();
+			break;
+		case 5:
+			str = getLv5Name();
+			break;
+		case 6:
+			str = getLv6Name();
+			break;
+		case 7:
+			str = getLv7Name();
+			break;
+		case 8:
+			str = getLv8Name();
+			break;
+		case 9:
+			str = getLv9Name();
+			break;
+		default:
+			str = "エラー";
+			break;
+		}
+		return str;
+	}
+
+
+
+	public PotionType getPotionType(int skilllevel) {
+		PotionType potiontype = PotionType.WATER;
+		switch(this.toString()){
+		case "ARROW":
+			switch(skilllevel){
+			case 4:
+				potiontype = PotionType.REGEN;
+				break;
+			case 5:
+				potiontype = PotionType.FIRE_RESISTANCE;
+				break;
+			case 6:
+				potiontype = PotionType.INSTANT_HEAL;
+				break;
+			case 7:
+				potiontype = PotionType.NIGHT_VISION;
+				break;
+			case 8:
+				potiontype = PotionType.SPEED;
+				break;
+			case 9:
+				potiontype = PotionType.INSTANT_DAMAGE;
+				break;
+			}
+			break;
+		}
+		return potiontype;
 	}
 
 

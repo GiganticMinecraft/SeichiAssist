@@ -21,11 +21,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.EffectData;
@@ -103,7 +105,7 @@ public class PlayerInventoryListener implements Listener {
 				//レベルが足りない場合処理終了
 				if( playerdata.level < SeichiAssist.config.getMineStacklevel(1)){
 					player.sendMessage(ChatColor.GREEN + "整地レベルが"+SeichiAssist.config.getMineStacklevel(1)+ "以上必要です");
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					return;
 				}
 				//開く音を再生
@@ -122,7 +124,7 @@ public class PlayerInventoryListener implements Listener {
 					//player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player));
 				}
 				//開く音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 0.8);
 				return;
 			}
 			//整地神番付を開く
@@ -177,7 +179,7 @@ public class PlayerInventoryListener implements Listener {
 				//経験値が足りなかったら処理を終了
 				if(!expman.hasExp(10000)){
 					player.sendMessage(ChatColor.RED + "必要な経験値が足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					return;
 				}
 				//経験値消費
@@ -422,7 +424,7 @@ public class PlayerInventoryListener implements Listener {
 				//レベルが足りない場合処理終了
 				if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
 					player.sendMessage(ChatColor.GREEN + "4次元ポケットを開くには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です");
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					return;
 				}
 				//開く音を再生
@@ -453,7 +455,7 @@ public class PlayerInventoryListener implements Listener {
 				//レベルが足りない場合処理終了
 				if( playerdata.level < SeichiAssist.config.getDokodemoEnderlevel()){
 					player.sendMessage(ChatColor.GREEN + "整地レベルが"+SeichiAssist.config.getDokodemoEnderlevel()+ "以上必要です");
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					return;
 				}
 				//どこでもエンダーチェストを開く
@@ -487,6 +489,169 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 
+
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが36でない時終了
+		if(topinventory.getSize() != 36){
+			return;
+		}
+		Player player = (Player)he;
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+
+		//経験値変更用のクラスを設定
+		ExperienceManager expman = new ExperienceManager(player);
+
+
+		//インベントリ名が以下の時処理
+		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキル選択")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			//ARROWSKILL
+			for(int skilllevel = 4;skilllevel <= 9 ; skilllevel++){
+
+				if(itemstackcurrent.getType().equals(ActiveSkill.ARROW.getMaterial(skilllevel))){
+					PotionMeta potionmeta =(PotionMeta)itemstackcurrent.getItemMeta();
+					if(potionmeta.getBasePotionData().getType().equals(ActiveSkill.ARROW.getPotionType(skilllevel))){
+						if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()
+								&& playerdata.activeskilldata.skillnum == skilllevel){
+							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+							player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+						}else{
+							playerdata.activeskilldata.skilltype = ActiveSkill.ARROW.gettypenum();
+							playerdata.activeskilldata.skillnum = skilllevel;
+							player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.ARROW.getName(skilllevel) + "  が選択されました");
+							playerdata.activeskilldata.mineflagnum = 1;
+							player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+						}
+					}
+				}
+			}
+			//MULTISKILL
+			for(int skilllevel = 4;skilllevel <= 9 ; skilllevel++){
+				if(itemstackcurrent.getType().equals(ActiveSkill.MULTI.getMaterial(skilllevel))){
+					if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()
+							&& playerdata.activeskilldata.skillnum == skilllevel){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+						player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+					}else{
+						playerdata.activeskilldata.skilltype = ActiveSkill.MULTI.gettypenum();
+						playerdata.activeskilldata.skillnum = skilllevel;
+						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.MULTI.getName(skilllevel) + "  が選択されました");
+						playerdata.activeskilldata.mineflagnum = 1;
+						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+					}
+				}
+			}
+			//BREAKSKILL
+			for(int skilllevel = 1;skilllevel <= 9 ; skilllevel++){
+				if(itemstackcurrent.getType().equals(ActiveSkill.BREAK.getMaterial(skilllevel))){
+					if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()
+							&& playerdata.activeskilldata.skillnum == skilllevel){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+						player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+					}else{
+						playerdata.activeskilldata.skilltype = ActiveSkill.BREAK.gettypenum();
+						playerdata.activeskilldata.skillnum = skilllevel;
+						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.BREAK.getName(skilllevel) + "  が選択されました");
+						playerdata.activeskilldata.mineflagnum = 1;
+						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+					}
+				}
+			}
+			//CONDENSKILL
+			for(int skilllevel = 4;skilllevel <= 9 ; skilllevel++){
+				if(itemstackcurrent.getType().equals(ActiveSkill.CONDENSE.getMaterial(skilllevel))){
+					if(playerdata.activeskilldata.skilltype == ActiveSkill.CONDENSE.gettypenum()
+							&& playerdata.activeskilldata.skillnum == skilllevel){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+						player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+					}else{
+						playerdata.activeskilldata.skilltype = ActiveSkill.CONDENSE.gettypenum();
+						playerdata.activeskilldata.skillnum = skilllevel;
+						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.CONDENSE.getName(skilllevel) + "  が選択されました");
+						playerdata.activeskilldata.mineflagnum = 1;
+						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+					}
+				}
+			}
+
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+			else if(itemstackcurrent.getType().equals(Material.STONE_BUTTON)){
+				//経験値変更用のクラスを設定
+				//経験値が足りなかったら処理を終了
+				if(!expman.hasExp(10000)){
+					player.sendMessage(ChatColor.RED + "必要な経験値が足りません");
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					return;
+				}
+				//経験値消費
+				expman.changeExp(-10000);
+
+				//リセット処理
+				playerdata.activeskilldata.reset();
+				//スキルポイント更新
+				playerdata.activeskilldata.updataActiveSkillPoint(player, playerdata.level);
+				//リセット音を流す
+				player.playSound(player.getLocation(), Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1, (float) 0.1);
+				//メッセージを流す
+				player.sendMessage(ChatColor.LIGHT_PURPLE + "アクティブスキルポイントをリセットしました");
+				//メニューを開く
+				player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+			}
+			else if(itemstackcurrent.getType().equals(Material.GLASS)){
+				if(playerdata.activeskilldata.skilltype == 0 && playerdata.activeskilldata.skillnum == 0){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else{
+					playerdata.activeskilldata.skilltype = 0;
+					playerdata.activeskilldata.skillnum = 0;
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:未設定  が選択されました");
+					playerdata.activeskilldata.mineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}
+			}
+			else if(itemstackcurrent.getType().equals(Material.BOOKSHELF)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 1, (float) 0.5);
+				player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
+				return;
+			}
+		}
+	}
+	//スキルエフェクトメニューの処理 + エフェクト開放の処理
+	@EventHandler
+	public void onPlayerClickActiveSkillEffectSellectEvent(InventoryClickEvent event){
+		//外枠のクリック処理なら終了
+		if(event.getClickedInventory() == null){
+			return;
+		}
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
+
 		Inventory topinventory = view.getTopInventory();
 		//インベントリが存在しない時終了
 		if(topinventory == null){
@@ -501,7 +666,7 @@ public class PlayerInventoryListener implements Listener {
 		PlayerData playerdata = playermap.get(uuid);
 
 		//インベントリ名が以下の時処理
-		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキル選択")){
+		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキルエフェクト選択")){
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
@@ -515,131 +680,52 @@ public class PlayerInventoryListener implements Listener {
 			//ページ変更処理
 			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getMenuData(player));
+				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 				return;
-			}
-			else if(itemstackcurrent.getType().equals(Material.GRASS)){
-				if(playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 1){
+			}else if(itemstackcurrent.getType().equals(Material.GLASS)){
+				if(playerdata.activeskilldata.effectnum == 0){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 				}else{
-					playerdata.activeskilltype = ActiveSkill.BREAK.gettypenum();
-					playerdata.activeskillnum = 1;
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:デュアル・ブレイク  が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-					playerdata.activemineflagnum = 1;
+					playerdata.activeskilldata.effectnum = 0;
+					player.sendMessage(ChatColor.GREEN + "エフェクト:未設定  が選択されました");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}
-			}
-			else if(itemstackcurrent.getType().equals(Material.STONE)){
-				if(playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 2){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else{
-					playerdata.activeskilltype = ActiveSkill.BREAK.gettypenum();
-					playerdata.activeskillnum = 2;
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:トリアル・ブレイク  が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}
-			}
-			else if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
-				if(playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 3){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else{
-					playerdata.activeskilltype = ActiveSkill.BREAK.gettypenum();
-					playerdata.activeskillnum = 3;
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:エクスプロージョン  が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+			}else{
+				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+				for(int i = 0; i < skilleffect.length ; i++){
+					if(itemstackcurrent.getType().equals(skilleffect[i].getMaterial())){
+						if(playerdata.activeskilldata.effectnum == skilleffect[i].gettypenum()){
+							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+							player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+						}else{
+							playerdata.activeskilldata.effectnum = skilleffect[i].gettypenum();
+							player.sendMessage(ChatColor.GREEN + "エフェクト:" + skilleffect[i].getName() + ChatColor.RESET + "" + ChatColor.GREEN + " が選択されました");
+							player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+						}
+					}
 				}
 			}
 
-			else if(itemstackcurrent.getType().equals(Material.IRON_ORE)){
-				if(playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 4){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else{
-					playerdata.activeskilltype = ActiveSkill.BREAK.gettypenum();
-					playerdata.activeskillnum = 4;
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ミラージュ・フレア  が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}
-			}
 
-			else if(itemstackcurrent.getType().equals(Material.GOLD_ORE)){
-				if(playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 5){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else{
-					playerdata.activeskilltype = ActiveSkill.BREAK.gettypenum();
-					playerdata.activeskillnum = 5;
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ドッ・カーン  が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
-				if(playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 6){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else{
-					playerdata.activeskilltype = ActiveSkill.BREAK.gettypenum();
-					playerdata.activeskillnum = 6;
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ギガンティック・ボム  が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
-				if(playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 7){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else{
-					playerdata.activeskilltype = ActiveSkill.BREAK.gettypenum();
-					playerdata.activeskillnum = 7;
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:ブリリアント・デトネーション  が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
-				if(playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 8){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else{
-					playerdata.activeskilltype = ActiveSkill.BREAK.gettypenum();
-					playerdata.activeskillnum = 8;
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:レムリア・インパクト  が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
-				if(playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 9){
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-				}else{
-					playerdata.activeskilltype = ActiveSkill.BREAK.gettypenum();
-					playerdata.activeskillnum = 9;
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:エターナル・ヴァイス  が選択されました");
-					player.sendMessage(ChatColor.YELLOW + "アクティブスキルはピッケルorシャベルor斧を持った状態で\nShift(スニーク)+右クリックでスキルのONOFFを変更出来ます");
-					playerdata.activemineflagnum = 1;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+			//ここからエフェクト開放の処理
+			if(itemstackcurrent.getType().equals(Material.BEDROCK)){
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+				for(int i = 0; i < skilleffect.length ; i++){
+					if(itemmeta.getDisplayName().contains(skilleffect[i].getName())){
+						if(playerdata.activeskilldata.skillpoint < skilleffect[i].getUsePoint()){
+							player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
+							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float)0.5);
+						}else{
+							skilleffect[i].setObtained(playerdata.activeskilldata);
+							player.sendMessage(ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "エフェクト：" + skilleffect[i].getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "" + " を解除しました");
+							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
+							playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
+							player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
+						}
+					}
 				}
 			}
 		}
@@ -690,98 +776,98 @@ public class PlayerInventoryListener implements Listener {
 				if(itemmeta.getDisplayName().contains("エビフライ・ドライブ")){
 					skilllevel = 4;
 					skilltype = 1;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.breakskill < 3){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float)0.5);
+					}else if(playerdata.activeskilldata.breakskill < 3){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(3,3) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float)0.5);
 					}else{
-						playerdata.arrowskill = skilllevel;
+						playerdata.activeskilldata.arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ホーリー・ショット")){
 					skilllevel = 5;
 					skilltype = 1;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.arrowskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.arrowskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.arrowskill = skilllevel;
+						playerdata.activeskilldata.arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ツァーリ・ボンバ")){
 					skilllevel = 6;
 					skilltype = 1;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.arrowskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.arrowskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.arrowskill = skilllevel;
+						playerdata.activeskilldata.arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アーク・ブラスト")){
 					skilllevel = 7;
 					skilltype = 1;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.arrowskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.arrowskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.arrowskill = skilllevel;
+						playerdata.activeskilldata.arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ファンタズム・レイ")){
 					skilllevel = 8;
 					skilltype = 1;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.arrowskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.arrowskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.arrowskill = skilllevel;
+						playerdata.activeskilldata.arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("スーパー・ノヴァ")){
 					skilllevel = 9;
 					skilltype = 1;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.arrowskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.arrowskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.arrowskill = skilllevel;
+						playerdata.activeskilldata.arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
-						if(playerdata.multiskill == 9 && playerdata.breakskill == 9 && playerdata.condenskill == 9){
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
+						if(playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.condenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
@@ -791,98 +877,98 @@ public class PlayerInventoryListener implements Listener {
 				}else if(itemmeta.getDisplayName().contains("トム・ボウイ")){
 					skilllevel = 4;
 					skilltype = 2;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.breakskill < 3){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.breakskill < 3){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(3,3) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.multiskill = skilllevel;
+						playerdata.activeskilldata.multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("サンダー・ストーム")){
 					skilllevel = 5;
 					skilltype = 2;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.multiskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.multiskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.multiskill = skilllevel;
+						playerdata.activeskilldata.multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("スターライト・ブレイカー")){
 					skilllevel = 6;
 					skilltype = 2;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.multiskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.multiskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.multiskill = skilllevel;
+						playerdata.activeskilldata.multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アース・ディバイド")){
 					skilllevel = 7;
 					skilltype = 2;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.multiskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.multiskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.multiskill = skilllevel;
+						playerdata.activeskilldata.multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ヘヴン・ゲイボルグ")){
 					skilllevel = 8;
 					skilltype = 2;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.multiskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.multiskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.multiskill = skilllevel;
+						playerdata.activeskilldata.multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ディシジョン")){
 					skilllevel = 9;
 					skilltype = 2;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.multiskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.multiskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.multiskill = skilllevel;
+						playerdata.activeskilldata.multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
-						if(playerdata.arrowskill == 9 && playerdata.breakskill == 9 && playerdata.condenskill == 9){
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
+						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.condenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
@@ -892,143 +978,143 @@ public class PlayerInventoryListener implements Listener {
 				}else if(itemmeta.getDisplayName().contains("デュアル・ブレイク")){
 					skilllevel = 1;
 					skilltype = 3;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.breakskill = skilllevel;
+						playerdata.activeskilldata.breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("トリアル・ブレイク")){
 					skilllevel = 2;
 					skilltype = 3;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.breakskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.breakskill = skilllevel;
+						playerdata.activeskilldata.breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("エクスプロージョン")){
 					skilllevel = 3;
 					skilltype = 3;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.breakskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.breakskill = skilllevel;
+						playerdata.activeskilldata.breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ミラージュ・フレア")){
 					skilllevel = 4;
 					skilltype = 3;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.breakskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.breakskill = skilllevel;
+						playerdata.activeskilldata.breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ドッ・カーン")){
 					skilllevel = 5;
 					skilltype = 3;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.breakskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.breakskill = skilllevel;
+						playerdata.activeskilldata.breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ギガンティック・ボム")){
 					skilllevel = 6;
 					skilltype = 3;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.breakskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.breakskill = skilllevel;
+						playerdata.activeskilldata.breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ブリリアント・デトネーション")){
 					skilllevel = 7;
 					skilltype = 3;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.breakskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.breakskill = skilllevel;
+						playerdata.activeskilldata.breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("レムリア・インパクト")){
 					skilllevel = 8;
 					skilltype = 3;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.breakskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.breakskill = skilllevel;
+						playerdata.activeskilldata.breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("エターナル・ヴァイス")){
 					skilllevel = 9;
 					skilltype = 3;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.breakskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.breakskill = skilllevel;
+						playerdata.activeskilldata.breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
-						if(playerdata.arrowskill == 9 && playerdata.breakskill == 9 && playerdata.condenskill == 9){
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
+						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.condenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
@@ -1038,98 +1124,98 @@ public class PlayerInventoryListener implements Listener {
 				}else if(itemmeta.getDisplayName().contains("ホワイト・ブレス")){
 					skilllevel = 4;
 					skilltype = 4;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.breakskill < 3){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.breakskill < 3){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(3,3) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.condenskill = skilllevel;
+						playerdata.activeskilldata.condenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アブソリュート・ゼロ")){
 					skilllevel = 5;
 					skilltype = 4;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.condenskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.condenskill = skilllevel;
+						playerdata.activeskilldata.condenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ダイアモンド・ダスト")){
 					skilllevel = 6;
 					skilltype = 4;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.condenskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.condenskill = skilllevel;
+						playerdata.activeskilldata.condenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ラヴァ・コンデンセーション")){
 					skilllevel = 7;
 					skilltype = 4;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.condenskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.condenskill = skilllevel;
+						playerdata.activeskilldata.condenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("モエラキ・ボールダーズ")){
 					skilllevel = 8;
 					skilltype = 4;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.condenskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.condenskill = skilllevel;
+						playerdata.activeskilldata.condenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("エルト・フェットル")){
 					skilllevel = 9;
 					skilltype = 4;
-					if(playerdata.activeskillpoint < skilllevel * 10){
+					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					}else if(playerdata.condenskill < skilllevel - 1){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
-						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.condenskill = skilllevel;
+						playerdata.activeskilldata.condenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.updataActiveSkillPoint(player);
-						if(playerdata.arrowskill == 9 && playerdata.breakskill == 9 && playerdata.condenskill == 9){
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
+						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.multiskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
@@ -1145,7 +1231,6 @@ public class PlayerInventoryListener implements Listener {
 		}
 	}
 	//マインスタックメニュー
-	//minestackメニュー
 	@EventHandler
 	public void onPlayerClickMineStackMenuEvent(InventoryClickEvent event){
 		//外枠のクリック処理なら終了
@@ -1290,6 +1375,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 		}
 	}
+	//ランキングメニュー処理
 	//ランキングメニュー
 	@EventHandler
 	public void onPlayerClickSeichiRankingMenuEvent(InventoryClickEvent event){
@@ -1316,8 +1402,6 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 		Player player = (Player)he;
-		UUID uuid = player.getUniqueId();
-		PlayerData playerdata = playermap.get(uuid);
 
 		//インベントリ名が以下の時処理
 		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング")){

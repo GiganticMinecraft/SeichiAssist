@@ -48,16 +48,8 @@ public class PlayerData {
 	public int level;
 	//詫び券をあげる数
 	public int numofsorryforbug;
-	//採掘用アクティブスキルのフラグ 0:なし 1:上破壊 2:下破壊
-	public int activemineflagnum;
 	//拡張インベントリ
 	public Inventory inventory;
-	//アクティブスキルの種類を格納
-	public int activeskilltype;
-	//選択されているアクティブスキルの番号を格納
-	public int activeskillnum;
-	//スキルクールダウン用フラグ
-	public boolean skillcanbreakflag;
 	//ワールドガード保護自動設定用
 	public int rgnum;
 	//スキル発動中だけtrueになるフラグ
@@ -82,17 +74,9 @@ public class PlayerData {
 	public int totalbreaknum;
 	//各統計値差分計算用配列
 	private List<Integer> staticdata;
-	//アクティブスキルポイント
-	public int activeskillpoint;
-	//投てきスキル獲得量
-	public int arrowskill;
-	//連続破壊スキル獲得量
-	public int multiskill;
-	//破壊スキル獲得量
-	public int breakskill;
-	//凝固スキル獲得量
-	public int condenskill;
 
+	//アクティブスキル関連データ
+	public ActiveSkillData activeskilldata;
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -110,11 +94,7 @@ public class PlayerData {
 		effectdatalist = new ArrayList<EffectData>();
 		level = 1;
 		numofsorryforbug = 0;
-		activemineflagnum = 0;
 		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
-		activeskilltype = 0;
-		activeskillnum = 0;
-		skillcanbreakflag = true;
 		rgnum = 0;
 		skillflag = false;
 		minestack = new MineStack();
@@ -130,11 +110,8 @@ public class PlayerData {
 		for(Material m : SeichiAssist.materiallist){
 			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
 		}
-		activeskillpoint = 0;
-		arrowskill = 0;
-		multiskill = 0;
-		breakskill = 0;
-		condenskill = 0;
+		activeskilldata = new ActiveSkillData();
+
 
 	}
 
@@ -144,42 +121,10 @@ public class PlayerData {
 		minuteblock.before = totalbreaknum;
 		halfhourblock.before = totalbreaknum;
 		updataLevel(player);
-		updataActiveSkillPoint(player);
+		activeskilldata.updataActiveSkillPoint(player, level);
 		NotifySorryForBug(player);
 	}
-	//activeskillpointをレベルに従って更新
-	public void updataActiveSkillPoint(Player player) {
-		int point = 0;
-		//レベルに応じたスキルポイント量を取得
-		for(int i = 1;i <= level;i++){
-			point += (int)(i / 10) + 1;
-		}
-		if(SeichiAssist.DEBUG){
-			player.sendMessage("あなたのレベルでの獲得アクティブスキルポイント：" + point);
-		}
-		//取得しているスキルを確認してその分のスキルポイントを引く
-		//遠距離スキル
-		for(int i = arrowskill; i >= 4 ; i--){
-			point -= i * 10;
-		}
-		//マルチ破壊スキル
-		for(int i = multiskill; i >= 4 ; i--){
-			point -= i * 10;
-		}
-		//破壊スキル
-		for(int i = breakskill; i >= 1 ; i--){
-			point -= i * 10;
-		}
-		//凝固スキル
-		for(int i = condenskill; i >= 4 ; i--){
-			point -= i * 10;
-		}
-		if(SeichiAssist.DEBUG){
-			player.sendMessage("獲得済みスキルを考慮したアクティブスキルポイント：" + point);
-		}
 
-		activeskillpoint = point;
-	}
 
 	//quit時とondisable時、プレイヤーデータを最新の状態に更新
 	public void UpdateonQuit(Player player){
@@ -413,6 +358,7 @@ public class PlayerData {
 			return 9*6;
 		}
 	}
+
 
 
 }

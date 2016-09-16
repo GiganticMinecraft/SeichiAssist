@@ -20,6 +20,7 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
 import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
@@ -894,8 +895,8 @@ public class MenuInventoryData {
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "のアクティブスキルデータ");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
 				, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum)
-				, ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.getActiveSkillName(playerdata.activeskilltype,playerdata.activeskillnum)
-				, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるアクティブスキルポイント：" + playerdata.activeskillpoint);
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum)
+				, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるアクティブスキルポイント：" + playerdata.activeskilldata.skillpoint);
 		skullmeta.setLore(lore);
 		skullmeta.setOwner(playerdata.name);
 		itemstack.setItemMeta(skullmeta);
@@ -904,7 +905,6 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.GLASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スキルを使用しない");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 		itemmeta.setLore(lore);
@@ -920,8 +920,17 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(2,itemstack);
 
+		itemstack = new ItemStack(Material.STONE_BUTTON,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_BUTTON);
+		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リセットボタン");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "" + "全スキル・全エフェクトの振り直しができます。"
+					,ChatColor.RESET + "" +  ChatColor.RED + "必要経験値：10000"
+					,ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでリセット");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(9,itemstack);
 
-		if(playerdata.arrowskill >= 4){
+		if(playerdata.activeskilldata.arrowskill >= 4){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
 			potionmeta.setBasePotionData(new PotionData(PotionType.REGEN));
@@ -949,7 +958,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(3,itemstack);
 
-		if(playerdata.arrowskill >= 5){
+		if(playerdata.activeskilldata.arrowskill >= 5){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
 			potionmeta.setBasePotionData(new PotionData(PotionType.FIRE_RESISTANCE));
@@ -977,7 +986,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(4,itemstack);
 
-		if(playerdata.arrowskill >= 6){
+		if(playerdata.activeskilldata.arrowskill >= 6){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
 			potionmeta.setBasePotionData(new PotionData(PotionType.INSTANT_HEAL));
@@ -1005,7 +1014,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(5,itemstack);
 
-		if(playerdata.arrowskill >= 7){
+		if(playerdata.activeskilldata.arrowskill >= 7){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
 			potionmeta.setBasePotionData(new PotionData(PotionType.NIGHT_VISION));
@@ -1033,7 +1042,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(6,itemstack);
 
-		if(playerdata.arrowskill >= 8){
+		if(playerdata.activeskilldata.arrowskill >= 8){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
 			potionmeta.setBasePotionData(new PotionData(PotionType.SPEED));
@@ -1061,7 +1070,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(7,itemstack);
 
-		if(playerdata.arrowskill >= 9){
+		if(playerdata.activeskilldata.arrowskill >= 9){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
 			potionmeta.setBasePotionData(new PotionData(PotionType.INSTANT_DAMAGE));
@@ -1090,7 +1099,7 @@ public class MenuInventoryData {
 		inventory.setItem(8,itemstack);
 
 		//2列目
-		if(playerdata.multiskill >= 4){
+		if(playerdata.activeskilldata.multiskill >= 4){
 			itemstack = new ItemStack(Material.SADDLE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SADDLE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1117,7 +1126,7 @@ public class MenuInventoryData {
 		inventory.setItem(12,itemstack);
 
 
-		if(playerdata.multiskill >= 5){
+		if(playerdata.activeskilldata.multiskill >= 5){
 			itemstack = new ItemStack(Material.MINECART,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MINECART);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1143,7 +1152,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(13,itemstack);
 
-		if(playerdata.multiskill >= 6){
+		if(playerdata.activeskilldata.multiskill >= 6){
 			itemstack = new ItemStack(Material.STORAGE_MINECART,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STORAGE_MINECART);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1170,7 +1179,7 @@ public class MenuInventoryData {
 		inventory.setItem(14,itemstack);
 
 
-		if(playerdata.multiskill >= 7){
+		if(playerdata.activeskilldata.multiskill >= 7){
 			itemstack = new ItemStack(Material.POWERED_MINECART,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.POWERED_MINECART);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1197,7 +1206,7 @@ public class MenuInventoryData {
 		inventory.setItem(15,itemstack);
 
 
-		if(playerdata.multiskill >= 8){
+		if(playerdata.activeskilldata.multiskill >= 8){
 			itemstack = new ItemStack(Material.EXPLOSIVE_MINECART,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EXPLOSIVE_MINECART);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1224,7 +1233,7 @@ public class MenuInventoryData {
 		inventory.setItem(16,itemstack);
 
 
-		if(playerdata.multiskill >= 9){
+		if(playerdata.activeskilldata.multiskill >= 9){
 			itemstack = new ItemStack(Material.HOPPER_MINECART,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.HOPPER_MINECART);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1252,7 +1261,7 @@ public class MenuInventoryData {
 
 
 		//３列目
-		if(playerdata.breakskill >= 1){
+		if(playerdata.activeskilldata.breakskill >= 1){
 			itemstack = new ItemStack(Material.GRASS,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1279,7 +1288,7 @@ public class MenuInventoryData {
 		inventory.setItem(18,itemstack);
 
 
-		if(playerdata.breakskill >= 2){
+		if(playerdata.activeskilldata.breakskill >= 2){
 			itemstack = new ItemStack(Material.STONE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1305,7 +1314,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(19,itemstack);
 
-		if(playerdata.breakskill >= 3){
+		if(playerdata.activeskilldata.breakskill >= 3){
 			itemstack = new ItemStack(Material.COAL_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1331,7 +1340,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(20,itemstack);
 
-		if(playerdata.breakskill >= 4){
+		if(playerdata.activeskilldata.breakskill >= 4){
 			itemstack = new ItemStack(Material.IRON_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1357,7 +1366,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(21,itemstack);
 
-		if(playerdata.breakskill >= 5){
+		if(playerdata.activeskilldata.breakskill >= 5){
 			itemstack = new ItemStack(Material.GOLD_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1383,7 +1392,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(22,itemstack);
 
-		if(playerdata.breakskill >= 6){
+		if(playerdata.activeskilldata.breakskill >= 6){
 			itemstack = new ItemStack(Material.REDSTONE_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1410,7 +1419,7 @@ public class MenuInventoryData {
 		inventory.setItem(23,itemstack);
 
 
-		if(playerdata.breakskill >= 7){
+		if(playerdata.activeskilldata.breakskill >= 7){
 			itemstack = new ItemStack(Material.LAPIS_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1436,7 +1445,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(24,itemstack);
 
-		if(playerdata.breakskill >= 8){
+		if(playerdata.activeskilldata.breakskill >= 8){
 			itemstack = new ItemStack(Material.EMERALD_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1462,7 +1471,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(25,itemstack);
 
-		if(playerdata.breakskill >= 9){
+		if(playerdata.activeskilldata.breakskill >= 9){
 			itemstack = new ItemStack(Material.DIAMOND_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1489,7 +1498,7 @@ public class MenuInventoryData {
 		inventory.setItem(26,itemstack);
 
 		//4列目
-		if(playerdata.condenskill >= 4){
+		if(playerdata.activeskilldata.condenskill >= 4){
 			itemstack = new ItemStack(Material.SNOW_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SNOW_BLOCK);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1516,7 +1525,7 @@ public class MenuInventoryData {
 		inventory.setItem(30,itemstack);
 
 
-		if(playerdata.condenskill >= 5){
+		if(playerdata.activeskilldata.condenskill >= 5){
 			itemstack = new ItemStack(Material.ICE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ICE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1543,7 +1552,7 @@ public class MenuInventoryData {
 		inventory.setItem(31,itemstack);
 
 
-		if(playerdata.condenskill >= 6){
+		if(playerdata.activeskilldata.condenskill >= 6){
 			itemstack = new ItemStack(Material.PACKED_ICE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PACKED_ICE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1570,7 +1579,7 @@ public class MenuInventoryData {
 		inventory.setItem(32,itemstack);
 
 
-		if(playerdata.condenskill >= 7){
+		if(playerdata.activeskilldata.condenskill >= 7){
 			itemstack = new ItemStack(Material.NETHERRACK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHERRACK);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -1597,13 +1606,13 @@ public class MenuInventoryData {
 		inventory.setItem(33,itemstack);
 
 
-		if(playerdata.condenskill >= 8){
+		if(playerdata.activeskilldata.condenskill >= 8){
 			itemstack = new ItemStack(Material.NETHER_BRICK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_BRICK);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "モエラキ・ボールダーズ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "溶岩5×5×5ブロックを固めます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.2秒"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.5秒"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：120"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
@@ -1613,7 +1622,7 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "モエラキ・ボールダーズ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "溶岩5×5×5ブロックを固めます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.2秒"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.5秒"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：120"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：80"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ラヴァ・コンデンセーション"
@@ -1624,13 +1633,13 @@ public class MenuInventoryData {
 		inventory.setItem(34,itemstack);
 
 
-		if(playerdata.condenskill >= 9){
+		if(playerdata.activeskilldata.condenskill >= 9){
 			itemstack = new ItemStack(Material.MAGMA,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MAGMA);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エルト・フェットル");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "溶岩7×7×7ブロックを固めます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.4秒"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：3秒"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：240"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
@@ -1640,7 +1649,7 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エルト・フェットル");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "溶岩7×7×7ブロックを固めます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.4秒"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：3秒"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：240"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：90"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：モエラキ・ボールダーズ"
@@ -1650,7 +1659,7 @@ public class MenuInventoryData {
 		}
 		inventory.setItem(35,itemstack);
 
-		if(playerdata.multiskill >= 9 && playerdata.breakskill >= 9 && playerdata.arrowskill >= 9 && playerdata.condenskill >= 9){
+		if(playerdata.activeskilldata.multiskill >= 9 && playerdata.activeskilldata.breakskill >= 9 && playerdata.activeskilldata.arrowskill >= 9 && playerdata.activeskilldata.condenskill >= 9){
 			itemstack = new ItemStack(Material.DIAMOND_CHESTPLATE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_CHESTPLATE);
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -1673,7 +1682,7 @@ public class MenuInventoryData {
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 		}
-		inventory.setItem(9,itemstack);
+		inventory.setItem(10,itemstack);
 
 		return inventory;
 	}
@@ -1702,7 +1711,6 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		return itemmeta;
 	}
-
 	// ガチャ券受け取りボタン
 	public static List<String> GachaGetButtonLore(PlayerData playerdata){
 		List<String> lore = new ArrayList<String>();
@@ -1716,7 +1724,6 @@ public class MenuInventoryData {
 		}
 		return lore;
 	}
-
 	//運営ガチャ券受け取りボタン
 	public static List<String> SorryGachaGetButtonLore(PlayerData playerdata){
 		List<String> lore = new ArrayList<String>();
@@ -1734,7 +1741,6 @@ public class MenuInventoryData {
 		}
 		return lore;
 	}
-
 	public static Inventory getMineStackMenu(Player p){
 		//プレイヤーを取得
 		Player player = p.getPlayer();
@@ -1827,7 +1833,6 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		return itemmeta;
 	}
-
 	//MineStackボタン作成
 	public static Inventory setMineStackButton(Inventory inv,int minestack,Material type,int level,int set){
 		ItemStack itemstack = new ItemStack(type,1);
@@ -1841,7 +1846,6 @@ public class MenuInventoryData {
 		inv.setItem(set,itemstack);
 		return inv;
 	}
-
 	// 死亡メッセージ表示トグルボタン
 	public static ItemMeta dispKillLogToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<String>();
@@ -1857,7 +1861,6 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		return itemmeta;
 	}
-
 	// PvPトグルボタン
 	public static ItemMeta dispPvPToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<String>();
@@ -1873,7 +1876,6 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		return itemmeta;
 	}
-
 	//ランキングリスト
 	public static Inventory getRankingList(Player p){
 		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
@@ -1917,6 +1919,97 @@ public class MenuInventoryData {
 		skullmeta.setOwner("unchama");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(35,itemstack);
+
+		return inventory;
+	}
+	//エフェクト選択メニュー
+	public static Inventory getActiveSkillEffectMenuData(Player p) {
+		//プレイヤーを取得
+				Player player = p.getPlayer();
+				//UUID取得
+				UUID uuid = player.getUniqueId();
+				//プレイヤーデータ
+				PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+				//念のためエラー分岐
+				if(playerdata == null){
+					player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+					Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
+					Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+					return null;
+				}
+
+				Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキルエフェクト選択");
+				ItemStack itemstack;
+				ItemMeta itemmeta;
+				SkullMeta skullmeta;
+				List<String> lore = new ArrayList<String>();
+
+				// 1ページ目を開く
+				itemstack = new ItemStack(Material.SKULL_ITEM,1);
+				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+				itemstack.setDurability((short) 3);
+				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スキルメニューへ");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+						);
+				skullmeta.setLore(lore);
+				skullmeta.setOwner("MHF_ArrowLeft");
+				itemstack.setItemMeta(skullmeta);
+				inventory.setItem(27,itemstack);
+
+				//1行目
+
+				itemstack = new ItemStack(Material.SKULL_ITEM,1);
+				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+				itemstack.setDurability((short) 3);
+				skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "のアクティブスキルデータ");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
+						, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum)
+						, ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum)
+						, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるアクティブスキルポイント：" + playerdata.activeskilldata.skillpoint);
+				skullmeta.setLore(lore);
+				skullmeta.setOwner(playerdata.name);
+				itemstack.setItemMeta(skullmeta);
+				inventory.setItem(0,itemstack);
+
+
+				itemstack = new ItemStack(Material.GLASS,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エフェクトを使用しない");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(1,itemstack);
+
+
+				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+
+				for(int i = 0; i < skilleffect.length;i++){
+					//プレイヤーがそのスキルを取得している場合の処理
+					if(skilleffect[i].isObtained(playerdata.activeskilldata)){
+						itemstack = new ItemStack(skilleffect[i].getMaterial(),1);
+						itemmeta = Bukkit.getItemFactory().getItemMeta(skilleffect[i].getMaterial());
+						itemmeta.setDisplayName(skilleffect[i].getName());
+						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + skilleffect[i].getExplain()
+								, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
+								);
+						itemmeta.setLore(lore);
+						itemstack.setItemMeta(itemmeta);
+					}
+					//プレイヤーがそのスキルをまだ取得していない場合の処理
+					else{
+						itemstack = new ItemStack(Material.BEDROCK,1);
+						itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+						itemmeta.setDisplayName(skilleffect[i].getName());
+						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + skilleffect[i].getExplain()
+								, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：" + skilleffect[i].getUsePoint()
+								, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
+						itemmeta.setLore(lore);
+						itemstack.setItemMeta(itemmeta);
+					}
+					inventory.setItem(i + 9,itemstack);
+				}
 
 		return inventory;
 	}

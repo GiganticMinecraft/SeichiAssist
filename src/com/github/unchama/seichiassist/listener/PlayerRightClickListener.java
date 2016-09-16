@@ -29,6 +29,50 @@ public class PlayerRightClickListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
+	//アクティブスキル処理
+	@EventHandler
+	public void onPlayerActiveSkillEvent(PlayerInteractEvent event){
+		//プレイヤー型を取得
+		Player player = event.getPlayer();
+		//プレイヤーが起こしたアクションを取得
+		Action action = event.getAction();
+		//使った手を取得
+		EquipmentSlot equipmentslot = event.getHand();
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータを取得
+		PlayerData playerdata = playermap.get(uuid);
+
+		//オフハンドから実行された時処理を終了
+		if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+			return;
+		}
+
+		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
+				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
+
+				}else if(playerdata.activeskilldata.skilltype == ActiveSkill.CONDENSE.gettypenum()){
+
+				}
+/*
+				Location ploc = player.getLocation();
+		    	player.playSound(ploc, Sound.ENTITY_GHAST_SHOOT, 1, 1);
+		        Location loc = player.getLocation();loc.add(loc.getDirection().multiply(2)).add(0,0.5,0);
+		        Vector vec = loc.getDirection();
+		        int k = 1;
+		        vec.setX(vec.getX() * k);
+		        vec.setY(vec.getY() * k);
+		        vec.setZ(vec.getZ() * k);
+
+		        final Fireball fireball = player.getWorld().spawn(loc, Fireball.class);
+		        fireball.setVelocity(vec);
+		        */
+			}
+		}
+	}
+
+
 	//プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
 	@EventHandler
 	public void onPlayerRightClickGachaEvent(PlayerInteractEvent event){
@@ -175,35 +219,35 @@ public class PlayerRightClickListener implements Listener {
 
 				int activemineflagnum = 0;
 
-				if((playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 1)
-						|| (playerdata.activeskilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskillnum == 2)){
+				if((playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskilldata.skillnum == 1)
+						|| (playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskilldata.skillnum == 2)){
 
-					activemineflagnum = (playerdata.activemineflagnum + 1) % 3;
+					activemineflagnum = (playerdata.activeskilldata.mineflagnum + 1) % 3;
 					switch (activemineflagnum){
 					case 0:
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilltype,playerdata.activeskillnum) + "：OFF");
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + "：OFF");
 						break;
 					case 1:
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilltype,playerdata.activeskillnum) + ":ON-Above(上向き）");
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + ":ON-Above(上向き）");
 						break;
 					case 2:
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilltype,playerdata.activeskillnum) + ":ON-Under(下向き）");
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + ":ON-Under(下向き）");
 						break;
 					}
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-				}else if(playerdata.breakskill >= 3){
-					activemineflagnum = (playerdata.activemineflagnum + 1) % 2;
+				}else if(playerdata.activeskilldata.skilltype > 0 && playerdata.activeskilldata.skillnum > 0){
+					activemineflagnum = (playerdata.activeskilldata.mineflagnum + 1) % 2;
 					switch (activemineflagnum){
 					case 0:
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilltype,playerdata.activeskillnum) + "：OFF");
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + "：OFF");
 						break;
 					case 1:
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilltype,playerdata.activeskillnum) + ":ON");
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + ":ON");
 						break;
 					}
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 				}
-				playerdata.activemineflagnum = activemineflagnum;
+				playerdata.activeskilldata.mineflagnum = activemineflagnum;
 			}
 		}
 	}
