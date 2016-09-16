@@ -11,20 +11,29 @@ import net.coreprotect.CoreProtectAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.DyeColor;
+import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Builder;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Statistic;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.material.Dye;
 import org.bukkit.plugin.Plugin;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
@@ -239,5 +248,245 @@ public class Util {
 			}
 		}
 		return false;
+	}
+	//他のプラグインの影響があってもブロックを破壊できるのか
+	public static boolean canBreak(Player player ,Block breakblock) {
+		//壊されるブロックの状態を取得
+		BlockState blockstate = breakblock.getState();
+		//壊されるブロックのデータを取得
+		@SuppressWarnings("deprecation")
+		byte data = blockstate.getData().getData();
+
+
+		//壊されるブロックがワールドガード範囲だった場合処理を終了
+		if(!Util.getWorldGuard().canBuild(player, breakblock.getLocation())){
+			player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
+			return false;
+		}
+		//コアプロテクトのクラスを取得
+		CoreProtectAPI CoreProtect = Util.getCoreProtect();
+		//破壊ログを設定
+		Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
+		//もし失敗したらプレイヤーに報告し処理を終了
+		if(!success){
+			player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
+			return false;
+		}
+		return true;
+	}
+	//ブロックを破壊する処理、ドロップも含む、統計増加も含む
+	public static void BreakBlock(Player player,Block breakblock,Location centerofblock,ItemStack tool,Boolean stepflag) {
+
+		Material material = breakblock.getType();
+
+
+		//アイテムをドロップさせる
+		breakblock.getWorld().dropItemNaturally(centerofblock,dropItemOnTool(breakblock,tool));
+
+		//ブロックを空気に変える
+		breakblock.setType(Material.AIR);
+
+		if(stepflag){
+			//あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
+			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,material);
+		}
+		// Effect.ENDER_SIGNALこれかっこいい
+		// Effect.EXPLOSION 範囲でかい
+		// Effect.WITCH_MAGIC 小さい 紫
+		// Effect.SPELL かわいい
+		// Effect.WITHER_SHOOT 音だけ、結構うるさい
+		// Effect.WITHER_BREAK_BLOCK これまた音だけ　うるせえ
+		// Effect.COLOURED_DUST エフェクトちっちゃすぎ
+		// Effect.LARGE_SMOKE EXPLOSIONの黒版
+		// Effect.MOBSPAWNER_FLAMES 火の演出　すき
+		// Effect.SMOKE　黒いすすを噴き出してる
+		// Effect.HAPPY_VILLAGER 緑のパーティクル　けっこう長く残る
+		// Effect.INSTANT_SPELL かなりいい白いパーティクル
+		//expman.changeExp(calcExpDrop(playerdata));
+		//orb.setExperience(calcExpDrop(blockexpdrop,playerdata));
+		//プレイヤーの統計を１増やす
+		player.incrementStatistic(Statistic.MINE_BLOCK, material);
+
+	}
+
+	@SuppressWarnings("deprecation")
+	public static ItemStack dropItemOnTool(Block breakblock, ItemStack tool) {
+		ItemStack dropitem = null;
+		Material dropmaterial;
+		Material breakmaterial = breakblock.getType();
+		int fortunelevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+        int bonus = (int) (Math.random() * ((fortunelevel + 2)) - 1);
+        if (bonus <= 1) {
+            bonus = 1;
+        }
+        byte b = breakblock.getData();
+        b &= 0x03;
+
+
+		int silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH);
+		if(silktouch > 0){
+			//シルクタッチの処理
+			dropitem = new ItemStack(breakmaterial,1,b);
+		}else if(fortunelevel > 0 && SeichiAssist.luckmateriallist.contains(breakmaterial)){
+			//幸運の処理
+			switch(breakmaterial){
+				case COAL_ORE:
+					dropmaterial = Material.COAL;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case DIAMOND_ORE:
+					dropmaterial = Material.DIAMOND;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case LAPIS_ORE:
+					Dye dye = new Dye();
+					dye.setColor(DyeColor.BLUE);
+					dropitem = dye.toItemStack(bonus);
+					break;
+				case EMERALD_ORE:
+					dropmaterial = Material.EMERALD;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case REDSTONE_ORE:
+					dropmaterial = Material.REDSTONE;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case QUARTZ_ORE:
+					dropmaterial = Material.QUARTZ;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case GRAVEL:
+					dropmaterial = Material.FLINT;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				default:
+					break;
+			}
+		}else{
+			//シルク幸運なしの処理
+			switch(breakmaterial){
+				case COAL_ORE:
+					dropmaterial = Material.COAL;
+					dropitem = new ItemStack(dropmaterial);
+					break;
+				case DIAMOND_ORE:
+					dropmaterial = Material.DIAMOND;
+					dropitem = new ItemStack(dropmaterial);
+					break;
+				case LAPIS_ORE:
+					Dye dye = new Dye();
+					dye.setColor(DyeColor.BLUE);
+					dropitem = dye.toItemStack();
+					break;
+				case EMERALD_ORE:
+					dropmaterial = Material.EMERALD;
+					dropitem = new ItemStack(dropmaterial);
+					break;
+				case REDSTONE_ORE:
+					dropmaterial = Material.REDSTONE;
+					dropitem = new ItemStack(dropmaterial);
+					break;
+				case QUARTZ_ORE:
+					dropmaterial = Material.QUARTZ;
+					dropitem = new ItemStack(dropmaterial);
+					break;
+				case STONE:
+					//Material.STONEの処理
+					if(breakblock.getData() == 0x00){
+						//焼き石の処理
+						dropmaterial = Material.COBBLESTONE;
+						dropitem = new ItemStack(dropmaterial);
+					}else{
+						//他の石の処理
+						dropitem = new ItemStack(breakmaterial,1,b);
+					}
+					break;
+				case GRASS:
+					//芝生の処理
+					dropmaterial = Material.DIRT;
+					dropitem = new ItemStack(dropmaterial);
+					break;
+				default:
+					//breakblcokのままのアイテムスタックを保存
+					dropitem = new ItemStack(breakmaterial,1,b);
+					break;
+			}
+		}
+		return dropitem;
+	}
+
+	//追加経験値の設定
+	public static int calcExpDrop(PlayerData playerdata) {
+		//０～１のランダムな値を取得
+		double rand = Math.random();
+		//10%の確率で経験値付与
+		if(rand < 0.1){
+			//Lv8未満は獲得経験値ゼロ、それ以上はレベルに応じて経験値付与
+			if(playerdata.level < 8){
+				return 0;
+			}else if (playerdata.level < 18){
+				return SeichiAssist.config.getDropExplevel(1);
+			}else if (playerdata.level < 28){
+				return SeichiAssist.config.getDropExplevel(2);
+			}else if (playerdata.level < 38){
+				return SeichiAssist.config.getDropExplevel(3);
+			}else if (playerdata.level < 48){
+				return SeichiAssist.config.getDropExplevel(4);
+			}else if (playerdata.level < 58){
+				return SeichiAssist.config.getDropExplevel(5);
+			}else if (playerdata.level < 68){
+				return SeichiAssist.config.getDropExplevel(6);
+			}else if (playerdata.level < 78){
+				return SeichiAssist.config.getDropExplevel(7);
+			}else if (playerdata.level < 88){
+				return SeichiAssist.config.getDropExplevel(8);
+			}else if (playerdata.level < 98){
+				return SeichiAssist.config.getDropExplevel(9);
+			}else{
+				return SeichiAssist.config.getDropExplevel(10);
+			}
+		}else{
+			return 0;
+		}
+	}
+	//num回だけ耐久を減らす処理
+	public static short calcDurability(int enchantmentLevel,int num) {
+		Random rand = new Random();
+		short durability = 0;
+		double probability = 1.0 / (enchantmentLevel + 1.0);
+
+		for(int i = 0; i < num ; i++){
+			if(probability >  rand.nextDouble() ){
+				durability++;
+			}
+		}
+		return durability;
+	}
+
+	public static String getCardinalDirection(Entity entity) {
+		double rotation = (entity.getLocation().getYaw() + 180) % 360;
+		Location loc = entity.getLocation();
+		float pitch = loc.getPitch();
+		if (rotation < 0) {
+		rotation += 360.0;
+		}
+
+		if(pitch <= -30){
+			return "U";
+		}else if(pitch >= 25){
+			return "D";
+		}else if (0 <= rotation && rotation < 45.0) {
+			return "N";
+		}else if (45.0 <= rotation && rotation < 135.0) {
+			return "E";
+		}else if (135.0 <= rotation && rotation < 225.0) {
+			return "S";
+		}else if (225.0 <= rotation && rotation < 315.0) {
+			return "W";
+		}else if (315.0 <= rotation && rotation < 360.0) {
+		return "N";
+		} else {
+		return null;
+		}
 	}
 }

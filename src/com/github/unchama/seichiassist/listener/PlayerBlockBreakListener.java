@@ -3,21 +3,14 @@ package com.github.unchama.seichiassist.listener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
-import net.coreprotect.CoreProtectAPI;
-
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.Statistic;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.material.Dye;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
@@ -94,7 +86,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//経験値変更用のクラスを設定
 		ExperienceManager expman = new ExperienceManager(player);
 		//passiveskill[追加経験値獲得]処理実行
-		int exp = calcExpDrop(playerdata);
+		int exp = Util.calcExpDrop(playerdata);
 		expman.changeExp(exp);
 		//これ以降の終了処理は経験値はもらえます
 
@@ -145,25 +137,9 @@ public class PlayerBlockBreakListener implements Listener {
 			runMultiSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
 			runBreakSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
-		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.CONDENSE.gettypenum()){
-			//runCondenSkill(player,playerdata.activeskilldata.skillnum, block, tool, expman);
+		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.CONDENSE.gettypenum()){			//runCondenSkill(player,playerdata.activeskilldata.skillnum, block, tool, expman);
 		}
-		/*
-		//アクティブスキルを発動させる処理
-		if(playerdata.activenum == ActiveSkill.DUALBREAK.getNum()){
-			DualBreak(player,block,tool,expman);
-		}else if(playerdata.activenum == ActiveSkill.TRIALBREAK.getNum()){
-			TrialBreak(player,block,tool,expman);
-		}else if(playerdata.activenum == ActiveSkill.EXPLOSION.getNum()){
-			Explosion(player,block,tool,expman);
-		}else if(playerdata.activenum == ActiveSkill.THUNDERSTORM.getNum()){
-			new ThunderStormTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,4);
-		}else if(playerdata.activenum == ActiveSkill.BLIZZARD.getNum()){
-			new BlizzardTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,0,10);
-		}else if(playerdata.activenum == ActiveSkill.METEO.getNum()){
-			new MeteoTaskRunnable(player, block,tool,expman).runTaskTimer(plugin,10,10);
-		}
-		*/
+
 	}
 	//複数範囲破壊
 	private void runMultiSkill(Player player, int skilllevel, Block block,
@@ -177,11 +153,9 @@ public class PlayerBlockBreakListener implements Listener {
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
 		//プレイヤーの向いている方角を取得
-		String dir = getCardinalDirection(player);
+		String dir = Util.getCardinalDirection(player);
 		//元ブロックのマテリアルを取得
 		Material material = block.getType();
-		//元ブロックの真ん中の位置を取得
-		Location centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
 
 
 
@@ -258,7 +232,7 @@ public class PlayerBlockBreakListener implements Listener {
 								|| breakblock.getType().equals(Material.LAVA)
 								){
 							if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
-								if(canBreak(player, breakblock)){
+								if(Util.canBreak(player, breakblock)){
 									if(breakblock.getType().equals(Material.LAVA)){
 										lavalist.add(breakblock);
 									}else{
@@ -281,10 +255,10 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 			//減る耐久値の計算
-			short durability = (short) (tool.getDurability() + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
+			short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 			//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
 			if(lavalist.size() == 1){
-				durability += calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10);
+				durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10);
 			}
 
 			//実際に経験値を減らせるか判定
@@ -340,7 +314,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
 		//プレイヤーの向いている方角を取得
-		String dir = getCardinalDirection(player);
+		String dir = Util.getCardinalDirection(player);
 		//元ブロックのマテリアルを取得
 		Material material = block.getType();
 		//元ブロックの真ん中の位置を取得
@@ -474,7 +448,7 @@ public class PlayerBlockBreakListener implements Listener {
 							|| breakblock.getType().equals(Material.LAVA)
 							){
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
-							if(canBreak(player, breakblock)){
+							if(Util.canBreak(player, breakblock)){
 								if(breakblock.getType().equals(Material.LAVA)){
 									lavalist.add(breakblock);
 								}else{
@@ -500,10 +474,10 @@ public class PlayerBlockBreakListener implements Listener {
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値：" + useExp);
 		}
 		//減る耐久値の計算
-		short durability = (short) (tool.getDurability() + calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
+		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
 		if(lavalist.size() == 1){
-			durability += calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10);
+			durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10);
 		}
 
 
@@ -547,7 +521,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//エフェクトが指定されていないときの処理
 		if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
-				BreakBlock(player, b, centerofblock, tool,true);
+				Util.BreakBlock(player, b, centerofblock, tool,true);
 			}
 			playerdata.activeskilldata.blocklist.clear();
 		}
@@ -560,246 +534,6 @@ public class PlayerBlockBreakListener implements Listener {
 		//クールダウンを発生させる
 		if(playerdata.activeskilldata.skillnum > 3 && breaklist.size() > 0){
 			new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum));
-		}
-	}
-	//他のプラグインの影響があってもブロックを破壊できるのか
-	public static boolean canBreak(Player player ,Block breakblock) {
-		//壊されるブロックの状態を取得
-		BlockState blockstate = breakblock.getState();
-		//壊されるブロックのデータを取得
-		@SuppressWarnings("deprecation")
-		byte data = blockstate.getData().getData();
-
-
-		//壊されるブロックがワールドガード範囲だった場合処理を終了
-		if(!Util.getWorldGuard().canBuild(player, breakblock.getLocation())){
-			player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
-			return false;
-		}
-		//コアプロテクトのクラスを取得
-		CoreProtectAPI CoreProtect = Util.getCoreProtect();
-		//破壊ログを設定
-		Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
-		//もし失敗したらプレイヤーに報告し処理を終了
-		if(!success){
-			player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
-			return false;
-		}
-		return true;
-	}
-	//ブロックを破壊する処理、ドロップも含む、統計増加も含む
-	public static void BreakBlock(Player player,Block breakblock,Location centerofblock,ItemStack tool,Boolean stepflag) {
-
-		Material material = breakblock.getType();
-
-
-		//アイテムをドロップさせる
-		breakblock.getWorld().dropItemNaturally(centerofblock,dropItemOnTool(breakblock,tool));
-
-		//ブロックを空気に変える
-		breakblock.setType(Material.AIR);
-
-		if(stepflag){
-			//あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
-			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,material);
-		}
-		// Effect.ENDER_SIGNALこれかっこいい
-		// Effect.EXPLOSION 範囲でかい
-		// Effect.WITCH_MAGIC 小さい 紫
-		// Effect.SPELL かわいい
-		// Effect.WITHER_SHOOT 音だけ、結構うるさい
-		// Effect.WITHER_BREAK_BLOCK これまた音だけ　うるせえ
-		// Effect.COLOURED_DUST エフェクトちっちゃすぎ
-		// Effect.LARGE_SMOKE EXPLOSIONの黒版
-		// Effect.MOBSPAWNER_FLAMES 火の演出　すき
-		// Effect.SMOKE　黒いすすを噴き出してる
-		// Effect.HAPPY_VILLAGER 緑のパーティクル　けっこう長く残る
-		// Effect.INSTANT_SPELL かなりいい白いパーティクル
-		//expman.changeExp(calcExpDrop(playerdata));
-		//orb.setExperience(calcExpDrop(blockexpdrop,playerdata));
-		//プレイヤーの統計を１増やす
-		player.incrementStatistic(Statistic.MINE_BLOCK, material);
-
-	}
-
-	@SuppressWarnings("deprecation")
-	public static ItemStack dropItemOnTool(Block breakblock, ItemStack tool) {
-		ItemStack dropitem = null;
-		Material dropmaterial;
-		Material breakmaterial = breakblock.getType();
-		int fortunelevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
-        int bonus = (int) (Math.random() * ((fortunelevel + 2)) - 1);
-        if (bonus <= 1) {
-            bonus = 1;
-        }
-        byte b = breakblock.getData();
-        b &= 0x03;
-
-
-		int silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH);
-		if(silktouch > 0){
-			//シルクタッチの処理
-			dropitem = new ItemStack(breakmaterial,1,b);
-		}else if(fortunelevel > 0 && SeichiAssist.luckmateriallist.contains(breakmaterial)){
-			//幸運の処理
-			switch(breakmaterial){
-				case COAL_ORE:
-					dropmaterial = Material.COAL;
-					dropitem = new ItemStack(dropmaterial,bonus);
-					break;
-				case DIAMOND_ORE:
-					dropmaterial = Material.DIAMOND;
-					dropitem = new ItemStack(dropmaterial,bonus);
-					break;
-				case LAPIS_ORE:
-					Dye dye = new Dye();
-					dye.setColor(DyeColor.BLUE);
-					dropitem = dye.toItemStack(bonus);
-					break;
-				case EMERALD_ORE:
-					dropmaterial = Material.EMERALD;
-					dropitem = new ItemStack(dropmaterial,bonus);
-					break;
-				case REDSTONE_ORE:
-					dropmaterial = Material.REDSTONE;
-					dropitem = new ItemStack(dropmaterial,bonus);
-					break;
-				case QUARTZ_ORE:
-					dropmaterial = Material.QUARTZ;
-					dropitem = new ItemStack(dropmaterial,bonus);
-					break;
-				case GRAVEL:
-					dropmaterial = Material.FLINT;
-					dropitem = new ItemStack(dropmaterial,bonus);
-					break;
-				default:
-					break;
-			}
-		}else{
-			//シルク幸運なしの処理
-			switch(breakmaterial){
-				case COAL_ORE:
-					dropmaterial = Material.COAL;
-					dropitem = new ItemStack(dropmaterial);
-					break;
-				case DIAMOND_ORE:
-					dropmaterial = Material.DIAMOND;
-					dropitem = new ItemStack(dropmaterial);
-					break;
-				case LAPIS_ORE:
-					Dye dye = new Dye();
-					dye.setColor(DyeColor.BLUE);
-					dropitem = dye.toItemStack();
-					break;
-				case EMERALD_ORE:
-					dropmaterial = Material.EMERALD;
-					dropitem = new ItemStack(dropmaterial);
-					break;
-				case REDSTONE_ORE:
-					dropmaterial = Material.REDSTONE;
-					dropitem = new ItemStack(dropmaterial);
-					break;
-				case QUARTZ_ORE:
-					dropmaterial = Material.QUARTZ;
-					dropitem = new ItemStack(dropmaterial);
-					break;
-				case STONE:
-					//Material.STONEの処理
-					if(breakblock.getData() == 0x00){
-						//焼き石の処理
-						dropmaterial = Material.COBBLESTONE;
-						dropitem = new ItemStack(dropmaterial);
-					}else{
-						//他の石の処理
-						dropitem = new ItemStack(breakmaterial,1,b);
-					}
-					break;
-				case GRASS:
-					//芝生の処理
-					dropmaterial = Material.DIRT;
-					dropitem = new ItemStack(dropmaterial);
-					break;
-				default:
-					//breakblcokのままのアイテムスタックを保存
-					dropitem = new ItemStack(breakmaterial,1,b);
-					break;
-			}
-		}
-		return dropitem;
-	}
-
-	//追加経験値の設定
-	public static int calcExpDrop(PlayerData playerdata) {
-		//０～１のランダムな値を取得
-		double rand = Math.random();
-		//10%の確率で経験値付与
-		if(rand < 0.1){
-			//Lv8未満は獲得経験値ゼロ、それ以上はレベルに応じて経験値付与
-			if(playerdata.level < 8){
-				return 0;
-			}else if (playerdata.level < 18){
-				return SeichiAssist.config.getDropExplevel(1);
-			}else if (playerdata.level < 28){
-				return SeichiAssist.config.getDropExplevel(2);
-			}else if (playerdata.level < 38){
-				return SeichiAssist.config.getDropExplevel(3);
-			}else if (playerdata.level < 48){
-				return SeichiAssist.config.getDropExplevel(4);
-			}else if (playerdata.level < 58){
-				return SeichiAssist.config.getDropExplevel(5);
-			}else if (playerdata.level < 68){
-				return SeichiAssist.config.getDropExplevel(6);
-			}else if (playerdata.level < 78){
-				return SeichiAssist.config.getDropExplevel(7);
-			}else if (playerdata.level < 88){
-				return SeichiAssist.config.getDropExplevel(8);
-			}else if (playerdata.level < 98){
-				return SeichiAssist.config.getDropExplevel(9);
-			}else{
-				return SeichiAssist.config.getDropExplevel(10);
-			}
-		}else{
-			return 0;
-		}
-	}
-	//num回だけ耐久を減らす処理
-	public static short calcDurability(int enchantmentLevel,int num) {
-		Random rand = new Random();
-		short durability = 0;
-		double probability = 1.0 / (enchantmentLevel + 1.0);
-
-		for(int i = 0; i < num ; i++){
-			if(probability >  rand.nextDouble() ){
-				durability++;
-			}
-		}
-		return durability;
-	}
-
-	public static String getCardinalDirection(Player player) {
-		double rotation = (player.getLocation().getYaw() + 180) % 360;
-		Location loc = player.getLocation();
-		float pitch = loc.getPitch();
-		if (rotation < 0) {
-		rotation += 360.0;
-		}
-
-		if(pitch <= -30){
-			return "U";
-		}else if(pitch >= 25){
-			return "D";
-		}else if (0 <= rotation && rotation < 45.0) {
-			return "N";
-		}else if (45.0 <= rotation && rotation < 135.0) {
-			return "E";
-		}else if (135.0 <= rotation && rotation < 225.0) {
-			return "S";
-		}else if (225.0 <= rotation && rotation < 315.0) {
-			return "W";
-		}else if (315.0 <= rotation && rotation < 360.0) {
-		return "N";
-		} else {
-		return null;
 		}
 	}
 }

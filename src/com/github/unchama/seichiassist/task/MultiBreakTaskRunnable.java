@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.util.Util;
 
 public class MultiBreakTaskRunnable extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.plugin;
@@ -68,7 +68,7 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 						|| (b.getType().equals(Material.REDSTONE_ORE)&&b.getType().equals(Material.GLOWING_REDSTONE_ORE))
 						|| b.getType().equals(Material.LAVA)
 						){
-					PlayerBlockBreakListener.BreakBlock(player, b, droploc, tool,true);
+					Util.BreakBlock(player, b, droploc, tool,true);
 				}
 
 

@@ -6,9 +6,13 @@ import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -17,12 +21,16 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.util.Vector;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.task.ArrowRemoveTaskRunnable;
+import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerRightClickListener implements Listener {
@@ -43,33 +51,129 @@ public class PlayerRightClickListener implements Listener {
 		//プレイヤーデータを取得
 		PlayerData playerdata = playermap.get(uuid);
 
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
+			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return;
+		}
+		if(equipmentslot==null){
+			return;
+		}
 		//オフハンドから実行された時処理を終了
 		if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+			return;
+		}
+
+		if(player.isSneaking()){
+			return;
+		}
+
+		//もしサバイバルでなければ処理を終了
+		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+			return;
+		}
+
+		//アクティブスキルフラグがオフの時処理を終了
+		if(playerdata.activeskilldata.mineflagnum == 0){
+			return;
+		}
+
+		//クールダウンタイム中は処理を終了
+		if(!playerdata.activeskilldata.skillcanbreakflag){
+			//SEを再生
+			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-
+					runArrowSkillofLaunch(player,Arrow.class);
 				}else if(playerdata.activeskilldata.skilltype == ActiveSkill.CONDENSE.gettypenum()){
-
+					runCondenSkill(player,Snowball.class);
 				}
-/*
-				Location ploc = player.getLocation();
-		    	player.playSound(ploc, Sound.ENTITY_GHAST_SHOOT, 1, 1);
-		        Location loc = player.getLocation();loc.add(loc.getDirection().multiply(2)).add(0,0.5,0);
-		        Vector vec = loc.getDirection();
-		        int k = 1;
-		        vec.setX(vec.getX() * k);
-		        vec.setY(vec.getY() * k);
-		        vec.setZ(vec.getZ() * k);
-
-		        final Fireball fireball = player.getWorld().spawn(loc, Fireball.class);
-		        fireball.setVelocity(vec);
-		        */
 			}
 		}
+	}
+
+
+	private <T extends org.bukkit.entity.Projectile> void runCondenSkill(Player player, Class<T> clazz) {
+		//プレイヤーの位置を取得
+		Location ploc = player.getLocation();
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//ぷれいやーでーたを取得
+		PlayerData playerdata = playermap.get(uuid);
+
+		//発射する音を再生する.
+    	player.playSound(ploc, Sound.ENTITY_SNOWBALL_THROW, 1, 1);
+
+    	//スキルを実行する処理
+        Location loc = player.getLocation();
+        loc.add(loc.getDirection()).add(0,1.6,0);
+        Vector vec = loc.getDirection();
+        int k = 1;
+        vec.setX(vec.getX() * k);
+        vec.setY(vec.getY() * k);
+        vec.setZ(vec.getZ() * k);
+        final T arrow = player.getWorld().spawn(loc, clazz);
+        arrow.setShooter(player);
+        arrow.setGravity(false);
+        //読み込み方法
+        /*
+         * Projectile proj = event.getEntity();
+		    if ( proj instanceof Arrow && proj.hasMetadata("ArrowSkill") ) {
+		    }
+         */
+        arrow.setMetadata("CondenSkill", new FixedMetadataValue(plugin, true));
+        arrow.setVelocity(vec);
+
+        //矢を途中で破裂させる処理
+        //new ArrowExplosionTaskRunnable((Projectile)arrow).runTaskLater(plugin,100);
+
+        //クールダウン処理
+        new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.CONDENSE.getCoolDown(playerdata.activeskilldata.skillnum));
+	}
+
+
+	private <T extends org.bukkit.entity.Projectile> void runArrowSkillofLaunch(Player player, Class<T> clazz) {
+		//プレイヤーの位置を取得
+		Location ploc = player.getLocation();
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//ぷれいやーでーたを取得
+		PlayerData playerdata = playermap.get(uuid);
+
+		//発射する音を再生する.
+    	player.playSound(ploc, Sound.ENTITY_GHAST_SHOOT, 1, 1);
+
+    	//スキルを実行する処理
+        Location loc = player.getLocation();
+        loc.add(loc.getDirection()).add(0,1.6,0);
+        Vector vec = loc.getDirection();
+        int k = 1;
+        vec.setX(vec.getX() * k);
+        vec.setY(vec.getY() * k);
+        vec.setZ(vec.getZ() * k);
+        final T arrow = player.getWorld().spawn(loc, clazz);
+        arrow.setShooter(player);
+        arrow.setGravity(false);
+        //読み込み方法
+        /*
+         * Projectile proj = event.getEntity();
+		    if ( proj instanceof Arrow && proj.hasMetadata("ArrowSkill") ) {
+		    }
+         */
+        arrow.setMetadata("ArrowSkill", new FixedMetadataValue(plugin, true));
+        arrow.setVelocity(vec);
+
+        //矢を消去する処理
+        new ArrowRemoveTaskRunnable((Projectile)arrow).runTaskLater(plugin,100);
+
+        //クールダウン処理
+        new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum));
 	}
 
 
