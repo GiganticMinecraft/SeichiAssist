@@ -319,9 +319,12 @@ public class EntityListener implements Listener {
 
 		playerdata.activeskilldata.blocklist = breaklist;
 
+
 		//１マスの溶岩のみ破壊する処理
-		if(lavalist.size() == 1){
-			lavalist.get(0).setType(Material.AIR);
+		if(lavalist.size() < 10){
+			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
+				lavalist.get(lavanum).setType(Material.AIR);
+			}
 		}
 
 		//選択されたブロックを破壊する処理
@@ -338,6 +341,7 @@ public class EntityListener implements Listener {
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 			skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(breaklist, start, end);
 		}
+		playerdata.activeskilldata.blocklist.clear();
 
 	}
 

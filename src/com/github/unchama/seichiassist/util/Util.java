@@ -284,6 +284,10 @@ public class Util {
 		Material material = breakblock.getType();
 		ItemStack itemstack = dropItemOnTool(breakblock,tool);
 
+		if(material.equals(Material.GLOWING_REDSTONE_ORE)){
+			material = Material.REDSTONE_ORE;
+		}
+
 
 		//アイテムをドロップさせる
 		if(!addItemtoMineStack(player,itemstack)){
@@ -485,7 +489,16 @@ public class Util {
 		int silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH);
 		if(silktouch > 0){
 			//シルクタッチの処理
-			dropitem = new ItemStack(breakmaterial,1,b);
+			switch(breakmaterial){
+			case GLOWING_REDSTONE_ORE:
+				dropmaterial = Material.REDSTONE_ORE;
+				dropitem = new ItemStack(dropmaterial);
+				break;
+			default:
+				dropitem = new ItemStack(breakmaterial,1,b);
+				break;
+			}
+
 		}else if(fortunelevel > 0 && SeichiAssist.luckmateriallist.contains(breakmaterial)){
 			//幸運の処理
 			switch(breakmaterial){
@@ -507,6 +520,10 @@ public class Util {
 					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
 				case REDSTONE_ORE:
+					dropmaterial = Material.REDSTONE;
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case GLOWING_REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
 					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
@@ -544,6 +561,10 @@ public class Util {
 				case REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
 					dropitem = new ItemStack(dropmaterial);
+					break;
+				case GLOWING_REDSTONE_ORE:
+					dropmaterial = Material.REDSTONE;
+					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
 				case QUARTZ_ORE:
 					dropmaterial = Material.QUARTZ;

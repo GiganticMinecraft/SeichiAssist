@@ -516,8 +516,10 @@ public class PlayerBlockBreakListener implements Listener {
 		playerdata.activeskilldata.blocklist = breaklist;
 
 		//１マスの溶岩のみ破壊する処理
-		if(lavalist.size() == 1){
-			lavalist.get(0).setType(Material.AIR);
+		if(lavalist.size() < 10){
+			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
+				lavalist.get(lavanum).setType(Material.AIR);
+			}
 		}
 
 		//選択されたブロックを破壊する処理
@@ -533,10 +535,10 @@ public class PlayerBlockBreakListener implements Listener {
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(breaklist, start, end);
 		}
-
 		//クールダウンを発生させる
 		if(playerdata.activeskilldata.skillnum > 3 && breaklist.size() > 0){
 			new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum));
 		}
+		playerdata.activeskilldata.blocklist.clear();
 	}
 }
