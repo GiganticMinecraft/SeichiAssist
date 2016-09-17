@@ -102,6 +102,12 @@ public class PlayerPickupItemListener implements Listener {
 				}
 				playerdata.minestack.sand += amount;
 				break;
+			case PACKED_ICE:
+				if(playerdata.level < v4){
+					return;
+				}
+				playerdata.minestack.packed_ice += amount;
+				break;
 			case SANDSTONE:
 				if(playerdata.level < v4){
 					return;

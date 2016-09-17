@@ -66,7 +66,6 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 						|| (b.getType().equals(Material.GRASS)&&b.getType().equals(Material.DIRT))
 						|| (b.getType().equals(Material.GLOWING_REDSTONE_ORE)&&b.getType().equals(Material.REDSTONE_ORE))
 						|| (b.getType().equals(Material.REDSTONE_ORE)&&b.getType().equals(Material.GLOWING_REDSTONE_ORE))
-						|| b.getType().equals(Material.LAVA)
 						){
 					Util.BreakBlock(player, b, droploc, tool,true);
 				}
