@@ -529,7 +529,6 @@ public class PlayerBlockBreakListener implements Listener {
 			for(Block b:breaklist){
 				Util.BreakBlock(player, b, centerofblock, tool,true);
 			}
-			playerdata.activeskilldata.blocklist.clear();
 		}
 		//エフェクトが指定されているときの処理
 		else{
@@ -540,5 +539,6 @@ public class PlayerBlockBreakListener implements Listener {
 		if(playerdata.activeskilldata.skillnum > 3 && breaklist.size() > 0){
 			new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum));
 		}
+		playerdata.activeskilldata.blocklist.clear();
 	}
 }
