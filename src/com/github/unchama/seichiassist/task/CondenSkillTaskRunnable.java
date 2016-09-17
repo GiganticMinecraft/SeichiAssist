@@ -229,13 +229,15 @@ public class CondenSkillTaskRunnable extends BukkitRunnable{
 			for(Block b:breaklist){
 				b.setType(replacematerial);
 			}
-			playerdata.activeskilldata.blocklist.clear();
+
 		}
 		//エフェクトが指定されているときの処理
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			//skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(breaklist, start, end);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runCondensEffect(breaklist, start, end);
 		}
+
+		playerdata.activeskilldata.blocklist.clear();
 
 
 	}

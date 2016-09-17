@@ -1784,25 +1784,27 @@ public class MenuInventoryData {
 
 		setMineStackButton(inventory, playerdata.minestack.sand, Material.SAND,v4, 6);
 
-		setMineStackButton(inventory, playerdata.minestack.sandstone, Material.SANDSTONE, v4, 7);
+		setMineStackButton(inventory, playerdata.minestack.packed_ice, Material.PACKED_ICE,v4, 7);
 
-		setMineStackButton(inventory, playerdata.minestack.netherrack, Material.NETHERRACK, v5, 8);
+		setMineStackButton(inventory, playerdata.minestack.sandstone, Material.SANDSTONE, v4, 8);
 
-		setMineStackButton(inventory, playerdata.minestack.soul_sand, Material.SOUL_SAND, v6, 9);
+		setMineStackButton(inventory, playerdata.minestack.netherrack, Material.NETHERRACK, v5, 9);
 
-		setMineStackButton(inventory, playerdata.minestack.magma, Material.MAGMA, v6, 10);
+		setMineStackButton(inventory, playerdata.minestack.soul_sand, Material.SOUL_SAND, v6, 10);
 
-		setMineStackButton(inventory, playerdata.minestack.ender_stone, Material.ENDER_STONE, v7, 11);
+		setMineStackButton(inventory, playerdata.minestack.magma, Material.MAGMA, v6, 11);
 
-		setMineStackButton(inventory, playerdata.minestack.coal, Material.COAL, v8, 12);
+		setMineStackButton(inventory, playerdata.minestack.ender_stone, Material.ENDER_STONE, v7, 12);
 
-		setMineStackButton(inventory, playerdata.minestack.coal_ore, Material.COAL_ORE, v8, 13);
+		setMineStackButton(inventory, playerdata.minestack.coal, Material.COAL, v8, 13);
 
-		setMineStackButton(inventory, playerdata.minestack.iron_ore, Material.IRON_ORE, v9, 14);
+		setMineStackButton(inventory, playerdata.minestack.coal_ore, Material.COAL_ORE, v8, 14);
 
-		setMineStackButton(inventory, playerdata.minestack.quartz, Material.QUARTZ, v10, 15);
+		setMineStackButton(inventory, playerdata.minestack.iron_ore, Material.IRON_ORE, v9, 15);
 
-		setMineStackButton(inventory, playerdata.minestack.quartz_ore, Material.QUARTZ_ORE, v10, 16);
+		setMineStackButton(inventory, playerdata.minestack.quartz, Material.QUARTZ, v10, 16);
+
+		setMineStackButton(inventory, playerdata.minestack.quartz_ore, Material.QUARTZ_ORE, v10, 17);
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);

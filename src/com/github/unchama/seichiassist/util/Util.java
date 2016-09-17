@@ -395,6 +395,12 @@ public class Util {
 				}
 				playerdata.minestack.sand += amount;
 				break;
+			case PACKED_ICE:
+				if(playerdata.level < v4){
+					return false;
+				}
+				playerdata.minestack.packed_ice += amount;
+				break;
 			case SANDSTONE:
 				if(playerdata.level < v4){
 					return false;

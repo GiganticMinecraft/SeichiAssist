@@ -1326,7 +1326,10 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.SAND)){
 				playerdata.minestack.sand = giveMineStack(player,playerdata.minestack.sand,Material.SAND);
 			}
-
+			//packed_ice
+			else if(itemstackcurrent.getType().equals(Material.PACKED_ICE)){
+				playerdata.minestack.packed_ice = giveMineStack(player,playerdata.minestack.packed_ice,Material.PACKED_ICE);
+			}
 			//sandstone
 			else if(itemstackcurrent.getType().equals(Material.SANDSTONE)){
 				playerdata.minestack.sandstone = giveMineStack(player,playerdata.minestack.sandstone,Material.SANDSTONE);
