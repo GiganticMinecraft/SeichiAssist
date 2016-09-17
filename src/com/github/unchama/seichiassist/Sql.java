@@ -216,6 +216,7 @@ public class Sql{
 				",add column if not exists stack_coal int default 0" +
 				",add column if not exists stack_coal_ore int default 0" +
 				",add column if not exists stack_iron_ore int default 0" +
+				",add column if not exists stack_packed_ice int default 0" +
 				",add column if not exists playtick int default 0" +
 				",add column if not exists killlogflag boolean default false" +
 				",add column if not exists pvpflag boolean default false" +
@@ -391,6 +392,7 @@ public class Sql{
  	 				playerdata.minestack.coal = rs.getInt("stack_coal");
  	 				playerdata.minestack.coal_ore = rs.getInt("stack_coal_ore");
  	 				playerdata.minestack.iron_ore = rs.getInt("stack_iron_ore");
+ 	 				playerdata.minestack.packed_ice = rs.getInt("stack_packed_ice");
  				  }
  				rs.close();
  			} catch (SQLException | IOException e) {
@@ -470,6 +472,7 @@ public class Sql{
 				+ ",stack_coal = " + Integer.toString(playerdata.minestack.coal)
 				+ ",stack_coal_ore = " + Integer.toString(playerdata.minestack.coal_ore)
 				+ ",stack_iron_ore = " + Integer.toString(playerdata.minestack.iron_ore)
+				+ ",stack_packed_ice = " + Integer.toString(playerdata.minestack.packed_ice)
 
 				+ " where uuid like '" + struuid + "'";
 

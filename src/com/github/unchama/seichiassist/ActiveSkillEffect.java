@@ -113,4 +113,39 @@ public enum ActiveSkillEffect {
 		}
 		return;
 	}
+
+	//エフェクトの実行処理分岐
+	public void runArrowEffect(List<Block> breaklist,Coordinate start,Coordinate end){
+		switch(this.toString()){
+		case "EXPLOSION":
+
+			break;
+		case "BLIZZARD":
+
+			break;
+		case "METEO":
+
+			break;
+		default :
+			break;
+		}
+		return;
+	}
+	//エフェクトの実行処理分岐
+	public void runCondensEffect(List<Block> breaklist,Coordinate start,Coordinate end){
+		switch(this.toString()){
+		case "EXPLOSION":
+
+			break;
+		case "BLIZZARD":
+
+			break;
+		case "METEO":
+
+			break;
+		default :
+			break;
+		}
+		return;
+	}
 }

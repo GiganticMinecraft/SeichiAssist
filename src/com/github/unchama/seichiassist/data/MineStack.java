@@ -18,6 +18,7 @@ public class MineStack {
 	public int coal_ore;
 	public int iron_ore;
 	public int coal;
+	public int packed_ice;
 
 	public MineStack(){
 		stone = 0;
@@ -37,5 +38,6 @@ public class MineStack {
 		coal_ore = 0;
 		iron_ore = 0;
 		coal = 0;
+		packed_ice = 0;
 	}
 }
