@@ -69,11 +69,12 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 						){
 					Util.BreakBlock(player, b, droploc, tool,true);
 				}
-
-
 			}
-			if(multilavalist.get(count).size() == 1){
-				multilavalist.get(count).get(0).setType(Material.AIR);
+			//１マスの溶岩のみ破壊する処理
+			if(multilavalist.get(count).size() < 10){
+				for(int lavanum = 0 ; lavanum < multilavalist.get(count).size();lavanum++){
+					multilavalist.get(count).get(lavanum).setType(Material.AIR);
+				}
 			}
 			count++;
 		}else{
