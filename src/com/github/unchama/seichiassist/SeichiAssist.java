@@ -140,6 +140,7 @@ public class SeichiAssist extends JavaPlugin{
 			82165000,83315000,84465000,85615000,87115000//200
 			));
 
+
 	public static final List<Material> materiallist = new ArrayList<Material>(Arrays.asList(
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
 			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
@@ -217,7 +218,7 @@ public class SeichiAssist extends JavaPlugin{
 			//プレイヤーマップにプレイヤーを追加
 			playermap.put(uuid,playerdata);
 			//join時とonenable時、プレイヤーデータを最新の状態に更新
-			playerdata.UpdateonJoin(p);
+			playerdata.updateonJoin(p);
 		}
 
 		//ランキングデータをセット

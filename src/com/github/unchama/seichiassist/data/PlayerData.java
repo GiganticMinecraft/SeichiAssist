@@ -48,14 +48,8 @@ public class PlayerData {
 	public int level;
 	//詫び券をあげる数
 	public int numofsorryforbug;
-	//採掘用アクティブスキルのフラグ 0:なし 1:上破壊 2:下破壊
-	public int activemineflagnum;
 	//拡張インベントリ
 	public Inventory inventory;
-	//アクティブスキル番号を格納
-	public int activenum;
-	//スキルクールダウン用フラグ
-	public boolean skillcanbreakflag;
 	//ワールドガード保護自動設定用
 	public int rgnum;
 	//スキル発動中だけtrueになるフラグ
@@ -76,13 +70,13 @@ public class PlayerData {
 	public Location loc;
 	//放置時間
 	public int idletime;
-
 	//トータル破壊ブロック
 	public int totalbreaknum;
 	//各統計値差分計算用配列
 	private List<Integer> staticdata;
 
-
+	//アクティブスキル関連データ
+	public ActiveSkillData activeskilldata;
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -100,10 +94,7 @@ public class PlayerData {
 		effectdatalist = new ArrayList<EffectData>();
 		level = 1;
 		numofsorryforbug = 0;
-		activemineflagnum = 0;
 		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
-		activenum = 1;
-		skillcanbreakflag = true;
 		rgnum = 0;
 		skillflag = false;
 		minestack = new MineStack();
@@ -115,22 +106,25 @@ public class PlayerData {
 		loc = null;
 		idletime = 0;
 		staticdata = new ArrayList<Integer>();
-
 		totalbreaknum = 0;
 		for(Material m : SeichiAssist.materiallist){
 			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
 		}
+		activeskilldata = new ActiveSkillData();
+
 
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
-	public void UpdateonJoin(Player player) {
+	public void updateonJoin(Player player) {
 		//破壊量データ(before)を設定
 		minuteblock.before = totalbreaknum;
 		halfhourblock.before = totalbreaknum;
-		levelupdata(player);
+		updataLevel(player);
+		activeskilldata.updataActiveSkillPoint(player, level);
 		NotifySorryForBug(player);
 	}
+
 
 	//quit時とondisable時、プレイヤーデータを最新の状態に更新
 	public void UpdateonQuit(Player player){
@@ -196,7 +190,7 @@ public class PlayerData {
 
 
 	//レベルを更新
-	public void levelupdata(Player p) {
+	public void updataLevel(Player p) {
 		calcPlayerLevel(p);
 		setDisplayName(p);
 	}
@@ -364,4 +358,7 @@ public class PlayerData {
 			return 9*6;
 		}
 	}
+
+
+
 }
