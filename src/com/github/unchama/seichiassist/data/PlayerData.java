@@ -230,10 +230,14 @@ public class PlayerData {
 
 	//プレイヤーレベルを計算し、更新する。
 	private void calcPlayerLevel(Player p){
-		//現在のランクの次を取得
+		//現在のランクを取得
 		int i = level;
+		//既にレベル上限に達していたら終了
+		if(i >= SeichiAssist.levellist.size()){
+			return;
+		}
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.levellist.get(i).intValue() <= totalbreaknum && i <= SeichiAssist.levellist.size()){
+		while(SeichiAssist.levellist.get(i).intValue() <= totalbreaknum && (i+1) <= SeichiAssist.levellist.size()){
 
 			//レベルアップ時のメッセージ
 			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i)+")→Lv("+(i+1)+")】");
@@ -244,8 +248,12 @@ public class PlayerData {
 			if(!(lvmessage.isEmpty())){
 				p.sendMessage(ChatColor.AQUA+lvmessage);
 			}
-
 			i++;
+
+			//レベル上限に達したら終了
+			if(i >= SeichiAssist.levellist.size()){
+				break;
+			}
 		}
 		level = i;
 	}

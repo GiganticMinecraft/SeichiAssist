@@ -517,7 +517,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		playerdata.activeskilldata.blocklist = breaklist;
 
-		//１マスの溶岩のみ破壊する処理
+		//nマスの溶岩のみ破壊する処理
 		if(lavalist.size() < 10){
 			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
 				lavalist.get(lavanum).setType(Material.AIR);
