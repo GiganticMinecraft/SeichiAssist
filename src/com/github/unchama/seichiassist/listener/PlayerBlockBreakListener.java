@@ -189,6 +189,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//繰り返し回数だけ繰り返す
 		for(int i = 1; i <= breaknum ; i++){
 			breaklist.clear();
+			lavalist.clear();
 			switch (dir){
 			case "N":
 				start = new Coordinate(-((breaklength.x - 1)/2),-1,-((breaklength.z * i - 1)));
