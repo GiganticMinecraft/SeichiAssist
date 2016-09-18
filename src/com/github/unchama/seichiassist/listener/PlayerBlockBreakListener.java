@@ -188,6 +188,8 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//繰り返し回数だけ繰り返す
 		for(int i = 1; i <= breaknum ; i++){
+			breaklist.clear();
+			lavalist.clear();
 			switch (dir){
 			case "N":
 				start = new Coordinate(-((breaklength.x - 1)/2),-1,-((breaklength.z * i - 1)));
@@ -229,11 +231,11 @@ public class PlayerBlockBreakListener implements Listener {
 								|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
 								|| (block.getType().equals(Material.GLOWING_REDSTONE_ORE)&&breakblock.getType().equals(Material.REDSTONE_ORE))
 								|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
-								|| breakblock.getType().equals(Material.LAVA)
+								|| breakblock.getType().equals(Material.STATIONARY_LAVA)
 								){
 							if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
 								if(Util.canBreak(player, breakblock)){
-									if(breakblock.getType().equals(Material.LAVA)){
+									if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
 										lavalist.add(breakblock);
 									}else{
 										breaklist.add(breakblock);
@@ -257,8 +259,8 @@ public class PlayerBlockBreakListener implements Listener {
 			//減る耐久値の計算
 			short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 			//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-			if(lavalist.size() == 1){
-				durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10);
+			if(lavalist.size() < 10){
+				durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
 			}
 
 			//実際に経験値を減らせるか判定
@@ -348,8 +350,8 @@ public class PlayerBlockBreakListener implements Listener {
 				start = new Coordinate(-(skillnum-2),-(skillnum-2),-(skillnum-2)-1);
 				end = new Coordinate(skillnum-2,skillnum-2,(skillnum-2)-1);
 			}else{
-				start = new Coordinate(-(skillnum-2),-1,-(skillnum-2)-1);
-				end = new Coordinate(skillnum-2,(skillnum-4)*2 + 1,(skillnum-2)-1);
+				start = new Coordinate(-(skillnum-2),-1,-(skillnum-2)*2);
+				end = new Coordinate(skillnum-2,(skillnum-4)*2 + 1,0);
 			}
 			break;
 		case "E":
@@ -367,8 +369,8 @@ public class PlayerBlockBreakListener implements Listener {
 				start = new Coordinate(-(skillnum-2)+1,-(skillnum-2),-(skillnum-2));
 				end = new Coordinate((skillnum-2)+1,skillnum-2,(skillnum-2));
 			}else{
-				start = new Coordinate(-(skillnum-2)+1,-1,-(skillnum-2));
-				end = new Coordinate((skillnum-2)+1,(skillnum-4)*2 + 1,(skillnum-2));
+				start = new Coordinate(0,-1,-(skillnum-2));
+				end = new Coordinate((skillnum-2)*2,(skillnum-4)*2 + 1,(skillnum-2));
 			}
 			break;
 		case "S":
@@ -386,8 +388,8 @@ public class PlayerBlockBreakListener implements Listener {
 				start = new Coordinate(-(skillnum-2),-(skillnum-2),-(skillnum-2)+1);
 				end = new Coordinate(skillnum-2,skillnum-2,(skillnum-2)+1);
 			}else{
-				start = new Coordinate(-(skillnum-2),-1,-(skillnum-2)+1);
-				end = new Coordinate(skillnum-2,(skillnum-4)*2 + 1,(skillnum-2)+1);
+				start = new Coordinate(-(skillnum-2),-1,0);
+				end = new Coordinate(skillnum-2,(skillnum-4)*2 + 1,(skillnum-2)*2);
 			}
 			break;
 		case "W":
@@ -405,8 +407,8 @@ public class PlayerBlockBreakListener implements Listener {
 				start = new Coordinate(-(skillnum-2)-1,-(skillnum-2),-(skillnum-2));
 				end = new Coordinate((skillnum-2)-1,skillnum-2,(skillnum-2));
 			}else{
-				start = new Coordinate(-(skillnum-2)-1,-1,-(skillnum-2));
-				end = new Coordinate((skillnum-2)-1,(skillnum-4)*2 + 1,(skillnum-2));
+				start = new Coordinate(-(skillnum-2)*2,-1,-(skillnum-2));
+				end = new Coordinate(0,(skillnum-4)*2 + 1,(skillnum-2));
 			}
 			break;
 		case "U":
@@ -446,11 +448,11 @@ public class PlayerBlockBreakListener implements Listener {
 							|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
 							|| (block.getType().equals(Material.GLOWING_REDSTONE_ORE)&&breakblock.getType().equals(Material.REDSTONE_ORE))
 							|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
-							|| breakblock.getType().equals(Material.LAVA)
+							|| breakblock.getType().equals(Material.STATIONARY_LAVA)
 							){
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking()){
 							if(Util.canBreak(player, breakblock)){
-								if(breakblock.getType().equals(Material.LAVA)){
+								if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
 									lavalist.add(breakblock);
 								}else{
 									breaklist.add(breakblock);
@@ -477,8 +479,8 @@ public class PlayerBlockBreakListener implements Listener {
 		//減る耐久値の計算
 		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-		if(lavalist.size() == 1){
-			durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10);
+		if(lavalist.size() < 10){
+			durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavalist.size());
 		}
 
 
