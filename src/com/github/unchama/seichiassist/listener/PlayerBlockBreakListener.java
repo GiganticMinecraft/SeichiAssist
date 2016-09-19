@@ -556,7 +556,15 @@ public class PlayerBlockBreakListener implements Listener {
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock, key);
 		}
+<<<<<<< HEAD
 
 
+=======
+		//クールダウンを発生させる
+		if(breaklist.size() > 0){
+			new CoolDownTaskRunnable(player,1).runTaskLater(plugin,ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum));
+		}
+		playerdata.activeskilldata.blocklist.clear();
+>>>>>>> refs/remotes/unchama/master
 	}
 }

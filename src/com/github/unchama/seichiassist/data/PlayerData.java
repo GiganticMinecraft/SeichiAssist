@@ -75,6 +75,8 @@ public class PlayerData {
 	private List<Integer> staticdata;
 	//特典受け取り済み投票数
 	public int p_givenvote;
+	//投票受け取りボタン連打防止用
+	public boolean votecooldownflag;
 
 	//アクティブスキル関連データ
 	public ActiveSkillData activeskilldata;
@@ -112,6 +114,7 @@ public class PlayerData {
 		}
 		activeskilldata = new ActiveSkillData();
 		p_givenvote = 0;
+		votecooldownflag = true;
 
 	}
 

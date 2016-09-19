@@ -19,6 +19,7 @@ import org.bukkit.inventory.Inventory;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
+import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
@@ -240,7 +241,15 @@ public class Sql{
 	}
 
 	//投票特典配布時の処理(p_givenvoteの値の更新もココ)
-	public int compareVotePoint(final PlayerData playerdata){
+	public int compareVotePoint(Player player,final PlayerData playerdata){
+
+		if(!playerdata.votecooldownflag){
+			player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
+			return 0;
+		}else{
+	        //連打による負荷防止の為クールダウン処理
+	        new CoolDownTaskRunnable(player,2).runTaskLater(plugin,1200);
+		}
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
 		int p_vote = 0;
@@ -258,6 +267,7 @@ public class Sql{
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
 			e.printStackTrace();
+			player.sendMessage(ChatColor.RED + "投票特典の受け取りに失敗しました");
 			return 0;
 		}
  		//比較して差があればその差の値を返す(同時にp_givenvoteも更新しておく)
@@ -266,11 +276,13 @@ public class Sql{
  					+ " set p_givenvote = " + p_vote
  					+ " where uuid like '" + struuid + "'";
  			if(!putCommand(command)){
+ 				player.sendMessage(ChatColor.RED + "投票特典の受け取りに失敗しました");
  				return 0;
  			}
+
  			return p_vote - p_givenvote;
  		}
-
+ 		player.sendMessage(ChatColor.YELLOW + "投票特典は全て受け取り済みのようです");
 		return 0;
 
 	}

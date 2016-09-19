@@ -53,7 +53,7 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 		//playerdataを取得
 		playerdata = playermap.get(uuid);
 		//クールダウンタイム生成
-		new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum));
+		new CoolDownTaskRunnable(player,1).runTaskLater(plugin,ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum));
 	}
 
 	@Override

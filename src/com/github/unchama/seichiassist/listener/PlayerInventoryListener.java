@@ -10,6 +10,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -177,7 +178,7 @@ public class PlayerInventoryListener implements Listener {
 			//投票特典受け取り
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND)){
 
-				int n = sql.compareVotePoint(playerdata);
+				int n = sql.compareVotePoint(player,playerdata);
 				//投票数に変化が無ければ処理終了
 				if(n == 0){
 					return;
@@ -206,6 +207,8 @@ public class PlayerInventoryListener implements Listener {
 						List<String> lore = Arrays.asList("投票特典でもらえるピッケルです"
 								, "整地レベルが30になるまで毎回貰えます"
 								);
+						itemmeta.addEnchant(Enchantment.DIG_SPEED, 3, true);
+						itemmeta.addEnchant(Enchantment.DURABILITY, 5, true);
 						itemmeta.setLore(lore);
 						itemstack.setItemMeta(itemmeta);
 						if(!Util.isPlayerInventryFill(player)){
