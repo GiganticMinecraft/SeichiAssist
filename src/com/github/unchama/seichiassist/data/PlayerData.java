@@ -112,8 +112,6 @@ public class PlayerData {
 		}
 		activeskilldata = new ActiveSkillData();
 		p_vote = 0;
-
-
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新

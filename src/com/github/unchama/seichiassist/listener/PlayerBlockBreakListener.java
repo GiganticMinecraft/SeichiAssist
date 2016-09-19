@@ -155,7 +155,8 @@ public class PlayerBlockBreakListener implements Listener {
 		String dir = Util.getCardinalDirection(player);
 		//元ブロックのマテリアルを取得
 		Material material = block.getType();
-
+		//元ブロックの真ん中の位置を取得
+		Location centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
 
 
 		//壊されるブロックの宣言
@@ -300,7 +301,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//エフェクトが選択されているとき
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runMultiEffect(multibreaklist, startlist, endlist);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runMultiEffect(multibreaklist, startlist, endlist,centerofblock);
 		}
 	}
 
@@ -530,7 +531,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//エフェクトが指定されているときの処理
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(breaklist, start, end);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(breaklist, start, end,centerofblock);
 		}
 		//クールダウンを発生させる
 		if(breaklist.size() > 0){

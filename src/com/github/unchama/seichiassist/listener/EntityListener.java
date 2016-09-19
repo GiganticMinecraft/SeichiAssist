@@ -337,7 +337,7 @@ public class EntityListener implements Listener {
 		//エフェクトが指定されているときの処理
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(breaklist, start, end);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(breaklist, start, end,centerofblock);
 		}
 		playerdata.activeskilldata.blocklist.clear();
 

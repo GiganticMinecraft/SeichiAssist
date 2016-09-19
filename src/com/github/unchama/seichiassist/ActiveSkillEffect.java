@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
@@ -59,7 +60,7 @@ public enum ActiveSkillEffect {
 		return;
 	}
 	//エフェクトの実行処理分岐
-	public void runBreakEffect(List<Block> breaklist,Coordinate start,Coordinate end){
+	public void runBreakEffect(List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
 		case "EXPLOSION":
 
@@ -76,7 +77,7 @@ public enum ActiveSkillEffect {
 		return;
 	}
 	//エフェクトの実行処理分岐
-	public void runMultiEffect(List<List<Block> > multibreaklist,List<Coordinate> startlist,List<Coordinate> endlist){
+	public void runMultiEffect(List<List<Block> > multibreaklist,List<Coordinate> startlist,List<Coordinate> endlist,Location standard){
 		switch(this.toString()){
 		case "EXPLOSION":
 
@@ -94,7 +95,7 @@ public enum ActiveSkillEffect {
 	}
 
 	//エフェクトの実行処理分岐
-	public void runArrowEffect(List<Block> breaklist,Coordinate start,Coordinate end){
+	public void runArrowEffect(List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
 		case "EXPLOSION":
 
@@ -111,7 +112,7 @@ public enum ActiveSkillEffect {
 		return;
 	}
 	//エフェクトの実行処理分岐
-	public void runCondensEffect(List<Block> breaklist,Coordinate start,Coordinate end){
+	public void runCondensEffect(List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
 		case "EXPLOSION":
 
