@@ -414,13 +414,13 @@ public enum ActiveSkill{
 		case "BREAK":
 			switch(skillnum){
 			case 1:
-				cooldowntime = 0;
+				cooldowntime = 0.1;
 				break;
 			case 2:
-				cooldowntime = 0;
+				cooldowntime = 0.1;
 				break;
 			case 3:
-				cooldowntime = 0;
+				cooldowntime = 0.1;
 				break;
 			case 4:
 				cooldowntime = 0.7;

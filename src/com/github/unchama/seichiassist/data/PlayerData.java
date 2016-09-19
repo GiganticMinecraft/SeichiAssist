@@ -52,8 +52,7 @@ public class PlayerData {
 	public Inventory inventory;
 	//ワールドガード保護自動設定用
 	public int rgnum;
-	//スキル発動中だけtrueになるフラグ
-	public boolean skillflag;
+
 	//MineStack
 	public MineStack minestack;
 	//MineStackFlag
@@ -100,7 +99,6 @@ public class PlayerData {
 		numofsorryforbug = 0;
 		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 		rgnum = 0;
-		skillflag = false;
 		minestack = new MineStack();
 		minestackflag = true;
 		servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);

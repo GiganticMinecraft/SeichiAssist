@@ -12,6 +12,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 public class ActiveSkillData {
 	//アクティブスキルポイント
 	public int skillpoint;
+	//アクティブスキルエフェクトポイント
+	public int effectpoint;
 	//投てきスキル獲得量
 	public int arrowskill;
 	//連続破壊スキル獲得量
@@ -47,6 +49,7 @@ public class ActiveSkillData {
 		skillnum = 0;
 		skillcanbreakflag = true;
 		skillpoint = 0;
+		effectpoint = 0;
 		arrowskill = 0;
 		multiskill = 0;
 		breakskill = 0;
