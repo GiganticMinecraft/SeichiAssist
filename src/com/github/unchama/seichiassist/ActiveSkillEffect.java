@@ -4,16 +4,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.data.Coordinate;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.skilleffect.ExplosionTaskRunnable;
 
 public enum ActiveSkillEffect {
 	EXPLOSION(1,"ef_explosion",ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン","単純な爆発のエフェクト",10,Material.TNT),
 	BLIZZARD(2,"ef_blizzard",ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード","凍らせるエフェクト",20,Material.PACKED_ICE),
 	METEO(3,"ef_meteo",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ","隕石を落とすエフェクト",30,Material.FIREBALL),
 	;
+
+	SeichiAssist plugin = SeichiAssist.plugin;
 
 	private int num;
 	private String sql_name;
@@ -59,7 +66,42 @@ public enum ActiveSkillEffect {
 		return;
 	}
 	//エフェクトの実行処理分岐
-	public void runBreakEffect(List<Block> breaklist,Coordinate start,Coordinate end){
+	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
+		switch(this.toString()){
+		case "EXPLOSION":
+			new ExplosionTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
+			break;
+		case "BLIZZARD":
+
+			break;
+		case "METEO":
+
+			break;
+		default :
+			break;
+		}
+		return;
+	}
+	//エフェクトの実行処理分岐
+	public void runMultiEffect(Player player,PlayerData playerdata,ItemStack tool,List<List<Block> > multibreaklist,List<Coordinate> startlist,List<Coordinate> endlist,Location standard){
+		switch(this.toString()){
+		case "EXPLOSION":
+
+			break;
+		case "BLIZZARD":
+
+			break;
+		case "METEO":
+
+			break;
+		default :
+			break;
+		}
+		return;
+	}
+
+	//エフェクトの実行処理分岐
+	public void runArrowEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
 		case "EXPLOSION":
 
@@ -76,42 +118,7 @@ public enum ActiveSkillEffect {
 		return;
 	}
 	//エフェクトの実行処理分岐
-	public void runMultiEffect(List<List<Block> > multibreaklist,List<Coordinate> startlist,List<Coordinate> endlist){
-		switch(this.toString()){
-		case "EXPLOSION":
-
-			break;
-		case "BLIZZARD":
-
-			break;
-		case "METEO":
-
-			break;
-		default :
-			break;
-		}
-		return;
-	}
-
-	//エフェクトの実行処理分岐
-	public void runArrowEffect(List<Block> breaklist,Coordinate start,Coordinate end){
-		switch(this.toString()){
-		case "EXPLOSION":
-
-			break;
-		case "BLIZZARD":
-
-			break;
-		case "METEO":
-
-			break;
-		default :
-			break;
-		}
-		return;
-	}
-	//エフェクトの実行処理分岐
-	public void runCondensEffect(List<Block> breaklist,Coordinate start,Coordinate end){
+	public void runCondensEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
 		case "EXPLOSION":
 

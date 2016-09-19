@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -32,6 +31,7 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 	private PlayerData playerdata;
 	private int count;
 	private Material material;
+	//private int key;
 
 	public MultiBreakTaskRunnable(Player player,Block centerblock,ItemStack tool,
 			List<List<Block>> multibreaklist, List<List<Block>> multilavalist,
@@ -46,12 +46,11 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 		this.endlist = endlist;
 		this.breaknum = multibreaklist.size();
 		this.count = 0;
+		//this.key = key;
 		//UUIDを取得
 		uuid = player.getUniqueId();
 		//playerdataを取得
 		playerdata = playermap.get(uuid);
-		//クールダウンタイム生成
-		new CoolDownTaskRunnable(player,1).runTaskLater(plugin,ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum));
 	}
 
 	@Override
@@ -66,10 +65,10 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 			}
 			for(Block b:multibreaklist.get(count)){
 				Util.BreakBlock(player, b, droploc, tool,true);
+				playerdata.activeskilldata.blocklist.remove(b);
 			}
 			count++;
 		}else{
-			playerdata.activeskilldata.blocklist.clear();
 			cancel();
 		}
 

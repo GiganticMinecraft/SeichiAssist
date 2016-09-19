@@ -448,19 +448,19 @@ public enum ActiveSkill{
 				cooldowntime = 0.3;
 				break;
 			case 5:
-				cooldowntime = 1.0;
+				cooldowntime = 0.3;
 				break;
 			case 6:
-				cooldowntime = 2.0;
+				cooldowntime = 0.3;
 				break;
 			case 7:
-				cooldowntime = 0.5;
+				cooldowntime = 0.3;
 				break;
 			case 8:
-				cooldowntime = 1.5;
+				cooldowntime = 0.3;
 				break;
 			case 9:
-				cooldowntime = 3.0;
+				cooldowntime = 0.3;
 				break;
 			}
 			break;

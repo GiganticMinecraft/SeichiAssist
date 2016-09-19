@@ -60,6 +60,7 @@ public class ActiveSkillData {
 		effectnum = 0;
 		effectflagmap = new HashMap<Integer,Boolean>();
 		blocklist = new ArrayList<Block>();
+
 		explosiontime = 1;
 		hitflag = false;
 	}

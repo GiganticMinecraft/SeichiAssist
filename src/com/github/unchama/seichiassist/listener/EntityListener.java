@@ -59,7 +59,8 @@ public class EntityListener implements Listener {
 		}
 
 		//もしサバイバルでなければ処理を終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+		//もしフライ中なら終了
+		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
 			return;
 		}
 
@@ -95,13 +96,17 @@ public class EntityListener implements Listener {
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
-		//スキルで破壊されるブロックの時処理を終了
-		if(playerdata.activeskilldata.blocklist.contains(block)){
-			if(SeichiAssist.DEBUG){
-				player.sendMessage("スキルで使用中のブロックです。");
+
+		for(Block b : playerdata.activeskilldata.blocklist){
+			//スキルで破壊されるブロックの時処理を終了
+			if(b.equals(block)){
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("スキルで使用中のブロックです。");
+				}
+				return;
 			}
-			return;
 		}
+
 
 		//経験値変更用のクラスを設定
 		ExperienceManager expman = new ExperienceManager(player);
@@ -259,12 +264,18 @@ public class EntityListener implements Listener {
 								lavalist.add(breakblock);
 							}else{
 								breaklist.add(breakblock);
+								playerdata.activeskilldata.blocklist.add(breakblock);
 							}
 						}
 
 					}
 				}
 			}
+		}
+
+		//壊すものがない時
+		if(breaklist.size() == 1){
+			return;
 		}
 
 		//減る経験値計算
@@ -314,10 +325,9 @@ public class EntityListener implements Listener {
 		tool.setDurability(durability);
 
 
+
+
 		//以降破壊する処理
-
-		playerdata.activeskilldata.blocklist = breaklist;
-
 
 		//溶岩を破壊する処理
 		for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
@@ -331,15 +341,14 @@ public class EntityListener implements Listener {
 		if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
 				Util.BreakBlock(player, b, player.getLocation(), tool,true);
+				playerdata.activeskilldata.blocklist.remove(b);
 			}
-			playerdata.activeskilldata.blocklist.clear();
 		}
 		//エフェクトが指定されているときの処理
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(breaklist, start, end);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player,playerdata,tool,breaklist, start, end,centerofblock);
 		}
-		playerdata.activeskilldata.blocklist.clear();
 
 	}
 

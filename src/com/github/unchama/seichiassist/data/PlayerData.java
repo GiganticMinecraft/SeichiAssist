@@ -116,7 +116,6 @@ public class PlayerData {
 		p_givenvote = 0;
 		votecooldownflag = true;
 
-
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新

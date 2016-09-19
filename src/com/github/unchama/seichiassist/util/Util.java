@@ -287,6 +287,9 @@ public class Util {
 		if(material.equals(Material.GLOWING_REDSTONE_ORE)){
 			material = Material.REDSTONE_ORE;
 		}
+		if(material.equals(Material.AIR)){
+			return;
+		}
 
 
 		//アイテムをドロップさせる
@@ -468,7 +471,7 @@ public class Util {
 			default:
 				return false;
 		}
-		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
+		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, (float)0.1, (float)1);
 		return true;
 
 	}

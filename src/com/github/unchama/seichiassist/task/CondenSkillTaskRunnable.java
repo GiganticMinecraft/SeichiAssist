@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -122,6 +123,8 @@ public class CondenSkillTaskRunnable extends BukkitRunnable{
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
+		//元ブロックの真ん中の位置を取得
+		Location centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
 
 		//壊されるブロックの宣言
 		Block breakblock;
@@ -157,7 +160,10 @@ public class CondenSkillTaskRunnable extends BukkitRunnable{
 				}
 			}
 		}
-
+		//壊すものがない時
+		if(breaklist.size() == 0){
+			return;
+		}
 		//減る経験値計算
 
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数
@@ -203,8 +209,6 @@ public class CondenSkillTaskRunnable extends BukkitRunnable{
 
 		//以降破壊する処理
 
-		playerdata.activeskilldata.blocklist = breaklist;
-
 
 		//選択されたブロックを破壊する処理
 
@@ -234,10 +238,8 @@ public class CondenSkillTaskRunnable extends BukkitRunnable{
 		//エフェクトが指定されているときの処理
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runCondensEffect(breaklist, start, end);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runCondensEffect(player,playerdata,tool,breaklist, start, end,centerofblock);
 		}
-
-		playerdata.activeskilldata.blocklist.clear();
 
 
 	}
