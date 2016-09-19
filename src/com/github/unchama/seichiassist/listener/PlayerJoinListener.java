@@ -79,21 +79,8 @@ public class PlayerJoinListener implements Listener {
 	public void onplayerJoinEvent(PlayerJoinEvent event){
 		//ジョインしたplayerを取得
 		Player player = event.getPlayer();
-		//プレイヤーのuuidを取得
-		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ作成
-		PlayerData playerdata = sql.loadPlayerData(player);
-		//念のためエラー分岐
-		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataの作成に失敗しました。管理者に報告してください");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[join処理]でエラー発生");
-			plugin.getLogger().warning(player.getName() + "のplayerdataの作成に失敗しました。開発者に報告してください");
-			return;
-		}
-		//playermapに追加
-		playermap.put(uuid, playerdata);
-		//join時とonenable時、プレイヤーデータを最新の状態に更新
-		playerdata.updateonJoin(player);
+		sql.loadPlayerData(player);
 
 		//初見さんへの処理
 		if(!player.hasPlayedBefore()){
