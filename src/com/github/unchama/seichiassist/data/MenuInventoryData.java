@@ -220,6 +220,18 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(29,itemstack);
 
+		//投票特典受け取りボタン
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る");
+		skullmeta.setLore(VoteGetButtonLore(playerdata));
+		skullmeta.setOwner("TAR0SS");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(30,itemstack);
+
+
+
 		// ゴミ箱を開く
 		itemstack = new ItemStack(Material.BUCKET,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BUCKET);
@@ -1741,6 +1753,17 @@ public class MenuInventoryData {
 		}
 		return lore;
 	}
+
+	//投票特典受け取りボタン
+	public static List<String> VoteGetButtonLore(PlayerData playerdata){
+		List<String> lore = new ArrayList<String>();
+		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "投票特典を受け取るには"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "投票ページで投票した後"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンをクリックします"));
+		lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "あなたの投票回数：" + playerdata.p_vote + "回");
+		return lore;
+	}
+
 	public static Inventory getMineStackMenu(Player p){
 		//プレイヤーを取得
 		Player player = p.getPlayer();

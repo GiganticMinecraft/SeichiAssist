@@ -254,8 +254,17 @@ public class PlayerRightClickListener implements Listener {
 					present.itemstack.setAmount(present.amount);
 					//メッセージ設定
 					String str = ChatColor.AQUA + "プレゼントがドロップしました。";
+
+					//プレゼントを格納orドロップ
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,present.itemstack);
+					}else{
+						Util.dropItem(player,present.itemstack);
+					}
+					/*
 					//プレゼントをドロップ
 					Util.dropItem(player, present.itemstack);
+					*/
 
 					//確率に応じてメッセージを送信
 					if(present.probability < 0.001){

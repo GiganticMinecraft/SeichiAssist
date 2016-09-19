@@ -236,6 +236,33 @@ public class Sql{
 		return putCommand(command);
 	}
 
+	public int compareVotePoint(PlayerData playerdata){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		int p_givenvote = 0;
+		String command = "select p_givenvote from " + table
+				+ " where uuid = '" + struuid + "'";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				p_givenvote = rs.getInt("p_givenvote");
+				}
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return 0;
+		}
+ 		//比較して差があればその差の値を返す
+ 		if(playerdata.p_vote > p_givenvote){
+ 			return playerdata.p_vote - p_givenvote;
+ 		}
+
+		return 0;
+
+	}
+
 	public boolean createGachaDataTable(String table){
 		if(table==null){
 			return false;

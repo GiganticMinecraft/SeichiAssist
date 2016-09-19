@@ -30,6 +30,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -40,6 +41,7 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private Config config = SeichiAssist.config;
+	private Sql sql = SeichiAssist.plugin.sql;
 
 	//棒メニュー
 	@EventHandler
@@ -169,6 +171,48 @@ public class PlayerInventoryListener implements Listener {
 
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				itemmeta.setLore(MenuInventoryData.SorryGachaGetButtonLore(playerdata));
+				itemstackcurrent.setItemMeta(itemmeta);
+			}
+
+			//投票特典受け取り
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("TAR0SS")){
+
+				int n = sql.compareVotePoint(playerdata);
+				ItemStack skull = Util.getskull(Util.getName(player));
+				while(n > 0){
+					//ここに投票1回につきプレゼントする特典の処理を書く
+
+					//ガチャ券プレゼント処理
+					for (int i = 0; i < 10; i++){
+						if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+							Util.addItem(player,skull);
+						}else{
+							Util.dropItem(player,skull);
+						}
+					}
+
+					//ピッケルプレゼント処理
+					if(playerdata.level < 30){
+						ItemStack itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
+						ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
+						itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "Thanks for Voting!");
+						List<String> lore = Arrays.asList("投票特典でもらえるピッケルです"
+								, "整地レベルが30になるまで毎回貰えます"
+								);
+						itemmeta.setLore(lore);
+						itemstack.setItemMeta(itemmeta);
+						if(!Util.isPlayerInventryFill(player)){
+							Util.addItem(player,itemstack);
+						}else{
+							Util.dropItem(player,itemstack);
+						}
+					}
+
+					n--;
+				}
+
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemmeta.setLore(MenuInventoryData.VoteGetButtonLore(playerdata));
 				itemstackcurrent.setItemMeta(itemmeta);
 			}
 
