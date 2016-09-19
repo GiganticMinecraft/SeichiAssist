@@ -238,6 +238,7 @@ public class Sql{
 		return putCommand(command);
 	}
 
+	//投票特典配布時の処理(p_givenvoteの値の更新もココ)
 	public int compareVotePoint(PlayerData playerdata){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
@@ -256,12 +257,35 @@ public class Sql{
 			e.printStackTrace();
 			return 0;
 		}
- 		//比較して差があればその差の値を返す
+ 		//比較して差があればその差の値を返す(同時にp_givenvoteも更新しておく)
  		if(playerdata.p_vote > p_givenvote){
+ 			command = "update " + table
+ 					+ " set p_givenvote = " + playerdata.p_vote
+ 					+ " where uuid like '" + struuid + "'";
+ 			if(!putCommand(command)){
+ 				return 0;
+ 			}
  			return playerdata.p_vote - p_givenvote;
  		}
 
 		return 0;
+
+	}
+
+	//投票時にmysqlに投票ポイントを加算しておく処理
+	public boolean addVotePoint(String name) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "";
+
+		command = "update " + table
+				+ " set"
+
+				//1加算
+				+ " p_vote = p_vote + 1"
+
+				+ " where name like '" + name + "'";
+
+		return putCommand(command);
 
 	}
 
@@ -376,7 +400,6 @@ public class Sql{
 				+ ",lastquit = cast( now() as datetime )"
 				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
 				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
-				+ ",p_vote = " + Integer.toString(playerdata.p_vote)
 				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
 
 				//MineStack機能の数値更新処理
