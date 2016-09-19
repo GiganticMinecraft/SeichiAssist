@@ -534,7 +534,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 		//クールダウンを発生させる
 		if(breaklist.size() > 0){
-			new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum));
+			new CoolDownTaskRunnable(player,1).runTaskLater(plugin,ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum));
 		}
 		playerdata.activeskilldata.blocklist.clear();
 	}

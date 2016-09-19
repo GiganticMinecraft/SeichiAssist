@@ -178,7 +178,7 @@ public class PlayerInventoryListener implements Listener {
 			//投票特典受け取り
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND)){
 
-				int n = sql.compareVotePoint(playerdata);
+				int n = sql.compareVotePoint(player,playerdata);
 				//投票数に変化が無ければ処理終了
 				if(n == 0){
 					return;
