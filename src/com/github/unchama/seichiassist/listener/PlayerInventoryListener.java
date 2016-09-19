@@ -216,7 +216,7 @@ public class PlayerInventoryListener implements Listener {
 					}
 
 					//エフェクトポイント加算処理
-					playerdata.effectpoint++;
+					playerdata.activeskilldata.effectpoint++;
 
 					n--;
 				}
