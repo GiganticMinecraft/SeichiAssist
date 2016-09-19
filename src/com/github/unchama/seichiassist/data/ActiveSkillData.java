@@ -16,6 +16,8 @@ public class ActiveSkillData {
 	public int skillpoint;
 	//アクティブスキルエフェクトポイント
 	public int effectpoint;
+	//プレミアムアクティブスキルエフェクトポイント
+	public int premiumeffectpoint;
 	//投てきスキル獲得量
 	public int arrowskill;
 	//連続破壊スキル獲得量
@@ -50,6 +52,7 @@ public class ActiveSkillData {
 		skillcanbreakflag = true;
 		skillpoint = 0;
 		effectpoint = 0;
+		premiumeffectpoint = 0;
 		arrowskill = 0;
 		multiskill = 0;
 		breakskill = 0;

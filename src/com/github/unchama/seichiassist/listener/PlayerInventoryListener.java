@@ -175,7 +175,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//投票特典受け取り
-			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("TAR0SS")){
+			else if(itemstackcurrent.getType().equals(Material.DIAMOND)){
 
 				int n = sql.compareVotePoint(playerdata);
 				//投票数に変化が無ければ処理終了
@@ -183,7 +183,7 @@ public class PlayerInventoryListener implements Listener {
 					return;
 				}
 				//先にp_voteの値を更新しておく
-				playerdata.p_vote += n;
+				playerdata.p_givenvote += n;
 
 				while(n > 0){
 					//ここに投票1回につきプレゼントする特典の処理を書く
