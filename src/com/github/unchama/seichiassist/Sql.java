@@ -226,11 +226,41 @@ public class Sql{
 				",add column if not exists killlogflag boolean default false" +
 				",add column if not exists pvpflag boolean default false" +
 				",add column if not exists loginflag boolean default false" +
+				",add column if not exists p_vote int default 0" +
+				",add column if not exists p_givenvote int default 0" +
+				",add column if not exists effectpoint int default 0" +
 				",add index if not exists name_index(name)" +
 				",add index if not exists uuid_index(uuid)" +
 				",add index if not exists ranking_index(totalbreaknum)" +
 				"";
 		return putCommand(command);
+	}
+
+	public int compareVotePoint(PlayerData playerdata){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		int p_givenvote = 0;
+		String command = "select p_givenvote from " + table
+				+ " where uuid = '" + struuid + "'";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				p_givenvote = rs.getInt("p_givenvote");
+				}
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return 0;
+		}
+ 		//比較して差があればその差の値を返す
+ 		if(playerdata.p_vote > p_givenvote){
+ 			return playerdata.p_vote - p_givenvote;
+ 		}
+
+		return 0;
+
 	}
 
 	public boolean createGachaDataTable(String table){
@@ -347,6 +377,8 @@ public class Sql{
 				+ ",lastquit = cast( now() as datetime )"
 				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
 				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
+				+ ",p_vote = " + Integer.toString(playerdata.p_vote)
+				+ ",effectpoint = " + Integer.toString(playerdata.effectpoint)
 
 				//MineStack機能の数値更新処理
 				+ ",stack_dirt = " + Integer.toString(playerdata.minestack.dirt)
