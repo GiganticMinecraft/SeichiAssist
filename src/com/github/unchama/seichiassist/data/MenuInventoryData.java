@@ -224,7 +224,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る");
+		skullmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票特典を受け取る");
 		skullmeta.setLore(VoteGetButtonLore(playerdata));
 		skullmeta.setOwner("TAR0SS");
 		itemstack.setItemMeta(skullmeta);

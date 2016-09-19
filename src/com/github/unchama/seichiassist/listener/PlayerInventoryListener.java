@@ -221,6 +221,9 @@ public class PlayerInventoryListener implements Listener {
 					n--;
 				}
 
+				player.sendMessage(ChatColor.GOLD + "投票特典" + ChatColor.WHITE + "を受け取りました");
+				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				itemmeta.setLore(MenuInventoryData.VoteGetButtonLore(playerdata));
 				itemstackcurrent.setItemMeta(itemmeta);
