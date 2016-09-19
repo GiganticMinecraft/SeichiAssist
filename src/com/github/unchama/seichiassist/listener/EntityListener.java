@@ -184,8 +184,8 @@ public class EntityListener implements Listener {
 				start = new Coordinate(-(skilllevel-3),-(skilllevel-3),-(skilllevel-3)-1);
 				end = new Coordinate(skilllevel-3,skilllevel-3,(skilllevel-3)-1);
 			}else{
-				start = new Coordinate(-(skilllevel-3),-1,-(skilllevel-3)-1);
-				end = new Coordinate(skilllevel-3,(skilllevel-5)*2 + 1,(skilllevel-3)-1);
+				start = new Coordinate(-(skilllevel-3),-1,-(skilllevel-3)*2);
+				end = new Coordinate(skilllevel-3,(skilllevel-5)*2 + 1,0);
 			}
 			break;
 		case "E":
@@ -194,8 +194,8 @@ public class EntityListener implements Listener {
 				start = new Coordinate(-(skilllevel-3)+1,-(skilllevel-3),-(skilllevel-3));
 				end = new Coordinate((skilllevel-3)+1,skilllevel-3,(skilllevel-3));
 			}else{
-				start = new Coordinate(-(skilllevel-3)+1,-1,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3)+1,(skilllevel-5)*2 + 1,(skilllevel-3));
+				start = new Coordinate(0,-1,-(skilllevel-3));
+				end = new Coordinate((skilllevel-3)*2,(skilllevel-5)*2 + 1,(skilllevel-3));
 			}
 			break;
 		case "S":
@@ -204,8 +204,8 @@ public class EntityListener implements Listener {
 				start = new Coordinate(-(skilllevel-3),-(skilllevel-3),-(skilllevel-3)+1);
 				end = new Coordinate(skilllevel-3,skilllevel-3,(skilllevel-3)+1);
 			}else{
-				start = new Coordinate(-(skilllevel-3),-1,-(skilllevel-3)+1);
-				end = new Coordinate(skilllevel-3,(skilllevel-5)*2 + 1,(skilllevel-3)+1);
+				start = new Coordinate(-(skilllevel-3),-1,0);
+				end = new Coordinate(skilllevel-3,(skilllevel-5)*2 + 1,(skilllevel-3)*2);
 			}
 			break;
 		case "W":
@@ -214,8 +214,8 @@ public class EntityListener implements Listener {
 				start = new Coordinate(-(skilllevel-3)-1,-(skilllevel-3),-(skilllevel-3));
 				end = new Coordinate((skilllevel-3)-1,skilllevel-3,(skilllevel-3));
 			}else{
-				start = new Coordinate(-(skilllevel-3)-1,-1,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3)-1,(skilllevel-5)*2 + 1,(skilllevel-3));
+				start = new Coordinate(-(skilllevel-3)*2,-1,-(skilllevel-3));
+				end = new Coordinate(0,(skilllevel-5)*2 + 1,(skilllevel-3));
 			}
 			break;
 		case "U":
@@ -252,10 +252,10 @@ public class EntityListener implements Listener {
 							|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
 							|| (block.getType().equals(Material.GLOWING_REDSTONE_ORE)&&breakblock.getType().equals(Material.REDSTONE_ORE))
 							|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
-							|| breakblock.getType().equals(Material.LAVA)
+							|| breakblock.getType().equals(Material.STATIONARY_LAVA)
 							){
 						if(Util.canBreak(player, breakblock)){
-							if(breakblock.getType().equals(Material.LAVA)){
+							if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
 								lavalist.add(breakblock);
 							}else{
 								breaklist.add(breakblock);
@@ -319,9 +319,12 @@ public class EntityListener implements Listener {
 
 		playerdata.activeskilldata.blocklist = breaklist;
 
+
 		//１マスの溶岩のみ破壊する処理
-		if(lavalist.size() == 1){
-			lavalist.get(0).setType(Material.AIR);
+		if(lavalist.size() < 10){
+			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
+				lavalist.get(lavanum).setType(Material.AIR);
+			}
 		}
 
 		//選択されたブロックを破壊する処理
@@ -336,8 +339,9 @@ public class EntityListener implements Listener {
 		//エフェクトが指定されているときの処理
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			//skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(breaklist, start, end);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(breaklist, start, end);
 		}
+		playerdata.activeskilldata.blocklist.clear();
 
 	}
 

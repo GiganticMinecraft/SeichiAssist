@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,17 +19,21 @@ import org.bukkit.inventory.Inventory;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
+import com.github.unchama.seichiassist.task.LoadPlayerDataTask;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
 
 //MySQL操作関数
 public class Sql{
-	private SeichiAssist plugin;
 	private final String url, db, id, pw;
-	private Connection con = null;
+	public Connection con = null;
 	private Statement stmt = null;
+
 	private ResultSet rs = null;
+
 	public static String exc;
+	private SeichiAssist plugin = SeichiAssist.plugin;
+	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 
 	//コンストラクタ
 	Sql(SeichiAssist plugin ,String url, String db, String id, String pw){
@@ -216,6 +221,7 @@ public class Sql{
 				",add column if not exists stack_coal int default 0" +
 				",add column if not exists stack_coal_ore int default 0" +
 				",add column if not exists stack_iron_ore int default 0" +
+				",add column if not exists stack_packed_ice int default 0" +
 				",add column if not exists playtick int default 0" +
 				",add column if not exists killlogflag boolean default false" +
 				",add column if not exists pvpflag boolean default false" +
@@ -248,12 +254,12 @@ public class Sql{
 		return putCommand(command);
 	}
 
-	public PlayerData loadPlayerData(Player p) {
+	public boolean loadPlayerData(final Player p) {
 		String name = Util.getName(p);
-		UUID uuid = p.getUniqueId();
-		String struuid = uuid.toString().toLowerCase();
+		final UUID uuid = p.getUniqueId();
+		final String struuid = uuid.toString().toLowerCase();
 		String command = "";
-		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		final String table = SeichiAssist.PLAYERDATA_TABLENAME;
  		int count = -1;
  		//uuidがsqlデータ内に存在するか検索
  		//command:
@@ -270,7 +276,7 @@ public class Sql{
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
 			e.printStackTrace();
-			return null;
+			return false;
 		}
 
  		if(count == 0){
@@ -282,135 +288,24 @@ public class Sql{
  	 				+ " (name,uuid,loginflag) values('" + name
  	 				+ "','" + struuid+ "','1')";
  			if(!putCommand(command)){
- 				return null;
+ 				return false;
  			}
  			//PlayerDataを新規作成
- 			return new PlayerData(p);
+ 			playermap.put(uuid, new PlayerData(p));
+ 			return true;
 
  		}else if(count == 1){
  			//uuidが存在するときの処理
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlにデータが保存されています。");
  			}
+ 			new LoadPlayerDataTask(p).runTaskTimer(plugin, 0, 10);;
+ 			return true;
 
- 			//loginflag判別処理
- 			Boolean flag = true;
- 			int i = 0;
- 			//flagがfalseになるまで繰り返す
- 			while(flag){
-	 	 		command = "select loginflag from " + table
-	 	 				+ " where uuid = '" + struuid + "'";
-	 	 		try{
-	 				rs = stmt.executeQuery(command);
-	 				while (rs.next()) {
-	 					   flag = rs.getBoolean("loginflag");
-	 					  }
-	 				rs.close();
-	 			} catch (SQLException e) {
-	 				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-	 				exc = e.getMessage();
-	 				e.printStackTrace();
-	 				return null;
-	 			}
-	 	 		if(i < 5&&flag){
-	 	 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "のloginflag=false待機…(" + (i+1) + "回目)");
-	 	 			p.sendMessage(ChatColor.YELLOW + "PlayerDataの取得待機中。しばらくお待ちください…");
-	 	 			//次のリクエストまで1000ms待つ
-	 	 			try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						// TODO 自動生成された catch ブロック
-						e.printStackTrace();
-					}
-	 	 		}
-	 	 		if(i > 5&&flag){
-	 	 			//諦める
-	 	 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "のloginflagがtrueの為、プレイヤーデータが取得できませんでした");
-	 	 			p.sendMessage(ChatColor.RED + "取得失敗。再接続しても改善されない場合は管理者へ報告して下さい");
-	 	 			return null;
-	 	 		}
-	 	 		i++;
- 			}
- 			//loginflag書き換え処理
- 			command = "update " + table
-						+ " set loginflag = true"
-						+ " where uuid like '" + struuid + "'";
- 			if(!putCommand(command)){
- 				return null;
- 			}
-
- 			//PlayerDataを新規作成
- 			PlayerData playerdata = new PlayerData(p);
-
- 			//playerdataをsqlデータから得られた値で更新
- 			command = "select * from " + table
- 					+ " where uuid like '" + struuid + "'";
- 			try{
- 				rs = stmt.executeQuery(command);
- 				while (rs.next()) {
- 					//各種数値
- 	 				playerdata.effectflag = rs.getBoolean("effectflag");
- 	 				playerdata.minestackflag = rs.getBoolean("minestackflag");
- 	 				playerdata.messageflag = rs.getBoolean("messageflag");
- 	 				playerdata.activeskilldata.mineflagnum = rs.getInt("activemineflagnum");
- 	 				playerdata.activeskilldata.skilltype = rs.getInt("activeskilltype");
- 	 				playerdata.activeskilldata.skillnum = rs.getInt("activeskillnum");
- 	 				playerdata.activeskilldata.arrowskill = rs.getInt("arrowskill");
- 	 				playerdata.activeskilldata.multiskill = rs.getInt("multiskill");
- 	 				playerdata.activeskilldata.breakskill = rs.getInt("breakskill");
- 	 				playerdata.activeskilldata.condenskill = rs.getInt("condenskill");
- 	 				playerdata.activeskilldata.effect_explosion = rs.getBoolean("effect_explosion");
- 	 				playerdata.activeskilldata.effect_blizzard = rs.getBoolean("effect_blizzard");
- 	 				playerdata.activeskilldata.effect_meteo = rs.getBoolean("effect_meteo");
- 	 				playerdata.activeskilldata.effectnum = rs.getInt("effectnum");
- 	 				playerdata.gachapoint = rs.getInt("gachapoint");
- 	 				playerdata.gachaflag = rs.getBoolean("gachaflag");
- 	 				playerdata.level = rs.getInt("level");
- 	 				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
- 	 				playerdata.rgnum = rs.getInt("rgnum");
- 	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
- 	 				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
- 	 				playerdata.pvpflag = rs.getBoolean("pvpflag");
- 	 				playerdata.totalbreaknum = rs.getInt("totalbreaknum");
- 	 				playerdata.playtick = rs.getInt("playtick");
-
- 	 				//MineStack機能の数値
- 	 				playerdata.minestack.dirt = rs.getInt("stack_dirt");
- 	 				playerdata.minestack.gravel = rs.getInt("stack_gravel");
- 	 				playerdata.minestack.cobblestone = rs.getInt("stack_cobblestone");
- 	 				playerdata.minestack.stone = rs.getInt("stack_stone");
- 	 				playerdata.minestack.sand = rs.getInt("stack_sand");
- 	 				playerdata.minestack.sandstone = rs.getInt("stack_sandstone");
- 	 				playerdata.minestack.netherrack = rs.getInt("stack_netherrack");
- 	 				playerdata.minestack.ender_stone = rs.getInt("stack_ender_stone");
- 	 				playerdata.minestack.grass = rs.getInt("stack_grass");
- 	 				playerdata.minestack.quartz = rs.getInt("stack_quartz");
- 	 				playerdata.minestack.quartz_ore = rs.getInt("stack_quartz_ore");
- 	 				playerdata.minestack.soul_sand = rs.getInt("stack_soul_sand");
- 	 				playerdata.minestack.magma = rs.getInt("stack_magma");
- 	 				playerdata.minestack.coal = rs.getInt("stack_coal");
- 	 				playerdata.minestack.coal_ore = rs.getInt("stack_coal_ore");
- 	 				playerdata.minestack.iron_ore = rs.getInt("stack_iron_ore");
- 				  }
- 				rs.close();
- 			} catch (SQLException | IOException e) {
- 				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
- 				exc = e.getMessage();
- 				e.printStackTrace();
- 				return null;
- 			}
- 			if(SeichiAssist.DEBUG){
- 				p.sendMessage("sqlデータで更新しました");
- 			}
- 			//更新したplayerdataを返す
- 			p.sendMessage(ChatColor.GREEN + "プレイヤーデータ取得完了");
- 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ取得完了");
- 			return playerdata;
  		}else{
  			//mysqlに該当するplayerdataが2個以上ある時エラーを吐く
- 			Bukkit.getLogger().info(Util.getName(p) + "のplayerdataがmysqlに2個以上ある為、正常にロード出来ませんでした");
- 			p.sendMessage("独自機能のロードに失敗しました。管理人に報告して下さい");
- 			return null;
+ 			Bukkit.getLogger().info(Util.getName(p) + "のplayerdata読込時に原因不明のエラー発生");
+ 			return false;
  		}
 	}
 	public boolean savePlayerData(PlayerData playerdata) {
@@ -470,6 +365,7 @@ public class Sql{
 				+ ",stack_coal = " + Integer.toString(playerdata.minestack.coal)
 				+ ",stack_coal_ore = " + Integer.toString(playerdata.minestack.coal_ore)
 				+ ",stack_iron_ore = " + Integer.toString(playerdata.minestack.iron_ore)
+				+ ",stack_packed_ice = " + Integer.toString(playerdata.minestack.packed_ice)
 
 				+ " where uuid like '" + struuid + "'";
 

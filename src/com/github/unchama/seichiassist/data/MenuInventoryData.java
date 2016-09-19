@@ -58,9 +58,11 @@ public class MenuInventoryData {
 		skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ");
 		lore.clear();
-		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
-				, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum)
-				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "パッシブスキル効果："
+		lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level);
+		if(playerdata.level < SeichiAssist.levellist.size()){
+			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum));
+		}
+		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "パッシブスキル効果："
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "1ブロック整地ごとに"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "10%の確率で"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + playerdata.dispPassiveExp() + "の経験値を獲得"
@@ -893,9 +895,7 @@ public class MenuInventoryData {
 		itemstack.setDurability((short) 3);
 		skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "のアクティブスキルデータ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
-				, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum)
-				, ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum)
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum)
 				, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるアクティブスキルポイント：" + playerdata.activeskilldata.skillpoint);
 		skullmeta.setLore(lore);
 		skullmeta.setOwner(playerdata.name);
@@ -1784,25 +1784,27 @@ public class MenuInventoryData {
 
 		setMineStackButton(inventory, playerdata.minestack.sand, Material.SAND,v4, 6);
 
-		setMineStackButton(inventory, playerdata.minestack.sandstone, Material.SANDSTONE, v4, 7);
+		setMineStackButton(inventory, playerdata.minestack.packed_ice, Material.PACKED_ICE,v4, 7);
 
-		setMineStackButton(inventory, playerdata.minestack.netherrack, Material.NETHERRACK, v5, 8);
+		setMineStackButton(inventory, playerdata.minestack.sandstone, Material.SANDSTONE, v4, 8);
 
-		setMineStackButton(inventory, playerdata.minestack.soul_sand, Material.SOUL_SAND, v6, 9);
+		setMineStackButton(inventory, playerdata.minestack.netherrack, Material.NETHERRACK, v5, 9);
 
-		setMineStackButton(inventory, playerdata.minestack.magma, Material.MAGMA, v6, 10);
+		setMineStackButton(inventory, playerdata.minestack.soul_sand, Material.SOUL_SAND, v6, 10);
 
-		setMineStackButton(inventory, playerdata.minestack.ender_stone, Material.ENDER_STONE, v7, 11);
+		setMineStackButton(inventory, playerdata.minestack.magma, Material.MAGMA, v6, 11);
 
-		setMineStackButton(inventory, playerdata.minestack.coal, Material.COAL, v8, 12);
+		setMineStackButton(inventory, playerdata.minestack.ender_stone, Material.ENDER_STONE, v7, 12);
 
-		setMineStackButton(inventory, playerdata.minestack.coal_ore, Material.COAL_ORE, v8, 13);
+		setMineStackButton(inventory, playerdata.minestack.coal, Material.COAL, v8, 13);
 
-		setMineStackButton(inventory, playerdata.minestack.iron_ore, Material.IRON_ORE, v9, 14);
+		setMineStackButton(inventory, playerdata.minestack.coal_ore, Material.COAL_ORE, v8, 14);
 
-		setMineStackButton(inventory, playerdata.minestack.quartz, Material.QUARTZ, v10, 15);
+		setMineStackButton(inventory, playerdata.minestack.iron_ore, Material.IRON_ORE, v9, 15);
 
-		setMineStackButton(inventory, playerdata.minestack.quartz_ore, Material.QUARTZ_ORE, v10, 16);
+		setMineStackButton(inventory, playerdata.minestack.quartz, Material.QUARTZ, v10, 16);
+
+		setMineStackButton(inventory, playerdata.minestack.quartz_ore, Material.QUARTZ_ORE, v10, 17);
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1963,9 +1965,7 @@ public class MenuInventoryData {
 				itemstack.setDurability((short) 3);
 				skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "のアクティブスキルデータ");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level
-						, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum)
-						, ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum)
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum)
 						, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるアクティブスキルポイント：" + playerdata.activeskilldata.skillpoint);
 				skullmeta.setLore(lore);
 				skullmeta.setOwner(playerdata.name);
