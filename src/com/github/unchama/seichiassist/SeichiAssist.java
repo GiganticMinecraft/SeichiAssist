@@ -204,21 +204,8 @@ public class SeichiAssist extends JavaPlugin{
 
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){
-			//UUIDを取得
-			UUID uuid = p.getUniqueId();
 			//プレイヤーデータを生成
-			PlayerData playerdata = sql.loadPlayerData(p);
-			//念のためエラー分岐
-			if(playerdata == null){
-				p.sendMessage(ChatColor.RED + "playerdataの作成に失敗しました。管理者に報告してください");
-				getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[Onenable処理]でエラー発生");
-				getLogger().warning(Util.getName(p)+ "のplayerdataの作成失敗。開発者に報告してください");
-				continue;
-			}
-			//プレイヤーマップにプレイヤーを追加
-			playermap.put(uuid,playerdata);
-			//join時とonenable時、プレイヤーデータを最新の状態に更新
-			playerdata.updateonJoin(p);
+			sql.loadPlayerData(p);
 		}
 
 		//ランキングデータをセット
