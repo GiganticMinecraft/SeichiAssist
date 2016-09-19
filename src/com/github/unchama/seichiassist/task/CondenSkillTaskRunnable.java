@@ -160,7 +160,10 @@ public class CondenSkillTaskRunnable extends BukkitRunnable{
 				}
 			}
 		}
-
+		//壊すものがない時
+		if(breaklist.size() == 0){
+			return;
+		}
 		//減る経験値計算
 
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数
@@ -206,8 +209,6 @@ public class CondenSkillTaskRunnable extends BukkitRunnable{
 
 		//以降破壊する処理
 
-		playerdata.activeskilldata.blocklist = breaklist;
-
 
 		//選択されたブロックを破壊する処理
 
@@ -239,8 +240,6 @@ public class CondenSkillTaskRunnable extends BukkitRunnable{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 			skilleffect[playerdata.activeskilldata.effectnum - 1].runCondensEffect(player,playerdata,tool,breaklist, start, end,centerofblock);
 		}
-
-		playerdata.activeskilldata.blocklist.clear();
 
 
 	}

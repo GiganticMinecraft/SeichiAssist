@@ -66,10 +66,10 @@ public enum ActiveSkillEffect {
 		return;
 	}
 	//エフェクトの実行処理分岐
-	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard,int key){
+	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
 		case "EXPLOSION":
-			new ExplosionTaskRunnable(player,playerdata,tool,breaklist,start,end,standard,key).runTaskLater(plugin, 10);
+			new ExplosionTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
 			break;
 		case "BLIZZARD":
 

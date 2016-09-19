@@ -72,8 +72,8 @@ public class PlayerRightClickListener implements Listener {
 			return;
 		}
 
-		//もしサバイバルでなければ処理を終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+		//サバイバルでない時　または　フライ中の時終了
+		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
 			return;
 		}
 

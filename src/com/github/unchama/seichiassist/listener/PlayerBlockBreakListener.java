@@ -44,7 +44,8 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		//もしサバイバルでなければ処理を終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+		//もしフライ中なら終了
+		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
 			return;
 		}
 
@@ -74,32 +75,23 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-		for(List<Block> blocklist : playerdata.activeskilldata.blockmap.values()){
-			//スキルで破壊されるブロックの時処理を終了
-			if(blocklist.contains(block)){
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("スキルで使用中のブロックです。");
-				}
-				return;
-			}
-		}
-
-		/*
-		//スキルで破壊されるブロックの時処理を終了
-		if(playerdata.activeskilldata.blocklist.contains(block)){
-			event.setCancelled(true);
-			if(SeichiAssist.DEBUG){
-				player.sendMessage("スキルで使用中のブロックです。");
-			}
-			return;
-		}
-		*/
 
 		//クールダウンタイム中は処理を終了
 		if(!playerdata.activeskilldata.skillcanbreakflag){
 			//SEを再生
 			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
+		}
+
+		for(Block b : playerdata.activeskilldata.blocklist){
+			//スキルで破壊されるブロックの時処理を終了
+			if(b.equals(block)){
+				event.setCancelled(true);
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("スキルで使用中のブロックです。");
+				}
+				return;
+			}
 		}
 
 		//これ以前の終了処理はパッシブの追加経験値はもらえません
@@ -144,13 +136,12 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-		if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
+		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
 			runBreakSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
-		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.CONDENSE.gettypenum()){			//runCondenSkill(player,playerdata.activeskilldata.skillnum, block, tool, expman);
 		}
+		event.setCancelled(true);
 
 	}
 	//複数範囲破壊
@@ -172,8 +163,11 @@ public class PlayerBlockBreakListener implements Listener {
 		Location centerofblock = block.getLocation().add(0.5, 0.5, 0.5);
 
 
+
 		//壊されるブロックの宣言
 		Block breakblock;
+		//実際に破壊するブロック数
+		long breakblocknum = 0;
 		Coordinate start = new Coordinate();
 		Coordinate end = new Coordinate();
 
@@ -234,9 +228,6 @@ public class PlayerBlockBreakListener implements Listener {
 			for(int x = start.x ; x <= end.x ; x++){
 				for(int z = start.z ; z <= end.z ; z++){
 					for(int y = start.y; y <= end.y ; y++){
-						if(x==0&&y==0&&z==0){
-							continue;
-						}
 						breakblock = block.getRelative(x, y, z);
 						//もし壊されるブロックがもともとのブロックと同じ種類だった場合
 						if(breakblock.getType().equals(material)
@@ -252,6 +243,7 @@ public class PlayerBlockBreakListener implements Listener {
 										lavalist.add(breakblock);
 									}else{
 										breaklist.add(breakblock);
+										playerdata.activeskilldata.blocklist.add(breakblock);
 									}
 								}
 							}
@@ -303,8 +295,16 @@ public class PlayerBlockBreakListener implements Listener {
 			multilavalist.add(new ArrayList<Block>(lavalist));
 			startlist.add(start);
 			endlist.add(end);
-			playerdata.activeskilldata.blocklist.addAll(breaklist);
+			breakblocknum += (long)breaklist.size();
 		}
+		//壊すものがない時
+		if(breakblocknum == 0){
+			return;
+		}
+
+		//壊したブロック数に応じてクールダウンを発生させる
+		long cooldown = (long) ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1) * breaknum);
+		new CoolDownTaskRunnable(player,1).runTaskLater(plugin,cooldown);
 
 
 		//エフェクトが選択されていない時
@@ -324,7 +324,6 @@ public class PlayerBlockBreakListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
-		playerdata.activeskilldata.blocklist.clear();
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
 		//プレイヤーの向いている方角を取得
@@ -344,9 +343,6 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//壊される溶岩のリストデータ
 		List<Block> lavalist = new ArrayList<Block>();
-
-		//brockmap保存用
-		int key = player.getTicksLived();
 
 		switch (dir){
 		case "N":
@@ -452,9 +448,6 @@ public class PlayerBlockBreakListener implements Listener {
 		for(int x = start.x ; x <= end.x ; x++){
 			for(int z = start.z ; z <= end.z ; z++){
 				for(int y = start.y; y <= end.y ; y++){
-					if(x==0&&y==0&&z==0){
-						continue;
-					}
 					breakblock = block.getRelative(x, y, z);
 					//もし壊されるブロックがもともとのブロックと同じ種類だった場合
 					if(breakblock.getType().equals(material)
@@ -470,6 +463,7 @@ public class PlayerBlockBreakListener implements Listener {
 									lavalist.add(breakblock);
 								}else{
 									breaklist.add(breakblock);
+									playerdata.activeskilldata.blocklist.add(breakblock);
 								}
 							}
 						}
@@ -477,7 +471,13 @@ public class PlayerBlockBreakListener implements Listener {
 				}
 			}
 		}
-
+		//壊すものがない時
+		if(breaklist.size() == 0){
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("スキルを使用する必要なし");
+			}
+			return;
+		}
 		//減る経験値計算
 
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数
@@ -525,16 +525,12 @@ public class PlayerBlockBreakListener implements Listener {
 		//耐久値を減らす
 		tool.setDurability(durability);
 
-		//クールダウンを発生させる
-		if(breaklist.size() > 0){
-			new CoolDownTaskRunnable(player,1).runTaskLater(plugin,ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum));
-		}
+		//壊したブロック数に応じてクールダウンを発生させる
+		long cooldown = (long) ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1));
+		new CoolDownTaskRunnable(player,1).runTaskLater(plugin,cooldown);
 
 
 		//以降破壊する処理
-
-		//playerdata.activeskilldata.blocklist = breaklist;
-		playerdata.activeskilldata.blockmap.put(key, breaklist);
 
 		//溶岩の破壊する処理
 		for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
@@ -547,14 +543,14 @@ public class PlayerBlockBreakListener implements Listener {
 		if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
 				Util.BreakBlock(player, b, centerofblock, tool,true);
+				playerdata.activeskilldata.blocklist.remove(b);
 			}
-			playerdata.activeskilldata.blockmap.remove(key);
-			//playerdata.activeskilldata.blocklist.clear();
+
 		}
 		//エフェクトが指定されているときの処理
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock, key);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
 		}
 	}
 }
