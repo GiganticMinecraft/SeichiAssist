@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -12,6 +14,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 public class ActiveSkillData {
 	//アクティブスキルポイント
 	public int skillpoint;
+	//アクティブスキルエフェクトポイント
+	public int effectpoint;
 	//投てきスキル獲得量
 	public int arrowskill;
 	//連続破壊スキル獲得量
@@ -28,10 +32,8 @@ public class ActiveSkillData {
 	public boolean skillcanbreakflag;
 	//採掘用アクティブスキルのフラグ 0:なし 1:上破壊 2:下破壊
 	public int mineflagnum;
-	//エフェクトの獲得フラグ
-	public boolean effect_explosion;
-	public boolean effect_blizzard;
-	public boolean effect_meteo;
+	//エフェクトの獲得フラグリスト<エフェクト番号,エフェクト獲得フラグ>
+	public Map<Integer,Boolean> effectflagmap;
 	//選択されているアクティブスキルの番号を格納
 	public int effectnum;
 	//スキルで破壊されるブロック
@@ -47,11 +49,13 @@ public class ActiveSkillData {
 		skillnum = 0;
 		skillcanbreakflag = true;
 		skillpoint = 0;
+		effectpoint = 0;
 		arrowskill = 0;
 		multiskill = 0;
 		breakskill = 0;
 		condenskill = 0;
 		effectnum = 0;
+		effectflagmap = new HashMap<Integer,Boolean>();
 		blocklist = new ArrayList<Block>();
 		explosiontime = 1;
 		hitflag = false;
@@ -88,7 +92,7 @@ public class ActiveSkillData {
 		ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 
 		for(int i = 0; i < skilleffect.length;i++){
-			if(skilleffect[i].isObtained(this)){
+			if(skilleffect[i].isObtained(effectflagmap)){
 				point -= skilleffect[i].getUsePoint();
 			}
 		}
@@ -104,6 +108,7 @@ public class ActiveSkillData {
 			skillpoint = point;
 		}
 	}
+
 	public void reset() {
 		arrowskill = 0;
 		multiskill = 0;
@@ -111,9 +116,5 @@ public class ActiveSkillData {
 		condenskill = 0;
 		skilltype = 0;
 		skillnum = 0;
-		effect_explosion = false;
-		effect_blizzard = false;
-		effect_meteo = false;
-		effectnum = 0;
 	}
 }

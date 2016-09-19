@@ -11,13 +11,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
 
-public class LoadPlayerDataTask extends BukkitRunnable{
+public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -36,7 +37,7 @@ public class LoadPlayerDataTask extends BukkitRunnable{
 	Statement stmt2 = null;
 	ResultSet rs2 = null;
 
-	public LoadPlayerDataTask(Player _p) {
+	public LoadPlayerDataTaskRunnable(Player _p) {
 		p = _p;
 		name = Util.getName(p);
 		uuid = p.getUniqueId();
@@ -119,9 +120,6 @@ public class LoadPlayerDataTask extends BukkitRunnable{
 	 				playerdata.activeskilldata.multiskill = rs2.getInt("multiskill");
 	 				playerdata.activeskilldata.breakskill = rs2.getInt("breakskill");
 	 				playerdata.activeskilldata.condenskill = rs2.getInt("condenskill");
-	 				playerdata.activeskilldata.effect_explosion = rs2.getBoolean("effect_explosion");
-	 				playerdata.activeskilldata.effect_blizzard = rs2.getBoolean("effect_blizzard");
-	 				playerdata.activeskilldata.effect_meteo = rs2.getBoolean("effect_meteo");
 	 				playerdata.activeskilldata.effectnum = rs2.getInt("effectnum");
 	 				playerdata.gachapoint = rs2.getInt("gachapoint");
 	 				playerdata.gachaflag = rs2.getBoolean("gachaflag");
@@ -134,8 +132,13 @@ public class LoadPlayerDataTask extends BukkitRunnable{
 	 				playerdata.totalbreaknum = rs2.getInt("totalbreaknum");
 	 				playerdata.playtick = rs2.getInt("playtick");
 	 				playerdata.p_vote = rs2.getInt("p_vote");
-	 				playerdata.effectpoint = rs2.getInt("effectpoint");
-
+	 				playerdata.activeskilldata.effectpoint = rs2.getInt("effectpoint");
+	 				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
+	 				for(int i = 0 ; i < activeskilleffect.length ; i++){
+	 					int num = activeskilleffect[i].getNum();
+	 					String sqlname = activeskilleffect[i].getsqlName();
+	 					playerdata.activeskilldata.effectflagmap.put(num, rs2.getBoolean(sqlname));
+	 				}
 	 				//MineStack機能の数値
 	 				playerdata.minestack.dirt = rs2.getInt("stack_dirt");
 	 				playerdata.minestack.gravel = rs2.getInt("stack_gravel");

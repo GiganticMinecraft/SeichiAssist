@@ -258,9 +258,7 @@ public class PlayerBlockBreakListener implements Listener {
 			//減る耐久値の計算
 			short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 			//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-			if(lavalist.size() < 10){
-				durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
-			}
+			durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
 
 			//実際に経験値を減らせるか判定
 			if(!expman.hasExp(useExp)){
@@ -478,9 +476,8 @@ public class PlayerBlockBreakListener implements Listener {
 		//減る耐久値の計算
 		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-		if(lavalist.size() < 10){
-			durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavalist.size());
-		}
+		durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavalist.size());
+
 
 
 		//実際に経験値を減らせるか判定
@@ -516,12 +513,11 @@ public class PlayerBlockBreakListener implements Listener {
 
 		playerdata.activeskilldata.blocklist = breaklist;
 
-		//nマスの溶岩のみ破壊する処理
-		if(lavalist.size() < 10){
-			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
-				lavalist.get(lavanum).setType(Material.AIR);
-			}
+		//溶岩の破壊する処理
+		for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
+			lavalist.get(lavanum).setType(Material.AIR);
 		}
+
 
 		//選択されたブロックを破壊する処理
 
@@ -537,7 +533,7 @@ public class PlayerBlockBreakListener implements Listener {
 			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(breaklist, start, end);
 		}
 		//クールダウンを発生させる
-		if(playerdata.activeskilldata.skillnum > 3 && breaklist.size() > 0){
+		if(breaklist.size() > 0){
 			new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum));
 		}
 		playerdata.activeskilldata.blocklist.clear();
