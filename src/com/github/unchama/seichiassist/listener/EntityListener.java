@@ -77,6 +77,7 @@ public class EntityListener implements Listener {
 		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
 			return;
 		}
+
 		//ブロックのタイプを取得
 		Material material = block.getType();
 
@@ -97,15 +98,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 
-		for(Block b : playerdata.activeskilldata.blocklist){
-			//スキルで破壊されるブロックの時処理を終了
-			if(b.equals(block)){
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("スキルで使用中のブロックです。");
-				}
-				return;
-			}
-		}
+
 
 
 		//経験値変更用のクラスを設定
@@ -135,6 +128,15 @@ public class EntityListener implements Listener {
 			return;
 		}
 
+		for(Block b : playerdata.activeskilldata.blocklist){
+			//スキルで破壊されるブロックの時処理を終了
+			if(b.equals(block)){
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("スキルで使用中のブロックです。");
+				}
+				return;
+			}
+		}
 		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
 		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
 			return;

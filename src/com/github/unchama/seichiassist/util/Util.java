@@ -471,7 +471,7 @@ public class Util {
 			default:
 				return false;
 		}
-		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, (float)0.1, (float)1);
+		//player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, (float)0.1, (float)1);
 		return true;
 
 	}
@@ -670,6 +670,13 @@ public class Util {
 		return "N";
 		} else {
 		return null;
+		}
+	}
+	public static float toInt(boolean flag) {
+		if(flag){
+			return 1;
+		}else{
+			return 0;
 		}
 	}
 }

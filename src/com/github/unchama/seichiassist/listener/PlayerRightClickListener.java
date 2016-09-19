@@ -145,7 +145,12 @@ public class PlayerRightClickListener implements Listener {
         new CondenSkillTaskRunnable((Projectile)proj).runTaskLater(plugin,playerdata.activeskilldata.explosiontime*20);
 
         //クールダウン処理
-        new CoolDownTaskRunnable(player,1).runTaskLater(plugin,ActiveSkill.CONDENSE.getCoolDown(playerdata.activeskilldata.skillnum));
+        long cooldown = ActiveSkill.CONDENSE.getCoolDown(playerdata.activeskilldata.skillnum);
+        if(cooldown > 5){
+        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+        }else{
+        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
+        }
 	}
 
 
@@ -184,7 +189,12 @@ public class PlayerRightClickListener implements Listener {
         new ArrowRemoveTaskRunnable((Projectile)proj).runTaskLater(plugin,100);
 
         //クールダウン処理
-        new CoolDownTaskRunnable(player,1).runTaskLater(plugin,ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum));
+        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
+        if(cooldown > 5){
+        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+        }else{
+        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
+        }
 	}
 
 
