@@ -178,11 +178,18 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("TAR0SS")){
 
 				int n = sql.compareVotePoint(playerdata);
-				ItemStack skull = Util.getskull(Util.getName(player));
+				//投票数に変化が無ければ処理終了
+				if(n == 0){
+					return;
+				}
+				//先にp_voteの値を更新しておく
+				playerdata.p_vote += n;
+
 				while(n > 0){
 					//ここに投票1回につきプレゼントする特典の処理を書く
 
 					//ガチャ券プレゼント処理
+					ItemStack skull = Util.getskull(Util.getName(player));
 					for (int i = 0; i < 10; i++){
 						if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
 							Util.addItem(player,skull);
@@ -191,7 +198,7 @@ public class PlayerInventoryListener implements Listener {
 						}
 					}
 
-					//ピッケルプレゼント処理
+					//ピッケルプレゼント処理(レベル30になるまで)
 					if(playerdata.level < 30){
 						ItemStack itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
 						ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
@@ -207,6 +214,9 @@ public class PlayerInventoryListener implements Listener {
 							Util.dropItem(player,itemstack);
 						}
 					}
+
+					//エフェクトポイント加算処理
+					playerdata.effectpoint++;
 
 					n--;
 				}
