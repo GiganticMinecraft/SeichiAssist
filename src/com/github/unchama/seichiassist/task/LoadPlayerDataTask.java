@@ -133,6 +133,8 @@ public class LoadPlayerDataTask extends BukkitRunnable{
 	 				playerdata.pvpflag = rs2.getBoolean("pvpflag");
 	 				playerdata.totalbreaknum = rs2.getInt("totalbreaknum");
 	 				playerdata.playtick = rs2.getInt("playtick");
+	 				playerdata.p_vote = rs2.getInt("p_vote");
+	 				playerdata.effectpoint = rs2.getInt("effectpoint");
 
 	 				//MineStack機能の数値
 	 				playerdata.minestack.dirt = rs2.getInt("stack_dirt");
