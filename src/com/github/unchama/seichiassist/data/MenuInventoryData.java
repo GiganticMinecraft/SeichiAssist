@@ -1987,9 +1987,9 @@ public class MenuInventoryData {
 				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 				itemstack.setDurability((short) 3);
 				skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "のアクティブスキルデータ");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum)
-						, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるアクティブスキルポイント：" + playerdata.activeskilldata.skillpoint);
+				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "のスキルエフェクトデータ");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillEffect.getNamebyNum(playerdata.activeskilldata.effectnum)
+						, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるエフェクトポイント：" + playerdata.activeskilldata.effectpoint);
 				skullmeta.setLore(lore);
 				skullmeta.setOwner(playerdata.name);
 				itemstack.setItemMeta(skullmeta);
@@ -2010,7 +2010,7 @@ public class MenuInventoryData {
 
 				for(int i = 0; i < skilleffect.length;i++){
 					//プレイヤーがそのスキルを取得している場合の処理
-					if(skilleffect[i].isObtained(playerdata.activeskilldata)){
+					if(skilleffect[i].isObtained(playerdata.activeskilldata.effectflagmap)){
 						itemstack = new ItemStack(skilleffect[i].getMaterial(),1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(skilleffect[i].getMaterial());
 						itemmeta.setDisplayName(skilleffect[i].getName());
@@ -2026,7 +2026,7 @@ public class MenuInventoryData {
 						itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 						itemmeta.setDisplayName(skilleffect[i].getName());
 						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + skilleffect[i].getExplain()
-								, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：" + skilleffect[i].getUsePoint()
+								, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要エフェクトポイント：" + skilleffect[i].getUsePoint()
 								, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
 						itemmeta.setLore(lore);
 						itemstack.setItemMeta(itemmeta);

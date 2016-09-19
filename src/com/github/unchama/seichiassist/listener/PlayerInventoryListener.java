@@ -676,8 +676,7 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.BOOKSHELF)){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 1, (float) 0.5);
-				player.sendMessage("未実装ナリよ");
-				//player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
+				player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
 				return;
 			}
 		}
@@ -741,11 +740,11 @@ public class PlayerInventoryListener implements Listener {
 				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 				for(int i = 0; i < skilleffect.length ; i++){
 					if(itemstackcurrent.getType().equals(skilleffect[i].getMaterial())){
-						if(playerdata.activeskilldata.effectnum == skilleffect[i].gettypenum()){
+						if(playerdata.activeskilldata.effectnum == skilleffect[i].getNum()){
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 							player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 						}else{
-							playerdata.activeskilldata.effectnum = skilleffect[i].gettypenum();
+							playerdata.activeskilldata.effectnum = skilleffect[i].getNum();
 							player.sendMessage(ChatColor.GREEN + "エフェクト:" + skilleffect[i].getName() + ChatColor.RESET + "" + ChatColor.GREEN + " が選択されました");
 							player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 						}
@@ -753,27 +752,27 @@ public class PlayerInventoryListener implements Listener {
 				}
 			}
 
-/*
+
 			//ここからエフェクト開放の処理
 			if(itemstackcurrent.getType().equals(Material.BEDROCK)){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 				for(int i = 0; i < skilleffect.length ; i++){
 					if(itemmeta.getDisplayName().contains(skilleffect[i].getName())){
-						if(playerdata.activeskilldata.skillpoint < skilleffect[i].getUsePoint()){
-							player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
+						if(playerdata.activeskilldata.effectpoint < skilleffect[i].getUsePoint()){
+							player.sendMessage(ChatColor.DARK_RED  + "エフェクトポイントが足りません");
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float)0.5);
 						}else{
-							skilleffect[i].setObtained(playerdata.activeskilldata);
+							skilleffect[i].setObtained(playerdata.activeskilldata.effectflagmap);
 							player.sendMessage(ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "エフェクト：" + skilleffect[i].getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "" + " を解除しました");
 							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-							playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
+							playerdata.activeskilldata.effectpoint -= skilleffect[i].getUsePoint();
 							player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
 						}
 					}
 				}
 			}
-			*/
+
 		}
 	}
 

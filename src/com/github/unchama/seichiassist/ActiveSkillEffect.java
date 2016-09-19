@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
-import com.github.unchama.seichiassist.data.ActiveSkillData;
 import com.github.unchama.seichiassist.data.Coordinate;
 
 public enum ActiveSkillEffect {
@@ -15,15 +15,15 @@ public enum ActiveSkillEffect {
 	METEO(3,"ef_meteo",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ","隕石を落とすエフェクト",30,Material.FIREBALL),
 	;
 
-	private int typenum;
+	private int num;
 	private String sql_name;
 	private String name;
 	private String explain;
 	private int usepoint;
 	private Material material;
 
-	ActiveSkillEffect(int typenum,String sql_name,String name,String explain,int usepoint,Material material){
-		this.typenum = typenum;
+	ActiveSkillEffect(int num,String sql_name,String name,String explain,int usepoint,Material material){
+		this.num = num;
 		this.sql_name = sql_name;
 		this.name = name;
 		this.explain = explain;
@@ -31,8 +31,8 @@ public enum ActiveSkillEffect {
 		this.material = material;
 	}
 
-	public int gettypenum(){
-        return this.typenum;
+	public int getNum(){
+        return this.num;
     }
 	public String getsqlName(){
 		return this.sql_name;
@@ -50,38 +50,12 @@ public enum ActiveSkillEffect {
 		return this.material;
 	}
 	//プレイヤーが所持しているかどうか
-	public Boolean isObtained(ActiveSkillData activeskilldata){
-		boolean flag = false;
-		switch(this.toString()){
-		case "EXPLOSION":
-			flag = activeskilldata.effect_explosion;
-			break;
-		case "BLIZZARD":
-			flag = activeskilldata.effect_blizzard;
-			break;
-		case "METEO":
-			flag = activeskilldata.effect_meteo;
-			break;
-		default :
-			flag = false;
-		}
-		return flag;
+	public Boolean isObtained(Map<Integer,Boolean> flagmap){
+		return flagmap.get(getNum());
 	}
 	//獲得させる処理
-	public void setObtained(ActiveSkillData activeskilldata) {
-		switch(this.toString()){
-		case "EXPLOSION":
-			activeskilldata.effect_explosion = true;
-			break;
-		case "BLIZZARD":
-			activeskilldata.effect_blizzard = true;
-			break;
-		case "METEO":
-			activeskilldata.effect_meteo = true;
-			break;
-		default :
-			break;
-		}
+	public void setObtained(Map<Integer,Boolean> flagmap) {
+		flagmap.put(getNum(), true);
 		return;
 	}
 	//エフェクトの実行処理分岐
@@ -152,5 +126,15 @@ public enum ActiveSkillEffect {
 			break;
 		}
 		return;
+	}
+
+	public static String getNamebyNum(int effectnum) {
+		ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+		for(int i = 0 ; i < skilleffect.length ; i++){
+			if(skilleffect[i].getNum() == effectnum){
+				return skilleffect[i].getName();
+			}
+		}
+		return "未設定";
 	}
 }

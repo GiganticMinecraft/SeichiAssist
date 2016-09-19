@@ -282,9 +282,8 @@ public class EntityListener implements Listener {
 		//減る耐久値の計算
 		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-		if(lavalist.size() == 1){
-			durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10);
-		}
+		durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
+
 
 
 		//実際に経験値を減らせるか判定
@@ -320,12 +319,11 @@ public class EntityListener implements Listener {
 		playerdata.activeskilldata.blocklist = breaklist;
 
 
-		//１マスの溶岩のみ破壊する処理
-		if(lavalist.size() < 10){
-			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
-				lavalist.get(lavanum).setType(Material.AIR);
-			}
+		//溶岩を破壊する処理
+		for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
+			lavalist.get(lavanum).setType(Material.AIR);
 		}
+
 
 		//選択されたブロックを破壊する処理
 

@@ -19,7 +19,7 @@ import org.bukkit.inventory.Inventory;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
-import com.github.unchama.seichiassist.task.LoadPlayerDataTask;
+import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -193,9 +193,6 @@ public class Sql{
 				",add column if not exists multiskill int default 0" +
 				",add column if not exists breakskill int default 0" +
 				",add column if not exists condenskill int default 0" +
-				",add column if not exists effect_explosion boolean default false" +
-				",add column if not exists effect_blizzard boolean default false" +
-				",add column if not exists effect_meteo boolean default false" +
 				",add column if not exists effectnum int default 0" +
 				",add column if not exists gachapoint int default 0" +
 				",add column if not exists gachaflag boolean default true" +
@@ -233,6 +230,11 @@ public class Sql{
 				",add index if not exists uuid_index(uuid)" +
 				",add index if not exists ranking_index(totalbreaknum)" +
 				"";
+		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
+		for(int i = 0; i < activeskilleffect.length ; i++){
+			command = command +
+					",add column if not exists " + activeskilleffect[i].getsqlName() + " boolean default false";
+		}
 		return putCommand(command);
 	}
 
@@ -329,7 +331,7 @@ public class Sql{
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlにデータが保存されています。");
  			}
- 			new LoadPlayerDataTask(p).runTaskTimer(plugin, 0, 10);;
+ 			new LoadPlayerDataTaskRunnable(p).runTaskTimer(plugin, 0, 10);;
  			return true;
 
  		}else{
@@ -362,9 +364,6 @@ public class Sql{
 				+ ",multiskill = " + Integer.toString(playerdata.activeskilldata.multiskill)
 				+ ",breakskill = " + Integer.toString(playerdata.activeskilldata.breakskill)
 				+ ",condenskill = " + Integer.toString(playerdata.activeskilldata.condenskill)
-				+ ",effect_explosion = " + Boolean.toString(playerdata.activeskilldata.effect_explosion)
-				+ ",effect_blizzard = " + Boolean.toString(playerdata.activeskilldata.effect_blizzard)
-				+ ",effect_meteo = " + Boolean.toString(playerdata.activeskilldata.effect_meteo)
 				+ ",effectnum = " + Integer.toString(playerdata.activeskilldata.effectnum)
 				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
 				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
@@ -378,7 +377,7 @@ public class Sql{
 				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
 				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
 				+ ",p_vote = " + Integer.toString(playerdata.p_vote)
-				+ ",effectpoint = " + Integer.toString(playerdata.effectpoint)
+				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
 
 				//MineStack機能の数値更新処理
 				+ ",stack_dirt = " + Integer.toString(playerdata.minestack.dirt)
@@ -397,9 +396,20 @@ public class Sql{
 				+ ",stack_coal = " + Integer.toString(playerdata.minestack.coal)
 				+ ",stack_coal_ore = " + Integer.toString(playerdata.minestack.coal_ore)
 				+ ",stack_iron_ore = " + Integer.toString(playerdata.minestack.iron_ore)
-				+ ",stack_packed_ice = " + Integer.toString(playerdata.minestack.packed_ice)
+				+ ",stack_packed_ice = " + Integer.toString(playerdata.minestack.packed_ice);
 
-				+ " where uuid like '" + struuid + "'";
+
+		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
+		for(int i = 0; i < activeskilleffect.length ; i++){
+			String sqlname = activeskilleffect[i].getsqlName();
+			int num = activeskilleffect[i].getNum();
+			Boolean flag = playerdata.activeskilldata.effectflagmap.get(num);
+			command = command +
+					"," + sqlname + " = " + Boolean.toString(flag);
+		}
+
+		//最後の処理
+		command = command + " where uuid like '" + struuid + "'";
 
 		return putCommand(command);
 	}

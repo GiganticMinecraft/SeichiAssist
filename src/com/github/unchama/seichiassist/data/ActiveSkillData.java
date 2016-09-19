@@ -32,8 +32,8 @@ public class ActiveSkillData {
 	public boolean skillcanbreakflag;
 	//採掘用アクティブスキルのフラグ 0:なし 1:上破壊 2:下破壊
 	public int mineflagnum;
-	//エフェクトの獲得フラグリスト
-	public Map<String,Boolean> effectflagmap;
+	//エフェクトの獲得フラグリスト<エフェクト番号,エフェクト獲得フラグ>
+	public Map<Integer,Boolean> effectflagmap;
 	//選択されているアクティブスキルの番号を格納
 	public int effectnum;
 	//スキルで破壊されるブロック
@@ -55,7 +55,7 @@ public class ActiveSkillData {
 		breakskill = 0;
 		condenskill = 0;
 		effectnum = 0;
-		effectflagmap = new HashMap<String,Boolean>();
+		effectflagmap = new HashMap<Integer,Boolean>();
 		blocklist = new ArrayList<Block>();
 		explosiontime = 1;
 		hitflag = false;
@@ -92,7 +92,7 @@ public class ActiveSkillData {
 		ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 
 		for(int i = 0; i < skilleffect.length;i++){
-			if(skilleffect[i].isObtained(this)){
+			if(skilleffect[i].isObtained(effectflagmap)){
 				point -= skilleffect[i].getUsePoint();
 			}
 		}
@@ -108,6 +108,7 @@ public class ActiveSkillData {
 			skillpoint = point;
 		}
 	}
+
 	public void reset() {
 		arrowskill = 0;
 		multiskill = 0;
@@ -115,9 +116,5 @@ public class ActiveSkillData {
 		condenskill = 0;
 		skilltype = 0;
 		skillnum = 0;
-		for(String effectname : effectflagmap.keySet()){
-			effectflagmap.put(effectname, false);
-		}
-		effectnum = 0;
 	}
 }
