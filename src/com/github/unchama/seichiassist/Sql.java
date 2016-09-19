@@ -226,6 +226,7 @@ public class Sql{
 				",add column if not exists p_vote int default 0" +
 				",add column if not exists p_givenvote int default 0" +
 				",add column if not exists effectpoint int default 0" +
+				",add column if not exists premiumeffectpoint int default 0" +
 				",add index if not exists name_index(name)" +
 				",add index if not exists uuid_index(uuid)" +
 				",add index if not exists ranking_index(totalbreaknum)" +
@@ -284,6 +285,23 @@ public class Sql{
 
 				//1加算
 				+ " p_vote = p_vote + 1"
+
+				+ " where name like '" + name + "'";
+
+		return putCommand(command);
+
+	}
+
+	//プレミアムエフェクトポイントを加算しておく処理
+	public boolean addPremiumEffectPoint(String name,int num) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "";
+
+		command = "update " + table
+				+ " set"
+
+				//引数で来たポイント数分加算
+				+ " premiumeffectpoint = premiumeffectpoint + " + num
 
 				+ " where name like '" + name + "'";
 

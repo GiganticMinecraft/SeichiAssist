@@ -277,9 +277,9 @@ public class PlayerData {
 		for(Material m : SeichiAssist.materiallist){
 			int getstat = p.getStatistic(Statistic.MINE_BLOCK, m);
 			int getincrease = getstat - staticdata.get(i);
-			sum += calcBlockExp(m,getincrease);
+			sum += calcBlockExp(m,getincrease,p);
 			if(SeichiAssist.DEBUG){
-				p.sendMessage("calcの値:" + calcBlockExp(m,getincrease) + "(" + m + ")");
+				p.sendMessage("calcの値:" + calcBlockExp(m,getincrease,p) + "(" + m + ")");
 			}
 			staticdata.set(i, getstat);
 			i++;
@@ -293,7 +293,7 @@ public class PlayerData {
 	}
 
 	//ブロック別整地数反映量の調節
-	private double calcBlockExp(Material m,int i){
+	private double calcBlockExp(Material m,int i,Player p){
 		double result = (double)i;
 		//ブロック別重み分け
 		switch(m){
@@ -307,6 +307,14 @@ public class PlayerData {
 			break;
 		default:
 			break;
+		}
+		if(p.getWorld().getName().equalsIgnoreCase("world_s")
+				|| p.getWorld().getName().equalsIgnoreCase("world_nether_s")
+				|| p.getWorld().getName().equalsIgnoreCase("world_the_end_s")){
+			if(SeichiAssist.DEBUG){
+				p.sendMessage("ワールドによる削減前の値:" + result);
+			}
+			result *= 0.7;
 		}
 		return result;
 	}

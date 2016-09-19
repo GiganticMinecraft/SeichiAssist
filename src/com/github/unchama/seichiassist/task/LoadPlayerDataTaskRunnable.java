@@ -133,6 +133,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	 				playerdata.playtick = rs2.getInt("playtick");
 	 				playerdata.p_givenvote = rs2.getInt("p_givenvote");
 	 				playerdata.activeskilldata.effectpoint = rs2.getInt("effectpoint");
+	 				playerdata.activeskilldata.premiumeffectpoint = rs2.getInt("premiumeffectpoint");
 	 				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 	 				for(int i = 0 ; i < activeskilleffect.length ; i++){
 	 					int num = activeskilleffect[i].getNum();

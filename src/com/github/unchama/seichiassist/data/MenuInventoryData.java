@@ -1987,7 +1987,12 @@ public class MenuInventoryData {
 				skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "のスキルエフェクトデータ");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillEffect.getNamebyNum(playerdata.activeskilldata.effectnum)
-						, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるエフェクトポイント：" + playerdata.activeskilldata.effectpoint);
+						, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるエフェクトポイント：" + playerdata.activeskilldata.effectpoint
+						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※投票すると獲得出来ます"
+						, ChatColor.RESET + "" +  ChatColor.LIGHT_PURPLE + "使えるプレミアムエフェクトポイント：" + playerdata.activeskilldata.premiumeffectpoint
+						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※寄付をすると獲得できます"
+
+						);
 				skullmeta.setLore(lore);
 				skullmeta.setOwner(playerdata.name);
 				itemstack.setItemMeta(skullmeta);
