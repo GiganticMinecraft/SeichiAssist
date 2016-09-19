@@ -43,6 +43,8 @@ public class gachaCommand implements TabExecutor{
 			sender.sendMessage("メンテモードのON,OFF切り替え。ONだとガチャが引けなくなる");
 			sender.sendMessage(ChatColor.RED + "/gacha give <all/プレイヤー名> <個数>");
 			sender.sendMessage("ガチャ券配布コマンドです。allを指定すると全員に配布します");
+			sender.sendMessage(ChatColor.RED + "/gacha vote <プレイヤー名>");
+			sender.sendMessage("投票特典配布用コマンドです");
 			sender.sendMessage(ChatColor.RED + "/gacha add <確率>");
 			sender.sendMessage("現在のメインハンドをガチャリストに追加。確率は1.0までで指定");
 			sender.sendMessage(ChatColor.DARK_GRAY + "※ゲーム内でのみ実行できます");
@@ -168,9 +170,9 @@ public class gachaCommand implements TabExecutor{
 
 				//mysqlにも書き込んどく
 				if(!sql.addVotePoint(name)){
-					sender.sendMessage("・mysqlへの書き込み失敗");
+					sender.sendMessage("mysqlへの書き込み失敗");
 				}else{
-					sender.sendMessage("・mysqlへの書き込み成功");
+					sender.sendMessage("mysqlへの書き込み成功");
 				}
 				return true;
 			}
