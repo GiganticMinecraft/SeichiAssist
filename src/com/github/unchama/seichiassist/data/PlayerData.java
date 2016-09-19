@@ -73,8 +73,6 @@ public class PlayerData {
 	public int totalbreaknum;
 	//各統計値差分計算用配列
 	private List<Integer> staticdata;
-	//エフェクトポイント
-	public int effectpoint;
 	//投票数
 	public int p_vote;
 
@@ -113,7 +111,6 @@ public class PlayerData {
 			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
 		}
 		activeskilldata = new ActiveSkillData();
-		effectpoint = 0;
 		p_vote = 0;
 
 

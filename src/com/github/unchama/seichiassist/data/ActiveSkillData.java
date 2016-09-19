@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -30,10 +32,8 @@ public class ActiveSkillData {
 	public boolean skillcanbreakflag;
 	//採掘用アクティブスキルのフラグ 0:なし 1:上破壊 2:下破壊
 	public int mineflagnum;
-	//エフェクトの獲得フラグ
-	public boolean effect_explosion;
-	public boolean effect_blizzard;
-	public boolean effect_meteo;
+	//エフェクトの獲得フラグリスト
+	public Map<String,Boolean> effectflagmap;
 	//選択されているアクティブスキルの番号を格納
 	public int effectnum;
 	//スキルで破壊されるブロック
@@ -55,6 +55,7 @@ public class ActiveSkillData {
 		breakskill = 0;
 		condenskill = 0;
 		effectnum = 0;
+		effectflagmap = new HashMap<String,Boolean>();
 		blocklist = new ArrayList<Block>();
 		explosiontime = 1;
 		hitflag = false;
@@ -114,9 +115,9 @@ public class ActiveSkillData {
 		condenskill = 0;
 		skilltype = 0;
 		skillnum = 0;
-		effect_explosion = false;
-		effect_blizzard = false;
-		effect_meteo = false;
+		for(String effectname : effectflagmap.keySet()){
+			effectflagmap.put(effectname, false);
+		}
 		effectnum = 0;
 	}
 }

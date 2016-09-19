@@ -10,19 +10,21 @@ import com.github.unchama.seichiassist.data.ActiveSkillData;
 import com.github.unchama.seichiassist.data.Coordinate;
 
 public enum ActiveSkillEffect {
-	EXPLOSION(1,ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン","単純な爆発のエフェクト",10,Material.TNT),
-	BLIZZARD(2,ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード","凍らせるエフェクト",20,Material.PACKED_ICE),
-	METEO(3,ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ","隕石を落とすエフェクト",30,Material.FIREBALL),
+	EXPLOSION(1,"ef_explosion",ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン","単純な爆発のエフェクト",10,Material.TNT),
+	BLIZZARD(2,"ef_blizzard",ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード","凍らせるエフェクト",20,Material.PACKED_ICE),
+	METEO(3,"ef_meteo",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ","隕石を落とすエフェクト",30,Material.FIREBALL),
 	;
 
 	private int typenum;
+	private String sql_name;
 	private String name;
 	private String explain;
 	private int usepoint;
 	private Material material;
 
-	ActiveSkillEffect(int typenum,String name,String explain,int usepoint,Material material){
+	ActiveSkillEffect(int typenum,String sql_name,String name,String explain,int usepoint,Material material){
 		this.typenum = typenum;
+		this.sql_name = sql_name;
 		this.name = name;
 		this.explain = explain;
 		this.usepoint = usepoint;
@@ -32,6 +34,9 @@ public enum ActiveSkillEffect {
 	public int gettypenum(){
         return this.typenum;
     }
+	public String getsqlName(){
+		return this.sql_name;
+	}
 	public String getName(){
 		return this.name;
 	}
