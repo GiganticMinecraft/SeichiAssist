@@ -221,13 +221,11 @@ public class MenuInventoryData {
 		inventory.setItem(29,itemstack);
 
 		//投票特典受け取りボタン
-		itemstack = new ItemStack(Material.SKULL_ITEM,1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票特典を受け取る");
-		skullmeta.setLore(VoteGetButtonLore(playerdata));
-		skullmeta.setOwner("TAR0SS");
-		itemstack.setItemMeta(skullmeta);
+		itemstack = new ItemStack(Material.DIAMOND,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND);
+		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票特典を受け取る");
+		itemmeta.setLore(VoteGetButtonLore(playerdata));
+		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(30,itemstack);
 
 
@@ -1760,7 +1758,7 @@ public class MenuInventoryData {
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "投票特典を受け取るには"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "投票ページで投票した後"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンをクリックします"));
-		lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "あなたの投票回数：" + playerdata.p_vote + "回");
+		lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "特典受取済投票回数：" + playerdata.p_givenvote);
 		return lore;
 	}
 

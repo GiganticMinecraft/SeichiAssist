@@ -131,7 +131,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	 				playerdata.pvpflag = rs2.getBoolean("pvpflag");
 	 				playerdata.totalbreaknum = rs2.getInt("totalbreaknum");
 	 				playerdata.playtick = rs2.getInt("playtick");
-	 				playerdata.p_vote = rs2.getInt("p_vote");
+	 				playerdata.p_givenvote = rs2.getInt("p_givenvote");
 	 				playerdata.activeskilldata.effectpoint = rs2.getInt("effectpoint");
 	 				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 	 				for(int i = 0 ; i < activeskilleffect.length ; i++){
