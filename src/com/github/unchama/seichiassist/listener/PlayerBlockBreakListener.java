@@ -306,9 +306,11 @@ public class PlayerBlockBreakListener implements Listener {
 		long cooldown = (long) ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1) * breaknum);
 		new CoolDownTaskRunnable(player,1).runTaskLater(plugin,cooldown);
 
-
-		//エフェクトが選択されていない時
-		if(playerdata.activeskilldata.effectnum == 0){
+		//自身のみしか壊さない時自然に処理する
+		if(breakblocknum==1){
+			Util.BreakBlock(player, block, centerofblock, tool,false);
+		}//エフェクトが指定されていないときの処理
+		else if(playerdata.activeskilldata.effectnum == 0){
 			new MultiBreakTaskRunnable(player,block,tool,multibreaklist,multilavalist,startlist,endlist).runTaskTimer(plugin,0,4);
 		}
 		//エフェクトが選択されているとき
@@ -471,7 +473,7 @@ public class PlayerBlockBreakListener implements Listener {
 				}
 			}
 		}
-		//壊すものがない時
+		//壊すものがない時終了
 		if(breaklist.size() == 0){
 			if(SeichiAssist.DEBUG){
 				player.sendMessage("スキルを使用する必要なし");
@@ -506,7 +508,7 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 		if(SeichiAssist.DEBUG){
-			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値:" + durability);
+			player.sendMessage(ChatColor.RED + "アクティブスキル発動後のツールの耐久値:" + durability);
 		}
 
 		//実際に耐久値を減らせるか判定
@@ -539,8 +541,11 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//選択されたブロックを破壊する処理
 
-		//エフェクトが指定されていないときの処理
-		if(playerdata.activeskilldata.effectnum == 0){
+		//自身のみしか壊さない時自然に処理する
+		if(breaklist.size()==1){
+			Util.BreakBlock(player, block, centerofblock, tool,false);
+		}//エフェクトが指定されていないときの処理
+		else if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
 				Util.BreakBlock(player, b, centerofblock, tool,true);
 				playerdata.activeskilldata.blocklist.remove(b);
