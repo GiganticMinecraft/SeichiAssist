@@ -38,6 +38,11 @@ public class PlayerBlockBreakListener implements Listener {
 		//実行したプレイヤーを取得
 		Player player = event.getPlayer();
 
+		//デバッグ用
+		if(SeichiAssist.DEBUG){
+			player.sendMessage("ブロックブレイクイベントが呼び出されました");
+		}
+
 		//もしサバイバルでなければ処理を終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
 			return;
@@ -77,10 +82,11 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-
-		//デバッグ用
-		if(SeichiAssist.DEBUG){
-			player.sendMessage("ブロックブレイクイベントが呼び出されました");
+		//クールダウンタイム中は処理を終了
+		if(!playerdata.activeskilldata.skillcanbreakflag){
+			//SEを再生
+			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
+			return;
 		}
 
 		//これ以前の終了処理はパッシブの追加経験値はもらえません
@@ -93,13 +99,6 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activeskilldata.mineflagnum == 0){
-			return;
-		}
-
-		//クールダウンタイム中は処理を終了
-		if(!playerdata.activeskilldata.skillcanbreakflag){
-			//SEを再生
-			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
 
