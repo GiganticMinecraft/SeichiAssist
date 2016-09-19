@@ -23,12 +23,12 @@ public class CoolDownTaskRunnable  extends BukkitRunnable{
 		uuid = player.getUniqueId();
 		//playerdataを取得
 		playerdata = playermap.get(uuid);
-		playerdata.skillcanbreakflag = false;
+		playerdata.activeskilldata.skillcanbreakflag = false;
 	}
 
 	@Override
 	public void run() {
-		playerdata.skillcanbreakflag = true;
+		playerdata.activeskilldata.skillcanbreakflag = true;
 		player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, (float)0.5, (float)0.1);
 		//デバッグ用
 		if(SeichiAssist.DEBUG){

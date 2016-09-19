@@ -48,18 +48,11 @@ public class PlayerData {
 	public int level;
 	//詫び券をあげる数
 	public int numofsorryforbug;
-	//採掘用アクティブスキルのフラグ 0:なし 1:上破壊 2:下破壊
-	public int activemineflagnum;
 	//拡張インベントリ
 	public Inventory inventory;
-	//アクティブスキル番号を格納
-	public int activenum;
-	//スキルクールダウン用フラグ
-	public boolean skillcanbreakflag;
 	//ワールドガード保護自動設定用
 	public int rgnum;
-	//スキル発動中だけtrueになるフラグ
-	public boolean skillflag;
+
 	//MineStack
 	public MineStack minestack;
 	//MineStackFlag
@@ -76,13 +69,15 @@ public class PlayerData {
 	public Location loc;
 	//放置時間
 	public int idletime;
-
 	//トータル破壊ブロック
 	public int totalbreaknum;
 	//各統計値差分計算用配列
 	private List<Integer> staticdata;
+	//投票数
+	public int p_vote;
 
-
+	//アクティブスキル関連データ
+	public ActiveSkillData activeskilldata;
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -100,12 +95,8 @@ public class PlayerData {
 		effectdatalist = new ArrayList<EffectData>();
 		level = 1;
 		numofsorryforbug = 0;
-		activemineflagnum = 0;
 		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
-		activenum = 1;
-		skillcanbreakflag = true;
 		rgnum = 0;
-		skillflag = false;
 		minestack = new MineStack();
 		minestackflag = true;
 		servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
@@ -115,22 +106,26 @@ public class PlayerData {
 		loc = null;
 		idletime = 0;
 		staticdata = new ArrayList<Integer>();
-
 		totalbreaknum = 0;
 		for(Material m : SeichiAssist.materiallist){
 			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
 		}
+		activeskilldata = new ActiveSkillData();
+		p_vote = 0;
+
 
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
-	public void UpdateonJoin(Player player) {
+	public void updateonJoin(Player player) {
 		//破壊量データ(before)を設定
 		minuteblock.before = totalbreaknum;
 		halfhourblock.before = totalbreaknum;
-		levelupdata(player);
+		updataLevel(player);
+		activeskilldata.updataActiveSkillPoint(player, level);
 		NotifySorryForBug(player);
 	}
+
 
 	//quit時とondisable時、プレイヤーデータを最新の状態に更新
 	public void UpdateonQuit(Player player){
@@ -196,7 +191,7 @@ public class PlayerData {
 
 
 	//レベルを更新
-	public void levelupdata(Player p) {
+	public void updataLevel(Player p) {
 		calcPlayerLevel(p);
 		setDisplayName(p);
 	}
@@ -236,10 +231,14 @@ public class PlayerData {
 
 	//プレイヤーレベルを計算し、更新する。
 	private void calcPlayerLevel(Player p){
-		//現在のランクの次を取得
+		//現在のランクを取得
 		int i = level;
+		//既にレベル上限に達していたら終了
+		if(i >= SeichiAssist.levellist.size()){
+			return;
+		}
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.levellist.get(i).intValue() <= totalbreaknum && i <= SeichiAssist.levellist.size()){
+		while(SeichiAssist.levellist.get(i).intValue() <= totalbreaknum && (i+1) <= SeichiAssist.levellist.size()){
 
 			//レベルアップ時のメッセージ
 			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i)+")→Lv("+(i+1)+")】");
@@ -250,8 +249,12 @@ public class PlayerData {
 			if(!(lvmessage.isEmpty())){
 				p.sendMessage(ChatColor.AQUA+lvmessage);
 			}
-
 			i++;
+
+			//レベル上限に達したら終了
+			if(i >= SeichiAssist.levellist.size()){
+				break;
+			}
 		}
 		level = i;
 	}
@@ -313,9 +316,11 @@ public class PlayerData {
 		//ランク用関数
 		int i = 0;
 		int t = totalbreaknum;
+		RankData rankdata = SeichiAssist.ranklist.get(i);
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.ranklist.get(i).intValue() > t){
+		while(rankdata.totalbreaknum > t){
 			i++;
+			rankdata = SeichiAssist.ranklist.get(i);
 		}
 		return i+1;
 	}
@@ -362,4 +367,7 @@ public class PlayerData {
 			return 9*6;
 		}
 	}
+
+
+
 }

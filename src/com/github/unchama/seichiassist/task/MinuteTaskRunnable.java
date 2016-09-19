@@ -80,7 +80,9 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//総整地量を更新
 			playerdata.calcMineBlock(player);
 			//Levelを設定(必ず総整地量更新後に実施！)
-			playerdata.levelupdata(player);
+			playerdata.updataLevel(player);
+			//activeskillpointを設定
+			playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 			//総プレイ時間更新
 			playerdata.calcPlayTick(player);
 
@@ -170,7 +172,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				playerdata.gachapoint -= config.getGachaPresentInterval();
 				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
 					Util.addItem(player,skull);
-					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー");
+					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー。右クリックで使えるゾ");
 				}else{
 					Util.dropItem(player,skull);
 					player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
