@@ -24,7 +24,6 @@ import com.github.unchama.seichiassist.util.Util;
 
 //MySQL操作関数
 public class Sql{
-	//private SeichiAssist plugin;
 	private final String url, db, id, pw;
 	private Connection con = null;
 	private Statement stmt = null;
@@ -304,17 +303,21 @@ public class Sql{
 
 			@Override
 			public void run() {
+				//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
 				Statement stmt2 = null;
 				try {
 					stmt2 = con.createStatement();
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 				}
+				//同時にresultsetも別で作成しておく
 				ResultSet rs2 = null;
+
 				//loginflag判別処理
 				Boolean flag = true;
 				int i = 0;
 				String command = "";
+
 				//flagがfalseになるまで繰り返す
 				while(flag){
 		 	 		command = "select loginflag from " + table
@@ -338,9 +341,9 @@ public class Sql{
 		 	 		}
 		 	 		if(flag){
 		 	 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "のloginflag=false待機…(" + (i+1) + "回目)");
-		 	 			//次のリクエストまで待つ(ms)
+		 	 			//次のリクエストまで待つ
 		 	 			try {
-							Thread.sleep(500);
+							Thread.sleep(500);	//ここに待機時間を入れる(ms)
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -422,6 +425,13 @@ public class Sql{
 	 				e.printStackTrace();
 	 				return;
 	 			}
+	 			//念のためstatement閉じておく
+	 			try {
+					stmt2.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
 	 			if(SeichiAssist.DEBUG){
 	 				p.sendMessage("sqlデータで更新しました");
 	 			}
