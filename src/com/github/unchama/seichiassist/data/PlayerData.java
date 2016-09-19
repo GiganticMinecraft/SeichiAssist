@@ -111,13 +111,8 @@ public class PlayerData {
 			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
 		}
 		activeskilldata = new ActiveSkillData();
-<<<<<<< HEAD
-		p_vote = 0;
-=======
 		p_givenvote = 0;
 
-
->>>>>>> refs/remotes/unchama/master
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新

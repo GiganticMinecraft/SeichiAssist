@@ -73,6 +73,18 @@ public class PlayerBlockBreakListener implements Listener {
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
+
+		for(List<Block> blocklist : playerdata.activeskilldata.blockmap.values()){
+			//スキルで破壊されるブロックの時処理を終了
+			if(blocklist.contains(block)){
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("スキルで使用中のブロックです。");
+				}
+				return;
+			}
+		}
+
+		/*
 		//スキルで破壊されるブロックの時処理を終了
 		if(playerdata.activeskilldata.blocklist.contains(block)){
 			event.setCancelled(true);
@@ -81,6 +93,7 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 			return;
 		}
+		*/
 
 		//クールダウンタイム中は処理を終了
 		if(!playerdata.activeskilldata.skillcanbreakflag){
@@ -301,7 +314,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//エフェクトが選択されているとき
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runMultiEffect(multibreaklist, startlist, endlist,centerofblock);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runMultiEffect(player,playerdata,tool,multibreaklist, startlist, endlist,centerofblock);
 		}
 	}
 
@@ -331,6 +344,9 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//壊される溶岩のリストデータ
 		List<Block> lavalist = new ArrayList<Block>();
+
+		//brockmap保存用
+		int key = player.getTicksLived();
 
 		switch (dir){
 		case "N":
@@ -509,16 +525,21 @@ public class PlayerBlockBreakListener implements Listener {
 		//耐久値を減らす
 		tool.setDurability(durability);
 
+		//クールダウンを発生させる
+		if(breaklist.size() > 0){
+			new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum));
+		}
+
 
 		//以降破壊する処理
 
-		playerdata.activeskilldata.blocklist = breaklist;
+		//playerdata.activeskilldata.blocklist = breaklist;
+		playerdata.activeskilldata.blockmap.put(key, breaklist);
 
 		//溶岩の破壊する処理
 		for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
 			lavalist.get(lavanum).setType(Material.AIR);
 		}
-
 
 		//選択されたブロックを破壊する処理
 
@@ -527,16 +548,15 @@ public class PlayerBlockBreakListener implements Listener {
 			for(Block b:breaklist){
 				Util.BreakBlock(player, b, centerofblock, tool,true);
 			}
+			playerdata.activeskilldata.blockmap.remove(key);
+			//playerdata.activeskilldata.blocklist.clear();
 		}
 		//エフェクトが指定されているときの処理
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(breaklist, start, end,centerofblock);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock, key);
 		}
-		//クールダウンを発生させる
-		if(breaklist.size() > 0){
-			new CoolDownTaskRunnable(player).runTaskLater(plugin,ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum));
-		}
-		playerdata.activeskilldata.blocklist.clear();
+
+
 	}
 }

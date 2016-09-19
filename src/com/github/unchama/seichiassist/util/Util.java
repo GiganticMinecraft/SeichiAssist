@@ -287,6 +287,9 @@ public class Util {
 		if(material.equals(Material.GLOWING_REDSTONE_ORE)){
 			material = Material.REDSTONE_ORE;
 		}
+		if(material.equals(Material.AIR)){
+			return;
+		}
 
 
 		//アイテムをドロップさせる

@@ -237,7 +237,7 @@ public class CondenSkillTaskRunnable extends BukkitRunnable{
 		//エフェクトが指定されているときの処理
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runCondensEffect(breaklist, start, end,centerofblock);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runCondensEffect(player,playerdata,tool,breaklist, start, end,centerofblock);
 		}
 
 		playerdata.activeskilldata.blocklist.clear();

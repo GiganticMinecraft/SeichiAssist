@@ -32,6 +32,7 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 	private PlayerData playerdata;
 	private int count;
 	private Material material;
+	//private int key;
 
 	public MultiBreakTaskRunnable(Player player,Block centerblock,ItemStack tool,
 			List<List<Block>> multibreaklist, List<List<Block>> multilavalist,
@@ -46,6 +47,7 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 		this.endlist = endlist;
 		this.breaknum = multibreaklist.size();
 		this.count = 0;
+		//this.key = key;
 		//UUIDを取得
 		uuid = player.getUniqueId();
 		//playerdataを取得
@@ -69,6 +71,7 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 			}
 			count++;
 		}else{
+			//playerdata.activeskilldata.blockmap.remove(key);
 			playerdata.activeskilldata.blocklist.clear();
 			cancel();
 		}

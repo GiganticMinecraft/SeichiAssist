@@ -40,6 +40,8 @@ public class ActiveSkillData {
 	public int effectnum;
 	//スキルで破壊されるブロック
 	public List<Block> blocklist;
+	//スキルで破壊されるブロックのハッシュマップ
+	public Map<Integer,List<Block>> blockmap;
 	//凝固スキルを発動する時間
 	public int explosiontime;
 	//凝固スキルを発動し何かにあたったときの処理
@@ -60,6 +62,8 @@ public class ActiveSkillData {
 		effectnum = 0;
 		effectflagmap = new HashMap<Integer,Boolean>();
 		blocklist = new ArrayList<Block>();
+		blockmap = new HashMap<Integer,List<Block>>();
+
 		explosiontime = 1;
 		hitflag = false;
 	}

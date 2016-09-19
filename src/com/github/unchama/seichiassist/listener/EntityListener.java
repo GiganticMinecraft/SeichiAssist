@@ -95,13 +95,17 @@ public class EntityListener implements Listener {
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
-		//スキルで破壊されるブロックの時処理を終了
-		if(playerdata.activeskilldata.blocklist.contains(block)){
-			if(SeichiAssist.DEBUG){
-				player.sendMessage("スキルで使用中のブロックです。");
+		
+		for(List<Block> blocklist : playerdata.activeskilldata.blockmap.values()){
+			//スキルで破壊されるブロックの時処理を終了
+			if(blocklist.contains(block)){
+				if(SeichiAssist.DEBUG){
+					player.sendMessage("スキルで使用中のブロックです。");
+				}
+				return;
 			}
-			return;
 		}
+		
 
 		//経験値変更用のクラスを設定
 		ExperienceManager expman = new ExperienceManager(player);
@@ -337,7 +341,7 @@ public class EntityListener implements Listener {
 		//エフェクトが指定されているときの処理
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(breaklist, start, end,centerofblock);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player,playerdata,tool,breaklist, start, end,centerofblock);
 		}
 		playerdata.activeskilldata.blocklist.clear();
 
