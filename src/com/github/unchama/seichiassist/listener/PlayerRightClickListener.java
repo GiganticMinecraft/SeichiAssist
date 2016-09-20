@@ -72,24 +72,26 @@ public class PlayerRightClickListener implements Listener {
 			return;
 		}
 
-		//サバイバルでない時　または　フライ中の時終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
-			return;
-		}
-
-		//アクティブスキルフラグがオフの時処理を終了
-		if(playerdata.activeskilldata.mineflagnum == 0){
-			return;
-		}
-
-		//クールダウンタイム中は処理を終了
-		if(!playerdata.activeskilldata.skillcanbreakflag){
-			//SEを再生
-			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
-			return;
-		}
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+
+			//サバイバルでない時　または　フライ中の時終了
+			if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
+				return;
+			}
+
+			//アクティブスキルフラグがオフの時処理を終了
+			if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0){
+				return;
+			}
+
+			//クールダウンタイム中は処理を終了
+			if(!playerdata.activeskilldata.skillcanbreakflag){
+				//SEを再生
+				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
+				return;
+			}
+
 			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
 					runArrowSkillofLaunch(player,Arrow.class);
@@ -145,7 +147,12 @@ public class PlayerRightClickListener implements Listener {
         new CondenSkillTaskRunnable((Projectile)proj).runTaskLater(plugin,playerdata.activeskilldata.explosiontime*20);
 
         //クールダウン処理
-        new CoolDownTaskRunnable(player,1).runTaskLater(plugin,ActiveSkill.CONDENSE.getCoolDown(playerdata.activeskilldata.skillnum));
+        long cooldown = ActiveSkill.CONDENSE.getCoolDown(playerdata.activeskilldata.skillnum);
+        if(cooldown > 5){
+        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+        }else{
+        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
+        }
 	}
 
 
@@ -184,7 +191,12 @@ public class PlayerRightClickListener implements Listener {
         new ArrowRemoveTaskRunnable((Projectile)proj).runTaskLater(plugin,100);
 
         //クールダウン処理
-        new CoolDownTaskRunnable(player,1).runTaskLater(plugin,ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum));
+        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
+        if(cooldown > 5){
+        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+        }else{
+        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
+        }
 	}
 
 
