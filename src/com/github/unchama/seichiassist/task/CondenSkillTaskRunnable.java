@@ -212,15 +212,7 @@ public class CondenSkillTaskRunnable extends BukkitRunnable{
 
 		//選択されたブロックを破壊する処理
 
-		Boolean stepflag;
-		if(breaklist.size() < 500){
-			stepflag = true;
-		}else{
-			stepflag = false;
-		}
-		if(SeichiAssist.DEBUG){
-			player.sendMessage("エフェクト判定値:" + breaklist.size() + " 結果:" + stepflag);
-		}
+
 		Material replacematerial = Material.AIR;
 		if(playerdata.activeskilldata.skillnum < 7){
 			 replacematerial = Material.PACKED_ICE;

@@ -605,7 +605,7 @@ public class Util {
 		//10%の確率で経験値付与
 		if(rand < 0.1){
 			//Lv8未満は獲得経験値ゼロ、それ以上はレベルに応じて経験値付与
-			if(playerdata.level < 8 || playerdata.activeskilldata.skillcanbreakflag == true){
+			if(playerdata.level < 8 || playerdata.activeskilldata.skillcanbreakflag == false){
 				return 0;
 			}else if (playerdata.level < 18){
 				return SeichiAssist.config.getDropExplevel(1);
