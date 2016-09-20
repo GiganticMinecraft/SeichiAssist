@@ -294,7 +294,7 @@ public class Sql{
 			return 0;
 		}else{
 	        //連打による負荷防止の為クールダウン処理
-	        new CoolDownTaskRunnable(player,2).runTaskLater(plugin,1200);
+	        new CoolDownTaskRunnable(player,true,false).runTaskLater(plugin,1200);
 		}
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
