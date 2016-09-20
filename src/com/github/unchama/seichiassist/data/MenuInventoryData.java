@@ -1676,7 +1676,7 @@ public class MenuInventoryData {
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アサルト・アーマー");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲のブロックを破壊します"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：30秒"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：100/秒"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
