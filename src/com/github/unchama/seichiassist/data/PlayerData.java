@@ -11,7 +11,6 @@ import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
@@ -137,6 +136,7 @@ public class PlayerData {
 		calcPlayTick(player);
 	}
 
+	/*
 	//詫び券の配布
 	public void giveSorryForBug(Player player){
 		ItemStack skull = Util.getskull(Util.getName(player));
@@ -158,12 +158,13 @@ public class PlayerData {
 			player.sendMessage(ChatColor.GREEN + "運営チームから"+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
 		}
 	}
+	*/
 
 	//詫びガチャの通知
 	public void NotifySorryForBug(Player player){
 		if(numofsorryforbug > 0){
 			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			player.sendMessage(ChatColor.GREEN + "運営チームから"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が届いています！\n木の棒メニューから受け取ってください。");
+			player.sendMessage(ChatColor.GREEN + "運営チームから"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が届いています！\n木の棒メニューから受け取ってください");
 		}
 	}
 

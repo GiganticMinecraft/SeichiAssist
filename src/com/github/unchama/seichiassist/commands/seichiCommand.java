@@ -47,6 +47,7 @@ public class seichiCommand implements TabExecutor {
 			sender.sendMessage(ChatColor.RED + "/seichi <playername/all> <duration(tick)> <amplifier(double)> <id>");
 			sender.sendMessage("指定されたプレイヤーに採掘速度上昇効果を付与します");
 			sender.sendMessage("all指定で全プレイヤー対象");
+			sender.sendMessage("同じ鯖にログイン中の人にしか適用されません");
 			sender.sendMessage("idを指定すると上昇値に説明文を付加出来ます。指定なしだと5が入ります");
 			sender.sendMessage("id=0 不明な上昇値");
 			sender.sendMessage("id=1 接続人数から");

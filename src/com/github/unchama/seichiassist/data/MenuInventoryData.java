@@ -603,7 +603,7 @@ public class MenuInventoryData {
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トリアル・ブレイク");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×2マス破壊"
-										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
+										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.1秒"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル："  + SeichiAssist.config.getTrialBreaklevel()
 										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：3"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
@@ -617,7 +617,7 @@ public class MenuInventoryData {
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊"
-										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
+										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.1秒"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getExplosionlevel()
 										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：15"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
@@ -1304,7 +1304,7 @@ public class MenuInventoryData {
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トリアル・ブレイク");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×2ブロック破壊"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.1秒"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：3"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
@@ -1314,7 +1314,7 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トリアル・ブレイク");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×2ブロック破壊"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.1秒"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：3"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：20"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：デュアルブレイク"
@@ -1330,7 +1330,7 @@ public class MenuInventoryData {
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3ブロック破壊"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.2秒"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：15"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
@@ -1340,7 +1340,7 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3ブロック破壊"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.2秒"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：15"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：30"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：トリアルブレイク"
@@ -1741,7 +1741,6 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "以下の場合に配布されます"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "・各種不具合のお詫びとして"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "・イベント景品として"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "・投票ボーナスとして"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "・各種謝礼として"));
 		int gachaget = playerdata.numofsorryforbug;
 		if(gachaget != 0){
