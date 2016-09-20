@@ -31,6 +31,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.ArrowRemoveTaskRunnable;
+import com.github.unchama.seichiassist.task.AssaultArmorTaskRunnable;
 import com.github.unchama.seichiassist.task.CondenSkillTaskRunnable;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
@@ -309,15 +310,29 @@ public class PlayerRightClickListener implements Listener {
 		Action action = event.getAction();
 		//アクションを起こした手を取得
 		EquipmentSlot equipmentslot = event.getHand();
-
+		if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)){
+			return;
+		}
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-			//スニークしていなかったら処理終了
-			if(!player.isSneaking()){
+			//UUIDを取得
+			UUID uuid = player.getUniqueId();
+			//playerdataを取得
+			PlayerData playerdata = playermap.get(uuid);
+			//念のためエラー分岐
+			if(playerdata == null){
+				player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
+				plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 				return;
 			}
-			if(SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInMainHand().getType())){
+			if(SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInMainHand().getType())
+					&& equipmentslot.equals(EquipmentSlot.HAND)
+					){
 				//メインハンドで指定ツールを持っていた時の処理
-
+				//スニークしていなかったら処理終了
+				if(!player.isSneaking()){
+					return;
+				}
 				//アクション実行されたブロックがある場合の処理
 				if(action.equals(Action.RIGHT_CLICK_BLOCK)){
 					//クリックされたブロックの種類を取得
@@ -328,17 +343,7 @@ public class PlayerRightClickListener implements Listener {
 					}
 				}
 
-				//UUIDを取得
-				UUID uuid = player.getUniqueId();
-				//playerdataを取得
-				PlayerData playerdata = playermap.get(uuid);
-				//念のためエラー分岐
-				if(playerdata == null){
-					player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-					plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
-					plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-					return;
-				}
+
 				//アクティブスキルを発動できるレベルに達していない場合処理終了
 				if( playerdata.level < SeichiAssist.config.getDualBreaklevel()){
 					return;
@@ -346,11 +351,6 @@ public class PlayerRightClickListener implements Listener {
 
 				//設置をキャンセル
 				event.setCancelled(true);
-
-				//アクション実行がオフハンドだった時の処理終了
-				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
-					return;
-				}
 
 
 				int activemineflagnum = 0;
@@ -371,6 +371,7 @@ public class PlayerRightClickListener implements Listener {
 						break;
 					}
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
+					playerdata.activeskilldata.mineflagnum = activemineflagnum;
 				}else if(playerdata.activeskilldata.skilltype > 0 && playerdata.activeskilldata.skillnum > 0){
 					activemineflagnum = (playerdata.activeskilldata.mineflagnum + 1) % 2;
 					switch (activemineflagnum){
@@ -382,8 +383,42 @@ public class PlayerRightClickListener implements Listener {
 						break;
 					}
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
+					playerdata.activeskilldata.mineflagnum = activemineflagnum;
 				}
-				playerdata.activeskilldata.mineflagnum = activemineflagnum;
+
+			}else if(SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInOffHand().getType())
+					&& equipmentslot.equals(EquipmentSlot.OFF_HAND)
+					){
+
+				//オフハンドで指定ツールを持っていた時の処理
+
+				//設置をキャンセル
+				event.setCancelled(true);
+
+				//アクション実行されたブロックがある場合の処理
+				if(action.equals(Action.RIGHT_CLICK_BLOCK)){
+					//クリックされたブロックの種類を取得
+					Material cmaterial = event.getClickedBlock().getType();
+					//cancelledmateriallistに存在すれば処理終了
+					if(SeichiAssist.cancelledmateriallist.contains(cmaterial)){
+						return;
+					}
+				}
+				int activemineflagnum = 0;
+				if(playerdata.activeskilldata.skillnum == 10 && playerdata.activeskilldata.skilltype == 5){
+					activemineflagnum = (playerdata.activeskilldata.mineflagnum + 1) % 2;
+					switch (activemineflagnum){
+					case 0:
+						player.sendMessage(ChatColor.GOLD + "アサルト・アーマー" + "：OFF");
+						break;
+					case 1:
+						player.sendMessage(ChatColor.GOLD + "アサルト・アーマー" + ":ON");
+						new AssaultArmorTaskRunnable(player).runTaskTimer(plugin,0,1);
+						break;
+					}
+					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
+					playerdata.activeskilldata.mineflagnum = activemineflagnum;
+				}
 			}
 		}
 	}

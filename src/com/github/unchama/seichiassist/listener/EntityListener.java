@@ -276,10 +276,6 @@ public class EntityListener implements Listener {
 			}
 		}
 
-		//壊すものがない時
-		if(breaklist.size() == 1){
-			return;
-		}
 
 		//減る経験値計算
 

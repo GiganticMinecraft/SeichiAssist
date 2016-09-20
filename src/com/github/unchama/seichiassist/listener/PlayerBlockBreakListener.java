@@ -142,10 +142,12 @@ public class PlayerBlockBreakListener implements Listener {
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
+			event.setCancelled(true);
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
 			runBreakSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
+			event.setCancelled(true);
 		}
-		event.setCancelled(true);
+
 
 	}
 	//複数範囲破壊
@@ -510,7 +512,7 @@ public class PlayerBlockBreakListener implements Listener {
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 			}
-
+			playerdata.activeskilldata.blocklist.removeAll(breaklist);
 			return;
 		}
 		if(SeichiAssist.DEBUG){

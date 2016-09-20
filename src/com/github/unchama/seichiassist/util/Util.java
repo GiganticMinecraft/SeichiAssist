@@ -255,6 +255,10 @@ public class Util {
 	}
 	//他のプラグインの影響があってもブロックを破壊できるのか
 	public static boolean canBreak(Player player ,Block breakblock) {
+		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+
 		//壊されるブロックの状態を取得
 		BlockState blockstate = breakblock.getState();
 		//壊されるブロックのデータを取得
@@ -265,6 +269,10 @@ public class Util {
 		//壊されるブロックがワールドガード範囲だった場合処理を終了
 		if(!Util.getWorldGuard().canBuild(player, breakblock.getLocation())){
 			player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
+			return false;
+		}
+		//壊されるブロックがスキルで使用中だった場合処理を終了
+		if(playerdata.activeskilldata.blocklist.contains(breakblock)){
 			return false;
 		}
 		//コアプロテクトのクラスを取得
