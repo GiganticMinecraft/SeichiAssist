@@ -127,7 +127,10 @@ public class EntityListener implements Listener {
 			//どちらにももっていない時処理を終了
 			return;
 		}
-
+		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
+		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
+			return;
+		}
 		for(Block b : playerdata.activeskilldata.blocklist){
 			//スキルで破壊されるブロックの時処理を終了
 			if(b.equals(block)){
@@ -137,10 +140,8 @@ public class EntityListener implements Listener {
 				return;
 			}
 		}
-		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
-			return;
-		}
+
+
 
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
@@ -305,6 +306,7 @@ public class EntityListener implements Listener {
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 			}
+			playerdata.activeskilldata.blocklist.removeAll(breaklist);
 			return;
 		}
 		if(SeichiAssist.DEBUG){
@@ -316,6 +318,7 @@ public class EntityListener implements Listener {
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
+			playerdata.activeskilldata.blocklist.removeAll(breaklist);
 			return;
 		}
 

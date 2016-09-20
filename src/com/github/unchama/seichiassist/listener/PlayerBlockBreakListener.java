@@ -45,6 +45,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 
+
 		//壊されるブロックを取得
 		Block block = event.getBlock();
 		//他人の保護がかかっている場合は処理を終了
@@ -54,10 +55,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//ブロックのタイプを取得
 		Material material = block.getType();
 
-		//ブロックタイプがmateriallistに登録されていなければ処理終了
-		if(!SeichiAssist.materiallist.contains(material)){
-			return;
-		}
+
 
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
@@ -70,13 +68,7 @@ public class PlayerBlockBreakListener implements Listener {
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
-		//これ以前の終了処理はパッシブの追加経験値はもらえません
-		//経験値変更用のクラスを設定
-		ExperienceManager expman = new ExperienceManager(player);
-		//passiveskill[追加経験値獲得]処理実行
-		int exp = Util.calcExpDrop(playerdata);
-		expman.changeExp(exp);
-		//これ以降の終了処理は経験値はもらえます
+
 
 		//プレイヤーインベントリを取得
 		PlayerInventory inventory = player.getInventory();
@@ -102,20 +94,13 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-		//アクティブスキルフラグがオフの時処理を終了
-		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0){
+		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
+		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
 			return;
 		}
 		//もしサバイバルでなければ処理を終了
 		//もしフライ中なら終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
-			return;
-		}
-
-		//クールダウンタイム中は処理を終了
-		if(!playerdata.activeskilldata.skillcanbreakflag){
-			//SEを再生
-			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
 
@@ -128,10 +113,32 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
+		//クールダウンタイム中は処理を終了
+		if(!playerdata.activeskilldata.skillcanbreakflag){
+			//SEを再生
+			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
+
+		//これ以前の終了処理はパッシブの追加経験値はもらえません
+		//経験値変更用のクラスを設定
+		ExperienceManager expman = new ExperienceManager(player);
+		//passiveskill[追加経験値獲得]処理実行
+		int exp = Util.calcExpDrop(playerdata);
+		expman.changeExp(exp);
+
+
+		//これ以降の終了処理は経験値はもらえます
+		//ブロックタイプがmateriallistに登録されていなければ処理終了
+		if(!SeichiAssist.materiallist.contains(material)){
+			return;
+		}
+
+		//アクティブスキルフラグがオフの時処理を終了
+		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0){
+			return;
+		}
+
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
@@ -269,6 +276,9 @@ public class PlayerBlockBreakListener implements Listener {
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 				}
+
+				playerdata.activeskilldata.blocklist.removeAll(breaklist);
+
 				break;
 			}
 			//実際に耐久値を減らせるか判定
@@ -277,6 +287,8 @@ public class PlayerBlockBreakListener implements Listener {
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 				}
+				playerdata.activeskilldata.blocklist.removeAll(breaklist);
+
 				break;
 			}
 
@@ -307,6 +319,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//自身のみしか壊さない時自然に処理する
 		if(breakblocknum==1){
 			Util.BreakBlock(player, block, centerofblock, tool,false);
+			playerdata.activeskilldata.blocklist.remove(block);
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.activeskilldata.effectnum == 0){
 			new MultiBreakTaskRunnable(player,block,tool,multibreaklist,multilavalist,startlist,endlist).runTaskTimer(plugin,0,4);
@@ -497,6 +510,7 @@ public class PlayerBlockBreakListener implements Listener {
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 			}
+
 			return;
 		}
 		if(SeichiAssist.DEBUG){
@@ -509,6 +523,7 @@ public class PlayerBlockBreakListener implements Listener {
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
+			playerdata.activeskilldata.blocklist.removeAll(breaklist);
 			return;
 		}
 
