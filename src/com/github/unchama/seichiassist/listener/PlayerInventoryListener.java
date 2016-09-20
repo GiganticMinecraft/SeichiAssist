@@ -684,8 +684,8 @@ public class PlayerInventoryListener implements Listener {
 				}else{
 					playerdata.activeskilldata.skilltype = 0;
 					playerdata.activeskilldata.skillnum = 0;
+					playerdata.activeskilldata.mineflagnum = 0;
 					player.sendMessage(ChatColor.GREEN + "アクティブスキル:未設定  が選択されました");
-					playerdata.activeskilldata.mineflagnum = 1;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}
 			}

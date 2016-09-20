@@ -103,7 +103,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		//アクティブスキルフラグがオフの時処理を終了
-		if(playerdata.activeskilldata.mineflagnum == 0){
+		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0){
 			return;
 		}
 		//もしサバイバルでなければ処理を終了

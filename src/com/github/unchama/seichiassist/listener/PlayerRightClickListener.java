@@ -72,24 +72,26 @@ public class PlayerRightClickListener implements Listener {
 			return;
 		}
 
-		//サバイバルでない時　または　フライ中の時終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
-			return;
-		}
-
-		//アクティブスキルフラグがオフの時処理を終了
-		if(playerdata.activeskilldata.mineflagnum == 0){
-			return;
-		}
-
-		//クールダウンタイム中は処理を終了
-		if(!playerdata.activeskilldata.skillcanbreakflag){
-			//SEを再生
-			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
-			return;
-		}
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+
+			//サバイバルでない時　または　フライ中の時終了
+			if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
+				return;
+			}
+
+			//アクティブスキルフラグがオフの時処理を終了
+			if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0){
+				return;
+			}
+
+			//クールダウンタイム中は処理を終了
+			if(!playerdata.activeskilldata.skillcanbreakflag){
+				//SEを再生
+				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
+				return;
+			}
+
 			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
 					runArrowSkillofLaunch(player,Arrow.class);
