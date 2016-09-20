@@ -145,7 +145,7 @@ public class SeichiAssist extends JavaPlugin{
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
 			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
 			,Material.COAL_ORE,Material.IRON_ORE,Material.GOLD_ORE,Material.DIAMOND_ORE
-			,Material.LAPIS_ORE,Material.EMERALD_ORE,Material.REDSTONE_ORE,Material.SAND
+			,Material.LAPIS_ORE,Material.EMERALD_ORE,Material.REDSTONE_ORE,Material.GLOWING_REDSTONE_ORE,Material.SAND
 			,Material.SANDSTONE,Material.QUARTZ_ORE,Material.END_BRICKS,Material.ENDER_STONE
 			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN,Material.MAGMA,Material.SOUL_SAND
 			));

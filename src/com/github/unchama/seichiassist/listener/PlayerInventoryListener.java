@@ -35,12 +35,14 @@ import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.task.AssaultArmorTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	SeichiAssist plugin = SeichiAssist.plugin;
 	private Config config = SeichiAssist.config;
 	private Sql sql = SeichiAssist.plugin.sql;
 
@@ -672,6 +674,21 @@ public class PlayerInventoryListener implements Listener {
 						playerdata.activeskilldata.mineflagnum = 1;
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 					}
+				}
+			}
+
+			//アサルトアーマー
+			if(itemstackcurrent.getType().equals(Material.DIAMOND_CHESTPLATE)){
+				if(playerdata.activeskilldata.skillnum == 10 || playerdata.activeskilldata.skilltype == 5){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+				}else{
+					playerdata.activeskilldata.skilltype = 5;
+					playerdata.activeskilldata.skillnum = 10;
+					player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + "アサルト・アーマー" + "  が選択されました");
+					playerdata.activeskilldata.mineflagnum = 1;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+					new AssaultArmorTaskRunnable(player).runTaskTimer(plugin,0,1);
 				}
 			}
 

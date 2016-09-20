@@ -512,7 +512,7 @@ public class PlayerBlockBreakListener implements Listener {
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 			}
-
+			playerdata.activeskilldata.blocklist.removeAll(breaklist);
 			return;
 		}
 		if(SeichiAssist.DEBUG){
