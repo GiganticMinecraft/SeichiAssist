@@ -471,7 +471,7 @@ public class Util {
 			default:
 				return false;
 		}
-		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, (float)0.1, (float)1);
+		//player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, (float)0.1, (float)1);
 		return true;
 
 	}
@@ -605,7 +605,7 @@ public class Util {
 		//10%の確率で経験値付与
 		if(rand < 0.1){
 			//Lv8未満は獲得経験値ゼロ、それ以上はレベルに応じて経験値付与
-			if(playerdata.level < 8){
+			if(playerdata.level < 8 || playerdata.activeskilldata.skillcanbreakflag == true){
 				return 0;
 			}else if (playerdata.level < 18){
 				return SeichiAssist.config.getDropExplevel(1);
@@ -670,6 +670,13 @@ public class Util {
 		return "N";
 		} else {
 		return null;
+		}
+	}
+	public static float toInt(boolean flag) {
+		if(flag){
+			return 1;
+		}else{
+			return 0;
 		}
 	}
 }

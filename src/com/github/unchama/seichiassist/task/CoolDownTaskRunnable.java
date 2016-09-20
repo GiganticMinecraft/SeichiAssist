@@ -15,31 +15,34 @@ public class CoolDownTaskRunnable  extends BukkitRunnable{
 	private Player player;
 	UUID uuid;
 	PlayerData playerdata;
-	int flag;
+	Boolean voteflag;
+	boolean soundflag;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
-	public CoolDownTaskRunnable(Player player,int _flag) {
-		//flagの引数[1]でスキルクールダウン、[2]で投票受け取りボタンクールダウン
-		flag = _flag;
+	public CoolDownTaskRunnable(Player player,boolean voteflag,boolean soundflag) {
 		this.player = player;
+		this.voteflag = voteflag;
+		this.soundflag = soundflag;
 		//UUIDを取得
 		uuid = player.getUniqueId();
 		//playerdataを取得
 		playerdata = playermap.get(uuid);
-		if(flag == 1){
-			playerdata.activeskilldata.skillcanbreakflag = false;
-		}else if(flag == 2){
+		if(voteflag){
 			playerdata.votecooldownflag = false;
+		}else{
+			playerdata.activeskilldata.skillcanbreakflag = false;
 		}
 	}
 
 	@Override
 	public void run() {
-		if(flag == 1){
-			playerdata.activeskilldata.skillcanbreakflag = true;
-			player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, (float)0.5, (float)0.1);
-		}else if(flag == 2){
+		if(voteflag){
 			playerdata.votecooldownflag = true;
+		}else{
+			playerdata.activeskilldata.skillcanbreakflag = true;
+			if(soundflag){
+				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, (float)0.5, (float)0.1);
+			}
 		}
 		//デバッグ用
 		if(SeichiAssist.DEBUG){
