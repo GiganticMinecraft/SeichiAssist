@@ -69,7 +69,11 @@ public enum ActiveSkillEffect {
 	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
 		case "EXPLOSION":
+<<<<<<< HEAD
 			new ExplosionTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 5);
+=======
+			new ExplosionTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1 * playerdata.activeskilldata.skillnum);
+>>>>>>> origin/master
 			break;
 		case "BLIZZARD":
 

@@ -26,6 +26,8 @@ public class ExplosionTaskRunnable extends BukkitRunnable{
 	Location standard;
 	//相対座標から得られるスキルの範囲座標
 	Coordinate breaklength;
+	//逐一更新が必要な位置
+	Location explosionloc;
 
 
 	public ExplosionTaskRunnable(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist, Coordinate start,
@@ -43,10 +45,11 @@ public class ExplosionTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
-		for(int x = start.x + 1 ; x <= end.x ; x=x+2){
-			for(int z = start.z + 1 ; z <= end.z ; z=z+2){
-				for(int y = start.y + 1; y <= end.y ; y=y+2){
-					player.getWorld().createExplosion(standard.add(x, y, z),(float)0,false);
+		for(int x = start.x + 1 ; x < end.x ; x=x+2){
+			for(int z = start.z + 1 ; z < end.z ; z=z+2){
+				for(int y = start.y + 1; y < end.y ; y=y+2){
+					explosionloc = standard.clone();
+					player.getWorld().createExplosion(explosionloc.add(x, y, z),(float)0,false);
 					/*
 					player.spawnParticle(Particle.EXPLOSION_LARGE,standard,1);
 					player.playSound(standard, Sound.ENTITY_GENERIC_EXPLODE, 1, (float)(Math.random() + 0.25));
