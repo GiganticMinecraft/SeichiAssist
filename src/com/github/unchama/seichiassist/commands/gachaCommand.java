@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.commands;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,7 +12,6 @@ import org.bukkit.inventory.PlayerInventory;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class gachaCommand implements TabExecutor{
@@ -42,11 +40,11 @@ public class gachaCommand implements TabExecutor{
 			sender.sendMessage(ChatColor.RED + "/gacha mente");
 			sender.sendMessage("メンテモードのON,OFF切り替え。ONだとガチャが引けなくなる");
 			sender.sendMessage(ChatColor.RED + "/gacha give <all/プレイヤー名> <個数>");
-			sender.sendMessage("ガチャ券配布コマンドです。allを指定すると全員に配布します");
+			sender.sendMessage("ガチャ券配布コマンドです。allを指定で全員に配布(マルチ鯖対応済)");
 			sender.sendMessage(ChatColor.RED + "/gacha vote <プレイヤー名>");
-			sender.sendMessage("投票特典配布用コマンドです");
+			sender.sendMessage("投票特典配布用コマンドです(マルチ鯖対応済)");
 			sender.sendMessage(ChatColor.RED + "/gacha donate <プレイヤー名> <ポイント数>");
-			sender.sendMessage("寄付者用プレミアムエフェクトポイント配布コマンドです");
+			sender.sendMessage("寄付者用プレミアムエフェクトポイント配布コマンドです(マルチ鯖対応済)");
 			sender.sendMessage(ChatColor.RED + "/gacha add <確率>");
 			sender.sendMessage("現在のメインハンドをガチャリストに追加。確率は1.0までで指定");
 			sender.sendMessage(ChatColor.DARK_GRAY + "※ゲーム内でのみ実行できます");
@@ -92,64 +90,34 @@ public class gachaCommand implements TabExecutor{
 
 				if(!name.equalsIgnoreCase("all")){
 					//プレイヤー名がallでない時の処理
-					//プレイヤーオンライン時はplayerdataに直接反映、オフライン時はsqlに送信(結果をsenderへ)
 
-					//対象プレイヤーをサーバーから取得
-					Player targetplayer = plugin.getServer().getPlayer(name);
-					if(targetplayer != null){
-						//プレイヤーがオンラインの時の処理
-						//uuid取得
-						UUID uuid = targetplayer.getUniqueId();
-						//playerdata取得
-						PlayerData playerdata = SeichiAssist.playermap.get(uuid);
-						//playerdataが取得できなかった場合処理終了
-						if(playerdata == null){
-							sender.sendMessage(name + "はオンラインですが、何故かplayerdataが見つかりませんでした(要報告)");
-							return true;
-						}
-						playerdata.numofsorryforbug += num;
-						//同時にプレイヤーにお知らせ
-						playerdata.NotifySorryForBug(targetplayer);
-						sender.sendMessage(name + "にガチャ券を" + num + "枚配布しました。オンラインの為通知もしました");
-						return true;
+					//プレイヤーオンライン、オフラインにかかわらずsqlに送信(マルチ鯖におけるコンフリクト防止の為)
+					sender.sendMessage(ChatColor.YELLOW + name + "のガチャ券配布処理開始…");
+
+					//mysqlにも書き込んどく
+					if(!sql.addPlayerBug(name,num)){
+						sender.sendMessage(ChatColor.RED + "失敗");
 					}else{
-						sender.sendMessage(name + "はオフラインなので");
-						sender.sendMessage("mysqlデータにガチャ券データを書き込みます");
-						sender.sendMessage("追加するガチャ券:" + num + "枚");
-						//プレイヤーがオフラインの時の処理
-						@SuppressWarnings("deprecation")
-						UUID uuid = plugin.getServer().getOfflinePlayer(name).getUniqueId();
-
-						/*
-						//playerdata取得
-						PlayerData playerdata = SeichiAssist.playermap.get(uuid);
-						//playerdataが取得できた場合は書き込んでおく
-						if(playerdata != null){
-							playerdata.numofsorryforbug += num;
-							sender.sendMessage("・playerdataへの書き込み成功");
-						}else{
-							sender.sendMessage("・playerdataは見つかりませんでした");
-						}
-						*/
-
-						//mysqlにも書き込んどく
-						if(!sql.addPlayerBug(uuid,num)){
-							sender.sendMessage("・mysqlへの書き込み失敗");
-						}else{
-							sender.sendMessage("・mysqlへの書き込み成功");
-						}
-						return true;
-
+						sender.sendMessage(ChatColor.GREEN + "ガチャ券" + num +"枚加算成功");
 					}
+					return true;
 
 				}else{
 					//プレイヤー名がallの時の処理(全員に配布)
-					addSorryForBug(sender,Util.toInt(args[2]));
+
+					//プレイヤーオンライン、オフラインにかかわらずsqlに送信(マルチ鯖におけるコンフリクト防止の為)
+					sender.sendMessage(ChatColor.YELLOW + "全プレイヤーへのガチャ券配布処理開始…");
+
+					//MySql処理
+					if(!sql.addAllPlayerBug(num)){
+						sender.sendMessage(ChatColor.RED + "失敗");
+					}else{
+						sender.sendMessage(ChatColor.GREEN + "ガチャ券" + num +"枚加算成功");
+					}
+					//addSorryForBug(sender,Util.toInt(args[2]));
 					return true;
 				}
 			}
-
-
 
 
 		}else if(args[0].equalsIgnoreCase("vote")){
@@ -164,7 +132,7 @@ public class gachaCommand implements TabExecutor{
 				//プレイヤー名を取得(小文字にする)
 				String name = Util.getName(args[1]);
 
-				//プレイヤーオンライン時はplayerdataに直接反映、オフライン時はsqlに送信(結果をsenderへ)
+				//プレイヤーオンライン、オフラインにかかわらずsqlに送信(マルチ鯖におけるコンフリクト防止の為)
 				sender.sendMessage(ChatColor.YELLOW + name + "の投票特典配布処理開始…");
 
 				//mysqlにも書き込んどく
@@ -442,6 +410,7 @@ public class gachaCommand implements TabExecutor{
 		}
 		return 1.0;
 	}
+	/*
 	private void addSorryForBug(CommandSender sender,int num) {
 		for(PlayerData playerdata : SeichiAssist.playermap.values()){
 			//オンラインプレイヤーに対しての追加処理
@@ -466,5 +435,6 @@ public class gachaCommand implements TabExecutor{
 			sender.sendMessage("mysqlに保存されている全プレイヤーへガチャ券" + num +"枚を加算しました");
 		}
 	}
+	*/
 
 }
