@@ -308,6 +308,10 @@ public class PlayerData {
 			//DIRTとGRASSは二重カウントされているので半分に
 			result *= 0.5;
 			break;
+		case NETHERRACK:
+			//ネザーラックのみ重み分け
+			result *= 0.7;
+			break;
 		default:
 			break;
 		}
