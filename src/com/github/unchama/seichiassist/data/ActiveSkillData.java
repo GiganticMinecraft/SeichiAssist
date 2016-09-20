@@ -60,9 +60,13 @@ public class ActiveSkillData {
 		effectnum = 0;
 		effectflagmap = new HashMap<Integer,Boolean>();
 		blocklist = new ArrayList<Block>();
-
 		explosiontime = 1;
 		hitflag = false;
+
+		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
+		for(int i=0 ; i < activeskilleffect.length ; i++){
+			effectflagmap.put(activeskilleffect[i].getNum(), false);
+		}
 	}
 	//activeskillpointをレベルに従って更新
 	public void updataActiveSkillPoint(Player player,int level) {
