@@ -165,10 +165,32 @@ public class PlayerInventoryListener implements Listener {
 				itemstackcurrent.setItemMeta(itemmeta);
 			}
 
-			//詫びガチャ券をインベントリへ
+			//運営からのガチャ券受け取り
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("whitecat_haru")){
 
-				playerdata.giveSorryForBug(player);
+				//nは最新のnumofsorryforbugの値になる
+				int n = sql.givePlayerBug(player,playerdata);
+				//0だったら処理終了
+				if(n == 0){
+					return;
+				}
+				//先に詫びガチャ関数初期化
+				playerdata.numofsorryforbug = 0;
+
+				ItemStack skull = Util.getskull(Util.getName(player));
+				int count = 0;
+				while(n > 0){
+					if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+						Util.addItem(player,skull);
+					}else{
+						Util.dropItem(player,skull);
+					}
+					n--;
+					count++;
+				}
+
+				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+				player.sendMessage(ChatColor.GREEN + "運営チームから"+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
 
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				itemmeta.setLore(MenuInventoryData.SorryGachaGetButtonLore(playerdata));
@@ -178,6 +200,7 @@ public class PlayerInventoryListener implements Listener {
 			//投票特典受け取り
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND)){
 
+				//nは特典をまだ受け取ってない投票分
 				int n = sql.compareVotePoint(player,playerdata);
 				//投票数に変化が無ければ処理終了
 				if(n == 0){
@@ -186,6 +209,7 @@ public class PlayerInventoryListener implements Listener {
 				//先にp_voteの値を更新しておく
 				playerdata.p_givenvote += n;
 
+				int count = 0;
 				while(n > 0){
 					//ここに投票1回につきプレゼントする特典の処理を書く
 
@@ -200,31 +224,34 @@ public class PlayerInventoryListener implements Listener {
 					}
 
 					//ピッケルプレゼント処理(レベル30になるまで)
+					/*
 					if(playerdata.level < 30){
-						ItemStack itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
-						ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
-						itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "Thanks for Voting!");
-						List<String> lore = Arrays.asList("投票特典でもらえるピッケルです"
-								, "整地レベルが30になるまで毎回貰えます"
-								);
-						itemmeta.addEnchant(Enchantment.DIG_SPEED, 3, true);
-						itemmeta.addEnchant(Enchantment.DURABILITY, 5, true);
-						itemmeta.setLore(lore);
-						itemstack.setItemMeta(itemmeta);
-						if(!Util.isPlayerInventryFill(player)){
-							Util.addItem(player,itemstack);
-						}else{
-							Util.dropItem(player,itemstack);
-						}
+
+					}
+					*/
+					ItemStack itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
+					ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
+					itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "Thanks for Voting!");
+					List<String> lore = Arrays.asList("投票ありがとナス♡"
+							);
+					itemmeta.addEnchant(Enchantment.DIG_SPEED, 3, true);
+					itemmeta.addEnchant(Enchantment.DURABILITY, 3, true);
+					itemmeta.setLore(lore);
+					itemstack.setItemMeta(itemmeta);
+					if(!Util.isPlayerInventryFill(player)){
+						Util.addItem(player,itemstack);
+					}else{
+						Util.dropItem(player,itemstack);
 					}
 
 					//エフェクトポイント加算処理
 					playerdata.activeskilldata.effectpoint++;
 
 					n--;
+					count++;
 				}
 
-				player.sendMessage(ChatColor.GOLD + "投票特典" + ChatColor.WHITE + "を受け取りました");
+				player.sendMessage(ChatColor.GOLD + "投票特典" + ChatColor.WHITE + "(" + count + "票分)を受け取りました");
 				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
 
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();

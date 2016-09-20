@@ -287,6 +287,50 @@ public class Sql{
 
 	}
 
+	//最新のnumofsorryforbug値を返してmysqlのnumofsorrybug値を初期化する処理
+	public int givePlayerBug(Player player,final PlayerData playerdata){
+		if(!playerdata.votecooldownflag){
+			player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
+			return 0;
+		}else{
+	        //連打による負荷防止の為クールダウン処理
+	        new CoolDownTaskRunnable(player,2).runTaskLater(plugin,1200);
+		}
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		int numofsorryforbug = 0;
+		String command = "select numofsorryforbug from " + table
+				+ " where uuid = '" + struuid + "'";
+		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				numofsorryforbug = rs.getInt("numofsorryforbug");
+				}
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
+			return 0;
+		}
+ 		//0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
+ 		if(numofsorryforbug > 0){
+ 			command = "update " + table
+ 					+ " set numofsorryforbug = 0"
+ 					+ " where uuid like '" + struuid + "'";
+ 			if(!putCommand(command)){
+ 				player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
+ 				return 0;
+ 			}
+
+ 			return numofsorryforbug;
+ 		}
+ 		player.sendMessage(ChatColor.YELLOW + "ガチャ券は全て受け取り済みのようです");
+		return 0;
+
+	}
+
 	//投票時にmysqlに投票ポイントを加算しておく処理
 	public boolean addVotePoint(String name) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
@@ -318,8 +362,18 @@ public class Sql{
 				+ " where name like '" + name + "'";
 
 		return putCommand(command);
-
 	}
+
+
+	//指定されたプレイヤーにガチャ券を送信する
+	public boolean addPlayerBug(String name,int num) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "update " + table
+				+ " set numofsorryforbug = numofsorryforbug + " + num
+				+ " where name like '" + name + "'";
+		return putCommand(command);
+	}
+
 
 	public boolean createGachaDataTable(String table){
 		if(table==null){
@@ -424,7 +478,7 @@ public class Sql{
 				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
 				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
 				+ ",level = " + Integer.toString(playerdata.level)
-				+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug)
+				//+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug) //仕様変更の為コメントアウト
 				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
 				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
@@ -593,16 +647,6 @@ public class Sql{
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "update " + table
 				+ " set numofsorryforbug = numofsorryforbug + " + amount;
-		return putCommand(command);
-	}
-
-	//指定されたプレイヤーにガチャ券を送信する
-	public boolean addPlayerBug(UUID uuid,int num) {
-		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String struuid = uuid.toString();
-		String command = "update " + table
-				+ " set numofsorryforbug = numofsorryforbug + " + num
-				+ " where uuid like '" + struuid + "'";
 		return putCommand(command);
 	}
 
