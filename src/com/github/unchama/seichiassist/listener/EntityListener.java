@@ -28,7 +28,6 @@ import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.CondenSkillTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -44,7 +43,7 @@ public class EntityListener implements Listener {
 		Player player;
 
 
-		if(!e.hasMetadata("ArrowSkill")&&!e.hasMetadata("CondenSkill")) {
+		if(!e.hasMetadata("ArrowSkill")) {
 			return;
 		}
 		Projectile proj = (Projectile)e;
@@ -67,11 +66,8 @@ public class EntityListener implements Listener {
 
 		//壊されるブロックを取得
 		Block block = null;
-		if(e.hasMetadata("ArrowSkill")){
-			block = player.getWorld().getBlockAt(proj.getLocation().add(proj.getVelocity().normalize()));
-		}else{
-			block = player.getWorld().getBlockAt(proj.getLocation());
-		}
+		block = player.getWorld().getBlockAt(proj.getLocation().add(proj.getVelocity().normalize()));
+
 
 		//他人の保護がかかっている場合は処理を終了
 		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
@@ -96,6 +92,17 @@ public class EntityListener implements Listener {
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
+		}
+		ActiveSkill[] activeskill = ActiveSkill.values();
+		String worldname = "world_sw";
+		if(SeichiAssist.DEBUG){
+			worldname = "world";
+		}
+		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
+			if(Util.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
+				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
+				return;
+			}
 		}
 
 
@@ -141,21 +148,7 @@ public class EntityListener implements Listener {
 			}
 		}
 
-
-
-
-		if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-			runArrowSkillofHitBlock(player,proj, playerdata.activeskilldata.skillnum, block, tool, expman);
-		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.CONDENSE.gettypenum()){
-			if(playerdata.activeskilldata.skillnum < 7){
-				CondenSkillTaskRunnable.runCondenSkillofExplosion(player,playerdata.activeskilldata.skillnum,block,tool,expman);
-			}else{
-				CondenSkillTaskRunnable.runCondenSkillofExplosion(player,playerdata.activeskilldata.skillnum - 3 ,block,tool,expman);
-			}
-
-			playerdata.activeskilldata.hitflag = true;
-		}
-
+		runArrowSkillofHitBlock(player,proj, playerdata.activeskilldata.skillnum, block, tool, expman);
 		//矢を消滅させる
 		event.getEntity().remove();
 	}
@@ -358,7 +351,7 @@ public class EntityListener implements Listener {
 		//エフェクトが指定されているときの処理
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player,playerdata,tool,breaklist, start, end,centerofblock);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,breaklist, start, end,centerofblock);
 		}
 
 	}

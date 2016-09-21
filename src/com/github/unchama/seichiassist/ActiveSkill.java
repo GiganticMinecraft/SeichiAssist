@@ -250,6 +250,8 @@ public enum ActiveSkill{
 		case 9:
 			str = activeskill[typenum-1].getLv9Name();
 			break;
+		case 10:
+			str = "アサルト・アーマー";
 		default:
 			str = "エラー";
 			break;

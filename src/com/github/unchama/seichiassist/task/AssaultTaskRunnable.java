@@ -22,7 +22,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
-public class AssaultArmorTaskRunnable extends BukkitRunnable{
+public class AssaultTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
@@ -36,7 +36,7 @@ public class AssaultArmorTaskRunnable extends BukkitRunnable{
 	//経験値変更用のクラスを設定
 	ExperienceManager expman;
 
-	public AssaultArmorTaskRunnable(Player player) {
+	public AssaultTaskRunnable(Player player) {
 		this.player = player;
 		uuid = player.getUniqueId();
 		playerdata = playermap.get(uuid);
@@ -45,7 +45,7 @@ public class AssaultArmorTaskRunnable extends BukkitRunnable{
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-			playerdata.activeskilldata.mineflagnum = 0;
+			playerdata.activeskilldata.assaultflag = false;
 			this.cancel();
 			return;
 		}
@@ -72,20 +72,20 @@ public class AssaultArmorTaskRunnable extends BukkitRunnable{
 		}else if(mainhandtoolflag){
 			//メインハンドの時
 			player.sendMessage(ChatColor.GREEN + "使うツールをオフハンドにセット(fキー)してください");
-			playerdata.activeskilldata.mineflagnum = 0;
+			playerdata.activeskilldata.assaultflag = false;
 			this.cancel();
 			return;
 		}else{
 			//どちらにももっていない時処理を終了
 			player.sendMessage(ChatColor.GREEN + "使うツールをオフハンドにセット(fキー)してください");
-			playerdata.activeskilldata.mineflagnum = 0;
+			playerdata.activeskilldata.assaultflag = false;
 			this.cancel();
 			return;
 		}
 		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
 		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
 			player.sendMessage(ChatColor.GREEN + "不正な耐久値です。");
-			playerdata.activeskilldata.mineflagnum = 0;
+			playerdata.activeskilldata.assaultflag = false;
 			this.cancel();
 			return;
 		}
@@ -93,7 +93,7 @@ public class AssaultArmorTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
-		if(playerdata.activeskilldata.mineflagnum == 0){
+		if(playerdata.activeskilldata.assaultflag == false){
 			this.cancel();
 			return;
 		}
@@ -101,7 +101,7 @@ public class AssaultArmorTaskRunnable extends BukkitRunnable{
 		//もしフライ中なら終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
 			player.sendMessage(ChatColor.GREEN + "フライ機能をOFFにしてください.");
-			playerdata.activeskilldata.mineflagnum = 0;
+			playerdata.activeskilldata.assaultflag = false;
 			this.cancel();
 			return;
 		}
@@ -119,7 +119,7 @@ public class AssaultArmorTaskRunnable extends BukkitRunnable{
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "ツールの変更を検知しました");
 			}
-			playerdata.activeskilldata.mineflagnum = 0;
+			playerdata.activeskilldata.assaultflag = false;
 			this.cancel();
 			return;
 		}
@@ -172,7 +172,7 @@ public class AssaultArmorTaskRunnable extends BukkitRunnable{
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 			}
 			playerdata.activeskilldata.blocklist.removeAll(breaklist);
-			playerdata.activeskilldata.mineflagnum = 0;
+			playerdata.activeskilldata.assaultflag = false;
 			this.cancel();
 			return;
 		}
@@ -185,7 +185,7 @@ public class AssaultArmorTaskRunnable extends BukkitRunnable{
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
 			playerdata.activeskilldata.blocklist.removeAll(breaklist);
-			playerdata.activeskilldata.mineflagnum = 0;
+			playerdata.activeskilldata.assaultflag = false;
 			this.cancel();
 			return;
 		}

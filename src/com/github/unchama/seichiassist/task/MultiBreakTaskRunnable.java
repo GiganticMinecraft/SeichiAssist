@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -63,10 +64,21 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 			for(int lavanum = 0 ; lavanum < multilavalist.get(count).size();lavanum++){
 				multilavalist.get(count).get(lavanum).setType(Material.AIR);
 			}
-			for(Block b:multibreaklist.get(count)){
-				Util.BreakBlock(player, b, droploc, tool,true);
-				playerdata.activeskilldata.blocklist.remove(b);
+
+			//エフェクトが選択されていない時の通常処理
+			if(playerdata.activeskilldata.effectnum == 0){
+				//ブロックを破壊する処理
+				for(Block b:multibreaklist.get(count)){
+					Util.BreakBlock(player, b, droploc, tool,true);
+					playerdata.activeskilldata.blocklist.remove(b);
+				}
 			}
+			//エフェクトが選択されているとき
+			else{
+				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+				skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,multibreaklist.get(count), startlist.get(count), endlist.get(count),droploc);
+			}
+
 			count++;
 		}else{
 			cancel();

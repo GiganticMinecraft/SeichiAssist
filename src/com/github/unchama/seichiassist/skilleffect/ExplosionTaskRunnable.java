@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -51,9 +50,8 @@ public class ExplosionTaskRunnable extends BukkitRunnable{
 				for(int y = start.y + 1; y < end.y ; y=y+2){
 					explosionloc = standard.clone();
 					player.getWorld().createExplosion(explosionloc.add(x, y, z), 0, false);
-					player.stopSound(Sound.ENTITY_GENERIC_EXPLODE);
 					//player.spawnParticle(Particle.EXPLOSION_NORMAL,explosionloc.add(x, y, z),1);
-					player.playSound(explosionloc.add(x, y, z), Sound.ENTITY_GENERIC_EXPLODE, (float)1/playerdata.activeskilldata.skillnum, (float)((rand.nextDouble()*0.4)+0.8));
+					//player.playSound(explosionloc.add(x, y, z), Sound.ENTITY_GENERIC_EXPLODE, (float)1, (float)((rand.nextDouble()*0.4)+0.8));
 					//player.getWorld().playEffect(explosionloc.add(x, y, z), Effect.EXPLOSION, 0,(int)10);
 				}
 			}

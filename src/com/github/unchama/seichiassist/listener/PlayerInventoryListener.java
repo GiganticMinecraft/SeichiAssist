@@ -38,7 +38,7 @@ import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.AssaultArmorTaskRunnable;
+import com.github.unchama.seichiassist.task.AssaultTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -683,9 +683,12 @@ public class PlayerInventoryListener implements Listener {
 					}else{
 						playerdata.activeskilldata.skilltype = ActiveSkill.CONDENSE.gettypenum();
 						playerdata.activeskilldata.skillnum = skilllevel;
+						playerdata.activeskilldata.assaulttype = ActiveSkill.CONDENSE.gettypenum();
+						playerdata.activeskilldata.assaultnum = skilllevel;
 						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.CONDENSE.getName(skilllevel) + "  が選択されました");
-						playerdata.activeskilldata.mineflagnum = 1;
+						playerdata.activeskilldata.assaultflag = true;
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+						new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
 					}
 				}
 			}
@@ -698,10 +701,12 @@ public class PlayerInventoryListener implements Listener {
 				}else{
 					playerdata.activeskilldata.skilltype = 5;
 					playerdata.activeskilldata.skillnum = 10;
+					playerdata.activeskilldata.assaulttype = 5;
+					playerdata.activeskilldata.assaultnum = 10;
 					player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + "アサルト・アーマー" + "  が選択されました");
-					playerdata.activeskilldata.mineflagnum = 1;
+					playerdata.activeskilldata.assaultflag = true;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-					new AssaultArmorTaskRunnable(player).runTaskTimer(plugin,0,1);
+					new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
 				}
 			}
 

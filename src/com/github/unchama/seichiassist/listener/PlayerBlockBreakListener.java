@@ -64,7 +64,18 @@ public class PlayerBlockBreakListener implements Listener {
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
-
+		ActiveSkill[] activeskill = ActiveSkill.values();
+		String worldname = "world_sw";
+		if(SeichiAssist.DEBUG){
+			worldname = "world";
+		}
+		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
+			if(Util.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
+				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
+				event.setCancelled(true);
+				return;
+			}
+		}
 
 		//プレイヤーインベントリを取得
 		PlayerInventory inventory = player.getInventory();
@@ -115,18 +126,7 @@ public class PlayerBlockBreakListener implements Listener {
 			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
-		ActiveSkill[] activeskill = ActiveSkill.values();
-		String worldname = "world_sw";
-		if(SeichiAssist.DEBUG){
-			worldname = "world";
-		}
-		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
-			if(Util.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
-				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
-				event.setCancelled(true);
-				return;
-			}
-		}
+
 
 		//これ以前の終了処理はパッシブの追加経験値はもらえません
 		//経験値変更用のクラスを設定
@@ -339,14 +339,9 @@ public class PlayerBlockBreakListener implements Listener {
 		if(breakblocknum==1){
 			Util.BreakBlock(player, block, centerofblock, tool,false);
 			playerdata.activeskilldata.blocklist.remove(block);
-		}//エフェクトが指定されていないときの処理
-		else if(playerdata.activeskilldata.effectnum == 0){
-			new MultiBreakTaskRunnable(player,block,tool,multibreaklist,multilavalist,startlist,endlist).runTaskTimer(plugin,0,4);
-		}
-		//エフェクトが選択されているとき
+		}//スキルの処理
 		else{
-			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runMultiEffect(player,playerdata,tool,multibreaklist, startlist, endlist,centerofblock);
+			new MultiBreakTaskRunnable(player,block,tool,multibreaklist,multilavalist,startlist,endlist).runTaskTimer(plugin,0,4);
 		}
 	}
 
@@ -593,7 +588,6 @@ public class PlayerBlockBreakListener implements Listener {
 				Util.BreakBlock(player, b, centerofblock, tool,true);
 				playerdata.activeskilldata.blocklist.remove(b);
 			}
-
 		}
 		//エフェクトが指定されているときの処理
 		else{
