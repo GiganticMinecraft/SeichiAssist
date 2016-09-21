@@ -66,7 +66,7 @@ public enum ActiveSkillEffect {
 		flagmap.put(getNum(), true);
 		return;
 	}
-	//エフェクトの実行処理分岐
+	//エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
 	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
 		case "EXPLOSION":
@@ -83,24 +83,6 @@ public enum ActiveSkillEffect {
 		}
 		return;
 	}
-	//エフェクトの実行処理分岐
-	public void runMultiEffect(Player player,PlayerData playerdata,ItemStack tool,List<List<Block> > multibreaklist,List<Coordinate> startlist,List<Coordinate> endlist,Location standard){
-		switch(this.toString()){
-		case "EXPLOSION":
-
-			break;
-		case "BLIZZARD":
-
-			break;
-		case "METEO":
-
-			break;
-		default :
-			break;
-		}
-		return;
-	}
-
 	//エフェクトの実行処理分岐
 	public void runArrowEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){

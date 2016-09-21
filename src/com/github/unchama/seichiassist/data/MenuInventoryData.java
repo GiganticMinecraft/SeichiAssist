@@ -1528,8 +1528,8 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SNOW_BLOCK);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホワイト・ブレス");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "水3×3×3ブロックを凍らせます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水5×5×5ブロックを凍らせます"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：25"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
@@ -1538,8 +1538,8 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホワイト・ブレス");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "水3×3×3ブロックを凍らせます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水5×5×5ブロックを凍らせます"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：25"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：40"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：エクスプロージョン"
@@ -1555,8 +1555,8 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ICE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アブソリュート・ゼロ");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "水5×5×5ブロックを凍らせます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水7×7×7ブロックを凍らせます"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：50"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
@@ -1565,8 +1565,8 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アブソリュート・ゼロ");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "水5×5×5ブロックを凍らせます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水7×7×7ブロックを凍らせます"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：50"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：50"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ホワイト・ブレス"
@@ -1582,8 +1582,8 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PACKED_ICE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ダイアモンド・ダスト");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "水7×7×7ブロックを凍らせます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水9×9×9ブロックを凍らせます"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：100"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
@@ -1592,8 +1592,8 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ダイアモンド・ダスト");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "水7×7×7ブロックを凍らせます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水9×9×9ブロックを凍らせます"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：100"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：60"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：アブソリュート・ゼロ"
@@ -1609,8 +1609,8 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHERRACK);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ラヴァ・コンデンセーション");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "溶岩3×3×3ブロックを固めます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩5×5×5ブロックを固めます"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：60"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
@@ -1619,8 +1619,8 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ラヴァ・コンデンセーション");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "溶岩3×3×3ブロックを固めます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩5×5×5ブロックを固めます"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：60"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：70"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ダイアモンド・ダスト"
@@ -1636,8 +1636,8 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_BRICK);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "モエラキ・ボールダーズ");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "溶岩5×5×5ブロックを固めます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩7×7×7ブロックを固めます"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：120"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
@@ -1646,8 +1646,8 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "モエラキ・ボールダーズ");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "溶岩5×5×5ブロックを固めます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩7×7×7ブロックを固めます"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：120"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：80"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ラヴァ・コンデンセーション"
@@ -1663,8 +1663,8 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MAGMA);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エルト・フェットル");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "溶岩7×7×7ブロックを固めます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩9×9×9ブロックを固めます"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：240"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
@@ -1673,8 +1673,8 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エルト・フェットル");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "溶岩7×7×7ブロックを固めます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.3秒"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩9×9×9ブロックを固めます"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：240"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：90"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：モエラキ・ボールダーズ"
@@ -1692,7 +1692,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アサルト・アーマー");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲のブロックを破壊します"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：100/秒"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：50"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1701,8 +1701,8 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アサルト・アーマー");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲のブロックを破壊します"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：30秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：100/秒"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：50"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "全てのスキルを獲得すると解除されます");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);

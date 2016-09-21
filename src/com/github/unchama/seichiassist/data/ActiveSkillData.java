@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
@@ -28,12 +29,18 @@ public class ActiveSkillData {
 	public int condenskill;
 	//アクティブスキルの種類番号を格納
 	public int skilltype;
+	//アサルトスキルの種類番号を格納
+	public int assaulttype;
 	//選択されているアクティブスキルの番号を格納
 	public int skillnum;
+	//選択されているアサルトスキルの番号を格納
+	public int assaultnum;
 	//スキルクールダウン用フラグ
 	public boolean skillcanbreakflag;
 	//採掘用アクティブスキルのフラグ 0:なし 1:上破壊 2:下破壊
 	public int mineflagnum;
+	//アサルトスキル.コンデンススキルのtask
+	public BukkitTask assaulttask;
 	//エフェクトの獲得フラグリスト<エフェクト番号,エフェクト獲得フラグ>
 	public Map<Integer,Boolean> effectflagmap;
 	//選択されているアクティブスキルの番号を格納
@@ -47,6 +54,7 @@ public class ActiveSkillData {
 
 	public ActiveSkillData(){
 		mineflagnum = 0;
+		assaulttask = null;
 		skilltype = 0;
 		skillnum = 0;
 		skillcanbreakflag = true;
@@ -125,4 +133,5 @@ public class ActiveSkillData {
 		skilltype = 0;
 		skillnum = 0;
 	}
+
 }
