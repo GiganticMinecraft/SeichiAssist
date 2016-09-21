@@ -1569,134 +1569,143 @@ public class PlayerInventoryListener implements Listener {
 	}
 
 
-	//プレイヤーがアクティブスキル選択インベントリを閉じた時に実行
-	@EventHandler
-	public void onPlayerActiveSkillSellectCloseEvent(InventoryCloseEvent event){
-		HumanEntity he = event.getPlayer();
-		Inventory inventory = event.getInventory();
-
-		//インベントリを開けたのがプレイヤーではない時終了
-		if(!he.getType().equals(EntityType.PLAYER)){
-			return;
-		}
-		//インベントリサイズが36でない時終了
-		if(inventory.getSize() != 36){
-			return;
-		}
-
-		if(inventory.getTitle().equals(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください")){
-			Player player = (Player)he;
-			//PlayerInventory pinventory = player.getInventory();
-			//ItemStack itemstack = pinventory.getItemInMainHand();
-			int givegacha = 0;
-			/*この分岐処理必要かなぁ…とりあえずコメントアウト
-			if(itemstack.getType().equals(Material.STICK)){
-			}
-			*/
-			/*
-			 * step1 for文でinventory内に対象商品がないか検索
-			 * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
-			 */
-			//ガチャ景品交換インベントリの中身を取得
-			ItemStack[] item = inventory.getContents();
-			//ドロップ用アイテムリスト(返却box)作成
-			List<ItemStack> dropitem = new ArrayList<ItemStack>();
-			//カウント用
-			int big = 0;
-			int reg = 0;
-
-			//for文で１個ずつ対象アイテムか見る
-			//ガチャ景品交換インベントリを一個ずつ見ていくfor文
+    //ガチャ交換システム
+    @EventHandler
+    public void onGachaTradeEvent(InventoryCloseEvent event){
+        HumanEntity he = event.getPlayer();
+        Inventory inventory = event.getInventory();
+        //インベントリを開けたのがプレイヤーではない時終了
+        if(!he.getType().equals(EntityType.PLAYER)){
+            return;
+        }
+        //インベントリサイズが36でない時終了
+        if(inventory.getSize() != 36){
+            return;
+        }
+        if(inventory.getTitle().equals(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください")){
+            Player player = (Player)he;
+            //PlayerInventory pinventory = player.getInventory();
+            //ItemStack itemstack = pinventory.getItemInMainHand();
+            int givegacha = 0;
+            /*この分岐処理必要かなぁ…とりあえずコメントアウト
+            if(itemstack.getType().equals(Material.STICK)){
+            }
+            */
+            /*
+             * step1 for文でinventory内に対象商品がないか検索
+             * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
+             */
+            //ガチャ景品交換インベントリの中身を取得
+            ItemStack[] item = inventory.getContents();
+            //ドロップ用アイテムリスト(返却box)作成
+            List<ItemStack> dropitem = new ArrayList<ItemStack>();
+            //カウント用
+            int big = 0;
+            int reg = 0;
+            //for文で１個ずつ対象アイテムか見る
+            //ガチャ景品交換インベントリを一個ずつ見ていくfor文
             for (ItemStack m : item) {
-            	//無いなら次へ
-            	if(m == null){
-            		continue;
-            	}else if(!m.hasItemMeta()){
-    				//丁重にお返しする
-        			dropitem.add(m);
-        			continue;
-            	}else if(!m.getItemMeta().hasLore()){
-    				//丁重にお返しする
-        			dropitem.add(m);
-        			continue;
-            	}else if(m.getType().equals(Material.SKULL_ITEM)){
-    				//丁重にお返しする
-        			dropitem.add(m);
-        			continue;
-            	}
-            	//ガチャ景品リストにアイテムがあった時にtrueになるフラグ
-            	boolean flag = false;
-
-            	//ガチャ景品リストを一個ずつ見ていくfor文
-            	for(GachaData gachadata : gachadatalist){
-            		if(!gachadata.itemstack.hasItemMeta()){
-            			continue;
-                	}else if(!gachadata.itemstack.getItemMeta().hasLore()){
-            			continue;
-                	}
-            		//ガチャ景品リストにある商品の場合(Lore=説明文で判別),無い場合はアイテム返却
-            		if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())){
-            			flag = true;
-            			double prob = gachadata.probability;
-            			int amount = m.getAmount();
-    					if(prob < 0.001){
-    						//ギガンティック大当たりの部分
-    						//ガチャ券に交換せずそのままアイテムを返す
-    						dropitem.add(m);
-    					}else if(prob < 0.01){
-    						//大当たりの部分
-    						givegacha += (12*amount);
-    						big++;
-    					}else if(prob < 0.1){
-    						//当たりの部分
-    						givegacha += (3*amount);
-    						reg++;
-    					}else{
-    						//それ以外もアイテム返却(経験値ポーションとかがここにくるはず)
-    						dropitem.add(m);
-    					}
-    					break;
-            		}
-            	}
-
-            	//ガチャ景品リストに対象アイテムが無かった場合
-    			if(!flag){
-    				//丁重にお返しする
-        			dropitem.add(m);
-    			}
+                //無いなら次へ
+                if(m == null){
+                    continue;
+                }else if(SeichiAssist.gachamente){
+                    //ガチャシステムメンテナンス中は全て返却する
+                    dropitem.add(m);
+                    continue;
+                }else if(!m.hasItemMeta()){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                    continue;
+                }else if(!m.getItemMeta().hasLore()){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                    continue;
+                }else if(!m.getItemMeta().hasDisplayName()){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                    continue;
+                }else if(m.getType().equals(Material.SKULL_ITEM)){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                    continue;
+                }
+                //ガチャ景品リストにアイテムがあった時にtrueになるフラグ
+                boolean flag = false;
+                //ガチャ景品リストを一個ずつ見ていくfor文
+                for(GachaData gachadata : gachadatalist){
+                    if(!gachadata.itemstack.hasItemMeta()){
+                        continue;
+                    }else if(!gachadata.itemstack.getItemMeta().hasLore()){
+                        continue;
+                    }else if(!gachadata.itemstack.getItemMeta().hasDisplayName())
+                        continue;
+                    //ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
+                    if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())
+                            &&gachadata.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
+                        flag = true;
+                        double prob = gachadata.probability;
+                        int amount = m.getAmount();
+                        if(prob < 0.001){
+                            //ギガンティック大当たりの部分
+                            //ガチャ券に交換せずそのままアイテムを返す
+                            dropitem.add(m);
+                        }else if(prob < 0.01){
+                            //大当たりの部分
+                            givegacha += (12*amount);
+                            big++;
+                        }else if(prob < 0.1){
+                            //当たりの部分
+                            givegacha += (3*amount);
+                            reg++;
+                        }else{
+                            //それ以外もアイテム返却(経験値ポーションとかがここにくるはず)
+                            dropitem.add(m);
+                        }
+                        break;
+                    }
+                }
+                //ガチャ景品リストに対象アイテムが無かった場合
+                if(!flag){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                }
             }
-
-            player.sendMessage(ChatColor.GREEN + "大当たり景品を" + big + "個、当たり景品を" + reg + "個認識しました");
-
-			/*
-			 * step2 非対象商品をインベントリに戻す
-			 */
-
+            //ガチャシステムメンテナンス中は全て返却する
+            if(SeichiAssist.gachamente){
+                player.sendMessage(ChatColor.RED + "ガチャシステムメンテナンス中の為全てのアイテムを返却します");
+            }else if(!(big > 0)&&!(reg > 0)){
+                player.sendMessage(ChatColor.YELLOW + "景品を認識しませんでした。全てのアイテムを返却します");
+            }else{
+                player.sendMessage(ChatColor.GREEN + "大当たり景品を" + big + "個、当たり景品を" + reg + "個認識しました");
+            }
+            /*
+             * step2 非対象商品をインベントリに戻す
+             */
             for(ItemStack m : dropitem){
-            	if(!Util.isPlayerInventryFill(player)){
-    				Util.addItem(player,m);
-    			}else{
-    				Util.dropItem(player,m);
-    			}
+                if(!Util.isPlayerInventryFill(player)){
+                    Util.addItem(player,m);
+                }else{
+                    Util.dropItem(player,m);
+                }
             }
-
-			/*
-			 * step3 ガチャ券をインベントリへ
-			 */
-			ItemStack skull = Util.getskull(Util.getName(player));
-			int count2 = 0;
-			while(givegacha > 0){
-				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
-					Util.addItem(player,skull);
-				}else{
-					Util.dropItem(player,skull);
-				}
-				givegacha--;
-				count2++;
-			}
-
-			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			player.sendMessage(ChatColor.GREEN + ""+count2+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
-		}
-	}
+            /*
+             * step3 ガチャ券をインベントリへ
+             */
+            ItemStack skull = Util.getskull(Util.getName(player));
+            int count = 0;
+            while(givegacha > 0){
+                if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+                    Util.addItem(player,skull);
+                }else{
+                    Util.dropItem(player,skull);
+                }
+                givegacha--;
+                count++;
+            }
+            if(count > 0){
+                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+                player.sendMessage(ChatColor.GREEN + ""+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
+            }
+        }
+    }
 }
