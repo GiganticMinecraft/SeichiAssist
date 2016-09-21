@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,11 +14,11 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.skilleffect.ExplosionTaskRunnable;
 
 public enum ActiveSkillEffect {
-
+/*
 	EXPLOSION(1,"ef_explosion",ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン","単純な爆発のエフェクト",10,Material.TNT),
 	BLIZZARD(2,"ef_blizzard",ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード","凍らせるエフェクト",20,Material.PACKED_ICE),
 	METEO(3,"ef_meteo",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ","隕石を落とすエフェクト",30,Material.FIREBALL),
-
+*/
 	;
 
 	SeichiAssist plugin = SeichiAssist.plugin;
