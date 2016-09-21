@@ -299,12 +299,12 @@ public class Util {
 			return;
 		}
 
-
-		//アイテムをドロップさせる
-		if(!addItemtoMineStack(player,itemstack)){
-			breakblock.getWorld().dropItemNaturally(centerofblock,itemstack);
+		if(itemstack != null){
+			//アイテムをドロップさせる
+			if(!addItemtoMineStack(player,itemstack)){
+				breakblock.getWorld().dropItemNaturally(centerofblock,itemstack);
+			}
 		}
-
 
 		//ブロックを空気に変える
 		breakblock.setType(Material.AIR);
@@ -489,7 +489,8 @@ public class Util {
 		Material dropmaterial;
 		Material breakmaterial = breakblock.getType();
 		int fortunelevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
-        int bonus = (int) (Math.random() * ((fortunelevel + 2)) - 1);
+		double rand = Math.random();
+        int bonus = (int) (rand * ((fortunelevel + 2)) - 1);
         if (bonus <= 1) {
             bonus = 1;
         }
@@ -524,6 +525,7 @@ public class Util {
 				case LAPIS_ORE:
 					Dye dye = new Dye();
 					dye.setColor(DyeColor.BLUE);
+					bonus *= 4;
 					dropitem = dye.toItemStack(bonus);
 					break;
 				case EMERALD_ORE:
@@ -532,18 +534,18 @@ public class Util {
 					break;
 				case REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
+					bonus *= 4;
+					if(bonus > 20)bonus = 20;
 					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
 				case GLOWING_REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
+					bonus *= 4;
+					if(bonus > 20)bonus = 20;
 					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
 				case QUARTZ_ORE:
 					dropmaterial = Material.QUARTZ;
-					dropitem = new ItemStack(dropmaterial,bonus);
-					break;
-				case GRAVEL:
-					dropmaterial = Material.FLINT;
 					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
 				default:
@@ -563,7 +565,7 @@ public class Util {
 				case LAPIS_ORE:
 					Dye dye = new Dye();
 					dye.setColor(DyeColor.BLUE);
-					dropitem = dye.toItemStack();
+					dropitem = dye.toItemStack((int) ((rand*3 + 1 )* 2));
 					break;
 				case EMERALD_ORE:
 					dropmaterial = Material.EMERALD;
@@ -571,11 +573,11 @@ public class Util {
 					break;
 				case REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
-					dropitem = new ItemStack(dropmaterial);
+					dropitem = new ItemStack(dropmaterial,(int) (rand+4));
 					break;
 				case GLOWING_REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
-					dropitem = new ItemStack(dropmaterial,bonus);
+					dropitem = new ItemStack(dropmaterial,(int) (rand+4));
 					break;
 				case QUARTZ_ORE:
 					dropmaterial = Material.QUARTZ;
@@ -596,6 +598,37 @@ public class Util {
 					//芝生の処理
 					dropmaterial = Material.DIRT;
 					dropitem = new ItemStack(dropmaterial);
+					break;
+				case GRAVEL:
+					double p = 0;
+					switch(fortunelevel){
+					case 1:
+						p = 0.14;
+						break;
+					case 2:
+						p = 0.25;
+						break;
+					case 3:
+						p = 1.00;
+						break;
+					default :
+						p = 0.1;
+						break;
+					}
+					if(p>rand){
+						dropmaterial = Material.FLINT;
+					}else{
+						dropmaterial = Material.GRAVEL;
+					}
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case LEAVES:
+				case LEAVES_2:
+					dropitem = null;
+					break;
+				case CLAY:
+					dropmaterial = Material.CLAY_BALL;
+					dropitem = new ItemStack(dropmaterial,4);
 					break;
 				default:
 					//breakblcokのままのアイテムスタックを保存
