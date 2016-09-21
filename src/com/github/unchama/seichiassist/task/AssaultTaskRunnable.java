@@ -149,7 +149,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		//壊されるブロックの宣言
 		Block breakblock;
 		Coordinate start = new Coordinate(-2,-1,-2);
-		Coordinate end = new Coordinate(2,2,2);
+		Coordinate end = new Coordinate(2,5,2);
 
 		if(playerdata.activeskilldata.assaulttype == ActiveSkill.CONDENSE.gettypenum()){
 			breaklength = ActiveSkill.CONDENSE.getBreakLength(playerdata.activeskilldata.assaultnum);
