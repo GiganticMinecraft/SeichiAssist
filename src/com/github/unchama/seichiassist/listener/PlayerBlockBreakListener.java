@@ -69,7 +69,7 @@ public class PlayerBlockBreakListener implements Listener {
 		if(SeichiAssist.DEBUG){
 			worldname = "world";
 		}
-		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
+		if(player.getWorld().getName().equalsIgnoreCase(worldname) && playerdata.activeskilldata.skilltype != 0 && playerdata.activeskilldata.skillnum != 0){
 			if(Util.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
 				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 				event.setCancelled(true);
