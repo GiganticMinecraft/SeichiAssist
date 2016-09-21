@@ -687,4 +687,18 @@ public class Util {
 			return 0;
 		}
 	}
+	public static double getGravity(Player player, Block block, int breakyloc, int weight) {
+		int gravity = 2;
+		while(!block.getRelative(0,gravity,0).getType().equals(Material.AIR)){
+			gravity++;
+		}
+		gravity --;
+		gravity -= breakyloc;
+		if(SeichiAssist.DEBUG){
+			player.sendMessage(ChatColor.RED + "重力値：" + gravity);
+		}
+		gravity= gravity*weight + 1;
+		if(gravity < 1)gravity = 1;
+		return gravity;
+	}
 }

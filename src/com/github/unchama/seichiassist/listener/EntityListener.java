@@ -277,10 +277,14 @@ public class EntityListener implements Listener {
 		}
 
 
-		//減る経験値計算
+		//重力値計算
+		double gravity = Util.getGravity(player,block,end.y,1);
 
-		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数
-		double useExp = (double) (breaklist.size())
+
+		//減る経験値計算
+		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
+
+		double useExp = (double) (breaklist.size()) * gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 				/((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1)) ;
 		if(SeichiAssist.DEBUG){
@@ -295,6 +299,12 @@ public class EntityListener implements Listener {
 		durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
 
 
+		//重力値の判定
+		if(gravity > 15){
+			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
+			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			return;
+		}
 
 		//実際に経験値を減らせるか判定
 		if(!expman.hasExp(useExp)){
