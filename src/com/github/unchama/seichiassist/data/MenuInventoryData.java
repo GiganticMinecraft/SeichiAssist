@@ -242,6 +242,21 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(26,itemstack);
 
+		// 不要ガチャ景品交換システムを開く
+		itemstack = new ItemStack(Material.NOTE_BLOCK,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NOTE_BLOCK);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "不要ガチャ景品交換システム");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "不必要な当たり、大当たり景品を"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "ガチャ券と交換出来ます"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "出てきたインベントリ―に"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "交換したい景品を入れて"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "escキーを押してください"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(31,itemstack);
+
 		// ver0.3.2 homeコマンド
 		itemstack = new ItemStack(Material.COMPASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
