@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.listener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -33,6 +35,7 @@ import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.EffectData;
+import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.AssaultArmorTaskRunnable;
@@ -42,6 +45,7 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
 	SeichiAssist plugin = SeichiAssist.plugin;
 	private Config config = SeichiAssist.config;
 	private Sql sql = SeichiAssist.plugin.sql;
@@ -559,6 +563,15 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 1.5);
 				//インベントリを開く
 				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.RED + "" + ChatColor.BOLD + "ゴミ箱(取扱注意)"));
+			}
+
+
+			else if(itemstackcurrent.getType().equals(Material.NOTE_BLOCK)){
+				//ガチャ景品交換システムを開く
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
+				//インベントリを開く
+				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください"));
 			}
 		}
 	}
@@ -1550,7 +1563,7 @@ public class PlayerInventoryListener implements Listener {
 		return minestack;
 	}
 
-	/*
+
 	//プレイヤーがアクティブスキル選択インベントリを閉じた時に実行
 	@EventHandler
 	public void onPlayerActiveSkillSellectCloseEvent(InventoryCloseEvent event){
@@ -1565,17 +1578,120 @@ public class PlayerInventoryListener implements Listener {
 		if(inventory.getSize() != 36){
 			return;
 		}
-		if(inventory.getTitle().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "木の棒メニュー")){
+
+		if(inventory.getTitle().equals(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください")){
 			Player player = (Player)he;
-			PlayerInventory pinventory = player.getInventory();
-			ItemStack itemstack = pinventory.getItemInMainHand();
+			//PlayerInventory pinventory = player.getInventory();
+			//ItemStack itemstack = pinventory.getItemInMainHand();
+			int givegacha = 0;
+			/*この分岐処理必要かなぁ…とりあえずコメントアウト
 			if(itemstack.getType().equals(Material.STICK)){
-				//閉まる音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_CLOSE, 1, (float) 0.1);
 			}
+			*/
+			/*
+			 * step1 for文でinventory内に対象商品がないか検索
+			 * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
+			 */
+			//ガチャ景品交換インベントリの中身を取得
+			ItemStack[] item = inventory.getContents();
+			//ドロップ用アイテムリスト(返却box)作成
+			List<ItemStack> dropitem = new ArrayList<ItemStack>();
+			//カウント用
+			int big = 0;
+			int reg = 0;
+
+			//for文で１個ずつ対象アイテムか見る
+			//ガチャ景品交換インベントリを一個ずつ見ていくfor文
+            for (ItemStack m : item) {
+            	//無いなら次へ
+            	if(m == null){
+            		continue;
+            	}else if(!m.hasItemMeta()){
+    				//丁重にお返しする
+        			dropitem.add(m);
+        			continue;
+            	}else if(!m.getItemMeta().hasLore()){
+    				//丁重にお返しする
+        			dropitem.add(m);
+        			continue;
+            	}else if(m.getType().equals(Material.SKULL_ITEM)){
+    				//丁重にお返しする
+        			dropitem.add(m);
+        			continue;
+            	}
+            	//ガチャ景品リストにアイテムがあった時にtrueになるフラグ
+            	boolean flag = false;
+
+            	//ガチャ景品リストを一個ずつ見ていくfor文
+            	for(GachaData gachadata : gachadatalist){
+            		if(!gachadata.itemstack.hasItemMeta()){
+            			continue;
+                	}else if(!gachadata.itemstack.getItemMeta().hasLore()){
+            			continue;
+                	}
+            		//ガチャ景品リストにある商品の場合(Lore=説明文で判別),無い場合はアイテム返却
+            		if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())){
+            			flag = true;
+            			double prob = gachadata.probability;
+            			int amount = m.getAmount();
+    					if(prob < 0.001){
+    						//ギガンティック大当たりの部分
+    						//ガチャ券に交換せずそのままアイテムを返す
+    						dropitem.add(m);
+    					}else if(prob < 0.01){
+    						//大当たりの部分
+    						givegacha += (12*amount);
+    						big++;
+    					}else if(prob < 0.1){
+    						//当たりの部分
+    						givegacha += (3*amount);
+    						reg++;
+    					}else{
+    						//それ以外もアイテム返却(経験値ポーションとかがここにくるはず)
+    						dropitem.add(m);
+    					}
+    					break;
+            		}
+            	}
+
+            	//ガチャ景品リストに対象アイテムが無かった場合
+    			if(!flag){
+    				//丁重にお返しする
+        			dropitem.add(m);
+    			}
+            }
+
+            player.sendMessage(ChatColor.GREEN + "大当たり景品を" + big + "個、当たり景品を" + reg + "個認識しました");
+
+			/*
+			 * step2 非対象商品をインベントリに戻す
+			 */
+
+            for(ItemStack m : dropitem){
+            	if(!Util.isPlayerInventryFill(player)){
+    				Util.addItem(player,m);
+    			}else{
+    				Util.dropItem(player,m);
+    			}
+            }
+
+			/*
+			 * step3 ガチャ券をインベントリへ
+			 */
+			ItemStack skull = Util.getskull(Util.getName(player));
+			int count2 = 0;
+			while(givegacha > 0){
+				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+					Util.addItem(player,skull);
+				}else{
+					Util.dropItem(player,skull);
+				}
+				givegacha--;
+				count2++;
+			}
+
+			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+			player.sendMessage(ChatColor.GREEN + ""+count2+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
 		}
 	}
-	*/
-
-
 }
