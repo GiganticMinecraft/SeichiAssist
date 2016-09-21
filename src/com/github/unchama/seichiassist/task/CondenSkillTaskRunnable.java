@@ -164,10 +164,15 @@ public class CondenSkillTaskRunnable extends BukkitRunnable{
 		if(breaklist.size() == 0){
 			return;
 		}
-		//減る経験値計算
 
-		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数
-		double useExp = (double) (breaklist.size())
+		//重力値計算
+		double gravity = Util.getGravity(player,block,end.y,1);
+
+
+		//減る経験値計算
+		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
+
+		double useExp = (double) (breaklist.size()) * gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 				/((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1)) ;
 		if(SeichiAssist.DEBUG){

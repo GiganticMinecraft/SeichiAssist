@@ -43,9 +43,6 @@ public class PlayerBlockBreakListener implements Listener {
 			player.sendMessage("ブロックブレイクイベントが呼び出されました");
 		}
 
-
-
-
 		//壊されるブロックを取得
 		Block block = event.getBlock();
 		//他人の保護がかかっている場合は処理を終了
@@ -54,7 +51,6 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 		//ブロックのタイプを取得
 		Material material = block.getType();
-
 
 
 		//UUIDを取得
@@ -119,6 +115,18 @@ public class PlayerBlockBreakListener implements Listener {
 			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
+		ActiveSkill[] activeskill = ActiveSkill.values();
+		String worldname = "world_sw";
+		if(SeichiAssist.DEBUG){
+			worldname = "world";
+		}
+		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
+			if(Util.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
+				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
+				event.setCancelled(true);
+				return;
+			}
+		}
 
 		//これ以前の終了処理はパッシブの追加経験値はもらえません
 		//経験値変更用のクラスを設定
@@ -142,10 +150,10 @@ public class PlayerBlockBreakListener implements Listener {
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
-			event.setCancelled(true);
+
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
 			runBreakSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
-			event.setCancelled(true);
+
 		}
 
 
@@ -258,11 +266,14 @@ public class PlayerBlockBreakListener implements Listener {
 				}
 			}
 
-			//減る経験値計算
+			//重力値計算
+			double gravity = Util.getGravity(player,block,end.y,1);
 
-			//消費経験値の最大値は範囲破壊を行う回数で割る。
-			//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数
-			double useExp = (double) (breaklist.size())
+
+			//減る経験値計算
+			//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
+
+			double useExp = (double) (breaklist.size()) * gravity
 					* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 					/((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1) * breaknum) ;
 
@@ -272,6 +283,12 @@ public class PlayerBlockBreakListener implements Listener {
 			//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
 			durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
 
+			//重力値の判定
+			if(gravity > 15){
+				player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
+				playerdata.activeskilldata.blocklist.removeAll(breaklist);
+				break;
+			}
 			//実際に経験値を減らせるか判定
 			if(!expman.hasExp(useExp)){
 				//デバッグ用
@@ -487,10 +504,17 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 		}
 
-		//減る経験値計算
 
-		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数
-		double useExp = (double) (breaklist.size())
+
+
+		//重力値計算
+		double gravity = Util.getGravity(player,block,end.y,1);
+
+
+		//減る経験値計算
+		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
+
+		double useExp = (double) (breaklist.size()) * gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 				/((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1)) ;
 		if(SeichiAssist.DEBUG){
@@ -504,6 +528,13 @@ public class PlayerBlockBreakListener implements Listener {
 		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
 		durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavalist.size());
 
+
+		//重力値の判定
+		if(gravity > 15){
+			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
+			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			return;
+		}
 
 
 		//実際に経験値を減らせるか判定
