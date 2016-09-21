@@ -1603,14 +1603,23 @@ public class PlayerInventoryListener implements Listener {
 			//for文で１個ずつ対象アイテムか見る
 			//ガチャ景品交換インベントリを一個ずつ見ていくfor文
             for (ItemStack m : item) {
+
             	//無いなら次へ
             	if(m == null){
             		continue;
+            	}else if(SeichiAssist.gachamente){
+    				//ガチャシステムメンテナンス中は全て返却する
+					dropitem.add(m);
+					continue;
             	}else if(!m.hasItemMeta()){
     				//丁重にお返しする
         			dropitem.add(m);
         			continue;
             	}else if(!m.getItemMeta().hasLore()){
+    				//丁重にお返しする
+        			dropitem.add(m);
+        			continue;
+            	}else if(!m.getItemMeta().hasDisplayName()){
     				//丁重にお返しする
         			dropitem.add(m);
         			continue;
@@ -1628,9 +1637,11 @@ public class PlayerInventoryListener implements Listener {
             			continue;
                 	}else if(!gachadata.itemstack.getItemMeta().hasLore()){
             			continue;
-                	}
-            		//ガチャ景品リストにある商品の場合(Lore=説明文で判別),無い場合はアイテム返却
-            		if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())){
+                	}else if(!gachadata.itemstack.getItemMeta().hasDisplayName())
+                		continue;
+            		//ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
+            		if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())
+            				&&gachadata.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
             			flag = true;
             			double prob = gachadata.probability;
             			int amount = m.getAmount();
@@ -1661,7 +1672,14 @@ public class PlayerInventoryListener implements Listener {
     			}
             }
 
-            player.sendMessage(ChatColor.GREEN + "大当たり景品を" + big + "個、当たり景品を" + reg + "個認識しました");
+			//ガチャシステムメンテナンス中は全て返却する
+			if(SeichiAssist.gachamente){
+				player.sendMessage(ChatColor.RED + "ガチャシステムメンテナンス中の為全てのアイテムを返却します");
+			}else if(!(big > 0)&&!(reg > 0)){
+				player.sendMessage(ChatColor.YELLOW + "景品を認識しませんでした。全てのアイテムを返却します");
+			}else{
+				player.sendMessage(ChatColor.GREEN + "大当たり景品を" + big + "個、当たり景品を" + reg + "個認識しました");
+			}
 
 			/*
 			 * step2 非対象商品をインベントリに戻す
@@ -1679,7 +1697,7 @@ public class PlayerInventoryListener implements Listener {
 			 * step3 ガチャ券をインベントリへ
 			 */
 			ItemStack skull = Util.getskull(Util.getName(player));
-			int count2 = 0;
+			int count = 0;
 			while(givegacha > 0){
 				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
 					Util.addItem(player,skull);
@@ -1687,11 +1705,14 @@ public class PlayerInventoryListener implements Listener {
 					Util.dropItem(player,skull);
 				}
 				givegacha--;
-				count2++;
+				count++;
 			}
 
-			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			player.sendMessage(ChatColor.GREEN + ""+count2+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
+
+			if(count > 0){
+				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+				player.sendMessage(ChatColor.GREEN + ""+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
+			}
 		}
 	}
 }

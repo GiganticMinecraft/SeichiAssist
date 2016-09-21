@@ -121,7 +121,11 @@ public class PlayerBlockBreakListener implements Listener {
 			worldname = "world";
 		}
 		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
-			if(Util.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
+			int type = playerdata.activeskilldata.skilltype-1;
+			if(type < 0){
+				type = 0;
+			}
+			if(Util.getGravity(player, block, activeskill[type].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
 				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 				event.setCancelled(true);
 				return;
