@@ -254,6 +254,7 @@ public class Util {
 		return false;
 	}
 	//他のプラグインの影響があってもブロックを破壊できるのか
+	@SuppressWarnings("deprecation")
 	public static boolean canBreak(Player player ,Block breakblock) {
 		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 		UUID uuid = player.getUniqueId();
@@ -262,7 +263,6 @@ public class Util {
 		//壊されるブロックの状態を取得
 		BlockState blockstate = breakblock.getState();
 		//壊されるブロックのデータを取得
-		@SuppressWarnings("deprecation")
 		byte data = blockstate.getData().getData();
 
 
@@ -694,11 +694,25 @@ public class Util {
 		}
 		gravity --;
 		gravity -= breakyloc;
-		if(SeichiAssist.DEBUG){
-			player.sendMessage(ChatColor.RED + "重力値：" + gravity);
-		}
 		gravity= gravity*weight + 1;
 		if(gravity < 1)gravity = 1;
 		return gravity;
+	}
+	public static boolean logPlace(Player player, Block placeblock) {
+		//設置するブロックの状態を取得
+		BlockState blockstate = placeblock.getState();
+		//設置するブロックのデータを取得
+		byte data = blockstate.getData().getData();
+
+		//コアプロテクトのクラスを取得
+		CoreProtectAPI CoreProtect = Util.getCoreProtect();
+		//破壊ログを設定
+		Boolean success = CoreProtect.logRemoval(player.getName(), placeblock.getLocation(), blockstate.getType(),data);
+		//もし失敗したらプレイヤーに報告し処理を終了
+		if(!success){
+			player.sendMessage(ChatColor.RED + "error:coreprotectに保存できませんでした。管理者に報告してください。");
+			return false;
+		}
+		return true;
 	}
 }

@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -36,6 +37,10 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	//経験値変更用のクラスを設定
 	ExperienceManager expman;
 
+	Coordinate breaklength;
+
+	boolean waterflag = false,lavaflag = false,breakflag = false,condensflag = false;
+
 	public AssaultTaskRunnable(Player player) {
 		this.player = player;
 		uuid = player.getUniqueId();
@@ -45,13 +50,14 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-			playerdata.activeskilldata.assaultflag = false;
-			this.cancel();
+			setCancel();
 			return;
 		}
 
-		expman = new ExperienceManager(player);
 
+		setRun();
+
+		expman = new ExperienceManager(player);
 
 		//プレイヤーインベントリを取得
 		inventory = player.getInventory();
@@ -72,42 +78,57 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		}else if(mainhandtoolflag){
 			//メインハンドの時
 			player.sendMessage(ChatColor.GREEN + "使うツールをオフハンドにセット(fキー)してください");
-			playerdata.activeskilldata.assaultflag = false;
-			this.cancel();
+			setCancel();
 			return;
 		}else{
 			//どちらにももっていない時処理を終了
 			player.sendMessage(ChatColor.GREEN + "使うツールをオフハンドにセット(fキー)してください");
-			playerdata.activeskilldata.assaultflag = false;
-			this.cancel();
+			setCancel();
 			return;
 		}
 		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
 		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
 			player.sendMessage(ChatColor.GREEN + "不正な耐久値です。");
-			playerdata.activeskilldata.assaultflag = false;
-			this.cancel();
+			setCancel();
 			return;
 		}
+		if(playerdata.activeskilldata.assaulttype == ActiveSkill.CONDENSE.gettypenum()){
+			if(playerdata.activeskilldata.assaultnum < 7){
+				waterflag = true;
+			}else{
+				lavaflag = true;
+			}
+			condensflag = true;
+		}else if(playerdata.activeskilldata.assaulttype == 5){
+			breakflag = true;
+		}
+
+	}
+
+	private void setRun() {
+		playerdata.activeskilldata.mineflagnum = 1;
+	}
+
+	private void setCancel() {
+		this.cancel();
 	}
 
 	@Override
 	public void run() {
-		if(playerdata.activeskilldata.assaultflag == false){
-			this.cancel();
+		if(isCanceled()){
+			setCancel();
 			return;
 		}
 		//もしサバイバルでなければ処理を終了
 		//もしフライ中なら終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
-			player.sendMessage(ChatColor.GREEN + "フライ機能をOFFにしてください.");
-			playerdata.activeskilldata.assaultflag = false;
-			this.cancel();
+		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
+			//player.sendMessage(ChatColor.GREEN + "フライ機能をOFFにしてください.");
+			setCancel();
 			return;
 		}
 		List<Block> breaklist = new ArrayList<Block>();
 		List<Block> lavalist = new ArrayList<Block>();
-
+		List<Block> waterlist = new ArrayList<Block>();
 		ploc = player.getLocation();
 		//プレイヤーの足のy座標を取得
 		int playerlocy = ploc.getBlockY() - 1 ;
@@ -119,8 +140,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "ツールの変更を検知しました");
 			}
-			playerdata.activeskilldata.assaultflag = false;
-			this.cancel();
+			setCancel();
 			return;
 		}
 
@@ -131,17 +151,29 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		Coordinate start = new Coordinate(-2,-1,-2);
 		Coordinate end = new Coordinate(2,2,2);
 
+		if(playerdata.activeskilldata.assaulttype == ActiveSkill.CONDENSE.gettypenum()){
+			breaklength = ActiveSkill.CONDENSE.getBreakLength(playerdata.activeskilldata.assaultnum);
+			start = new Coordinate(-(breaklength.x - 1)/2,-(breaklength.y - 1)/2,-(breaklength.z - 1)/2);
+			end = new Coordinate((breaklength.x - 1)/2,(breaklength.y - 1)/2,(breaklength.z - 1)/2);
+		}
+
 		for(int x = start.x ; x <= end.x ; x++){
 			for(int z = start.z ; z <= end.z ; z++){
 				for(int y = start.y; y <= end.y ; y++){
 					breakblock = block.getRelative(x, y, z);
+					boolean lava_materialflag = breakblock.getType().equals(Material.STATIONARY_LAVA)
+												|| breakblock.getType().equals(Material.LAVA);
+					boolean water_materialflag = breakblock.getType().equals(Material.STATIONARY_WATER)
+												|| breakblock.getType().equals(Material.WATER);
 					if(SeichiAssist.materiallist.contains(breakblock.getType())
-							|| breakblock.getType().equals(Material.STATIONARY_LAVA)
+							|| lava_materialflag || water_materialflag
 							){
-						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
+						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block) || !breakflag){
 							if(Util.canBreak(player, breakblock)){
-								if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+								if(lava_materialflag){
 									lavalist.add(breakblock);
+								}else if(water_materialflag){
+									waterlist.add(breakblock);
 								}else{
 									breaklist.add(breakblock);
 									playerdata.activeskilldata.blocklist.add(breakblock);
@@ -152,18 +184,41 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 				}
 			}
 		}
+		//重力値計算
+		double gravity = Util.getGravity(player,block,end.y,1);
+
+		// 実際に破壊するブロック数の計算分岐
+		int breaksum = 0;
+		if(waterflag){
+			breaksum = waterlist.size();
+		}else if(lavaflag){
+			breaksum = lavalist.size();
+		}else if(breakflag){
+			breaksum = waterlist.size() + lavalist.size() + breaklist.size();
+		}
+
 		//減る経験値計算
+		//実際に破壊するブロック数 * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数
-		double useExp = (double) (breaklist.size())
-				* 100
+		double useExp = (double)breaksum * gravity
+				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum)
 				/((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1)) ;
+
+
+
 		//減る耐久値の計算
-		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
-		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-		durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavalist.size());
+		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaksum));
 
 
+		//重力値の判定
+		if(gravity > 15){
+			if(SeichiAssist.DEBUG){
+				player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
+			}
+			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			setCancel();
+			return;
+		}
 
 		//実際に経験値を減らせるか判定
 		if(!expman.hasExp(useExp)){
@@ -172,8 +227,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
 			}
 			playerdata.activeskilldata.blocklist.removeAll(breaklist);
-			playerdata.activeskilldata.assaultflag = false;
-			this.cancel();
+			setCancel();
 			return;
 		}
 
@@ -185,8 +239,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
 			playerdata.activeskilldata.blocklist.removeAll(breaklist);
-			playerdata.activeskilldata.assaultflag = false;
-			this.cancel();
+			setCancel();
 			return;
 		}
 
@@ -200,15 +253,38 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 		//以降破壊する処理
 
-		//溶岩の破壊する処理
-		for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
-			lavalist.get(lavanum).setType(Material.AIR);
+		//破壊する処理分岐
+		if(waterflag){
+			for(int waternum = 0 ; waternum <waterlist.size();waternum++){
+				waterlist.get(waternum).setType(Material.PACKED_ICE);
+				Util.logPlace(player,waterlist.get(waternum));
+			}
+		}else if(lavaflag){
+			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
+				lavalist.get(lavanum).setType(Material.MAGMA);
+				Util.logPlace(player,lavalist.get(lavanum));
+			}
+		}else if(breakflag){
+			for(int waternum = 0 ; waternum <waterlist.size();waternum++){
+				waterlist.get(waternum).setType(Material.AIR);
+			}
+			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
+				lavalist.get(lavanum).setType(Material.AIR);
+			}
+			for(Block b:breaklist){
+				Util.BreakBlock(player, b, ploc, tool,true);
+				playerdata.activeskilldata.blocklist.remove(b);
+			}
 		}
+		playerdata.activeskilldata.blocklist.removeAll(breaklist);
 
-		for(Block b:breaklist){
-			Util.BreakBlock(player, b, ploc, tool,true);
-			playerdata.activeskilldata.blocklist.remove(b);
-		}
 	}
 
+	private boolean isCanceled() {
+		if(playerdata.activeskilldata.mineflagnum == 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

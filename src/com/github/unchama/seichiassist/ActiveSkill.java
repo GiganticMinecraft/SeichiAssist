@@ -188,22 +188,22 @@ public enum ActiveSkill{
 		case "CONDENSE":
 			switch(skilllevel){
 			case 4:
-				breaklength.setXYZ(3, 3, 3);
+				breaklength.setXYZ(5, 5, 5);
 				break;
 			case 5:
-				breaklength.setXYZ(5, 5, 5);
+				breaklength.setXYZ(7, 7, 7);
 				break;
 			case 6:
-				breaklength.setXYZ(7, 7, 7);
+				breaklength.setXYZ(9, 9, 9);
 				break;
 			case 7:
-				breaklength.setXYZ(3, 3, 3);
-				break;
-			case 8:
 				breaklength.setXYZ(5, 5, 5);
 				break;
-			case 9:
+			case 8:
 				breaklength.setXYZ(7, 7, 7);
+				break;
+			case 9:
+				breaklength.setXYZ(9, 9, 9);
 				break;
 			}
 			break;
@@ -252,6 +252,7 @@ public enum ActiveSkill{
 			break;
 		case 10:
 			str = "アサルト・アーマー";
+			break;
 		default:
 			str = "エラー";
 			break;
@@ -362,6 +363,8 @@ public enum ActiveSkill{
 			default:
 				break;
 			}
+		}else if(typenum == 5){
+			exp = 50;
 		}
 		return exp;
 	}

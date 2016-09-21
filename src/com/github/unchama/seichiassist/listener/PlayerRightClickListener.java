@@ -69,26 +69,47 @@ public class PlayerRightClickListener implements Listener {
 		if(player.isSneaking()){
 			return;
 		}
+		//サバイバルでない時　または　フライ中の時終了
+		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
+			return;
+		}
+		//アクティブスキルフラグがオフの時処理を終了
+		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0){
+			return;
+		}
+
 
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-
-			//サバイバルでない時　または　フライ中の時終了
-			if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
+			//アサルトアーマー使用中の時は終了左クリックで判定
+			if(playerdata.activeskilldata.assaulttask.isSync()){
 				return;
 			}
-
-			//アクティブスキルフラグがオフの時処理を終了
-			if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0){
-				return;
-			}
-
 			//クールダウンタイム中は処理を終了
 			if(!playerdata.activeskilldata.skillcanbreakflag){
 				//SEを再生
 				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 				return;
 			}
+
+
+			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
+				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
+					runArrowSkillofLaunch(player,Arrow.class);
+				}
+			}
+		}else if(action.equals(Action.LEFT_CLICK_AIR)){
+			//アサルトアーマーをどっちも使用していない時終了
+			if(!playerdata.activeskilldata.assaulttask.isSync()){
+				return;
+			}
+			//クールダウンタイム中は処理を終了
+			if(!playerdata.activeskilldata.skillcanbreakflag){
+				//SEを再生
+				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
+				return;
+			}
+
 
 			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
@@ -272,8 +293,7 @@ public class PlayerRightClickListener implements Listener {
 			boolean mainhandflag = SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInMainHand().getType());
 			boolean offhandflag = SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInOffHand().getType());
 
-			int activemineflagnum = 0;
-			boolean assaultflag = !playerdata.activeskilldata.assaultflag;
+			int activemineflagnum = playerdata.activeskilldata.mineflagnum;
 			//どちらにも対応したアイテムを持っていない場合終了
 			if(!mainhandflag && !offhandflag){
 				return;
@@ -301,7 +321,7 @@ public class PlayerRightClickListener implements Listener {
 				if((playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskilldata.skillnum == 1)
 						|| (playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskilldata.skillnum == 2)){
 
-					activemineflagnum = (playerdata.activeskilldata.mineflagnum + 1) % 3;
+					activemineflagnum = (activemineflagnum + 1) % 3;
 					switch (activemineflagnum){
 					case 0:
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + "：OFF");
@@ -316,7 +336,7 @@ public class PlayerRightClickListener implements Listener {
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 					playerdata.activeskilldata.mineflagnum = activemineflagnum;
 				}else if(playerdata.activeskilldata.skilltype > 0 && playerdata.activeskilldata.skillnum > 0){
-					activemineflagnum = (playerdata.activeskilldata.mineflagnum + 1) % 2;
+					activemineflagnum = (activemineflagnum + 1) % 2;
 					switch (activemineflagnum){
 					case 0:
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + "：OFF");
@@ -341,21 +361,19 @@ public class PlayerRightClickListener implements Listener {
 
 
 				if(playerdata.activeskilldata.assaultnum >=4 && playerdata.activeskilldata.assaulttype >=4){
-					if(mainhandflag){
-						if(activemineflagnum == 0){
-							assaultflag = false;
-						}else{
-							assaultflag = true;
-						}
+					//メインハンドでも指定ツールを持っていたらフラグは変えない
+					if(!mainhandflag || playerdata.activeskilldata.skillnum == 0){
+						activemineflagnum = (activemineflagnum + 1) % 2;
 					}
-					if(assaultflag){
+					if(activemineflagnum == 0){
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + "：OFF");
 					}else{
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + ":ON");
-						new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
+						playerdata.activeskilldata.assaulttask.cancel();
+						playerdata.activeskilldata.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
 					}
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-					playerdata.activeskilldata.assaultflag = assaultflag;
+					playerdata.activeskilldata.mineflagnum = activemineflagnum;
 				}
 			}
 		}
