@@ -24,6 +24,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
@@ -82,7 +83,7 @@ public class PlayerRightClickListener implements Listener {
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			//アサルトアーマー使用中の時は終了左クリックで判定
-			if(playerdata.activeskilldata.assaulttask.isSync()){
+			if(playerdata.activeskilldata.assaultflag){
 				return;
 			}
 			//クールダウンタイム中は処理を終了
@@ -95,14 +96,30 @@ public class PlayerRightClickListener implements Listener {
 
 			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-					runArrowSkillofLaunch(player,Arrow.class);
+			        //クールダウン処理
+			        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
+			        if(cooldown > 5){
+			        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+			        }else{
+			        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
+			        }
+					//エフェクトが指定されていないときの処理
+					if(playerdata.activeskilldata.effectnum == 0){
+						runArrowSkill(player,Arrow.class);
+					}
+					//エフェクトが指定されているときの処理
+					else{
+						ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+						skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player);
+					}
 				}
 			}
-		}else if(action.equals(Action.LEFT_CLICK_AIR)){
+		}else if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
 			//アサルトアーマーをどっちも使用していない時終了
-			if(!playerdata.activeskilldata.assaulttask.isSync()){
+			if(!playerdata.activeskilldata.assaultflag){
 				return;
 			}
+
 			//クールダウンタイム中は処理を終了
 			if(!playerdata.activeskilldata.skillcanbreakflag){
 				//SEを再生
@@ -113,12 +130,28 @@ public class PlayerRightClickListener implements Listener {
 
 			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-					runArrowSkillofLaunch(player,Arrow.class);
+			        //クールダウン処理
+			        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
+			        if(cooldown > 5){
+			        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+			        }else{
+			        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
+			        }
+					//エフェクトが指定されていないときの処理
+					if(playerdata.activeskilldata.effectnum == 0){
+						runArrowSkill(player,Arrow.class);
+					}
+					//エフェクトが指定されているときの処理
+					else{
+						ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+						skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player);
+					}
+
 				}
 			}
 		}
 	}
-	private <T extends org.bukkit.entity.Projectile> void runArrowSkillofLaunch(Player player, Class<T> clazz) {
+	private <T extends org.bukkit.entity.Projectile> void runArrowSkill(Player player, Class<T> clazz) {
 		//プレイヤーの位置を取得
 		Location ploc = player.getLocation();
 		//UUIDを取得
@@ -133,7 +166,7 @@ public class PlayerRightClickListener implements Listener {
         Location loc = player.getLocation();
         loc.add(loc.getDirection()).add(0,1.6,0);
         Vector vec = loc.getDirection();
-        int k = 1;
+        double k = 1.0;
         vec.setX(vec.getX() * k);
         vec.setY(vec.getY() * k);
         vec.setZ(vec.getZ() * k);
@@ -151,14 +184,6 @@ public class PlayerRightClickListener implements Listener {
 
         //矢を消去する処理
         new ArrowRemoveTaskRunnable((Projectile)proj).runTaskLater(plugin,100);
-
-        //クールダウン処理
-        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
-        if(cooldown > 5){
-        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
-        }else{
-        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
-        }
 	}
 
 
@@ -311,7 +336,7 @@ public class PlayerRightClickListener implements Listener {
 			if(mainhandflag && equipmentslot.equals(EquipmentSlot.HAND)){
 				//メインハンドで指定ツールを持っていた時の処理
 				//スニークしていないかつアサルトタイプが選択されていない時処理を終了
-				if(!player.isSneaking() && playerdata.activeskilldata.assaulttype==0){
+				if(!player.isSneaking() && playerdata.activeskilldata.assaulttype == 0){
 					return;
 				}
 
@@ -353,7 +378,6 @@ public class PlayerRightClickListener implements Listener {
 			if(SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInOffHand().getType())
 					&& equipmentslot.equals(EquipmentSlot.OFF_HAND)
 					){
-
 				//オフハンドで指定ツールを持っていた時の処理
 
 				//設置をキャンセル
@@ -365,12 +389,18 @@ public class PlayerRightClickListener implements Listener {
 					if(!mainhandflag || playerdata.activeskilldata.skillnum == 0){
 						activemineflagnum = (activemineflagnum + 1) % 2;
 					}
+					if(playerdata.activeskilldata.assaultflag){
+						playerdata.activeskilldata.assaulttask.cancel();
+						playerdata.activeskilldata.assaultflag = false;
+					}
 					if(activemineflagnum == 0){
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + "：OFF");
+
 					}else{
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + ":ON");
-						playerdata.activeskilldata.assaulttask.cancel();
+
 						playerdata.activeskilldata.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
+						playerdata.activeskilldata.assaultflag = true;
 					}
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 					playerdata.activeskilldata.mineflagnum = activemineflagnum;

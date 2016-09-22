@@ -28,7 +28,6 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
@@ -686,8 +685,11 @@ public class PlayerInventoryListener implements Listener {
 						playerdata.activeskilldata.assaultnum = skilllevel;
 						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.CONDENSE.getName(skilllevel) + "  が選択されました");
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-						playerdata.activeskilldata.assaulttask.cancel();
+						if(playerdata.activeskilldata.assaultflag){
+							playerdata.activeskilldata.assaulttask.cancel();
+						}
 						playerdata.activeskilldata.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
+						playerdata.activeskilldata.assaultflag = true;
 					}
 				}
 			}
@@ -702,11 +704,11 @@ public class PlayerInventoryListener implements Listener {
 					playerdata.activeskilldata.assaultnum = 10;
 					player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + "アサルト・アーマー" + "  が選択されました");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-					BukkitTask task = playerdata.activeskilldata.assaulttask;
-					if(task != null){
-						if(task.isSync())task.cancel();
+					if(playerdata.activeskilldata.assaultflag){
+						playerdata.activeskilldata.assaulttask.cancel();
 					}
 					playerdata.activeskilldata.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
+					playerdata.activeskilldata.assaultflag = true;
 				}
 			}
 
@@ -749,6 +751,8 @@ public class PlayerInventoryListener implements Listener {
 					playerdata.activeskilldata.mineflagnum = 0;
 					playerdata.activeskilldata.assaultnum = 0;
 					playerdata.activeskilldata.assaulttype = 0;
+					if(playerdata.activeskilldata.assaultflag)playerdata.activeskilldata.assaulttask.cancel();
+					playerdata.activeskilldata.assaultflag = false;
 					player.sendMessage(ChatColor.GREEN + "アクティブスキル:未設定  が選択されました");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}

@@ -69,7 +69,7 @@ public class PlayerBlockBreakListener implements Listener {
 		if(SeichiAssist.DEBUG){
 			worldname = "world";
 		}
-		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
+		if(player.getWorld().getName().equalsIgnoreCase(worldname) && !block.getType().equals(Material.LOG) && !block.getType().equals(Material.LOG_2)){
 			int type = playerdata.activeskilldata.skilltype-1;
 			if(type < 0){
 				type = 0;
