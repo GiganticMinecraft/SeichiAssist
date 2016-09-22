@@ -256,6 +256,9 @@ public class Util {
 	//他のプラグインの影響があってもブロックを破壊できるのか
 	@SuppressWarnings("deprecation")
 	public static boolean canBreak(Player player ,Block breakblock) {
+		if(!player.isOnline() || breakblock == null){
+			return false;
+		}
 		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 		UUID uuid = player.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
@@ -272,8 +275,10 @@ public class Util {
 			return false;
 		}
 		//壊されるブロックがスキルで使用中だった場合処理を終了
-		if(playerdata.activeskilldata.blocklist.contains(breakblock)){
-			return false;
+		if(!playerdata.activeskilldata.blocklist.isEmpty() && !breakblock.isEmpty()){
+			if(playerdata.activeskilldata.blocklist.contains(breakblock)){
+				return false;
+			}
 		}
 		//コアプロテクトのクラスを取得
 		CoreProtectAPI CoreProtect = Util.getCoreProtect();

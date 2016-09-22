@@ -3,23 +3,28 @@ package com.github.unchama.seichiassist;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.github.unchama.seichiassist.arroweffect.ArrowBlizzardTaskRunnable;
 import com.github.unchama.seichiassist.arroweffect.ArrowExplosionTaskRunnable;
+import com.github.unchama.seichiassist.arroweffect.ArrowMeteoTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.BlizzardTaskRunnable;
 import com.github.unchama.seichiassist.breakeffect.ExplosionTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.MeteoTaskRunnable;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public enum ActiveSkillEffect {
-/*
-	EXPLOSION(1,"ef_explosion",ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン","単純な爆発のエフェクト",10,Material.TNT),
-	BLIZZARD(2,"ef_blizzard",ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード","凍らせるエフェクト",20,Material.PACKED_ICE),
-	METEO(3,"ef_meteo",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ","隕石を落とすエフェクト",30,Material.FIREBALL),
-*/
+
+	EXPLOSION(1,"ef_explosion",ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン","単純な爆発のエフェクト",50,Material.TNT),
+	BLIZZARD(2,"ef_blizzard",ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード","凍らせるエフェクト",70,Material.PACKED_ICE),
+//	METEO(3,"ef_meteo",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ","隕石を落とすエフェクト",100,Material.FIREBALL),
+
 	;
 
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -74,16 +79,22 @@ public enum ActiveSkillEffect {
 			new ExplosionTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 0);
 			break;
 		case "BLIZZARD":
+			if(playerdata.activeskilldata.skillnum < 3){
+				new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
+			}else{
+				new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
+			}
 
 			break;
 		case "METEO":
-
+			new MeteoTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
 			break;
 		default :
 			break;
 		}
 		return;
 	}
+
 	//エフェクトの実行処理分岐
 	public void runArrowEffect(Player player){
 		switch(this.toString()){
@@ -91,10 +102,10 @@ public enum ActiveSkillEffect {
 			new ArrowExplosionTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
 		case "BLIZZARD":
-
+			new ArrowBlizzardTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
 		case "METEO":
-
+			new ArrowMeteoTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
 		default :
 			break;

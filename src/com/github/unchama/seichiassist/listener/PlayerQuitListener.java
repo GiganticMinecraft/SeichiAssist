@@ -49,8 +49,7 @@ public class PlayerQuitListener implements Listener {
 		}else{
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + player.getName() + "のloginflag回収完了");
 		}
-
-		//マルチサーバー対応の為の処理
+		playerdata.activeskilldata.setRemove();
 		//不要なplayerdataを削除
 		playermap.remove(uuid);
 

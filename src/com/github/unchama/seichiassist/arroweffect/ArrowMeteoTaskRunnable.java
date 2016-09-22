@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.SmallFireball;
+import org.bukkit.entity.Snowball;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -14,7 +14,7 @@ import org.bukkit.util.Vector;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 
-public class ArrowExplosionTaskRunnable extends BukkitRunnable{
+public class ArrowMeteoTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
@@ -22,9 +22,9 @@ public class ArrowExplosionTaskRunnable extends BukkitRunnable{
 	UUID uuid;
 	PlayerData playerdata;
 	long tick;
-	SmallFireball proj;
+	Snowball proj;
 
-	public ArrowExplosionTaskRunnable(Player player) {
+	public ArrowMeteoTaskRunnable(Player player) {
 		this.tick = 0;
 		this.player = player;
 		//プレイヤーの位置を取得
@@ -35,17 +35,17 @@ public class ArrowExplosionTaskRunnable extends BukkitRunnable{
 		this.playerdata = playermap.get(uuid);
 
 		//発射する音を再生する.
-    	player.playSound(ploc, Sound.ENTITY_GHAST_SHOOT, 1, (float)1.3);
+    	player.playSound(ploc, Sound.ENTITY_SNOWBALL_THROW, 1, (float)1.3);
 
     	//スキルを実行する処理
         Location loc = player.getLocation().clone();
         loc.add(loc.getDirection()).add(0,1.6,0);
         Vector vec = loc.getDirection();
-        double k = 0.4;
+        double k = 1.0;
         vec.setX(vec.getX() * k);
         vec.setY(vec.getY() * k);
         vec.setZ(vec.getZ() * k);
-        proj = player.getWorld().spawn(loc, SmallFireball.class);
+        proj = player.getWorld().spawn(loc, Snowball.class);
         proj.setShooter(player);
         proj.setGravity(false);
         //読み込み方法
@@ -56,7 +56,6 @@ public class ArrowExplosionTaskRunnable extends BukkitRunnable{
          */
         proj.setMetadata("ArrowSkill", new FixedMetadataValue(plugin, true));
         proj.setVelocity(vec);
-
 	}
 
 	@Override

@@ -41,6 +41,8 @@ public class ActiveSkillData {
 	public int mineflagnum;
 	//アサルトスキル.コンデンススキルのtask
 	public BukkitTask assaulttask;
+	//アサルトスキルのフラグ
+	public boolean assaultflag;
 	//エフェクトの獲得フラグリスト<エフェクト番号,エフェクト獲得フラグ>
 	public Map<Integer,Boolean> effectflagmap;
 	//選択されているアクティブスキルの番号を格納
@@ -54,6 +56,7 @@ public class ActiveSkillData {
 
 	public ActiveSkillData(){
 		mineflagnum = 0;
+		assaultflag = false;
 		assaulttask = null;
 		skilltype = 0;
 		skillnum = 0;
@@ -104,15 +107,6 @@ public class ActiveSkillData {
 			point -= i * 10;
 		}
 
-		//ここからエフェクトによる減算処理
-		ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-
-		for(int i = 0; i < skilleffect.length;i++){
-			if(skilleffect[i].isObtained(effectflagmap)){
-				point -= skilleffect[i].getUsePoint();
-			}
-		}
-
 		if(SeichiAssist.DEBUG){
 			player.sendMessage("獲得済みスキルを考慮したアクティブスキルポイント：" + point);
 			point += 10000;
@@ -132,6 +126,14 @@ public class ActiveSkillData {
 		condenskill = 0;
 		skilltype = 0;
 		skillnum = 0;
+		assaulttype = 0;
+		assaultnum = 0;
+		if(assaultflag)assaulttask.cancel();
+		assaultflag = false;
+	}
+	public void setRemove() {
+		if(assaultflag)assaulttask.cancel();
+		assaultflag = false;
 	}
 
 }
