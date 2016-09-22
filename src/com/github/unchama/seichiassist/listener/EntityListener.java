@@ -149,6 +149,8 @@ public class EntityListener implements Listener {
 		}
 
 		runArrowSkillofHitBlock(player,proj, playerdata.activeskilldata.skillnum, block, tool, expman);
+
+		proj.remove();
 	}
 
 

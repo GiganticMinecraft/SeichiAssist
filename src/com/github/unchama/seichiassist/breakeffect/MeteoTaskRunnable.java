@@ -7,13 +7,13 @@ import java.util.UUID;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Fireball;
-import org.bukkit.entity.LargeFireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.SmallFireball;
+import org.bukkit.entity.Snowball;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
@@ -21,7 +21,7 @@ import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
-public class MeteoTaskRunnable extends BukkitRunnable{
+public class MeteoTaskRunnable<T extends Projectile> extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	//プレイヤー情報
@@ -46,8 +46,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 	int soundradius;
 	//音距離を設定するフラグ
 	boolean soundflag;
-	//飛ばすもの
-	Projectile proj;
+	T proj;
 
 	public MeteoTaskRunnable(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist, Coordinate start,
 			Coordinate end, Location standard) {
@@ -76,37 +75,34 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 		case 1:
 		case 2:
 		case 3:
-			launchFireball(SmallFireball.class);
+			//launchFireball(SmallFireball.class);
 			break;
 		case 4:
 		case 5:
 		case 6:
-			launchFireball(Fireball.class);
+			//launchFireball(Fireball.class);
 			break;
 		case 7:
 		case 8:
 		case 9:
-			launchFireball(LargeFireball.class);
+			//launchFireball(LargeFireball.class);
 			break;
 		}
 	}
 
-	private <T> void launchFireball(Class<T> clazz) {
-		/*
+
+	private void launchFireball(Class<T> clazz) {
 		//blockの位置を取得
 		Location loc = standard.clone();
 		//プレイヤーの位置を取得
 		Location ploc = player.getLocation();
 		//メテオの発射位置を決定
-		Location mloc = ploc.add(0,60,0);
-		double speed = 0.0001;
-		//メテオ発射
-		Vector vec = new Vector(loc.getX()-mloc.getX(),loc.getY()-mloc.getY(),loc.getZ()-mloc.getZ());
-		vec.multiply(speed);
-		//Vector vec = new Vector(0,-1,0);
-		final LargeFireball meteo = loc.getWorld().spawn(mloc, LargeFireball.class);
-		meteo.setDirection(vec);
-		meteo.setVelocity(vec);
+		Location launchloc = ploc.add(0,60,0);
+
+		Vector vec = new Vector(loc.getX()-launchloc.getX(),loc.getY()-launchloc.getY(),loc.getZ()-launchloc.getZ());
+		vec.normalize();
+		proj = player.getWorld().spawn(launchloc,clazz);
+		//meteo.setVelocity(vec);
 		Location loc = player.getLocation().clone();
 		Vector direction = ploc.getDirection().clone();
 		direction.setX(direction.getX()*-15);
@@ -128,7 +124,6 @@ public class MeteoTaskRunnable extends BukkitRunnable{
         proj.setShooter(player);
         proj.setMetadata("Effect", new FixedMetadataValue(plugin, true));
         proj.setVelocity(vec);
-*/
 	}
 
 	@Override

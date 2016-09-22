@@ -23,7 +23,7 @@ public enum ActiveSkillEffect {
 
 	EXPLOSION(1,"ef_explosion",ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン","単純な爆発のエフェクト",50,Material.TNT),
 	BLIZZARD(2,"ef_blizzard",ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード","凍らせるエフェクト",70,Material.PACKED_ICE),
-//	METEO(3,"ef_meteo",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ","隕石を落とすエフェクト",100,Material.FIREBALL),
+	METEO(3,"ef_meteo",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ","隕石を落とすエフェクト",100,Material.FIREBALL),
 
 	;
 

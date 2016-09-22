@@ -39,6 +39,8 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 	Coordinate breaklength;
 
+	boolean errorflag = false;
+
 	boolean waterflag = false,lavaflag = false,breakflag = false,condensflag = false;
 
 	public AssaultTaskRunnable(Player player) {
@@ -50,7 +52,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-			setCancel();
+			errorflag = true;
 			return;
 		}
 
@@ -78,18 +80,18 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		}else if(mainhandtoolflag){
 			//メインハンドの時
 			player.sendMessage(ChatColor.GREEN + "使うツールをオフハンドにセット(fキー)してください");
-			setCancel();
+			errorflag = true;
 			return;
 		}else{
 			//どちらにももっていない時処理を終了
 			player.sendMessage(ChatColor.GREEN + "使うツールをオフハンドにセット(fキー)してください");
-			setCancel();
+			errorflag = true;
 			return;
 		}
 		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
 		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
 			player.sendMessage(ChatColor.GREEN + "不正な耐久値です。");
-			setCancel();
+			errorflag = true;
 			return;
 		}
 		if(playerdata.activeskilldata.assaulttype == ActiveSkill.CONDENSE.gettypenum()){
@@ -115,6 +117,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
+
 		if(isCanceled()){
 			setCancel();
 			return;
@@ -281,7 +284,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	}
 
 	private boolean isCanceled() {
-		if(playerdata.activeskilldata.mineflagnum == 0){
+		if(playerdata.activeskilldata.mineflagnum == 0 || errorflag){
 			return true;
 		}else{
 			return false;
