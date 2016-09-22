@@ -525,7 +525,8 @@ public class Util {
 				case LAPIS_ORE:
 					Dye dye = new Dye();
 					dye.setColor(DyeColor.BLUE);
-					bonus *= 4;
+
+					bonus *= (rand * 4) + 4;
 					dropitem = dye.toItemStack(bonus);
 					break;
 				case EMERALD_ORE:
@@ -534,14 +535,12 @@ public class Util {
 					break;
 				case REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
-					bonus *= 4;
-					if(bonus > 20)bonus = 20;
+					bonus *= rand + 4;
 					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
 				case GLOWING_REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
-					bonus *= 4;
-					if(bonus > 20)bonus = 20;
+					bonus *= rand + 4;
 					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
 				case QUARTZ_ORE:
@@ -565,7 +564,7 @@ public class Util {
 				case LAPIS_ORE:
 					Dye dye = new Dye();
 					dye.setColor(DyeColor.BLUE);
-					dropitem = dye.toItemStack((int) ((rand*3 + 1 )* 2));
+					dropitem = dye.toItemStack((int) ((rand*4) + 4));
 					break;
 				case EMERALD_ORE:
 					dropmaterial = Material.EMERALD;
