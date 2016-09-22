@@ -686,7 +686,10 @@ public class PlayerInventoryListener implements Listener {
 						playerdata.activeskilldata.assaultnum = skilllevel;
 						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.CONDENSE.getName(skilllevel) + "  が選択されました");
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-						playerdata.activeskilldata.assaulttask.cancel();
+						BukkitTask task = playerdata.activeskilldata.assaulttask;
+						if(task != null){
+							if(task.isSync())task.cancel();
+						}
 						playerdata.activeskilldata.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
 					}
 				}

@@ -9,9 +9,10 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.github.unchama.seichiassist.arroweffect.ArrowExplosionTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.ExplosionTaskRunnable;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.skilleffect.ExplosionTaskRunnable;
 
 public enum ActiveSkillEffect {
 /*
@@ -84,10 +85,10 @@ public enum ActiveSkillEffect {
 		return;
 	}
 	//エフェクトの実行処理分岐
-	public void runArrowEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
+	public void runArrowEffect(Player player){
 		switch(this.toString()){
 		case "EXPLOSION":
-
+			new ArrowExplosionTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
 		case "BLIZZARD":
 
@@ -100,23 +101,7 @@ public enum ActiveSkillEffect {
 		}
 		return;
 	}
-	//エフェクトの実行処理分岐
-	public void runCondensEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
-		switch(this.toString()){
-		case "EXPLOSION":
 
-			break;
-		case "BLIZZARD":
-
-			break;
-		case "METEO":
-
-			break;
-		default :
-			break;
-		}
-		return;
-	}
 
 	public static String getNamebyNum(int effectnum) {
 		ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();

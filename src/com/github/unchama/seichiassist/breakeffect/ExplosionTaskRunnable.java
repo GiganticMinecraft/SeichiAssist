@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.skilleffect;
+package com.github.unchama.seichiassist.breakeffect;
 
 import java.util.List;
 import java.util.Random;

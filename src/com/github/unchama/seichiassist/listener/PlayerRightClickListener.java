@@ -21,9 +21,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
@@ -82,8 +84,10 @@ public class PlayerRightClickListener implements Listener {
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			//アサルトアーマー使用中の時は終了左クリックで判定
-			if(playerdata.activeskilldata.assaulttask.isSync()){
-				return;
+			if(playerdata.activeskilldata.assaulttask != null){
+				if(!playerdata.activeskilldata.assaulttask.isSync()){
+					return;
+				}
 			}
 			//クールダウンタイム中は処理を終了
 			if(!playerdata.activeskilldata.skillcanbreakflag){
@@ -95,14 +99,26 @@ public class PlayerRightClickListener implements Listener {
 
 			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-					runArrowSkillofLaunch(player,Arrow.class);
+					//エフェクトが指定されていないときの処理
+					if(playerdata.activeskilldata.effectnum == 0){
+						runArrowSkill(player,Arrow.class);
+					}
+					//エフェクトが指定されているときの処理
+					else{
+						ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+						skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player);
+					}
 				}
 			}
 		}else if(action.equals(Action.LEFT_CLICK_AIR)){
 			//アサルトアーマーをどっちも使用していない時終了
+			if(playerdata.activeskilldata.assaulttask == null){
+				return;
+			}
 			if(!playerdata.activeskilldata.assaulttask.isSync()){
 				return;
 			}
+
 			//クールダウンタイム中は処理を終了
 			if(!playerdata.activeskilldata.skillcanbreakflag){
 				//SEを再生
@@ -113,12 +129,28 @@ public class PlayerRightClickListener implements Listener {
 
 			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-					runArrowSkillofLaunch(player,Arrow.class);
+			        //クールダウン処理
+			        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
+			        if(cooldown > 5){
+			        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+			        }else{
+			        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
+			        }
+					//エフェクトが指定されていないときの処理
+					if(playerdata.activeskilldata.effectnum == 0){
+						runArrowSkill(player,Arrow.class);
+					}
+					//エフェクトが指定されているときの処理
+					else{
+						ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+						skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player);
+					}
+
 				}
 			}
 		}
 	}
-	private <T extends org.bukkit.entity.Projectile> void runArrowSkillofLaunch(Player player, Class<T> clazz) {
+	private <T extends org.bukkit.entity.Projectile> void runArrowSkill(Player player, Class<T> clazz) {
 		//プレイヤーの位置を取得
 		Location ploc = player.getLocation();
 		//UUIDを取得
@@ -151,14 +183,6 @@ public class PlayerRightClickListener implements Listener {
 
         //矢を消去する処理
         new ArrowRemoveTaskRunnable((Projectile)proj).runTaskLater(plugin,100);
-
-        //クールダウン処理
-        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
-        if(cooldown > 5){
-        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
-        }else{
-        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
-        }
 	}
 
 
@@ -369,7 +393,10 @@ public class PlayerRightClickListener implements Listener {
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + "：OFF");
 					}else{
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + ":ON");
-						playerdata.activeskilldata.assaulttask.cancel();
+						BukkitTask task = playerdata.activeskilldata.assaulttask;
+						if(task != null){
+							if(task.isSync())task.cancel();
+						}
 						playerdata.activeskilldata.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
 					}
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
