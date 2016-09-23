@@ -1,11 +1,13 @@
 package com.github.unchama.seichiassist;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -126,5 +128,25 @@ public enum ActiveSkillEffect {
 			}
 		}
 		return "未設定";
+	}
+
+	public void runAssaultEffect(Player player, PlayerData playerdata,
+			ItemStack tool, ArrayList<Block> arrayList, Coordinate start,
+			Coordinate end, Location centerofblock) {
+		switch(this.toString()){
+		case "EXPLOSION":
+			player.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, player.getEyeLocation(), 1, 3.0, 3.0, 3.0, 1);
+			break;
+		case "BLIZZARD":
+			player.getWorld().spawnParticle(Particle.SNOW_SHOVEL, player.getEyeLocation(), 1, 3.0, 3.0, 3.0, 1);
+			break;
+		case "METEO":
+			player.getWorld().spawnParticle(Particle.DRIP_LAVA, player.getEyeLocation(), 1, 3.0, 3.0, 3.0, 1);
+			break;
+		default :
+			break;
+		}
+		return;
+
 	}
 }

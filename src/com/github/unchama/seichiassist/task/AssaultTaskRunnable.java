@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -29,8 +30,6 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	Player player;
 	UUID uuid;
 	PlayerData playerdata;
-
-	Location ploc;
 	int playerlocy;
 	PlayerInventory inventory;
 	ItemStack tool;
@@ -39,14 +38,16 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 	Coordinate breaklength;
 
+
 	boolean errorflag = false;
 
 	boolean waterflag = false,lavaflag = false,breakflag = false,condensflag = false;
 
 	public AssaultTaskRunnable(Player player) {
 		this.player = player;
-		uuid = player.getUniqueId();
-		playerdata = playermap.get(uuid);
+		this.uuid = player.getUniqueId();
+		this.playerdata = playermap.get(uuid);
+
 		//念のためエラー分岐
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -55,11 +56,17 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			errorflag = true;
 			return;
 		}
-
+		//もしサバイバルでなければ処理を終了
+		//もしフライ中なら終了
+		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
+			player.sendMessage(ChatColor.GREEN + "ゲームモードをサバイバルに変更してください。");
+			errorflag = true;
+			return;
+		}
 
 		setRun();
 
-		expman = new ExperienceManager(player);
+		this.expman = new ExperienceManager(player);
 
 		//プレイヤーインベントリを取得
 		inventory = player.getInventory();
@@ -94,6 +101,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			errorflag = true;
 			return;
 		}
+		//壊すフラグを指定
 		if(playerdata.activeskilldata.assaulttype == ActiveSkill.CONDENSE.gettypenum()){
 			if(playerdata.activeskilldata.assaultnum < 7){
 				waterflag = true;
@@ -105,6 +113,9 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			breakflag = true;
 		}
 
+		//プレイヤーに使用音
+		if(!errorflag)player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, (float)1.5, (float) 0.65);
+
 	}
 
 	private void setRun() {
@@ -112,6 +123,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	}
 
 	private void setCancel() {
+		if(!errorflag)player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_CLOSE, (float)1.5, (float) 0.65);
 		this.cancel();
 	}
 
@@ -122,20 +134,23 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			setCancel();
 			return;
 		}
+
+
 		//もしサバイバルでなければ処理を終了
 		//もしフライ中なら終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
-			//player.sendMessage(ChatColor.GREEN + "フライ機能をOFFにしてください.");
+			player.sendMessage(ChatColor.GREEN + "ゲームモードをサバイバルに変更してください。");
 			setCancel();
 			return;
 		}
 		List<Block> breaklist = new ArrayList<Block>();
 		List<Block> lavalist = new ArrayList<Block>();
 		List<Block> waterlist = new ArrayList<Block>();
-		ploc = player.getLocation();
+
 		//プレイヤーの足のy座標を取得
-		int playerlocy = ploc.getBlockY() - 1 ;
-		Block block = ploc.getBlock();
+		int playerlocy = player.getLocation().getBlockY() - 1 ;
+		Block block = player.getLocation().getBlock();
+		Location centerofblock = block.getLocation().add(0.5,0.5,0.5);
 
 		ItemStack offhanditem = inventory.getItemInOffHand();
 		//最初に登録したツールと今のツールが違う場合
@@ -151,8 +166,8 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 		//壊されるブロックの宣言
 		Block breakblock;
-		Coordinate start = new Coordinate(-2,-1,-2);
-		Coordinate end = new Coordinate(2,5,2);
+		Coordinate start = new Coordinate(-6,-1,-6);
+		Coordinate end = new Coordinate(6,11,6);
 
 		if(playerdata.activeskilldata.assaulttype == ActiveSkill.CONDENSE.gettypenum()){
 			breaklength = ActiveSkill.CONDENSE.getBreakLength(playerdata.activeskilldata.assaultnum);
@@ -275,12 +290,11 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 				lavalist.get(lavanum).setType(Material.AIR);
 			}
 			for(Block b:breaklist){
-				Util.BreakBlock(player, b, ploc, tool,true);
+				Util.BreakBlock(player, b, player.getLocation(), tool,false);
 				playerdata.activeskilldata.blocklist.remove(b);
 			}
 		}
 		playerdata.activeskilldata.blocklist.removeAll(breaklist);
-
 	}
 
 	private boolean isCanceled() {

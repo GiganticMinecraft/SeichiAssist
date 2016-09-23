@@ -20,7 +20,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 
 public enum ActiveSkillPremiumEffect {
 /*
-	MAGIC(1,"ef_magic","マジック","鶏が出る手品",50,Material.RED_ROSE),
+	MAGIC(1,"ef_magic","マジック","鶏が出る手品",50,Material.RED_ROSE)ee,
 	BLADE(2,"ef_blade","ブレイド","切り刻む",70,Material.IRON_SWORD),
 	TIAMAT(3,"ef_tiamat","ティアマト","彗星を落とす",100,Material.NETHER_STAR),
 */

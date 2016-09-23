@@ -38,6 +38,7 @@ import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.task.AreaVisualizeTaskRunnable;
 import com.github.unchama.seichiassist.task.AssaultTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
@@ -637,6 +638,7 @@ public class PlayerInventoryListener implements Listener {
 							player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.ARROW.getName(skilllevel) + "  が選択されました");
 							playerdata.activeskilldata.mineflagnum = 1;
 							player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+							new AreaVisualizeTaskRunnable(player,playerdata).runTaskTimer(plugin,0,20);
 						}
 					}
 				}
@@ -742,7 +744,9 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
 			}
 			else if(itemstackcurrent.getType().equals(Material.GLASS)){
-				if(playerdata.activeskilldata.skilltype == 0 && playerdata.activeskilldata.skillnum == 0){
+				if(playerdata.activeskilldata.skilltype == 0 && playerdata.activeskilldata.skillnum == 0
+				&&playerdata.activeskilldata.assaulttype == 0 && playerdata.activeskilldata.assaultnum == 0
+						){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 				}else{

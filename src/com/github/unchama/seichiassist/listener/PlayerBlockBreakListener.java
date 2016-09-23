@@ -39,25 +39,22 @@ public class PlayerBlockBreakListener implements Listener {
 		Player player = event.getPlayer();
 
 		//デバッグ用
-		if(SeichiAssist.DEBUG){
-			player.sendMessage("ブロックブレイクイベントが呼び出されました");
-		}
+		if(SeichiAssist.DEBUG)player.sendMessage("ブロックブレイクイベントが呼び出されました");
 
 		//壊されるブロックを取得
 		Block block = event.getBlock();
+
 		//他人の保護がかかっている場合は処理を終了
-		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
-			return;
-		}
+		if(!Util.getWorldGuard().canBuild(player, block.getLocation()))return;
+
 		//ブロックのタイプを取得
 		Material material = block.getType();
-
 
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//UUIDを基にプレイヤーデータ取得
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
-		//念のためエラー分岐
+		//エラー分岐
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");

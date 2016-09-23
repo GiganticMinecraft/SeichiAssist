@@ -188,22 +188,22 @@ public enum ActiveSkill{
 		case "CONDENSE":
 			switch(skilllevel){
 			case 4:
-				breaklength.setXYZ(5, 5, 5);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			case 5:
-				breaklength.setXYZ(7, 7, 7);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			case 6:
-				breaklength.setXYZ(9, 9, 9);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			case 7:
-				breaklength.setXYZ(5, 5, 5);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			case 8:
-				breaklength.setXYZ(7, 7, 7);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			case 9:
-				breaklength.setXYZ(9, 9, 9);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			}
 			break;
@@ -343,28 +343,28 @@ public enum ActiveSkill{
 		}else if(typenum == ActiveSkill.CONDENSE.gettypenum()){
 			switch(skilllevel){
 			case 4:
-				exp = 25;
+				exp = 500;
 				break;
 			case 5:
-				exp = 50;
+				exp = 450;
 				break;
 			case 6:
-				exp = 100;
+				exp = 350;
 				break;
 			case 7:
-				exp = 60;
+				exp = 1200;
 				break;
 			case 8:
-				exp = 120;
+				exp = 1000;
 				break;
 			case 9:
-				exp = 240;
+				exp = 600;
 				break;
 			default:
 				break;
 			}
 		}else if(typenum == 5){
-			exp = 50;
+			exp = 800;
 		}
 		return exp;
 	}
@@ -450,22 +450,22 @@ public enum ActiveSkill{
 		case "CONDENSE":
 			switch(skillnum){
 			case 4:
-				cooldowntime = 0.3;
+				cooldowntime = 0;
 				break;
 			case 5:
-				cooldowntime = 0.3;
+				cooldowntime = 0;
 				break;
 			case 6:
-				cooldowntime = 0.3;
+				cooldowntime = 0;
 				break;
 			case 7:
-				cooldowntime = 0.3;
+				cooldowntime = 0;
 				break;
 			case 8:
-				cooldowntime = 0.3;
+				cooldowntime = 0;
 				break;
 			case 9:
-				cooldowntime = 0.3;
+				cooldowntime = 0;
 				break;
 			}
 			break;

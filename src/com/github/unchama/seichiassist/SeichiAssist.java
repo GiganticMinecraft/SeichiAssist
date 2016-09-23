@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
@@ -42,7 +43,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	public static SeichiAssist plugin;
 	//デバッグフラグ
-	public static Boolean DEBUG = false;
+	public static Boolean DEBUG = true;
 	//ガチャシステムのメンテナンスフラグ
 	public static Boolean gachamente = false;
 
@@ -167,9 +168,10 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
 			));
 
+	public static final Set<Material> transparentmateriallist = null;
+			//new HashSet<Material>(Arrays.asList());
 	@Override
 	public void onEnable(){
-
 		plugin = this;
 
 		//コンフィグ系の設定は全てConfig.javaに移動
