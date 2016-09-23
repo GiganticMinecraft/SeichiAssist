@@ -86,9 +86,10 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  	 			return;
  	 		}
 
-			//loginflag書き換え処理
+			//loginflag書き換え&lastquit更新処理
 			command = "update " + table
 					+ " set loginflag = true"
+					+ ",lastquit = cast( now() as datetime )"
 					+ " where uuid like '" + struuid + "'";
 			try {
 				stmt2.executeUpdate(command);

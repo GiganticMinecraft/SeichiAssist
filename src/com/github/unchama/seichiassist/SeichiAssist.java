@@ -18,6 +18,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.github.unchama.seichiassist.commands.effectCommand;
 import com.github.unchama.seichiassist.commands.gachaCommand;
+import com.github.unchama.seichiassist.commands.lastquitCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.data.GachaData;
@@ -41,7 +42,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	public static SeichiAssist plugin;
 	//デバッグフラグ
-	public static Boolean DEBUG = true;
+	public static Boolean DEBUG = false;
 	//ガチャシステムのメンテナンスフラグ
 	public static Boolean gachamente = false;
 
@@ -192,6 +193,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("seichi",new seichiCommand(plugin));
 		commandlist.put("ef",new effectCommand(plugin));
 		commandlist.put("level",new levelCommand(plugin));
+		commandlist.put("lastquit",new lastquitCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
