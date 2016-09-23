@@ -22,7 +22,7 @@ public class ExplosionTaskRunnable extends BukkitRunnable{
 	//スキルで破壊される相対座標
 	Coordinate start,end;
 	//スキルが発動される中心位置
-	Location standard;
+	Location droploc;
 	//相対座標から得られるスキルの範囲座標
 	Coordinate breaklength;
 	//逐一更新が必要な位置
@@ -30,14 +30,14 @@ public class ExplosionTaskRunnable extends BukkitRunnable{
 
 
 	public ExplosionTaskRunnable(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist, Coordinate start,
-			Coordinate end, Location standard) {
+			Coordinate end, Location droploc) {
 		this.player = player;
 		this.playerdata = playerdata;
 		this.tool = tool;
 		this.breaklist = breaklist;
 		this.start = start;
 		this.end = end;
-		this.standard = standard;
+		this.droploc = droploc;
 		breaklength = ActiveSkill.BREAK.getBreakLength(playerdata.activeskilldata.skillnum);
 	}
 
@@ -46,20 +46,24 @@ public class ExplosionTaskRunnable extends BukkitRunnable{
 		for(int x = start.x + 1 ; x < end.x ; x=x+2){
 			for(int z = start.z + 1 ; z < end.z ; z=z+2){
 				for(int y = start.y + 1; y < end.y ; y=y+2){
-					explosionloc = standard.clone();
+					explosionloc = droploc.clone();
 					explosionloc.add(x, y, z);
 					if(isBreakBlock(explosionloc)){
 						player.getWorld().createExplosion(explosionloc, 0, false);
 					}
-					//player.spawnParticle(Particle.EXPLOSION_NORMAL,explosionloc.add(x, y, z),1);
-					//player.playSound(explosionloc.add(x, y, z), Sound.ENTITY_GENERIC_EXPLODE, (float)1, (float)((rand.nextDouble()*0.4)+0.8));
-					//player.getWorld().playEffect(explosionloc.add(x, y, z), Effect.EXPLOSION, 0,(int)10);
 				}
 			}
 		}
-		for(Block b : breaklist){
-			Util.BreakBlock(player, b, standard, tool, false);
-			playerdata.activeskilldata.blocklist.remove(b);
+		if(playerdata.activeskilldata.skillnum > 2){
+			for(Block b : breaklist){
+				Util.BreakBlock(player, b, droploc, tool, false);
+				playerdata.activeskilldata.blocklist.remove(b);
+			}
+		}else{
+			for(Block b : breaklist){
+				Util.BreakBlock(player, b, droploc, tool, true);
+				playerdata.activeskilldata.blocklist.remove(b);
+			}
 		}
 	}
 

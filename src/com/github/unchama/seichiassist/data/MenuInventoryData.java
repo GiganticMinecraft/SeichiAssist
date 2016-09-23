@@ -21,6 +21,7 @@ import org.bukkit.potion.PotionType;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
@@ -1975,7 +1976,7 @@ public class MenuInventoryData {
 					return null;
 				}
 
-				Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキルエフェクト選択");
+				Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキルエフェクト選択");
 				ItemStack itemstack;
 				ItemMeta itemmeta;
 				SkullMeta skullmeta;
@@ -1991,7 +1992,7 @@ public class MenuInventoryData {
 				skullmeta.setLore(lore);
 				skullmeta.setOwner("MHF_ArrowLeft");
 				itemstack.setItemMeta(skullmeta);
-				inventory.setItem(27,itemstack);
+				inventory.setItem(45,itemstack);
 
 				//1行目
 
@@ -2003,7 +2004,7 @@ public class MenuInventoryData {
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillEffect.getNamebyNum(playerdata.activeskilldata.effectnum)
 						, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるエフェクトポイント：" + playerdata.activeskilldata.effectpoint
 						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※投票すると獲得出来ます"
-						, ChatColor.RESET + "" +  ChatColor.LIGHT_PURPLE + "使えるプレミアムエフェクトポイント：" + playerdata.activeskilldata.premiumeffectpoint
+						, ChatColor.RESET + "" +  ChatColor.LIGHT_PURPLE + "使えるプレミアムポイント：" + playerdata.activeskilldata.premiumeffectpoint
 						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※寄付をすると獲得できます"
 
 						);
@@ -2049,6 +2050,33 @@ public class MenuInventoryData {
 						itemstack.setItemMeta(itemmeta);
 					}
 					inventory.setItem(i + 9,itemstack);
+				}
+				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+
+				for(int i = 0; i < premiumeffect.length;i++){
+					//プレイヤーがそのスキルを取得している場合の処理
+					if(premiumeffect[i].isObtained(playerdata.activeskilldata.premiumeffectflagmap)){
+						itemstack = new ItemStack(premiumeffect[i].getMaterial(),1);
+						itemmeta = Bukkit.getItemFactory().getItemMeta(premiumeffect[i].getMaterial());
+						itemmeta.setDisplayName(ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(premiumeffect[i].getName()));
+						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + premiumeffect[i].getExplain()
+								, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
+								);
+						itemmeta.setLore(lore);
+						itemstack.setItemMeta(itemmeta);
+					}
+					//プレイヤーがそのスキルをまだ取得していない場合の処理
+					else{
+						itemstack = new ItemStack(Material.BEDROCK,1);
+						itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+						itemmeta.setDisplayName(premiumeffect[i].getName());
+						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + premiumeffect[i].getExplain()
+								, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要プレミアムポイント：" + premiumeffect[i].getUsePoint()
+								, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
+						itemmeta.setLore(lore);
+						itemstack.setItemMeta(itemmeta);
+					}
+					inventory.setItem(i + 27,itemstack);
 				}
 
 		return inventory;

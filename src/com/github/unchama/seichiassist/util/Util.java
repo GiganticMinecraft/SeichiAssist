@@ -297,6 +297,10 @@ public class Util {
 		Material material = breakblock.getType();
 		ItemStack itemstack = dropItemOnTool(breakblock,tool);
 
+		if(!SeichiAssist.materiallist.contains(material)){
+			return;
+		}
+
 		if(material.equals(Material.GLOWING_REDSTONE_ORE)){
 			material = Material.REDSTONE_ORE;
 		}
@@ -751,5 +755,9 @@ public class Util {
 			return false;
 		}
 		return true;
+	}
+	public static String stripColor(boolean b, boolean c, String name) {
+
+		return null;
 	}
 }

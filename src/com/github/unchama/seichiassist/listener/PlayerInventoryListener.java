@@ -785,8 +785,8 @@ public class PlayerInventoryListener implements Listener {
 		if(topinventory == null){
 			return;
 		}
-		//インベントリサイズが36でない時終了
-		if(topinventory.getSize() != 36){
+		//インベントリサイズ終了
+		if(topinventory.getSize() != 9 * 6){
 			return;
 		}
 		Player player = (Player)he;

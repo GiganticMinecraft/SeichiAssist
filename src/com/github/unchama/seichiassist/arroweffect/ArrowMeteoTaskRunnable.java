@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -22,7 +22,7 @@ public class ArrowMeteoTaskRunnable extends BukkitRunnable{
 	UUID uuid;
 	PlayerData playerdata;
 	long tick;
-	Snowball proj;
+	Arrow proj;
 
 	public ArrowMeteoTaskRunnable(Player player) {
 		this.tick = 0;
@@ -35,7 +35,7 @@ public class ArrowMeteoTaskRunnable extends BukkitRunnable{
 		this.playerdata = playermap.get(uuid);
 
 		//発射する音を再生する.
-    	player.playSound(ploc, Sound.ENTITY_SNOWBALL_THROW, 1, (float)1.3);
+    	player.playSound(ploc, Sound.ENTITY_ARROW_SHOOT, 1, (float)1.3);
 
     	//スキルを実行する処理
         Location loc = player.getLocation().clone();
@@ -45,9 +45,10 @@ public class ArrowMeteoTaskRunnable extends BukkitRunnable{
         vec.setX(vec.getX() * k);
         vec.setY(vec.getY() * k);
         vec.setZ(vec.getZ() * k);
-        proj = player.getWorld().spawn(loc, Snowball.class);
+        proj = player.getWorld().spawn(loc, Arrow.class);
         proj.setShooter(player);
         proj.setGravity(false);
+        proj.setGlowing(true);
         //読み込み方法
         /*
          * Projectile proj = event.getEntity();
