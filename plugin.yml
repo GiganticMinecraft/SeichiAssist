@@ -23,3 +23,8 @@ commands:
       usage: /<command> <reset>
       permission: multiseichiplugin.level
       permission-message: You don't have <permission>
+  lastquit:
+      description: This is a lastquit command.
+      usage: /<command> <playername>
+      permission: multiseichiplugin.lastquit
+      permission-message: You don't have <permission>

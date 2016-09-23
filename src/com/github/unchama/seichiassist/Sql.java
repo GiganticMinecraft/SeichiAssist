@@ -672,4 +672,25 @@ public class Sql{
 		return inventory;
 	}
 
+	//指定プレイヤーのlastquitを取得
+	public String selectLastQuit(String name){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String lastquit = "";
+		String command = "select lastquit from " + table
+				+ " where name = '" + name + "'";
+			try{
+				rs = stmt.executeQuery(command);
+				while (rs.next()) {
+					lastquit = rs.getString("lastquit");
+				  }
+				rs.close();
+			} catch (SQLException e) {
+				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+				exc = e.getMessage();
+				e.printStackTrace();
+				return null;
+			}
+		return lastquit;
+	}
+
 }
