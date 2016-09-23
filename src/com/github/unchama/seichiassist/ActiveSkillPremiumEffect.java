@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -19,12 +18,12 @@ import com.github.unchama.seichiassist.breakeffect.MeteoTaskRunnable;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 
-public enum ActiveSkillEffect {
-
-	EXPLOSION(1,"ef_explosion",ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン","単純な爆発",50,Material.TNT),
-	BLIZZARD(2,"ef_blizzard",ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリザード","凍らせる",70,Material.PACKED_ICE),
-	METEO(3,"ef_meteo",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "メテオ","隕石を落とす",100,Material.FIREBALL),
-
+public enum ActiveSkillPremiumEffect {
+/*
+	MAGIC(1,"ef_magic","マジック","鶏が出る手品",50,Material.RED_ROSE),
+	BLADE(2,"ef_blade","ブレイド","切り刻む",70,Material.IRON_SWORD),
+	TIAMAT(3,"ef_tiamat","ティアマト","彗星を落とす",100,Material.NETHER_STAR),
+*/
 	;
 
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -36,7 +35,7 @@ public enum ActiveSkillEffect {
 	private int usepoint;
 	private Material material;
 
-	ActiveSkillEffect(int num,String sql_name,String name,String explain,int usepoint,Material material){
+	ActiveSkillPremiumEffect(int num,String sql_name,String name,String explain,int usepoint,Material material){
 		this.num = num;
 		this.sql_name = sql_name;
 		this.name = name;

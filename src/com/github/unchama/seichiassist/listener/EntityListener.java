@@ -149,6 +149,8 @@ public class EntityListener implements Listener {
 		}
 
 		runArrowSkillofHitBlock(player,proj, playerdata.activeskilldata.skillnum, block, tool, expman);
+
+		proj.remove();
 	}
 
 
@@ -358,21 +360,22 @@ public class EntityListener implements Listener {
 	@EventHandler
 	public void onEntityExplodeEvent(EntityExplodeEvent event){
 		Entity e = event.getEntity();
-	    if ( e instanceof Projectile && e.hasMetadata("ArrowSkill") ) {
-	    	event.setCancelled(true);
-	    }else if( e instanceof Projectile && e.hasMetadata("CondenSkill")){
-	    	event.setCancelled(true);
+	    if ( e instanceof Projectile){
+	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+	    		event.setCancelled(true);
+	    	}
 	    }
+
 	}
 
 
 	@EventHandler
 	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
 		Entity e = event.getDamager();
-	    if ( e instanceof Projectile && e.hasMetadata("ArrowSkill") ) {
-	    	event.setCancelled(true);
-	    }else if( e instanceof Projectile && e.hasMetadata("CondenSkill")){
-	    	event.setCancelled(true);
+	    if ( e instanceof Projectile){
+	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+	    		event.setCancelled(true);
+	    	}
 	    }
 	}
 
