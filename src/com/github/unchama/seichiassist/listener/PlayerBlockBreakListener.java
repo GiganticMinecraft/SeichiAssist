@@ -22,6 +22,7 @@ import org.bukkit.inventory.PlayerInventory;
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
@@ -170,8 +171,6 @@ public class PlayerBlockBreakListener implements Listener {
 		playerdata.activeskilldata.blocklist.clear();
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
-		//プレイヤーの向いている方角を取得
-		String dir = Util.getCardinalDirection(player);
 		//元ブロックのマテリアルを取得
 		Material material = block.getType();
 		//元ブロックの真ん中の位置を取得
@@ -183,18 +182,15 @@ public class PlayerBlockBreakListener implements Listener {
 		Block breakblock;
 		//実際に破壊するブロック数
 		long breakblocknum = 0;
-		Coordinate start = new Coordinate();
-		Coordinate end = new Coordinate();
+		final BreakArea area = playerdata.activeskilldata.area;
+		final List<Coordinate> startlist = area.getStartList();
+		final List<Coordinate> endlist = area.getEndList();
 
 		//エフェクト用に壊されるブロック全てのリストデータ
 		List<List<Block>> multibreaklist = new ArrayList<List<Block>>();
 
 		//壊される溶岩の全てのリストデータ
 		List<List<Block>> multilavalist = new ArrayList<List<Block>>();
-
-		//壊されるブロック範囲の全てのリストデータ
-		List<Coordinate> startlist = new ArrayList<Coordinate>();
-		List<Coordinate> endlist = new ArrayList<Coordinate>();
 
 		//エフェクト用に壊されるブロック全てのリストデータ
 		List<Block> breaklist = new ArrayList<Block>();
@@ -203,43 +199,19 @@ public class PlayerBlockBreakListener implements Listener {
 		List<Block> lavalist = new ArrayList<Block>();
 
 		//繰り返す回数
-		int breaknum = ActiveSkill.MULTI.getRepeatTimes(skilllevel);
+		final int breaknum = area.getBreakNum();
 		//一回の破壊の範囲
-		Coordinate breaklength = ActiveSkill.MULTI.getBreakLength(skilllevel);
+		final Coordinate breaklength = area.getBreakLength();
+		//１回の全て破壊したときのブロック数
+		final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
 
 
 		//繰り返し回数だけ繰り返す
-		for(int i = 1; i <= breaknum ; i++){
+		for(int i = 0; i < breaknum ; i++){
 			breaklist.clear();
 			lavalist.clear();
-			switch (dir){
-			case "N":
-				start = new Coordinate(-((breaklength.x - 1)/2),-1,-((breaklength.z * i - 1)));
-				end = new Coordinate(((breaklength.x - 1)/2),((breaklength.y - 1)-1),-((breaklength.z * (i - 1))));
-				break;
-			case "E"://xとzが逆
-				start = new Coordinate((breaklength.z * (i - 1)),-1,-((breaklength.x - 1)/2));
-				end = new Coordinate(((breaklength.z * i - 1)),((breaklength.y - 1)-1),((breaklength.x - 1)/2));
-				break;
-			case "S":
-				start = new Coordinate(-((breaklength.x - 1)/2),-1,(breaklength.z * (i - 1)));
-				end = new Coordinate(((breaklength.x - 1)/2),((breaklength.y - 1)-1),((breaklength.z * i - 1)));
-				break;
-			case "W"://xとzが逆
-				start = new Coordinate(-((breaklength.z * i - 1)),-1,-((breaklength.x - 1)/2));
-				end = new Coordinate(-((breaklength.z * (i - 1))),((breaklength.y - 1)-1),((breaklength.x - 1)/2));
-				break;
-			case "U":
-				start = new Coordinate(-((breaklength.x - 1)/2),(breaklength.y * (i - 1)),-((breaklength.z - 1)/2));
-				end = new Coordinate(((breaklength.x - 1)/2),((breaklength.y * i - 1)),((breaklength.z - 1)/2));
-				break;
-			case "D":
-				start = new Coordinate(-((breaklength.x - 1)/2),-((breaklength.y * i - 1)),-((breaklength.z - 1)/2));
-				end = new Coordinate(((breaklength.x - 1)/2),-((breaklength.y * (i - 1))),((breaklength.z - 1)/2));
-				break;
-			}
-
-
+			Coordinate start = startlist.get(i);
+			Coordinate end = endlist.get(i);
 			for(int x = start.x ; x <= end.x ; x++){
 				for(int z = start.z ; z <= end.z ; z++){
 					for(int y = start.y; y <= end.y ; y++){
@@ -276,7 +248,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 			double useExp = (double) (breaklist.size()) * gravity
 					* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
-					/((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1) * breaknum) ;
+					/(ifallbreaknum * breaknum) ;
 
 
 			//減る耐久値の計算
@@ -322,18 +294,14 @@ public class PlayerBlockBreakListener implements Listener {
 			//選択されたブロックを破壊せずに保存する処理
 			multibreaklist.add(new ArrayList<Block>(breaklist));
 			multilavalist.add(new ArrayList<Block>(lavalist));
-			startlist.add(start);
-			endlist.add(end);
 			breakblocknum += (long)breaklist.size();
 		}
 
 
 		//壊したブロック数に応じてクールダウンを発生させる
-		long cooldown = (long) ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1) * breaknum);
+		long cooldown = (long) ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
 		if(cooldown >= 5){
 			new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
-		}else{
-			new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
 		}
 
 		//自身のみしか壊さない時自然に処理する
@@ -354,8 +322,6 @@ public class PlayerBlockBreakListener implements Listener {
 		PlayerData playerdata = playermap.get(uuid);
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
-		//プレイヤーの向いている方角を取得
-		String dir = Util.getCardinalDirection(player);
 		//元ブロックのマテリアルを取得
 		Material material = block.getType();
 		//元ブロックの真ん中の位置を取得
@@ -363,116 +329,17 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//壊されるブロックの宣言
 		Block breakblock;
-		Coordinate start = new Coordinate();
-		Coordinate end = new Coordinate();
-
+		//壊される範囲を取得
+		BreakArea area = playerdata.activeskilldata.area;
+		Coordinate start = area.getStartList().get(0);
+		Coordinate end = area.getEndList().get(0);
 		//エフェクト用に壊されるブロック全てのリストデータ
 		List<Block> breaklist = new ArrayList<Block>();
 
 		//壊される溶岩のリストデータ
 		List<Block> lavalist = new ArrayList<Block>();
 
-		switch (dir){
-		case "N":
-			//北を向いているとき
-			if(skillnum < 3){
-				if(playerdata.activeskilldata.mineflagnum == 1){
-					start = new Coordinate(-(skillnum-1),0,0);
-					end = new Coordinate(skillnum-1,1,0);
-				}else if(playerdata.activeskilldata.mineflagnum == 2){
-					start = new Coordinate(-(skillnum-1),-1,0);
-					end = new Coordinate(skillnum-1,0,0);
-				}
-
-			}else if(skillnum == 3){
-				start = new Coordinate(-(skillnum-2),-(skillnum-2),-(skillnum-2)-1);
-				end = new Coordinate(skillnum-2,skillnum-2,(skillnum-2)-1);
-			}else{
-				start = new Coordinate(-(skillnum-2),-1,-(skillnum-2)*2);
-				end = new Coordinate(skillnum-2,(skillnum-4)*2 + 1,0);
-			}
-			break;
-		case "E":
-			//東を向いているとき
-			if(skillnum < 3){
-				if(playerdata.activeskilldata.mineflagnum == 1){
-					start = new Coordinate(0,0,-(skillnum-1));
-					end = new Coordinate(0,1,skillnum-1);
-				}else if(playerdata.activeskilldata.mineflagnum == 2){
-					start = new Coordinate(0,-1,-(skillnum-1));
-					end = new Coordinate(0,0,skillnum-1);
-				}
-
-			}else if(skillnum == 3){
-				start = new Coordinate(-(skillnum-2)+1,-(skillnum-2),-(skillnum-2));
-				end = new Coordinate((skillnum-2)+1,skillnum-2,(skillnum-2));
-			}else{
-				start = new Coordinate(0,-1,-(skillnum-2));
-				end = new Coordinate((skillnum-2)*2,(skillnum-4)*2 + 1,(skillnum-2));
-			}
-			break;
-		case "S":
-			//南を向いているとき
-			if(skillnum < 3){
-				if(playerdata.activeskilldata.mineflagnum == 1){
-					start = new Coordinate(-(skillnum-1),0,0);
-					end = new Coordinate(skillnum-1,1,0);
-				}else if(playerdata.activeskilldata.mineflagnum == 2){
-					start = new Coordinate(-(skillnum-1),-1,0);
-					end = new Coordinate(skillnum-1,0,0);
-				}
-
-			}else if(skillnum == 3){
-				start = new Coordinate(-(skillnum-2),-(skillnum-2),-(skillnum-2)+1);
-				end = new Coordinate(skillnum-2,skillnum-2,(skillnum-2)+1);
-			}else{
-				start = new Coordinate(-(skillnum-2),-1,0);
-				end = new Coordinate(skillnum-2,(skillnum-4)*2 + 1,(skillnum-2)*2);
-			}
-			break;
-		case "W":
-			//西を向いているとき
-			if(skillnum < 3){
-				if(playerdata.activeskilldata.mineflagnum == 1){
-					start = new Coordinate(0,0,-(skillnum-1));
-					end = new Coordinate(0,1,skillnum-1);
-				}else if(playerdata.activeskilldata.mineflagnum == 2){
-					start = new Coordinate(0,-1,-(skillnum-1));
-					end = new Coordinate(0,0,skillnum-1);
-				}
-
-			}else if(skillnum == 3){
-				start = new Coordinate(-(skillnum-2)-1,-(skillnum-2),-(skillnum-2));
-				end = new Coordinate((skillnum-2)-1,skillnum-2,(skillnum-2));
-			}else{
-				start = new Coordinate(-(skillnum-2)*2,-1,-(skillnum-2));
-				end = new Coordinate(0,(skillnum-4)*2 + 1,(skillnum-2));
-			}
-			break;
-		case "U":
-			//上を向いているとき
-			if(skillnum < 3){
-			}else if(skillnum == 3){
-				start = new Coordinate(-(skillnum-2),0,-(skillnum-2));
-				end = new Coordinate((skillnum-2),2,(skillnum-2));
-			}else{
-				start = new Coordinate(-(skillnum-2),0,-(skillnum-2));
-				end = new Coordinate((skillnum-2),(skillnum-3)*2,(skillnum-2));
-			}
-			break;
-		case "D":
-			//下を向いているとき
-			if(skillnum < 3){
-			}else if(skillnum == 3){
-				start = new Coordinate(-(skillnum-2),-2,-(skillnum-2));
-				end = new Coordinate((skillnum-2),0,(skillnum-2));
-			}else{
-				start = new Coordinate(-(skillnum-2),-(skillnum-3)*2,-(skillnum-2));
-				end = new Coordinate((skillnum-2),0,(skillnum-2));
-			}
-			break;
-		}
-
+		//範囲内の破壊されるブロックを取得
 		for(int x = start.x ; x <= end.x ; x++){
 			for(int z = start.z ; z <= end.z ; z++){
 				for(int y = start.y; y <= end.y ; y++){
@@ -509,13 +376,14 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//減る経験値計算
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
-
+		Coordinate breaklength = area.getBreakLength();
+		int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
 		double useExp = (double) (breaklist.size()) * gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
-				/((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1)) ;
+				/ifallbreaknum ;
 		if(SeichiAssist.DEBUG){
 			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum));
-			player.sendMessage(ChatColor.RED + "全ての破壊数：" + ((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1)));
+			player.sendMessage(ChatColor.RED + "全ての破壊数：" + ifallbreaknum);
 			player.sendMessage(ChatColor.RED + "実際の破壊数：" + breaklist.size());
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値：" + useExp);
 		}
@@ -564,11 +432,9 @@ public class PlayerBlockBreakListener implements Listener {
 		tool.setDurability(durability);
 
 		//壊したブロック数に応じてクールダウンを発生させる
-		long cooldown = (long) ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1));
+		long cooldown = (long) ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
 		if(cooldown >= 5){
 			new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
-		}else{
-			new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
 		}
 
 		//以降破壊する処理

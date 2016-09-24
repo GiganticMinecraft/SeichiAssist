@@ -739,6 +739,7 @@ public class Util {
 		if(gravity < 1)gravity = 1;
 		return gravity;
 	}
+	@SuppressWarnings("deprecation")
 	public static boolean logPlace(Player player, Block placeblock) {
 		//設置するブロックの状態を取得
 		BlockState blockstate = placeblock.getState();

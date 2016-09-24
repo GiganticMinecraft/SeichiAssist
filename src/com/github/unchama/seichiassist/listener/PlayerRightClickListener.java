@@ -30,7 +30,6 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.ArrowRemoveTaskRunnable;
-import com.github.unchama.seichiassist.task.AssaultTaskRunnable;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -134,8 +133,6 @@ public class PlayerRightClickListener implements Listener {
 			        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
 			        if(cooldown > 5){
 			        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
-			        }else{
-			        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
 			        }
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){
@@ -154,10 +151,6 @@ public class PlayerRightClickListener implements Listener {
 	private <T extends org.bukkit.entity.Projectile> void runArrowSkill(Player player, Class<T> clazz) {
 		//プレイヤーの位置を取得
 		Location ploc = player.getLocation();
-		//UUIDを取得
-		UUID uuid = player.getUniqueId();
-		//ぷれいやーでーたを取得
-		PlayerData playerdata = playermap.get(uuid);
 
 		//発射する音を再生する.
     	player.playSound(ploc, Sound.ENTITY_ARROW_SHOOT, 1, 1);
@@ -358,8 +351,8 @@ public class PlayerRightClickListener implements Listener {
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + ":ON-Under(下向き）");
 						break;
 					}
+					playerdata.activeskilldata.updataSkill(player, playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum,activemineflagnum);
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-					playerdata.activeskilldata.mineflagnum = activemineflagnum;
 				}else if(playerdata.activeskilldata.skilltype > 0 && playerdata.activeskilldata.skillnum > 0){
 					activemineflagnum = (activemineflagnum + 1) % 2;
 					switch (activemineflagnum){
@@ -370,8 +363,8 @@ public class PlayerRightClickListener implements Listener {
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + ":ON");
 						break;
 					}
+					playerdata.activeskilldata.updataSkill(player, playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum,activemineflagnum);
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-					playerdata.activeskilldata.mineflagnum = activemineflagnum;
 				}
 			}
 
@@ -389,19 +382,14 @@ public class PlayerRightClickListener implements Listener {
 					if(!mainhandflag || playerdata.activeskilldata.skillnum == 0){
 						activemineflagnum = (activemineflagnum + 1) % 2;
 					}
-					if(playerdata.activeskilldata.assaultflag){
-						playerdata.activeskilldata.assaulttask.cancel();
-						playerdata.activeskilldata.assaultflag = false;
-					}
 					if(activemineflagnum == 0){
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + "：OFF");
 
 					}else{
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + ":ON");
 
-						playerdata.activeskilldata.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
-						playerdata.activeskilldata.assaultflag = true;
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + ":ON");
 					}
+					playerdata.activeskilldata.updataAssaultSkill(player, playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum,activemineflagnum);
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 					playerdata.activeskilldata.mineflagnum = activemineflagnum;
 				}

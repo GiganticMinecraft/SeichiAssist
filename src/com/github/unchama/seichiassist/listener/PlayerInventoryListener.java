@@ -38,8 +38,6 @@ import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.AreaVisualizeTaskRunnable;
-import com.github.unchama.seichiassist.task.AssaultTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -622,95 +620,88 @@ public class PlayerInventoryListener implements Listener {
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
+			int type = 0;
+			String name = null;
+			int skilllevel;
 			//ARROWSKILL
-			for(int skilllevel = 4;skilllevel <= 9 ; skilllevel++){
-
+			type = ActiveSkill.ARROW.gettypenum();
+			for(skilllevel = 4;skilllevel <= 9 ; skilllevel++){
+				name = ActiveSkill.ARROW.getName(skilllevel);
 				if(itemstackcurrent.getType().equals(ActiveSkill.ARROW.getMaterial(skilllevel))){
 					PotionMeta potionmeta =(PotionMeta)itemstackcurrent.getItemMeta();
 					if(potionmeta.getBasePotionData().getType().equals(ActiveSkill.ARROW.getPotionType(skilllevel))){
-						if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()
+						if(playerdata.activeskilldata.skilltype == type
 								&& playerdata.activeskilldata.skillnum == skilllevel){
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 							player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 						}else{
-							playerdata.activeskilldata.skilltype = ActiveSkill.ARROW.gettypenum();
-							playerdata.activeskilldata.skillnum = skilllevel;
-							player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.ARROW.getName(skilllevel) + "  が選択されました");
-							playerdata.activeskilldata.mineflagnum = 1;
+							playerdata.activeskilldata.updataSkill(player,type,skilllevel,1);
+							player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  が選択されました");
 							player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-							new AreaVisualizeTaskRunnable(player,playerdata).runTaskTimer(plugin,0,20);
 						}
 					}
 				}
 			}
 			//MULTISKILL
-			for(int skilllevel = 4;skilllevel <= 9 ; skilllevel++){
+			type = ActiveSkill.MULTI.gettypenum();
+			for(skilllevel = 4;skilllevel <= 9 ; skilllevel++){
+				name = ActiveSkill.MULTI.getName(skilllevel);
 				if(itemstackcurrent.getType().equals(ActiveSkill.MULTI.getMaterial(skilllevel))){
-					if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()
+					if(playerdata.activeskilldata.skilltype == type
 							&& playerdata.activeskilldata.skillnum == skilllevel){
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 						player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 					}else{
-						playerdata.activeskilldata.skilltype = ActiveSkill.MULTI.gettypenum();
-						playerdata.activeskilldata.skillnum = skilllevel;
-						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.MULTI.getName(skilllevel) + "  が選択されました");
-						playerdata.activeskilldata.mineflagnum = 1;
+						playerdata.activeskilldata.updataSkill(player,type,skilllevel,1);
+						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  が選択されました");
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 					}
 				}
 			}
 			//BREAKSKILL
-			for(int skilllevel = 1;skilllevel <= 9 ; skilllevel++){
+			type = ActiveSkill.BREAK.gettypenum();
+			for(skilllevel = 1;skilllevel <= 9 ; skilllevel++){
+				name = ActiveSkill.BREAK.getName(skilllevel);
 				if(itemstackcurrent.getType().equals(ActiveSkill.BREAK.getMaterial(skilllevel))){
 					if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()
 							&& playerdata.activeskilldata.skillnum == skilllevel){
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 						player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 					}else{
-						playerdata.activeskilldata.skilltype = ActiveSkill.BREAK.gettypenum();
-						playerdata.activeskilldata.skillnum = skilllevel;
-						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.BREAK.getName(skilllevel) + "  が選択されました");
-						playerdata.activeskilldata.mineflagnum = 1;
+						playerdata.activeskilldata.updataSkill(player,type,skilllevel,1);
+						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  が選択されました");
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 					}
 				}
 			}
 			//CONDENSKILL
-			for(int skilllevel = 4;skilllevel <= 9 ; skilllevel++){
+			type = ActiveSkill.CONDENSE.gettypenum();
+			for(skilllevel = 4;skilllevel <= 9 ; skilllevel++){
+				name = ActiveSkill.CONDENSE.getName(skilllevel);
 				if(itemstackcurrent.getType().equals(ActiveSkill.CONDENSE.getMaterial(skilllevel))){
-					if(playerdata.activeskilldata.assaulttype == ActiveSkill.CONDENSE.gettypenum()
+					if(playerdata.activeskilldata.assaulttype == type
 							&& playerdata.activeskilldata.assaultnum == skilllevel){
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 						player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 					}else{
-						playerdata.activeskilldata.assaulttype = ActiveSkill.CONDENSE.gettypenum();
-						playerdata.activeskilldata.assaultnum = skilllevel;
-						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + ActiveSkill.CONDENSE.getName(skilllevel) + "  が選択されました");
+						playerdata.activeskilldata.updataAssaultSkill(player,type,skilllevel,1);
+						player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + name + "  が選択されました");
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-						if(playerdata.activeskilldata.assaultflag){
-							playerdata.activeskilldata.assaulttask.cancel();
-						}
-						playerdata.activeskilldata.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
-						playerdata.activeskilldata.assaultflag = true;
 					}
 				}
 			}
 
 			//アサルトアーマー
-			if(itemstackcurrent.getType().equals(Material.DIAMOND_CHESTPLATE)){
-				if(playerdata.activeskilldata.assaultnum == 10 || playerdata.activeskilldata.assaulttype == 5){
+			type = ActiveSkill.ARMOR.gettypenum();
+			skilllevel = 10;
+			if(itemstackcurrent.getType().equals(ActiveSkill.ARMOR.getMaterial(skilllevel))){
+				if(playerdata.activeskilldata.assaultnum == skilllevel || playerdata.activeskilldata.assaulttype == type){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 				}else{
-					playerdata.activeskilldata.assaulttype = 5;
-					playerdata.activeskilldata.assaultnum = 10;
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + "アサルト・アーマー" + "  が選択されました");
+					playerdata.activeskilldata.updataAssaultSkill(player,type,skilllevel,1);
+					player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + "アサルト・アーマー" + "  が選択されました");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
-					if(playerdata.activeskilldata.assaultflag){
-						playerdata.activeskilldata.assaulttask.cancel();
-					}
-					playerdata.activeskilldata.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,0,1);
-					playerdata.activeskilldata.assaultflag = true;
 				}
 			}
 
@@ -748,17 +739,10 @@ public class PlayerInventoryListener implements Listener {
 				&&playerdata.activeskilldata.assaulttype == 0 && playerdata.activeskilldata.assaultnum == 0
 						){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+					player.sendMessage(ChatColor.YELLOW + "既に全ての選択は削除されています");
 				}else{
-					playerdata.activeskilldata.skilltype = 0;
-					playerdata.activeskilldata.skillnum = 0;
-					playerdata.activeskilldata.mineflagnum = 0;
-					playerdata.activeskilldata.assaultnum = 0;
-					playerdata.activeskilldata.assaulttype = 0;
-					if(playerdata.activeskilldata.assaultflag)playerdata.activeskilldata.assaulttask.cancel();
-					playerdata.activeskilldata.assaultflag = false;
-					player.sendMessage(ChatColor.GREEN + "アクティブスキル:未設定  が選択されました");
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+					playerdata.activeskilldata.clearSellect(player);
+
 				}
 			}
 			else if(itemstackcurrent.getType().equals(Material.BOOKSHELF)){

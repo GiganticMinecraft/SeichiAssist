@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -19,6 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -30,13 +30,20 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	Player player;
 	UUID uuid;
 	PlayerData playerdata;
+	int level;
+	int type;
 	int playerlocy;
 	PlayerInventory inventory;
 	ItemStack tool;
 	//経験値変更用のクラスを設定
 	ExperienceManager expman;
-
+	//一回の破壊の範囲
 	Coordinate breaklength;
+	//１回の全て破壊したときのブロック数
+	int ifallbreaknum;
+	//破壊エリアデータ
+	BreakArea assaultarea;
+
 
 
 	boolean errorflag = false;
@@ -48,6 +55,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		this.uuid = player.getUniqueId();
 		this.playerdata = playermap.get(uuid);
 
+
 		//念のためエラー分岐
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -56,6 +64,12 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			errorflag = true;
 			return;
 		}
+
+		this.level = playerdata.activeskilldata.assaultnum;
+		this.type = playerdata.activeskilldata.assaulttype;
+		this.assaultarea = playerdata.activeskilldata.assaultarea;
+
+
 		//もしサバイバルでなければ処理を終了
 		//もしフライ中なら終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
@@ -63,8 +77,6 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			errorflag = true;
 			return;
 		}
-
-		setRun();
 
 		this.expman = new ExperienceManager(player);
 
@@ -101,6 +113,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			errorflag = true;
 			return;
 		}
+		this.breaklength = assaultarea.getBreakLength();
 		//壊すフラグを指定
 		if(playerdata.activeskilldata.assaulttype == ActiveSkill.CONDENSE.gettypenum()){
 			if(playerdata.activeskilldata.assaultnum < 7){
@@ -109,21 +122,20 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 				lavaflag = true;
 			}
 			condensflag = true;
-		}else if(playerdata.activeskilldata.assaulttype == 5){
+
+		}else if(playerdata.activeskilldata.assaulttype == ActiveSkill.ARMOR.gettypenum()){
 			breakflag = true;
 		}
+		ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
 
 		//プレイヤーに使用音
 		if(!errorflag)player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, (float)1.5, (float) 0.65);
 
 	}
-
-	private void setRun() {
-		playerdata.activeskilldata.mineflagnum = 1;
-	}
-
 	private void setCancel() {
 		if(!errorflag)player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_CLOSE, (float)1.5, (float) 0.65);
+		playerdata.activeskilldata.assaultflag = false;
+		playerdata.activeskilldata.mineflagnum = 0;
 		this.cancel();
 	}
 
@@ -134,8 +146,6 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			setCancel();
 			return;
 		}
-
-
 		//もしサバイバルでなければ処理を終了
 		//もしフライ中なら終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
@@ -150,7 +160,6 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
 		Block block = player.getLocation().getBlock();
-		Location centerofblock = block.getLocation().add(0.5,0.5,0.5);
 
 		ItemStack offhanditem = inventory.getItemInOffHand();
 		//最初に登録したツールと今のツールが違う場合
@@ -166,14 +175,8 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 		//壊されるブロックの宣言
 		Block breakblock;
-		Coordinate start = new Coordinate(-6,-1,-6);
-		Coordinate end = new Coordinate(6,11,6);
-
-		if(playerdata.activeskilldata.assaulttype == ActiveSkill.CONDENSE.gettypenum()){
-			breaklength = ActiveSkill.CONDENSE.getBreakLength(playerdata.activeskilldata.assaultnum);
-			start = new Coordinate(-(breaklength.x - 1)/2,-(breaklength.y - 1)/2,-(breaklength.z - 1)/2);
-			end = new Coordinate((breaklength.x - 1)/2,(breaklength.y - 1)/2,(breaklength.z - 1)/2);
-		}
+		Coordinate start = assaultarea.getStartList().get(0);
+		Coordinate end = assaultarea.getEndList().get(0);
 
 		for(int x = start.x ; x <= end.x ; x++){
 			for(int z = start.z ; z <= end.z ; z++){
@@ -220,7 +223,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 		double useExp = (double)breaksum * gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum)
-				/((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1)) ;
+				/(ifallbreaknum) ;
 
 
 
