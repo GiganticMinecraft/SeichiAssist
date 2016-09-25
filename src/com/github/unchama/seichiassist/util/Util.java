@@ -26,6 +26,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -504,7 +505,7 @@ public class Util {
             bonus = 1;
         }
         byte b = breakblock.getData();
-        b &= 0x03;
+        b &= 0x0F;
 
 
 		int silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH);
@@ -638,6 +639,10 @@ public class Util {
 					dropmaterial = Material.CLAY_BALL;
 					dropitem = new ItemStack(dropmaterial,4);
 					break;
+				case MONSTER_EGGS:
+					Location loc = breakblock.getLocation();
+					breakblock.getWorld().spawnEntity(loc, EntityType.SILVERFISH);
+					dropitem = null;
 				default:
 					//breakblcokのままのアイテムスタックを保存
 					dropitem = new ItemStack(breakmaterial,1,b);
@@ -703,9 +708,9 @@ public class Util {
 		rotation += 360.0;
 		}
 
-		if(pitch <= -30){
+		if(pitch <= -10){
 			return "U";
-		}else if(pitch >= 25){
+		}else if(pitch >= 15){
 			return "D";
 		}else if (0 <= rotation && rotation < 45.0) {
 			return "N";
@@ -739,6 +744,7 @@ public class Util {
 		if(gravity < 1)gravity = 1;
 		return gravity;
 	}
+	@SuppressWarnings("deprecation")
 	public static boolean logPlace(Player player, Block placeblock) {
 		//設置するブロックの状態を取得
 		BlockState blockstate = placeblock.getState();

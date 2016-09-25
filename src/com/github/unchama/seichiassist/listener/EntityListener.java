@@ -26,6 +26,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -160,8 +161,6 @@ public class EntityListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
-		//プレイヤーの向いている方角を取得
-		String dir = Util.getCardinalDirection(player);
 		//元ブロックのマテリアルを取得
 		Material material = block.getType();
 		//元ブロックの真ん中の位置を取得
@@ -169,8 +168,9 @@ public class EntityListener implements Listener {
 
 		//壊されるブロックの宣言
 		Block breakblock;
-		Coordinate start = new Coordinate();
-		Coordinate end = new Coordinate();
+		BreakArea area = playerdata.activeskilldata.area;
+		Coordinate start = area.getStartList().get(0);
+		Coordinate end = area.getEndList().get(0);
 
 		//エフェクト用に壊されるブロック全てのリストデータ
 		List<Block> breaklist = new ArrayList<Block>();
@@ -178,68 +178,11 @@ public class EntityListener implements Listener {
 		//壊される溶岩のリストデータ
 		List<Block> lavalist = new ArrayList<Block>();
 
-		switch (dir){
-		case "N":
-			//北を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3),-(skilllevel-3),-(skilllevel-3)-1);
-				end = new Coordinate(skilllevel-3,skilllevel-3,(skilllevel-3)-1);
-			}else{
-				start = new Coordinate(-(skilllevel-3),-1,-(skilllevel-3)*2);
-				end = new Coordinate(skilllevel-3,(skilllevel-5)*2 + 1,0);
-			}
-			break;
-		case "E":
-			//東を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3)+1,-(skilllevel-3),-(skilllevel-3));
-				end = new Coordinate((skilllevel-3)+1,skilllevel-3,(skilllevel-3));
-			}else{
-				start = new Coordinate(0,-1,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3)*2,(skilllevel-5)*2 + 1,(skilllevel-3));
-			}
-			break;
-		case "S":
-			//南を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3),-(skilllevel-3),-(skilllevel-3)+1);
-				end = new Coordinate(skilllevel-3,skilllevel-3,(skilllevel-3)+1);
-			}else{
-				start = new Coordinate(-(skilllevel-3),-1,0);
-				end = new Coordinate(skilllevel-3,(skilllevel-5)*2 + 1,(skilllevel-3)*2);
-			}
-			break;
-		case "W":
-			//西を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3)-1,-(skilllevel-3),-(skilllevel-3));
-				end = new Coordinate((skilllevel-3)-1,skilllevel-3,(skilllevel-3));
-			}else{
-				start = new Coordinate(-(skilllevel-3)*2,-1,-(skilllevel-3));
-				end = new Coordinate(0,(skilllevel-5)*2 + 1,(skilllevel-3));
-			}
-			break;
-		case "U":
-			//上を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3),0,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3),2,(skilllevel-3));
-			}else{
-				start = new Coordinate(-(skilllevel-3),0,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3),(skilllevel-4)*2,(skilllevel-3));
-			}
-			break;
-		case "D":
-			//下を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3),-2,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3),0,(skilllevel-3));
-			}else{
-				start = new Coordinate(-(skilllevel-3),-(skilllevel-4)*2,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3),0,(skilllevel-3));
-			}
-			break;
-		}
+		//一回の破壊の範囲
+		final Coordinate breaklength = area.getBreakLength();
+		//１回の全て破壊したときのブロック数
+		final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
+
 
 		for(int x = start.x ; x <= end.x ; x++){
 			for(int z = start.z ; z <= end.z ; z++){
@@ -279,10 +222,10 @@ public class EntityListener implements Listener {
 
 		double useExp = (double) (breaklist.size()) * gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
-				/((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1)) ;
+				/(ifallbreaknum) ;
 		if(SeichiAssist.DEBUG){
 			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum));
-			player.sendMessage(ChatColor.RED + "全ての破壊数：" + ((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1)));
+			player.sendMessage(ChatColor.RED + "全ての破壊数：" + (ifallbreaknum));
 			player.sendMessage(ChatColor.RED + "実際の破壊数：" + breaklist.size());
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値：" + useExp);
 		}

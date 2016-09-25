@@ -18,7 +18,6 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class MultiBreakTaskRunnable extends BukkitRunnable{
-	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	private Player player;
 	private Location droploc;
@@ -31,15 +30,12 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 	private UUID uuid;
 	private PlayerData playerdata;
 	private int count;
-	private Material material;
-	//private int key;
 
 	public MultiBreakTaskRunnable(Player player,Block centerblock,ItemStack tool,
 			List<List<Block>> multibreaklist, List<List<Block>> multilavalist,
 			List<Coordinate> startlist, List<Coordinate> endlist) {
 		this.player = player;
 		this.droploc = centerblock.getLocation().add(0.5, 0.5, 0.5);
-		this.material = centerblock.getType();
 		this.tool = tool;
 		this.multibreaklist = multibreaklist;
 		this.multilavalist = multilavalist;

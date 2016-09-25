@@ -8,12 +8,12 @@ import com.github.unchama.seichiassist.data.Coordinate;
 
 
 public enum ActiveSkill{
-	ARROW(1,"","","","エビフライ・ドライブ","ホーリー・ショット","ツァーリ・ボンバ","アーク・ブラスト","ファンタズム・レイ","スーパー・ノヴァ"),
-	MULTI(2,"","","","トム・ボウイ","サンダー・ストーム","スターライト・ブレイカー","アース・ディバイド","ヘブン・ゲイボルグ","ディシジョン"),
-	BREAK(3,"デュアル・ブレイク","トリアル・ブレイク","エクスプロージョン","ミラージュ・フレア","ドッ・カーン","ギガンティック・ボム","ブリリアント・デトネーション","レムリア・インパクト","エターナル・ヴァイス"),
-	CONDENSE(4,"","","","ホワイト・ブレス","アブソリュート・ゼロ","ダイアモンド・ダスト","ラヴァ・コンデンセーション","モエラキ・ボールダーズ","エルト・フェットル"),
-	;
-
+	ARROW(1,"","","","エビフライ・ドライブ","ホーリー・ショット","ツァーリ・ボンバ","アーク・ブラスト","ファンタズム・レイ","スーパー・ノヴァ",""),
+	MULTI(2,"","","","トム・ボウイ","サンダー・ストーム","スターライト・ブレイカー","アース・ディバイド","ヘブン・ゲイボルグ","ディシジョン",""),
+	BREAK(3,"デュアル・ブレイク","トリアル・ブレイク","エクスプロージョン","ミラージュ・フレア","ドッ・カーン","ギガンティック・ボム","ブリリアント・デトネーション","レムリア・インパクト","エターナル・ヴァイス",""),
+	CONDENSE(4,"","","","ホワイト・ブレス","アブソリュート・ゼロ","ダイアモンド・ダスト","ラヴァ・コンデンセーション","モエラキ・ボールダーズ","エルト・フェットル",""),
+	ARMOR(5,"","","","","","","","","","アサルト・アーマー"),
+;
 	private int typenum;
 	private String lv1name;
 	private String lv2name;
@@ -24,9 +24,10 @@ public enum ActiveSkill{
 	private String lv7name;
 	private String lv8name;
 	private String lv9name;
+	private String lv10name;
 
 
-	ActiveSkill(int typenum,String lv1name,String lv2name,String lv3name,String lv4name,String lv5name,String lv6name,String lv7name,String lv8name,String lv9name){
+	ActiveSkill(int typenum,String lv1name,String lv2name,String lv3name,String lv4name,String lv5name,String lv6name,String lv7name,String lv8name,String lv9name,String lv10name){
 		this.typenum = typenum;
 		this.lv1name = lv1name;
 		this.lv2name = lv2name;
@@ -37,6 +38,7 @@ public enum ActiveSkill{
 		this.lv7name = lv7name;
 		this.lv8name = lv8name;
 		this.lv9name = lv9name;
+		this.lv10name = lv10name;
 
 	}
 
@@ -70,12 +72,12 @@ public enum ActiveSkill{
 	public String getLv9Name(){
 		return this.lv9name;
 	}
+	public String getLv10Name(){
+		return this.lv10name;
+	}
 	public int getRepeatTimes(int skilllevel){
-		int repeattimes = 0;
+		int repeattimes = 1;
 		switch(this.toString()){
-		case "ARROW":
-			repeattimes = 1;
-			break;
 		case "MULTI":
 			switch(skilllevel){
 			case 4:
@@ -97,12 +99,6 @@ public enum ActiveSkill{
 				repeattimes = 7;
 				break;
 			}
-			break;
-		case "BREAK":
-			repeattimes = 1;
-			break;
-		case "CONDENSE":
-			repeattimes = 1;
 			break;
 		}
 		return repeattimes;
@@ -188,25 +184,27 @@ public enum ActiveSkill{
 		case "CONDENSE":
 			switch(skilllevel){
 			case 4:
-				breaklength.setXYZ(5, 5, 5);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			case 5:
-				breaklength.setXYZ(7, 7, 7);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			case 6:
-				breaklength.setXYZ(9, 9, 9);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			case 7:
-				breaklength.setXYZ(5, 5, 5);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			case 8:
-				breaklength.setXYZ(7, 7, 7);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			case 9:
-				breaklength.setXYZ(9, 9, 9);
+				breaklength.setXYZ(13, 13, 13);
 				break;
 			}
 			break;
+		case "ARMOR":
+			breaklength.setXYZ(13, 13, 13);
 		}
 		return breaklength;
 	}
@@ -251,7 +249,7 @@ public enum ActiveSkill{
 			str = activeskill[typenum-1].getLv9Name();
 			break;
 		case 10:
-			str = "アサルト・アーマー";
+			str = activeskill[typenum-1].getLv10Name();
 			break;
 		default:
 			str = "エラー";
@@ -343,28 +341,28 @@ public enum ActiveSkill{
 		}else if(typenum == ActiveSkill.CONDENSE.gettypenum()){
 			switch(skilllevel){
 			case 4:
-				exp = 25;
+				exp = 500;
 				break;
 			case 5:
-				exp = 50;
+				exp = 450;
 				break;
 			case 6:
-				exp = 100;
+				exp = 350;
 				break;
 			case 7:
-				exp = 60;
+				exp = 1200;
 				break;
 			case 8:
-				exp = 120;
+				exp = 1000;
 				break;
 			case 9:
-				exp = 240;
+				exp = 600;
 				break;
 			default:
 				break;
 			}
-		}else if(typenum == 5){
-			exp = 50;
+		}else if(typenum == ActiveSkill.ARMOR.gettypenum()){
+			exp = 800;
 		}
 		return exp;
 	}
@@ -419,13 +417,13 @@ public enum ActiveSkill{
 		case "BREAK":
 			switch(skillnum){
 			case 1:
-				cooldowntime = 0.0;
+				cooldowntime = 0;
 				break;
 			case 2:
-				cooldowntime = 0.1;
+				cooldowntime = 0;
 				break;
 			case 3:
-				cooldowntime = 0.2;
+				cooldowntime = 0;
 				break;
 			case 4:
 				cooldowntime = 0.7;
@@ -444,28 +442,6 @@ public enum ActiveSkill{
 				break;
 			case 9:
 				cooldowntime = 7.0;
-				break;
-			}
-			break;
-		case "CONDENSE":
-			switch(skillnum){
-			case 4:
-				cooldowntime = 0.3;
-				break;
-			case 5:
-				cooldowntime = 0.3;
-				break;
-			case 6:
-				cooldowntime = 0.3;
-				break;
-			case 7:
-				cooldowntime = 0.3;
-				break;
-			case 8:
-				cooldowntime = 0.3;
-				break;
-			case 9:
-				cooldowntime = 0.3;
 				break;
 			}
 			break;
@@ -554,6 +530,8 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
+		case "ARMOR":
+			material = Material.DIAMOND_CHESTPLATE;
 		}
 		return material;
 	}
@@ -595,6 +573,9 @@ public enum ActiveSkill{
 		case 9:
 			str = getLv9Name();
 			break;
+		case 10:
+			str = getLv10Name();
+			break;
 		default:
 			str = "エラー";
 			break;
@@ -632,7 +613,6 @@ public enum ActiveSkill{
 		}
 		return potiontype;
 	}
-
 
 
 

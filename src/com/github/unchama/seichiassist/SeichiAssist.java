@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
@@ -150,6 +151,7 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.SANDSTONE,Material.QUARTZ_ORE,Material.END_BRICKS,Material.ENDER_STONE
 			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN,Material.MAGMA,Material.SOUL_SAND,Material.LEAVES,Material.LEAVES_2
 			,Material.CLAY,Material.STAINED_CLAY,Material.COBBLESTONE,Material.MOSSY_COBBLESTONE,Material.HARD_CLAY
+			,Material.MONSTER_EGGS
 			));
 	public static final List<Material> luckmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.COAL_ORE,Material.DIAMOND_ORE,Material.LAPIS_ORE,Material.EMERALD_ORE,
@@ -167,9 +169,10 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
 			));
 
+	public static final Set<Material> transparentmateriallist = null;
+			//new HashSet<Material>(Arrays.asList());
 	@Override
 	public void onEnable(){
-
 		plugin = this;
 
 		//コンフィグ系の設定は全てConfig.javaに移動
