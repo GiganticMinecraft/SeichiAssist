@@ -713,26 +713,52 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 			else if(itemstackcurrent.getType().equals(Material.STONE_BUTTON)){
-				//経験値変更用のクラスを設定
-				//経験値が足りなかったら処理を終了
-				if(!expman.hasExp(10000)){
-					player.sendMessage(ChatColor.RED + "必要な経験値が足りません");
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					return;
-				}
-				//経験値消費
-				expman.changeExp(-10000);
+				if(itemstackcurrent.getItemMeta().getDisplayName().contains("リセット")){
+					//経験値変更用のクラスを設定
+					//経験値が足りなかったら処理を終了
+					if(!expman.hasExp(10000)){
+						player.sendMessage(ChatColor.RED + "必要な経験値が足りません");
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+						return;
+					}
+					//経験値消費
+					expman.changeExp(-10000);
 
-				//リセット処理
-				playerdata.activeskilldata.reset();
-				//スキルポイント更新
-				playerdata.activeskilldata.updataActiveSkillPoint(player, playerdata.level);
-				//リセット音を流す
-				player.playSound(player.getLocation(), Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1, (float) 0.1);
-				//メッセージを流す
-				player.sendMessage(ChatColor.LIGHT_PURPLE + "アクティブスキルポイントをリセットしました");
-				//メニューを開く
-				player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+					//リセット処理
+					playerdata.activeskilldata.reset();
+					//スキルポイント更新
+					playerdata.activeskilldata.updataActiveSkillPoint(player, playerdata.level);
+					//リセット音を流す
+					player.playSound(player.getLocation(), Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1, (float) 0.1);
+					//メッセージを流す
+					player.sendMessage(ChatColor.LIGHT_PURPLE + "アクティブスキルポイントをリセットしました");
+					//メニューを開く
+					player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+				}else if(itemstackcurrent.getItemMeta().getDisplayName().contains("通常スキル範囲可視化ボタン")){
+					playerdata.activeskilldata.areaflag = !playerdata.activeskilldata.areaflag;
+					if(playerdata.activeskilldata.areaflag){
+						player.sendMessage(ChatColor.LIGHT_PURPLE + "通常スキル範囲可視化：ON");
+						playerdata.activeskilldata.updataArea(player);
+						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+					}else{
+						player.sendMessage(ChatColor.LIGHT_PURPLE + "通常スキル範囲可視化：OFF");
+						playerdata.activeskilldata.removeAreaTask(false);
+						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+					}
+				}else if(itemstackcurrent.getItemMeta().getDisplayName().contains("アサルトスキル範囲可視化ボタン")){
+					playerdata.activeskilldata.assaultareaflag = !playerdata.activeskilldata.assaultareaflag;
+					if(playerdata.activeskilldata.assaultareaflag){
+						player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル範囲可視化：ON");
+						playerdata.activeskilldata.updataAssaultArea(player);
+						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+					}else{
+						player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル範囲可視化：OFF");
+						playerdata.activeskilldata.removeAreaTask(true);
+						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+					}
+
+				}
+
 			}
 			else if(itemstackcurrent.getType().equals(Material.GLASS)){
 				if(playerdata.activeskilldata.skilltype == 0 && playerdata.activeskilldata.skillnum == 0

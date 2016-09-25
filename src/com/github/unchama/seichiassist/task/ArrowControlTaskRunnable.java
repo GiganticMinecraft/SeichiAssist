@@ -16,19 +16,23 @@ public class ArrowControlTaskRunnable extends BukkitRunnable{
 		this.proj = proj;
 		this.standard = standard;
 		this.tick = 0;
-		this.speed = 0;
+		this.speed = 6;
 	}
 
 	@Override
 	public void run() {
 		tick++;
-		speed = speed + 1;
-		if(tick > 10){
+		if(tick > 15){
+			proj.remove();
 			this.cancel();
 		}
 		projloc = proj.getLocation();
+
+
+
 		Vector vec = new Vector(standard.getX()-projloc.getX(),standard.getY()-projloc.getY(),standard.getZ()-projloc.getZ());
 		vec.normalize();
+
 		proj.setVelocity(vec.multiply(speed));
 
 	}

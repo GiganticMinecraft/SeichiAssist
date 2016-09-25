@@ -120,6 +120,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	 				playerdata.activeskilldata.skillnum = rs2.getInt("activeskillnum");
 	 				playerdata.activeskilldata.assaulttype = rs2.getInt("assaultskilltype");
 	 				playerdata.activeskilldata.assaultnum = rs2.getInt("assaultskillnum");
+	 				playerdata.activeskilldata.areaflag = rs2.getBoolean("areaflag");
+	 				playerdata.activeskilldata.assaultareaflag = rs2.getBoolean("assaultareaflag");
 	 				playerdata.activeskilldata.arrowskill = rs2.getInt("arrowskill");
 	 				playerdata.activeskilldata.multiskill = rs2.getInt("multiskill");
 	 				playerdata.activeskilldata.breakskill = rs2.getInt("breakskill");

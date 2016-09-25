@@ -11,6 +11,8 @@ public class BreakArea {
 	int type;
 	//スキルレベル
 	int level;
+	//フラグ
+	int mineflagnum;
 	//南向きを基準として破壊の範囲座標
 	Coordinate breaklength;
 	//破壊回数
@@ -22,9 +24,10 @@ public class BreakArea {
 	//変数として利用する相対座標
 	private Coordinate start,end;
 
-	public BreakArea(int type, int skilllevel) {
+	public BreakArea(int type, int skilllevel,int mineflagnum) {
 		this.type = type;
 		this.level = skilllevel;
+		this.mineflagnum = mineflagnum;
 		this.dir = "S";
 		this.startlist = new ArrayList<Coordinate>();
 		this.endlist = new ArrayList<Coordinate>();
@@ -69,6 +72,14 @@ public class BreakArea {
 			shift(0, (breaklength.y-1)/2 - 1, (breaklength.z-1)/2);
 
 		}
+
+		if(type == ActiveSkill.BREAK.gettypenum() && level < 3){
+			end.add(0, 1, 0);
+		}
+		if(type == ActiveSkill.BREAK.gettypenum() && level < 3 && mineflagnum == 1){
+			shift(0,1,0);
+		}
+
 		//スタートリストに追加
 		startlist.add(new Coordinate(start));
 		endlist.add(new Coordinate(end));

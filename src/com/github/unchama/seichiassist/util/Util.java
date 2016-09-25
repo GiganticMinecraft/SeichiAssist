@@ -504,7 +504,7 @@ public class Util {
             bonus = 1;
         }
         byte b = breakblock.getData();
-        b &= 0x03;
+        b &= 0x0F;
 
 
 		int silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH);

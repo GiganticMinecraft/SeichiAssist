@@ -136,6 +136,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		if(!errorflag)player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_CLOSE, (float)1.5, (float) 0.65);
 		playerdata.activeskilldata.assaultflag = false;
 		playerdata.activeskilldata.mineflagnum = 0;
+		playerdata.activeskilldata.removeAreaTask(true);
 		this.cancel();
 	}
 

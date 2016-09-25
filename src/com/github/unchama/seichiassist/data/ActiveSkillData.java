@@ -69,6 +69,10 @@ public class ActiveSkillData {
 	public BukkitTask areatask;
 	//アサルトスキルの破壊可視化タスク
 	public BukkitTask assaultareatask;
+	//通常スキルの可視化タスクの使用フラグ
+	public boolean areaflag;
+	//アサルトスキルの可視化タスクの使用フラグ
+	public boolean assaultareaflag;
 
 	public ActiveSkillData(){
 		mineflagnum = 0;
@@ -86,6 +90,8 @@ public class ActiveSkillData {
 		breakskill = 0;
 		condenskill = 0;
 		effectnum = 0;
+		areaflag = true;
+		assaultareaflag = true;
 		effectflagmap = new HashMap<Integer,Boolean>();
 		premiumeffectflagmap = new HashMap<Integer,Boolean>();
 		blocklist = new ArrayList<Block>();
@@ -147,9 +153,9 @@ public class ActiveSkillData {
 
 	public void reset() {
 		//タスクを即終了
-		if(assaultflag)assaulttask.cancel();
-		areatask.cancel();
-		assaultareatask.cancel();
+		if(assaultflag)try{this.assaulttask.cancel();}catch(NullPointerException e){}
+		try{this.areatask.cancel();}catch(NullPointerException e){}
+		try{this.assaultareatask.cancel();}catch(NullPointerException e){}
 
 		//初期化
 		arrowskill = 0;
@@ -174,9 +180,9 @@ public class ActiveSkillData {
 		this.skillnum = skilllevel;
 		this.mineflagnum = mineflagnum;
 		try{this.areatask.cancel();}catch(NullPointerException e){}
-		this.area = new BreakArea(type,skilllevel);
+		this.area = new BreakArea(type,skilllevel,mineflagnum);
 
-		if(mineflagnum != 0){
+		if(mineflagnum != 0 && areaflag){
 			this.areatask = new AreaVisualizeTaskRunnable(player,this.area,false).runTaskTimer(plugin,0,1);
 		}
 	}
@@ -187,10 +193,10 @@ public class ActiveSkillData {
 
 		try{this.assaultareatask.cancel();}catch(NullPointerException e){}
 		try{this.assaulttask.cancel();}catch(NullPointerException e){}
-		this.assaultarea = new BreakArea(type,skilllevel);
+		this.assaultarea = new BreakArea(type,skilllevel,mineflagnum);
 
 
-		if(mineflagnum != 0){
+		if(mineflagnum != 0 && assaultareaflag){
 			this.assaultflag = true;
 			this.assaultareatask = new AreaVisualizeTaskRunnable(player,this.assaultarea,true).runTaskTimer(plugin,0,1);
 			this.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,10,1);
@@ -232,6 +238,29 @@ public class ActiveSkillData {
 		player.sendMessage(ChatColor.GREEN + "全ての選択を削除しました。");
 		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 
+	}
+	public void removeAreaTask(boolean asflag) {
+		if(asflag){
+			try{this.assaultareatask.cancel();}catch(NullPointerException e){}
+		}else{
+			try{this.areatask.cancel();}catch(NullPointerException e){}
+		}
+	}
+	public void updataAssaultArea(Player player) {
+		try{this.assaultareatask.cancel();}catch(NullPointerException e){}
+		this.assaultarea = new BreakArea(assaulttype,assaultnum,mineflagnum);
+
+		if(mineflagnum != 0){
+			this.assaultareatask = new AreaVisualizeTaskRunnable(player,this.assaultarea,true).runTaskTimer(plugin,0,1);
+		}
+	}
+	public void updataArea(Player player) {
+		try{this.areatask.cancel();}catch(NullPointerException e){}
+		this.area = new BreakArea(skilltype,skillnum,mineflagnum);
+
+		if(mineflagnum != 0){
+			this.areatask = new AreaVisualizeTaskRunnable(player,this.area,false).runTaskTimer(plugin,0,1);
+		}
 	}
 
 }
