@@ -180,6 +180,9 @@ public class ActiveSkillData {
 		this.skillnum = skilllevel;
 		this.mineflagnum = mineflagnum;
 		try{this.areatask.cancel();}catch(NullPointerException e){}
+		if(skilltype == 0){
+			return;
+		}
 		this.area = new BreakArea(type,skilllevel,mineflagnum);
 
 		if(mineflagnum != 0 && areaflag){
@@ -193,6 +196,10 @@ public class ActiveSkillData {
 
 		try{this.assaultareatask.cancel();}catch(NullPointerException e){}
 		try{this.assaulttask.cancel();}catch(NullPointerException e){}
+
+		if(assaulttype == 0){
+			return;
+		}
 		this.assaultarea = new BreakArea(type,skilllevel,mineflagnum);
 
 

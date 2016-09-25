@@ -61,7 +61,9 @@ public class BreakArea {
 		end = new Coordinate((breaklength.x-1)/2, (breaklength.y-1)/2, (breaklength.z-1)/2);
 		//アサルトスキルの時
 		if(assaultflag){
-			shift(0, (breaklength.y-1)/2 - 1,0);
+			if(type == 5 && level == 10){
+				shift(0, (breaklength.y-1)/2 - 1,0);
+			}
 		}
 		//上向きまたは下向きの時
 		else if(dir.equals("U") || dir.equals("D")){
