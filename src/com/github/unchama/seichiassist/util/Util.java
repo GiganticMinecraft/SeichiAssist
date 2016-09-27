@@ -26,6 +26,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -254,11 +255,18 @@ public class Util {
 		return false;
 	}
 	//他のプラグインの影響があってもブロックを破壊できるのか
+	@SuppressWarnings("deprecation")
 	public static boolean canBreak(Player player ,Block breakblock) {
+		if(!player.isOnline() || breakblock == null){
+			return false;
+		}
+		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+
 		//壊されるブロックの状態を取得
 		BlockState blockstate = breakblock.getState();
 		//壊されるブロックのデータを取得
-		@SuppressWarnings("deprecation")
 		byte data = blockstate.getData().getData();
 
 
@@ -266,6 +274,12 @@ public class Util {
 		if(!Util.getWorldGuard().canBuild(player, breakblock.getLocation())){
 			player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
 			return false;
+		}
+		//壊されるブロックがスキルで使用中だった場合処理を終了
+		if(!playerdata.activeskilldata.blocklist.isEmpty() && !breakblock.isEmpty()){
+			if(playerdata.activeskilldata.blocklist.contains(breakblock)){
+				return false;
+			}
 		}
 		//コアプロテクトのクラスを取得
 		CoreProtectAPI CoreProtect = Util.getCoreProtect();
@@ -284,16 +298,23 @@ public class Util {
 		Material material = breakblock.getType();
 		ItemStack itemstack = dropItemOnTool(breakblock,tool);
 
+		if(!SeichiAssist.materiallist.contains(material)){
+			return;
+		}
+
 		if(material.equals(Material.GLOWING_REDSTONE_ORE)){
 			material = Material.REDSTONE_ORE;
 		}
-
-
-		//アイテムをドロップさせる
-		if(!addItemtoMineStack(player,itemstack)){
-			breakblock.getWorld().dropItemNaturally(centerofblock,itemstack);
+		if(material.equals(Material.AIR)){
+			return;
 		}
 
+		if(itemstack != null){
+			//アイテムをドロップさせる
+			if(!addItemtoMineStack(player,itemstack)){
+				breakblock.getWorld().dropItemNaturally(centerofblock,itemstack);
+			}
+		}
 
 		//ブロックを空気に変える
 		breakblock.setType(Material.AIR);
@@ -468,7 +489,7 @@ public class Util {
 			default:
 				return false;
 		}
-		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
+		//player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, (float)0.1, (float)1);
 		return true;
 
 	}
@@ -478,12 +499,15 @@ public class Util {
 		Material dropmaterial;
 		Material breakmaterial = breakblock.getType();
 		int fortunelevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
-        int bonus = (int) (Math.random() * ((fortunelevel + 2)) - 1);
+		double rand = Math.random();
+        int bonus = (int) (rand * ((fortunelevel + 2)) - 1);
         if (bonus <= 1) {
             bonus = 1;
         }
         byte b = breakblock.getData();
-        b &= 0x03;
+        byte b_tree = b;
+        b_tree &= 0x03;
+        b &= 0x0F;
 
 
 		int silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH);
@@ -513,6 +537,8 @@ public class Util {
 				case LAPIS_ORE:
 					Dye dye = new Dye();
 					dye.setColor(DyeColor.BLUE);
+
+					bonus *= (rand * 4) + 4;
 					dropitem = dye.toItemStack(bonus);
 					break;
 				case EMERALD_ORE:
@@ -521,18 +547,16 @@ public class Util {
 					break;
 				case REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
+					bonus *= rand + 4;
 					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
 				case GLOWING_REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
+					bonus *= rand + 4;
 					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
 				case QUARTZ_ORE:
 					dropmaterial = Material.QUARTZ;
-					dropitem = new ItemStack(dropmaterial,bonus);
-					break;
-				case GRAVEL:
-					dropmaterial = Material.FLINT;
 					dropitem = new ItemStack(dropmaterial,bonus);
 					break;
 				default:
@@ -552,7 +576,7 @@ public class Util {
 				case LAPIS_ORE:
 					Dye dye = new Dye();
 					dye.setColor(DyeColor.BLUE);
-					dropitem = dye.toItemStack();
+					dropitem = dye.toItemStack((int) ((rand*4) + 4));
 					break;
 				case EMERALD_ORE:
 					dropmaterial = Material.EMERALD;
@@ -560,11 +584,11 @@ public class Util {
 					break;
 				case REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
-					dropitem = new ItemStack(dropmaterial);
+					dropitem = new ItemStack(dropmaterial,(int) (rand+4));
 					break;
 				case GLOWING_REDSTONE_ORE:
 					dropmaterial = Material.REDSTONE;
-					dropitem = new ItemStack(dropmaterial,bonus);
+					dropitem = new ItemStack(dropmaterial,(int) (rand+4));
 					break;
 				case QUARTZ_ORE:
 					dropmaterial = Material.QUARTZ;
@@ -586,6 +610,46 @@ public class Util {
 					dropmaterial = Material.DIRT;
 					dropitem = new ItemStack(dropmaterial);
 					break;
+				case GRAVEL:
+					double p = 0;
+					switch(fortunelevel){
+					case 1:
+						p = 0.14;
+						break;
+					case 2:
+						p = 0.25;
+						break;
+					case 3:
+						p = 1.00;
+						break;
+					default :
+						p = 0.1;
+						break;
+					}
+					if(p>rand){
+						dropmaterial = Material.FLINT;
+					}else{
+						dropmaterial = Material.GRAVEL;
+					}
+					dropitem = new ItemStack(dropmaterial,bonus);
+					break;
+				case LEAVES:
+				case LEAVES_2:
+					dropitem = null;
+					break;
+				case CLAY:
+					dropmaterial = Material.CLAY_BALL;
+					dropitem = new ItemStack(dropmaterial,4);
+					break;
+				case MONSTER_EGGS:
+					Location loc = breakblock.getLocation();
+					breakblock.getWorld().spawnEntity(loc, EntityType.SILVERFISH);
+					dropitem = null;
+					break;
+				case LOG:
+				case LOG_2:
+					dropitem = new ItemStack(breakmaterial,1,b_tree);
+					break;
 				default:
 					//breakblcokのままのアイテムスタックを保存
 					dropitem = new ItemStack(breakmaterial,1,b);
@@ -602,7 +666,7 @@ public class Util {
 		//10%の確率で経験値付与
 		if(rand < 0.1){
 			//Lv8未満は獲得経験値ゼロ、それ以上はレベルに応じて経験値付与
-			if(playerdata.level < 8){
+			if(playerdata.level < 8 || playerdata.activeskilldata.skillcanbreakflag == false){
 				return 0;
 			}else if (playerdata.level < 18){
 				return SeichiAssist.config.getDropExplevel(1);
@@ -668,5 +732,45 @@ public class Util {
 		} else {
 		return null;
 		}
+	}
+	public static float toInt(boolean flag) {
+		if(flag){
+			return 1;
+		}else{
+			return 0;
+		}
+	}
+	public static double getGravity(Player player, Block block, int breakyloc, int weight) {
+		int gravity = 2;
+		while(!block.getRelative(0,gravity,0).getType().equals(Material.AIR)){
+			gravity++;
+		}
+		gravity --;
+		gravity -= breakyloc;
+		gravity= gravity*weight + 1;
+		if(gravity < 1)gravity = 1;
+		return gravity;
+	}
+	@SuppressWarnings("deprecation")
+	public static boolean logPlace(Player player, Block placeblock) {
+		//設置するブロックの状態を取得
+		BlockState blockstate = placeblock.getState();
+		//設置するブロックのデータを取得
+		byte data = blockstate.getData().getData();
+
+		//コアプロテクトのクラスを取得
+		CoreProtectAPI CoreProtect = Util.getCoreProtect();
+		//破壊ログを設定
+		Boolean success = CoreProtect.logRemoval(player.getName(), placeblock.getLocation(), blockstate.getType(),data);
+		//もし失敗したらプレイヤーに報告し処理を終了
+		if(!success){
+			player.sendMessage(ChatColor.RED + "error:coreprotectに保存できませんでした。管理者に報告してください。");
+			return false;
+		}
+		return true;
+	}
+	public static String stripColor(boolean b, boolean c, String name) {
+
+		return null;
 	}
 }

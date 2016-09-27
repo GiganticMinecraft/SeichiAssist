@@ -19,7 +19,8 @@ import org.bukkit.inventory.Inventory;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
-import com.github.unchama.seichiassist.task.LoadPlayerDataTask;
+import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
+import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -187,15 +188,15 @@ public class Sql{
 				",add column if not exists minestackflag boolean default true" +
 				",add column if not exists messageflag boolean default false" +
 				",add column if not exists activemineflagnum int default 0" +
+				",add column if not exists assaultflag boolean default false" +
 				",add column if not exists activeskilltype int default 0" +
 				",add column if not exists activeskillnum int default 1" +
+				",add column if not exists assaultskilltype int default 0" +
+				",add column if not exists assaultskillnum int default 0" +
 				",add column if not exists arrowskill int default 0" +
 				",add column if not exists multiskill int default 0" +
 				",add column if not exists breakskill int default 0" +
 				",add column if not exists condenskill int default 0" +
-				",add column if not exists effect_explosion boolean default false" +
-				",add column if not exists effect_blizzard boolean default false" +
-				",add column if not exists effect_meteo boolean default false" +
 				",add column if not exists effectnum int default 0" +
 				",add column if not exists gachapoint int default 0" +
 				",add column if not exists gachaflag boolean default true" +
@@ -226,12 +227,156 @@ public class Sql{
 				",add column if not exists killlogflag boolean default false" +
 				",add column if not exists pvpflag boolean default false" +
 				",add column if not exists loginflag boolean default false" +
+				",add column if not exists p_vote int default 0" +
+				",add column if not exists p_givenvote int default 0" +
+				",add column if not exists effectpoint int default 0" +
+				",add column if not exists premiumeffectpoint int default 0" +
 				",add index if not exists name_index(name)" +
 				",add index if not exists uuid_index(uuid)" +
 				",add index if not exists ranking_index(totalbreaknum)" +
 				"";
+		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
+		for(int i = 0; i < activeskilleffect.length ; i++){
+			command = command +
+					",add column if not exists " + activeskilleffect[i].getsqlName() + " boolean default false";
+		}
 		return putCommand(command);
 	}
+
+	//投票特典配布時の処理(p_givenvoteの値の更新もココ)
+	public int compareVotePoint(Player player,final PlayerData playerdata){
+
+		if(!playerdata.votecooldownflag){
+			player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
+			return 0;
+		}else{
+	        //連打による負荷防止の為クールダウン処理
+	        new CoolDownTaskRunnable(player,true,false).runTaskLater(plugin,1200);
+		}
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		int p_vote = 0;
+		int p_givenvote = 0;
+		String command = "select p_vote,p_givenvote from " + table
+				+ " where uuid = '" + struuid + "'";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				p_vote = rs.getInt("p_vote");
+				p_givenvote = rs.getInt("p_givenvote");
+				}
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			player.sendMessage(ChatColor.RED + "投票特典の受け取りに失敗しました");
+			return 0;
+		}
+ 		//比較して差があればその差の値を返す(同時にp_givenvoteも更新しておく)
+ 		if(p_vote > p_givenvote){
+ 			command = "update " + table
+ 					+ " set p_givenvote = " + p_vote
+ 					+ " where uuid like '" + struuid + "'";
+ 			if(!putCommand(command)){
+ 				player.sendMessage(ChatColor.RED + "投票特典の受け取りに失敗しました");
+ 				return 0;
+ 			}
+
+ 			return p_vote - p_givenvote;
+ 		}
+ 		player.sendMessage(ChatColor.YELLOW + "投票特典は全て受け取り済みのようです");
+		return 0;
+
+	}
+
+	//最新のnumofsorryforbug値を返してmysqlのnumofsorrybug値を初期化する処理
+	public int givePlayerBug(Player player,final PlayerData playerdata){
+		if(!playerdata.votecooldownflag){
+			player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
+			return 0;
+		}else{
+	        //連打による負荷防止の為クールダウン処理
+	        new CoolDownTaskRunnable(player,true,false).runTaskLater(plugin,1200);
+		}
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		int numofsorryforbug = 0;
+		String command = "select numofsorryforbug from " + table
+				+ " where uuid = '" + struuid + "'";
+		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				numofsorryforbug = rs.getInt("numofsorryforbug");
+				}
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
+			return 0;
+		}
+ 		//0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
+ 		if(numofsorryforbug > 0){
+ 			command = "update " + table
+ 					+ " set numofsorryforbug = 0"
+ 					+ " where uuid like '" + struuid + "'";
+ 			if(!putCommand(command)){
+ 				player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
+ 				return 0;
+ 			}
+
+ 			return numofsorryforbug;
+ 		}
+ 		player.sendMessage(ChatColor.YELLOW + "ガチャ券は全て受け取り済みのようです");
+		return 0;
+
+	}
+
+	//投票時にmysqlに投票ポイントを加算しておく処理
+	public boolean addVotePoint(String name) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "";
+
+		command = "update " + table
+				+ " set"
+
+				//1加算
+				+ " p_vote = p_vote + 1"
+
+				+ " where name like '" + name + "'";
+
+		return putCommand(command);
+
+	}
+
+	//プレミアムエフェクトポイントを加算しておく処理
+	public boolean addPremiumEffectPoint(String name,int num) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "";
+
+		command = "update " + table
+				+ " set"
+
+				//引数で来たポイント数分加算
+				+ " premiumeffectpoint = premiumeffectpoint + " + num
+
+				+ " where name like '" + name + "'";
+
+		return putCommand(command);
+	}
+
+
+	//指定されたプレイヤーにガチャ券を送信する
+	public boolean addPlayerBug(String name,int num) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "update " + table
+				+ " set numofsorryforbug = numofsorryforbug + " + num
+				+ " where name like '" + name + "'";
+		return putCommand(command);
+	}
+
 
 	public boolean createGachaDataTable(String table){
 		if(table==null){
@@ -299,7 +444,7 @@ public class Sql{
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlにデータが保存されています。");
  			}
- 			new LoadPlayerDataTask(p).runTaskTimer(plugin, 0, 10);;
+ 			new LoadPlayerDataTaskRunnable(p).runTaskTimer(plugin, 0, 10);;
  			return true;
 
  		}else{
@@ -326,20 +471,20 @@ public class Sql{
 				+ ",minestackflag = " + Boolean.toString(playerdata.minestackflag)
 				+ ",messageflag = " + Boolean.toString(playerdata.messageflag)
 				+ ",activemineflagnum = " + Integer.toString(playerdata.activeskilldata.mineflagnum)
-				+ ",activenum = " + Integer.toString(playerdata.activeskilldata.skilltype)
-				+ ",activenum = " + Integer.toString(playerdata.activeskilldata.skillnum)
+				+ ",assaultflag = " + Boolean.toString(playerdata.activeskilldata.assaultflag)
+				+ ",activeskilltype = " + Integer.toString(playerdata.activeskilldata.skilltype)
+				+ ",activeskillnum = " + Integer.toString(playerdata.activeskilldata.skillnum)
+				+ ",assaultskilltype = " + Integer.toString(playerdata.activeskilldata.assaulttype)
+				+ ",assaultskillnum = " + Integer.toString(playerdata.activeskilldata.assaultnum)
 				+ ",arrowskill = " + Integer.toString(playerdata.activeskilldata.arrowskill)
 				+ ",multiskill = " + Integer.toString(playerdata.activeskilldata.multiskill)
 				+ ",breakskill = " + Integer.toString(playerdata.activeskilldata.breakskill)
 				+ ",condenskill = " + Integer.toString(playerdata.activeskilldata.condenskill)
-				+ ",effect_explosion = " + Boolean.toString(playerdata.activeskilldata.effect_explosion)
-				+ ",effect_blizzard = " + Boolean.toString(playerdata.activeskilldata.effect_blizzard)
-				+ ",effect_meteo = " + Boolean.toString(playerdata.activeskilldata.effect_meteo)
 				+ ",effectnum = " + Integer.toString(playerdata.activeskilldata.effectnum)
 				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
 				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
 				+ ",level = " + Integer.toString(playerdata.level)
-				+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug)
+				//+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug) //仕様変更の為コメントアウト
 				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
 				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
@@ -347,6 +492,7 @@ public class Sql{
 				+ ",lastquit = cast( now() as datetime )"
 				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
 				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
+				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
 
 				//MineStack機能の数値更新処理
 				+ ",stack_dirt = " + Integer.toString(playerdata.minestack.dirt)
@@ -365,9 +511,20 @@ public class Sql{
 				+ ",stack_coal = " + Integer.toString(playerdata.minestack.coal)
 				+ ",stack_coal_ore = " + Integer.toString(playerdata.minestack.coal_ore)
 				+ ",stack_iron_ore = " + Integer.toString(playerdata.minestack.iron_ore)
-				+ ",stack_packed_ice = " + Integer.toString(playerdata.minestack.packed_ice)
+				+ ",stack_packed_ice = " + Integer.toString(playerdata.minestack.packed_ice);
 
-				+ " where uuid like '" + struuid + "'";
+
+		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
+		for(int i = 0; i < activeskilleffect.length ; i++){
+			String sqlname = activeskilleffect[i].getsqlName();
+			int num = activeskilleffect[i].getNum();
+			Boolean flag = playerdata.activeskilldata.effectflagmap.get(num);
+			command = command +
+					"," + sqlname + " = " + Boolean.toString(flag);
+		}
+
+		//最後の処理
+		command = command + " where uuid like '" + struuid + "'";
 
 		return putCommand(command);
 	}
@@ -499,16 +656,6 @@ public class Sql{
 		return putCommand(command);
 	}
 
-	//指定されたプレイヤーにガチャ券を送信する
-	public boolean addPlayerBug(UUID uuid,int num) {
-		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String struuid = uuid.toString();
-		String command = "update " + table
-				+ " set numofsorryforbug = numofsorryforbug + " + num
-				+ " where uuid like '" + struuid + "'";
-		return putCommand(command);
-	}
-
 	//指定プレイヤーの四次元ポケットの中身取得
 	public Inventory selectInventory(UUID uuid){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
@@ -529,6 +676,27 @@ public class Sql{
 				return null;
 			}
 		return inventory;
+	}
+
+	//指定プレイヤーのlastquitを取得
+	public String selectLastQuit(String name){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String lastquit = "";
+		String command = "select lastquit from " + table
+				+ " where name = '" + name + "'";
+			try{
+				rs = stmt.executeQuery(command);
+				while (rs.next()) {
+					lastquit = rs.getString("lastquit");
+				  }
+				rs.close();
+			} catch (SQLException e) {
+				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+				exc = e.getMessage();
+				e.printStackTrace();
+				return null;
+			}
+		return lastquit;
 	}
 
 }

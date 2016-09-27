@@ -11,13 +11,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
 
-public class LoadPlayerDataTask extends BukkitRunnable{
+public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -36,7 +37,7 @@ public class LoadPlayerDataTask extends BukkitRunnable{
 	Statement stmt2 = null;
 	ResultSet rs2 = null;
 
-	public LoadPlayerDataTask(Player _p) {
+	public LoadPlayerDataTaskRunnable(Player _p) {
 		p = _p;
 		name = Util.getName(p);
 		uuid = p.getUniqueId();
@@ -85,9 +86,10 @@ public class LoadPlayerDataTask extends BukkitRunnable{
  	 			return;
  	 		}
 
-			//loginflag書き換え処理
+			//loginflag書き換え&lastquit更新処理
 			command = "update " + table
 					+ " set loginflag = true"
+					+ ",lastquit = cast( now() as datetime )"
 					+ " where uuid like '" + struuid + "'";
 			try {
 				stmt2.executeUpdate(command);
@@ -113,15 +115,15 @@ public class LoadPlayerDataTask extends BukkitRunnable{
 	 				playerdata.minestackflag = rs2.getBoolean("minestackflag");
 	 				playerdata.messageflag = rs2.getBoolean("messageflag");
 	 				playerdata.activeskilldata.mineflagnum = rs2.getInt("activemineflagnum");
+	 				playerdata.activeskilldata.assaultflag = rs2.getBoolean("assaultflag");
 	 				playerdata.activeskilldata.skilltype = rs2.getInt("activeskilltype");
 	 				playerdata.activeskilldata.skillnum = rs2.getInt("activeskillnum");
+	 				playerdata.activeskilldata.assaulttype = rs2.getInt("assaultskilltype");
+	 				playerdata.activeskilldata.assaultnum = rs2.getInt("assaultskillnum");
 	 				playerdata.activeskilldata.arrowskill = rs2.getInt("arrowskill");
 	 				playerdata.activeskilldata.multiskill = rs2.getInt("multiskill");
 	 				playerdata.activeskilldata.breakskill = rs2.getInt("breakskill");
 	 				playerdata.activeskilldata.condenskill = rs2.getInt("condenskill");
-	 				playerdata.activeskilldata.effect_explosion = rs2.getBoolean("effect_explosion");
-	 				playerdata.activeskilldata.effect_blizzard = rs2.getBoolean("effect_blizzard");
-	 				playerdata.activeskilldata.effect_meteo = rs2.getBoolean("effect_meteo");
 	 				playerdata.activeskilldata.effectnum = rs2.getInt("effectnum");
 	 				playerdata.gachapoint = rs2.getInt("gachapoint");
 	 				playerdata.gachaflag = rs2.getBoolean("gachaflag");
@@ -133,7 +135,15 @@ public class LoadPlayerDataTask extends BukkitRunnable{
 	 				playerdata.pvpflag = rs2.getBoolean("pvpflag");
 	 				playerdata.totalbreaknum = rs2.getInt("totalbreaknum");
 	 				playerdata.playtick = rs2.getInt("playtick");
-
+	 				playerdata.p_givenvote = rs2.getInt("p_givenvote");
+	 				playerdata.activeskilldata.effectpoint = rs2.getInt("effectpoint");
+	 				playerdata.activeskilldata.premiumeffectpoint = rs2.getInt("premiumeffectpoint");
+	 				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
+	 				for(int i = 0 ; i < activeskilleffect.length ; i++){
+	 					int num = activeskilleffect[i].getNum();
+	 					String sqlname = activeskilleffect[i].getsqlName();
+	 					playerdata.activeskilldata.effectflagmap.put(num, rs2.getBoolean(sqlname));
+	 				}
 	 				//MineStack機能の数値
 	 				playerdata.minestack.dirt = rs2.getInt("stack_dirt");
 	 				playerdata.minestack.gravel = rs2.getInt("stack_gravel");

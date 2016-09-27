@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
@@ -18,6 +19,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.github.unchama.seichiassist.commands.effectCommand;
 import com.github.unchama.seichiassist.commands.gachaCommand;
+import com.github.unchama.seichiassist.commands.lastquitCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.data.GachaData;
@@ -41,7 +43,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	public static SeichiAssist plugin;
 	//デバッグフラグ
-	public static Boolean DEBUG = false;
+	public static Boolean DEBUG = true;
 	//ガチャシステムのメンテナンスフラグ
 	public static Boolean gachamente = false;
 
@@ -145,13 +147,15 @@ public class SeichiAssist extends JavaPlugin{
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
 			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
 			,Material.COAL_ORE,Material.IRON_ORE,Material.GOLD_ORE,Material.DIAMOND_ORE
-			,Material.LAPIS_ORE,Material.EMERALD_ORE,Material.REDSTONE_ORE,Material.SAND
+			,Material.LAPIS_ORE,Material.EMERALD_ORE,Material.REDSTONE_ORE,Material.GLOWING_REDSTONE_ORE,Material.SAND
 			,Material.SANDSTONE,Material.QUARTZ_ORE,Material.END_BRICKS,Material.ENDER_STONE
-			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN,Material.MAGMA,Material.SOUL_SAND
+			,Material.ICE,Material.PACKED_ICE,Material.OBSIDIAN,Material.MAGMA,Material.SOUL_SAND,Material.LEAVES,Material.LEAVES_2
+			,Material.CLAY,Material.STAINED_CLAY,Material.COBBLESTONE,Material.MOSSY_COBBLESTONE,Material.HARD_CLAY
+			,Material.MONSTER_EGGS
 			));
 	public static final List<Material> luckmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.COAL_ORE,Material.DIAMOND_ORE,Material.LAPIS_ORE,Material.EMERALD_ORE,
-			Material.REDSTONE_ORE,Material.QUARTZ_ORE,Material.GRAVEL
+			Material.REDSTONE_ORE,Material.GLOWING_REDSTONE_ORE,Material.QUARTZ_ORE
 			));
 	public static final List<Material> breakmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE,
@@ -165,9 +169,10 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
 			));
 
+	public static final Set<Material> transparentmateriallist = null;
+			//new HashSet<Material>(Arrays.asList());
 	@Override
 	public void onEnable(){
-
 		plugin = this;
 
 		//コンフィグ系の設定は全てConfig.javaに移動
@@ -191,6 +196,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("seichi",new seichiCommand(plugin));
 		commandlist.put("ef",new effectCommand(plugin));
 		commandlist.put("level",new levelCommand(plugin));
+		commandlist.put("lastquit",new lastquitCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);

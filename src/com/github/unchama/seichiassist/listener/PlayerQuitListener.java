@@ -36,6 +36,8 @@ public class PlayerQuitListener implements Listener {
 		}
 		//quit時とondisable時、プレイヤーデータを最新の状態に更新
 		playerdata.UpdateonQuit(player);
+		//タスクをすべて終了する
+		playerdata.activeskilldata.RemoveAllTask();
 
 		//mysqlに送信
 		if(!sql.savePlayerData(playerdata)){
@@ -50,7 +52,6 @@ public class PlayerQuitListener implements Listener {
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + player.getName() + "のloginflag回収完了");
 		}
 
-		//マルチサーバー対応の為の処理
 		//不要なplayerdataを削除
 		playermap.remove(uuid);
 

@@ -11,7 +11,6 @@ import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
@@ -52,8 +51,7 @@ public class PlayerData {
 	public Inventory inventory;
 	//ワールドガード保護自動設定用
 	public int rgnum;
-	//スキル発動中だけtrueになるフラグ
-	public boolean skillflag;
+
 	//MineStack
 	public MineStack minestack;
 	//MineStackFlag
@@ -74,10 +72,10 @@ public class PlayerData {
 	public int totalbreaknum;
 	//各統計値差分計算用配列
 	private List<Integer> staticdata;
-	//エフェクトポイント
-	public int effectpoint;
-	//投票数
-	public int p_vote;
+	//特典受け取り済み投票数
+	public int p_givenvote;
+	//投票受け取りボタン連打防止用
+	public boolean votecooldownflag;
 
 	//アクティブスキル関連データ
 	public ActiveSkillData activeskilldata;
@@ -100,7 +98,6 @@ public class PlayerData {
 		numofsorryforbug = 0;
 		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 		rgnum = 0;
-		skillflag = false;
 		minestack = new MineStack();
 		minestackflag = true;
 		servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
@@ -115,9 +112,8 @@ public class PlayerData {
 			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
 		}
 		activeskilldata = new ActiveSkillData();
-		effectpoint = 0;
-		p_vote = 0;
-
+		p_givenvote = 0;
+		votecooldownflag = true;
 
 	}
 
@@ -129,6 +125,7 @@ public class PlayerData {
 		updataLevel(player);
 		activeskilldata.updataActiveSkillPoint(player, level);
 		NotifySorryForBug(player);
+		activeskilldata.runTask(player);
 	}
 
 
@@ -140,6 +137,7 @@ public class PlayerData {
 		calcPlayTick(player);
 	}
 
+	/*
 	//詫び券の配布
 	public void giveSorryForBug(Player player){
 		ItemStack skull = Util.getskull(Util.getName(player));
@@ -161,12 +159,13 @@ public class PlayerData {
 			player.sendMessage(ChatColor.GREEN + "運営チームから"+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
 		}
 	}
+	*/
 
 	//詫びガチャの通知
 	public void NotifySorryForBug(Player player){
 		if(numofsorryforbug > 0){
 			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			player.sendMessage(ChatColor.GREEN + "運営チームから"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が届いています！\n木の棒メニューから受け取ってください。");
+			player.sendMessage(ChatColor.GREEN + "運営チームから"+numofsorryforbug+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が届いています！\n木の棒メニューから受け取ってください");
 		}
 	}
 
@@ -282,9 +281,9 @@ public class PlayerData {
 		for(Material m : SeichiAssist.materiallist){
 			int getstat = p.getStatistic(Statistic.MINE_BLOCK, m);
 			int getincrease = getstat - staticdata.get(i);
-			sum += calcBlockExp(m,getincrease);
+			sum += calcBlockExp(m,getincrease,p);
 			if(SeichiAssist.DEBUG){
-				p.sendMessage("calcの値:" + calcBlockExp(m,getincrease) + "(" + m + ")");
+				p.sendMessage("calcの値:" + calcBlockExp(m,getincrease,p) + "(" + m + ")");
 			}
 			staticdata.set(i, getstat);
 			i++;
@@ -298,7 +297,7 @@ public class PlayerData {
 	}
 
 	//ブロック別整地数反映量の調節
-	private double calcBlockExp(Material m,int i){
+	private double calcBlockExp(Material m,int i,Player p){
 		double result = (double)i;
 		//ブロック別重み分け
 		switch(m){
@@ -310,8 +309,24 @@ public class PlayerData {
 			//DIRTとGRASSは二重カウントされているので半分に
 			result *= 0.5;
 			break;
+		case NETHERRACK:
+			//ネザーラックの重み分け
+			result *= 0.7;
+			break;
+		case ENDER_STONE:
+			//エンドストーンの重み分け
+			result *= 0.7;
+			break;
 		default:
 			break;
+		}
+		if(p.getWorld().getName().equalsIgnoreCase("world_s")
+				|| p.getWorld().getName().equalsIgnoreCase("world_nether_s")
+				|| p.getWorld().getName().equalsIgnoreCase("world_the_end_s")){
+			if(SeichiAssist.DEBUG){
+				p.sendMessage("ワールドによる削減前の値:" + result);
+			}
+			result *= 0.7;
 		}
 		return result;
 	}
