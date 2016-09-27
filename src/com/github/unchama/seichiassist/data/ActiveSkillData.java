@@ -65,6 +65,9 @@ public class ActiveSkillData {
 	//アサルトスキルで破壊されるエリア
 	public BreakArea assaultarea;
 
+	//マナクラス
+	public Mana mana;
+
 	public ActiveSkillData(){
 		mineflagnum = 0;
 		assaultflag = false;
