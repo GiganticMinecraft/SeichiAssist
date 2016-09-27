@@ -183,6 +183,14 @@ public class PlayerBlockBreakListener implements Listener {
 		//実際に破壊するブロック数
 		long breakblocknum = 0;
 		final BreakArea area = playerdata.activeskilldata.area;
+		//現在のプレイヤーの向いている方向
+		String dir = Util.getCardinalDirection(player);
+		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
+		if(!dir.equals(area.getDir())){
+			area.setDir(dir);
+			area.makeArea(false);
+		}
+
 		final List<Coordinate> startlist = area.getStartList();
 		final List<Coordinate> endlist = area.getEndList();
 
@@ -329,8 +337,15 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//壊されるブロックの宣言
 		Block breakblock;
-		//壊される範囲を取得
+		//壊される範囲を設定
 		BreakArea area = playerdata.activeskilldata.area;
+		//現在のプレイヤーの向いている方向
+		String dir = Util.getCardinalDirection(player);
+		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
+		if(!dir.equals(area.getDir())){
+			area.setDir(dir);
+			area.makeArea(false);
+		}
 		Coordinate start = area.getStartList().get(0);
 		Coordinate end = area.getEndList().get(0);
 		//エフェクト用に壊されるブロック全てのリストデータ

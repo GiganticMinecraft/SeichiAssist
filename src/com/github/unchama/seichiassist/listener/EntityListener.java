@@ -169,6 +169,13 @@ public class EntityListener implements Listener {
 		//壊されるブロックの宣言
 		Block breakblock;
 		BreakArea area = playerdata.activeskilldata.area;
+		//現在のプレイヤーの向いている方向
+		String dir = Util.getCardinalDirection(player);
+		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
+		if(!dir.equals(area.getDir())){
+			area.setDir(dir);
+			area.makeArea(false);
+		}
 		Coordinate start = area.getStartList().get(0);
 		Coordinate end = area.getEndList().get(0);
 

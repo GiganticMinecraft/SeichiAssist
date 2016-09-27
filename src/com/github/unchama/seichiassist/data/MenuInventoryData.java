@@ -956,27 +956,6 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(9,itemstack);
 
-		itemstack = new ItemStack(Material.STONE_BUTTON,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_BUTTON);
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "通常スキル範囲可視化ボタン");
-
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "" + "メインハンドスキルの可視化処理"
-					,ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(28,itemstack);
-
-		itemstack = new ItemStack(Material.STONE_BUTTON,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_BUTTON);
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アサルトスキル範囲可視化ボタン");
-
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "" + "サブハンドスキルの可視化処理"
-					,ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(29,itemstack);
-
-
 		if(playerdata.activeskilldata.arrowskill >= 4){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);

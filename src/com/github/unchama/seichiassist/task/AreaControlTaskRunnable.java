@@ -3,20 +3,16 @@ package com.github.unchama.seichiassist.task;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.Color;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.inventivetalent.particle.ParticleEffect;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.BreakArea;
-import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.EffectUtil;
 import com.github.unchama.seichiassist.util.Util;
 
-public class AreaVisualizeTaskRunnable extends BukkitRunnable{
+public class AreaControlTaskRunnable extends BukkitRunnable{
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
 	PlayerData playerdata;
@@ -31,13 +27,15 @@ public class AreaVisualizeTaskRunnable extends BukkitRunnable{
 	BreakArea area;
 	//アサルトスキルかどうかのフラグ
 	boolean assaultflag;
+	//ビジュアライズフラグ
+	boolean visualizeflag;
 	//スキル発動中かどうかのフラグ
 	int skillflagnum;
 	//tick数の確認
 	int tick;
 
 
-	public AreaVisualizeTaskRunnable(Player player, BreakArea area,boolean assaultflag) {
+	public AreaControlTaskRunnable(Player player, BreakArea area,boolean assaultflag) {
 		this.player = player;
 		UUID uuid = player.getUniqueId();
 		this.playerdata = playermap.get(uuid);
@@ -55,18 +53,6 @@ public class AreaVisualizeTaskRunnable extends BukkitRunnable{
 			cancel();
 			return;
 		}
-		if(assaultflag){
-			if(!playerdata.activeskilldata.assaultareaflag){
-				cancel();
-				return;
-			}
-		}else{
-			if(!playerdata.activeskilldata.areaflag){
-				cancel();
-				return;
-			}
-		}
-
 		tick++;
 
 		targetblock = player.getTargetBlock(SeichiAssist.transparentmateriallist, 40);
@@ -78,39 +64,5 @@ public class AreaVisualizeTaskRunnable extends BukkitRunnable{
 			area.setDir(dir);
 			area.makeArea(assaultflag);
 		}
-
-		//以降15tick毎に実行
-		if(tick%3 != 0){
-			return;
-		}
-		//アサルトスキルであるときの処理
-		if(assaultflag){
-			AssaultAreaVisualize();
-		}
-		//他スキルの時の処理
-		else{
-			AreaVisualise();
-		}
 	}
-
-	private void AreaVisualise() {
-		for(int count = 0;count < area.getBreakNum() ; count++){
-			Coordinate start = new Coordinate(area.getStartList().get(count));
-			Coordinate end = new Coordinate(area.getEndList().get(count));
-			EffectUtil.playEffectCube(player,targetblock.getLocation(),ParticleEffect.REDSTONE,start,end,Color.AQUA);
-		}
-	}
-
-	private void AssaultAreaVisualize() {
-		//areaが変わる要因で範囲を変更する。
-		//シフトを押すと即落ちるので変更する必要はない。
-		for(int count = 0;count < area.getBreakNum() ; count++){
-			Coordinate start = new Coordinate(area.getStartList().get(count));
-			Coordinate end = new Coordinate(area.getEndList().get(count));
-			start.add(0, 1, 0);
-			EffectUtil.playEffectCube(player,player.getWorld().getBlockAt(player.getLocation()).getLocation(),ParticleEffect.REDSTONE,start,end,Color.PURPLE);
-		}
-
-	}
-
 }
