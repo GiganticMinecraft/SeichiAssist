@@ -505,6 +505,8 @@ public class Util {
             bonus = 1;
         }
         byte b = breakblock.getData();
+        byte b_tree = b;
+        b_tree &= 0x03;
         b &= 0x0F;
 
 
@@ -643,6 +645,11 @@ public class Util {
 					Location loc = breakblock.getLocation();
 					breakblock.getWorld().spawnEntity(loc, EntityType.SILVERFISH);
 					dropitem = null;
+					break;
+				case LOG:
+				case LOG_2:
+					dropitem = new ItemStack(breakmaterial,1,b_tree);
+					break;
 				default:
 					//breakblcokのままのアイテムスタックを保存
 					dropitem = new ItemStack(breakmaterial,1,b);

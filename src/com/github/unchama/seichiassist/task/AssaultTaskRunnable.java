@@ -128,12 +128,20 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		}
 		ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
 
-		//プレイヤーに使用音
-		if(!errorflag)player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, (float)1.5, (float) 0.65);
+		//以下実行処理
+		if(!errorflag){
+			//プレイヤーに使用音
+			player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, (float)1.5, (float) 0.65);
+			//プレイヤーにエフェクト
+		}
 
 	}
 	private void setCancel() {
-		if(!errorflag)player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_CLOSE, (float)1.5, (float) 0.65);
+		if(!errorflag){
+			//プレイヤーに終了音
+			player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_CLOSE, (float)1.5, (float) 0.65);
+			//プレイヤーにエフェクト終了
+		}
 		playerdata.activeskilldata.assaultflag = false;
 		playerdata.activeskilldata.mineflagnum = 0;
 		playerdata.activeskilldata.removeAreaTask(true);

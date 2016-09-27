@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.task.AreaVisualizeTaskRunnable;
+import com.github.unchama.seichiassist.task.AreaControlTaskRunnable;
 import com.github.unchama.seichiassist.task.AssaultTaskRunnable;
 
 public class ActiveSkillData {
@@ -185,8 +185,8 @@ public class ActiveSkillData {
 		}
 		this.area = new BreakArea(type,skilllevel,mineflagnum);
 
-		if(mineflagnum != 0 && areaflag){
-			this.areatask = new AreaVisualizeTaskRunnable(player,this.area,false).runTaskTimer(plugin,0,1);
+		if(mineflagnum != 0){
+			this.areatask = new AreaControlTaskRunnable(player,this.area,false).runTaskTimer(plugin,0,1);
 		}
 	}
 	public void updataAssaultSkill(Player player, int type, int skilllevel,int mineflagnum) {
@@ -203,9 +203,9 @@ public class ActiveSkillData {
 		this.assaultarea = new BreakArea(type,skilllevel,mineflagnum);
 
 
-		if(mineflagnum != 0 && assaultareaflag){
+		if(mineflagnum != 0){
 			this.assaultflag = true;
-			this.assaultareatask = new AreaVisualizeTaskRunnable(player,this.assaultarea,true).runTaskTimer(plugin,0,1);
+			this.assaultareatask = new AreaControlTaskRunnable(player,this.assaultarea,true).runTaskTimer(plugin,0,1);
 			this.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,10,1);
 		}else{
 			this.assaultflag = false;
@@ -258,7 +258,7 @@ public class ActiveSkillData {
 		this.assaultarea = new BreakArea(assaulttype,assaultnum,mineflagnum);
 
 		if(mineflagnum != 0){
-			this.assaultareatask = new AreaVisualizeTaskRunnable(player,this.assaultarea,true).runTaskTimer(plugin,0,1);
+			this.assaultareatask = new AreaControlTaskRunnable(player,this.assaultarea,true).runTaskTimer(plugin,0,1);
 		}
 	}
 	public void updataArea(Player player) {
@@ -266,7 +266,7 @@ public class ActiveSkillData {
 		this.area = new BreakArea(skilltype,skillnum,mineflagnum);
 
 		if(mineflagnum != 0){
-			this.areatask = new AreaVisualizeTaskRunnable(player,this.area,false).runTaskTimer(plugin,0,1);
+			this.areatask = new AreaControlTaskRunnable(player,this.area,false).runTaskTimer(plugin,0,1);
 		}
 	}
 

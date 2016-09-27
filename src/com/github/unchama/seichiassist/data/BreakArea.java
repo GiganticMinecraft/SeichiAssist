@@ -31,6 +31,9 @@ public class BreakArea {
 		this.dir = "S";
 		this.startlist = new ArrayList<Coordinate>();
 		this.endlist = new ArrayList<Coordinate>();
+		if(type == 0){
+			return;
+		}
 		//初期化
 		ActiveSkill[] as = ActiveSkill.values();
 		this.breaklength = as[type-1].getBreakLength(level);

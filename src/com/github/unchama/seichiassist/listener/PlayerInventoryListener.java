@@ -738,25 +738,22 @@ public class PlayerInventoryListener implements Listener {
 					playerdata.activeskilldata.areaflag = !playerdata.activeskilldata.areaflag;
 					if(playerdata.activeskilldata.areaflag){
 						player.sendMessage(ChatColor.LIGHT_PURPLE + "通常スキル範囲可視化：ON");
-						playerdata.activeskilldata.updataArea(player);
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 					}else{
 						player.sendMessage(ChatColor.LIGHT_PURPLE + "通常スキル範囲可視化：OFF");
-						playerdata.activeskilldata.removeAreaTask(false);
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 					}
+					playerdata.activeskilldata.updataSkill(player,type,skilllevel,playerdata.activeskilldata.mineflagnum);
 				}else if(itemstackcurrent.getItemMeta().getDisplayName().contains("アサルトスキル範囲可視化ボタン")){
 					playerdata.activeskilldata.assaultareaflag = !playerdata.activeskilldata.assaultareaflag;
 					if(playerdata.activeskilldata.assaultareaflag){
 						player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル範囲可視化：ON");
-						playerdata.activeskilldata.updataAssaultArea(player);
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 					}else{
 						player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル範囲可視化：OFF");
-						playerdata.activeskilldata.removeAreaTask(true);
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 					}
-
+					playerdata.activeskilldata.updataAssaultSkill(player,type,skilllevel,playerdata.activeskilldata.mineflagnum);
 				}
 
 			}

@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.EffectUtil;
 import com.github.unchama.seichiassist.util.Util;
 
-public class AreaVisualizeTaskRunnable extends BukkitRunnable{
+public class AreaControlTaskRunnable extends BukkitRunnable{
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
 	PlayerData playerdata;
@@ -31,13 +31,15 @@ public class AreaVisualizeTaskRunnable extends BukkitRunnable{
 	BreakArea area;
 	//アサルトスキルかどうかのフラグ
 	boolean assaultflag;
+	//ビジュアライズフラグ
+	boolean visualizeflag;
 	//スキル発動中かどうかのフラグ
 	int skillflagnum;
 	//tick数の確認
 	int tick;
 
 
-	public AreaVisualizeTaskRunnable(Player player, BreakArea area,boolean assaultflag) {
+	public AreaControlTaskRunnable(Player player, BreakArea area,boolean assaultflag) {
 		this.player = player;
 		UUID uuid = player.getUniqueId();
 		this.playerdata = playermap.get(uuid);
@@ -46,6 +48,12 @@ public class AreaVisualizeTaskRunnable extends BukkitRunnable{
 		this.assaultflag = assaultflag;
 		this.tick = 0;
 		area.makeArea(assaultflag);
+
+		if(assaultflag){
+			visualizeflag = playerdata.activeskilldata.assaultareaflag;
+		}else{
+			visualizeflag = playerdata.activeskilldata.areaflag;
+		}
 	}
 
 	@Override
@@ -55,18 +63,6 @@ public class AreaVisualizeTaskRunnable extends BukkitRunnable{
 			cancel();
 			return;
 		}
-		if(assaultflag){
-			if(!playerdata.activeskilldata.assaultareaflag){
-				cancel();
-				return;
-			}
-		}else{
-			if(!playerdata.activeskilldata.areaflag){
-				cancel();
-				return;
-			}
-		}
-
 		tick++;
 
 		targetblock = player.getTargetBlock(SeichiAssist.transparentmateriallist, 40);
@@ -79,10 +75,17 @@ public class AreaVisualizeTaskRunnable extends BukkitRunnable{
 			area.makeArea(assaultflag);
 		}
 
+		//可視化しない場合は以降の処理を実行しない。
+		if(!visualizeflag){
+			cancel();
+			return;
+		}
 		//以降15tick毎に実行
 		if(tick%3 != 0){
 			return;
 		}
+
+		//以降ビジュアライズ処理
 		//アサルトスキルであるときの処理
 		if(assaultflag){
 			AssaultAreaVisualize();
@@ -110,7 +113,6 @@ public class AreaVisualizeTaskRunnable extends BukkitRunnable{
 			start.add(0, 1, 0);
 			EffectUtil.playEffectCube(player,player.getWorld().getBlockAt(player.getLocation()).getLocation(),ParticleEffect.REDSTONE,start,end,Color.PURPLE);
 		}
-
 	}
 
 }
