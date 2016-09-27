@@ -193,8 +193,6 @@ public class Sql{
 				",add column if not exists activeskillnum int default 1" +
 				",add column if not exists assaultskilltype int default 0" +
 				",add column if not exists assaultskillnum int default 1" +
-				",add column if not exists areaflag boolean default true" +
-				",add column if not exists assaultareaflag boolean default true" +
 				",add column if not exists arrowskill int default 0" +
 				",add column if not exists multiskill int default 0" +
 				",add column if not exists breakskill int default 0" +
@@ -478,8 +476,6 @@ public class Sql{
 				+ ",activeskillnum = " + Integer.toString(playerdata.activeskilldata.skillnum)
 				+ ",assaultskilltype = " + Integer.toString(playerdata.activeskilldata.assaulttype)
 				+ ",assaultskillnum = " + Integer.toString(playerdata.activeskilldata.assaultnum)
-				+ ",areaflag = " + Boolean.toString(playerdata.activeskilldata.areaflag)
-				+ ",assaultareaflag = " + Boolean.toString(playerdata.activeskilldata.assaultareaflag)
 				+ ",arrowskill = " + Integer.toString(playerdata.activeskilldata.arrowskill)
 				+ ",multiskill = " + Integer.toString(playerdata.activeskilldata.multiskill)
 				+ ",breakskill = " + Integer.toString(playerdata.activeskilldata.breakskill)

@@ -44,8 +44,6 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	//破壊エリアデータ
 	BreakArea assaultarea;
 
-
-
 	boolean errorflag = false;
 
 	boolean waterflag = false,lavaflag = false,breakflag = false,condensflag = false;
@@ -69,9 +67,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		this.type = playerdata.activeskilldata.assaulttype;
 		this.assaultarea = playerdata.activeskilldata.assaultarea;
 
-
 		//もしサバイバルでなければ処理を終了
-		//もしフライ中なら終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
 			player.sendMessage(ChatColor.GREEN + "ゲームモードをサバイバルに変更してください。");
 			errorflag = true;
@@ -144,7 +140,6 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		}
 		playerdata.activeskilldata.assaultflag = false;
 		playerdata.activeskilldata.mineflagnum = 0;
-		playerdata.activeskilldata.removeAreaTask(true);
 		this.cancel();
 	}
 
@@ -184,6 +179,14 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 		//壊されるブロックの宣言
 		Block breakblock;
+		//壊されるエリアの設定
+		//現在のプレイヤーの向いている方向
+		String dir = Util.getCardinalDirection(player);
+		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
+		if(!dir.equals(assaultarea.getDir())){
+			assaultarea.setDir(dir);
+			assaultarea.makeArea(true);
+		}
 		Coordinate start = assaultarea.getStartList().get(0);
 		Coordinate end = assaultarea.getEndList().get(0);
 

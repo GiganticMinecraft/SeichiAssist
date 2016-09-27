@@ -24,6 +24,7 @@ public class BreakArea {
 	//変数として利用する相対座標
 	private Coordinate start,end;
 
+
 	public BreakArea(int type, int skilllevel,int mineflagnum) {
 		this.type = type;
 		this.level = skilllevel;
@@ -39,6 +40,7 @@ public class BreakArea {
 		this.breaklength = as[type-1].getBreakLength(level);
 		this.breaknum = as[type-1].getRepeatTimes(level);
 	}
+
 	public List<Coordinate> getStartList() {
 		return startlist;
 	}

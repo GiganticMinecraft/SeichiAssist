@@ -125,6 +125,7 @@ public class PlayerData {
 		updataLevel(player);
 		activeskilldata.updataActiveSkillPoint(player, level);
 		NotifySorryForBug(player);
+		activeskilldata.runTask(player);
 	}
 
 

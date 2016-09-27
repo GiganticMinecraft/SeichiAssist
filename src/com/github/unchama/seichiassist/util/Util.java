@@ -715,9 +715,9 @@ public class Util {
 		rotation += 360.0;
 		}
 
-		if(pitch <= -10){
+		if(pitch <= -30){
 			return "U";
-		}else if(pitch >= 15){
+		}else if(pitch >= 25){
 			return "D";
 		}else if (0 <= rotation && rotation < 45.0) {
 			return "N";

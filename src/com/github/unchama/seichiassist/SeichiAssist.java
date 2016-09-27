@@ -43,7 +43,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	public static SeichiAssist plugin;
 	//デバッグフラグ
-	public static Boolean DEBUG = false;
+	public static Boolean DEBUG = true;
 	//ガチャシステムのメンテナンスフラグ
 	public static Boolean gachamente = false;
 
