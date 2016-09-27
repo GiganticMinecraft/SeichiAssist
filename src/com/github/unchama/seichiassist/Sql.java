@@ -231,6 +231,7 @@ public class Sql{
 				",add column if not exists p_givenvote int default 0" +
 				",add column if not exists effectpoint int default 0" +
 				",add column if not exists premiumeffectpoint int default 0" +
+				",add column if not exists mana double default 0.0" +
 				",add index if not exists name_index(name)" +
 				",add index if not exists uuid_index(uuid)" +
 				",add index if not exists ranking_index(totalbreaknum)" +
@@ -493,6 +494,7 @@ public class Sql{
 				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
 				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
 				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
+				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana())
 
 				//MineStack機能の数値更新処理
 				+ ",stack_dirt = " + Integer.toString(playerdata.minestack.dirt)

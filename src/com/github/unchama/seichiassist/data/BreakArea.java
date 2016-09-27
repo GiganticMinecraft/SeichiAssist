@@ -4,6 +4,8 @@ package com.github.unchama.seichiassist.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.entity.Player;
+
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -24,23 +26,25 @@ public class BreakArea {
 	List<Coordinate> startlist,endlist;
 	//変数として利用する相対座標
 	private Coordinate start,end;
+	//アサルトスキルの時true
+	boolean assaultflag;
 
 
-	public BreakArea(int type, int skilllevel,int mineflagnum) {
+	public BreakArea(Player player,int type, int skilllevel,int mineflagnum,boolean assaultflag) {
 		this.type = type;
 		this.level = skilllevel;
 		this.mineflagnum = mineflagnum;
-		this.dir = new String("S");
+		this.assaultflag = assaultflag;
+		this.dir = Util.getCardinalDirection(player);
 		this.startlist = new ArrayList<Coordinate>();
 		this.endlist = new ArrayList<Coordinate>();
-		if(type == 0){
-			Util.sendAdminMessage("予期しないエラーです。１");
-			return;
-		}
 		//初期化
 		ActiveSkill[] as = ActiveSkill.values();
 		this.breaklength = as[type-1].getBreakLength(level);
 		this.breaknum = as[type-1].getRepeatTimes(level);
+
+		//初期範囲設定
+		makeArea();
 	}
 
 	public List<Coordinate> getStartList() {
@@ -56,12 +60,7 @@ public class BreakArea {
 		this.dir = new String(dir);
 	}
 	//破壊範囲の設定
-	public void makeArea(boolean assaultflag) {
-		//種類が選択されていなければ終了
-		if(type == 0){
-			Util.sendAdminMessage("予期しないエラーです。１");
-			return;
-		}
+	public void makeArea() {
 		startlist.clear();
 		endlist.clear();
 		//中心座標(0,0,0)のスタートとエンドを仮取得

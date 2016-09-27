@@ -91,8 +91,8 @@ public class Config{
 		return Util.toInt(config.getString("gravitylevel"));
 	}
 
-	public int getDropExplevel(int i){
-		return Util.toInt(config.getString("dropexplevel" + i,""));
+	public double getDropExplevel(int i){
+		return Util.toDouble(config.getString("dropexplevel" + i,""));
 	}
 
 	public int getPassivePortalInventorylevel() {

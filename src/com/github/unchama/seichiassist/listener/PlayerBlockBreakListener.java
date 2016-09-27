@@ -24,10 +24,10 @@ import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
+import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.MultiBreakTaskRunnable;
-import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerBlockBreakListener implements Listener {
@@ -130,13 +130,18 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 
+
+		playerdata.activeskilldata.mana.increaseMana(Util.calcManaDrop(playerdata),player,playerdata.level);
+
+
 		//これ以前の終了処理はパッシブの追加経験値はもらえません
+		/*マナに書き換え
 		//経験値変更用のクラスを設定
 		ExperienceManager expman = new ExperienceManager(player);
 		//passiveskill[追加経験値獲得]処理実行
 		int exp = Util.calcExpDrop(playerdata);
 		expman.changeExp(exp);
-
+*/
 
 		//これ以降の終了処理は経験値はもらえます
 		//ブロックタイプがmateriallistに登録されていなければ処理終了
@@ -151,22 +156,26 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
-			runMultiSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
+			runMultiSkill(player, block, tool);
 
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
-			runBreakSkill(player, playerdata.activeskilldata.skillnum, block, tool, expman);
+			runBreakSkill(player, block, tool);
 
 		}
 
 
 	}
 	//複数範囲破壊
-	private void runMultiSkill(Player player, int skilllevel, Block block,
-			ItemStack tool, ExperienceManager expman) {
+	private void runMultiSkill(Player player, Block block,
+			ItemStack tool) {
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
+		//レベルを取得
+		int skilllevel = playerdata.activeskilldata.skillnum;
+		//マナを取得
+		Mana mana = playerdata.activeskilldata.mana;
 		//blocklistをリセット
 		playerdata.activeskilldata.blocklist.clear();
 		//プレイヤーの足のy座標を取得
@@ -188,7 +197,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(area.getDir())){
 			area.setDir(dir);
-			area.makeArea(false);
+			area.makeArea();
 		}
 
 		final List<Coordinate> startlist = area.getStartList();
@@ -254,7 +263,7 @@ public class PlayerBlockBreakListener implements Listener {
 			//減る経験値計算
 			//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-			double useExp = (double) (breaklist.size()) * gravity
+			double useMana = (double) (breaklist.size()) * gravity
 					* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 					/(ifallbreaknum * breaknum) ;
 
@@ -271,10 +280,10 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 			}
 			//実際に経験値を減らせるか判定
-			if(!expman.hasExp(useExp)){
+			if(!mana.hasMana(useMana)){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
-					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
+					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 				}
 
 				playerdata.activeskilldata.blocklist.removeAll(breaklist);
@@ -294,7 +303,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 			//経験値を減らす
-			expman.changeExp(-useExp);
+			mana.decreaseMana(useMana,player,playerdata.level);
 
 			//耐久値を減らす
 			tool.setDurability(durability);
@@ -323,11 +332,15 @@ public class PlayerBlockBreakListener implements Listener {
 	}
 
 	//範囲破壊実行処理
-	private void runBreakSkill(Player player,int skillnum,Block block,ItemStack tool,ExperienceManager expman) {
+	private void runBreakSkill(Player player,Block block,ItemStack tool) {
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
+		//レベルを取得
+		int skilllevel = playerdata.activeskilldata.skillnum;
+		//マナを取得
+		Mana mana = playerdata.activeskilldata.mana;
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
 		//元ブロックのマテリアルを取得
@@ -344,7 +357,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(area.getDir())){
 			area.setDir(dir);
-			area.makeArea(false);
+			area.makeArea();
 		}
 		Coordinate start = area.getStartList().get(0);
 		Coordinate end = area.getEndList().get(0);
@@ -393,14 +406,14 @@ public class PlayerBlockBreakListener implements Listener {
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 		Coordinate breaklength = area.getBreakLength();
 		int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
-		double useExp = (double) (breaklist.size()) * gravity
+		double useMana = (double) (breaklist.size()) * gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 				/ifallbreaknum ;
 		if(SeichiAssist.DEBUG){
 			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum));
 			player.sendMessage(ChatColor.RED + "全ての破壊数：" + ifallbreaknum);
 			player.sendMessage(ChatColor.RED + "実際の破壊数：" + breaklist.size());
-			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値：" + useExp);
+			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なまな：" + useMana);
 		}
 		//減る耐久値の計算
 		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
@@ -417,10 +430,10 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//実際に経験値を減らせるか判定
-		if(!expman.hasExp(useExp)){
+		if(!mana.hasMana(useMana)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
-				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
+				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
 			playerdata.activeskilldata.blocklist.removeAll(breaklist);
 			return;
@@ -441,7 +454,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//経験値を減らす
-		expman.changeExp(-useExp);
+		mana.decreaseMana(useMana,player,playerdata.level);
 
 		//耐久値を減らす
 		tool.setDurability(durability);

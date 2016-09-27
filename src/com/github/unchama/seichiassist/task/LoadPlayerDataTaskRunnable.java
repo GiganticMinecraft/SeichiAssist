@@ -138,6 +138,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	 				playerdata.p_givenvote = rs2.getInt("p_givenvote");
 	 				playerdata.activeskilldata.effectpoint = rs2.getInt("effectpoint");
 	 				playerdata.activeskilldata.premiumeffectpoint = rs2.getInt("premiumeffectpoint");
+	 				//マナの情報
+	 				playerdata.activeskilldata.mana.setMana(rs2.getDouble("mana"));
 	 				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 	 				for(int i = 0 ; i < activeskilleffect.length ; i++){
 	 					int num = activeskilleffect[i].getNum();
