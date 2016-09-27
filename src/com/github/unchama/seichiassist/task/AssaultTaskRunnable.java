@@ -8,7 +8,6 @@ import java.util.UUID;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -66,6 +65,12 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		this.level = playerdata.activeskilldata.assaultnum;
 		this.type = playerdata.activeskilldata.assaulttype;
 		this.assaultarea = playerdata.activeskilldata.assaultarea;
+		//現在のプレイヤーの向いている方向
+		String dir = Util.getCardinalDirection(player);
+		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
+		assaultarea.setDir(dir);
+		assaultarea.makeArea(true);
+
 
 		//もしサバイバルでなければ処理を終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
@@ -124,20 +129,10 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		}
 		ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
 
-		//以下実行処理
-		if(!errorflag){
-			//プレイヤーに使用音
-			player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, (float)1.5, (float) 0.65);
-			//プレイヤーにエフェクト
-		}
+
 
 	}
 	private void setCancel() {
-		if(!errorflag){
-			//プレイヤーに終了音
-			player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_CLOSE, (float)1.5, (float) 0.65);
-			//プレイヤーにエフェクト終了
-		}
 		playerdata.activeskilldata.assaultflag = false;
 		playerdata.activeskilldata.mineflagnum = 0;
 		this.cancel();
@@ -313,7 +308,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	}
 
 	private boolean isCanceled() {
-		if(playerdata.activeskilldata.mineflagnum == 0 || errorflag){
+		if(playerdata.activeskilldata.mineflagnum == 0 || errorflag || playerdata.activeskilldata.assaulttype == 0){
 			return true;
 		}else{
 			return false;

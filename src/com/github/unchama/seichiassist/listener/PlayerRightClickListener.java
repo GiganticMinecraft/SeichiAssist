@@ -82,7 +82,7 @@ public class PlayerRightClickListener implements Listener {
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			//アサルトアーマー使用中の時は終了左クリックで判定
-			if(playerdata.activeskilldata.assaultflag){
+			if(playerdata.activeskilldata.assaulttype!=0){
 				return;
 			}
 			//クールダウンタイム中は処理を終了
@@ -115,7 +115,7 @@ public class PlayerRightClickListener implements Listener {
 			}
 		}else if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
 			//アサルトアーマーをどっちも使用していない時終了
-			if(!playerdata.activeskilldata.assaultflag){
+			if(playerdata.activeskilldata.assaulttype == 0){
 				return;
 			}
 
@@ -353,7 +353,9 @@ public class PlayerRightClickListener implements Listener {
 					}
 					playerdata.activeskilldata.mineflagnum = activemineflagnum;
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-				}else if(playerdata.activeskilldata.skilltype > 0 && playerdata.activeskilldata.skillnum > 0){
+				}else if(playerdata.activeskilldata.skilltype > 0 && playerdata.activeskilldata.skillnum > 0
+						&& playerdata.activeskilldata.skilltype < 4
+						){
 					activemineflagnum = (activemineflagnum + 1) % 2;
 					switch (activemineflagnum){
 					case 0:

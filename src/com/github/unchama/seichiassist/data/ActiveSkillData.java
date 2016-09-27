@@ -200,7 +200,7 @@ public class ActiveSkillData {
 		if(this.assaultflag && this.assaulttype != 0){
 			this.updataAssaultSkill(player,this.assaulttype,this.assaultnum,this.mineflagnum);
 			String name = ActiveSkill.getActiveSkillName(this.assaulttype, this.assaultnum);
-			player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + name + "  を選択しています。");
+			player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル:" + name + "  を選択しています。");
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 		}
 

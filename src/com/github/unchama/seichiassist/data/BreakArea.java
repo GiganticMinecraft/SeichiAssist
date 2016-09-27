@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.util.Util;
 
 public class BreakArea {
 	//スキルタイプ番号
@@ -29,10 +30,11 @@ public class BreakArea {
 		this.type = type;
 		this.level = skilllevel;
 		this.mineflagnum = mineflagnum;
-		this.dir = "S";
+		this.dir = new String("S");
 		this.startlist = new ArrayList<Coordinate>();
 		this.endlist = new ArrayList<Coordinate>();
 		if(type == 0){
+			Util.sendAdminMessage("予期しないエラーです。１");
 			return;
 		}
 		//初期化
@@ -51,12 +53,13 @@ public class BreakArea {
 		return dir;
 	}
 	public void setDir(String dir) {
-		this.dir = dir;
+		this.dir = new String(dir);
 	}
 	//破壊範囲の設定
 	public void makeArea(boolean assaultflag) {
 		//種類が選択されていなければ終了
 		if(type == 0){
+			Util.sendAdminMessage("予期しないエラーです。１");
 			return;
 		}
 		startlist.clear();
