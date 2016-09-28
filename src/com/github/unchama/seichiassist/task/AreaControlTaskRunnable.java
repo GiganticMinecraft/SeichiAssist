@@ -43,7 +43,6 @@ public class AreaControlTaskRunnable extends BukkitRunnable{
 		this.area = area;
 		this.assaultflag = assaultflag;
 		this.tick = 0;
-		area.makeArea(assaultflag);
 	}
 
 	@Override
@@ -62,7 +61,7 @@ public class AreaControlTaskRunnable extends BukkitRunnable{
 		dir = Util.getCardinalDirection(player);
 		if(!area.getDir().equals(dir)){
 			area.setDir(dir);
-			area.makeArea(assaultflag);
+			area.makeArea();
 		}
 	}
 }

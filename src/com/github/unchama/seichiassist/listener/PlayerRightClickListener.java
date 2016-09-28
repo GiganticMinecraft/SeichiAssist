@@ -25,6 +25,7 @@ import org.bukkit.util.Vector;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
@@ -82,7 +83,7 @@ public class PlayerRightClickListener implements Listener {
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			//アサルトアーマー使用中の時は終了左クリックで判定
-			if(playerdata.activeskilldata.assaultflag){
+			if(playerdata.activeskilldata.assaulttype!=0){
 				return;
 			}
 			//クールダウンタイム中は処理を終了
@@ -115,7 +116,7 @@ public class PlayerRightClickListener implements Listener {
 			}
 		}else if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
 			//アサルトアーマーをどっちも使用していない時終了
-			if(!playerdata.activeskilldata.assaultflag){
+			if(playerdata.activeskilldata.assaulttype == 0){
 				return;
 			}
 
@@ -138,10 +139,16 @@ public class PlayerRightClickListener implements Listener {
 					if(playerdata.activeskilldata.effectnum == 0){
 						runArrowSkill(player,Arrow.class);
 					}
-					//エフェクトが指定されているときの処理
-					else{
+					//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
+					else if(playerdata.activeskilldata.effectnum <= 100){
 						ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 						skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player);
+					}
+
+					//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
+					else if(playerdata.activeskilldata.effectnum > 100){
+						ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+						premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runArrowEffect(player);
 					}
 
 				}
@@ -351,9 +358,11 @@ public class PlayerRightClickListener implements Listener {
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + ":ON-Under(下向き）");
 						break;
 					}
-					playerdata.activeskilldata.mineflagnum = activemineflagnum;
+					playerdata.activeskilldata.updataSkill(player, playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum, activemineflagnum);
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-				}else if(playerdata.activeskilldata.skilltype > 0 && playerdata.activeskilldata.skillnum > 0){
+				}else if(playerdata.activeskilldata.skilltype > 0 && playerdata.activeskilldata.skillnum > 0
+						&& playerdata.activeskilldata.skilltype < 4
+						){
 					activemineflagnum = (activemineflagnum + 1) % 2;
 					switch (activemineflagnum){
 					case 0:

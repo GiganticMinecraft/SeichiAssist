@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -138,11 +139,20 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	 				playerdata.p_givenvote = rs2.getInt("p_givenvote");
 	 				playerdata.activeskilldata.effectpoint = rs2.getInt("effectpoint");
 	 				playerdata.activeskilldata.premiumeffectpoint = rs2.getInt("premiumeffectpoint");
+	 				//マナの情報
+	 				playerdata.activeskilldata.mana.setMana(rs2.getDouble("mana"));
+
 	 				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 	 				for(int i = 0 ; i < activeskilleffect.length ; i++){
 	 					int num = activeskilleffect[i].getNum();
 	 					String sqlname = activeskilleffect[i].getsqlName();
 	 					playerdata.activeskilldata.effectflagmap.put(num, rs2.getBoolean(sqlname));
+	 				}
+	 				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+	 				for(int i = 0 ; i < premiumeffect.length ; i++){
+	 					int num = premiumeffect[i].getNum();
+	 					String sqlname = premiumeffect[i].getsqlName();
+	 					playerdata.activeskilldata.premiumeffectflagmap.put(num, rs2.getBoolean(sqlname));
 	 				}
 	 				//MineStack機能の数値
 	 				playerdata.minestack.dirt = rs2.getInt("stack_dirt");

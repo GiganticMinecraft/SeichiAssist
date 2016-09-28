@@ -82,38 +82,38 @@ public class PlayerData {
 
 	public PlayerData(Player player){
 		//初期値を設定
-		name = Util.getName(player);
-		uuid = player.getUniqueId();
-		effectflag = true;
-		messageflag = false;
-		minuteblock = new MineBlock();
-		halfhourblock = new MineBlock();
-		gachapoint = 0;
-		lastgachapoint = 0;
-		gachaflag = true;
-		minespeedlv = 0;
-		lastminespeedlv = 0;
-		effectdatalist = new ArrayList<EffectData>();
-		level = 1;
-		numofsorryforbug = 0;
-		inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
-		rgnum = 0;
-		minestack = new MineStack();
-		minestackflag = true;
-		servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
-		playtick = 0;
-		dispkilllogflag = false;
-		pvpflag = false;
-		loc = null;
-		idletime = 0;
-		staticdata = new ArrayList<Integer>();
-		totalbreaknum = 0;
+		this.name = Util.getName(player);
+		this.uuid = player.getUniqueId();
+		this.effectflag = true;
+		this.messageflag = false;
+		this.minuteblock = new MineBlock();
+		this.halfhourblock = new MineBlock();
+		this.gachapoint = 0;
+		this.lastgachapoint = 0;
+		this.gachaflag = true;
+		this.minespeedlv = 0;
+		this.lastminespeedlv = 0;
+		this.effectdatalist = new ArrayList<EffectData>();
+		this.level = 1;
+		this.numofsorryforbug = 0;
+		this.inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
+		this.rgnum = 0;
+		this.minestack = new MineStack();
+		this.minestackflag = true;
+		this.servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
+		this.playtick = 0;
+		this.dispkilllogflag = false;
+		this.pvpflag = false;
+		this.loc = null;
+		this.idletime = 0;
+		this.staticdata = new ArrayList<Integer>();
+		this.totalbreaknum = 0;
 		for(Material m : SeichiAssist.materiallist){
 			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
 		}
-		activeskilldata = new ActiveSkillData();
-		p_givenvote = 0;
-		votecooldownflag = true;
+		this.activeskilldata = new ActiveSkillData();
+		this.p_givenvote = 0;
+		this.votecooldownflag = true;
 
 	}
 
@@ -123,18 +123,19 @@ public class PlayerData {
 		minuteblock.before = totalbreaknum;
 		halfhourblock.before = totalbreaknum;
 		updataLevel(player);
-		activeskilldata.updataActiveSkillPoint(player, level);
 		NotifySorryForBug(player);
-		activeskilldata.runTask(player);
+		activeskilldata.updateonJoin(player, level);
 	}
 
 
 	//quit時とondisable時、プレイヤーデータを最新の状態に更新
-	public void UpdateonQuit(Player player){
+	public void updateonQuit(Player player){
 		//総整地量を更新
 		calcMineBlock(player);
 		//総プレイ時間更新
 		calcPlayTick(player);
+
+		activeskilldata.updateonQuit(player);
 	}
 
 	/*
@@ -259,6 +260,10 @@ public class PlayerData {
 			if(i >= SeichiAssist.levellist.size()){
 				break;
 			}
+			if(activeskilldata.mana.isloaded()){
+				//マナ最大値の更新
+				activeskilldata.mana.LevelUp(p, i);
+			}
 		}
 		level = i;
 	}
@@ -336,6 +341,9 @@ public class PlayerData {
 		//ランク用関数
 		int i = 0;
 		int t = totalbreaknum;
+		if(SeichiAssist.ranklist.size() == 0){
+			return 1;
+		}
 		RankData rankdata = SeichiAssist.ranklist.get(i);
 		//ランクが上がらなくなるまで処理
 		while(rankdata.totalbreaknum > t){
@@ -346,7 +354,7 @@ public class PlayerData {
 	}
 
 	//パッシブスキルの獲得量表示
-	public int dispPassiveExp() {
+	public double dispPassiveExp() {
 		if(level < 8){
 			return 0;
 		}else if (level < 18){

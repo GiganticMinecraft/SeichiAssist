@@ -658,9 +658,43 @@ public class Util {
 		}
 		return dropitem;
 	}
-
+/*マナ追加のためいったん消えてもらおう
 	//追加経験値の設定
 	public static int calcExpDrop(PlayerData playerdata) {
+		//０～１のランダムな値を取得
+		double rand = Math.random();
+		//10%の確率で経験値付与
+		if(rand < 0.1){
+			//Lv8未満は獲得経験値ゼロ、それ以上はレベルに応じて経験値付与
+			if(playerdata.level < 8 || playerdata.activeskilldata.skillcanbreakflag == false){
+				return 0;
+			}else if (playerdata.level < 18){
+				return SeichiAssist.config.getDropExplevel(1);
+			}else if (playerdata.level < 28){
+				return SeichiAssist.config.getDropExplevel(2);
+			}else if (playerdata.level < 38){
+				return SeichiAssist.config.getDropExplevel(3);
+			}else if (playerdata.level < 48){
+				return SeichiAssist.config.getDropExplevel(4);
+			}else if (playerdata.level < 58){
+				return SeichiAssist.config.getDropExplevel(5);
+			}else if (playerdata.level < 68){
+				return SeichiAssist.config.getDropExplevel(6);
+			}else if (playerdata.level < 78){
+				return SeichiAssist.config.getDropExplevel(7);
+			}else if (playerdata.level < 88){
+				return SeichiAssist.config.getDropExplevel(8);
+			}else if (playerdata.level < 98){
+				return SeichiAssist.config.getDropExplevel(9);
+			}else{
+				return SeichiAssist.config.getDropExplevel(10);
+			}
+		}else{
+			return 0;
+		}
+	}
+	*/
+	public static double calcManaDrop(PlayerData playerdata) {
 		//０～１のランダムな値を取得
 		double rand = Math.random();
 		//10%の確率で経験値付与
@@ -773,4 +807,5 @@ public class Util {
 
 		return null;
 	}
+
 }

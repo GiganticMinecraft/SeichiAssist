@@ -8,7 +8,6 @@ import java.util.UUID;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -20,8 +19,8 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
+import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
 public class AssaultTaskRunnable extends BukkitRunnable{
@@ -33,10 +32,9 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	int level;
 	int type;
 	int playerlocy;
+	Mana mana ;
 	PlayerInventory inventory;
 	ItemStack tool;
-	//経験値変更用のクラスを設定
-	ExperienceManager expman;
 	//一回の破壊の範囲
 	Coordinate breaklength;
 	//１回の全て破壊したときのブロック数
@@ -66,6 +64,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		this.level = playerdata.activeskilldata.assaultnum;
 		this.type = playerdata.activeskilldata.assaulttype;
 		this.assaultarea = playerdata.activeskilldata.assaultarea;
+		this.mana = playerdata.activeskilldata.mana;
 
 		//もしサバイバルでなければ処理を終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
@@ -73,8 +72,6 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			errorflag = true;
 			return;
 		}
-
-		this.expman = new ExperienceManager(player);
 
 		//プレイヤーインベントリを取得
 		inventory = player.getInventory();
@@ -124,20 +121,10 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		}
 		ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
 
-		//以下実行処理
-		if(!errorflag){
-			//プレイヤーに使用音
-			player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, (float)1.5, (float) 0.65);
-			//プレイヤーにエフェクト
-		}
+
 
 	}
 	private void setCancel() {
-		if(!errorflag){
-			//プレイヤーに終了音
-			player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_CLOSE, (float)1.5, (float) 0.65);
-			//プレイヤーにエフェクト終了
-		}
 		playerdata.activeskilldata.assaultflag = false;
 		playerdata.activeskilldata.mineflagnum = 0;
 		this.cancel();
@@ -185,7 +172,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(assaultarea.getDir())){
 			assaultarea.setDir(dir);
-			assaultarea.makeArea(true);
+			assaultarea.makeArea();
 		}
 		Coordinate start = assaultarea.getStartList().get(0);
 		Coordinate end = assaultarea.getEndList().get(0);
@@ -233,7 +220,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		//減る経験値計算
 		//実際に破壊するブロック数 * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-		double useExp = (double)breaksum * gravity
+		double useMana = (double)breaksum * gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum)
 				/(ifallbreaknum) ;
 
@@ -254,10 +241,10 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		}
 
 		//実際に経験値を減らせるか判定
-		if(!expman.hasExp(useExp)){
+		if(!mana.hasMana(useMana)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
-				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
+				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
 			playerdata.activeskilldata.blocklist.removeAll(breaklist);
 			setCancel();
@@ -278,7 +265,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 
 		//経験値を減らす
-		expman.changeExp(-useExp);
+		mana.decreaseMana(useMana,player,playerdata.level);
 
 		//耐久値を減らす
 		tool.setDurability(durability);
@@ -313,7 +300,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	}
 
 	private boolean isCanceled() {
-		if(playerdata.activeskilldata.mineflagnum == 0 || errorflag){
+		if(playerdata.activeskilldata.mineflagnum == 0 || errorflag || playerdata.activeskilldata.assaulttype == 0){
 			return true;
 		}else{
 			return false;

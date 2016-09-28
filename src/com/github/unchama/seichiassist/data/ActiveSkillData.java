@@ -65,6 +65,9 @@ public class ActiveSkillData {
 	//アサルトスキルで破壊されるエリア
 	public BreakArea assaultarea;
 
+	//マナクラス
+	public Mana mana;
+
 	public ActiveSkillData(){
 		mineflagnum = 0;
 		assaultflag = false;
@@ -92,11 +95,11 @@ public class ActiveSkillData {
 		ActiveSkillPremiumEffect[] activeskillpremiumeffect = ActiveSkillPremiumEffect.values();
 		for(int i=0 ; i < activeskillpremiumeffect.length ; i++){
 			premiumeffectflagmap.put(activeskillpremiumeffect[i].getNum(), false);
-		}
-
+		};
 		area = null;
 		assaultarea = null;
 
+		mana = new Mana();
 	}
 	//activeskillpointをレベルに従って更新
 	public void updataActiveSkillPoint(Player player,int level) {
@@ -169,7 +172,7 @@ public class ActiveSkillData {
 		}
 		//スキルフラグがオンの時の処理
 		if(mineflagnum != 0){
-			this.area = new BreakArea(type,skilllevel,mineflagnum);
+			this.area = new BreakArea(player,type,skilllevel,mineflagnum,false);
 		}
 
 	}
@@ -185,7 +188,7 @@ public class ActiveSkillData {
 		}
 		//スキルフラグがオンの時の処理
 		if(mineflagnum != 0){
-			this.assaultarea = new BreakArea(type,skilllevel,mineflagnum);
+			this.assaultarea = new BreakArea(player,type,skilllevel,mineflagnum,true);
 			this.assaultflag = true;
 			this.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,10,1);
 		}//オフの時の処理
@@ -200,7 +203,7 @@ public class ActiveSkillData {
 		if(this.assaultflag && this.assaulttype != 0){
 			this.updataAssaultSkill(player,this.assaulttype,this.assaultnum,this.mineflagnum);
 			String name = ActiveSkill.getActiveSkillName(this.assaulttype, this.assaultnum);
-			player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + name + "  を選択しています。");
+			player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル:" + name + "  を選択しています。");
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 		}
 
@@ -226,5 +229,12 @@ public class ActiveSkillData {
 		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 
 	}
-
+	public void updateonJoin(Player player, int level) {
+		updataActiveSkillPoint(player, level);
+		runTask(player);
+		mana.update(player,level);
+	}
+	public void updateonQuit(Player player) {
+		mana.removeBar();
+	}
 }
