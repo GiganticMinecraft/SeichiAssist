@@ -315,7 +315,7 @@ public enum ActiveSkill{
 				exp = 3;
 				break;
 			case 3:
-				exp = 15;
+				exp = 12;
 				break;
 			case 4:
 				exp = 30;

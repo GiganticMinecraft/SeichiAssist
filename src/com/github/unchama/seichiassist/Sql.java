@@ -231,6 +231,7 @@ public class Sql{
 				",add column if not exists p_givenvote int default 0" +
 				",add column if not exists effectpoint int default 0" +
 				",add column if not exists premiumeffectpoint int default 0" +
+				",add column if not exists mana double default 0.0" +
 				",add index if not exists name_index(name)" +
 				",add index if not exists uuid_index(uuid)" +
 				",add index if not exists ranking_index(totalbreaknum)" +
@@ -239,6 +240,11 @@ public class Sql{
 		for(int i = 0; i < activeskilleffect.length ; i++){
 			command = command +
 					",add column if not exists " + activeskilleffect[i].getsqlName() + " boolean default false";
+		}
+		ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+		for(int i = 0; i < premiumeffect.length ; i++){
+			command = command +
+					",add column if not exists " + premiumeffect[i].getsqlName() + " boolean default false";
 		}
 		return putCommand(command);
 	}
@@ -493,6 +499,7 @@ public class Sql{
 				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
 				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
 				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
+				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana())
 
 				//MineStack機能の数値更新処理
 				+ ",stack_dirt = " + Integer.toString(playerdata.minestack.dirt)
@@ -522,7 +529,14 @@ public class Sql{
 			command = command +
 					"," + sqlname + " = " + Boolean.toString(flag);
 		}
-
+		ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+		for(int i = 0; i < premiumeffect.length ; i++){
+			String sqlname = premiumeffect[i].getsqlName();
+			int num = premiumeffect[i].getNum();
+			Boolean flag = playerdata.activeskilldata.premiumeffectflagmap.get(num);
+			command = command +
+					"," + sqlname + " = " + Boolean.toString(flag);
+		}
 		//最後の処理
 		command = command + " where uuid like '" + struuid + "'";
 

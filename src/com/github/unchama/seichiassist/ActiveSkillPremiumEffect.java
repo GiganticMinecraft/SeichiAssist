@@ -3,28 +3,31 @@ package com.github.unchama.seichiassist;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.github.unchama.seichiassist.arroweffect.ArrowBlizzardTaskRunnable;
-import com.github.unchama.seichiassist.arroweffect.ArrowExplosionTaskRunnable;
-import com.github.unchama.seichiassist.arroweffect.ArrowMeteoTaskRunnable;
-import com.github.unchama.seichiassist.breakeffect.BlizzardTaskRunnable;
-import com.github.unchama.seichiassist.breakeffect.ExplosionTaskRunnable;
-import com.github.unchama.seichiassist.breakeffect.MeteoTaskRunnable;
+import com.github.unchama.seichiassist.arroweffect.ArrowBladeTaskRunnable;
+import com.github.unchama.seichiassist.arroweffect.ArrowMagicTaskRunnable;
+import com.github.unchama.seichiassist.arroweffect.ArrowTiamatTaskRunnable;
+import com.github.unchama.seichiassist.arroweffect.ArrowVladmiaTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.BladeTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.MagicTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.TiamatTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.VladmiaTaskRunnable;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public enum ActiveSkillPremiumEffect {
-/*
+
 	MAGIC(1,"ef_magic",ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マジック","鶏が出る手品",10,Material.RED_ROSE),
 	BLADE(2,"ef_blade",ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブレイド","切り刻む",15,Material.IRON_SWORD),
 	VLADMIA(3,"ef_vladmia",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブラッドミア","吸血する",20,Material.REDSTONE),
 	TIAMAT(4,"ef_tiamat",ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ティアマト","彗星を落とす",25,Material.NETHER_STAR),
-	*/
+
 	;
 
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -75,23 +78,17 @@ public enum ActiveSkillPremiumEffect {
 	//エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
 	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
-		case "EXPLOSION":
-			new ExplosionTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 0);
+		case "MAGIC":
+			new MagicTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
 			break;
-		case "BLIZZARD":
-			if(playerdata.activeskilldata.skillnum < 3){
-				new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
-			}else{
-				new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
-			}
-
+		case "BLADE":
+			new BladeTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			break;
-		case "METEO":
-			if(playerdata.activeskilldata.skillnum < 3){
-				new MeteoTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
-			}else{
-				new MeteoTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
-			}
+		case "VLADMIA":
+			new VladmiaTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
+			break;
+		case "TIAMAT":
+			new TiamatTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			break;
 		default :
 			break;
@@ -102,14 +99,17 @@ public enum ActiveSkillPremiumEffect {
 	//エフェクトの実行処理分岐
 	public void runArrowEffect(Player player){
 		switch(this.toString()){
-		case "EXPLOSION":
-			new ArrowExplosionTaskRunnable(player).runTaskTimer(plugin,0,1);
+		case "MAGIC":
+			new ArrowMagicTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
-		case "BLIZZARD":
-			new ArrowBlizzardTaskRunnable(player).runTaskTimer(plugin,0,1);
+		case "BLADE":
+			new ArrowBladeTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
-		case "METEO":
-			new ArrowMeteoTaskRunnable(player).runTaskTimer(plugin,0,1);
+		case "VLADMIA":
+			new ArrowVladmiaTaskRunnable(player).runTaskTimer(plugin,0,1);
+			break;
+		case "TIAMAT":
+			new ArrowTiamatTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
 		default :
 			break;

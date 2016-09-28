@@ -423,6 +423,7 @@ public class MenuInventoryData {
 		SkullMeta skullmeta;
 		List<String> lore = new ArrayList<String>();
 
+		if(SeichiAssist.DEBUG){
 		// 自分の頭召喚
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
@@ -442,7 +443,7 @@ public class MenuInventoryData {
 		skullmeta.setOwner("MHF_Villager");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(12,itemstack);
-
+		}
 		//死亡メッセージ表示のトグルボタン
 		itemstack = new ItemStack(Material.FLINT_AND_STEEL,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.FLINT_AND_STEEL);
@@ -607,7 +608,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "1×2マス破壊"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getDualBreaklevel()
-										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：1"
+										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：1"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -621,7 +622,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×2マス破壊"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.1秒"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル："  + SeichiAssist.config.getTrialBreaklevel()
-										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：3"
+										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：3"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -635,7 +636,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.1秒"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getExplosionlevel()
-										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：15"
+										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：15"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -647,12 +648,12 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "フリーズ");
 		/*lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "16×16×256マス破壊"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getGravitylevel()
-										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：2000");*/
+										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：2000");*/
 
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "水を凍らせる"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：35"
-				, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+				, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -666,7 +667,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3マス破壊×5"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1秒"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getThunderStormlevel()
-										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：40"
+										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：40"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -680,7 +681,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "溶岩を固める"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：45"
-				, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+				, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -694,7 +695,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×5マス破壊"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.5秒"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getBlizzardlevel()
-										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：70"
+										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：70"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -709,7 +710,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "遠距離3*3*3"
 		, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：55"
-		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 		, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -723,7 +724,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "9*9*7マス破壊"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.5秒"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getMeteolevel()
-										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：100"
+										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：100"
 										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -738,7 +739,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "11*11*9"
 		, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：70"
-		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 		, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -752,7 +753,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "遠距離7*7*5"
 		, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：75"
-		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 		, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -767,7 +768,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "13*13*11"
 		, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：80"
-		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 		, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -782,7 +783,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "遠距離9*9*7"
 		, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：85"
-		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 		, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -796,7 +797,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "15*15*13"
 		, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：90"
-		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 		, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -812,7 +813,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "遠距離11*11*9"
 		, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：95"
-		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 		, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -826,7 +827,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "9*9*256"
 		, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：100"
-		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 		, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -841,7 +842,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "遠距離13*13*11"
 		, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：105"
-		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 		, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -855,7 +856,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "遠距離11*11*9*5"
 		, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：115"
-		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 		, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -870,7 +871,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "パッシブ周囲ブロック破壊"
 		, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：200"
-		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：???"
+		, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：???"
 		, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 
 		itemmeta.setLore(lore);
@@ -946,6 +947,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(2,itemstack);
 
+		if(SeichiAssist.DEBUG){
 		itemstack = new ItemStack(Material.STONE_BUTTON,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_BUTTON);
 		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リセットボタン");
@@ -955,7 +957,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(9,itemstack);
-
+		}
 		if(playerdata.activeskilldata.arrowskill >= 4){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
@@ -965,7 +967,7 @@ public class MenuInventoryData {
 			potionmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エビフライ・ドライブ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠3×3×3ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.8秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：18"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：18"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			potionmeta.setLore(lore);
 			itemstack.setItemMeta(potionmeta);
@@ -975,7 +977,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エビフライ・ドライブ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠3×3×3ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.8秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：18"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：18"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：40"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：エクスプロージョン"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -993,7 +995,7 @@ public class MenuInventoryData {
 			potionmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホーリー・ショット");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠5×5×3ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.3秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：35"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：35"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			potionmeta.setLore(lore);
 			itemstack.setItemMeta(potionmeta);
@@ -1003,7 +1005,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホーリー・ショット");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠5×5×3ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.3秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：35"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：35"
 											, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：50"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：エビフライ・ドライブ"
 											, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1021,7 +1023,7 @@ public class MenuInventoryData {
 			potionmeta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ツァーリ・ボンバ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠7×7×5ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.6秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：80"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：80"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			potionmeta.setLore(lore);
 			itemstack.setItemMeta(potionmeta);
@@ -1031,7 +1033,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ツァーリ・ボンバ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠7×7×5ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.6秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：80"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：80"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：60"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ホーリー・ショット"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1049,7 +1051,7 @@ public class MenuInventoryData {
 			potionmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アーク・ブラスト");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠9×9×7ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.7秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：110"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：110"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			potionmeta.setLore(lore);
 			itemstack.setItemMeta(potionmeta);
@@ -1059,7 +1061,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アーク・ブラスト");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠9×9×7ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.7秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：110"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：110"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：70"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ツァーリ・ボンバ"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1077,7 +1079,7 @@ public class MenuInventoryData {
 			potionmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ファンタズム・レイ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠11×11×9ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：3.8秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：220"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：220"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			potionmeta.setLore(lore);
 			itemstack.setItemMeta(potionmeta);
@@ -1087,7 +1089,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ファンタズム・レイ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠11×11×9ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：3.8秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：220"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：220"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：80"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：アーク・ブラスト"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1105,7 +1107,7 @@ public class MenuInventoryData {
 			potionmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スーパー・ノヴァ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠13×13×11ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：5.5秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：380"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：380"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			potionmeta.setLore(lore);
 			itemstack.setItemMeta(potionmeta);
@@ -1115,7 +1117,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スーパー・ノヴァ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "遠13×13×11ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：5.5秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：380"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：380"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：90"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ファンタズム・レイ"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1132,7 +1134,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トム・ボウイ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3ブロック破壊 ×3"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.6秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：28"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：28"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1142,7 +1144,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トム・ボウイ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3ブロック破壊 ×3"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.6秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：28"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：28"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：40"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：エクスプロージョン"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1159,7 +1161,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サンダー・ストーム");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3ブロック破壊 ×7"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.4秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：65"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：65"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1169,7 +1171,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サンダー・ストーム");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3ブロック破壊 ×7"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.4秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：65"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：65"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：50"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：トム・ボウイ"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1185,7 +1187,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スターライト・ブレイカー");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "5×5×5ブロック破壊 ×3"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.4秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：90"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：90"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1195,7 +1197,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スターライト・ブレイカー");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "5×5×5ブロック破壊 ×3"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.4秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：90"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：90"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：60"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：サンダー・ストーム"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1212,7 +1214,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アース・ディバイド");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "5×5×5ブロック破壊 ×5"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：3.4秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：185"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：185"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1222,7 +1224,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アース・ディバイド");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "5×5×5ブロック破壊 ×5"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：3.4秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：185"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：185"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：70"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：スターライト・ブレイカー"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1239,7 +1241,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ヘヴン・ゲイボルグ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×7ブロック破壊 ×3"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：4.8秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：330"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：330"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1249,7 +1251,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ヘヴン・ゲイボルグ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×7ブロック破壊 ×3"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：4.8秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：330"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：330"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：80"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：アース・ディバイド"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1266,7 +1268,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ディシジョン");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×7ブロック破壊 ×7"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：6.8秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：480"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：480"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1276,7 +1278,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ディシジョン");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×7ブロック破壊 ×7"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：6.8秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：480"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：480"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：90"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ヘヴン・ゲイボルグ"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1294,7 +1296,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "デュアル・ブレイク");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "1×2ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：1"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：1"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1304,7 +1306,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "デュアル・ブレイク");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "1×2ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：1"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：1"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：10"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：なし"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1321,7 +1323,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トリアル・ブレイク");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×2ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.1秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：3"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：3"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1331,7 +1333,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "トリアル・ブレイク");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×2ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.1秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：3"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：3"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：20"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：デュアルブレイク"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1347,7 +1349,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.2秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：15"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：12"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1357,7 +1359,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エクスプロージョン");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "3×3×3ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.2秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：15"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：12"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：30"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：トリアルブレイク"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1373,7 +1375,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ミラージュ・フレア");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "5×5×3ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.7秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：30"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：30"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1383,7 +1385,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ミラージュ・フレア");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "5×5×3ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0.7秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：30"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：30"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：40"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：エクスプロージョン"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1399,7 +1401,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.GRAY + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ドッ・カーン");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×5ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.5秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：70"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：70"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1409,7 +1411,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.GRAY + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ドッ・カーン");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "7×7×5ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：1.5秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：70"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：70"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：50"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ミラージュ・フレア"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1425,7 +1427,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ギガンティック・ボム");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "9×9×7ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.5秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：100"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：100"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1435,7 +1437,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ギガンティック・ボム");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "9×9×7ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：2.5秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：100"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：100"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：60"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ドッ・カーン"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1452,7 +1454,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリリアント・デトネーション");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "11×11×9ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：3.5秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：200"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：200"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1462,7 +1464,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブリリアント・デトネーション");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "11×11×9ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：3.5秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：200"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：200"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：70"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ギガンティック・ボム"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1478,7 +1480,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "レムリア・インパクト");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "13×13×11ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：5秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：350"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：350"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1488,7 +1490,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "レムリア・インパクト");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "13×13×11ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：5秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：350"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：350"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：80"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ブリリアント・デトネーション"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1504,7 +1506,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エターナル・ヴァイス");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "15×15×13ブロック破壊"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：7秒"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：500"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：500"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1514,7 +1516,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エターナル・ヴァイス");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "15×15×13ブロック破壊"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：7秒"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：500"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：500"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：90"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：レムリア・インパクト"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1531,7 +1533,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホワイト・ブレス");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水13×13×13ブロックを凍らせます"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：500"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：500"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1541,7 +1543,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホワイト・ブレス");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水13×13×13ブロックを凍らせます"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：500"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：500"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：40"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：エクスプロージョン"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1558,7 +1560,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アブソリュート・ゼロ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水13×13×13ブロックを凍らせます"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：450"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：450"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1568,7 +1570,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アブソリュート・ゼロ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水13×13×13ブロックを凍らせます"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：450"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：450"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：50"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ホワイト・ブレス"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1585,7 +1587,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ダイアモンド・ダスト");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水13×13×13ブロックを凍らせます"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：350"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：350"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1595,7 +1597,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ダイアモンド・ダスト");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水13×13×13ブロックを凍らせます"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：350"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：350"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：60"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：アブソリュート・ゼロ"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1612,7 +1614,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ラヴァ・コンデンセーション");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩13×13×13ブロックを固めます"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：1200"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：1200"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1622,7 +1624,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ラヴァ・コンデンセーション");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩13×13×13ブロックを固めます"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：1200"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：1200"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：70"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ダイアモンド・ダスト"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1639,7 +1641,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "モエラキ・ボールダーズ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩13×13×13ブロックを固めます"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：1000"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：1000"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1649,7 +1651,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "モエラキ・ボールダーズ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩13×13×13ブロックを固めます"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：1000"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：1000"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：80"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ラヴァ・コンデンセーション"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1666,7 +1668,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エルト・フェットル");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩13×13×13ブロックを固めます"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：600"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：600"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1676,7 +1678,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エルト・フェットル");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩13×13×13ブロックを固めます"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：600"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：600"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：90"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：モエラキ・ボールダーズ"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
@@ -1693,7 +1695,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アサルト・アーマー");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲のブロックを破壊します"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：800"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：800"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -1703,7 +1705,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アサルト・アーマー");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲のブロックを破壊します"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費経験値：800"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：800"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "全てのスキルを獲得すると解除されます");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);

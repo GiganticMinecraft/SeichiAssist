@@ -10,8 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -25,12 +25,13 @@ import org.bukkit.util.Vector;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.ArrowRemoveTaskRunnable;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
+import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerRightClickListener implements Listener {
@@ -107,9 +108,12 @@ public class PlayerRightClickListener implements Listener {
 						runArrowSkill(player,Arrow.class);
 					}
 					//エフェクトが指定されているときの処理
-					else{
+					else if(playerdata.activeskilldata.effectnum <= 100){
 						ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 						skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player);
+					}else if(playerdata.activeskilldata.effectnum > 100){
+						ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+						premiumeffect[playerdata.activeskilldata.effectnum - 1 -100].runArrowEffect(player);
 					}
 				}
 			}
@@ -138,10 +142,16 @@ public class PlayerRightClickListener implements Listener {
 					if(playerdata.activeskilldata.effectnum == 0){
 						runArrowSkill(player,Arrow.class);
 					}
-					//エフェクトが指定されているときの処理
-					else{
+					//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
+					else if(playerdata.activeskilldata.effectnum <= 100){
 						ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 						skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player);
+					}
+
+					//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
+					else if(playerdata.activeskilldata.effectnum > 100){
+						ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+						premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runArrowEffect(player);
 					}
 
 				}
@@ -176,7 +186,7 @@ public class PlayerRightClickListener implements Listener {
         proj.setVelocity(vec);
 
         //矢を消去する処理
-        new ArrowRemoveTaskRunnable((Projectile)proj).runTaskLater(plugin,100);
+        new EntityRemoveTaskRunnable((Entity)proj).runTaskLater(plugin,100);
 	}
 
 
@@ -351,7 +361,7 @@ public class PlayerRightClickListener implements Listener {
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + ":ON-Under(下向き）");
 						break;
 					}
-					playerdata.activeskilldata.mineflagnum = activemineflagnum;
+					playerdata.activeskilldata.updataSkill(player, playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum, activemineflagnum);
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 				}else if(playerdata.activeskilldata.skilltype > 0 && playerdata.activeskilldata.skillnum > 0
 						&& playerdata.activeskilldata.skilltype < 4
