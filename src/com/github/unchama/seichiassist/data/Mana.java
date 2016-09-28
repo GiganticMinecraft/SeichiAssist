@@ -9,6 +9,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
 
 
@@ -72,6 +73,7 @@ public class Mana {
 	public void decreaseMana(double d,Player player,int level){
 		this.m -= d;
 		if(m < 0) m = 0;
+		if(SeichiAssist.DEBUG)m = max;
 		displayMana(player,level);
 	}
 	public boolean hasMana(double h){
@@ -91,6 +93,10 @@ public class Mana {
 	}
 	//マナ最大値を計算する処理
 	public void calcMaxMana(int level){
+		if(SeichiAssist.DEBUG){
+			max = 100000;
+			return;
+		}
 		double t_max = 1;
 		//レベルが10行っていない時レベルの値で処理を終了
 		if(level < 10){

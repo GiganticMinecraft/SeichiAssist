@@ -296,11 +296,12 @@ public class Util {
 	public static void BreakBlock(Player player,Block breakblock,Location centerofblock,ItemStack tool,Boolean stepflag) {
 
 		Material material = breakblock.getType();
-		ItemStack itemstack = dropItemOnTool(breakblock,tool);
-
 		if(!SeichiAssist.materiallist.contains(material)){
 			return;
 		}
+		
+		ItemStack itemstack = dropItemOnTool(breakblock,tool);
+
 
 		if(material.equals(Material.GLOWING_REDSTONE_ORE)){
 			material = Material.REDSTONE_ORE;

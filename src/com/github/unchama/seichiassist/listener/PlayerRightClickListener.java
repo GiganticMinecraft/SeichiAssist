@@ -10,8 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -30,8 +30,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.ArrowRemoveTaskRunnable;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
+import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerRightClickListener implements Listener {
@@ -108,9 +108,12 @@ public class PlayerRightClickListener implements Listener {
 						runArrowSkill(player,Arrow.class);
 					}
 					//エフェクトが指定されているときの処理
-					else{
+					else if(playerdata.activeskilldata.effectnum <= 100){
 						ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 						skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player);
+					}else if(playerdata.activeskilldata.effectnum > 100){
+						ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+						premiumeffect[playerdata.activeskilldata.effectnum - 1 -100].runArrowEffect(player);
 					}
 				}
 			}
@@ -183,7 +186,7 @@ public class PlayerRightClickListener implements Listener {
         proj.setVelocity(vec);
 
         //矢を消去する処理
-        new ArrowRemoveTaskRunnable((Projectile)proj).runTaskLater(plugin,100);
+        new EntityRemoveTaskRunnable((Entity)proj).runTaskLater(plugin,100);
 	}
 
 
