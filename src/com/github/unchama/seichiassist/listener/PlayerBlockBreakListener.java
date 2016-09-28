@@ -222,7 +222,10 @@ public class PlayerBlockBreakListener implements Listener {
 		//１回の全て破壊したときのブロック数
 		final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
 
-
+		//全てのマナ消費量
+		double useAllMana = 0;
+		//全ての耐久消費量
+		short alldurability =  0;
 		//繰り返し回数だけ繰り返す
 		for(int i = 0; i < breaknum ; i++){
 			breaklist.clear();
@@ -263,15 +266,15 @@ public class PlayerBlockBreakListener implements Listener {
 			//減る経験値計算
 			//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-			double useMana = (double) (breaklist.size()) * gravity
+			useAllMana += (double) (breaklist.size()) * gravity
 					* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 					/(ifallbreaknum * breaknum) ;
 
 
 			//減る耐久値の計算
-			short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
+			alldurability += (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 			//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-			durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
+			alldurability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
 
 			//重力値の判定
 			if(gravity > 15){
@@ -280,7 +283,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 			}
 			//実際に経験値を減らせるか判定
-			if(!mana.hasMana(useMana)){
+			if(!mana.hasMana(useAllMana)){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
@@ -291,7 +294,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 			}
 			//実際に耐久値を減らせるか判定
-			if(tool.getType().getMaxDurability() <= durability && !tool.getItemMeta().spigot().isUnbreakable()){
+			if(tool.getType().getMaxDurability() <= alldurability && !tool.getItemMeta().spigot().isUnbreakable()){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
@@ -301,13 +304,6 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 			}
 
-
-			//経験値を減らす
-			mana.decreaseMana(useMana,player,playerdata.level);
-
-			//耐久値を減らす
-			tool.setDurability(durability);
-
 			//選択されたブロックを破壊せずに保存する処理
 			multibreaklist.add(new ArrayList<Block>(breaklist));
 			multilavalist.add(new ArrayList<Block>(lavalist));
@@ -315,19 +311,29 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 
-		//壊したブロック数に応じてクールダウンを発生させる
-		long cooldown = (long) ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
-		if(cooldown >= 5){
-			new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
-		}
+
 
 		//自身のみしか壊さない時自然に処理する
 		if(breakblocknum==1){
 			Util.BreakBlock(player, block, centerofblock, tool,false);
 			playerdata.activeskilldata.blocklist.remove(block);
+			return;
 		}//スキルの処理
 		else{
 			new MultiBreakTaskRunnable(player,block,tool,multibreaklist,multilavalist,startlist,endlist).runTaskTimer(plugin,0,4);
+		}
+
+
+		//経験値を減らす
+		mana.decreaseMana(useAllMana,player,playerdata.level);
+
+		//耐久値を減らす
+		tool.setDurability(alldurability);
+
+		//壊したブロック数に応じてクールダウンを発生させる
+		long cooldown = (long) ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
+		if(cooldown >= 5){
+			new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
 		}
 	}
 
@@ -402,7 +408,7 @@ public class PlayerBlockBreakListener implements Listener {
 		double gravity = Util.getGravity(player,block,end.y,1);
 
 
-		//減る経験値計算
+		//減るマナ計算
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 		Coordinate breaklength = area.getBreakLength();
 		int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
@@ -413,7 +419,7 @@ public class PlayerBlockBreakListener implements Listener {
 			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum));
 			player.sendMessage(ChatColor.RED + "全ての破壊数：" + ifallbreaknum);
 			player.sendMessage(ChatColor.RED + "実際の破壊数：" + breaklist.size());
-			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なまな：" + useMana);
+			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナ：" + useMana);
 		}
 		//減る耐久値の計算
 		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
@@ -452,20 +458,7 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-
-		//経験値を減らす
-		mana.decreaseMana(useMana,player,playerdata.level);
-
-		//耐久値を減らす
-		tool.setDurability(durability);
-
-		//壊したブロック数に応じてクールダウンを発生させる
-		long cooldown = (long) ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
-		if(cooldown >= 5){
-			new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
-		}
-
-		//以降破壊する処理
+		//破壊する処理
 
 		//溶岩の破壊する処理
 		for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
@@ -477,6 +470,8 @@ public class PlayerBlockBreakListener implements Listener {
 		//自身のみしか壊さない時自然に処理する
 		if(breaklist.size()==1){
 			Util.BreakBlock(player, block, centerofblock, tool,false);
+			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			return;
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
@@ -488,6 +483,19 @@ public class PlayerBlockBreakListener implements Listener {
 		else{
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
+		}
+
+
+		//経験値を減らす
+		mana.decreaseMana(useMana,player,playerdata.level);
+
+		//耐久値を減らす
+		tool.setDurability(durability);
+
+		//壊したブロック数に応じてクールダウンを発生させる
+		long cooldown = (long) ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
+		if(cooldown >= 5){
+			new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
 		}
 	}
 }
