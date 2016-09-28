@@ -24,10 +24,10 @@ import com.github.unchama.seichiassist.data.PlayerData;
 public enum ActiveSkillPremiumEffect {
 
 	MAGIC(1,"ef_magic",ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マジック","鶏が出る手品",10,Material.RED_ROSE),
-/*	BLADE(2,"ef_blade",ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブレイド","切り刻む",15,Material.IRON_SWORD),
+	BLADE(2,"ef_blade",ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブレイド","切り刻む",15,Material.IRON_SWORD),
 	VLADMIA(3,"ef_vladmia",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブラッドミア","吸血する",20,Material.REDSTONE),
 	TIAMAT(4,"ef_tiamat",ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ティアマト","彗星を落とす",25,Material.NETHER_STAR),
-*/
+
 	;
 
 	SeichiAssist plugin = SeichiAssist.plugin;
