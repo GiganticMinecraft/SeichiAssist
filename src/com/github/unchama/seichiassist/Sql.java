@@ -241,6 +241,11 @@ public class Sql{
 			command = command +
 					",add column if not exists " + activeskilleffect[i].getsqlName() + " boolean default false";
 		}
+		ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+		for(int i = 0; i < premiumeffect.length ; i++){
+			command = command +
+					",add column if not exists " + premiumeffect[i].getsqlName() + " boolean default false";
+		}
 		return putCommand(command);
 	}
 
@@ -524,7 +529,14 @@ public class Sql{
 			command = command +
 					"," + sqlname + " = " + Boolean.toString(flag);
 		}
-
+		ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+		for(int i = 0; i < premiumeffect.length ; i++){
+			String sqlname = premiumeffect[i].getsqlName();
+			int num = premiumeffect[i].getNum();
+			Boolean flag = playerdata.activeskilldata.premiumeffectflagmap.get(num);
+			command = command +
+					"," + sqlname + " = " + Boolean.toString(flag);
+		}
 		//最後の処理
 		command = command + " where uuid like '" + struuid + "'";
 

@@ -31,6 +31,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
@@ -838,7 +839,7 @@ public class PlayerInventoryListener implements Listener {
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float)0.5);
 						}else{
 							skilleffect[i].setObtained(playerdata.activeskilldata.effectflagmap);
-							player.sendMessage(ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "エフェクト：" + skilleffect[i].getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "" + " を解除しました");
+							player.sendMessage(ChatColor.LIGHT_PURPLE + "エフェクト：" + skilleffect[i].getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "" + " を解除しました");
 							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 							playerdata.activeskilldata.effectpoint -= skilleffect[i].getUsePoint();
 							player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
@@ -846,7 +847,25 @@ public class PlayerInventoryListener implements Listener {
 					}
 				}
 			}
-
+			//ここからプレミアムエフェクト開放の処理
+			if(itemstackcurrent.getType().equals(Material.BEDROCK)){
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+				for(int i = 0; i < premiumeffect.length ; i++){
+					if(itemmeta.getDisplayName().contains(premiumeffect[i].getName())){
+						if(playerdata.activeskilldata.premiumeffectpoint < premiumeffect[i].getUsePoint()){
+							player.sendMessage(ChatColor.DARK_RED  + "プレミアムエフェクトポイントが足りません");
+							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float)0.5);
+						}else{
+							premiumeffect[i].setObtained(playerdata.activeskilldata.premiumeffectflagmap);
+							player.sendMessage(ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "プレミアムエフェクト：" + premiumeffect[i].getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "" + " を解除しました");
+							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
+							playerdata.activeskilldata.premiumeffectpoint -= premiumeffect[i].getUsePoint();
+							player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
+						}
+					}
+				}
+			}
 		}
 	}
 

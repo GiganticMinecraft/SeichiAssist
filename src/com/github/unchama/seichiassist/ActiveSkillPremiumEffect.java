@@ -24,7 +24,7 @@ public enum ActiveSkillPremiumEffect {
 	BLADE(2,"ef_blade",ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブレイド","切り刻む",15,Material.IRON_SWORD),
 	VLADMIA(3,"ef_vladmia",ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブラッドミア","吸血する",20,Material.REDSTONE),
 	TIAMAT(4,"ef_tiamat",ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ティアマト","彗星を落とす",25,Material.NETHER_STAR),
-	*/
+*/
 	;
 
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -75,10 +75,10 @@ public enum ActiveSkillPremiumEffect {
 	//エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
 	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
-		case "EXPLOSION":
+		case "MAGIC":
 			new ExplosionTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 0);
 			break;
-		case "BLIZZARD":
+		case "BLADE":
 			if(playerdata.activeskilldata.skillnum < 3){
 				new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			}else{
@@ -86,12 +86,14 @@ public enum ActiveSkillPremiumEffect {
 			}
 
 			break;
-		case "METEO":
+		case "VLADMIA":
 			if(playerdata.activeskilldata.skillnum < 3){
 				new MeteoTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			}else{
 				new MeteoTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
 			}
+			break;
+		case "TIAMAT":
 			break;
 		default :
 			break;
@@ -102,14 +104,16 @@ public enum ActiveSkillPremiumEffect {
 	//エフェクトの実行処理分岐
 	public void runArrowEffect(Player player){
 		switch(this.toString()){
-		case "EXPLOSION":
+		case "MAGIC":
 			new ArrowExplosionTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
-		case "BLIZZARD":
+		case "BLADE":
 			new ArrowBlizzardTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
-		case "METEO":
+		case "VLADMIA":
 			new ArrowMeteoTaskRunnable(player).runTaskTimer(plugin,0,1);
+			break;
+		case "TIAMAT":
 			break;
 		default :
 			break;
