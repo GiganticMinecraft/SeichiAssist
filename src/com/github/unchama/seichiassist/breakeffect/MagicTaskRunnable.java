@@ -76,8 +76,6 @@ public class MagicTaskRunnable extends BukkitRunnable{
 	        red.setColor(DyeColor.RED);
 	        state.update();
 		}
-
-
 	}
 
 	@Override
