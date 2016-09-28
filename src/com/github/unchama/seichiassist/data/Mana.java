@@ -61,7 +61,7 @@ public class Mana {
 		if(this.m > max)this.m = max;
 	}
 	//現在のバーを削除する（更新するときは不要）
-	private void removeBar(){
+	public void removeBar(){
 		try{manabar.removeAll();}catch(NullPointerException e){}
 	}
 	public void increaseMana(double i,Player player,int level){
@@ -87,15 +87,14 @@ public class Mana {
 	//レベルアップするときに実行したい関数
 	public void LevelUp(Player player,int level){
 		calcMaxMana(level);
-		fullMana();
-		displayMana(player,level);
+		fullMana(player,level);
 	}
 	//マナ最大値を計算する処理
 	public void calcMaxMana(int level){
 		double t_max = 1;
-		//レベルが10行っていない時1で処理を終了
+		//レベルが10行っていない時レベルの値で処理を終了
 		if(level < 10){
-			this.max = t_max;
+			this.max = level;
 			return;
 		}
 		//１０行ってる時の処理
@@ -114,8 +113,9 @@ public class Mana {
 		return;
 	}
 	//マナを最大値まで回復する処理
-	public void fullMana(){
+	public void fullMana(Player player,int level){
 		this.m = this.max;
+		displayMana(player,level);
 	}
 	public void setMana(double m) {
 		this.m = m;

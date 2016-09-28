@@ -124,16 +124,18 @@ public class PlayerData {
 		halfhourblock.before = totalbreaknum;
 		updataLevel(player);
 		NotifySorryForBug(player);
-		activeskilldata.updata(player, level);
+		activeskilldata.updateonJoin(player, level);
 	}
 
 
 	//quit時とondisable時、プレイヤーデータを最新の状態に更新
-	public void UpdateonQuit(Player player){
+	public void updateonQuit(Player player){
 		//総整地量を更新
 		calcMineBlock(player);
 		//総プレイ時間更新
 		calcPlayTick(player);
+
+		activeskilldata.updateonQuit(player);
 	}
 
 	/*
@@ -339,6 +341,9 @@ public class PlayerData {
 		//ランク用関数
 		int i = 0;
 		int t = totalbreaknum;
+		if(SeichiAssist.ranklist.size() == 0){
+			return 1;
+		}
 		RankData rankdata = SeichiAssist.ranklist.get(i);
 		//ランクが上がらなくなるまで処理
 		while(rankdata.totalbreaknum > t){

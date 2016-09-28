@@ -229,10 +229,12 @@ public class ActiveSkillData {
 		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 
 	}
-	public void updata(Player player, int level) {
+	public void updateonJoin(Player player, int level) {
 		updataActiveSkillPoint(player, level);
 		runTask(player);
 		mana.update(player,level);
 	}
-
+	public void updateonQuit(Player player) {
+		mana.removeBar();
+	}
 }

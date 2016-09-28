@@ -26,6 +26,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.listener.EntityListener;
+import com.github.unchama.seichiassist.listener.GachaItemListener;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
 import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
@@ -207,6 +208,7 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerPickupItemListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
+		getServer().getPluginManager().registerEvents(new GachaItemListener(), this);
 
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){
@@ -249,7 +251,7 @@ public class SeichiAssist extends JavaPlugin{
 				continue;
 			}
 			//quit時とondisable時、プレイヤーデータを最新の状態に更新
-			playerdata.UpdateonQuit(p);
+			playerdata.updateonQuit(p);
 
 			//mysqlに送信
 			if(!sql.savePlayerData(playerdata)){
