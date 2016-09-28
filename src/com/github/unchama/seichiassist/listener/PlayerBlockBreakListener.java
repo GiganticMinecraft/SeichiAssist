@@ -21,6 +21,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
@@ -479,12 +480,17 @@ public class PlayerBlockBreakListener implements Listener {
 				playerdata.activeskilldata.blocklist.remove(b);
 			}
 		}
-		//エフェクトが指定されているときの処理
-		else{
+		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
+		else if(playerdata.activeskilldata.effectnum <= 100){
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
 		}
 
+		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
+		else if(playerdata.activeskilldata.effectnum > 100){
+			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+			premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
+		}
 
 		//経験値を減らす
 		mana.decreaseMana(useMana,player,playerdata.level);

@@ -9,12 +9,14 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.github.unchama.seichiassist.arroweffect.ArrowBlizzardTaskRunnable;
-import com.github.unchama.seichiassist.arroweffect.ArrowExplosionTaskRunnable;
-import com.github.unchama.seichiassist.arroweffect.ArrowMeteoTaskRunnable;
-import com.github.unchama.seichiassist.breakeffect.BlizzardTaskRunnable;
-import com.github.unchama.seichiassist.breakeffect.ExplosionTaskRunnable;
-import com.github.unchama.seichiassist.breakeffect.MeteoTaskRunnable;
+import com.github.unchama.seichiassist.arroweffect.ArrowBladeTaskRunnable;
+import com.github.unchama.seichiassist.arroweffect.ArrowMagicTaskRunnable;
+import com.github.unchama.seichiassist.arroweffect.ArrowTiamatTaskRunnable;
+import com.github.unchama.seichiassist.arroweffect.ArrowVladmiaTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.BladeTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.MagicTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.TiamatTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.VladmiaTaskRunnable;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 
@@ -76,24 +78,16 @@ public enum ActiveSkillPremiumEffect {
 	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
 		case "MAGIC":
-			new ExplosionTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 0);
+			new MagicTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
 			break;
 		case "BLADE":
-			if(playerdata.activeskilldata.skillnum < 3){
-				new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
-			}else{
-				new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
-			}
-
+			new BladeTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			break;
 		case "VLADMIA":
-			if(playerdata.activeskilldata.skillnum < 3){
-				new MeteoTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
-			}else{
-				new MeteoTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
-			}
+			new VladmiaTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			break;
 		case "TIAMAT":
+			new TiamatTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			break;
 		default :
 			break;
@@ -105,15 +99,16 @@ public enum ActiveSkillPremiumEffect {
 	public void runArrowEffect(Player player){
 		switch(this.toString()){
 		case "MAGIC":
-			new ArrowExplosionTaskRunnable(player).runTaskTimer(plugin,0,1);
+			new ArrowMagicTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
 		case "BLADE":
-			new ArrowBlizzardTaskRunnable(player).runTaskTimer(plugin,0,1);
+			new ArrowBladeTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
 		case "VLADMIA":
-			new ArrowMeteoTaskRunnable(player).runTaskTimer(plugin,0,1);
+			new ArrowVladmiaTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
 		case "TIAMAT":
+			new ArrowTiamatTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
 		default :
 			break;

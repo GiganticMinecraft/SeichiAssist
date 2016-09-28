@@ -825,6 +825,19 @@ public class PlayerInventoryListener implements Listener {
 						}
 					}
 				}
+				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+				for(int i = 0; i < premiumeffect.length ; i++){
+					if(itemstackcurrent.getType().equals(premiumeffect[i].getMaterial())){
+						if(playerdata.activeskilldata.effectnum == premiumeffect[i].getNum()){
+							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+							player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+						}else{
+							playerdata.activeskilldata.effectnum = premiumeffect[i].getNum() + 100;
+							player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "プレミアムエフェクト:" + premiumeffect[i].getName() + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + " が選択されました");
+							player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+						}
+					}
+				}
 			}
 
 

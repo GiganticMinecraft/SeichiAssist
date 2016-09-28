@@ -25,6 +25,7 @@ import org.bukkit.util.Vector;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
@@ -138,10 +139,16 @@ public class PlayerRightClickListener implements Listener {
 					if(playerdata.activeskilldata.effectnum == 0){
 						runArrowSkill(player,Arrow.class);
 					}
-					//エフェクトが指定されているときの処理
-					else{
+					//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
+					else if(playerdata.activeskilldata.effectnum <= 100){
 						ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 						skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player);
+					}
+
+					//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
+					else if(playerdata.activeskilldata.effectnum > 100){
+						ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+						premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runArrowEffect(player);
 					}
 
 				}
