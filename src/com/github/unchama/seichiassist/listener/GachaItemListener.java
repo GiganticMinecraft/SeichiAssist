@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class GachaItemListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -32,10 +33,10 @@ public class GachaItemListener implements Listener {
 		if(!itemmeta.hasLore())return;
 		List<String> lore = itemmeta.getLore();
 
-
-		if(itemmeta.getLore().contains("マナ完全回復")){
-		mana.fullMana(player,level);
-		player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
+		if(Util.LoreContains(lore,"マナ完全回復")){
+		//if(itemmeta.getLore().contains("マナ完全回復")){
+			mana.fullMana(player,level);
+			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
 		}
 
 	}

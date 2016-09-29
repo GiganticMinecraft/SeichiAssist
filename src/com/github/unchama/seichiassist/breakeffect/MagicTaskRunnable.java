@@ -22,7 +22,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
-import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class MagicTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -69,7 +69,7 @@ public class MagicTaskRunnable extends BukkitRunnable{
 
 
 		for(Block b : breaklist){
-			Util.BreakBlock(player, b, droploc, tool, false);
+			BreakUtil.BreakBlock(player, b, droploc, tool, false);
 			b.setType(Material.WOOL);
 	        state = b.getState();
 	        red = (Wool)state.getData();

@@ -45,7 +45,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	public static SeichiAssist plugin;
 	//デバッグフラグ
-	public static Boolean DEBUG = false;
+	public static Boolean DEBUG = true;
 	//ガチャシステムのメンテナンスフラグ
 	public static Boolean gachamente = false;
 
@@ -174,7 +174,9 @@ public class SeichiAssist extends JavaPlugin{
 	public static final Set<Material> transparentmateriallist = new HashSet<Material>(Arrays.asList(
 			Material.BEDROCK,Material.AIR
 			));
-			//new HashSet<Material>(Arrays.asList());
+	public static final List<Material> gravitymateriallist = new ArrayList<Material>(Arrays.asList(
+			Material.LOG, Material.LOG_2,Material.LEAVES,Material.LEAVES_2
+			));
 	@Override
 	public void onEnable(){
 		plugin = this;

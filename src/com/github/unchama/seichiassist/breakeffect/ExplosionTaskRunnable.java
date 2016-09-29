@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class ExplosionTaskRunnable extends BukkitRunnable{
 	Player player;
@@ -56,12 +56,12 @@ public class ExplosionTaskRunnable extends BukkitRunnable{
 		}
 		if(playerdata.activeskilldata.skillnum > 2){
 			for(Block b : breaklist){
-				Util.BreakBlock(player, b, droploc, tool, false);
+				BreakUtil.BreakBlock(player, b, droploc, tool, false);
 				playerdata.activeskilldata.blocklist.remove(b);
 			}
 		}else{
 			for(Block b : breaklist){
-				Util.BreakBlock(player, b, droploc, tool, true);
+				BreakUtil.BreakBlock(player, b, droploc, tool, true);
 				playerdata.activeskilldata.blocklist.remove(b);
 			}
 		}
