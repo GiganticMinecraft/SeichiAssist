@@ -237,6 +237,7 @@ public class PlayerBlockBreakListener implements Listener {
 				for(int z = start.z ; z <= end.z ; z++){
 					for(int y = start.y; y <= end.y ; y++){
 						breakblock = block.getRelative(x, y, z);
+						if(x == 0 && y == 0 && z == 0)continue;
 						//もし壊されるブロックがもともとのブロックと同じ種類だった場合
 						if(breakblock.getType().equals(material)
 								|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
@@ -267,7 +268,7 @@ public class PlayerBlockBreakListener implements Listener {
 			//減る経験値計算
 			//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-			useAllMana += (double) (breaklist.size()) * gravity
+			useAllMana += (double) (breaklist.size() + 1) * gravity
 					* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 					/(ifallbreaknum * breaknum) ;
 
@@ -315,7 +316,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//自身のみしか壊さない時自然に処理する
-		if(breakblocknum==1){
+		if(breakblocknum==0){
 			Util.BreakBlock(player, block, centerofblock, tool,false);
 			playerdata.activeskilldata.blocklist.remove(block);
 			return;
@@ -379,6 +380,7 @@ public class PlayerBlockBreakListener implements Listener {
 			for(int z = start.z ; z <= end.z ; z++){
 				for(int y = start.y; y <= end.y ; y++){
 					breakblock = block.getRelative(x, y, z);
+					if(x == 0 && y == 0 && z == 0)continue;
 					//もし壊されるブロックがもともとのブロックと同じ種類だった場合
 					if(breakblock.getType().equals(material)
 							|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
@@ -413,7 +415,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 		Coordinate breaklength = area.getBreakLength();
 		int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
-		double useMana = (double) (breaklist.size()) * gravity
+		double useMana = (double) (breaklist.size()+1) * gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 				/ifallbreaknum ;
 		if(SeichiAssist.DEBUG){
@@ -469,9 +471,8 @@ public class PlayerBlockBreakListener implements Listener {
 		//選択されたブロックを破壊する処理
 
 		//自身のみしか壊さない時自然に処理する
-		if(breaklist.size()==1){
+		if(breaklist.size()==0){
 			Util.BreakBlock(player, block, centerofblock, tool,false);
-			playerdata.activeskilldata.blocklist.removeAll(breaklist);
 			return;
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.activeskilldata.effectnum == 0){

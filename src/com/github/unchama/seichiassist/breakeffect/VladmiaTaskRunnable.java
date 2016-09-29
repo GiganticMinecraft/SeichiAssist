@@ -3,18 +3,30 @@ package com.github.unchama.seichiassist.breakeffect;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Wool;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class VladmiaTaskRunnable extends BukkitRunnable{
+	//プレイヤー情報
 	Player player;
+	//プレイヤーデータ
 	PlayerData playerdata;
+	//プレイヤーの位置情報
+	Location ploc;
+	//ブロックの位置情報
+	Location bloc;
+	//破壊するブロックの中心位置
+	Location centerbreakloc;
+	//使用するツール
 	ItemStack tool;
 	//破壊するブロックリスト
 	List<Block> breaklist;
@@ -25,7 +37,10 @@ public class VladmiaTaskRunnable extends BukkitRunnable{
 	//相対座標から得られるスキルの範囲座標
 	Coordinate breaklength;
 	//逐一更新が必要な位置
-	Location explosionloc;
+	Location effectloc;
+	Wool red;
+	BlockState state;
+	Material m;
 
 
 	public VladmiaTaskRunnable(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist, Coordinate start,
@@ -36,8 +51,17 @@ public class VladmiaTaskRunnable extends BukkitRunnable{
 		this.breaklist = breaklist;
 		this.start = start;
 		this.end = end;
-		this.droploc = droploc;
-		breaklength = ActiveSkill.BREAK.getBreakLength(playerdata.activeskilldata.skillnum);
+		this.droploc = droploc.clone();
+
+		this.ploc = player.getLocation().clone();
+		this.centerbreakloc = this.droploc.add(start.x + (end.x-start.x)/2, start.y + (end.y-start.y)/2,start.z + (end.z-start.z)/2);
+
+
+
+		for(Block b : breaklist){
+			Util.BreakBlock(player, b, droploc, tool, false);
+
+		}
 	}
 	@Override
 	public void run() {

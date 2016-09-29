@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -198,7 +199,6 @@ public class EntityListener implements Listener {
 		for(int x = start.x ; x <= end.x ; x++){
 			for(int z = start.z ; z <= end.z ; z++){
 				for(int y = start.y; y <= end.y ; y++){
-
 					breakblock = block.getRelative(x, y, z);
 					//player.sendMessage("x:" + x + "y:" + y + "z:" + z + "Type:"+ breakblock.getType().name());
 					//もし壊されるブロックがもともとのブロックと同じ種類だった場合
@@ -332,6 +332,15 @@ public class EntityListener implements Listener {
 	@EventHandler
 	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
 		Entity e = event.getDamager();
+	    if ( e instanceof Projectile){
+	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+	    		event.setCancelled(true);
+	    	}
+	    }
+	}
+	@EventHandler
+	public void onPotionSplashEvent(PotionSplashEvent event){
+		Entity e = event.getPotion();
 	    if ( e instanceof Projectile){
 	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
 	    		event.setCancelled(true);

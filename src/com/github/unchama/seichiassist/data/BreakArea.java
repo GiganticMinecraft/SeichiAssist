@@ -74,7 +74,8 @@ public class BreakArea {
 		}
 		//上向きまたは下向きの時
 		else if(dir.equals("U") || dir.equals("D")){
-			shift(0, (breaklength.y-1)/2, 0);
+			if(!assaultflag && level < 3){}
+			else{shift(0, (breaklength.y-1)/2, 0);}
 		}
 		//それ以外の範囲
 		else{
@@ -105,7 +106,8 @@ public class BreakArea {
 				break;
 			case "U":
 			case "D":
-				shift(0, breaklength.y, 0);
+				if(!assaultflag && level < 3){}
+				else{shift(0, breaklength.y, 0);}
 				break;
 
 			}
