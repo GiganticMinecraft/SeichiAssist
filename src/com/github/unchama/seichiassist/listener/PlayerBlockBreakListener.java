@@ -19,6 +19,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import zedly.zenchantments.Zenchantments;
+
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
@@ -156,6 +158,15 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
+		//Lumberをエンチャントしていたら終了
+		Zenchantments Ze = Util.getZenchantments();
+		if(Ze == null){
+			player.sendMessage("取得エラー");
+		}
+		if(Ze.isCompatible("木こり", tool)){
+			return;
+		}
+
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, block, tool);
@@ -164,8 +175,6 @@ public class PlayerBlockBreakListener implements Listener {
 			runBreakSkill(player, block, tool);
 
 		}
-
-
 	}
 	//複数範囲破壊
 	private void runMultiSkill(Player player, Block block,

@@ -23,6 +23,8 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
+import zedly.zenchantments.Zenchantments;
+
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -221,6 +223,14 @@ public class Util {
         Plugin pl = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
         if(pl instanceof WorldEditPlugin)
             return (WorldEditPlugin)pl;
+        else return null;
+    }
+
+	//ZenchantmentAPIを返す
+	public static Zenchantments getZenchantments() {
+        Plugin pl = Bukkit.getServer().getPluginManager().getPlugin("Zenchantments");
+        if(pl instanceof Zenchantments)
+            return (Zenchantments)pl;
         else return null;
     }
 	//ガチャアイテムを含んでいるか調べる

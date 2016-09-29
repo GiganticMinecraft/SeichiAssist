@@ -161,7 +161,7 @@ public class SeichiAssist extends JavaPlugin{
 			));
 	public static final List<Material> breakmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE,
-			Material.WOOD_PICKAXE,Material.WOOD_AXE,Material.WOOD_SPADE,
+			Material.WOOD_PICKAXE,						  Material.WOOD_SPADE,
 			Material.IRON_PICKAXE,Material.IRON_AXE,Material.IRON_SPADE,
 			Material.GOLD_PICKAXE,Material.GOLD_AXE,Material.GOLD_SPADE
 			));
