@@ -255,14 +255,13 @@ public class PlayerData {
 				p.sendMessage(ChatColor.AQUA+lvmessage);
 			}
 			i++;
-
-			//レベル上限に達したら終了
-			if(i >= SeichiAssist.levellist.size()){
-				break;
-			}
 			if(activeskilldata.mana.isloaded()){
 				//マナ最大値の更新
 				activeskilldata.mana.LevelUp(p, i);
+			}
+			//レベル上限に達したら終了
+			if(i >= SeichiAssist.levellist.size()){
+				break;
 			}
 		}
 		level = i;

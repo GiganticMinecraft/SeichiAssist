@@ -299,7 +299,7 @@ public class Util {
 		if(!SeichiAssist.materiallist.contains(material)){
 			return;
 		}
-		
+
 		ItemStack itemstack = dropItemOnTool(breakblock,tool);
 
 
@@ -518,6 +518,12 @@ public class Util {
 			case GLOWING_REDSTONE_ORE:
 				dropmaterial = Material.REDSTONE_ORE;
 				dropitem = new ItemStack(dropmaterial);
+				break;
+			case LOG:
+			case LOG_2:
+			case LEAVES:
+			case LEAVES_2:
+				dropitem = new ItemStack(breakmaterial,1,b_tree);
 				break;
 			default:
 				dropitem = new ItemStack(breakmaterial,1,b);
@@ -777,7 +783,7 @@ public class Util {
 	}
 	public static double getGravity(Player player, Block block, int breakyloc, int weight) {
 		int gravity = 2;
-		while(!block.getRelative(0,gravity,0).getType().equals(Material.AIR)){
+		while(!SeichiAssist.transparentmateriallist.contains(block.getRelative(0,gravity,0).getType())){
 			gravity++;
 		}
 		gravity --;

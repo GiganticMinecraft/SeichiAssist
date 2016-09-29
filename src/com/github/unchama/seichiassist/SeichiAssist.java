@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -44,7 +45,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	public static SeichiAssist plugin;
 	//デバッグフラグ
-	public static Boolean DEBUG = true;
+	public static Boolean DEBUG = false;
 	//ガチャシステムのメンテナンスフラグ
 	public static Boolean gachamente = false;
 
@@ -170,7 +171,9 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
 			));
 
-	public static final Set<Material> transparentmateriallist = null;
+	public static final Set<Material> transparentmateriallist = new HashSet<Material>(Arrays.asList(
+			Material.BEDROCK,Material.AIR
+			));
 			//new HashSet<Material>(Arrays.asList());
 	@Override
 	public void onEnable(){
