@@ -33,12 +33,10 @@ public class GachaItemListener implements Listener {
 		List<String> lore = itemmeta.getLore();
 
 
-
-		if(m.equals(Material.POTION)){
-			if(itemmeta.getLore().contains("マナ完全回復")){
-			mana.fullMana(player,level);
-			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
-			}
+		if(itemmeta.getLore().contains("マナ完全回復")){
+		mana.fullMana(player,level);
+		player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
 		}
+
 	}
 }
