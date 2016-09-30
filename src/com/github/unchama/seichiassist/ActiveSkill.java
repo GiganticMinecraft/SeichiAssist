@@ -184,27 +184,27 @@ public enum ActiveSkill{
 		case "CONDENSE":
 			switch(skilllevel){
 			case 4:
-				breaklength.setXYZ(13, 13, 13);
+				breaklength.setXYZ(7, 7, 7);
 				break;
 			case 5:
-				breaklength.setXYZ(13, 13, 13);
+				breaklength.setXYZ(9, 9, 9);
 				break;
 			case 6:
-				breaklength.setXYZ(13, 13, 13);
+				breaklength.setXYZ(11, 11, 11);
 				break;
 			case 7:
-				breaklength.setXYZ(13, 13, 13);
+				breaklength.setXYZ(7, 7, 7);
 				break;
 			case 8:
-				breaklength.setXYZ(13, 13, 13);
+				breaklength.setXYZ(9, 9, 9);
 				break;
 			case 9:
-				breaklength.setXYZ(13, 13, 13);
+				breaklength.setXYZ(11, 11, 11);
 				break;
 			}
 			break;
 		case "ARMOR":
-			breaklength.setXYZ(13, 13, 13);
+			breaklength.setXYZ(11, 11, 11);
 		}
 		return breaklength;
 	}
@@ -341,28 +341,28 @@ public enum ActiveSkill{
 		}else if(typenum == ActiveSkill.CONDENSE.gettypenum()){
 			switch(skilllevel){
 			case 4:
-				exp = 500;
+				exp = 40;
 				break;
 			case 5:
-				exp = 450;
+				exp = 70;
 				break;
 			case 6:
-				exp = 350;
+				exp = 140;
 				break;
 			case 7:
-				exp = 1200;
+				exp = 80;
 				break;
 			case 8:
-				exp = 1000;
+				exp = 150;
 				break;
 			case 9:
-				exp = 600;
+				exp = 300;
 				break;
 			default:
 				break;
 			}
 		}else if(typenum == ActiveSkill.ARMOR.gettypenum()){
-			exp = 800;
+			exp = 600;
 		}
 		return exp;
 	}

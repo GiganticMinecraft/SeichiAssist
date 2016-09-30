@@ -87,6 +87,7 @@ public class MagicTaskRunnable extends BukkitRunnable{
 					effectloc.add(x, y, z);
 					if(isBreakBlock(effectloc)){
 						Chicken e = (Chicken) player.getWorld().spawnEntity(effectloc, EntityType.CHICKEN);
+						SeichiAssist.entitylist.add((Entity) e);
 						e.playEffect(EntityEffect.WITCH_MAGIC);
 						e.setInvulnerable(true);
 						new EntityRemoveTaskRunnable((Entity)e).runTaskLater(plugin,100);
@@ -98,7 +99,7 @@ public class MagicTaskRunnable extends BukkitRunnable{
 		for(Block b : breaklist){
 			b.setType(Material.AIR);
 			b.getWorld().playEffect(b.getLocation().add(0.5,0.5,0.5), Effect.NOTE, 1);
-			playerdata.activeskilldata.blocklist.remove(b);
+			SeichiAssist.allblocklist.remove(b);
 		}
 
 	}

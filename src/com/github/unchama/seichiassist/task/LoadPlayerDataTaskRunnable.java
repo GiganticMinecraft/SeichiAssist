@@ -73,7 +73,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				return;
  			}
 
- 	 		if(i >= 10&&flag){
+ 	 		if(i >= 4&&flag){
  	 			//強制取得実行
  	 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "のplayerdata強制取得実行");
  	 			cancel();

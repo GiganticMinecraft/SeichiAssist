@@ -19,6 +19,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -280,6 +281,39 @@ public class Util {
 			if(lore.get(i).contains(string))return true;
 		}
 		return false;
+	}
+	public static boolean isGachaTicket(ItemStack itemstack) {
+		if(!itemstack.getType().equals(Material.SKULL_ITEM)){
+			return false;
+		}
+		SkullMeta skullmeta = (SkullMeta) itemstack.getItemMeta();
+
+		//ownerがいない場合処理終了
+		if(!skullmeta.hasOwner()){
+			return false;
+		}
+		//ownerがうんちゃまじゃない時の処理
+		if(!skullmeta.getOwner().equals("unchama")){
+			return false;
+		}
+
+		return true;
+	}
+	public static boolean removeItemfromPlayerInventory(PlayerInventory inventory,
+			ItemStack itemstack, int count) {
+		//持っているアイテムを減らす処理
+		if (itemstack.getAmount() == count) {
+			// アイテムをcount個使うので、プレイヤーの手を素手にする
+			inventory.setItemInMainHand(new ItemStack(Material.AIR));
+		}
+		else if(itemstack.getAmount() > count){
+			// プレイヤーが持っているアイテムをcount個減らす
+			itemstack.setAmount(itemstack.getAmount()-count);
+		}
+		else if(itemstack.getAmount() < count){
+			return false;
+		}
+		return true;
 	}
 
 

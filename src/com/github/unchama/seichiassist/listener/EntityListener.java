@@ -141,18 +141,17 @@ public class EntityListener implements Listener {
 		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
 			return;
 		}
-		for(Block b : playerdata.activeskilldata.blocklist){
-			//スキルで破壊されるブロックの時処理を終了
-			if(b.equals(block)){
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("スキルで使用中のブロックです。");
-				}
-				return;
+		//スキルで破壊されるブロックの時処理を終了
+		if(SeichiAssist.allblocklist.contains(block)){
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("スキルで使用中のブロックです。");
 			}
+			return;
 		}
 
 		runArrowSkillofHitBlock(player,proj, block, tool);
 
+		SeichiAssist.entitylist.remove(proj);
 		proj.remove();
 	}
 
@@ -215,7 +214,7 @@ public class EntityListener implements Listener {
 								lavalist.add(breakblock);
 							}else{
 								breaklist.add(breakblock);
-								playerdata.activeskilldata.blocklist.add(breakblock);
+								SeichiAssist.allblocklist.add(breakblock);
 							}
 						}
 
@@ -250,7 +249,7 @@ public class EntityListener implements Listener {
 		//重力値の判定
 		if(gravity > 15){
 			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			SeichiAssist.allblocklist.removeAll(breaklist);
 			return;
 		}
 
@@ -260,7 +259,7 @@ public class EntityListener implements Listener {
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
-			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			SeichiAssist.allblocklist.removeAll(breaklist);
 			return;
 		}
 		if(SeichiAssist.DEBUG){
@@ -272,7 +271,7 @@ public class EntityListener implements Listener {
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
-			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			SeichiAssist.allblocklist.removeAll(breaklist);
 			return;
 		}
 
@@ -300,7 +299,7 @@ public class EntityListener implements Listener {
 		if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
 				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,true);
-				playerdata.activeskilldata.blocklist.remove(b);
+				SeichiAssist.allblocklist.remove(b);
 			}
 		}
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）

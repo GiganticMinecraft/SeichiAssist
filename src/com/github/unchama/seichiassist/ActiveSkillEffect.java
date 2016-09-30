@@ -84,7 +84,12 @@ public enum ActiveSkillEffect {
 			if(playerdata.activeskilldata.skillnum < 3){
 				new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			}else{
-				new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
+				if(SeichiAssist.DEBUG){
+					new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 100);
+				}else{
+					new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
+				}
+
 			}
 
 			break;

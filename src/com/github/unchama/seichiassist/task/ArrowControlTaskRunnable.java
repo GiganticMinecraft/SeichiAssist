@@ -5,6 +5,8 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import com.github.unchama.seichiassist.SeichiAssist;
+
 public class ArrowControlTaskRunnable extends BukkitRunnable{
 
 	Projectile proj;
@@ -24,6 +26,7 @@ public class ArrowControlTaskRunnable extends BukkitRunnable{
 		tick++;
 		if(tick > 15){
 			proj.remove();
+			SeichiAssist.entitylist.remove(proj);
 			this.cancel();
 		}
 		projloc = proj.getLocation();

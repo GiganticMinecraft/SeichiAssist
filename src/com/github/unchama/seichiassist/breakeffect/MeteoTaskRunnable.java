@@ -128,12 +128,12 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 		if(playerdata.activeskilldata.skillnum > 2){
 			for(Block b : breaklist){
 				BreakUtil.BreakBlock(player, b, droploc, tool, false);
-				playerdata.activeskilldata.blocklist.remove(b);
+				SeichiAssist.allblocklist.remove(b);
 			}
 		}else{
 			for(Block b : breaklist){
 				BreakUtil.BreakBlock(player, b, droploc, tool, true);
-				playerdata.activeskilldata.blocklist.remove(b);
+				SeichiAssist.allblocklist.remove(b);
 			}
 		}
 

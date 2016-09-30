@@ -79,7 +79,12 @@ public enum ActiveSkillPremiumEffect {
 	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this.toString()){
 		case "MAGIC":
-			new MagicTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
+			if(SeichiAssist.DEBUG){
+				new MagicTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 100);
+			}else{
+				new MagicTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
+			}
+
 			break;
 		case "BLADE":
 			new BladeTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
