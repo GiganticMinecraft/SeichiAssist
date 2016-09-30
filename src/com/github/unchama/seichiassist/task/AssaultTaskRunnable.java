@@ -21,7 +21,7 @@ import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class AssaultTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -168,7 +168,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		Block breakblock;
 		//壊されるエリアの設定
 		//現在のプレイヤーの向いている方向
-		String dir = Util.getCardinalDirection(player);
+		String dir = BreakUtil.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(assaultarea.getDir())){
 			assaultarea.setDir(dir);
@@ -189,7 +189,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 							|| lava_materialflag || water_materialflag
 							){
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block) || !breakflag){
-							if(Util.canBreak(player, breakblock)){
+							if(BreakUtil.canBreak(player, breakblock)){
 								if(lava_materialflag){
 									lavalist.add(breakblock);
 								}else if(water_materialflag){
@@ -205,7 +205,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			}
 		}
 		//重力値計算
-		double gravity = Util.getGravity(player,block,end.y,1);
+		double gravity = BreakUtil.getGravity(player,block,end.y,1);
 
 		// 実際に破壊するブロック数の計算分岐
 		int breaksum = 0;
@@ -227,7 +227,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 
 		//減る耐久値の計算
-		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaksum));
+		short durability = (short) (tool.getDurability() + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaksum));
 
 
 		//重力値の判定
@@ -277,12 +277,12 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		if(waterflag){
 			for(int waternum = 0 ; waternum <waterlist.size();waternum++){
 				waterlist.get(waternum).setType(Material.PACKED_ICE);
-				Util.logPlace(player,waterlist.get(waternum));
+				BreakUtil.logPlace(player,waterlist.get(waternum));
 			}
 		}else if(lavaflag){
 			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
 				lavalist.get(lavanum).setType(Material.MAGMA);
-				Util.logPlace(player,lavalist.get(lavanum));
+				BreakUtil.logPlace(player,lavalist.get(lavanum));
 			}
 		}else if(breakflag){
 			for(int waternum = 0 ; waternum <waterlist.size();waternum++){
@@ -292,7 +292,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 				lavalist.get(lavanum).setType(Material.AIR);
 			}
 			for(Block b:breaklist){
-				Util.BreakBlock(player, b, player.getLocation(), tool,false);
+				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,false);
 				playerdata.activeskilldata.blocklist.remove(b);
 			}
 		}

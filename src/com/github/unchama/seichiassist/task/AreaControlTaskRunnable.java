@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class AreaControlTaskRunnable extends BukkitRunnable{
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -58,7 +58,7 @@ public class AreaControlTaskRunnable extends BukkitRunnable{
 		playerlocy = player.getLocation().getBlockY() - 1 ;
 
 		//もし前回とプレイヤーの向いている方向が違ったらBreakAreaを取り直す
-		dir = Util.getCardinalDirection(player);
+		dir = BreakUtil.getCardinalDirection(player);
 		if(!area.getDir().equals(dir)){
 			area.setDir(dir);
 			area.makeArea();

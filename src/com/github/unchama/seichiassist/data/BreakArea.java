@@ -7,7 +7,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class BreakArea {
 	//スキルタイプ番号
@@ -35,7 +35,7 @@ public class BreakArea {
 		this.level = skilllevel;
 		this.mineflagnum = mineflagnum;
 		this.assaultflag = assaultflag;
-		this.dir = Util.getCardinalDirection(player);
+		this.dir = BreakUtil.getCardinalDirection(player);
 		this.startlist = new ArrayList<Coordinate>();
 		this.endlist = new ArrayList<Coordinate>();
 		//初期化

@@ -161,7 +161,7 @@ public class SeichiAssist extends JavaPlugin{
 			));
 	public static final List<Material> breakmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE,
-			Material.WOOD_PICKAXE,Material.WOOD_AXE,Material.WOOD_SPADE,
+			Material.WOOD_PICKAXE,						  Material.WOOD_SPADE,
 			Material.IRON_PICKAXE,Material.IRON_AXE,Material.IRON_SPADE,
 			Material.GOLD_PICKAXE,Material.GOLD_AXE,Material.GOLD_SPADE
 			));
@@ -174,7 +174,12 @@ public class SeichiAssist extends JavaPlugin{
 	public static final Set<Material> transparentmateriallist = new HashSet<Material>(Arrays.asList(
 			Material.BEDROCK,Material.AIR
 			));
-			//new HashSet<Material>(Arrays.asList());
+	public static final List<Material> gravitymateriallist = new ArrayList<Material>(Arrays.asList(
+			Material.LOG, Material.LOG_2,Material.LEAVES,Material.LEAVES_2
+			));
+	public static final List<String> ignoreWorldlist = new ArrayList<String>(Arrays.asList(
+			"world_S","world_nether_S","world_SW"
+			));
 	@Override
 	public void onEnable(){
 		plugin = this;

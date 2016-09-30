@@ -19,6 +19,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import zedly.zenchantments.Zenchantments;
+
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
@@ -29,6 +31,7 @@ import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.MultiBreakTaskRunnable;
+import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerBlockBreakListener implements Listener {
@@ -68,12 +71,12 @@ public class PlayerBlockBreakListener implements Listener {
 		if(SeichiAssist.DEBUG){
 			worldname = "world";
 		}
-		if(player.getWorld().getName().equalsIgnoreCase(worldname) && !block.getType().equals(Material.LOG) && !block.getType().equals(Material.LOG_2)){
+		if(player.getWorld().getName().equalsIgnoreCase(worldname) && !SeichiAssist.gravitymateriallist.contains(block.getType())){
 			int type = playerdata.activeskilldata.skilltype-1;
 			if(type < 0){
 				type = 0;
 			}
-			if(Util.getGravity(player, block, activeskill[type].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
+			if(BreakUtil.getGravity(player, block, activeskill[type].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
 				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 				event.setCancelled(true);
 				return;
@@ -132,7 +135,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 
-		playerdata.activeskilldata.mana.increaseMana(Util.calcManaDrop(playerdata),player,playerdata.level);
+		playerdata.activeskilldata.mana.increaseMana(BreakUtil.calcManaDrop(playerdata),player,playerdata.level);
 
 
 		//これ以前の終了処理はパッシブの追加経験値はもらえません
@@ -155,6 +158,15 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
+		//Lumberをエンチャントしていたら終了
+		Zenchantments Ze = Util.getZenchantments();
+		if(Ze == null){
+			player.sendMessage("取得エラー");
+		}
+		if(Ze.isCompatible("木こり", tool)){
+			return;
+		}
+
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, block, tool);
@@ -163,8 +175,6 @@ public class PlayerBlockBreakListener implements Listener {
 			runBreakSkill(player, block, tool);
 
 		}
-
-
 	}
 	//複数範囲破壊
 	private void runMultiSkill(Player player, Block block,
@@ -194,7 +204,7 @@ public class PlayerBlockBreakListener implements Listener {
 		long breakblocknum = 0;
 		final BreakArea area = playerdata.activeskilldata.area;
 		//現在のプレイヤーの向いている方向
-		String dir = Util.getCardinalDirection(player);
+		String dir = BreakUtil.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(area.getDir())){
 			area.setDir(dir);
@@ -247,7 +257,7 @@ public class PlayerBlockBreakListener implements Listener {
 								|| breakblock.getType().equals(Material.STATIONARY_LAVA)
 								){
 							if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
-								if(Util.canBreak(player, breakblock)){
+								if(BreakUtil.canBreak(player, breakblock)){
 									if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
 										lavalist.add(breakblock);
 									}else{
@@ -262,7 +272,7 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 
 			//重力値計算
-			double gravity = Util.getGravity(player,block,end.y,1);
+			double gravity = BreakUtil.getGravity(player,block,end.y,1);
 
 
 			//減る経験値計算
@@ -274,9 +284,9 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 			//減る耐久値の計算
-			alldurability += (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
+			alldurability += (short) (tool.getDurability() + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 			//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-			alldurability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
+			alldurability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
 
 			//重力値の判定
 			if(gravity > 15){
@@ -317,7 +327,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breakblocknum==0){
-			Util.BreakBlock(player, block, centerofblock, tool,false);
+			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
 			playerdata.activeskilldata.blocklist.remove(block);
 			return;
 		}//スキルの処理
@@ -361,7 +371,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//壊される範囲を設定
 		BreakArea area = playerdata.activeskilldata.area;
 		//現在のプレイヤーの向いている方向
-		String dir = Util.getCardinalDirection(player);
+		String dir = BreakUtil.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(area.getDir())){
 			area.setDir(dir);
@@ -390,7 +400,7 @@ public class PlayerBlockBreakListener implements Listener {
 							|| breakblock.getType().equals(Material.STATIONARY_LAVA)
 							){
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
-							if(Util.canBreak(player, breakblock)){
+							if(BreakUtil.canBreak(player, breakblock)){
 								if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
 									lavalist.add(breakblock);
 								}else{
@@ -408,7 +418,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//重力値計算
-		double gravity = Util.getGravity(player,block,end.y,1);
+		double gravity = BreakUtil.getGravity(player,block,end.y,1);
 
 
 		//減るマナ計算
@@ -425,9 +435,9 @@ public class PlayerBlockBreakListener implements Listener {
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナ：" + useMana);
 		}
 		//減る耐久値の計算
-		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
+		short durability = (short) (tool.getDurability() + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-		durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavalist.size());
+		durability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavalist.size());
 
 
 		//重力値の判定
@@ -472,12 +482,12 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breaklist.size()==0){
-			Util.BreakBlock(player, block, centerofblock, tool,false);
+			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
 			return;
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
-				Util.BreakBlock(player, b, centerofblock, tool,true);
+				BreakUtil.BreakBlock(player, b, centerofblock, tool,true);
 				playerdata.activeskilldata.blocklist.remove(b);
 			}
 		}
