@@ -177,6 +177,9 @@ public class SeichiAssist extends JavaPlugin{
 	public static final List<Material> gravitymateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.LOG, Material.LOG_2,Material.LEAVES,Material.LEAVES_2
 			));
+	public static final List<String> ignoreWorldlist = new ArrayList<String>(Arrays.asList(
+			"world_S","world_nether_S","world_SW"
+			));
 	@Override
 	public void onEnable(){
 		plugin = this;

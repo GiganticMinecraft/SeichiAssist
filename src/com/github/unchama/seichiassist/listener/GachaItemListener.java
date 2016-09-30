@@ -38,6 +38,6 @@ public class GachaItemListener implements Listener {
 			mana.fullMana(player,level);
 			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
 		}
-
 	}
+
 }

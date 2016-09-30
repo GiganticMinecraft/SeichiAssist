@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -54,16 +55,29 @@ public class BreakUtil {
 				return false;
 			}
 		}
-		//コアプロテクトのクラスを取得
-		CoreProtectAPI CoreProtect = Util.getCoreProtect();
-		//破壊ログを設定
-		Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
-		//もし失敗したらプレイヤーに報告し処理を終了
-		if(!success){
-			player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
-			return false;
+
+		if(!equalignoreWorld(player.getWorld().getName())){
+			//コアプロテクトのクラスを取得
+			CoreProtectAPI CoreProtect = Util.getCoreProtect();
+			//破壊ログを設定
+			Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
+			//もし失敗したらプレイヤーに報告し処理を終了
+			if(!success){
+				player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
+				return false;
+			}
 		}
+
 		return true;
+	}
+	private static boolean equalignoreWorld(String name) {
+		List<String> ignoreworldlist = SeichiAssist.ignoreWorldlist;
+		for(String s : ignoreworldlist){
+			if(name.equalsIgnoreCase(s.toLowerCase())){
+				return true;
+			}
+		}
+		return false;
 	}
 	//ブロックを破壊する処理、ドロップも含む、統計増加も含む
 	public static void BreakBlock(Player player,Block breakblock,Location centerofblock,ItemStack tool,Boolean stepflag) {
