@@ -29,12 +29,12 @@ import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.listener.EntityListener;
 import com.github.unchama.seichiassist.listener.GachaItemListener;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.listener.PlayerClickListener;
 import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
 import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
 import com.github.unchama.seichiassist.listener.PlayerJoinListener;
 import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
 import com.github.unchama.seichiassist.listener.PlayerQuitListener;
-import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
@@ -210,7 +210,7 @@ public class SeichiAssist extends JavaPlugin{
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
-		getServer().getPluginManager().registerEvents(new PlayerRightClickListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerClickListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);

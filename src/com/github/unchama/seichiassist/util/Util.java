@@ -20,6 +20,7 @@ import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
@@ -49,6 +50,20 @@ public class Util {
 		skull.setItemMeta(skullmeta);
 		return skull;
 	}
+	//がちゃりんごの取得
+	public static ItemStack getGachaimo() {
+		ItemStack gachaimo;
+		ItemMeta meta;
+		gachaimo = new ItemStack(Material.GOLDEN_APPLE,1);
+		meta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
+		meta.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "がちゃりんご");
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "序盤に重宝します。"
+				, ChatColor.RESET + "" +  ChatColor.AQUA + "マナ回復（小）");
+		meta.setLore(lore);
+		gachaimo.setItemMeta(meta);
+		return gachaimo;
+	}
+
 	//String -> double
 	public static double toDouble(String s){
 		return Double.parseDouble(s);
@@ -266,6 +281,7 @@ public class Util {
 		}
 		return false;
 	}
+
 
 
 

@@ -34,7 +34,7 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
 
-public class PlayerRightClickListener implements Listener {
+public class PlayerClickListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
@@ -515,4 +515,42 @@ public class PlayerRightClickListener implements Listener {
 			}
 		}
 	}
+
+/*
+	//芋を食べる
+	@EventHandler
+	public void onPlayerUseGachaimoEvent(PlayerInteractEvent event){
+		//プレイヤーを取得
+		Player player = event.getPlayer();
+		//プレイヤーが起こしたアクションを取得
+		Action action = event.getAction();
+		//アクションを起こした手を取得
+		EquipmentSlot equipmentslot = event.getHand();
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//playerdataを取得
+		PlayerData playerdata = playermap.get(uuid);
+		//マナを取得
+		Mana mana = playerdata.activeskilldata.mana;
+		//レベルを取得
+		int level = playerdata.level;
+
+		//オフハンドのアクション実行時処理を終了
+		if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+			return;
+		}
+		ItemStack gachaimo = player.getInventory().getItemInMainHand();
+		ItemMeta meta = gachaimo.getItemMeta();
+		if(gachaimo.equals(Material.BAKED_POTATO)&& Util.LoreContains(meta.getLore(), "マナ回復（小）")){
+			player.sendMessage("呼び出されました");
+			//メインハンドに芋マナ回復（小）を持っているときの処理
+			if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
+				player.sendMessage("呼び出されました");
+				//左クリックの処理
+				final PlayerItemConsumeEvent re = new PlayerItemConsumeEvent(player,gachaimo);
+				Bukkit.getPluginManager().callEvent(re);
+			}
+		}
+	}
+*/
 }

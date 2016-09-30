@@ -30,12 +30,39 @@ public class GachaItemListener implements Listener {
 		ItemStack i = e.getItem();
 		Material m = i.getType();
 		ItemMeta itemmeta = i.getItemMeta();
+		
+		
+		
+		
+		
+		
+		
+		//これ以降は説明文あり
 		if(!itemmeta.hasLore())return;
 		List<String> lore = itemmeta.getLore();
 
 		if(Util.LoreContains(lore,"マナ完全回復")){
-		//if(itemmeta.getLore().contains("マナ完全回復")){
 			mana.fullMana(player,level);
+			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
+		}
+		
+		if(Util.LoreContains(lore,"マナ回復（小）")){
+			mana.increaseMana(300, player, level);
+			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
+		}
+		
+		if(Util.LoreContains(lore,"マナ回復（中）")){
+			mana.increaseMana(1500, player, level);
+			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
+		}
+		
+		if(Util.LoreContains(lore,"マナ回復（大）")){
+			mana.increaseMana(10000, player, level);
+			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
+		}
+		
+		if(Util.LoreContains(lore,"マナ回復（極）")){
+			mana.increaseMana(100000, player, level);
 			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
 		}
 	}

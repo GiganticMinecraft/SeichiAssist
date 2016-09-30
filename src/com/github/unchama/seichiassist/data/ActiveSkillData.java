@@ -190,7 +190,7 @@ public class ActiveSkillData {
 		if(mineflagnum != 0){
 			this.assaultarea = new BreakArea(player,type,skilllevel,mineflagnum,true);
 			this.assaultflag = true;
-			this.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,10,1);
+			this.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,10,10);
 		}//オフの時の処理
 		else{
 			this.assaultflag = false;
