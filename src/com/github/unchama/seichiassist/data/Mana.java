@@ -109,7 +109,7 @@ public class Mana {
 		int inc_inc = 2;
 		//１１以降の処理
 		for(int i = 10 ; i < level;i++){
-			if(i%10 == 0 && i<110 && i != 10){
+			if(i%10 == 0 && i<=110 && i != 10){
 				increase += inc_inc;
 				inc_inc *= 2;
 			}

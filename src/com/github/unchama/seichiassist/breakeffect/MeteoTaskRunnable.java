@@ -22,7 +22,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.ArrowControlTaskRunnable;
-import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class MeteoTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -127,13 +127,13 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 		player.getWorld().playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, (float)1, (float)((Math.random()*0.4)+0.8));
 		if(playerdata.activeskilldata.skillnum > 2){
 			for(Block b : breaklist){
-				Util.BreakBlock(player, b, droploc, tool, false);
-				playerdata.activeskilldata.blocklist.remove(b);
+				BreakUtil.BreakBlock(player, b, droploc, tool, false);
+				SeichiAssist.allblocklist.remove(b);
 			}
 		}else{
 			for(Block b : breaklist){
-				Util.BreakBlock(player, b, droploc, tool, true);
-				playerdata.activeskilldata.blocklist.remove(b);
+				BreakUtil.BreakBlock(player, b, droploc, tool, true);
+				SeichiAssist.allblocklist.remove(b);
 			}
 		}
 

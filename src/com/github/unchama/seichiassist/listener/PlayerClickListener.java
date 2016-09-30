@@ -19,7 +19,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
@@ -34,7 +33,7 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
 
-public class PlayerRightClickListener implements Listener {
+public class PlayerClickListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
@@ -197,97 +196,88 @@ public class PlayerRightClickListener implements Listener {
 		Player player = event.getPlayer();
 		//プレイヤーが起こしたアクションを取得
 		Action action = event.getAction();
+		//使った手を取得
+		EquipmentSlot equipmentslot = event.getHand();
+		//もしサバイバルでなければ処理を終了
+		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+			return;
+		}
+		//使ったアイテムを取得
+		ItemStack itemstack = event.getItem();
+		//ガチャ用の頭でなければ終了
+		if(!Util.isGachaTicket(itemstack)){
+			return;
+		}
+		event.setCancelled(true);
+
+		//以下サバイバル時のガチャ券の処理↓
+		//オフハンドから実行された時処理を終了
+		if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+			return;
+		}
+		//ガチャシステムメンテナンス中は処理を終了
+		if(SeichiAssist.gachamente){
+			player.sendMessage("現在ガチャシステムはメンテナンス中です。\nしばらく経ってからもう一度お試しください");
+			return;
+		}
+		//ガチャデータが設定されていない場合
+		if(gachadatalist.isEmpty()){
+			player.sendMessage("ガチャが設定されていません");
+			return;
+		}
+		PlayerData playerdata = playermap.get(player.getUniqueId());
+
+		new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,5);
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-			if(event.getMaterial().equals(Material.SKULL_ITEM)){
-				//プレイヤーが起こした対象のitemstackを取得
-				ItemStack itemstack = event.getItem();
-				//対象スカルのskullmetaを取得
-				SkullMeta skullmeta = (SkullMeta) itemstack.getItemMeta();
+			int count = 1;
+			if(player.isSneaking()) count = 64;
 
-				//ownerがいない場合処理終了
-				if(!skullmeta.hasOwner()){
-					return;
+			for(int c = 0 ; c < count ; c++){
+				if(!Util.removeItemfromPlayerInventory(player.getInventory(),itemstack,1)){
+					player.sendMessage(ChatColor.RED + "アイテムの個数が足りません");
+					break;
 				}
-				//ownerがうんちゃまの時の処理
-				if(skullmeta.getOwner().equals("unchama")){
 
-					//もしサバイバルでなければ処理を終了
-					if(!player.getGameMode().equals(GameMode.SURVIVAL)){
-						return;
-					}
+				//プレゼント用ガチャデータ作成
+				GachaData present;
+				//ガチャ実行
+				present = GachaData.runGacha();
+				//ガチャデータのitemstackの数を再設定（バグのため）
+				present.itemstack.setAmount(present.amount);
+				//メッセージ設定
+				String str = "";
 
-					//これ以前のフラグに引っかかると設置できる
-					//設置キャンセル
-					event.setCancelled(true);
-					//これより下のフラグに引っかかると設置できない
+				//プレゼントを格納orドロップ
+				if(!Util.isPlayerInventryFill(player)){
+					Util.addItem(player,present.itemstack);
+				}else{
+					Util.dropItem(player,present.itemstack);
+					str += ChatColor.AQUA + "プレゼントがドロップしました。";
+				}
 
-					//ガチャシステムメンテナンス中は処理を終了
-					if(SeichiAssist.gachamente){
-						player.sendMessage("現在ガチャシステムはメンテナンス中です。\nしばらく経ってからもう一度お試しください");
-						return;
-					}
-					//ガチャデータが設定されていない場合
-					if(gachadatalist.isEmpty()){
-						player.sendMessage("ガチャが設定されていません");
-						return;
-					}
+				//確率に応じてメッセージを送信
+				if(present.probability < 0.001){
+					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 2);
+					player.sendMessage(ChatColor.RED + "おめでとう！！！！！Gigantic☆大当たり！" + str);
+					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！\n" + ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
+				}else if(present.probability < 0.01){
+					//大当たり時にSEを鳴らす(自分だけ)
+					player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
+					//ver 0.3.1以降 大当たり時の全体通知を削除
+					// Util.sendEverySound(Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
+					player.sendMessage(ChatColor.GOLD + "おめでとう！！大当たり！" + str);
 
-					//使った手を取得
-					EquipmentSlot equipmentslot = event.getHand();
-
-					//オフハンドから実行された時処理を終了
-					if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
-						return;
-					}
-					//持っているガチャ券を減らす処理
-					if (itemstack.getAmount() == 1) {
-						// がちゃ券を1枚使うので、プレイヤーの手を素手にする
-						player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-					} else {
-						// プレイヤーが持っているガチャ券を1枚減らす
-						itemstack.setAmount(itemstack.getAmount()-1);
-					}
-					//プレゼント用ガチャデータ作成
-					GachaData present;
-					//ガチャ実行
-					present = GachaData.runGacha();
-					//ガチャデータのitemstackの数を再設定（バグのため）
-					present.itemstack.setAmount(present.amount);
-					//メッセージ設定
-					String str = ChatColor.AQUA + "プレゼントがドロップしました。";
-
-					//プレゼントを格納orドロップ
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,present.itemstack);
-					}else{
-						Util.dropItem(player,present.itemstack);
-					}
-					/*
-					//プレゼントをドロップ
-					Util.dropItem(player, present.itemstack);
-					*/
-
-					//確率に応じてメッセージを送信
-					if(present.probability < 0.001){
-						Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 2);
-						player.sendMessage(ChatColor.RED + "おめでとう！！！！！Gigantic☆大当たり！" + str);
-						Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！\n" + ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
-					}else if(present.probability < 0.01){
-						//大当たり時にSEを鳴らす(自分だけ)
-						player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
-						//ver 0.3.1以降 大当たり時の全体通知を削除
-						// Util.sendEverySound(Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
-						player.sendMessage(ChatColor.GOLD + "おめでとう！！大当たり！" + str);
-						// Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
-					}else if(present.probability < 0.1){
-						player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！" + str);
-					}else{
+					//Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
+				}else if(present.probability < 0.1){
+					player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！" + str);
+				}else{
+					if(count == 1){
 						player.sendMessage(ChatColor.WHITE + "はずれ！また遊んでね！" + str);
 					}
-					player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
 				}
 			}
+			player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
 		}
 	}
 	//スキル切り替えのイベント
@@ -299,25 +289,36 @@ public class PlayerRightClickListener implements Listener {
 		Action action = event.getAction();
 		//アクションを起こした手を取得
 		EquipmentSlot equipmentslot = event.getHand();
-		if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)){
+		if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)
+			|| player.getInventory().getItemInMainHand().getType().equals(Material.SKULL_ITEM)
+			){
 			return;
 		}
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//playerdataを取得
+		PlayerData playerdata = playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
+			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return;
+		}
+		//アクティブスキルを発動できるレベルに達していない場合処理終了
+		if( playerdata.level < SeichiAssist.config.getDualBreaklevel()){
+			return;
+		}
+
+		//クールダウンタイム中は処理を終了
+		if(!playerdata.activeskilldata.skillcanbreakflag){
+			//SEを再生
+			//player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
+			return;
+		}
+
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
-			//UUIDを取得
-			UUID uuid = player.getUniqueId();
-			//playerdataを取得
-			PlayerData playerdata = playermap.get(uuid);
-			//念のためエラー分岐
-			if(playerdata == null){
-				player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
-				plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-				return;
-			}
-			//アクティブスキルを発動できるレベルに達していない場合処理終了
-			if( playerdata.level < SeichiAssist.config.getDualBreaklevel()){
-				return;
-			}
+
 			boolean mainhandflag = SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInMainHand().getType());
 			boolean offhandflag = SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInOffHand().getType());
 
@@ -515,4 +516,42 @@ public class PlayerRightClickListener implements Listener {
 			}
 		}
 	}
+
+/*
+	//芋を食べる
+	@EventHandler
+	public void onPlayerUseGachaimoEvent(PlayerInteractEvent event){
+		//プレイヤーを取得
+		Player player = event.getPlayer();
+		//プレイヤーが起こしたアクションを取得
+		Action action = event.getAction();
+		//アクションを起こした手を取得
+		EquipmentSlot equipmentslot = event.getHand();
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//playerdataを取得
+		PlayerData playerdata = playermap.get(uuid);
+		//マナを取得
+		Mana mana = playerdata.activeskilldata.mana;
+		//レベルを取得
+		int level = playerdata.level;
+
+		//オフハンドのアクション実行時処理を終了
+		if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+			return;
+		}
+		ItemStack gachaimo = player.getInventory().getItemInMainHand();
+		ItemMeta meta = gachaimo.getItemMeta();
+		if(gachaimo.equals(Material.BAKED_POTATO)&& Util.LoreContains(meta.getLore(), "マナ回復（小）")){
+			player.sendMessage("呼び出されました");
+			//メインハンドに芋マナ回復（小）を持っているときの処理
+			if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
+				player.sendMessage("呼び出されました");
+				//左クリックの処理
+				final PlayerItemConsumeEvent re = new PlayerItemConsumeEvent(player,gachaimo);
+				Bukkit.getPluginManager().callEvent(re);
+			}
+		}
+	}
+*/
 }

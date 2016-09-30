@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -10,9 +11,11 @@ import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -28,12 +31,12 @@ import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.listener.EntityListener;
 import com.github.unchama.seichiassist.listener.GachaItemListener;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.listener.PlayerClickListener;
 import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
 import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
 import com.github.unchama.seichiassist.listener.PlayerJoinListener;
 import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
 import com.github.unchama.seichiassist.listener.PlayerQuitListener;
-import com.github.unchama.seichiassist.listener.PlayerRightClickListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
@@ -44,7 +47,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	public static SeichiAssist plugin;
 	//デバッグフラグ
-	public static Boolean DEBUG = true;
+	public static Boolean DEBUG = false;
 	//ガチャシステムのメンテナンスフラグ
 	public static Boolean gachamente = false;
 
@@ -71,6 +74,13 @@ public class SeichiAssist extends JavaPlugin{
 
 	//総採掘量表示用int
 	public static int allplayerbreakblockint;
+
+	//プラグインで出すエンティティの保存
+	public static final List<Entity> entitylist = new ArrayList<Entity>();
+
+	//プレイヤーがスキルで破壊するブロックリスト
+	public static final List<Block> allblocklist = new ArrayList<Block>();
+
 
 	//lvの閾値
 	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
@@ -160,7 +170,7 @@ public class SeichiAssist extends JavaPlugin{
 			));
 	public static final List<Material> breakmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE,
-			Material.WOOD_PICKAXE,Material.WOOD_AXE,Material.WOOD_SPADE,
+			Material.WOOD_PICKAXE,						  Material.WOOD_SPADE,
 			Material.IRON_PICKAXE,Material.IRON_AXE,Material.IRON_SPADE,
 			Material.GOLD_PICKAXE,Material.GOLD_AXE,Material.GOLD_SPADE
 			));
@@ -170,8 +180,15 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
 			));
 
-	public static final Set<Material> transparentmateriallist = null;
-			//new HashSet<Material>(Arrays.asList());
+	public static final Set<Material> transparentmateriallist = new HashSet<Material>(Arrays.asList(
+			Material.BEDROCK,Material.AIR
+			));
+	public static final List<Material> gravitymateriallist = new ArrayList<Material>(Arrays.asList(
+			Material.LOG, Material.LOG_2,Material.LEAVES,Material.LEAVES_2
+			));
+	public static final List<String> ignoreWorldlist = new ArrayList<String>(Arrays.asList(
+			"world_S","world_nether_S","world_SW"
+			));
 	@Override
 	public void onEnable(){
 		plugin = this;
@@ -202,7 +219,7 @@ public class SeichiAssist extends JavaPlugin{
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
-		getServer().getPluginManager().registerEvents(new PlayerRightClickListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerClickListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
@@ -237,6 +254,15 @@ public class SeichiAssist extends JavaPlugin{
 		//全てのタスクをキャンセル
 		stopAllTaskRunnable();
 
+		//全てのエンティティを削除
+		for(Entity e :entitylist){
+			e.remove();
+		}
+
+		//全てのスキルで破壊されるブロックを強制破壊
+		for(Block b : allblocklist){
+			b.setType(Material.AIR);
+		}
 
 		for(Player p : getServer().getOnlinePlayers()){
 			//UUIDを取得

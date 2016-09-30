@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
@@ -59,6 +60,7 @@ public class ArrowMagicTaskRunnable extends BukkitRunnable{
         vec.setY(vec.getY() * k);
         vec.setZ(vec.getZ() * k);
         proj = player.getWorld().spawn(loc, ThrownPotion.class);
+        SeichiAssist.entitylist.add((Entity) proj);
         proj.setShooter(player);
         proj.setGravity(false);
         proj.setItem(i);
@@ -76,6 +78,7 @@ public class ArrowMagicTaskRunnable extends BukkitRunnable{
 		tick ++;
 		if(tick > 100){
 			proj.remove();
+			SeichiAssist.entitylist.remove(proj);
 			this.cancel();
 			return;
 		}

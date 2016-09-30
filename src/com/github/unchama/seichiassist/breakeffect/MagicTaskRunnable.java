@@ -22,7 +22,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
-import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class MagicTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -69,7 +69,7 @@ public class MagicTaskRunnable extends BukkitRunnable{
 
 
 		for(Block b : breaklist){
-			Util.BreakBlock(player, b, droploc, tool, false);
+			BreakUtil.BreakBlock(player, b, droploc, tool, false);
 			b.setType(Material.WOOL);
 	        state = b.getState();
 	        red = (Wool)state.getData();
@@ -87,6 +87,7 @@ public class MagicTaskRunnable extends BukkitRunnable{
 					effectloc.add(x, y, z);
 					if(isBreakBlock(effectloc)){
 						Chicken e = (Chicken) player.getWorld().spawnEntity(effectloc, EntityType.CHICKEN);
+						SeichiAssist.entitylist.add((Entity) e);
 						e.playEffect(EntityEffect.WITCH_MAGIC);
 						e.setInvulnerable(true);
 						new EntityRemoveTaskRunnable((Entity)e).runTaskLater(plugin,100);
@@ -98,7 +99,7 @@ public class MagicTaskRunnable extends BukkitRunnable{
 		for(Block b : breaklist){
 			b.setType(Material.AIR);
 			b.getWorld().playEffect(b.getLocation().add(0.5,0.5,0.5), Effect.NOTE, 1);
-			playerdata.activeskilldata.blocklist.remove(b);
+			SeichiAssist.allblocklist.remove(b);
 		}
 
 	}

@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.breakeffect;
 
 import java.util.List;
 
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,11 +12,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Wool;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.task.moveParticleTaskRunnable;
+import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class VladmiaTaskRunnable extends BukkitRunnable{
+	SeichiAssist plugin = SeichiAssist.plugin;
 	//プレイヤー情報
 	Player player;
 	//プレイヤーデータ
@@ -59,8 +63,8 @@ public class VladmiaTaskRunnable extends BukkitRunnable{
 
 
 		for(Block b : breaklist){
-			Util.BreakBlock(player, b, droploc, tool, false);
-
+			BreakUtil.BreakBlock(player, b, droploc, tool, false);
+			new moveParticleTaskRunnable(player,b,Color.RED).runTaskTimer(plugin, 0, 3);
 		}
 	}
 	@Override

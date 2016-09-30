@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class MultiBreakTaskRunnable extends BukkitRunnable{
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
@@ -66,8 +66,8 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 			if(playerdata.activeskilldata.effectnum == 0){
 				//ブロックを破壊する処理
 				for(Block b:multibreaklist.get(count)){
-					Util.BreakBlock(player, b, droploc, tool,true);
-					playerdata.activeskilldata.blocklist.remove(b);
+					BreakUtil.BreakBlock(player, b, droploc, tool,true);
+					SeichiAssist.allblocklist.remove(b);
 				}
 			}
 			//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）

@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.data;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.util.Util;
 
 public class GachaData {
 	//アイテムデータ格納
@@ -35,6 +35,6 @@ public class GachaData {
                 return gachadata;
             }
 		}
-		return new GachaData(new ItemStack(Material.BAKED_POTATO,1),1.0,1);
+		return new GachaData(Util.getGachaimo(),1.0,1);
 	}
 }

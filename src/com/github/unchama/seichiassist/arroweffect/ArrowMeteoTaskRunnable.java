@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -46,6 +47,7 @@ public class ArrowMeteoTaskRunnable extends BukkitRunnable{
         vec.setY(vec.getY() * k);
         vec.setZ(vec.getZ() * k);
         proj = player.getWorld().spawn(loc, Arrow.class);
+        SeichiAssist.entitylist.add((Entity) proj);
         proj.setShooter(player);
         proj.setGravity(false);
         proj.setGlowing(true);
@@ -64,6 +66,7 @@ public class ArrowMeteoTaskRunnable extends BukkitRunnable{
 		tick ++;
 		if(tick > 100){
 			proj.remove();
+			SeichiAssist.entitylist.remove(proj);
 			this.cancel();
 			return;
 		}

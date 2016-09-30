@@ -32,6 +32,7 @@ import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
 
 public class EntityListener implements Listener {
@@ -102,7 +103,7 @@ public class EntityListener implements Listener {
 			worldname = "world";
 		}
 		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
-			if(Util.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
+			if(BreakUtil.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
 				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 				return;
 			}
@@ -140,18 +141,17 @@ public class EntityListener implements Listener {
 		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
 			return;
 		}
-		for(Block b : playerdata.activeskilldata.blocklist){
-			//スキルで破壊されるブロックの時処理を終了
-			if(b.equals(block)){
-				if(SeichiAssist.DEBUG){
-					player.sendMessage("スキルで使用中のブロックです。");
-				}
-				return;
+		//スキルで破壊されるブロックの時処理を終了
+		if(SeichiAssist.allblocklist.contains(block)){
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("スキルで使用中のブロックです。");
 			}
+			return;
 		}
 
 		runArrowSkillofHitBlock(player,proj, block, tool);
 
+		SeichiAssist.entitylist.remove(proj);
 		proj.remove();
 	}
 
@@ -175,7 +175,7 @@ public class EntityListener implements Listener {
 		Block breakblock;
 		BreakArea area = playerdata.activeskilldata.area;
 		//現在のプレイヤーの向いている方向
-		String dir = Util.getCardinalDirection(player);
+		String dir = BreakUtil.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(area.getDir())){
 			area.setDir(dir);
@@ -209,12 +209,12 @@ public class EntityListener implements Listener {
 							|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
 							|| breakblock.getType().equals(Material.STATIONARY_LAVA)
 							){
-						if(Util.canBreak(player, breakblock)){
+						if(BreakUtil.canBreak(player, breakblock)){
 							if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
 								lavalist.add(breakblock);
 							}else{
 								breaklist.add(breakblock);
-								playerdata.activeskilldata.blocklist.add(breakblock);
+								SeichiAssist.allblocklist.add(breakblock);
 							}
 						}
 
@@ -225,7 +225,7 @@ public class EntityListener implements Listener {
 
 
 		//重力値計算
-		double gravity = Util.getGravity(player,block,end.y,1);
+		double gravity = BreakUtil.getGravity(player,block,end.y,1);
 
 
 		//減る経験値計算
@@ -241,15 +241,15 @@ public class EntityListener implements Listener {
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナ：" + useMana);
 		}
 		//減る耐久値の計算
-		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
+		short durability = (short) (tool.getDurability() + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-		durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
+		durability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
 
 
 		//重力値の判定
 		if(gravity > 15){
 			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			SeichiAssist.allblocklist.removeAll(breaklist);
 			return;
 		}
 
@@ -259,7 +259,7 @@ public class EntityListener implements Listener {
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
-			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			SeichiAssist.allblocklist.removeAll(breaklist);
 			return;
 		}
 		if(SeichiAssist.DEBUG){
@@ -271,7 +271,7 @@ public class EntityListener implements Listener {
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
-			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			SeichiAssist.allblocklist.removeAll(breaklist);
 			return;
 		}
 
@@ -298,8 +298,8 @@ public class EntityListener implements Listener {
 		//エフェクトが指定されていないときの処理
 		if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
-				Util.BreakBlock(player, b, player.getLocation(), tool,true);
-				playerdata.activeskilldata.blocklist.remove(b);
+				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,true);
+				SeichiAssist.allblocklist.remove(b);
 			}
 		}
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
