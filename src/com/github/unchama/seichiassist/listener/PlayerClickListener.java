@@ -203,6 +203,9 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 		//使ったアイテムを取得
+		if(event.getItem() == null){
+			return ;
+		}
 		ItemStack itemstack = event.getItem();
 		//ガチャ用の頭でなければ終了
 		if(!Util.isGachaTicket(itemstack)){
@@ -232,13 +235,11 @@ public class PlayerClickListener implements Listener {
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			int count = 1;
 			if(player.isSneaking()) count = 64;
-
+			if(!Util.removeItemfromPlayerInventory(player.getInventory(),itemstack,count)){
+				player.sendMessage(ChatColor.RED + "アイテムの個数が足りません");
+				return;
+			}
 			for(int c = 0 ; c < count ; c++){
-				if(!Util.removeItemfromPlayerInventory(player.getInventory(),itemstack,1)){
-					player.sendMessage(ChatColor.RED + "アイテムの個数が足りません");
-					break;
-				}
-
 				//プレゼント用ガチャデータ作成
 				GachaData present;
 				//ガチャ実行
