@@ -250,7 +250,7 @@ public class Util {
         else return null;
     }
 	//ガチャアイテムを含んでいるか調べる
-	public static boolean containsGacha(Player player) {
+	public static boolean containsGachaTicket(Player player) {
 		org.bukkit.inventory.ItemStack[] inventory = player.getInventory().getStorageContents();
 		Material material;
 		SkullMeta skullmeta;
@@ -276,11 +276,11 @@ public class Util {
 		}
 	}
 	//Listの中でひとつでもstringに該当するものがあればtrueを開放します。
-	public static boolean LoreContains(List<String> lore, String string) {
+	public static int LoreContains(List<String> lore, String string) {
 		for(int i = 0; i < lore.size(); i++){
-			if(lore.get(i).contains(string))return true;
+			if(lore.get(i).contains(string))return i;
 		}
-		return false;
+		return -1;
 	}
 	public static boolean isGachaTicket(ItemStack itemstack) {
 		if(!itemstack.getType().equals(Material.SKULL_ITEM)){
@@ -314,6 +314,51 @@ public class Util {
 			return false;
 		}
 		return true;
+	}
+	public static ItemStack getForBugskull(String name) {
+		ItemStack skull;
+		SkullMeta skullmeta;
+		skull = new ItemStack(Material.SKULL_ITEM, 1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skull.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "運営から不具合のお詫びです");
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("unchama");
+		skull.setItemMeta(skullmeta);
+		return skull;
+	}
+	public static ItemStack getVoteskull(String name) {
+		ItemStack skull;
+		SkullMeta skullmeta;
+		skull = new ItemStack(Material.SKULL_ITEM, 1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skull.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name
+				,ChatColor.RESET + "" +  ChatColor.LIGHT_PURPLE + "投票ありがとナス♡");
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("unchama");
+		skull.setItemMeta(skullmeta);
+		return skull;
+	}
+	public static ItemStack getExchangeskull(String name) {
+		ItemStack skull;
+		SkullMeta skullmeta;
+		skull = new ItemStack(Material.SKULL_ITEM, 1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skull.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name
+				,ChatColor.RESET + "" +  ChatColor.GRAY + "ガチャ景品と交換しました。");
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("unchama");
+		skull.setItemMeta(skullmeta);
+		return skull;
 	}
 
 
