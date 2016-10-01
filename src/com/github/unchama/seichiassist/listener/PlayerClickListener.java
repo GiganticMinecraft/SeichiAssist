@@ -194,6 +194,7 @@ public class PlayerClickListener implements Listener {
 	public void onPlayerRightClickGachaEvent(PlayerInteractEvent event){
 		//プレイヤー型を取得
 		Player player = event.getPlayer();
+		String name = playermap.get(player.getUniqueId()).name;
 		//プレイヤーが起こしたアクションを取得
 		Action action = event.getAction();
 		//使った手を取得
@@ -229,14 +230,24 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 		PlayerData playerdata = playermap.get(player.getUniqueId());
-
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[ガチャを回す処理]でエラー発生");
+			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return;
+		}
 		new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,5);
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			int count = 1;
-			if(player.isSneaking()) count = 64;
+			if(player.isSneaking()){
+				count = itemstack.getAmount();
+				player.sendMessage(ChatColor.AQUA + "" + count + "回ガチャを回しました。");
+			}
+
 			if(!Util.removeItemfromPlayerInventory(player.getInventory(),itemstack,count)){
-				player.sendMessage(ChatColor.RED + "アイテムの個数が足りません");
+				player.sendMessage(ChatColor.RED + "ガチャ券の数が不正です。");
 				return;
 			}
 			for(int c = 0 ; c < count ; c++){
@@ -244,6 +255,9 @@ public class PlayerClickListener implements Listener {
 				GachaData present;
 				//ガチャ実行
 				present = GachaData.runGacha();
+				if(present.probability < 0.1){
+					present.addname(name);
+				}
 				//ガチャデータのitemstackの数を再設定（バグのため）
 				present.itemstack.setAmount(present.amount);
 				//メッセージ設定

@@ -28,8 +28,8 @@ import com.mysql.jdbc.CommunicationsException;
 //MySQL操作関数
 public class Sql{
 	private final String url, db, id, pw;
-	public Connection con = null;
-	private Statement stmt = null;
+	public static Connection con = null;
+	private static Statement stmt = null;
 
 	private ResultSet rs = null;
 
@@ -462,7 +462,7 @@ public class Sql{
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlにデータが保存されています。");
  			}
- 			new LoadPlayerDataTaskRunnable(p).runTaskTimer(plugin, 0, 10);;
+ 			new LoadPlayerDataTaskRunnable(p).runTaskTimerAsynchronously(plugin, 0, 10);;
  			return true;
 
  		}else{

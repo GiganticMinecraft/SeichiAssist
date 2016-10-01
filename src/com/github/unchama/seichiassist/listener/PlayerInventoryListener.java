@@ -183,7 +183,7 @@ public class PlayerInventoryListener implements Listener {
 				//先に詫びガチャ関数初期化
 				playerdata.numofsorryforbug = 0;
 
-				ItemStack skull = Util.getskull(Util.getName(player));
+				ItemStack skull = Util.getForBugskull(Util.getName(player));
 				int count = 0;
 				while(n > 0){
 					if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
@@ -220,7 +220,7 @@ public class PlayerInventoryListener implements Listener {
 					//ここに投票1回につきプレゼントする特典の処理を書く
 
 					//ガチャ券プレゼント処理
-					ItemStack skull = Util.getskull(Util.getName(player));
+					ItemStack skull = Util.getVoteskull(Util.getName(player));
 					for (int i = 0; i < 10; i++){
 						if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
 							Util.addItem(player,skull);
@@ -390,17 +390,6 @@ public class PlayerInventoryListener implements Listener {
 				}
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispPvPToggleMeta(playerdata,itemmeta));
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.WHEAT)){
-				// farmassist toggleコマンド実行
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.chat("/farmassist toggle");
-			}
-			else if(itemstackcurrent.getType().equals(Material.LOG)){
-				// treeassist toggleコマンド実行
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.chat("/treeassist toggle");
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.BEACON)){
@@ -1528,6 +1517,9 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.QUARTZ_ORE)){
 				playerdata.minestack.quartz_ore = giveMineStack(player,playerdata.minestack.quartz_ore,Material.QUARTZ_ORE);
 			}
+
+			player.openInventory(MenuInventoryData.getMineStackMenu(player));
+
 		}
 	}
 	//ランキングメニュー処理
@@ -1582,15 +1574,24 @@ public class PlayerInventoryListener implements Listener {
 	//minestackの1stack付与の処理
 	private int giveMineStack(Player player,int minestack,Material type){
 		if(minestack >= 64){
-			minestack -= 64;
 			ItemStack itemstack = new ItemStack(type,64);
 			if(!Util.isPlayerInventryFill(player)){
 				Util.addItem(player,itemstack);
 			}else{
 				Util.dropItem(player,itemstack);
 			}
+			minestack -= 64;
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+		}else if(minestack == 0){
+			return minestack;
 		}else{
+			ItemStack itemstack = new ItemStack(type,minestack);
+			if(!Util.isPlayerInventryFill(player)){
+				Util.addItem(player,itemstack);
+			}else{
+				Util.dropItem(player,itemstack);
+			}
+			minestack -= minestack;
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 		}
 		return minestack;
@@ -1600,18 +1601,17 @@ public class PlayerInventoryListener implements Listener {
     //ガチャ交換システム
     @EventHandler
     public void onGachaTradeEvent(InventoryCloseEvent event){
-        HumanEntity he = event.getPlayer();
+        Player player = (Player)event.getPlayer();
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+		String name = playerdata.name;
         Inventory inventory = event.getInventory();
-        //インベントリを開けたのがプレイヤーではない時終了
-        if(!he.getType().equals(EntityType.PLAYER)){
-            return;
-        }
+
         //インベントリサイズが36でない時終了
         if(inventory.getSize() != 36){
             return;
         }
         if(inventory.getTitle().equals(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください")){
-            Player player = (Player)he;
             //PlayerInventory pinventory = player.getInventory();
             //ItemStack itemstack = pinventory.getItemInMainHand();
             int givegacha = 0;
@@ -1648,10 +1648,6 @@ public class PlayerInventoryListener implements Listener {
                     //丁重にお返しする
                     dropitem.add(m);
                     continue;
-                }else if(!m.getItemMeta().hasDisplayName()){
-                    //丁重にお返しする
-                    dropitem.add(m);
-                    continue;
                 }else if(m.getType().equals(Material.SKULL_ITEM)){
                     //丁重にお返しする
                     dropitem.add(m);
@@ -1665,11 +1661,11 @@ public class PlayerInventoryListener implements Listener {
                         continue;
                     }else if(!gachadata.itemstack.getItemMeta().hasLore()){
                         continue;
-                    }else if(!gachadata.itemstack.getItemMeta().hasDisplayName())
-                        continue;
+                    }
                     //ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
-                    if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())
-                            &&gachadata.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
+                    if(gachadata.compare(m,name)){
+                    //if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())
+                           // &&gachadata.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
                         flag = true;
                         double prob = gachadata.probability;
                         int amount = m.getAmount();
@@ -1686,7 +1682,7 @@ public class PlayerInventoryListener implements Listener {
                             givegacha += (3*amount);
                             reg++;
                         }else{
-                            //それ以外もアイテム返却(経験値ポーションとかがここにくるはず)
+                            //それ以外アイテム返却(経験値ポーションとかがここにくるはず)
                             dropitem.add(m);
                         }
                         break;
@@ -1719,7 +1715,7 @@ public class PlayerInventoryListener implements Listener {
             /*
              * step3 ガチャ券をインベントリへ
              */
-            ItemStack skull = Util.getskull(Util.getName(player));
+            ItemStack skull = Util.getExchangeskull(Util.getName(player));
             int count = 0;
             while(givegacha > 0){
                 if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){

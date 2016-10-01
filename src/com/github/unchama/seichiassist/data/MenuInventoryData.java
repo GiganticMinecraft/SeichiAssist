@@ -379,7 +379,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		itemstack.setDurability((short) 3);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-		skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガチャ券を受け取る");
+		skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地報酬ガチャ券を受け取る");
 		skullmeta.setLore(GachaGetButtonLore(playerdata));
 		skullmeta.setOwner("unchama");
 		itemstack.setItemMeta(skullmeta);
@@ -388,7 +388,7 @@ public class MenuInventoryData {
 		//ガチャ券受け取り方法選択ボタン
 		itemstack = new ItemStack(Material.STONE_BUTTON,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_BUTTON);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガチャ券受け取り方法");
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地報酬ガチャ券受け取り方法");
 		if(playerdata.gachaflag){
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "毎分受け取ります"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変更"
@@ -475,33 +475,6 @@ public class MenuInventoryData {
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
-
-
-		// farmassist toggleコマンド
-		itemstack = new ItemStack(Material.WHEAT,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SEEDS);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "FarmAssist機能");
-		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "ONにすると…"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "作物収穫時、手持ちの種や"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "苗を自動で植えてくれます"
-				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでON,OFFを変更"
-				);
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(9,itemstack);
-
-		// treeassist toggleコマンド
-		itemstack = new ItemStack(Material.LOG,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SAPLING);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "TreeAssist機能");
-		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "ONにすると…"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "木の根元を切った時、自動で"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "木こり&苗木を植えてくれます"
-				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでON,OFFを変更"
-				);
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(10,itemstack);
 
 		// ver0.3.2 wikiページ表示
 		itemstack = new ItemStack(Material.BOOK,1);
