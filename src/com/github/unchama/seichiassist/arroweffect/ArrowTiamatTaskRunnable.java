@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -46,6 +47,7 @@ public class ArrowTiamatTaskRunnable extends BukkitRunnable{
         vec.setY(vec.getY() * k);
         vec.setZ(vec.getZ() * k);
         proj = player.getWorld().spawn(loc, SmallFireball.class);
+        SeichiAssist.entitylist.add((Entity) proj);
         proj.setShooter(player);
         proj.setGravity(false);
         //読み込み方法

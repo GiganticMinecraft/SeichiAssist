@@ -196,7 +196,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 									waterlist.add(breakblock);
 								}else{
 									breaklist.add(breakblock);
-									playerdata.activeskilldata.blocklist.add(breakblock);
+									SeichiAssist.allblocklist.add(breakblock);
 								}
 							}
 						}
@@ -235,7 +235,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
 			}
-			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			SeichiAssist.allblocklist.removeAll(breaklist);
 			setCancel();
 			return;
 		}
@@ -246,7 +246,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
-			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			SeichiAssist.allblocklist.removeAll(breaklist);
 			setCancel();
 			return;
 		}
@@ -258,7 +258,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
-			playerdata.activeskilldata.blocklist.removeAll(breaklist);
+			SeichiAssist.allblocklist.removeAll(breaklist);
 			setCancel();
 			return;
 		}
@@ -293,10 +293,10 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			}
 			for(Block b:breaklist){
 				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,false);
-				playerdata.activeskilldata.blocklist.remove(b);
+				SeichiAssist.allblocklist.remove(b);
 			}
 		}
-		playerdata.activeskilldata.blocklist.removeAll(breaklist);
+		SeichiAssist.allblocklist.removeAll(breaklist);
 	}
 
 	private boolean isCanceled() {

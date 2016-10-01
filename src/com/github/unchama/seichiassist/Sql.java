@@ -23,6 +23,7 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
+import com.mysql.jdbc.CommunicationsException;
 
 //MySQL操作関数
 public class Sql{
@@ -131,7 +132,18 @@ public class Sql{
 		try {
 			stmt.executeUpdate(command);
 			return true;
-		} catch (SQLException e) {
+		}catch(CommunicationsException e){
+			java.lang.System.out.println("sqlの接続に失敗したため、再接続します。");
+			if(connectMySQL()){
+				java.lang.System.out.println("接続成功");
+				return true;
+			}else{
+				java.lang.System.out.println("接続に失敗しました。");
+				exc = e.getMessage();
+				e.printStackTrace();
+				return false;
+			}
+		}catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
 			e.printStackTrace();

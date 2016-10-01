@@ -67,7 +67,7 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 				//ブロックを破壊する処理
 				for(Block b:multibreaklist.get(count)){
 					BreakUtil.BreakBlock(player, b, droploc, tool,true);
-					playerdata.activeskilldata.blocklist.remove(b);
+					SeichiAssist.allblocklist.remove(b);
 				}
 			}
 			//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）

@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BreakUtil;
@@ -51,7 +52,7 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 		}else{
 			for(Block b : breaklist){
 				BreakUtil.BreakBlock(player, b, droploc, tool, true);
-				playerdata.activeskilldata.blocklist.remove(b);
+				SeichiAssist.allblocklist.remove(b);
 			}
 		}
 		soundradius = 5;
@@ -84,7 +85,7 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 				}else{
 					b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND,Material.PACKED_ICE);
 				}
-				playerdata.activeskilldata.blocklist.remove(b);
+				SeichiAssist.allblocklist.remove(b);
 			}
 		}
 	}

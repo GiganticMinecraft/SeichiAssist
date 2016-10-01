@@ -49,12 +49,6 @@ public class BreakUtil {
 			player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
 			return false;
 		}
-		//壊されるブロックがスキルで使用中だった場合処理を終了
-		if(!playerdata.activeskilldata.blocklist.isEmpty() && !breakblock.isEmpty()){
-			if(playerdata.activeskilldata.blocklist.contains(breakblock)){
-				return false;
-			}
-		}
 
 		if(!equalignoreWorld(player.getWorld().getName())){
 			//コアプロテクトのクラスを取得

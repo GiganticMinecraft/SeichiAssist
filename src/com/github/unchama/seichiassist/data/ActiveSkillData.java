@@ -1,14 +1,11 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -58,8 +55,6 @@ public class ActiveSkillData {
 	public boolean specialflag;
 	//選択されているアクティブスキルの番号を格納
 	public int effectnum;
-	//スキルで破壊されるブロック
-	public List<Block> blocklist;
 	//通常スキルで破壊されるエリア
 	public BreakArea area;
 	//アサルトスキルで破壊されるエリア
@@ -86,7 +81,6 @@ public class ActiveSkillData {
 		effectnum = 0;
 		effectflagmap = new HashMap<Integer,Boolean>();
 		premiumeffectflagmap = new HashMap<Integer,Boolean>();
-		blocklist = new ArrayList<Block>();
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 		for(int i=0 ; i < activeskilleffect.length ; i++){
@@ -190,7 +184,7 @@ public class ActiveSkillData {
 		if(mineflagnum != 0){
 			this.assaultarea = new BreakArea(player,type,skilllevel,mineflagnum,true);
 			this.assaultflag = true;
-			this.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,10,1);
+			this.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,10,10);
 		}//オフの時の処理
 		else{
 			this.assaultflag = false;

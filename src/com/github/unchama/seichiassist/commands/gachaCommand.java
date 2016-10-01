@@ -247,7 +247,7 @@ public class gachaCommand implements TabExecutor{
 				return true;
 			}
 			int num = Util.toInt(args[1]);
-			int probability = Util.toInt(args[2]);
+			double probability = Util.toDouble(args[2]);
 			GachaEditProbability(sender,num,probability);
 			return true;
 		}else if(args[0].equalsIgnoreCase("move")){
@@ -364,7 +364,7 @@ public class gachaCommand implements TabExecutor{
 		SeichiAssist.gachadatalist.set(num-1,gachadata);
 		sender.sendMessage(num + "|" + gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "のアイテム数を" + gachadata.amount + "個に変更しました");
 	}
-	private void GachaEditProbability(CommandSender sender,int num,int probability) {
+	private void GachaEditProbability(CommandSender sender,int num,double probability) {
 		if(num < 1 || SeichiAssist.gachadatalist.size() < num){
 			sender.sendMessage("アイテム番号が間違っているようです");
 			return;
