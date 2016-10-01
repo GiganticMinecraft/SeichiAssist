@@ -53,9 +53,9 @@ public class PlayerClickListener implements Listener {
 
 		//念のためエラー分岐
 		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
-			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
+			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		if(equipmentslot==null){
@@ -315,9 +315,9 @@ public class PlayerClickListener implements Listener {
 		PlayerData playerdata = playermap.get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
-			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
+			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		//アクティブスキルを発動できるレベルに達していない場合処理終了
