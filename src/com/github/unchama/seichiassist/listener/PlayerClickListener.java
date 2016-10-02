@@ -53,9 +53,9 @@ public class PlayerClickListener implements Listener {
 
 		//念のためエラー分岐
 		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
-			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
+			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		if(equipmentslot==null){
@@ -194,7 +194,19 @@ public class PlayerClickListener implements Listener {
 	public void onPlayerRightClickGachaEvent(PlayerInteractEvent event){
 		//プレイヤー型を取得
 		Player player = event.getPlayer();
-		String name = playermap.get(player.getUniqueId()).name;
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータを取得
+		PlayerData playerdata = playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[ガチャを回す処理]でエラー発生");
+			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return;
+		}
+
+		String name = playerdata.name;
 		//プレイヤーが起こしたアクションを取得
 		Action action = event.getAction();
 		//使った手を取得
@@ -227,14 +239,6 @@ public class PlayerClickListener implements Listener {
 		//ガチャデータが設定されていない場合
 		if(gachadatalist.isEmpty()){
 			player.sendMessage("ガチャが設定されていません");
-			return;
-		}
-		PlayerData playerdata = playermap.get(player.getUniqueId());
-		//念のためエラー分岐
-		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[ガチャを回す処理]でエラー発生");
-			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,5);
@@ -315,9 +319,9 @@ public class PlayerClickListener implements Listener {
 		PlayerData playerdata = playermap.get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
-			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
+			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		//アクティブスキルを発動できるレベルに達していない場合処理終了

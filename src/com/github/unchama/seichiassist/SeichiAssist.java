@@ -331,10 +331,11 @@ public class SeichiAssist extends JavaPlugin{
 			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
 		}
 
+		//非同期処理にしたいけど別ステートメントでsql文処理させるようにしてからじゃないとだめぽ
 		if(DEBUG){
-			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimerAsynchronously(this,480,400));
+			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,480,400));
 		}else{
-			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimerAsynchronously(this,6800,6000));
+			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,12800,12000));
 		}
 	}
 
