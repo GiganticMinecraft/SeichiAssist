@@ -32,7 +32,6 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 			PlayerData playerdata = playermap.get(uuid);
 			//念のためエラー分岐
 			if(playerdata == null){
-				p.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
 				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[15分Save処理]でエラー発生");
 				plugin.getLogger().warning(Util.getName(p)+ "のplayerdataがありません。開発者に報告してください");
 				continue;

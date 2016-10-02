@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -25,11 +26,13 @@ import org.bukkit.projectiles.ProjectileSource;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
+import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.CondenSkillTaskRunnable;
-import com.github.unchama.seichiassist.util.ExperienceManager;
+import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
 
 public class EntityListener implements Listener {
@@ -44,7 +47,7 @@ public class EntityListener implements Listener {
 		Player player;
 
 
-		if(!e.hasMetadata("ArrowSkill")&&!e.hasMetadata("CondenSkill")) {
+		if(!e.hasMetadata("ArrowSkill")) {
 			return;
 		}
 		Projectile proj = (Projectile)e;
@@ -59,23 +62,22 @@ public class EntityListener implements Listener {
 		}
 
 		//もしサバイバルでなければ処理を終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+		//もしフライ中なら終了
+		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
 			return;
 		}
 
 
 		//壊されるブロックを取得
 		Block block = null;
-		if(e.hasMetadata("ArrowSkill")){
-			block = player.getWorld().getBlockAt(proj.getLocation().add(proj.getVelocity().normalize()));
-		}else{
-			block = player.getWorld().getBlockAt(proj.getLocation());
-		}
+		block = player.getWorld().getBlockAt(proj.getLocation().add(proj.getVelocity().normalize()));
+
 
 		//他人の保護がかかっている場合は処理を終了
 		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
 			return;
 		}
+
 		//ブロックのタイプを取得
 		Material material = block.getType();
 
@@ -95,16 +97,22 @@ public class EntityListener implements Listener {
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
-		//スキルで破壊されるブロックの時処理を終了
-		if(playerdata.activeskilldata.blocklist.contains(block)){
-			if(SeichiAssist.DEBUG){
-				player.sendMessage("スキルで使用中のブロックです。");
+		ActiveSkill[] activeskill = ActiveSkill.values();
+		String worldname = "world_sw";
+		if(SeichiAssist.DEBUG){
+			worldname = "world";
+		}
+		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
+			if(BreakUtil.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
+				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
+				return;
 			}
-			return;
 		}
 
-		//経験値変更用のクラスを設定
-		ExperienceManager expman = new ExperienceManager(player);
+
+
+
+
 
 		//プレイヤーインベントリを取得
 		PlayerInventory inventory = player.getInventory();
@@ -129,38 +137,35 @@ public class EntityListener implements Listener {
 			//どちらにももっていない時処理を終了
 			return;
 		}
-
 		//耐久値がマイナスかつ耐久無限ツールでない時処理を終了
 		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
 			return;
 		}
-
-
-		if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-			runArrowSkillofHitBlock(player,proj, playerdata.activeskilldata.skillnum, block, tool, expman);
-		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.CONDENSE.gettypenum()){
-			if(playerdata.activeskilldata.skillnum < 7){
-				CondenSkillTaskRunnable.runCondenSkillofExplosion(player,playerdata.activeskilldata.skillnum,block,tool,expman);
-			}else{
-				CondenSkillTaskRunnable.runCondenSkillofExplosion(player,playerdata.activeskilldata.skillnum - 3 ,block,tool,expman);
+		//スキルで破壊されるブロックの時処理を終了
+		if(SeichiAssist.allblocklist.contains(block)){
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("スキルで使用中のブロックです。");
 			}
-
-			playerdata.activeskilldata.hitflag = true;
+			return;
 		}
 
-		//矢を消滅させる
-		event.getEntity().remove();
+		runArrowSkillofHitBlock(player,proj, block, tool);
+
+		SeichiAssist.entitylist.remove(proj);
+		proj.remove();
 	}
 
 
-	private void runArrowSkillofHitBlock(Player player,Projectile proj, int skilllevel,
-			Block block, ItemStack tool, ExperienceManager expman) {
+	private void runArrowSkillofHitBlock(Player player,Projectile proj,
+			Block block, ItemStack tool) {
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
-		//プレイヤーの向いている方角を取得
-		String dir = Util.getCardinalDirection(player);
+		//レベルを取得
+		int skilllevel = playerdata.activeskilldata.skillnum;
+		//マナを取得
+		Mana mana = playerdata.activeskilldata.mana;
 		//元ブロックのマテリアルを取得
 		Material material = block.getType();
 		//元ブロックの真ん中の位置を取得
@@ -168,8 +173,16 @@ public class EntityListener implements Listener {
 
 		//壊されるブロックの宣言
 		Block breakblock;
-		Coordinate start = new Coordinate();
-		Coordinate end = new Coordinate();
+		BreakArea area = playerdata.activeskilldata.area;
+		//現在のプレイヤーの向いている方向
+		String dir = BreakUtil.getCardinalDirection(player);
+		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
+		if(!dir.equals(area.getDir())){
+			area.setDir(dir);
+			area.makeArea();
+		}
+		Coordinate start = area.getStartList().get(0);
+		Coordinate end = area.getEndList().get(0);
 
 		//エフェクト用に壊されるブロック全てのリストデータ
 		List<Block> breaklist = new ArrayList<Block>();
@@ -177,73 +190,15 @@ public class EntityListener implements Listener {
 		//壊される溶岩のリストデータ
 		List<Block> lavalist = new ArrayList<Block>();
 
-		switch (dir){
-		case "N":
-			//北を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3),-(skilllevel-3),-(skilllevel-3)-1);
-				end = new Coordinate(skilllevel-3,skilllevel-3,(skilllevel-3)-1);
-			}else{
-				start = new Coordinate(-(skilllevel-3),-1,-(skilllevel-3)*2);
-				end = new Coordinate(skilllevel-3,(skilllevel-5)*2 + 1,0);
-			}
-			break;
-		case "E":
-			//東を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3)+1,-(skilllevel-3),-(skilllevel-3));
-				end = new Coordinate((skilllevel-3)+1,skilllevel-3,(skilllevel-3));
-			}else{
-				start = new Coordinate(0,-1,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3)*2,(skilllevel-5)*2 + 1,(skilllevel-3));
-			}
-			break;
-		case "S":
-			//南を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3),-(skilllevel-3),-(skilllevel-3)+1);
-				end = new Coordinate(skilllevel-3,skilllevel-3,(skilllevel-3)+1);
-			}else{
-				start = new Coordinate(-(skilllevel-3),-1,0);
-				end = new Coordinate(skilllevel-3,(skilllevel-5)*2 + 1,(skilllevel-3)*2);
-			}
-			break;
-		case "W":
-			//西を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3)-1,-(skilllevel-3),-(skilllevel-3));
-				end = new Coordinate((skilllevel-3)-1,skilllevel-3,(skilllevel-3));
-			}else{
-				start = new Coordinate(-(skilllevel-3)*2,-1,-(skilllevel-3));
-				end = new Coordinate(0,(skilllevel-5)*2 + 1,(skilllevel-3));
-			}
-			break;
-		case "U":
-			//上を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3),0,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3),2,(skilllevel-3));
-			}else{
-				start = new Coordinate(-(skilllevel-3),0,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3),(skilllevel-4)*2,(skilllevel-3));
-			}
-			break;
-		case "D":
-			//下を向いているとき
-			if(skilllevel == 4){
-				start = new Coordinate(-(skilllevel-3),-2,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3),0,(skilllevel-3));
-			}else{
-				start = new Coordinate(-(skilllevel-3),-(skilllevel-4)*2,-(skilllevel-3));
-				end = new Coordinate((skilllevel-3),0,(skilllevel-3));
-			}
-			break;
-		}
+		//一回の破壊の範囲
+		final Coordinate breaklength = area.getBreakLength();
+		//１回の全て破壊したときのブロック数
+		final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
+
 
 		for(int x = start.x ; x <= end.x ; x++){
 			for(int z = start.z ; z <= end.z ; z++){
 				for(int y = start.y; y <= end.y ; y++){
-
 					breakblock = block.getRelative(x, y, z);
 					//player.sendMessage("x:" + x + "y:" + y + "z:" + z + "Type:"+ breakblock.getType().name());
 					//もし壊されるブロックがもともとのブロックと同じ種類だった場合
@@ -254,11 +209,12 @@ public class EntityListener implements Listener {
 							|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
 							|| breakblock.getType().equals(Material.STATIONARY_LAVA)
 							){
-						if(Util.canBreak(player, breakblock)){
+						if(BreakUtil.canBreak(player, breakblock)){
 							if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
 								lavalist.add(breakblock);
 							}else{
 								breaklist.add(breakblock);
+								SeichiAssist.allblocklist.add(breakblock);
 							}
 						}
 
@@ -267,31 +223,43 @@ public class EntityListener implements Listener {
 			}
 		}
 
-		//減る経験値計算
 
-		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数
-		double useExp = (double) (breaklist.size())
+		//重力値計算
+		double gravity = BreakUtil.getGravity(player,block,end.y,1);
+
+
+		//減る経験値計算
+		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
+
+		double useMana = (double) (breaklist.size()) * gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
-				/((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1)) ;
+				/(ifallbreaknum) ;
 		if(SeichiAssist.DEBUG){
 			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum));
-			player.sendMessage(ChatColor.RED + "全ての破壊数：" + ((end.x - start.x + 1) * (end.z - start.z + 1) * (end.y - start.y + 1)));
+			player.sendMessage(ChatColor.RED + "全ての破壊数：" + (ifallbreaknum));
 			player.sendMessage(ChatColor.RED + "実際の破壊数：" + breaklist.size());
-			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値：" + useExp);
+			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナ：" + useMana);
 		}
 		//減る耐久値の計算
-		short durability = (short) (tool.getDurability() + Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
+		short durability = (short) (tool.getDurability() + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-		durability += Util.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
+		durability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
 
 
+		//重力値の判定
+		if(gravity > 15){
+			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
+			SeichiAssist.allblocklist.removeAll(breaklist);
+			return;
+		}
 
 		//実際に経験値を減らせるか判定
-		if(!expman.hasExp(useExp)){
+		if(!mana.hasMana(useMana)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
-				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要な経験値が足りません");
+				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
+			SeichiAssist.allblocklist.removeAll(breaklist);
 			return;
 		}
 		if(SeichiAssist.DEBUG){
@@ -303,21 +271,21 @@ public class EntityListener implements Listener {
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
+			SeichiAssist.allblocklist.removeAll(breaklist);
 			return;
 		}
 
 
 		//経験値を減らす
-		expman.changeExp(-useExp);
+		mana.decreaseMana(useMana,player,playerdata.level);
 
 		//耐久値を減らす
 		tool.setDurability(durability);
 
 
+
+
 		//以降破壊する処理
-
-		playerdata.activeskilldata.blocklist = breaklist;
-
 
 		//溶岩を破壊する処理
 		for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
@@ -330,16 +298,21 @@ public class EntityListener implements Listener {
 		//エフェクトが指定されていないときの処理
 		if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
-				Util.BreakBlock(player, b, player.getLocation(), tool,true);
+				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,true);
+				SeichiAssist.allblocklist.remove(b);
 			}
-			playerdata.activeskilldata.blocklist.clear();
 		}
-		//エフェクトが指定されているときの処理
-		else{
+		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
+		else if(playerdata.activeskilldata.effectnum <= 100){
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(breaklist, start, end);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
 		}
-		playerdata.activeskilldata.blocklist.clear();
+
+		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
+		else if(playerdata.activeskilldata.effectnum > 100){
+			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+			premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
+		}
 
 	}
 
@@ -347,21 +320,31 @@ public class EntityListener implements Listener {
 	@EventHandler
 	public void onEntityExplodeEvent(EntityExplodeEvent event){
 		Entity e = event.getEntity();
-	    if ( e instanceof Projectile && e.hasMetadata("ArrowSkill") ) {
-	    	event.setCancelled(true);
-	    }else if( e instanceof Projectile && e.hasMetadata("CondenSkill")){
-	    	event.setCancelled(true);
+	    if ( e instanceof Projectile){
+	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+	    		event.setCancelled(true);
+	    	}
 	    }
+
 	}
 
 
 	@EventHandler
 	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
 		Entity e = event.getDamager();
-	    if ( e instanceof Projectile && e.hasMetadata("ArrowSkill") ) {
-	    	event.setCancelled(true);
-	    }else if( e instanceof Projectile && e.hasMetadata("CondenSkill")){
-	    	event.setCancelled(true);
+	    if ( e instanceof Projectile){
+	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+	    		event.setCancelled(true);
+	    	}
+	    }
+	}
+	@EventHandler
+	public void onPotionSplashEvent(PotionSplashEvent event){
+		Entity e = event.getPotion();
+	    if ( e instanceof Projectile){
+	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+	    		event.setCancelled(true);
+	    	}
 	    }
 	}
 

@@ -4,12 +4,10 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
@@ -71,20 +69,6 @@ public class effectCommand implements TabExecutor {
 				}
 				//反転したフラグで更新
 				playerdata.messageflag = messageflag;
-				return true;
-
-
-			}else if (args[0].equalsIgnoreCase("dr")){
-				//ef dr の時の処理
-				//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
-				if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
-					sender.sendMessage(ChatColor.GREEN + "4次元ポケットを入手するには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です。");
-					return true;
-				}
-				ItemStack itemstack = Util.getInventoryOpenItem(name);
-				Util.dropItem(player, itemstack);
-				sender.sendMessage(ChatColor.AQUA + "あなたの4次元ポケットがドロップしました。");
-				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
 				return true;
 
 

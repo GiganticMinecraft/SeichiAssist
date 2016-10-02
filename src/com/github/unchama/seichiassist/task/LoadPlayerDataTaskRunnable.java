@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -72,7 +73,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				return;
  			}
 
- 	 		if(i >= 10&&flag){
+ 	 		if(i >= 4&&flag){
  	 			//強制取得実行
  	 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "のplayerdata強制取得実行");
  	 			cancel();
@@ -86,9 +87,10 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  	 			return;
  	 		}
 
-			//loginflag書き換え処理
+			//loginflag書き換え&lastquit更新処理
 			command = "update " + table
 					+ " set loginflag = true"
+					+ ",lastquit = cast( now() as datetime )"
 					+ " where uuid like '" + struuid + "'";
 			try {
 				stmt2.executeUpdate(command);
@@ -114,8 +116,11 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	 				playerdata.minestackflag = rs2.getBoolean("minestackflag");
 	 				playerdata.messageflag = rs2.getBoolean("messageflag");
 	 				playerdata.activeskilldata.mineflagnum = rs2.getInt("activemineflagnum");
+	 				playerdata.activeskilldata.assaultflag = rs2.getBoolean("assaultflag");
 	 				playerdata.activeskilldata.skilltype = rs2.getInt("activeskilltype");
 	 				playerdata.activeskilldata.skillnum = rs2.getInt("activeskillnum");
+	 				playerdata.activeskilldata.assaulttype = rs2.getInt("assaultskilltype");
+	 				playerdata.activeskilldata.assaultnum = rs2.getInt("assaultskillnum");
 	 				playerdata.activeskilldata.arrowskill = rs2.getInt("arrowskill");
 	 				playerdata.activeskilldata.multiskill = rs2.getInt("multiskill");
 	 				playerdata.activeskilldata.breakskill = rs2.getInt("breakskill");
@@ -131,13 +136,23 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	 				playerdata.pvpflag = rs2.getBoolean("pvpflag");
 	 				playerdata.totalbreaknum = rs2.getInt("totalbreaknum");
 	 				playerdata.playtick = rs2.getInt("playtick");
-	 				playerdata.p_vote = rs2.getInt("p_vote");
+	 				playerdata.p_givenvote = rs2.getInt("p_givenvote");
 	 				playerdata.activeskilldata.effectpoint = rs2.getInt("effectpoint");
+	 				playerdata.activeskilldata.premiumeffectpoint = rs2.getInt("premiumeffectpoint");
+	 				//マナの情報
+	 				playerdata.activeskilldata.mana.setMana(rs2.getDouble("mana"));
+
 	 				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 	 				for(int i = 0 ; i < activeskilleffect.length ; i++){
 	 					int num = activeskilleffect[i].getNum();
 	 					String sqlname = activeskilleffect[i].getsqlName();
 	 					playerdata.activeskilldata.effectflagmap.put(num, rs2.getBoolean(sqlname));
+	 				}
+	 				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+	 				for(int i = 0 ; i < premiumeffect.length ; i++){
+	 					int num = premiumeffect[i].getNum();
+	 					String sqlname = premiumeffect[i].getsqlName();
+	 					playerdata.activeskilldata.premiumeffectflagmap.put(num, rs2.getBoolean(sqlname));
 	 				}
 	 				//MineStack機能の数値
 	 				playerdata.minestack.dirt = rs2.getInt("stack_dirt");
@@ -178,12 +193,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			}
 			//更新したplayerdataをplayermapに追加
 			playermap.put(uuid, playerdata);
-
-			p.sendMessage(ChatColor.GREEN + "プレイヤーデータ取得完了");
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ取得完了");
-
-			//join時とonenable時、プレイヤーデータを最新の状態に更新
-			playerdata.updateonJoin(p);
 
 			return;
 	}
