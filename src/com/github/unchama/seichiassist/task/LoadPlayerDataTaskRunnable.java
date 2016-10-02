@@ -193,12 +193,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			}
 			//更新したplayerdataをplayermapに追加
 			playermap.put(uuid, playerdata);
-
-			p.sendMessage(ChatColor.GREEN + "プレイヤーデータ取得完了");
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ取得完了");
-
-			//join時とonenable時、プレイヤーデータを最新の状態に更新
-			playerdata.updateonJoin(p);
 
 			return;
 	}

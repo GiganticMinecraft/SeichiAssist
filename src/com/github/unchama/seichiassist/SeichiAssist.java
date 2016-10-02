@@ -332,9 +332,9 @@ public class SeichiAssist extends JavaPlugin{
 		}
 
 		if(DEBUG){
-			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,480,400));
+			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimerAsynchronously(this,480,400));
 		}else{
-			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,18800,18000));
+			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimerAsynchronously(this,6800,6000));
 		}
 	}
 
