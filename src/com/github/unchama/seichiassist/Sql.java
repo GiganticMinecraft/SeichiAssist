@@ -137,14 +137,6 @@ public class Sql{
 			java.lang.System.out.println("sqlの接続に失敗したため、再接続します。");
 			if(connectMySQL()){
 				java.lang.System.out.println("接続成功");
-				try {
-					stmt.executeUpdate(command);
-				} catch (SQLException e1) {
-					java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-					exc = e.getMessage();
-					e.printStackTrace();
-					return false;
-				}
 				return true;
 			}else{
 				java.lang.System.out.println("接続に失敗しました。");
