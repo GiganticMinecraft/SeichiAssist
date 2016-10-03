@@ -78,7 +78,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//プレイヤー名を取得
 			String name = Util.getName(player);
 			//総整地量を更新
-			playerdata.calcMineBlock(player);
+			int increase = playerdata.calcMineBlock(player);
 			//Levelを設定(必ず総整地量更新後に実施！)
 			playerdata.updataLevel(player);
 			//activeskillpointを設定
@@ -165,7 +165,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//ガチャ券付与の処理
 
 			//ガチャポイントに合算
-			playerdata.gachapoint += playerdata.minuteblock.increase;
+			playerdata.gachapoint += increase;
 
 			if(playerdata.gachapoint >= config.getGachaPresentInterval() && playerdata.gachaflag){
 				ItemStack skull = Util.getskull(name);

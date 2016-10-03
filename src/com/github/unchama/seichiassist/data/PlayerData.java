@@ -279,7 +279,7 @@ public class PlayerData {
 	}
 
 	//総破壊ブロック数を更新する
-	public void calcMineBlock(Player p){
+	public int calcMineBlock(Player p){
 		int i = 0;
 		double sum = 0.0;
 		for(Material m : SeichiAssist.materiallist){
@@ -298,6 +298,7 @@ public class PlayerData {
 			p.sendMessage("整地量に追加した値:" + x);
 		}
 		totalbreaknum += x;
+		return x;
 	}
 
 	//ブロック別整地数反映量の調節
