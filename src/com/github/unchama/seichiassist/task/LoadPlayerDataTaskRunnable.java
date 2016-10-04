@@ -35,8 +35,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	public static String exc;
 	Boolean flag;
 	int i;
-	Statement stmt2 = null;
-	ResultSet rs2 = null;
+	Statement stmt = null;
+	ResultSet rs = null;
 
 	public LoadPlayerDataTaskRunnable(Player _p) {
 		p = _p;
@@ -48,7 +48,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		i = 0;
 		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
 		try {
-			stmt2 = sql.con.createStatement();
+			stmt = sql.con.createStatement();
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
@@ -60,11 +60,11 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  	 		command = "select loginflag from " + table
  	 				+ " where uuid = '" + struuid + "'";
  	 		try{
- 				rs2 = stmt2.executeQuery(command);
- 				while (rs2.next()) {
- 					   flag = rs2.getBoolean("loginflag");
+ 				rs = stmt.executeQuery(command);
+ 				while (rs.next()) {
+ 					   flag = rs.getBoolean("loginflag");
  					  }
- 				rs2.close();
+ 				rs.close();
  			} catch (SQLException e) {
  				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
  				exc = e.getMessage();
@@ -93,7 +93,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 					+ ",lastquit = cast( now() as datetime )"
 					+ " where uuid like '" + struuid + "'";
 			try {
-				stmt2.executeUpdate(command);
+				stmt.executeUpdate(command);
 			} catch (SQLException e) {
 				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 				exc = e.getMessage();
@@ -109,71 +109,71 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			command = "select * from " + table
 					+ " where uuid like '" + struuid + "'";
 			try{
-				rs2 = stmt2.executeQuery(command);
-				while (rs2.next()) {
+				rs = stmt.executeQuery(command);
+				while (rs.next()) {
 					//各種数値
-	 				playerdata.effectflag = rs2.getBoolean("effectflag");
-	 				playerdata.minestackflag = rs2.getBoolean("minestackflag");
-	 				playerdata.messageflag = rs2.getBoolean("messageflag");
-	 				playerdata.activeskilldata.mineflagnum = rs2.getInt("activemineflagnum");
-	 				playerdata.activeskilldata.assaultflag = rs2.getBoolean("assaultflag");
-	 				playerdata.activeskilldata.skilltype = rs2.getInt("activeskilltype");
-	 				playerdata.activeskilldata.skillnum = rs2.getInt("activeskillnum");
-	 				playerdata.activeskilldata.assaulttype = rs2.getInt("assaultskilltype");
-	 				playerdata.activeskilldata.assaultnum = rs2.getInt("assaultskillnum");
-	 				playerdata.activeskilldata.arrowskill = rs2.getInt("arrowskill");
-	 				playerdata.activeskilldata.multiskill = rs2.getInt("multiskill");
-	 				playerdata.activeskilldata.breakskill = rs2.getInt("breakskill");
-	 				playerdata.activeskilldata.condenskill = rs2.getInt("condenskill");
-	 				playerdata.activeskilldata.effectnum = rs2.getInt("effectnum");
-	 				playerdata.gachapoint = rs2.getInt("gachapoint");
-	 				playerdata.gachaflag = rs2.getBoolean("gachaflag");
-	 				playerdata.level = rs2.getInt("level");
-	 				playerdata.numofsorryforbug = rs2.getInt("numofsorryforbug");
-	 				playerdata.rgnum = rs2.getInt("rgnum");
-	 				playerdata.inventory = BukkitSerialization.fromBase64(rs2.getString("inventory").toString());
-	 				playerdata.dispkilllogflag = rs2.getBoolean("killlogflag");
-	 				playerdata.pvpflag = rs2.getBoolean("pvpflag");
-	 				playerdata.totalbreaknum = rs2.getInt("totalbreaknum");
-	 				playerdata.playtick = rs2.getInt("playtick");
-	 				playerdata.p_givenvote = rs2.getInt("p_givenvote");
-	 				playerdata.activeskilldata.effectpoint = rs2.getInt("effectpoint");
-	 				playerdata.activeskilldata.premiumeffectpoint = rs2.getInt("premiumeffectpoint");
+	 				playerdata.effectflag = rs.getBoolean("effectflag");
+	 				playerdata.minestackflag = rs.getBoolean("minestackflag");
+	 				playerdata.messageflag = rs.getBoolean("messageflag");
+	 				playerdata.activeskilldata.mineflagnum = rs.getInt("activemineflagnum");
+	 				playerdata.activeskilldata.assaultflag = rs.getBoolean("assaultflag");
+	 				playerdata.activeskilldata.skilltype = rs.getInt("activeskilltype");
+	 				playerdata.activeskilldata.skillnum = rs.getInt("activeskillnum");
+	 				playerdata.activeskilldata.assaulttype = rs.getInt("assaultskilltype");
+	 				playerdata.activeskilldata.assaultnum = rs.getInt("assaultskillnum");
+	 				playerdata.activeskilldata.arrowskill = rs.getInt("arrowskill");
+	 				playerdata.activeskilldata.multiskill = rs.getInt("multiskill");
+	 				playerdata.activeskilldata.breakskill = rs.getInt("breakskill");
+	 				playerdata.activeskilldata.condenskill = rs.getInt("condenskill");
+	 				playerdata.activeskilldata.effectnum = rs.getInt("effectnum");
+	 				playerdata.gachapoint = rs.getInt("gachapoint");
+	 				playerdata.gachaflag = rs.getBoolean("gachaflag");
+	 				playerdata.level = rs.getInt("level");
+	 				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
+	 				playerdata.rgnum = rs.getInt("rgnum");
+	 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
+	 				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
+	 				playerdata.pvpflag = rs.getBoolean("pvpflag");
+	 				playerdata.totalbreaknum = rs.getInt("totalbreaknum");
+	 				playerdata.playtick = rs.getInt("playtick");
+	 				playerdata.p_givenvote = rs.getInt("p_givenvote");
+	 				playerdata.activeskilldata.effectpoint = rs.getInt("effectpoint");
+	 				playerdata.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint");
 	 				//マナの情報
-	 				playerdata.activeskilldata.mana.setMana(rs2.getDouble("mana"));
+	 				playerdata.activeskilldata.mana.setMana(rs.getDouble("mana"));
 
 	 				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 	 				for(int i = 0 ; i < activeskilleffect.length ; i++){
 	 					int num = activeskilleffect[i].getNum();
 	 					String sqlname = activeskilleffect[i].getsqlName();
-	 					playerdata.activeskilldata.effectflagmap.put(num, rs2.getBoolean(sqlname));
+	 					playerdata.activeskilldata.effectflagmap.put(num, rs.getBoolean(sqlname));
 	 				}
 	 				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
 	 				for(int i = 0 ; i < premiumeffect.length ; i++){
 	 					int num = premiumeffect[i].getNum();
 	 					String sqlname = premiumeffect[i].getsqlName();
-	 					playerdata.activeskilldata.premiumeffectflagmap.put(num, rs2.getBoolean(sqlname));
+	 					playerdata.activeskilldata.premiumeffectflagmap.put(num, rs.getBoolean(sqlname));
 	 				}
 	 				//MineStack機能の数値
-	 				playerdata.minestack.dirt = rs2.getInt("stack_dirt");
-	 				playerdata.minestack.gravel = rs2.getInt("stack_gravel");
-	 				playerdata.minestack.cobblestone = rs2.getInt("stack_cobblestone");
-	 				playerdata.minestack.stone = rs2.getInt("stack_stone");
-	 				playerdata.minestack.sand = rs2.getInt("stack_sand");
-	 				playerdata.minestack.sandstone = rs2.getInt("stack_sandstone");
-	 				playerdata.minestack.netherrack = rs2.getInt("stack_netherrack");
-	 				playerdata.minestack.ender_stone = rs2.getInt("stack_ender_stone");
-	 				playerdata.minestack.grass = rs2.getInt("stack_grass");
-	 				playerdata.minestack.quartz = rs2.getInt("stack_quartz");
-	 				playerdata.minestack.quartz_ore = rs2.getInt("stack_quartz_ore");
-	 				playerdata.minestack.soul_sand = rs2.getInt("stack_soul_sand");
-	 				playerdata.minestack.magma = rs2.getInt("stack_magma");
-	 				playerdata.minestack.coal = rs2.getInt("stack_coal");
-	 				playerdata.minestack.coal_ore = rs2.getInt("stack_coal_ore");
-	 				playerdata.minestack.iron_ore = rs2.getInt("stack_iron_ore");
-	 				playerdata.minestack.packed_ice = rs2.getInt("stack_packed_ice");
+	 				playerdata.minestack.dirt = rs.getInt("stack_dirt");
+	 				playerdata.minestack.gravel = rs.getInt("stack_gravel");
+	 				playerdata.minestack.cobblestone = rs.getInt("stack_cobblestone");
+	 				playerdata.minestack.stone = rs.getInt("stack_stone");
+	 				playerdata.minestack.sand = rs.getInt("stack_sand");
+	 				playerdata.minestack.sandstone = rs.getInt("stack_sandstone");
+	 				playerdata.minestack.netherrack = rs.getInt("stack_netherrack");
+	 				playerdata.minestack.ender_stone = rs.getInt("stack_ender_stone");
+	 				playerdata.minestack.grass = rs.getInt("stack_grass");
+	 				playerdata.minestack.quartz = rs.getInt("stack_quartz");
+	 				playerdata.minestack.quartz_ore = rs.getInt("stack_quartz_ore");
+	 				playerdata.minestack.soul_sand = rs.getInt("stack_soul_sand");
+	 				playerdata.minestack.magma = rs.getInt("stack_magma");
+	 				playerdata.minestack.coal = rs.getInt("stack_coal");
+	 				playerdata.minestack.coal_ore = rs.getInt("stack_coal_ore");
+	 				playerdata.minestack.iron_ore = rs.getInt("stack_iron_ore");
+	 				playerdata.minestack.packed_ice = rs.getInt("stack_packed_ice");
 				  }
-				rs2.close();
+				rs.close();
 			} catch (SQLException | IOException e) {
 				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 				exc = e.getMessage();
@@ -182,12 +182,13 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 				//コネクション復活後にnewインスタンスのデータで上書きされるのを防止する為削除しておく
 				playermap.remove(uuid);
 
-				cancel();
+				//既に宣言済み
+				//cancel();
 				return;
 			}
 			//念のためstatement閉じておく
 			try {
-				stmt2.close();
+				stmt.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
