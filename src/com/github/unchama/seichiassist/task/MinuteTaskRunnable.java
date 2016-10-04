@@ -77,7 +77,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//プレイヤー名を取得
 			String name = Util.getName(player);
-			//総整地量を更新
+			//総整地量を更新(返り血で重み分け済みの1分間のブロック破壊量が返ってくる)
 			int increase = playerdata.calcMineBlock(player);
 			//Levelを設定(必ず総整地量更新後に実施！)
 			playerdata.updataLevel(player);
@@ -92,18 +92,18 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//以下の3つ、必ずこの順番で実施！(after更新→setIncrease→before更新)
 			//現在（after）の統計量を設定
-			playerdata.minuteblock.after = playerdata.totalbreaknum;
+			//playerdata.minuteblock.after = playerdata.totalbreaknum;
 			//1分前(before)との差を計算し、設定
-			playerdata.minuteblock.setIncrease();
+			//playerdata.minuteblock.setIncrease();
 			//現在の統計量を設定(before)
-			playerdata.minuteblock.before = playerdata.totalbreaknum;
+			//playerdata.minuteblock.before = playerdata.totalbreaknum;
 
 
 			//effectの大きさ
 			double amplifier = 0;
 			//effectのメッセージ
 			//１分間のブロック破壊量による上昇
-			amplifier = (double) playerdata.minuteblock.increase * config.getMinuteMineSpeed();
+			amplifier = (double) increase * config.getMinuteMineSpeed();
 			playerdata.effectdatalist.add(new EffectData(amplifier,2));
 
 			//プレイヤー数による上昇
@@ -179,7 +179,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました。右クリックで使えるゾ");
 				}
 			}else{
-				if(playerdata.minuteblock.increase != 0 && playerdata.gachaflag){
+				if(increase != 0 && playerdata.gachaflag){
 					player.sendMessage("あと" + ChatColor.AQUA + (config.getGachaPresentInterval()-(playerdata.gachapoint % config.getGachaPresentInterval())) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
 				}
 			}

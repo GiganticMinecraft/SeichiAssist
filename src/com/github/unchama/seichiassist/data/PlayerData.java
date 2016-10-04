@@ -28,7 +28,7 @@ public class PlayerData {
 	//内訳メッセージを出すフラグ
 	public boolean messageflag;
 	//1分間のデータを保存するincrease:１分間の採掘量
-	public MineBlock minuteblock;
+	//public MineBlock minuteblock;
 	//３０分間のデータを保存する．
 	public MineBlock halfhourblock;
 	//ガチャの基準となるポイント
@@ -80,13 +80,16 @@ public class PlayerData {
 	//アクティブスキル関連データ
 	public ActiveSkillData activeskilldata;
 
+	//ガチャボタン連打防止用
+	public boolean gachacooldownflag;
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.name = Util.getName(player);
 		this.uuid = player.getUniqueId();
 		this.effectflag = true;
 		this.messageflag = false;
-		this.minuteblock = new MineBlock();
+		//this.minuteblock = new MineBlock();
 		this.halfhourblock = new MineBlock();
 		this.gachapoint = 0;
 		this.lastgachapoint = 0;
@@ -114,13 +117,14 @@ public class PlayerData {
 		this.activeskilldata = new ActiveSkillData();
 		this.p_givenvote = 0;
 		this.votecooldownflag = true;
+		this.gachacooldownflag = true;
 
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
 	public void updateonJoin(Player player) {
 		//破壊量データ(before)を設定
-		minuteblock.before = totalbreaknum;
+		//minuteblock.before = totalbreaknum;
 		halfhourblock.before = totalbreaknum;
 		updataLevel(player);
 		NotifySorryForBug(player);

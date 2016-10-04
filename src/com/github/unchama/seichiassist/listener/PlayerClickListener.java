@@ -98,9 +98,9 @@ public class PlayerClickListener implements Listener {
 			        //クールダウン処理
 			        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
 			        if(cooldown > 5){
-			        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+			        	new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
 			        }else{
-			        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
+			        	new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
 			        }
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){
@@ -135,7 +135,7 @@ public class PlayerClickListener implements Listener {
 			        //クールダウン処理
 			        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
 			        if(cooldown > 5){
-			        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+			        	new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
 			        }
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){
@@ -227,6 +227,15 @@ public class PlayerClickListener implements Listener {
 		event.setCancelled(true);
 
 		//以下サバイバル時のガチャ券の処理↓
+
+		//連打防止クールダウン処理
+		if(!playerdata.gachacooldownflag){
+			return;
+		}else{
+	        //連打による負荷防止の為クールダウン処理
+			new CoolDownTaskRunnable(player,false,false,true).runTaskLater(plugin,4);
+		}
+
 		//オフハンドから実行された時処理を終了
 		if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
 			return;
@@ -241,7 +250,6 @@ public class PlayerClickListener implements Listener {
 			player.sendMessage("ガチャが設定されていません");
 			return;
 		}
-		new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,5);
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			int count = 1;
@@ -277,7 +285,7 @@ public class PlayerClickListener implements Listener {
 
 				//確率に応じてメッセージを送信
 				if(present.probability < 0.001){
-					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 2);
+					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH,(float)0.5, 2);
 					player.sendMessage(ChatColor.RED + "おめでとう！！！！！Gigantic☆大当たり！" + str);
 					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！\n" + ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
 				}else if(present.probability < 0.01){

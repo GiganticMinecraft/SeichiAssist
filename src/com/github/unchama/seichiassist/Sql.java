@@ -270,7 +270,7 @@ public class Sql{
 			return 0;
 		}else{
 	        //連打による負荷防止の為クールダウン処理
-	        new CoolDownTaskRunnable(player,true,false).runTaskLater(plugin,1200);
+	        new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
 		}
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
@@ -316,7 +316,7 @@ public class Sql{
 			return 0;
 		}else{
 	        //連打による負荷防止の為クールダウン処理
-	        new CoolDownTaskRunnable(player,true,false).runTaskLater(plugin,1200);
+	        new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
 		}
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
@@ -336,8 +336,19 @@ public class Sql{
 			player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
 			return 0;
 		}
- 		//0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
- 		if(numofsorryforbug > 0){
+ 		//576より多い場合はその値を返す(同時にnumofsorryforbugから-576)
+ 		if(numofsorryforbug > 576){
+ 			command = "update " + table
+ 					+ " set numofsorryforbug = numofsorryforbug - 576"
+ 					+ " where uuid like '" + struuid + "'";
+ 			if(!putCommand(command)){
+ 				player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
+ 				return 0;
+ 			}
+
+ 			return 576;
+ 		}//0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
+ 		else if(numofsorryforbug > 0){
  			command = "update " + table
  					+ " set numofsorryforbug = 0"
  					+ " where uuid like '" + struuid + "'";
@@ -464,7 +475,7 @@ public class Sql{
  				p.sendMessage("sqlにデータが保存されています。");
  			}
  			new LoadPlayerDataTaskRunnable(p).runTaskTimerAsynchronously(plugin, 0, 10);
- 			new PlayerDataUpdateOnJoinRunnable(p).runTaskTimer(plugin, 10, 10);
+ 			new PlayerDataUpdateOnJoinRunnable(p).runTaskTimer(plugin, 15, 10);
  			return true;
 
  		}else{

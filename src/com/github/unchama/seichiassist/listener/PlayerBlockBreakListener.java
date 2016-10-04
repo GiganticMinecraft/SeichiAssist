@@ -347,7 +347,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = (long) ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
 		if(cooldown >= 5){
-			new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+			new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
 		}
 	}
 
@@ -514,7 +514,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = (long) ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
 		if(cooldown >= 5){
-			new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+			new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
 		}
 	}
 }

@@ -149,7 +149,7 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("unchama")){
 				ItemStack skull = Util.getskull(Util.getName(player));
 				int count = 0;
-				while(playerdata.gachapoint >= config.getGachaPresentInterval()){
+				while(playerdata.gachapoint >= config.getGachaPresentInterval() && count < 576){
 					playerdata.gachapoint -= config.getGachaPresentInterval();
 					if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
 						Util.addItem(player,skull);
@@ -174,18 +174,17 @@ public class PlayerInventoryListener implements Listener {
 			//運営からのガチャ券受け取り
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("whitecat_haru")){
 
-				//nは最新のnumofsorryforbugの値になる
+				//nは最新のnumofsorryforbugの値になる(上限値576個)
 				int n = sql.givePlayerBug(player,playerdata);
 				//0だったら処理終了
 				if(n == 0){
 					return;
 				}
-				//先に詫びガチャ関数初期化
-				playerdata.numofsorryforbug = 0;
 
 				ItemStack skull = Util.getForBugskull(Util.getName(player));
 				int count = 0;
 				while(n > 0){
+					playerdata.numofsorryforbug--;
 					if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
 						Util.addItem(player,skull);
 					}else{
@@ -1664,20 +1663,22 @@ public class PlayerInventoryListener implements Listener {
                     }
                     //ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
                     if(gachadata.compare(m,name)){
+                    	if(SeichiAssist.DEBUG){
+                    		player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
+                    	}
                     //if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())
                            // &&gachadata.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
                         flag = true;
-                        double prob = gachadata.probability;
                         int amount = m.getAmount();
-                        if(prob < 0.001){
+                        if(gachadata.probability < 0.001){
                             //ギガンティック大当たりの部分
                             //ガチャ券に交換せずそのままアイテムを返す
                             dropitem.add(m);
-                        }else if(prob < 0.01){
+                        }else if(gachadata.probability < 0.01){
                             //大当たりの部分
                             givegacha += (12*amount);
                             big++;
-                        }else if(prob < 0.1){
+                        }else if(gachadata.probability < 0.1){
                             //当たりの部分
                             givegacha += (3*amount);
                             reg++;
