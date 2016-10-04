@@ -39,6 +39,7 @@ import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -147,6 +148,14 @@ public class PlayerInventoryListener implements Listener {
 
 			//溜まったガチャ券をインベントリへ
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("unchama")){
+				//連打防止クールダウン処理
+				if(!playerdata.gachacooldownflag){
+					return;
+				}else{
+			        //連打による負荷防止の為クールダウン処理
+					new CoolDownTaskRunnable(player,false,false,true).runTaskLater(plugin,20);
+				}
+
 				ItemStack skull = Util.getskull(Util.getName(player));
 				int count = 0;
 				while(playerdata.gachapoint >= config.getGachaPresentInterval() && count < 576){
