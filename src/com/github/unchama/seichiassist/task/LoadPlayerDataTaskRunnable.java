@@ -69,7 +69,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
  				exc = e.getMessage();
  				e.printStackTrace();
- 				i++;
+ 				cancel();
  				return;
  			}
 
@@ -98,7 +98,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 				exc = e.getMessage();
 				e.printStackTrace();
-				i++;
+				cancel();
 				return;
 			}
 
@@ -178,7 +178,11 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 				exc = e.getMessage();
 				e.printStackTrace();
-				i++;
+
+				//コネクション復活後にnewインスタンスのデータで上書きされるのを防止する為削除しておく
+				playermap.remove(uuid);
+
+				cancel();
 				return;
 			}
 			//念のためstatement閉じておく

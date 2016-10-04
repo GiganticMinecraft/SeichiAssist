@@ -24,7 +24,6 @@ import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataUpdateOnJoinRunnable;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
-import com.mysql.jdbc.CommunicationsException;
 
 //MySQL操作関数
 public class Sql{
@@ -107,6 +106,26 @@ public class Sql{
 		return true;
 	}
 
+	//接続正常ならtrue、そうでなければ再接続試行後正常でtrue、だめならfalseを返す
+	private boolean checkConnection(){
+		try {
+			if(con.isClosed()){
+				java.lang.System.out.println("sqlConnectionクローズを検出。再接続試行");
+				con = (Connection) DriverManager.getConnection(url, id, pw);
+			}
+			if(stmt.isClosed()){
+				java.lang.System.out.println("sqlStatementクローズを検出。再接続試行");
+				stmt = con.createStatement();
+				connectDB();
+			}
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    	//イクセプションった時に接続再試行
+	    	return connectMySQL();
+		}
+		return true;
+	}
+
 	/**
 	 * コネクション切断処理
 	 *
@@ -130,20 +149,14 @@ public class Sql{
 	//@return 成否
 	//@throws SQLException
 	private boolean putCommand(String command){
+		if(checkConnection()){
+			plugin.getLogger().info("sqlコネクション正常");
+		}else{
+			plugin.getLogger().warning("sqlコネクション不良を検出");
+		}
 		try {
 			stmt.executeUpdate(command);
 			return true;
-		}catch(CommunicationsException e){
-			java.lang.System.out.println("sqlの接続に失敗したため、再接続します。");
-			if(connectMySQL()){
-				java.lang.System.out.println("接続成功");
-				return true;
-			}else{
-				java.lang.System.out.println("接続に失敗しました。");
-				exc = e.getMessage();
-				e.printStackTrace();
-				return false;
-			}
 		}catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
@@ -430,6 +443,11 @@ public class Sql{
 	}
 
 	public boolean loadPlayerData(final Player p) {
+		if(checkConnection()){
+			plugin.getLogger().info("sqlコネクション正常");
+		}else{
+			plugin.getLogger().warning("sqlコネクション不良を検出");
+		}
 		String name = Util.getName(p);
 		final UUID uuid = p.getUniqueId();
 		final String struuid = uuid.toString().toLowerCase();

@@ -1612,6 +1612,10 @@ public class PlayerInventoryListener implements Listener {
         Player player = (Player)event.getPlayer();
 		UUID uuid = player.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
+		//エラー分岐
+		if(playerdata == null){
+			return;
+		}
 		String name = playerdata.name;
         Inventory inventory = event.getInventory();
 
