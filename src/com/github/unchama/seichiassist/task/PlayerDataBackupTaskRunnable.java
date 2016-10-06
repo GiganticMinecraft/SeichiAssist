@@ -25,6 +25,8 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 	public void run() {
 		Util.sendEveryMessage(ChatColor.AQUA + "プレイヤーデータセーブ中…");
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "プレイヤーデータセーブ中…");
+		//sqlコネクションチェック
+		sql.checkConnection();
 		//現在オンラインのプレイヤーのプレイヤーデータを送信
 		for(Player p : plugin.getServer().getOnlinePlayers()){
 			//UUIDを取得
@@ -36,9 +38,7 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 				plugin.getLogger().warning(Util.getName(p)+ "のplayerdataがありません。開発者に報告してください");
 				continue;
 			}
-			if(!sql.savePlayerData(playerdata)){
-				plugin.getLogger().info(ChatColor.RED + playerdata.name + "のデータ保存に失敗しました");
-			}
+			sql.savePlayerData(playerdata);
 		}
 
 		Util.sendEveryMessage(ChatColor.AQUA + "プレイヤーデータセーブ完了");

@@ -28,7 +28,7 @@ public class PlayerData {
 	//内訳メッセージを出すフラグ
 	public boolean messageflag;
 	//1分間のデータを保存するincrease:１分間の採掘量
-	public MineBlock minuteblock;
+	//public MineBlock minuteblock;
 	//３０分間のデータを保存する．
 	public MineBlock halfhourblock;
 	//ガチャの基準となるポイント
@@ -80,13 +80,16 @@ public class PlayerData {
 	//アクティブスキル関連データ
 	public ActiveSkillData activeskilldata;
 
+	//ガチャボタン連打防止用
+	public boolean gachacooldownflag;
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.name = Util.getName(player);
 		this.uuid = player.getUniqueId();
 		this.effectflag = true;
 		this.messageflag = false;
-		this.minuteblock = new MineBlock();
+		//this.minuteblock = new MineBlock();
 		this.halfhourblock = new MineBlock();
 		this.gachapoint = 0;
 		this.lastgachapoint = 0;
@@ -114,13 +117,14 @@ public class PlayerData {
 		this.activeskilldata = new ActiveSkillData();
 		this.p_givenvote = 0;
 		this.votecooldownflag = true;
+		this.gachacooldownflag = true;
 
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
 	public void updateonJoin(Player player) {
 		//破壊量データ(before)を設定
-		minuteblock.before = totalbreaknum;
+		//minuteblock.before = totalbreaknum;
 		halfhourblock.before = totalbreaknum;
 		updataLevel(player);
 		NotifySorryForBug(player);
@@ -279,7 +283,7 @@ public class PlayerData {
 	}
 
 	//総破壊ブロック数を更新する
-	public void calcMineBlock(Player p){
+	public int calcMineBlock(Player p){
 		int i = 0;
 		double sum = 0.0;
 		for(Material m : SeichiAssist.materiallist){
@@ -298,6 +302,7 @@ public class PlayerData {
 			p.sendMessage("整地量に追加した値:" + x);
 		}
 		totalbreaknum += x;
+		return x;
 	}
 
 	//ブロック別整地数反映量の調節

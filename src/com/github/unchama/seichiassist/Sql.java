@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -21,16 +22,16 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
+import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataUpdateOnJoinRunnable;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
-import com.mysql.jdbc.CommunicationsException;
 
 //MySQL操作関数
 public class Sql{
 	private final String url, db, id, pw;
 	public static Connection con = null;
-	private static Statement stmt = null;
+	private Statement stmt = null;
 
 	private ResultSet rs = null;
 
@@ -107,6 +108,33 @@ public class Sql{
 		return true;
 	}
 
+	//接続正常ならtrue、そうでなければ再接続試行後正常でtrue、だめならfalseを返す
+	public boolean checkConnection(){
+		try {
+			if(con.isClosed()){
+				java.lang.System.out.println("sqlConnectionクローズを検出。再接続試行");
+				con = (Connection) DriverManager.getConnection(url, id, pw);
+			}
+			if(stmt.isClosed()){
+				java.lang.System.out.println("sqlStatementクローズを検出。再接続試行");
+				stmt = con.createStatement();
+				connectDB();
+			}
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    	//イクセプションった時に接続再試行
+	    	if(connectMySQL()){
+	    		plugin.getLogger().info("sqlコネクション正常");
+	    		return true;
+	    	}else{
+	    		plugin.getLogger().warning("sqlコネクション不良を検出");
+	    		return false;
+	    	}
+		}
+		plugin.getLogger().info("sqlコネクション正常");
+		return true;
+	}
+
 	/**
 	 * コネクション切断処理
 	 *
@@ -129,21 +157,12 @@ public class Sql{
 	//@param command コマンド内容
 	//@return 成否
 	//@throws SQLException
+	//private変更禁止！(処理がバッティングします)
 	private boolean putCommand(String command){
+		checkConnection();
 		try {
 			stmt.executeUpdate(command);
 			return true;
-		}catch(CommunicationsException e){
-			java.lang.System.out.println("sqlの接続に失敗したため、再接続します。");
-			if(connectMySQL()){
-				java.lang.System.out.println("接続成功");
-				return true;
-			}else{
-				java.lang.System.out.println("接続に失敗しました。");
-				exc = e.getMessage();
-				e.printStackTrace();
-				return false;
-			}
 		}catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
@@ -270,7 +289,7 @@ public class Sql{
 			return 0;
 		}else{
 	        //連打による負荷防止の為クールダウン処理
-	        new CoolDownTaskRunnable(player,true,false).runTaskLater(plugin,1200);
+	        new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
 		}
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
@@ -316,7 +335,7 @@ public class Sql{
 			return 0;
 		}else{
 	        //連打による負荷防止の為クールダウン処理
-	        new CoolDownTaskRunnable(player,true,false).runTaskLater(plugin,1200);
+	        new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
 		}
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
@@ -336,8 +355,19 @@ public class Sql{
 			player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
 			return 0;
 		}
- 		//0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
- 		if(numofsorryforbug > 0){
+ 		//576より多い場合はその値を返す(同時にnumofsorryforbugから-576)
+ 		if(numofsorryforbug > 576){
+ 			command = "update " + table
+ 					+ " set numofsorryforbug = numofsorryforbug - 576"
+ 					+ " where uuid like '" + struuid + "'";
+ 			if(!putCommand(command)){
+ 				player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
+ 				return 0;
+ 			}
+
+ 			return 576;
+ 		}//0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
+ 		else if(numofsorryforbug > 0){
  			command = "update " + table
  					+ " set numofsorryforbug = 0"
  					+ " where uuid like '" + struuid + "'";
@@ -430,6 +460,8 @@ public class Sql{
  		//select count(*) from playerdata where uuid = 'struuid'
  		command = "select count(*) as count from " + table
  				+ " where uuid = '" + struuid + "'";
+ 		//sqlコネクションチェック
+ 		checkConnection();
  		try{
 			rs = stmt.executeQuery(command);
 			while (rs.next()) {
@@ -456,6 +488,10 @@ public class Sql{
  			}
  			//PlayerDataを新規作成
  			playermap.put(uuid, new PlayerData(p));
+ 			//初見さんであることを全体告知
+ 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "【初見キタ】" + p.getName() + "のプレイヤーデータ作成完了");
+ 			Util.sendEveryMessage(ChatColor.LIGHT_PURPLE+""+ChatColor.BOLD+name+"さんは初参加です。整地鯖へヨウコソ！" + ChatColor.RESET +" - " + ChatColor.YELLOW + ChatColor.UNDERLINE +  "http://seichi.click");
+ 			Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
  			return true;
 
  		}else if(count == 1){
@@ -464,7 +500,7 @@ public class Sql{
  				p.sendMessage("sqlにデータが保存されています。");
  			}
  			new LoadPlayerDataTaskRunnable(p).runTaskTimerAsynchronously(plugin, 0, 10);
- 			new PlayerDataUpdateOnJoinRunnable(p).runTaskTimer(plugin, 10, 10);
+ 			new PlayerDataUpdateOnJoinRunnable(p).runTaskTimer(plugin, 15, 10);
  			return true;
 
  		}else{
@@ -473,88 +509,10 @@ public class Sql{
  			return false;
  		}
 	}
-	public boolean savePlayerData(PlayerData playerdata) {
-		//引数のplayerdataをsqlにデータを送信
 
-		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String struuid = playerdata.uuid.toString();
-		String command = "";
-
-		command = "update " + table
-				+ " set"
-
-				//名前更新処理
-				+ " name = '" + playerdata.name + "'"
-
-				//各種数値更新処理
-				+ ",effectflag = " + Boolean.toString(playerdata.effectflag)
-				+ ",minestackflag = " + Boolean.toString(playerdata.minestackflag)
-				+ ",messageflag = " + Boolean.toString(playerdata.messageflag)
-				+ ",activemineflagnum = " + Integer.toString(playerdata.activeskilldata.mineflagnum)
-				+ ",assaultflag = " + Boolean.toString(playerdata.activeskilldata.assaultflag)
-				+ ",activeskilltype = " + Integer.toString(playerdata.activeskilldata.skilltype)
-				+ ",activeskillnum = " + Integer.toString(playerdata.activeskilldata.skillnum)
-				+ ",assaultskilltype = " + Integer.toString(playerdata.activeskilldata.assaulttype)
-				+ ",assaultskillnum = " + Integer.toString(playerdata.activeskilldata.assaultnum)
-				+ ",arrowskill = " + Integer.toString(playerdata.activeskilldata.arrowskill)
-				+ ",multiskill = " + Integer.toString(playerdata.activeskilldata.multiskill)
-				+ ",breakskill = " + Integer.toString(playerdata.activeskilldata.breakskill)
-				+ ",condenskill = " + Integer.toString(playerdata.activeskilldata.condenskill)
-				+ ",effectnum = " + Integer.toString(playerdata.activeskilldata.effectnum)
-				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
-				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
-				+ ",level = " + Integer.toString(playerdata.level)
-				//+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug) //仕様変更の為コメントアウト
-				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
-				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
-				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
-				+ ",playtick = " + Integer.toString(playerdata.playtick)
-				+ ",lastquit = cast( now() as datetime )"
-				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
-				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
-				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
-				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana())
-
-				//MineStack機能の数値更新処理
-				+ ",stack_dirt = " + Integer.toString(playerdata.minestack.dirt)
-				+ ",stack_gravel = " + Integer.toString(playerdata.minestack.gravel)
-				+ ",stack_cobblestone = " + Integer.toString(playerdata.minestack.cobblestone)
-				+ ",stack_stone = " + Integer.toString(playerdata.minestack.stone)
-				+ ",stack_sand = " + Integer.toString(playerdata.minestack.sand)
-				+ ",stack_sandstone = " + Integer.toString(playerdata.minestack.sandstone)
-				+ ",stack_netherrack = " + Integer.toString(playerdata.minestack.netherrack)
-				+ ",stack_ender_stone = " + Integer.toString(playerdata.minestack.ender_stone)
-				+ ",stack_grass = " + Integer.toString(playerdata.minestack.grass)
-				+ ",stack_quartz = " + Integer.toString(playerdata.minestack.quartz)
-				+ ",stack_quartz_ore = " + Integer.toString(playerdata.minestack.quartz_ore)
-				+ ",stack_soul_sand = " + Integer.toString(playerdata.minestack.soul_sand)
-				+ ",stack_magma = " + Integer.toString(playerdata.minestack.magma)
-				+ ",stack_coal = " + Integer.toString(playerdata.minestack.coal)
-				+ ",stack_coal_ore = " + Integer.toString(playerdata.minestack.coal_ore)
-				+ ",stack_iron_ore = " + Integer.toString(playerdata.minestack.iron_ore)
-				+ ",stack_packed_ice = " + Integer.toString(playerdata.minestack.packed_ice);
-
-
-		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
-		for(int i = 0; i < activeskilleffect.length ; i++){
-			String sqlname = activeskilleffect[i].getsqlName();
-			int num = activeskilleffect[i].getNum();
-			Boolean flag = playerdata.activeskilldata.effectflagmap.get(num);
-			command = command +
-					"," + sqlname + " = " + Boolean.toString(flag);
-		}
-		ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-		for(int i = 0; i < premiumeffect.length ; i++){
-			String sqlname = premiumeffect[i].getsqlName();
-			int num = premiumeffect[i].getNum();
-			Boolean flag = playerdata.activeskilldata.premiumeffectflagmap.get(num);
-			command = command +
-					"," + sqlname + " = " + Boolean.toString(flag);
-		}
-		//最後の処理
-		command = command + " where uuid like '" + struuid + "'";
-
-		return putCommand(command);
+	//ondisable"以外"の時のプレイヤーデータセーブ処理
+	public void savePlayerData(PlayerData playerdata){
+		new PlayerDataSaveTaskRunnable(playerdata,false).runTaskTimerAsynchronously(plugin, 0, 10);
 	}
 
 

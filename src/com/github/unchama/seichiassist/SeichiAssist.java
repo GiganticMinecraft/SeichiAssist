@@ -40,6 +40,7 @@ import com.github.unchama.seichiassist.listener.PlayerQuitListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
+import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
 
 
@@ -264,6 +265,8 @@ public class SeichiAssist extends JavaPlugin{
 			b.setType(Material.AIR);
 		}
 
+		//sqlコネクションチェック
+		sql.checkConnection();
 		for(Player p : getServer().getOnlinePlayers()){
 			//UUIDを取得
 			UUID uuid = p.getUniqueId();
@@ -279,18 +282,13 @@ public class SeichiAssist extends JavaPlugin{
 			//quit時とondisable時、プレイヤーデータを最新の状態に更新
 			playerdata.updateonQuit(p);
 
-			//mysqlに送信
-			if(!sql.savePlayerData(playerdata)){
-				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
-			}else{
-				getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ保存完了");
-			}
-			//ログインフラグ折る
+			//ログインフラグ折る(必ずsaveplayerdataの前に実行)
 			if(!sql.logoutPlayerData(playerdata)){
 				getLogger().warning(playerdata.name + "のloginflag->false化に失敗しました");
 			}else{
 				getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のloginflag回収完了");
 			}
+			new PlayerDataSaveTaskRunnable(playerdata,true).run();
 		}
 
 

@@ -51,7 +51,7 @@ public class GachaData {
 		List<String> mlore,lore;
 		lore = this.itemstack.getItemMeta().getLore();
 		mlore = m.getItemMeta().getLore();
-		if(mlore.containsAll(lore)){
+		if(mlore.containsAll(lore)&&this.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
 			int index = Util.LoreContains(mlore, "所有者");
 			if(index >= 0){
 				//保有者であれば交換
