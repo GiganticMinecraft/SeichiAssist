@@ -302,7 +302,7 @@ public class Sql{
 		String struuid = playerdata.uuid.toString();
 		int p_vote = 0;
 		int p_givenvote = 0;
-		String command = "select p_vote,p_givenvote from " + table
+		String command = "select p_vote,p_givenvote from " + db + "."  + table
 				+ " where uuid = '" + struuid + "'";
  		try{
 			rs = stmt.executeQuery(command);
