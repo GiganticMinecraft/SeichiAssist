@@ -37,8 +37,10 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	int i;
 	Statement stmt = null;
 	ResultSet rs = null;
+	String db;
 
 	public LoadPlayerDataTaskRunnable(Player _p) {
+		db = SeichiAssist.config.getDB();
 		p = _p;
 		name = Util.getName(p);
 		uuid = p.getUniqueId();
@@ -59,7 +61,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			e1.printStackTrace();
 		}
 
- 		command = "select loginflag from " + table
+ 		command = "select loginflag from " + db + "." + table
  				+ " where uuid = '" + struuid + "'";
  		try{
 			rs = stmt.executeQuery(command);
@@ -90,7 +92,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  		}
 
 		//loginflag書き換え&lastquit更新処理
-		command = "update " + table
+		command = "update " + db + "." + table
 				+ " set loginflag = true"
 				+ ",lastquit = cast( now() as datetime )"
 				+ " where uuid like '" + struuid + "'";
@@ -108,7 +110,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		PlayerData playerdata = new PlayerData(p);
 
 		//playerdataをsqlデータから得られた値で更新
-		command = "select * from " + table
+		command = "select * from " + db + "." + table
 				+ " where uuid like '" + struuid + "'";
 		try{
 			rs = stmt.executeQuery(command);
