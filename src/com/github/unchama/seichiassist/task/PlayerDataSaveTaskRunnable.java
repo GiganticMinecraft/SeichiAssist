@@ -30,10 +30,12 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 	//ondisableからの呼び出し時のみtrueにしておくフラグ
 	boolean isOnDisable;
 	public static String exc;
+	String db;
 	Statement stmt = null;
 	ResultSet rs = null;
 
 	public PlayerDataSaveTaskRunnable(PlayerData _playerdata,boolean _isondisable) {
+		db = SeichiAssist.config.getDB();
 		command = "";
 		i = 0;
 		playerdata = _playerdata;
@@ -57,7 +59,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		String struuid = playerdata.uuid.toString();
 		String command = "";
 
-		command = "update " + table
+		command = "update " + db + "." + table
 				+ " set"
 
 				//名前更新処理
