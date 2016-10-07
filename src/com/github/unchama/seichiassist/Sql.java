@@ -467,7 +467,7 @@ public class Sql{
  		//select count(*) from playerdata where uuid = 'struuid'
  		command = "select count(*) as count from " + db + "." + table
  				+ " where uuid = '" + struuid + "'";
- 		//sqlコネクションチェック
+ 		//sqlコネクションチェック(mysql接続が切れたときの為のフェイルセーフ機構(ダメならリログすれば直る))
  		checkConnection();
  		try{
 			rs = stmt.executeQuery(command);
