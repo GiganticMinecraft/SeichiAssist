@@ -519,7 +519,7 @@ public class Sql{
 
 	//ondisable"以外"の時のプレイヤーデータセーブ処理
 	public void savePlayerData(PlayerData playerdata){
-		new PlayerDataSaveTaskRunnable(playerdata,false).runTaskTimerAsynchronously(plugin, 0, 10);
+		new PlayerDataSaveTaskRunnable(playerdata,false).runTaskAsynchronously(plugin);
 	}
 
 

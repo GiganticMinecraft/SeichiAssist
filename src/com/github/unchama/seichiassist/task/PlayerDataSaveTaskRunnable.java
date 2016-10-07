@@ -152,7 +152,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
  				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + playerdata.name + "のプレイヤーデータ保存失敗");
  			}
  			return;
- 		}else if(i >= 4&&!result){
+ 		}else if(/*i >= 4&&*/!result){
  			//諦める
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + playerdata.name + "のプレイヤーデータ保存失敗");
  			cancel();
@@ -162,12 +162,12 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + playerdata.name + "のプレイヤーデータ保存完了");
  			cancel();
  			return;
- 		}else{
+ 		}/*else{
  			//再試行
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + playerdata.name + "のプレイヤーデータ保存再試行(" + (i+1) + "回目)");
  			i++;
  			return;
- 		}
+ 		}*/
 	}
 
 }
