@@ -54,9 +54,10 @@ public class SeichiAssist extends JavaPlugin{
 
 	public static final String PLAYERDATA_TABLENAME = "playerdata";
 	public static final String GACHADATA_TABLENAME = "gachadata";
+	public static final String DONATEDATA_TABLENAME = "donatedata";
 
 	private HashMap<String, TabExecutor> commandlist;
-	public Sql sql;
+	public static Sql sql;
 	public static Config config;
 
 

@@ -7,15 +7,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -94,6 +98,11 @@ public class Sql{
 			plugin.getLogger().info("gachadataテーブル作成に失敗しました");
 			return false;
 		}
+		if(!createDonateDataTable(SeichiAssist.DONATEDATA_TABLENAME)){
+			plugin.getLogger().info("donatedataテーブル作成に失敗しました");
+			return false;
+		}
+
 
 		return true;
 	}
@@ -288,6 +297,50 @@ public class Sql{
 		return putCommand(command);
 	}
 
+	public boolean createGachaDataTable(String table){
+		if(table==null){
+			return false;
+		}
+		//テーブルが存在しないときテーブルを新規作成
+		String command =
+				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
+				"(id int auto_increment unique,"
+				+ "amount int(11))";
+		if(!putCommand(command)){
+			return false;
+		}
+		//必要なcolumnを随時追加
+		command =
+				"alter table " + db + "." + table +
+				" add column if not exists probability double default 0.0" +
+				",add column if not exists itemstack blob default null" +
+				"";
+		return putCommand(command);
+	}
+	public boolean createDonateDataTable(String table){
+		if(table==null){
+			return false;
+		}
+		//テーブルが存在しないときテーブルを新規作成
+		String command =
+				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
+				"(id int auto_increment unique)";
+		if(!putCommand(command)){
+			return false;
+		}
+		//必要なcolumnを随時追加
+		command =
+				"alter table " + db + "." + table +
+				" add column if not exists playername varchar(20) default null" +
+				",add column if not exists playeruuid varchar(128) default null" +
+				",add column if not exists effectnum int default null" +
+				",add column if not exists effectname varchar(20) default null" +
+				",add column if not exists getpoint int default 0" +
+				",add column if not exists usepoint int default 0" +
+				",add column if not exists date datetime default null" +
+				"";
+		return putCommand(command);
+	}
 	//投票特典配布時の処理(p_givenvoteの値の更新もココ)
 	public int compareVotePoint(Player player,final PlayerData playerdata){
 
@@ -434,26 +487,7 @@ public class Sql{
 	}
 
 
-	public boolean createGachaDataTable(String table){
-		if(table==null){
-			return false;
-		}
-		//テーブルが存在しないときテーブルを新規作成
-		String command =
-				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
-				"(id int auto_increment unique,"
-				+ "amount int(11))";
-		if(!putCommand(command)){
-			return false;
-		}
-		//必要なcolumnを随時追加
-		command =
-				"alter table " + db + "." + table +
-				" add column if not exists probability double default 0.0" +
-				",add column if not exists itemstack blob default null" +
-				"";
-		return putCommand(command);
-	}
+
 
 	public boolean loadPlayerData(final Player p) {
 		String name = Util.getName(p);
@@ -690,6 +724,85 @@ public class Sql{
 				return null;
 			}
 		return lastquit;
+	}
+
+	//
+	public boolean addPremiumEffectBuy(PlayerData playerdata,
+			ActiveSkillPremiumEffect effect) {
+		String table = SeichiAssist.DONATEDATA_TABLENAME;
+		//
+		String command = "insert into " + db + "." + table
+					+ " (playername,playeruuid,effectnum,effectname,usepoint,date) "
+					+ "value("
+					+ "'" + playerdata.name + "',"
+					+ "'" + playerdata.uuid.toString() + "',"
+					+ Integer.toString(effect.getNum()) + ","
+					+ "'" + effect.getsqlName() + "',"
+					+ Integer.toString(effect.getUsePoint()) + ","
+					+ "cast( now() as datetime )"
+					+ ")";
+		return putCommand(command);
+	}
+	public boolean addDonate(String name,int point) {
+		String table = SeichiAssist.DONATEDATA_TABLENAME;
+		String command = "insert into " + db + "." + table
+					+ " (playername,getpoint,date) "
+					+ "value("
+					+ "'" + name + "',"
+					+ Integer.toString(point) + ","
+					+ "cast( now() as datetime )"
+					+ ")";
+		return putCommand(command);
+	}
+
+	public boolean loadDonateData(PlayerData playerdata, Inventory inventory) {
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		Material material;
+		List<String> lore = new ArrayList<String>();
+		int count = 0;
+		ActiveSkillPremiumEffect effect[] = ActiveSkillPremiumEffect.values();
+
+		String table = SeichiAssist.DONATEDATA_TABLENAME;
+		String command = "select * from " + db + "." + table + " where playername = '" + playerdata.name + "'";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				//ポイント購入の処理
+				if(rs.getInt("getpoint")>0){
+					itemstack = new ItemStack(Material.DIAMOND);
+					itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND);
+					itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付");
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "" + "金額：" + rs.getInt("getpoint")*100,
+							ChatColor.RESET + "" +  ChatColor.GREEN + "" + "プレミアムエフェクトポイント：+" + rs.getInt("getpoint"),
+							ChatColor.RESET + "" +  ChatColor.GREEN + "" + "日時：" + rs.getString("date")
+							);
+					itemmeta.setLore(lore);
+					itemstack.setItemMeta(itemmeta);
+					inventory.setItem(count,itemstack);
+				}else if(rs.getInt("usepoint")>0){
+					int num = rs.getInt("effectnum")-1;
+					material = effect[num].getMaterial();
+					itemstack = new ItemStack(material);
+					itemmeta = Bukkit.getItemFactory().getItemMeta(material);
+					itemmeta.setDisplayName(ChatColor.RESET + "" +  ChatColor.YELLOW + "購入エフェクト：" + effect[num].getName());
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GOLD + "" + "プレミアムエフェクトポイント： -" + rs.getInt("usepoint"),
+							ChatColor.RESET + "" +  ChatColor.GOLD + "" + "日時：" + rs.getString("date")
+							);
+					itemmeta.setLore(lore);
+					itemstack.setItemMeta(itemmeta);
+					inventory.setItem(count,itemstack);
+				}
+				count ++;
+			}
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+ 		return true;
 	}
 
 }

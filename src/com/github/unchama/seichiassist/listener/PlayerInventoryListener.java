@@ -808,6 +808,12 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "エフェクト:未設定  が選択されました");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}
+				return;
+			}else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getBuyRecordMenuData(player));
+				return;
 			}else{
 				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 				for(int i = 0; i < skilleffect.length ; i++){
@@ -869,6 +875,9 @@ public class PlayerInventoryListener implements Listener {
 						}else{
 							premiumeffect[i].setObtained(playerdata.activeskilldata.premiumeffectflagmap);
 							player.sendMessage(ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "プレミアムエフェクト：" + premiumeffect[i].getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "" + " を解除しました");
+							if(!sql.addPremiumEffectBuy(playerdata,premiumeffect[i])){
+								player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。");
+							}
 							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 							playerdata.activeskilldata.premiumeffectpoint -= premiumeffect[i].getUsePoint();
 							player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
@@ -1530,7 +1539,7 @@ public class PlayerInventoryListener implements Listener {
 
 		}
 	}
-	//ランキングメニュー処理
+
 	//ランキングメニュー
 	@EventHandler
 	public void onPlayerClickSeichiRankingMenuEvent(InventoryClickEvent event){
@@ -1575,6 +1584,54 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+		}
+	}
+	//購入履歴メニュー
+	@EventHandler
+	public void onPlayerClickPremiumLogMenuEvent(InventoryClickEvent event){
+		//外枠のクリック処理なら終了
+		if(event.getClickedInventory() == null){
+			return;
+		}
+
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
+
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが36でない時終了
+		if(topinventory.getSize() != 36){
+			return;
+		}
+		Player player = (Player)he;
+
+		//インベントリ名が以下の時処理
+		if(topinventory.getTitle().equals(ChatColor.BLUE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
 				return;
 			}
 		}
