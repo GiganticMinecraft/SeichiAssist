@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,11 +24,14 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class MenuInventoryData {
+	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
+	static Sql sql = SeichiAssist.sql;
 	//1ページ目メニュー
 	public static Inventory getMenuData(Player p){
 		//プレイヤーを取得
@@ -1989,6 +1993,14 @@ public class MenuInventoryData {
 				inventory.setItem(0,itemstack);
 
 
+				itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
+				itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで閲覧");
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(2,itemstack);
+
 				itemstack = new ItemStack(Material.GLASS,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
 				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -2053,6 +2065,32 @@ public class MenuInventoryData {
 					}
 					inventory.setItem(i + 27,itemstack);
 				}
+
+		return inventory;
+	}
+	//プレミア購入履歴表示
+	public static Inventory getBuyRecordMenuData(Player player) {
+		PlayerData playerdata = playermap.get(player.getUniqueId());
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.BLUE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴");
+		ItemStack itemstack;
+		SkullMeta skullmeta;
+		List<String> lore = new ArrayList<String>();
+
+		// 1ページ目を開く
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エフェクト選択メニューへ");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowLeft");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(27,itemstack);
+
+		sql.loadDonateData(playerdata,inventory);
+
+
 
 		return inventory;
 	}

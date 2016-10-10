@@ -162,7 +162,7 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage(ChatColor.YELLOW + name + "のプレミアムエフェクトポイント配布処理開始…");
 
 				//mysqlにも書き込んどく
-				if(!sql.addPremiumEffectPoint(name,num)){
+				if(!sql.addPremiumEffectPoint(name,num) || !sql.addDonate(name, num)){
 					sender.sendMessage(ChatColor.RED + "失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "成功");
