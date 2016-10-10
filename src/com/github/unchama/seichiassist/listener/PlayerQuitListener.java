@@ -38,8 +38,6 @@ public class PlayerQuitListener implements Listener {
 		playerdata.updateonQuit(player);
 		//タスクをすべて終了する
 		playerdata.activeskilldata.RemoveAllTask();
-		//sqlコネクションチェック
-		sql.checkConnection();
 		//ログインフラグ折る(必ずsaveplayerdataの前に実行)
 		if(!sql.logoutPlayerData(playerdata)){
 			plugin.getLogger().warning(playerdata.name + "のloginflag->false化に失敗しました");

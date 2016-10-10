@@ -501,7 +501,7 @@ public class Sql{
  		//select count(*) from playerdata where uuid = 'struuid'
  		command = "select count(*) as count from " + db + "." + table
  				+ " where uuid = '" + struuid + "'";
- 		//sqlコネクションチェック
+ 		//sqlコネクションチェック(mysql接続が切れたときの為のフェイルセーフ機構(ダメならリログすれば直る))
  		checkConnection();
  		try{
 			rs = stmt.executeQuery(command);
@@ -553,7 +553,7 @@ public class Sql{
 
 	//ondisable"以外"の時のプレイヤーデータセーブ処理
 	public void savePlayerData(PlayerData playerdata){
-		new PlayerDataSaveTaskRunnable(playerdata,false).runTaskTimerAsynchronously(plugin, 0, 10);
+		new PlayerDataSaveTaskRunnable(playerdata,false).runTaskAsynchronously(plugin);
 	}
 
 

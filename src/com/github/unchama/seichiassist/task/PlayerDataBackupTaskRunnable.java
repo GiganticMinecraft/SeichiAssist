@@ -25,8 +25,6 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 	public void run() {
 		Util.sendEveryMessage(ChatColor.AQUA + "プレイヤーデータセーブ中…");
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "プレイヤーデータセーブ中…");
-		//sqlコネクションチェック
-		sql.checkConnection();
 		//現在オンラインのプレイヤーのプレイヤーデータを送信
 		for(Player p : plugin.getServer().getOnlinePlayers()){
 			//UUIDを取得
