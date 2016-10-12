@@ -5,17 +5,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import net.coreprotect.CoreProtectAPI;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -37,6 +42,54 @@ import com.github.unchama.seichiassist.util.Util;
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private SeichiAssist plugin = SeichiAssist.plugin;
+	//ログの処理
+	@SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onSeichiLogRemoveEvent(BlockBreakEvent event){
+		Player player = event.getPlayer();
+		Block breakblock = event.getBlock();
+		//設置するブロックの状態を取得
+		BlockState blockstate = breakblock.getState();
+		//設置するブロックのデータを取得
+		byte data = blockstate.getData().getData();
+
+		if(BreakUtil.equalignoreWorld(player.getWorld().getName()) && breakblock.getY() < 8){
+			//コアプロテクトのクラスを取得
+			CoreProtectAPI CoreProtect = Util.getCoreProtect();
+			//破壊ログを設定
+			Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
+			//もし失敗したらプレイヤーに報告し処理を終了
+			if(!success){
+				player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
+				return;
+			}
+		}
+		return;
+	}
+	//ログの処理
+	@SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onSeichiLogPlaceEvent(BlockPlaceEvent event){
+		Player player = event.getPlayer();
+		Block placeblock = event.getBlock();
+		//設置するブロックの状態を取得
+		BlockState blockstate = placeblock.getState();
+		//設置するブロックのデータを取得
+		byte data = blockstate.getData().getData();
+
+		if(BreakUtil.equalignoreWorld(player.getWorld().getName()) && placeblock.getY() < 8){
+			//コアプロテクトのクラスを取得
+			CoreProtectAPI CoreProtect = Util.getCoreProtect();
+			//破壊ログを設定
+			Boolean success = CoreProtect.logPlacement(player.getName(), placeblock.getLocation(), blockstate.getType(),data);
+			//もし失敗したらプレイヤーに報告し処理を終了
+			if(!success){
+				player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
+				return;
+			}
+		}
+		return;
+	}
 	//アクティブスキルの実行
 	@EventHandler
 	public void onPlayerActiveSkillEvent(BlockBreakEvent event){

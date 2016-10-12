@@ -188,7 +188,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 					if(SeichiAssist.materiallist.contains(breakblock.getType())
 							|| lava_materialflag || water_materialflag
 							){
-						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block) || !breakflag){
+						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || !breakflag){
 							if(BreakUtil.canBreak(player, breakblock)){
 								if(lava_materialflag){
 									lavalist.add(breakblock);
