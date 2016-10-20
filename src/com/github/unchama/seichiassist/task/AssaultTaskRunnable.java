@@ -22,6 +22,7 @@ import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BreakUtil;
+import com.github.unchama.seichiassist.util.Util;
 
 public class AssaultTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -69,6 +70,17 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		//もしサバイバルでなければ処理を終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
 			player.sendMessage(ChatColor.GREEN + "ゲームモードをサバイバルに変更してください。");
+			errorflag = true;
+			return;
+		}
+
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+		//整地ワールドではない時スキルを発動しない。
+		if(!player.getWorld().getName().equalsIgnoreCase(worldname)){
+			player.sendMessage(ChatColor.GREEN + "スキルは整地ワールドでのみ使用可能です。");
 			errorflag = true;
 			return;
 		}
@@ -164,9 +176,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 
 
-		//壊されるブロックの宣言
-		Block breakblock;
-		//壊されるエリアの設定
+
 		//現在のプレイヤーの向いている方向
 		String dir = BreakUtil.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
@@ -174,6 +184,19 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			assaultarea.setDir(dir);
 			assaultarea.makeArea();
 		}
+		double gravity = BreakUtil.getGravity(assaultarea, block, 1);
+
+		if(SeichiAssist.DEBUG){
+			player.sendMessage(ChatColor.RED + "重力値：" + Util.Decimal(gravity));
+		}
+		if(gravity > 1){
+			player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
+			setCancel();
+			return;
+		}
+		//壊されるブロックの宣言
+		Block breakblock;
+		//壊されるエリアの設定
 		Coordinate start = assaultarea.getStartList().get(0);
 		Coordinate end = assaultarea.getEndList().get(0);
 
@@ -196,7 +219,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 									waterlist.add(breakblock);
 								}else{
 									breaklist.add(breakblock);
-									SeichiAssist.allblocklist.add(breakblock);
+									//SeichiAssist.allblocklist.add(breakblock);
 								}
 							}
 						}
@@ -204,9 +227,6 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 				}
 			}
 		}
-		//重力値計算
-		double gravity = BreakUtil.getGravity(player,block,end.y,1);
-
 		// 実際に破壊するブロック数の計算分岐
 		int breaksum = 0;
 		if(waterflag){
@@ -230,7 +250,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		short durability = (short) (tool.getDurability() + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaksum));
 
 
-		//重力値の判定
+		/*//重力値の判定
 		if(gravity > 15){
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
@@ -238,7 +258,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			SeichiAssist.allblocklist.removeAll(breaklist);
 			setCancel();
 			return;
-		}
+		}*/
 
 		//実際に経験値を減らせるか判定
 		if(!mana.hasMana(useMana)){
@@ -293,10 +313,10 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			}
 			for(Block b:breaklist){
 				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,false);
-				SeichiAssist.allblocklist.remove(b);
+				//SeichiAssist.allblocklist.remove(b);
 			}
 		}
-		SeichiAssist.allblocklist.removeAll(breaklist);
+		//SeichiAssist.allblocklist.removeAll(breaklist);
 	}
 
 	private boolean isCanceled() {

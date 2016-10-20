@@ -25,6 +25,8 @@ import org.bukkit.material.Dye;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.BreakArea;
+import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class BreakUtil {
@@ -526,14 +528,29 @@ public class BreakUtil {
 		return null;
 		}
 	}
-	public static double getGravity(Player player, Block block, int breakyloc, int weight) {
-		int gravity = 2;
-		while(!SeichiAssist.transparentmateriallist.contains(block.getRelative(0,gravity,0).getType())){
-			gravity++;
+	public static double getGravity(BreakArea area, Block block, int weight) {
+		int gravity = 1;
+		Coordinate start = area.getAllStart();
+		Coordinate end = area.getAllEnd();
+		Block calcblock;
+
+		for(int x = start.x ; x <= end.x ; x++){
+			for(int z = start.z ; z <= end.z ; z++){
+				for(int y = end.y + 1; y <= end.y + 11; y++){
+					//最大10ブロック分
+					calcblock = block.getRelative(x, y, z);
+					if(!SeichiAssist.gravitymateriallist.contains(calcblock.getType()) &&
+						!SeichiAssist.cancelledmateriallist.contains(calcblock.getType()) &&
+						!SeichiAssist.transparentmateriallist.contains(calcblock.getType())){
+						//もし透過許可ブロックに入っていないブロックだった場合重力値を加算
+						gravity++;
+					}
+				}
+			}
 		}
-		gravity --;
-		gravity -= breakyloc;
-		gravity= gravity*weight + 1;
+		//重力値に重みづけ
+		gravity = gravity*weight;
+		//１より小さくなった場合は１に変更
 		if(gravity < 1)gravity = 1;
 		return gravity;
 	}

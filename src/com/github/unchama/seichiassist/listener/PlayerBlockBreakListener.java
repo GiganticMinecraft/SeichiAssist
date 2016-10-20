@@ -119,25 +119,31 @@ public class PlayerBlockBreakListener implements Listener {
 			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
-		ActiveSkill[] activeskill = ActiveSkill.values();
-		String worldname = "world_sw";
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
 		if(SeichiAssist.DEBUG){
-			worldname = "world";
+			worldname = SeichiAssist.DEBUGWORLDNAME;
 		}
-		if(player.getWorld().getName().equalsIgnoreCase(worldname) &&
-			!SeichiAssist.gravitymateriallist.contains(block.getType()) &&
-			!SeichiAssist.cancelledmateriallist.contains(block.getType())){
+		//整地ワールドではない時スキルを発動しない。
+		if(!player.getWorld().getName().equalsIgnoreCase(worldname)){
+			return;
+		}
+		BreakArea area = playerdata.activeskilldata.area;
+		//現在のプレイヤーの向いている方向
+		String dir = BreakUtil.getCardinalDirection(player);
+		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
+		if(!dir.equals(area.getDir())){
+			area.setDir(dir);
+			area.makeArea();
+		}
+		double gravity = BreakUtil.getGravity(area, block, 1);
 
-
-			int type = playerdata.activeskilldata.skilltype-1;
-			if(type < 0){
-				type = 0;
-			}
-			if(BreakUtil.getGravity(player, block, activeskill[type].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
-				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
-				event.setCancelled(true);
-				return;
-			}
+		if(SeichiAssist.DEBUG){
+			player.sendMessage(ChatColor.RED + "重力値：" + Util.Decimal(gravity));
+		}
+		if(gravity > 1){
+			player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
+			event.setCancelled(true);
+			return;
 		}
 
 		//プレイヤーインベントリを取得
@@ -226,15 +232,15 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
-			runMultiSkill(player, block, tool);
+			runMultiSkill(player,gravity,block, tool);
 
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
-			runBreakSkill(player, block, tool);
+			runBreakSkill(player,gravity,block, tool);
 
 		}
 	}
 	//複数範囲破壊
-	private void runMultiSkill(Player player, Block block,
+	private void runMultiSkill(Player player,double gravity, Block block,
 			ItemStack tool) {
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
@@ -258,13 +264,6 @@ public class PlayerBlockBreakListener implements Listener {
 		//実際に破壊するブロック数
 		long breakblocknum = 0;
 		final BreakArea area = playerdata.activeskilldata.area;
-		//現在のプレイヤーの向いている方向
-		String dir = BreakUtil.getCardinalDirection(player);
-		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
-		if(!dir.equals(area.getDir())){
-			area.setDir(dir);
-			area.makeArea();
-		}
 
 		final List<Coordinate> startlist = area.getStartList();
 		final List<Coordinate> endlist = area.getEndList();
@@ -325,11 +324,6 @@ public class PlayerBlockBreakListener implements Listener {
 					}
 				}
 			}
-
-			//重力値計算
-			double gravity = BreakUtil.getGravity(player,block,end.y,1);
-
-
 			//減る経験値計算
 			//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
@@ -405,7 +399,7 @@ public class PlayerBlockBreakListener implements Listener {
 	}
 
 	//範囲破壊実行処理
-	private void runBreakSkill(Player player,Block block,ItemStack tool) {
+	private void runBreakSkill(Player player,double gravity,Block block,ItemStack tool) {
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
@@ -425,13 +419,7 @@ public class PlayerBlockBreakListener implements Listener {
 		Block breakblock;
 		//壊される範囲を設定
 		BreakArea area = playerdata.activeskilldata.area;
-		//現在のプレイヤーの向いている方向
-		String dir = BreakUtil.getCardinalDirection(player);
-		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
-		if(!dir.equals(area.getDir())){
-			area.setDir(dir);
-			area.makeArea();
-		}
+
 		Coordinate start = area.getStartList().get(0);
 		Coordinate end = area.getEndList().get(0);
 		//エフェクト用に壊されるブロック全てのリストデータ
@@ -469,13 +457,6 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 		}
 
-
-
-
-		//重力値計算
-		double gravity = BreakUtil.getGravity(player,block,end.y,1);
-
-
 		//減るマナ計算
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 		Coordinate breaklength = area.getBreakLength();
@@ -495,13 +476,13 @@ public class PlayerBlockBreakListener implements Listener {
 		durability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavalist.size());
 
 
-		//重力値の判定
+		/*//重力値の判定
 		if(gravity > 15){
 			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
 			SeichiAssist.allblocklist.removeAll(breaklist);
 			return;
 		}
-
+		*/
 
 		//実際に経験値を減らせるか判定
 		if(!mana.hasMana(useMana)){
