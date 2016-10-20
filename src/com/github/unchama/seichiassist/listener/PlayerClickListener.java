@@ -77,6 +77,14 @@ public class PlayerClickListener implements Listener {
 		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0){
 			return;
 		}
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+		//整地ワールドではない時スキルを発動しない。
+		if(!player.getWorld().getName().equalsIgnoreCase(worldname)){
+			return;
+		}
 
 
 
@@ -330,6 +338,14 @@ public class PlayerClickListener implements Listener {
 			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
 			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
 			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return;
+		}
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+		//整地ワールドではない時スキルを発動しない。
+		if(!player.getWorld().getName().equalsIgnoreCase(worldname)){
 			return;
 		}
 		//アクティブスキルを発動できるレベルに達していない場合処理終了

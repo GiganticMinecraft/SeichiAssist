@@ -25,24 +25,16 @@ import org.bukkit.material.Dye;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.BreakArea;
+import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class BreakUtil {
 	//他のプラグインの影響があってもブロックを破壊できるのか
-	@SuppressWarnings("deprecation")
 	public static boolean canBreak(Player player ,Block breakblock) {
 		if(!player.isOnline() || breakblock == null){
 			return false;
 		}
-		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-		UUID uuid = player.getUniqueId();
-		PlayerData playerdata = playermap.get(uuid);
-
-		//壊されるブロックの状態を取得
-		BlockState blockstate = breakblock.getState();
-		//壊されるブロックのデータを取得
-		byte data = blockstate.getData().getData();
-
 
 		//壊されるブロックがワールドガード範囲だった場合処理を終了
 		if(!Util.getWorldGuard().canBuild(player, breakblock.getLocation())){
@@ -50,21 +42,12 @@ public class BreakUtil {
 			return false;
 		}
 
-		if(!equalignoreWorld(player.getWorld().getName())){
-			//コアプロテクトのクラスを取得
-			CoreProtectAPI CoreProtect = Util.getCoreProtect();
-			//破壊ログを設定
-			Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
-			//もし失敗したらプレイヤーに報告し処理を終了
-			if(!success){
-				player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
-				return false;
-			}
-		}
+		BreakUtil.logRemove(player,breakblock);
+
 
 		return true;
 	}
-	private static boolean equalignoreWorld(String name) {
+	public static boolean equalignoreWorld(String name) {
 		List<String> ignoreworldlist = SeichiAssist.ignoreWorldlist;
 		for(String s : ignoreworldlist){
 			if(name.equalsIgnoreCase(s.toLowerCase())){
@@ -545,16 +528,51 @@ public class BreakUtil {
 		return null;
 		}
 	}
-	public static double getGravity(Player player, Block block, int breakyloc, int weight) {
-		int gravity = 2;
-		while(!SeichiAssist.transparentmateriallist.contains(block.getRelative(0,gravity,0).getType())){
-			gravity++;
+	public static double getGravity(BreakArea area, Block block, int weight) {
+		int gravity = 1;
+		Coordinate start = area.getAllStart();
+		Coordinate end = area.getAllEnd();
+		Block calcblock;
+
+		for(int x = start.x ; x <= end.x ; x++){
+			for(int z = start.z ; z <= end.z ; z++){
+				for(int y = end.y + 1; y <= end.y + 11; y++){
+					//最大10ブロック分
+					calcblock = block.getRelative(x, y, z);
+					if(!SeichiAssist.gravitymateriallist.contains(calcblock.getType()) &&
+						!SeichiAssist.cancelledmateriallist.contains(calcblock.getType()) &&
+						!SeichiAssist.transparentmateriallist.contains(calcblock.getType())){
+						//もし透過許可ブロックに入っていないブロックだった場合重力値を加算
+						gravity++;
+					}
+				}
+			}
 		}
-		gravity --;
-		gravity -= breakyloc;
-		gravity= gravity*weight + 1;
+		//重力値に重みづけ
+		gravity = gravity*weight;
+		//１より小さくなった場合は１に変更
 		if(gravity < 1)gravity = 1;
 		return gravity;
+	}
+	@SuppressWarnings("deprecation")
+	public static boolean logRemove(Player player, Block breakblock) {
+		//設置するブロックの状態を取得
+		BlockState blockstate = breakblock.getState();
+		//設置するブロックのデータを取得
+		byte data = blockstate.getData().getData();
+
+		if(!equalignoreWorld(player.getWorld().getName()) || breakblock.getY() < 8){
+			//コアプロテクトのクラスを取得
+			CoreProtectAPI CoreProtect = Util.getCoreProtect();
+			//破壊ログを設定
+			Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
+			//もし失敗したらプレイヤーに報告し処理を終了
+			if(!success){
+				player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
+				return false;
+			}
+		}
+		return true;
 	}
 	@SuppressWarnings("deprecation")
 	public static boolean logPlace(Player player, Block placeblock) {
@@ -563,14 +581,16 @@ public class BreakUtil {
 		//設置するブロックのデータを取得
 		byte data = blockstate.getData().getData();
 
-		//コアプロテクトのクラスを取得
-		CoreProtectAPI CoreProtect = Util.getCoreProtect();
-		//破壊ログを設定
-		Boolean success = CoreProtect.logRemoval(player.getName(), placeblock.getLocation(), blockstate.getType(),data);
-		//もし失敗したらプレイヤーに報告し処理を終了
-		if(!success){
-			player.sendMessage(ChatColor.RED + "error:coreprotectに保存できませんでした。管理者に報告してください。");
-			return false;
+		if(!equalignoreWorld(player.getWorld().getName()) || placeblock.getY() < 8){
+			//コアプロテクトのクラスを取得
+			CoreProtectAPI CoreProtect = Util.getCoreProtect();
+			//破壊ログを設定
+			Boolean success = CoreProtect.logPlacement(player.getName(), placeblock.getLocation(), blockstate.getType(),data);
+			//もし失敗したらプレイヤーに報告し処理を終了
+			if(!success){
+				player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
+				return false;
+			}
 		}
 		return true;
 	}
