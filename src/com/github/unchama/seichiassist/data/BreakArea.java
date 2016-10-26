@@ -7,11 +7,9 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class BreakArea {
-	Player player;
 	//スキルタイプ番号
 	int type;
 	//スキルレベル
@@ -26,8 +24,6 @@ public class BreakArea {
 	String dir;
 	//破壊範囲を示す相対座標リスト
 	List<Coordinate> startlist,endlist;
-	//全破壊範囲の相対座標
-	Coordinate allstart,allend;
 	//変数として利用する相対座標
 	private Coordinate start,end;
 	//アサルトスキルの時true
@@ -35,7 +31,6 @@ public class BreakArea {
 
 
 	public BreakArea(Player player,int type, int skilllevel,int mineflagnum,boolean assaultflag) {
-		this.player = player;
 		this.type = type;
 		this.level = skilllevel;
 		this.mineflagnum = mineflagnum;
@@ -43,8 +38,6 @@ public class BreakArea {
 		this.dir = BreakUtil.getCardinalDirection(player);
 		this.startlist = new ArrayList<Coordinate>();
 		this.endlist = new ArrayList<Coordinate>();
-		this.allstart = new Coordinate(0,0,0);
-		this.allend = new Coordinate(0,0,0);
 		//初期化
 		ActiveSkill[] as = ActiveSkill.values();
 		this.breaklength = as[type-1].getBreakLength(level);
@@ -70,8 +63,6 @@ public class BreakArea {
 	public void makeArea() {
 		startlist.clear();
 		endlist.clear();
-		allstart = new Coordinate(0,0,0);
-		allend = new Coordinate(0,0,0);
 		//中心座標(0,0,0)のスタートとエンドを仮取得
 		start = new Coordinate(-(breaklength.x-1)/2, -(breaklength.y-1)/2, -(breaklength.z-1)/2);
 		end = new Coordinate((breaklength.x-1)/2, (breaklength.y-1)/2, (breaklength.z-1)/2);
@@ -124,7 +115,7 @@ public class BreakArea {
 			endlist.add(new Coordinate(end));
 		}
 
-		//方角によって範囲を回転
+
 		switch(dir){
 		case "N":
 			rotateXZ(180);
@@ -142,33 +133,6 @@ public class BreakArea {
 		case "D":
 			if(!assaultflag)multiply_Y(-1);
 			break;
-		}
-
-		//全ての範囲から最小値と最大値を取る
-		for(int i = 0;i<breaknum;i++){
-			if(startlist.get(i).x < allstart.x){
-				allstart.x = startlist.get(i).x;
-			}
-			if(startlist.get(i).y < allstart.y){
-				allstart.y = startlist.get(i).y;
-			}
-			if(startlist.get(i).z < allstart.z){
-				allstart.z = startlist.get(i).z;
-			}
-			if(endlist.get(i).x > allend.x){
-				allend.x = endlist.get(i).x;
-			}
-			if(endlist.get(i).y > allend.y){
-				allend.y = endlist.get(i).y;
-			}
-			if(endlist.get(i).z > allend.z){
-				allend.z = endlist.get(i).z;
-			}
-		}
-		if(SeichiAssist.DEBUG){
-			player.sendMessage("x:"+allstart.x + "y:" + allstart.y + "z:" + allstart.z);
-			player.sendMessage("x:"+allend.x + "y:" + allend.y + "z:" + allend.z);
-
 		}
 	}
 	private void multiply_Y(int i) {
@@ -217,12 +181,6 @@ public class BreakArea {
 	}
 	public int getBreakNum() {
 		return breaknum;
-	}
-	public Coordinate getAllStart(){
-		return allstart;
-	}
-	public Coordinate getAllEnd(){
-		return allend;
 	}
 
 

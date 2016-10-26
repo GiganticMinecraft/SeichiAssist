@@ -97,31 +97,19 @@ public class EntityListener implements Listener {
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		ActiveSkill[] activeskill = ActiveSkill.values();
+		String worldname = "world_sw";
 		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
+			worldname = "world";
 		}
-		//整地ワールドではない時スキルを発動しない。
-		if(!player.getWorld().getName().equalsIgnoreCase(worldname)){
-			return;
+		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
+			if(BreakUtil.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
+				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
+				return;
+			}
 		}
-		BreakArea area = playerdata.activeskilldata.area;
-		//現在のプレイヤーの向いている方向
-		String dir = BreakUtil.getCardinalDirection(player);
-		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
-		if(!dir.equals(area.getDir())){
-			area.setDir(dir);
-			area.makeArea();
-		}
-		double gravity = BreakUtil.getGravity(area, block, 1);
 
-		if(SeichiAssist.DEBUG){
-			player.sendMessage(ChatColor.RED + "重力値：" + Util.Decimal(gravity));
-		}
-		if(gravity > 1){
-			player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
-			return;
-		}
+
 
 
 
@@ -186,6 +174,13 @@ public class EntityListener implements Listener {
 		//壊されるブロックの宣言
 		Block breakblock;
 		BreakArea area = playerdata.activeskilldata.area;
+		//現在のプレイヤーの向いている方向
+		String dir = BreakUtil.getCardinalDirection(player);
+		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
+		if(!dir.equals(area.getDir())){
+			area.setDir(dir);
+			area.makeArea();
+		}
 		Coordinate start = area.getStartList().get(0);
 		Coordinate end = area.getEndList().get(0);
 
@@ -230,7 +225,7 @@ public class EntityListener implements Listener {
 
 
 		//重力値計算
-		double gravity = BreakUtil.getGravity(playerdata.activeskilldata.area,block,1);
+		double gravity = BreakUtil.getGravity(player,block,end.y,1);
 
 
 		//減る経験値計算
@@ -251,12 +246,12 @@ public class EntityListener implements Listener {
 		durability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
 
 
-		/*//重力値の判定
+		//重力値の判定
 		if(gravity > 15){
 			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
 			SeichiAssist.allblocklist.removeAll(breaklist);
 			return;
-		}*/
+		}
 
 		//実際に経験値を減らせるか判定
 		if(!mana.hasMana(useMana)){
