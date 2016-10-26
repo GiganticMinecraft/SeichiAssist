@@ -29,18 +29,22 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 	int i;
 	//ondisableからの呼び出し時のみtrueにしておくフラグ
 	boolean isOnDisable;
+	//loginflag折る時にtrueにしておくフラグ
+	boolean logoutflag;
 	public static String exc;
 	String db;
 	Statement stmt = null;
 	ResultSet rs = null;
 
-	public PlayerDataSaveTaskRunnable(PlayerData _playerdata,boolean _isondisable) {
+	public PlayerDataSaveTaskRunnable(PlayerData _playerdata,boolean _isondisable,boolean _logoutflag) {
 		db = SeichiAssist.config.getDB();
 		command = "";
 		i = 0;
 		playerdata = _playerdata;
 		//ondisableからの呼び出し時のみtrueにしておくフラグ
 		isOnDisable = _isondisable;
+		//loginflag折る時にtrueにしておくフラグ
+		logoutflag = _logoutflag;
 	}
 
 	@Override
@@ -129,6 +133,13 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 			command = command +
 					"," + sqlname + " = " + Boolean.toString(flag);
 		}
+
+		//loginflag折る処理
+		if(logoutflag){
+			command = command +
+					",loginflag = false";
+		}
+
 		//最後の処理
 		command = command + " where uuid like '" + struuid + "'";
 

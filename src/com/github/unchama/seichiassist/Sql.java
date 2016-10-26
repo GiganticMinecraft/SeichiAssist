@@ -551,13 +551,19 @@ public class Sql{
  		}
 	}
 
-	//ondisable"以外"の時のプレイヤーデータセーブ処理
+	//ondisable"以外"の時のプレイヤーデータセーブ処理(loginflag折りません)
 	public void savePlayerData(PlayerData playerdata){
-		new PlayerDataSaveTaskRunnable(playerdata,false).runTaskAsynchronously(plugin);
+		new PlayerDataSaveTaskRunnable(playerdata,false,false).runTaskAsynchronously(plugin);
+	}
+
+	//ondisable"以外"の時のプレイヤーデータセーブ処理(ログアウト時に使用、loginflag折ります)
+	public void saveQuitPlayerData(PlayerData playerdata){
+		new PlayerDataSaveTaskRunnable(playerdata,false,true).runTaskAsynchronously(plugin);
 	}
 
 
 	//loginflagのフラグ折る処理(ondisable時とquit時に実行させる)
+	/*
 	public boolean logoutPlayerData(PlayerData playerdata) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
@@ -574,6 +580,7 @@ public class Sql{
 		return putCommand(command);
 
 	}
+	*/
 
 	//ガチャデータロード
 	public boolean loadGachaData(){

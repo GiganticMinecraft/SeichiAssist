@@ -283,13 +283,7 @@ public class SeichiAssist extends JavaPlugin{
 			//quit時とondisable時、プレイヤーデータを最新の状態に更新
 			playerdata.updateonQuit(p);
 
-			//ログインフラグ折る(必ずsaveplayerdataの前に実行)
-			if(!sql.logoutPlayerData(playerdata)){
-				getLogger().warning(playerdata.name + "のloginflag->false化に失敗しました");
-			}else{
-				getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のloginflag回収完了");
-			}
-			new PlayerDataSaveTaskRunnable(playerdata,true).run();
+			new PlayerDataSaveTaskRunnable(playerdata,true,true).run();
 		}
 
 
