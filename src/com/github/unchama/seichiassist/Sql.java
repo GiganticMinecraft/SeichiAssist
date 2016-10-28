@@ -540,8 +540,9 @@ public class Sql{
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlにデータが保存されています。");
  			}
- 			new LoadPlayerDataTaskRunnable(p).runTaskTimerAsynchronously(plugin, 0, 10);
- 			new PlayerDataUpdateOnJoinRunnable(p).runTaskTimer(plugin, 15, 10);
+ 			p.sendMessage(ChatColor.YELLOW + "プレイヤーデータを読み込んでいます。しばらくお待ちください…");
+ 			new LoadPlayerDataTaskRunnable(p).runTaskTimerAsynchronously(plugin, 20, 20);
+ 			new PlayerDataUpdateOnJoinRunnable(p).runTaskTimer(plugin, 30, 20);
  			return true;
 
  		}else{
