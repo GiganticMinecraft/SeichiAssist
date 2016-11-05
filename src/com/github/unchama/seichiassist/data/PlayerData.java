@@ -326,7 +326,7 @@ public class PlayerData {
 			if(SeichiAssist.DEBUG){
 				p.sendMessage("ワールドによる削減前の値:" + result);
 			}
-			result *= 0.7;
+			result *= 0.5;
 		}
 		return result;
 	}
