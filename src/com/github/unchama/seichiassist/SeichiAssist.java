@@ -192,7 +192,7 @@ public class SeichiAssist extends JavaPlugin{
 			Material.LOG, Material.LOG_2,Material.LEAVES,Material.LEAVES_2
 			));
 	public static final List<String> ignoreWorldlist = new ArrayList<String>(Arrays.asList(
-			"world_S","world_nether_S","world_SW"
+			"world_S","world_nether_S","world_SW","world_SW_2"
 			));
 	@Override
 	public void onEnable(){
