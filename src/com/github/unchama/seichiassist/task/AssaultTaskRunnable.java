@@ -55,7 +55,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		//念のためエラー分岐
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[アサルトタスクRunnable処理]でエラー発生");
 			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			errorflag = true;
 			return;
@@ -69,6 +69,18 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		//もしサバイバルでなければ処理を終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
 			player.sendMessage(ChatColor.GREEN + "ゲームモードをサバイバルに変更してください。");
+			errorflag = true;
+			return;
+		}
+
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+
+		//整地ワールドではない時スキルを発動しない。
+		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
+			player.sendMessage(ChatColor.GREEN + "スキルは整地ワールドでのみ使用可能です。");
 			errorflag = true;
 			return;
 		}

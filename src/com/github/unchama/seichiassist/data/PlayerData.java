@@ -309,6 +309,7 @@ public class PlayerData {
 			//DIRTとGRASSは二重カウントされているので半分に
 			result *= 0.5;
 			break;
+		/*
 		case NETHERRACK:
 			//ネザーラックの重み分け
 			result *= 0.7;
@@ -317,9 +318,11 @@ public class PlayerData {
 			//エンドストーンの重み分け
 			result *= 0.7;
 			break;
+		*/
 		default:
 			break;
 		}
+		/*
 		if(p.getWorld().getName().equalsIgnoreCase("world_s")
 				|| p.getWorld().getName().equalsIgnoreCase("world_nether_s")
 				|| p.getWorld().getName().equalsIgnoreCase("world_the_end_s")){
@@ -328,6 +331,7 @@ public class PlayerData {
 			}
 			result *= 0.5;
 		}
+		*/
 		return result;
 	}
 

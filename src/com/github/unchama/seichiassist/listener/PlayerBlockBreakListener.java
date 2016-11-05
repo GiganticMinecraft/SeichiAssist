@@ -67,10 +67,19 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 		ActiveSkill[] activeskill = ActiveSkill.values();
-		String worldname = "world_sw";
+
+
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
 		if(SeichiAssist.DEBUG){
-			worldname = "world";
+			worldname = SeichiAssist.DEBUGWORLDNAME;
 		}
+
+		//整地ワールドではない時スキルを発動しない。
+		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
+			return;
+		}
+
+		//重力値によるキャンセル判定
 		if(player.getWorld().getName().equalsIgnoreCase(worldname) &&
 			!SeichiAssist.gravitymateriallist.contains(block.getType()) &&
 			!SeichiAssist.cancelledmateriallist.contains(block.getType())){

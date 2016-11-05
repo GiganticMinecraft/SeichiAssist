@@ -78,6 +78,16 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+
+		//整地ワールドではない時スキルを発動しない。
+		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
+			return;
+		}
+
 
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
@@ -332,6 +342,17 @@ public class PlayerClickListener implements Listener {
 			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
+
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+
+		//整地ワールドではない時スキルを発動しない。
+		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
+			return;
+		}
+
 		//アクティブスキルを発動できるレベルに達していない場合処理終了
 		if( playerdata.level < SeichiAssist.config.getDualBreaklevel()){
 			return;

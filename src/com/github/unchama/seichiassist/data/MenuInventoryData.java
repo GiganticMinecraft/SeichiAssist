@@ -427,7 +427,6 @@ public class MenuInventoryData {
 		SkullMeta skullmeta;
 		List<String> lore = new ArrayList<String>();
 
-		if(SeichiAssist.DEBUG){
 		// 自分の頭召喚
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
@@ -447,7 +446,7 @@ public class MenuInventoryData {
 		skullmeta.setOwner("MHF_Villager");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(12,itemstack);
-		}
+
 		//死亡メッセージ表示のトグルボタン
 		itemstack = new ItemStack(Material.FLINT_AND_STEEL,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.FLINT_AND_STEEL);
@@ -455,13 +454,15 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(dispKillLogToggleMeta(playerdata,itemmeta));
 		inventory.setItem(14,itemstack);
 
-		//死亡メッセージ表示のトグルボタン
+		/*
+		//PvPのトグルボタン
 		itemstack = new ItemStack(Material.IRON_SWORD,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_SWORD);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "PvP切替");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemstack.setItemMeta(dispPvPToggleMeta(playerdata,itemmeta));
 		inventory.setItem(15,itemstack);
+		*/
 
 		/*
 		 * ここまでadd.loreに変更済み
