@@ -52,16 +52,23 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
-		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
+		//対象プレイヤーがオフラインなら処理終了
+		if(SeichiAssist.plugin.getServer().getPlayer(uuid) == null){
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "はオフラインの為取得処理を中断");
+			cancel();
+			return;
+		}
 		//sqlコネクションチェック
 		sql.checkConnection();
+		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
 		try {
 			stmt = sql.con.createStatement();
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
 
- 		command = "select loginflag from " + db + "." + table
+ 		//ログインフラグの確認を行う
+		command = "select loginflag from " + db + "." + table
  				+ " where uuid = '" + struuid + "'";
  		try{
 			rs = stmt.executeQuery(command);
