@@ -13,9 +13,9 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
-	SeichiAssist plugin = SeichiAssist.plugin;
-	Sql sql = SeichiAssist.plugin.sql;
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	private SeichiAssist plugin = SeichiAssist.plugin;
+	private Sql sql = SeichiAssist.sql;
+	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 
 	public PlayerDataBackupTaskRunnable(){
 
@@ -23,6 +23,10 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
+		//playermapが空の時return
+		if(playermap.isEmpty()){
+			return;
+		}
 		Util.sendEveryMessage(ChatColor.AQUA + "プレイヤーデータセーブ中…");
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "プレイヤーデータセーブ中…");
 		//現在オンラインのプレイヤーのプレイヤーデータを送信

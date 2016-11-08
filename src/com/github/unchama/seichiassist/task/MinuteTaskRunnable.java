@@ -30,20 +30,20 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
-		playermap = SeichiAssist.playermap;
-		plugin = SeichiAssist.plugin;
+		//playermap = SeichiAssist.playermap;
+		//plugin = SeichiAssist.plugin;
 		if(SeichiAssist.DEBUG){
 			Util.sendEveryMessage("プレイヤーの１分間の処理を実行");
 		}
-
-		//オンラインプレイヤーの人数を取得
-		int onlinenums = plugin.getServer().getOnlinePlayers().size();
-
 
 		//playermapが空の時return
 		if(playermap.isEmpty()){
 			return;
 		}
+
+		//オンラインプレイヤーの人数を取得
+		int onlinenums = plugin.getServer().getOnlinePlayers().size();
+
 		//プレイヤーマップに記録されているすべてのplayerdataについての処理
 		for(PlayerData playerdata : playermap.values()){
 			//プレイヤーのオンラインオフラインに関係なく処理

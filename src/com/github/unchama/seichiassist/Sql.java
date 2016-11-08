@@ -126,17 +126,18 @@ public class Sql{
 	public boolean checkConnection(){
 		try {
 			if(con.isClosed()){
-				java.lang.System.out.println("sqlConnectionクローズを検出。再接続試行");
+				plugin.getLogger().warning("sqlConnectionクローズを検出。再接続試行");
 				con = (Connection) DriverManager.getConnection(url, id, pw);
 			}
 			if(stmt.isClosed()){
-				java.lang.System.out.println("sqlStatementクローズを検出。再接続試行");
+				plugin.getLogger().warning("sqlStatementクローズを検出。再接続試行");
 				stmt = con.createStatement();
 				//connectDB();
 			}
 	    } catch (SQLException e) {
 	    	e.printStackTrace();
 	    	//イクセプションった時に接続再試行
+	    	plugin.getLogger().warning("sqlExceptionを検出。再接続試行");
 	    	if(connectMySQL()){
 	    		plugin.getLogger().info("sqlコネクション正常");
 	    		return true;
@@ -145,7 +146,7 @@ public class Sql{
 	    		return false;
 	    	}
 		}
-		plugin.getLogger().info("sqlコネクション正常");
+		//plugin.getLogger().info("sqlコネクション正常");
 		return true;
 	}
 
