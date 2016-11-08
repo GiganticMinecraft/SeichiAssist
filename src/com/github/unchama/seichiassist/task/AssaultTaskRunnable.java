@@ -156,6 +156,16 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			setCancel();
 			return;
 		}
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+		//整地ワールドではない時スキルを発動しない。
+		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
+			player.sendMessage(ChatColor.GREEN + "スキルは整地ワールドでのみ使用可能です。");
+			setCancel();
+			return;
+		}
 		List<Block> breaklist = new ArrayList<Block>();
 		List<Block> lavalist = new ArrayList<Block>();
 		List<Block> waterlist = new ArrayList<Block>();
