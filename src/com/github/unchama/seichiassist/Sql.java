@@ -644,7 +644,7 @@ public class Sql{
 
 	//ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
 	public boolean setRanking() {
-		plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
 		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		List<RankData> ranklist = SeichiAssist.ranklist;
@@ -671,7 +671,7 @@ public class Sql{
 			e.printStackTrace();
 			return false;
 		}
-		plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
 		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
  		return true;
 	}
