@@ -67,6 +67,11 @@ public class MenuInventoryData {
 		if(playerdata.level < SeichiAssist.levellist.size()){
 			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum));
 		}
+		//整地ワールド外では整地数が反映されない
+		if(!Util.isGainSeichiExp(p)){
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "整地レベルを上げるには");
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "整地ワールドで掘ってください");
+		}
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "パッシブスキル効果："
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "1ブロック整地ごとに"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "10%の確率で"
@@ -371,8 +376,14 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ENCHANTED_BOOK);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキルブック");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "整地に便利なスキルを使用できるゾ"
-										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでスキル一覧を開く");
+		//整地ワールド外では整地スキルが発動しない
+		if(!Util.isSkillEnable(p)){
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "このワールドでは"
+					,ChatColor.RESET + "" +  ChatColor.RED + "整地スキルを使えません");
+		}else{
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "整地に便利なスキルを使用できるゾ"
+					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでスキル一覧を開く");
+		}
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(13,itemstack);

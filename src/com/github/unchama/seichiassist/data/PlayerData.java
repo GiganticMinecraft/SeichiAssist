@@ -309,29 +309,25 @@ public class PlayerData {
 			//DIRTとGRASSは二重カウントされているので半分に
 			result *= 0.5;
 			break;
-		/*
+
 		case NETHERRACK:
 			//ネザーラックの重み分け
-			result *= 0.7;
+			result *= 0.2;
 			break;
+		/*
 		case ENDER_STONE:
 			//エンドストーンの重み分け
-			result *= 0.7;
+			result *= 0.5;
 			break;
 		*/
+
 		default:
 			break;
 		}
-		/*
-		if(p.getWorld().getName().equalsIgnoreCase("world_s")
-				|| p.getWorld().getName().equalsIgnoreCase("world_nether_s")
-				|| p.getWorld().getName().equalsIgnoreCase("world_the_end_s")){
-			if(SeichiAssist.DEBUG){
-				p.sendMessage("ワールドによる削減前の値:" + result);
-			}
-			result *= 0.5;
+		//整地ワールド外では整地数が反映されない
+		if(!Util.isGainSeichiExp(p)){
+			result *= 0.0;
 		}
-		*/
 		return result;
 	}
 
@@ -380,7 +376,11 @@ public class PlayerData {
 	}
 	//四次元ポケットのサイズを取得
 	public int getPocketSize() {
-		if (level < 26){
+		if (level < 6){
+			return 9*3;
+		}else if (level < 16){
+			return 9*3;
+		}else if (level < 26){
 			return 9*3;
 		}else if (level < 36){
 			return 9*3;

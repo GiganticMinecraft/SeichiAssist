@@ -99,22 +99,23 @@ public class EntityListener implements Listener {
 		}
 		ActiveSkill[] activeskill = ActiveSkill.values();
 
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
+			return;
+		}
+
+		//SEICHIWORLDNAMEのみ重力値によるブロック破壊拒否されることがある処理
 		String worldname = SeichiAssist.SEICHIWORLDNAME;
 		if(SeichiAssist.DEBUG){
 			worldname = SeichiAssist.DEBUGWORLDNAME;
 		}
-
-		//整地ワールドではない時スキルを発動しない。
-		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
-			return;
-		}
-
 		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
 			if(BreakUtil.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
 				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 				return;
 			}
 		}
+
 
 
 

@@ -69,14 +69,14 @@ public class PlayerBlockBreakListener implements Listener {
 		ActiveSkill[] activeskill = ActiveSkill.values();
 
 
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
+			return;
+		}
+
 		String worldname = SeichiAssist.SEICHIWORLDNAME;
 		if(SeichiAssist.DEBUG){
 			worldname = SeichiAssist.DEBUGWORLDNAME;
-		}
-
-		//整地ワールドではない時スキルを発動しない。
-		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
-			return;
 		}
 
 		//重力値によるキャンセル判定

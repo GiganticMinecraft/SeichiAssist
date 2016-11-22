@@ -36,6 +36,41 @@ public class Util {
 		FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST,
 		FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR, };
 
+	//スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
+	public static boolean isSkillEnable(Player player){
+		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+		//プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)にいる場合
+		if(player.getWorld().getName().toLowerCase().startsWith(worldname)
+				|| player.getWorld().getName().equalsIgnoreCase("world")
+				|| player.getWorld().getName().equalsIgnoreCase("world_nether")
+				|| player.getWorld().getName().equalsIgnoreCase("world_the_end")
+				){
+			return true;
+		}
+		//それ以外のワールドの場合
+		return false;
+	}
+
+	//整地レベルへの整地量反映可否の処理(反映されるならtrue、反映されないならfalse)
+	public static boolean isGainSeichiExp(Player player){
+		//デバッグモード時は全ワールドで整地数が反映される(DEBUGWORLDNAME = worldの場合)
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+		//整地ワールドでは反映されるのでtrue
+		if(player.getWorld().getName().toLowerCase().startsWith(worldname)){
+			return true;
+		}
+
+		//それ以外のワールドの場合
+		return false;
+	}
+
 	//ガチャ券アイテムスタック型の取得
 	public static ItemStack getskull(String name){
 		ItemStack skull;

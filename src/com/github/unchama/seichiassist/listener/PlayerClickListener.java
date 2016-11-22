@@ -78,16 +78,10 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
-		}
-
-		//整地ワールドではない時スキルを発動しない。
-		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
 			return;
 		}
-
 
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
@@ -343,13 +337,9 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
-		}
 
-		//整地ワールドではない時スキルを発動しない。
-		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
 			return;
 		}
 
