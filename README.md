@@ -1,5 +1,6 @@
 # SeichiAssist
 ##開発環境
+eclipse 4.4 luna<br>
 java 1.8<br>
 spigot 1.10.2<br>
 mysql-connecter-java-5.1.35<br>
