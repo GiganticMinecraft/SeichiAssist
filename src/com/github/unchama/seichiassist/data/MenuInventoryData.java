@@ -142,33 +142,29 @@ public class MenuInventoryData {
 		lore.clear();
 		Selection selection = Util.getWorldEdit().getSelection(player);
 		if (selection == null) {
-			lore.addAll(Arrays.asList(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "範囲指定されてません"
-					, ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "先に木の斧で2か所クリックしてネ"
-					, ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "A new region has been claimed"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "と出れば、保護の設定が完了しています"
-					, ChatColor.RESET + "" +  ChatColor.RED + "赤色で別の英文が出た場合"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "保護の設定に失敗しています"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "・別の保護と被っていないか"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "・保護数上限に達していないか"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "確認してください"
+			lore.addAll(Arrays.asList(ChatColor.RED + "範囲指定されてません"
+					, ChatColor.RED + "先に木の斧で2か所クリックしてネ"
+					));
+		}else if(selection.getLength() < 10||selection.getWidth() < 10){
+			lore.addAll(Arrays.asList(ChatColor.RED + "選択された範囲が狭すぎます"
+					, ChatColor.RED + "1辺当たり最低10ブロック以上にしてネ"
 					));
 		}else{
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			lore.addAll(Arrays.asList(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "範囲指定されています"
 					, ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックすると保護を申請します"
-					, ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "A new region has been claimed"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "と出れば、保護の設定が完了しています"
-					, ChatColor.RESET + "" +  ChatColor.RED + "赤色で別の英文が出た場合"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "保護の設定に失敗しています"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "・別の保護と被っていないか"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "・保護数上限に達していないか"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "確認してください"
 					));
 		}
+		lore.addAll(Arrays.asList(ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
+				, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "A new region has been claimed"
+				, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "と出れば保護設定完了です"
+				, ChatColor.RESET + "" +  ChatColor.RED + "赤色で別の英文が出た場合"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "保護の設定に失敗しています"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "・別の保護と被っていないか"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "・保護数上限に達していないか"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "確認してください"
+				));
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
@@ -280,6 +276,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "うまく機能しない時は"
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "再接続してみてください"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでワープ"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/home]"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -291,7 +288,7 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームポイントを設定");
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "現在位置をホームポイント"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "として設定します"
-				, ChatColor.RESET + "" + ChatColor.	DARK_GRAY + "※上書きされます"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※上書きされます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで設定"
 				);
 		itemmeta.setLore(lore);
@@ -311,6 +308,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "④メニューの" + ChatColor.RESET + "" +  ChatColor.YELLOW + "金の斧" + ChatColor.RESET + "" +  ChatColor.GREEN + "をクリック"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[//wand]"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -325,13 +323,16 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "今いるワールドで"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "あなたが保護している"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "土地の一覧を表示します"
+				, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg info 保護名"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "該当保護の詳細情報を表示"
 				, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg rem 保護名"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "で保護の削除が出来ます"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "該当保護を削除する"
 				, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg addmem 保護名 プレイヤー名"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "で該当保護にメンバーを追加出来ます"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "該当保護に指定メンバーを追加"
 				, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg removemember 保護名 プレイヤー名"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "で該当保護のメンバーを削除出来ます"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "該当保護の指定メンバーを削除"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "その他のコマンドはWikiを参照"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/rg list]"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -349,10 +350,25 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "保護の各種設定や削除が行えます"
 				, ChatColor.RESET + "" +  ChatColor.YELLOW + "それ以外なら…"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "新規保護の作成画面が表示されます"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/land]"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(6,itemstack);
+
+		// fastcraftリンク
+		itemstack = new ItemStack(Material.WORKBENCH,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WORKBENCH);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "FastCraft機能");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+				, ChatColor.RESET + "" +  ChatColor.RED + "ただの作業台じゃないんです…"
+				, ChatColor.RESET + "" +  ChatColor.YELLOW + "自動レシピ補完機能付きの"
+				, ChatColor.RESET + "" +  ChatColor.YELLOW + "最強な作業台はこちら"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/fc craft]"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(23,itemstack);
 
 
 		// ver0.3.2 /spawnコマンド実行
@@ -365,7 +381,9 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・ロビーサーバー"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・各サバイバルサーバー"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "間を移動する時に使います"
-				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします");
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/spawn]"
+				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(8,itemstack);
@@ -482,6 +500,7 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ロビーサーバーへ移動");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると移動します"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/hub]"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);

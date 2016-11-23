@@ -420,6 +420,13 @@ public class PlayerInventoryListener implements Listener {
 				player.chat("/home");
 			}
 
+			else if(itemstackcurrent.getType().equals(Material.WORKBENCH)){
+				// /fc craftコマンド実行
+				player.closeInventory();
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.chat("/fc craft");
+			}
+
 			else if(itemstackcurrent.getType().equals(Material.WOOD_AXE)){
 				// wand召喚
 				player.closeInventory();
@@ -442,7 +449,13 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "先に木の斧で範囲を指定してからこのボタンを押してください");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					return;
+				}else if(selection.getLength() < 10||selection.getWidth() < 10){
+					player.sendMessage(ChatColor.RED + "指定された範囲が狭すぎます。1辺当たり最低10ブロック以上にしてください");
+					player.sendMessage(ChatColor.DARK_GRAY + "[TIPS]どうしても小さい保護が必要な人は直接コマンド入力で作ろう！");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					return;
 				}
+
 				player.chat("//expand vert");
 				player.chat("/rg claim " + player.getName() + "_" + playerdata.rgnum);
 				playerdata.rgnum += 1;
@@ -454,7 +467,11 @@ public class PlayerInventoryListener implements Listener {
 				// 保護リストの表示
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
-				player.chat("/land list");
+				player.sendMessage(ChatColor.GRAY + "--------------------\n"
+						+ ChatColor.GRAY + "複数ページの場合… " + ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg list ページNo\n"
+						+ ChatColor.RESET + "" +  ChatColor.GRAY + "先頭に[+]のついた保護はOwner権限\n[-]のついた保護はMember権限を保有しています\n"
+						+ ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard");
+				player.chat("/rg list");
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND_AXE)){
@@ -469,7 +486,7 @@ public class PlayerInventoryListener implements Listener {
 				// player.chat("/hub");
 				player.closeInventory();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.sendMessage(ChatColor.RESET + "" +  ChatColor.GRAY + "Tキーを押して/hubと入力してEnterキーを押してください");
+				player.sendMessage(ChatColor.RESET + "" +  ChatColor.GRAY + "/hubと入力してEnterを押してください");
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.BOOK)){
