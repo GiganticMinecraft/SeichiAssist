@@ -32,6 +32,7 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 public class MenuInventoryData {
 	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	static Sql sql = SeichiAssist.sql;
+	SeichiAssist plugin = SeichiAssist.plugin;
 	//1ページ目メニュー
 	public static Inventory getMenuData(Player p){
 		//プレイヤーを取得
@@ -42,9 +43,9 @@ public class MenuInventoryData {
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
-			Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			Util.sendPlayerDataNullMessage(p);
+			Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
+			Bukkit.getLogger().warning("MenuInventoryData.getMenuData");
 			return null;
 		}
 
@@ -140,8 +141,14 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護の申請");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		lore.clear();
+
 		Selection selection = Util.getWorldEdit().getSelection(player);
-		if (selection == null) {
+
+		if(!player.hasPermission("worldguard.region.claim")){
+			lore.addAll(Arrays.asList(ChatColor.RED + "このワールドでは"
+					, ChatColor.RED + "保護を申請出来ません"
+					));
+		}else if (selection == null) {
 			lore.addAll(Arrays.asList(ChatColor.RED + "範囲指定されてません"
 					, ChatColor.RED + "先に木の斧で2か所クリックしてネ"
 					));
@@ -155,16 +162,20 @@ public class MenuInventoryData {
 					, ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックすると保護を申請します"
 					));
 		}
-		lore.addAll(Arrays.asList(ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
-				, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "A new region has been claimed"
-				, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "と出れば保護設定完了です"
-				, ChatColor.RESET + "" +  ChatColor.RED + "赤色で別の英文が出た場合"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "保護の設定に失敗しています"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "・別の保護と被っていないか"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "・保護数上限に達していないか"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "確認してください"
-				));
+
+		if(player.hasPermission("worldguard.region.claim")){
+			lore.addAll(Arrays.asList(ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
+					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "A new region has been claimed"
+					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "と出れば保護設定完了です"
+					, ChatColor.RESET + "" +  ChatColor.RED + "赤色で別の英文が出た場合"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "保護の設定に失敗しています"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "・別の保護と被っていないか"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "・保護数上限に達していないか"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "確認してください"
+					));
+		}
+
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);

@@ -445,7 +445,10 @@ public class PlayerInventoryListener implements Listener {
 				// 保護の設定
 				player.closeInventory();
 				Selection selection = Util.getWorldEdit().getSelection(player);
-				if (selection == null) {
+				if(!player.hasPermission("worldguard.region.claim")){
+					player.sendMessage(ChatColor.RED + "このワールドでは保護を申請できません");
+					return;
+				}else if (selection == null) {
 					player.sendMessage(ChatColor.RED + "先に木の斧で範囲を指定してからこのボタンを押してください");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					return;

@@ -36,6 +36,11 @@ public class Util {
 		FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST,
 		FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR, };
 
+	public static void sendPlayerDataNullMessage(Player player){
+		player.sendMessage(ChatColor.RED + "初回ログイン時の読み込み中か、読み込みに失敗しています");
+		player.sendMessage(ChatColor.RED + "再接続しても改善されない場合はお問い合わせフォームからお知らせ下さい");
+	}
+
 	//スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
 	public static boolean isSkillEnable(Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)

@@ -61,9 +61,6 @@ public class PlayerBlockBreakListener implements Listener {
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//エラー分岐
 		if(playerdata == null){
-			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
-			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		ActiveSkill[] activeskill = ActiveSkill.values();
