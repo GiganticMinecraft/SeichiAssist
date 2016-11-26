@@ -414,12 +414,9 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 
-				if(itemmeta.getDisplayName().contains("サブホームポイント")){
+				if(itemmeta.getDisplayName().contains("サブホームポイント")){//ホームボタンかサブホームボタンか判定
 					//ホームをセット
-					String s = itemmeta.getDisplayName();
-					player.sendMessage(s.substring(15, 16));
-					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) ) - 1;
-//					playerdata.sub_home = player.getLocation();
+					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) ) - 1;	//サブホームボタンの番号
 					playerdata.SetSubHome(player.getLocation(), z);
 					
 					//mysqlにも書き込んどく
@@ -427,7 +424,6 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.RED + "失敗");
 					}else{
 						player.sendMessage("現在位置をサブホームポイント"+(z+1)+"に設定しました");
-						player.sendMessage(playerdata.SubHomeToString());
 					}					
 					player.closeInventory();
 				}else {
@@ -441,17 +437,13 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-				if(itemmeta.getDisplayName().contains("サブホームポイント")){
-					player.sendMessage("未実装ナリよ");
-
-					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) ) - 1;
-
+				if(itemmeta.getDisplayName().contains("サブホームポイント")){//ホームボタンかサブホームボタンか判定
 					//サブホームに移動
+					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) ) - 1;	//サブホームボタンの番号
 					Location l = playerdata.GetSubHome(z);
 					if(l != null){
 						World world = Bukkit.getWorld(l.getWorld().getName());
 						if(world != null){
-//							player.teleport(playerdata.sub_home);
 							player.teleport(l);
 							player.sendMessage("サブホームポイント"+ (z+1) +"にワープしました");
 						}else{

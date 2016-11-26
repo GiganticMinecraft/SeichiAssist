@@ -284,8 +284,7 @@ public class Sql{
 				",add index if not exists name_index(name)" +
 				",add index if not exists uuid_index(uuid)" +
 				",add index if not exists ranking_index(totalbreaknum)" +
-//				",add column if not exists subhome varchar(SeichiAssist.SUB_HOME_MAX*SeichiAssist.SUB_HOME_DATASIZE) default ''" +
-				",add column if not exists homepoint_" + SeichiAssist.config.getServerNum() + " varchar(" + SeichiAssist.SUB_HOME_MAX * SeichiAssist.SUB_HOME_DATASIZE + ") default ''"+
+				",add column if not exists homepoint_" + SeichiAssist.config.getServerNum() + " varchar(" + SeichiAssist.config.getSubHomeMax() * SeichiAssist.SUB_HOME_DATASIZE + ") default ''"+
 
 				"";
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();

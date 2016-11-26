@@ -555,9 +555,9 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
 
-
-		for(int x = 0 ; x < SeichiAssist.SUB_HOME_MAX ; x++){
-			//homeに移動
+		//サブホーム関係
+		for(int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
+			//サブホームに移動ボタン
 			itemstack = new ItemStack(Material.COMPASS,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント"+  (x+1) + "にワープ");
@@ -579,13 +579,12 @@ public class MenuInventoryData {
 						, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでワープ"
 						, ChatColor.RESET + "" + ChatColor.GRAY + "" + l.getWorld().getName() + " x:" + (int)l.getX() + " y:" + (int)l.getY() + " z:" + (int)l.getZ()
 						);
-
 			}
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(29+x,itemstack);
 			
-			//ｈome設定
+			//サブホーム設定ボタン
 			itemstack = new ItemStack(Material.BED,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BED);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント" + (x+1) + "を設定");
