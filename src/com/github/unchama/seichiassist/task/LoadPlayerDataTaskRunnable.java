@@ -152,6 +152,10 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint");
  				//マナの情報
  				playerdata.activeskilldata.mana.setMana(rs.getDouble("mana"));
+ 				
+ 				//subhomeの情報
+// 				playerdata.SetSubHome(rs.getString("subhome"));
+ 				playerdata.SetSubHome(rs.getString("homepoint_" + SeichiAssist.config.getServerNum() ),p);
 
  				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
  				for(int i = 0 ; i < activeskilleffect.length ; i++){

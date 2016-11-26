@@ -9,8 +9,10 @@ import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
@@ -410,14 +412,60 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.BED)){
 				// sethomeコマンド実行
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.chat("/sethome");
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+
+				if(itemmeta.getDisplayName().contains("サブホームポイント")){
+					//ホームをセット
+					String s = itemmeta.getDisplayName();
+					player.sendMessage(s.substring(15, 16));
+					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) ) - 1;
+//					playerdata.sub_home = player.getLocation();
+					playerdata.SetSubHome(player.getLocation(), z);
+					
+					//mysqlにも書き込んどく
+					if(!sql.UpDataSubHome(playerdata.SubHomeToString())){
+						player.sendMessage(ChatColor.RED + "失敗");
+					}else{
+						player.sendMessage("現在位置をサブホームポイント"+(z+1)+"に設定しました");
+						player.sendMessage(playerdata.SubHomeToString());
+					}					
+					player.closeInventory();
+				}else {
+					player.chat("/sethome");
+				}
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.COMPASS)){
 				// homeコマンド実行
 				player.closeInventory();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.chat("/home");
+				
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				if(itemmeta.getDisplayName().contains("サブホームポイント")){
+					player.sendMessage("未実装ナリよ");
+
+					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) ) - 1;
+
+					//サブホームに移動
+					Location l = playerdata.GetSubHome(z);
+					if(l != null){
+						World world = Bukkit.getWorld(l.getWorld().getName());
+						if(world != null){
+//							player.teleport(playerdata.sub_home);
+							player.teleport(l);
+							player.sendMessage("サブホームポイント"+ (z+1) +"にワープしました");
+						}else{
+							player.sendMessage("サブホームポイント"+ (z+1) +"が設定されてません");
+						}
+					}else{
+						player.sendMessage("サブホームポイント"+ (z+1) +"が設定されてません");
+					}
+				}else {
+					player.chat("/home");
+				}
+				
+				
+				
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.WOOD_AXE)){
@@ -570,6 +618,7 @@ public class PlayerInventoryListener implements Listener {
 				//インベントリを開く
 				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください"));
 			}
+			
 		}
 	}
 	//スキルメニューの処理

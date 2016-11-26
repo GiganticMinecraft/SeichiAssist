@@ -284,6 +284,9 @@ public class Sql{
 				",add index if not exists name_index(name)" +
 				",add index if not exists uuid_index(uuid)" +
 				",add index if not exists ranking_index(totalbreaknum)" +
+//				",add column if not exists subhome varchar(SeichiAssist.SUB_HOME_MAX*SeichiAssist.SUB_HOME_DATASIZE) default ''" +
+				",add column if not exists homepoint_" + SeichiAssist.config.getServerNum() + " varchar(" + SeichiAssist.SUB_HOME_MAX * SeichiAssist.SUB_HOME_DATASIZE + ") default ''"+
+
 				"";
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 		for(int i = 0; i < activeskilleffect.length ; i++){
@@ -488,7 +491,13 @@ public class Sql{
 	}
 
 
-
+	//サブホームを保存
+	public boolean UpDataSubHome(String s) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "update " + db + "." + table
+				+ " set homepoint_" + SeichiAssist.config.getServerNum() + " = '" + s + "'";
+		return putCommand(command);
+	}
 
 	public boolean loadPlayerData(final Player p) {
 		String name = Util.getName(p);
