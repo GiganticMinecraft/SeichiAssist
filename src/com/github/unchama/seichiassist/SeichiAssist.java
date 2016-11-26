@@ -63,7 +63,8 @@ public class SeichiAssist extends JavaPlugin{
 	public static Sql sql;
 	public static Config config;
 
-
+	public static final int SUB_HOME_DATASIZE = 98;	//DB上でのサブホーム1つ辺りのデータサイズ　xyz各10*3+ワールド名64+区切り文字1*4
+	
 	Random rand = new java.util.Random();
 	//起動するタスクリスト
 	private List<BukkitTask> tasklist = new ArrayList<BukkitTask>();
