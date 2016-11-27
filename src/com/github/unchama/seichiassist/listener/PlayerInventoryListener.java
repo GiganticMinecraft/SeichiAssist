@@ -420,11 +420,14 @@ public class PlayerInventoryListener implements Listener {
 					playerdata.SetSubHome(player.getLocation(), z);
 					
 					//mysqlにも書き込んどく
+					/*別スレッド処理PlayerDataSaveTaskRunnableに移動
 					if(!sql.UpDataSubHome(playerdata.SubHomeToString())){
 						player.sendMessage(ChatColor.RED + "失敗");
 					}else{
 						player.sendMessage("現在位置をサブホームポイント"+(z+1)+"に設定しました");
-					}					
+					}
+					*/
+					player.sendMessage("現在位置をサブホームポイント"+(z+1)+"に設定しました");
 					player.closeInventory();
 				}else {
 					player.chat("/sethome");
