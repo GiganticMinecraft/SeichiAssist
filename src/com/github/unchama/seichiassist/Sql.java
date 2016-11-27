@@ -491,13 +491,15 @@ public class Sql{
 
 
 	//サブホームを保存
+	/*
 	public boolean UpDataSubHome(String s) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "update " + db + "." + table
 				+ " set homepoint_" + SeichiAssist.config.getServerNum() + " = '" + s + "'";
 		return putCommand(command);
 	}
-
+*/
+	
 	public boolean loadPlayerData(final Player p) {
 		String name = Util.getName(p);
 		final UUID uuid = p.getUniqueId();
