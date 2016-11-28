@@ -114,7 +114,10 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",stack_coal = " + Integer.toString(playerdata.minestack.coal)
 				+ ",stack_coal_ore = " + Integer.toString(playerdata.minestack.coal_ore)
 				+ ",stack_iron_ore = " + Integer.toString(playerdata.minestack.iron_ore)
-				+ ",stack_packed_ice = " + Integer.toString(playerdata.minestack.packed_ice);
+				+ ",stack_packed_ice = " + Integer.toString(playerdata.minestack.packed_ice)
+				
+				//サブホームのデータ
+				+ ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'";
 
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();

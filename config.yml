@@ -3,6 +3,7 @@ port: '3306'
 db: 'seichiassist'
 id: 'root'
 pw: ''
+servernum: '1'
 defaultmineamount: '3'
 minutespeedamount: '0.01'
 onlineplayersamount: '0.5'
@@ -77,3 +78,4 @@ lv68message: "整地の際に獲得できる経験値量が増えました。"
 lv78message: "整地の際に獲得できる経験値量が増えました。"
 lv88message: "整地の際に獲得できる経験値量が増えました。"
 lv98message: "整地の際に獲得できる経験値量が増えました。"
+subhomemax: 3
