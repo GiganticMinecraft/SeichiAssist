@@ -32,6 +32,7 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 public class MenuInventoryData {
 	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	static Sql sql = SeichiAssist.sql;
+	SeichiAssist plugin = SeichiAssist.plugin;
 	//1ページ目メニュー
 	public static Inventory getMenuData(Player p){
 		//プレイヤーを取得
@@ -42,9 +43,9 @@ public class MenuInventoryData {
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
-			Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			Util.sendPlayerDataNullMessage(p);
+			Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
+			Bukkit.getLogger().warning("MenuInventoryData.getMenuData");
 			return null;
 		}
 
@@ -67,6 +68,11 @@ public class MenuInventoryData {
 		if(playerdata.level < SeichiAssist.levellist.size()){
 			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum));
 		}
+		//整地ワールド外では整地数が反映されない
+		if(!Util.isGainSeichiExp(p)){
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "整地ワールド以外では");
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "整地量とガチャ券は増えません");
+		}
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "パッシブスキル効果："
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "1ブロック整地ごとに"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "10%の確率で"
@@ -81,7 +87,7 @@ public class MenuInventoryData {
 		lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "総ログイン時間：" + Util.toTimeString(Util.toSecond(playerdata.playtick)));
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※1分毎に更新");
 		lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "統計データは");
-		lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "第1,第2サバイバルサーバー間で");
+		lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "各サバイバルサーバー間で");
 		lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "共有されます");
 
 		skullmeta.setLore(lore);
@@ -109,7 +115,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで開く");
 		}
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※四次元ポケットの中身は");
-		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "第1,第2サバイバルサーバー間で");
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "各サバイバルサーバー間で");
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "共有されます");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -132,36 +138,44 @@ public class MenuInventoryData {
 		// ver0.3.2 保護設定コマンド
 		itemstack = new ItemStack(Material.GOLD_AXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_AXE);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護領域の申請");
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護の申請");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		lore.clear();
+
 		Selection selection = Util.getWorldEdit().getSelection(player);
-		if (selection == null) {
-			lore.addAll(Arrays.asList(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "範囲指定されてません"
-					, ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "先に木の斧で2か所クリックしてネ"
-					, ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "A new region has been claimed"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "と出れば、保護の設定が完了しています"
-					, ChatColor.RESET + "" +  ChatColor.RED + "赤色で別の英文が出た場合"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "保護の設定に失敗しています"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "別の保護と被ってないか等ご確認の上"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "始めからやり直してください"
+
+		if(!player.hasPermission("worldguard.region.claim")){
+			lore.addAll(Arrays.asList(ChatColor.RED + "このワールドでは"
+					, ChatColor.RED + "保護を申請出来ません"
+					));
+		}else if (selection == null) {
+			lore.addAll(Arrays.asList(ChatColor.RED + "範囲指定されてません"
+					, ChatColor.RED + "先に木の斧で2か所クリックしてネ"
+					));
+		}else if(selection.getLength() < 10||selection.getWidth() < 10){
+			lore.addAll(Arrays.asList(ChatColor.RED + "選択された範囲が狭すぎます"
+					, ChatColor.RED + "1辺当たり最低10ブロック以上にしてネ"
 					));
 		}else{
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			lore.addAll(Arrays.asList(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "範囲指定されています"
 					, ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックすると保護を申請します"
-					, ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "A new region has been claimed"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "と出れば、保護の設定が完了しています"
-					, ChatColor.RESET + "" +  ChatColor.RED + "赤色で別の英文が出た場合"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "保護の設定に失敗しています"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "別の保護と被ってないか等ご確認の上"
-					, ChatColor.RESET + "" +  ChatColor.GRAY + "始めからやり直してください"
 					));
 		}
+
+		if(player.hasPermission("worldguard.region.claim")){
+			lore.addAll(Arrays.asList(ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
+					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "A new region has been claimed"
+					, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "と出れば保護設定完了です"
+					, ChatColor.RESET + "" +  ChatColor.RED + "赤色で別の英文が出た場合"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "保護の設定に失敗しています"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "・別の保護と被っていないか"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "・保護数上限に達していないか"
+					, ChatColor.RESET + "" +  ChatColor.GRAY + "確認してください"
+					));
+		}
+
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
@@ -171,7 +185,7 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHEST);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack機能");
 		lore.clear();
-		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "説明しよう!MineStackとは!"
+		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "説明しよう!MineStackとは…"
 				, ChatColor.RESET + "" + "主要ブロックを無限にスタック出来る!"
 				, ChatColor.RESET + "" + "スタックしたアイテムは"
 				, ChatColor.RESET + "" + "ここから取り出せるゾ!"
@@ -182,7 +196,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで開く");
 		}
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※スタックしたブロックは");
-		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "第1,第2サバイバルサーバー間で");
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "各サバイバルサーバー間で");
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "共有されます");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -256,6 +270,8 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "出てきたインベントリ―に"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "交換したい景品を入れて"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "escキーを押してください"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "たまにアイテムが消失するから"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "大事なものはいれないでネ"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
 				);
 		itemmeta.setLore(lore);
@@ -271,6 +287,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "うまく機能しない時は"
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "再接続してみてください"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでワープ"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/home]"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -282,7 +299,7 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームポイントを設定");
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "現在位置をホームポイント"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "として設定します"
-				, ChatColor.RESET + "" + ChatColor.	DARK_GRAY + "※上書きされます"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※上書きされます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで設定"
 				);
 		itemmeta.setLore(lore);
@@ -295,13 +312,14 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD_AXE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護設定用の木の斧を召喚");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると召喚されます"
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで召喚"
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※インベントリを空けておこう"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "保護のかけ方"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "①召喚された斧を手に持ちます"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "④メニューの" + ChatColor.RESET + "" +  ChatColor.YELLOW + "金の斧" + ChatColor.RESET + "" +  ChatColor.GREEN + "をクリック"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[//wand]"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -310,33 +328,59 @@ public class MenuInventoryData {
 		// ver0.3.2 保護リスト表示
 		itemstack = new ItemStack(Material.STONE_AXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_AXE);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護リストを表示");
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護一覧を表示");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると表示"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "現在あなたが保護している"
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで表示"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "今いるワールドで"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "あなたが保護している"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "土地の一覧を表示します"
-				, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg remove 保護名"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "で保護の削除が出来ます"
-				, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg addmember 保護名 プレイヤー名"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "で該当保護にメンバーを追加出来ます"
+				, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg info 保護名"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "該当保護の詳細情報を表示"
+				, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg rem 保護名"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "該当保護を削除する"
+				, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg addmem 保護名 プレイヤー名"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "該当保護に指定メンバーを追加"
 				, ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.UNDERLINE + "/rg removemember 保護名 プレイヤー名"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "で該当保護のメンバーを削除出来ます"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "その他のコマンドはWikiで確認して下さい"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "該当保護の指定メンバーを削除"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "その他のコマンドはWikiを参照"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/rg list]"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(5,itemstack);
 
-
-		// ver0.3.2 hubコマンド
-		itemstack = new ItemStack(Material.NETHER_STAR,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ロビーサーバーへ移動");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると移動します"
+		// RegionGUIリンク
+		itemstack = new ItemStack(Material.DIAMOND_AXE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_AXE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "RegionGUI機能");
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+				, ChatColor.RESET + "" +  ChatColor.RED + "保護の作成と管理が超簡単に！"
+				, ChatColor.RESET + "" +  ChatColor.RED + "クリックした場所によって挙動が変わります"
+				, ChatColor.RESET + "" +  ChatColor.YELLOW + "自分の所有する保護内なら…"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "保護の各種設定や削除が行えます"
+				, ChatColor.RESET + "" +  ChatColor.YELLOW + "それ以外なら…"
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "新規保護の作成画面が表示されます"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/land]"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(7,itemstack);
+		inventory.setItem(6,itemstack);
+
+		// fastcraftリンク
+		itemstack = new ItemStack(Material.WORKBENCH,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WORKBENCH);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "FastCraft機能");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+				, ChatColor.RESET + "" +  ChatColor.RED + "ただの作業台じゃないんです…"
+				, ChatColor.RESET + "" +  ChatColor.YELLOW + "自動レシピ補完機能付きの"
+				, ChatColor.RESET + "" +  ChatColor.YELLOW + "最強な作業台はこちら"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/fc craft]"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(23,itemstack);
+
 
 		// ver0.3.2 /spawnコマンド実行
 		itemstack = new ItemStack(Material.BEACON,1);
@@ -346,9 +390,11 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・資源ワールド"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・整地ワールド"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・ロビーサーバー"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "・第1,第2サバイバルサーバー"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "・各サバイバルサーバー"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "間を移動する時に使います"
-				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします");
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/spawn]"
+				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(8,itemstack);
@@ -371,8 +417,14 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ENCHANTED_BOOK);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アクティブスキルブック");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "整地に便利なスキルを使用できるゾ"
-										, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでスキル一覧を開く");
+		//整地ワールド外では整地スキルが発動しない
+		if(!Util.isSkillEnable(p)){
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "このワールドでは"
+					,ChatColor.RESET + "" +  ChatColor.RED + "整地スキルを使えません");
+		}else{
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "整地に便利なスキルを使用できるゾ"
+					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでスキル一覧を開く");
+		}
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(13,itemstack);
@@ -453,6 +505,17 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "死亡メッセージ表示切替");
 		itemstack.setItemMeta(dispKillLogToggleMeta(playerdata,itemmeta));
 		inventory.setItem(14,itemstack);
+
+		// ver0.3.2 hubコマンド
+		itemstack = new ItemStack(Material.NETHER_STAR,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ロビーサーバーへ移動");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックすると移動します"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/hub]"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(8,itemstack);
 
 		/*
 		//PvPのトグルボタン

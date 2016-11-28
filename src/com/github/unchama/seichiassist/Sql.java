@@ -530,6 +530,8 @@ public class Sql{
  			}
  			//PlayerDataを新規作成
  			playermap.put(uuid, new PlayerData(p));
+ 			//初見さんにLv1メッセージを送信
+ 			p.sendMessage(SeichiAssist.config.getLvMessage(1));
  			//初見さんであることを全体告知
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "【初見キタ】" + p.getName() + "のプレイヤーデータ作成完了");
  			Util.sendEveryMessage(ChatColor.LIGHT_PURPLE+""+ChatColor.BOLD+name+"さんは初参加です。整地鯖へヨウコソ！" + ChatColor.RESET +" - " + ChatColor.YELLOW + ChatColor.UNDERLINE +  "http://seichi.click");

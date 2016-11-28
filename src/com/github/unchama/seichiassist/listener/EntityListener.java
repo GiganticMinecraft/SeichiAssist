@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -92,29 +93,30 @@ public class EntityListener implements Listener {
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[entitylistener処理]でエラー発生");
-			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			Util.sendPlayerDataNullMessage(player);
+			Bukkit.getLogger().warning(player.getName() + " -> PlayerData not found.");
+			Bukkit.getLogger().warning("EntityListener.onPlayerActiveSkillEvent");
 			return;
 		}
 		ActiveSkill[] activeskill = ActiveSkill.values();
 
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
+			return;
+		}
+
+		//SEICHIWORLDNAMEのみ重力値によるブロック破壊拒否されることがある処理
 		String worldname = SeichiAssist.SEICHIWORLDNAME;
 		if(SeichiAssist.DEBUG){
 			worldname = SeichiAssist.DEBUGWORLDNAME;
 		}
-
-		//整地ワールドではない時スキルを発動しない。
-		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
-			return;
-		}
-
 		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
 			if(BreakUtil.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
 				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 				return;
 			}
 		}
+
 
 
 

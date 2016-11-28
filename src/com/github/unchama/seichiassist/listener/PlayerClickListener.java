@@ -51,11 +51,8 @@ public class PlayerClickListener implements Listener {
 		//プレイヤーデータを取得
 		PlayerData playerdata = playermap.get(uuid);
 
-		//念のためエラー分岐
+		//playerdataがない場合はreturn
 		if(playerdata == null){
-			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
-			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		if(equipmentslot==null){
@@ -78,16 +75,10 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
-		}
-
-		//整地ワールドではない時スキルを発動しない。
-		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
 			return;
 		}
-
 
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
@@ -208,11 +199,8 @@ public class PlayerClickListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータを取得
 		PlayerData playerdata = playermap.get(uuid);
-		//念のためエラー分岐
+		//playerdataがない場合はreturn
 		if(playerdata == null){
-			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[ガチャを回す処理]でエラー発生");
-			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 
@@ -335,21 +323,14 @@ public class PlayerClickListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
-		//念のためエラー分岐
+		//playerdataがない場合はreturn
 		if(playerdata == null){
-			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
-			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
-		}
 
-		//整地ワールドではない時スキルを発動しない。
-		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
 			return;
 		}
 
@@ -542,9 +523,9 @@ public class PlayerClickListener implements Listener {
 			PlayerData playerdata = playermap.get(uuid);
 			//念のためエラー分岐
 			if(playerdata == null){
-				player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[インベントリから四次元ポケットOPEN処理]でエラー発生");
-				plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+				Util.sendPlayerDataNullMessage(player);
+				plugin.getLogger().warning(player.getName() + " -> PlayerData not found.");
+				plugin.getLogger().warning("PlayerClickListener.onPlayerOpenInventorySkillEvent");
 				return;
 			}
 			//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了

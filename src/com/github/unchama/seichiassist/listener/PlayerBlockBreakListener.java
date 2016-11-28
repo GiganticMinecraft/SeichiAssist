@@ -61,22 +61,19 @@ public class PlayerBlockBreakListener implements Listener {
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//エラー分岐
 		if(playerdata == null){
-			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
-			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		ActiveSkill[] activeskill = ActiveSkill.values();
 
 
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
+			return;
+		}
+
 		String worldname = SeichiAssist.SEICHIWORLDNAME;
 		if(SeichiAssist.DEBUG){
 			worldname = SeichiAssist.DEBUGWORLDNAME;
-		}
-
-		//整地ワールドではない時スキルを発動しない。
-		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
-			return;
 		}
 
 		//重力値によるキャンセル判定

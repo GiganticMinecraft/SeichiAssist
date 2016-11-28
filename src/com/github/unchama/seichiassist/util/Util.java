@@ -36,6 +36,46 @@ public class Util {
 		FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST,
 		FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR, };
 
+	public static void sendPlayerDataNullMessage(Player player){
+		player.sendMessage(ChatColor.RED + "初回ログイン時の読み込み中か、読み込みに失敗しています");
+		player.sendMessage(ChatColor.RED + "再接続しても改善されない場合はお問い合わせフォームからお知らせ下さい");
+	}
+
+	//スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
+	public static boolean isSkillEnable(Player player){
+		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+		//プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)にいる場合
+		if(player.getWorld().getName().toLowerCase().startsWith(worldname)
+				|| player.getWorld().getName().equalsIgnoreCase("world")
+				|| player.getWorld().getName().equalsIgnoreCase("world_nether")
+				|| player.getWorld().getName().equalsIgnoreCase("world_the_end")
+				){
+			return true;
+		}
+		//それ以外のワールドの場合
+		return false;
+	}
+
+	//整地レベルへの整地量反映可否の処理(反映されるならtrue、反映されないならfalse)
+	public static boolean isGainSeichiExp(Player player){
+		//デバッグモード時は全ワールドで整地数が反映される(DEBUGWORLDNAME = worldの場合)
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+		//整地ワールドでは反映されるのでtrue
+		if(player.getWorld().getName().toLowerCase().startsWith(worldname)){
+			return true;
+		}
+
+		//それ以外のワールドの場合
+		return false;
+	}
+
 	//ガチャ券アイテムスタック型の取得
 	public static ItemStack getskull(String name){
 		ItemStack skull;

@@ -78,7 +78,7 @@ public class SeichiAssist extends JavaPlugin{
 	public static final List<RankData> ranklist = new ArrayList<RankData>();
 
 	//総採掘量表示用int
-	public static int allplayerbreakblockint;
+	public static long allplayerbreakblockint;
 
 	//プラグインで出すエンティティの保存
 	public static final List<Entity> entitylist = new ArrayList<Entity>();
@@ -191,8 +191,10 @@ public class SeichiAssist extends JavaPlugin{
 	public static final List<Material> gravitymateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.LOG, Material.LOG_2,Material.LEAVES,Material.LEAVES_2
 			));
+	//スキル破壊ブロック分のcoreprotectログ保存処理を除外するワールドリスト(coreprotectログデータ肥大化の軽減が目的)
+	//スキル自体はメインワールドと各整地ワールドのみ(world_SWで始まるワールドのみ)で発動する(ここの設定は無視する)
 	public static final List<String> ignoreWorldlist = new ArrayList<String>(Arrays.asList(
-			"world_S","world_nether_S","world_SW","world_SW_2"
+			"world_SW","world_SW_2","world_SW_nether"
 			));
 	@Override
 	public void onEnable(){
