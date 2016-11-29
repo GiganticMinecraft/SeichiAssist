@@ -152,7 +152,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint");
  				//マナの情報
  				playerdata.activeskilldata.mana.setMana(rs.getDouble("mana"));
- 				
+
  				//subhomeの情報
  				playerdata.SetSubHome(rs.getString("homepoint_" + SeichiAssist.config.getServerNum()));
 
@@ -177,6 +177,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.minestack.sandstone = rs.getInt("stack_sandstone");
  				playerdata.minestack.netherrack = rs.getInt("stack_netherrack");
  				playerdata.minestack.ender_stone = rs.getInt("stack_ender_stone");
+ 				playerdata.minestack.obsidian = rs.getInt("stack_obsidian"); //追加
  				playerdata.minestack.grass = rs.getInt("stack_grass");
  				playerdata.minestack.quartz = rs.getInt("stack_quartz");
  				playerdata.minestack.quartz_ore = rs.getInt("stack_quartz_ore");
@@ -186,6 +187,19 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.minestack.coal_ore = rs.getInt("stack_coal_ore");
  				playerdata.minestack.iron_ore = rs.getInt("stack_iron_ore");
  				playerdata.minestack.packed_ice = rs.getInt("stack_packed_ice");
+ 				playerdata.minestack.gold_ore = rs.getInt("stack_gold_ore"); //追加
+ 				playerdata.minestack.lapis_ore = rs.getInt("stack_lapis_ore"); //追加
+ 				playerdata.minestack.emerald_ore = rs.getInt("stack_emerald_ore"); //追加
+ 				playerdata.minestack.redstone_ore = rs.getInt("stack_redstone_ore"); //追加
+ 				playerdata.minestack.diamond_ore = rs.getInt("stack_diamond_ore"); //追加
+ 				playerdata.minestack.log = rs.getInt("stack_log"); //追加
+ 				playerdata.minestack.log_2 = rs.getInt("stack_log_2"); //追加
+ 				playerdata.minestack.wood = rs.getInt("stack_wood"); //追加
+ 				playerdata.minestack.hard_clay = rs.getInt("stack_hard_clay"); //追加
+ 				playerdata.minestack.stained_clay = rs.getInt("stack_stained_clay"); //追加
+ 				playerdata.minestack.fence = rs.getInt("stack_fence"); //追加
+ 				
+ 				
 			  }
 			rs.close();
 		} catch (SQLException | IOException e) {

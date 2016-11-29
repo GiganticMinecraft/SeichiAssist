@@ -418,7 +418,7 @@ public class PlayerInventoryListener implements Listener {
 					//ホームをセット
 					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) ) - 1;	//サブホームボタンの番号
 					playerdata.SetSubHome(player.getLocation(), z);
-					
+
 					//mysqlにも書き込んどく
 					/*別スレッド処理PlayerDataSaveTaskRunnableに移動
 					if(!sql.UpDataSubHome(playerdata.SubHomeToString())){
@@ -438,7 +438,7 @@ public class PlayerInventoryListener implements Listener {
 				// homeコマンド実行
 				player.closeInventory();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				
+
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				if(itemmeta.getDisplayName().contains("サブホームポイント")){//ホームボタンかサブホームボタンか判定
 					//サブホームに移動
@@ -458,9 +458,9 @@ public class PlayerInventoryListener implements Listener {
 				}else {
 					player.chat("/home");
 				}
-				
-				
-				
+
+
+
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.WORKBENCH)){
@@ -634,7 +634,7 @@ public class PlayerInventoryListener implements Listener {
 				//インベントリを開く
 				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください"));
 			}
-			
+
 		}
 	}
 	//スキルメニューの処理
@@ -1464,6 +1464,9 @@ public class PlayerInventoryListener implements Listener {
 		ItemStack itemstackcurrent = event.getCurrentItem();
 		InventoryView view = event.getView();
 		HumanEntity he = view.getPlayer();
+
+		int open_flag=-1;
+
 		//インベントリを開けたのがプレイヤーではない時終了
 		if(!he.getType().equals(EntityType.PLAYER)){
 			return;
@@ -1503,6 +1506,22 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 
+			//追加
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMenu2(player));
+				return;
+			}
+
+			//追加
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMenu(player));
+				return;
+			}
+
 			if(itemstackcurrent.getType().equals(Material.IRON_PICKAXE)){
 				// 対象ブロック自動スタック機能トグル
 				playerdata.minestackflag = !playerdata.minestackflag;
@@ -1520,87 +1539,182 @@ public class PlayerInventoryListener implements Listener {
 			//dirt
 			else if(itemstackcurrent.getType().equals(Material.DIRT)){
 				playerdata.minestack.dirt = giveMineStack(player,playerdata.minestack.dirt,Material.DIRT);
+				open_flag=0;
 			}
 
 			//grass
 			else if(itemstackcurrent.getType().equals(Material.GRASS)){
 				playerdata.minestack.grass = giveMineStack(player,playerdata.minestack.grass,Material.GRASS);
+				open_flag=0;
 			}
 
 			//gravel
 			else if(itemstackcurrent.getType().equals(Material.GRAVEL)){
 				playerdata.minestack.gravel = giveMineStack(player,playerdata.minestack.gravel,Material.GRAVEL);
+				open_flag=0;
 			}
 
 			//cobblestone
 			else if(itemstackcurrent.getType().equals(Material.COBBLESTONE)){
 				playerdata.minestack.cobblestone = giveMineStack(player,playerdata.minestack.cobblestone,Material.COBBLESTONE);
+				open_flag=0;
 			}
 
 			//stone
 			else if(itemstackcurrent.getType().equals(Material.STONE)){
 				playerdata.minestack.stone = giveMineStack(player,playerdata.minestack.stone,Material.STONE);
+				open_flag=0;
 			}
 
 			//sand
 			else if(itemstackcurrent.getType().equals(Material.SAND)){
 				playerdata.minestack.sand = giveMineStack(player,playerdata.minestack.sand,Material.SAND);
+				open_flag=0;
 			}
 			//packed_ice
 			else if(itemstackcurrent.getType().equals(Material.PACKED_ICE)){
 				playerdata.minestack.packed_ice = giveMineStack(player,playerdata.minestack.packed_ice,Material.PACKED_ICE);
+				open_flag=0;
 			}
 			//sandstone
 			else if(itemstackcurrent.getType().equals(Material.SANDSTONE)){
 				playerdata.minestack.sandstone = giveMineStack(player,playerdata.minestack.sandstone,Material.SANDSTONE);
+				open_flag=0;
 			}
 
 			//netherrack
 			else if(itemstackcurrent.getType().equals(Material.NETHERRACK)){
 				playerdata.minestack.netherrack = giveMineStack(player,playerdata.minestack.netherrack,Material.NETHERRACK);
+				open_flag=0;
 			}
 
 			//soul_sand
 			else if(itemstackcurrent.getType().equals(Material.SOUL_SAND)){
 				playerdata.minestack.soul_sand = giveMineStack(player,playerdata.minestack.soul_sand,Material.SOUL_SAND);
+				open_flag=0;
 			}
 
 			//magma
 			else if(itemstackcurrent.getType().equals(Material.MAGMA)){
 				playerdata.minestack.magma = giveMineStack(player,playerdata.minestack.magma,Material.MAGMA);
+				open_flag=0;
 			}
 
 			//ender_stone
 			else if(itemstackcurrent.getType().equals(Material.ENDER_STONE)){
 				playerdata.minestack.ender_stone = giveMineStack(player,playerdata.minestack.ender_stone,Material.ENDER_STONE);
+				open_flag=0;
+			}
+
+			//obsidian(追加)
+			else if(itemstackcurrent.getType().equals(Material.OBSIDIAN)){
+				playerdata.minestack.obsidian = giveMineStack(player,playerdata.minestack.obsidian,Material.OBSIDIAN);
+				open_flag=0;
 			}
 
 			//coal
 			else if(itemstackcurrent.getType().equals(Material.COAL)){
 				playerdata.minestack.coal = giveMineStack(player,playerdata.minestack.coal,Material.COAL);
+				open_flag=0;
 			}
 
 			//coal_ore
 			else if(itemstackcurrent.getType().equals(Material.COAL_ORE)){
 				playerdata.minestack.coal_ore = giveMineStack(player,playerdata.minestack.coal_ore,Material.COAL_ORE);
+				open_flag=0;
 			}
 
 			//iron_ore
 			else if(itemstackcurrent.getType().equals(Material.IRON_ORE)){
 				playerdata.minestack.iron_ore = giveMineStack(player,playerdata.minestack.iron_ore,Material.IRON_ORE);
+				open_flag=0;
 			}
 
 			//quartz
 			else if(itemstackcurrent.getType().equals(Material.QUARTZ)){
 				playerdata.minestack.quartz = giveMineStack(player,playerdata.minestack.quartz,Material.QUARTZ);
+				open_flag=0;
 			}
 
 			//quartz_ore
 			else if(itemstackcurrent.getType().equals(Material.QUARTZ_ORE)){
 				playerdata.minestack.quartz_ore = giveMineStack(player,playerdata.minestack.quartz_ore,Material.QUARTZ_ORE);
+				open_flag=0;
 			}
 
-			player.openInventory(MenuInventoryData.getMineStackMenu(player));
+			//gold_ore(追加)
+			else if(itemstackcurrent.getType().equals(Material.GOLD_ORE)){
+				playerdata.minestack.gold_ore = giveMineStack(player,playerdata.minestack.gold_ore,Material.GOLD_ORE);
+				open_flag=0;
+			}
+
+			//lapis_ore(追加)
+			else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
+				playerdata.minestack.lapis_ore = giveMineStack(player,playerdata.minestack.lapis_ore,Material.LAPIS_ORE);
+				open_flag=0;
+			}
+
+			//emerald_ore(追加)
+			else if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
+				playerdata.minestack.emerald_ore = giveMineStack(player,playerdata.minestack.emerald_ore,Material.EMERALD_ORE);
+				open_flag=0;
+			}
+
+			//redstone_ore(追加)
+			else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
+				playerdata.minestack.redstone_ore = giveMineStack(player,playerdata.minestack.redstone_ore,Material.REDSTONE_ORE);
+				open_flag=0;
+			}
+
+			//diamond_ore(追加)
+			else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
+				playerdata.minestack.diamond_ore = giveMineStack(player,playerdata.minestack.diamond_ore,Material.DIAMOND_ORE);
+				open_flag=0;
+			}
+
+			//log(追加)
+			else if(itemstackcurrent.getType().equals(Material.LOG)){
+				playerdata.minestack.log = giveMineStack(player,playerdata.minestack.log,Material.LOG);
+				open_flag=1;
+			}
+
+			//log_2(追加)
+			else if(itemstackcurrent.getType().equals(Material.LOG_2)){
+				playerdata.minestack.log_2 = giveMineStack(player,playerdata.minestack.log_2,Material.LOG_2);
+				open_flag=1;
+			}
+
+			//wood(追加)
+			else if(itemstackcurrent.getType().equals(Material.WOOD)){
+				playerdata.minestack.wood = giveMineStack(player,playerdata.minestack.wood,Material.WOOD);
+				open_flag=1;
+			}
+
+			//hard_clay(追加)
+			else if(itemstackcurrent.getType().equals(Material.HARD_CLAY)){
+				playerdata.minestack.hard_clay = giveMineStack(player,playerdata.minestack.hard_clay,Material.HARD_CLAY);
+				open_flag=1;
+			}
+			
+			//stained_clay(追加)
+			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY)){
+				playerdata.minestack.stained_clay = giveMineStack(player,playerdata.minestack.stained_clay,Material.STAINED_CLAY);
+				open_flag=1;
+			}
+
+			//fence(追加)
+			else if(itemstackcurrent.getType().equals(Material.FENCE)){
+				playerdata.minestack.fence = giveMineStack(player,playerdata.minestack.fence,Material.FENCE);
+				open_flag=1;
+			}
+
+			if(open_flag==0){
+				player.openInventory(MenuInventoryData.getMineStackMenu(player));
+				open_flag=-1;
+			} else if(open_flag==1){
+				player.openInventory(MenuInventoryData.getMineStackMenu2(player));
+				open_flag=-1;
+			}
 
 		}
 	}

@@ -263,6 +263,7 @@ public class Sql{
 				",add column if not exists stack_sandstone int default 0" +
 				",add column if not exists stack_netherrack int default 0" +
 				",add column if not exists stack_ender_stone int default 0" +
+				",add column if not exists stack_obsidian int default 0" + //追加
 				",add column if not exists stack_grass int default 0" +
 				",add column if not exists stack_quartz int default 0" +
 				",add column if not exists stack_quartz_ore int default 0" +
@@ -272,6 +273,17 @@ public class Sql{
 				",add column if not exists stack_coal_ore int default 0" +
 				",add column if not exists stack_iron_ore int default 0" +
 				",add column if not exists stack_packed_ice int default 0" +
+				",add column if not exists stack_gold_ore int default 0" + //追加
+				",add column if not exists stack_lapis_ore int default 0" + //追加
+				",add column if not exists stack_emerald_ore int default 0" + //追加
+				",add column if not exists stack_redstone_ore int default 0" + //追加
+				",add column if not exists stack_diamond_ore int default 0" + //追加
+				",add column if not exists stack_log int default 0" + //追加
+				",add column if not exists stack_log_2 int default 0" + //追加
+				",add column if not exists stack_wood int default 0" + //追加
+				",add column if not exists stack_hard_clay int default 0" + //追加
+				",add column if not exists stack_stained_clay int default 0" + //追加
+				",add column if not exists stack_fence int default 0" + //追加
 				",add column if not exists playtick int default 0" +
 				",add column if not exists killlogflag boolean default false" +
 				",add column if not exists pvpflag boolean default false" +
@@ -499,7 +511,7 @@ public class Sql{
 		return putCommand(command);
 	}
 */
-	
+
 	public boolean loadPlayerData(final Player p) {
 		String name = Util.getName(p);
 		final UUID uuid = p.getUniqueId();
