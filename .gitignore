@@ -1,4 +1,9 @@
 /bin/
 
+#Eclipse
 .classpath
 *.prefs
+
+#IntelliJ IDEA
+.idea/
+MultiSeichiEffect.iml
