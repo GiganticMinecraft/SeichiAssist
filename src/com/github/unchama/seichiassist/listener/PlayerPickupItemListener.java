@@ -59,6 +59,8 @@ public class PlayerPickupItemListener implements Listener {
 		int v8 = config.getMineStacklevel(8);
 		int v9 = config.getMineStacklevel(9);
 		int v10 = config.getMineStacklevel(10);
+		int v11 = config.getMineStacklevel(11);//追加
+		int v12 = config.getMineStacklevel(12);//追加
 
 
 		switch(material){
@@ -134,6 +136,12 @@ public class PlayerPickupItemListener implements Listener {
 				}
 				playerdata.minestack.ender_stone += amount;
 				break;
+			case OBSIDIAN: //追加
+				if(playerdata.level < v7){
+					return;
+				}
+				playerdata.minestack.obsidian += amount;
+				break;	
 			case COAL:
 				if(playerdata.level < v8){
 					return;
@@ -163,6 +171,72 @@ public class PlayerPickupItemListener implements Listener {
 					return;
 				}
 				playerdata.minestack.quartz_ore += amount;
+				break;
+			case GOLD_ORE: //追加
+				if(playerdata.level < v11){
+					return;
+				}
+				playerdata.minestack.gold_ore += amount;
+				break;
+			case LAPIS_ORE: //追加
+				if(playerdata.level < v11){
+					return;
+				}
+				playerdata.minestack.lapis_ore += amount;
+				break;
+			case EMERALD_ORE: //追加
+				if(playerdata.level < v11){
+					return;
+				}
+				playerdata.minestack.emerald_ore += amount;
+				break;
+			case REDSTONE_ORE: //追加
+				if(playerdata.level < v12){
+					return;
+				}
+				playerdata.minestack.redstone_ore += amount;
+				break;
+			case DIAMOND_ORE: //追加
+				if(playerdata.level < v12){
+					return;
+				}
+				playerdata.minestack.diamond_ore += amount;
+				break;
+			case LOG: //追加
+				if(playerdata.level < v4){
+					return;
+				}
+				playerdata.minestack.log += amount;
+				break;
+			case LOG_2: //追加
+				if(playerdata.level < v4){
+					return;
+				}
+				playerdata.minestack.log_2 += amount;
+				break;
+			case WOOD: //追加
+				if(playerdata.level < v5){
+					return;
+				}
+				playerdata.minestack.wood += amount;
+				break;
+			case HARD_CLAY: //追加
+				if(playerdata.level < v5){
+					return;
+				}
+				playerdata.minestack.hard_clay += amount;
+				break;
+			case STAINED_CLAY: //追加
+				if(playerdata.level < v5){
+					return;
+				}
+				playerdata.minestack.stained_clay += amount;
+				break;
+			case FENCE: //追加
+				if(playerdata.level < v5){
+					return;
+				}
+				playerdata.minestack.fence += amount;
 				break;
 			default:
 				return;
