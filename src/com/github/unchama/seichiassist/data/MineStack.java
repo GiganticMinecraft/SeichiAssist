@@ -19,6 +19,18 @@ public class MineStack {
 	public int iron_ore;
 	public int coal;
 	public int packed_ice;
+	public int gold_ore; //追加
+	public int lapis_ore; //追加
+	public int emerald_ore; //追加
+	public int redstone_ore; //追加
+	public int diamond_ore; //追加
+	public int log; //追加
+	public int log_2; //追加
+	public int wood; //追加
+	public int hard_clay; //追加
+	public int stained_clay; //追加
+	public int fence; //追加
+	
 
 	public MineStack(){
 		stone = 0;
@@ -39,5 +51,16 @@ public class MineStack {
 		iron_ore = 0;
 		coal = 0;
 		packed_ice = 0;
+		gold_ore = 0; //追加
+		lapis_ore = 0; //追加
+		emerald_ore = 0; //追加
+		redstone_ore = 0; //追加
+		diamond_ore = 0; //追加
+		log = 0; //追加
+		log_2 = 0; //追加
+		wood = 0; //追加
+		hard_clay = 0; //追加
+		stained_clay = 0; //追加
+		fence = 0; //追加
 	}
 }

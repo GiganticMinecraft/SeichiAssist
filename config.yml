@@ -1,4 +1,4 @@
-host: 'localhost'
+﻿host: 'localhost'
 port: '3306'
 db: 'seichiassist'
 id: 'root'
@@ -37,6 +37,8 @@ minestacklevel7: '42'
 minestacklevel8: '47'
 minestacklevel9: '52'
 minestacklevel10: '57'
+minestacklevel11: '62'
+minestacklevel12: '67'
 lv1message: "整地鯖では整地をするとレベルが上がり、様々な恩恵が受けられます。\n初めての方は整地ワールドで掘ってレベルを上げてみましょう！\n木の棒を右クリックしてメニューを開き右上のビーコンボタンをクリック！"
 lv2message: "おめでとうございます！最初のレベルアップです！\nレベル8に到達すると整地するだけで経験値がもらえるようになります。"
 lv3message: "やけに早く掘れる気がする…？それは仕様です＾＾\n整地鯖では接続人数や採掘量に応じて採掘速度にブーストが掛かります。"

@@ -646,7 +646,7 @@ public class MenuInventoryData {
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(29+x,itemstack);
-			
+
 			//サブホーム設定ボタン
 			itemstack = new ItemStack(Material.BED,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BED);
@@ -658,8 +658,8 @@ public class MenuInventoryData {
 					);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(20+x,itemstack);		
-			
+			inventory.setItem(20+x,itemstack);
+
 		}
 
 		return inventory;
@@ -1863,6 +1863,9 @@ public class MenuInventoryData {
 		return lore;
 	}
 
+
+
+
 	public static Inventory getMineStackMenu(Player p){
 		//プレイヤーを取得
 		Player player = p.getPlayer();
@@ -1893,6 +1896,8 @@ public class MenuInventoryData {
 		int v8 = SeichiAssist.config.getMineStacklevel(8);
 		int v9 = SeichiAssist.config.getMineStacklevel(9);
 		int v10 = SeichiAssist.config.getMineStacklevel(10);
+		int v11 = SeichiAssist.config.getMineStacklevel(11);//追加
+		int v12 = SeichiAssist.config.getMineStacklevel(12);//追加
 
 		setMineStackButton(inventory, playerdata.minestack.dirt, Material.DIRT, v1, 1);
 
@@ -1917,16 +1922,29 @@ public class MenuInventoryData {
 		setMineStackButton(inventory, playerdata.minestack.magma, Material.MAGMA, v6, 11);
 
 		setMineStackButton(inventory, playerdata.minestack.ender_stone, Material.ENDER_STONE, v7, 12);
+		//追加
+		setMineStackButton(inventory, playerdata.minestack.obsidian, Material.OBSIDIAN, v7, 13);
 
-		setMineStackButton(inventory, playerdata.minestack.coal, Material.COAL, v8, 13);
+		setMineStackButton(inventory, playerdata.minestack.coal, Material.COAL, v8, 14);
 
-		setMineStackButton(inventory, playerdata.minestack.coal_ore, Material.COAL_ORE, v8, 14);
+		setMineStackButton(inventory, playerdata.minestack.coal_ore, Material.COAL_ORE, v8, 15);
 
-		setMineStackButton(inventory, playerdata.minestack.iron_ore, Material.IRON_ORE, v9, 15);
+		setMineStackButton(inventory, playerdata.minestack.iron_ore, Material.IRON_ORE, v9, 16);
 
-		setMineStackButton(inventory, playerdata.minestack.quartz, Material.QUARTZ, v10, 16);
+		setMineStackButton(inventory, playerdata.minestack.quartz, Material.QUARTZ, v10, 17);
 
-		setMineStackButton(inventory, playerdata.minestack.quartz_ore, Material.QUARTZ_ORE, v10, 17);
+		setMineStackButton(inventory, playerdata.minestack.quartz_ore, Material.QUARTZ_ORE, v10, 18);
+		//追加
+		setMineStackButton(inventory, playerdata.minestack.gold_ore, Material.GOLD_ORE, v11, 19);
+		//追加
+		setMineStackButton(inventory, playerdata.minestack.lapis_ore, Material.LAPIS_ORE, v11, 20);
+		//追加
+		setMineStackButton(inventory, playerdata.minestack.emerald_ore, Material.EMERALD_ORE, v11, 21);
+		//追加
+		setMineStackButton(inventory, playerdata.minestack.redstone_ore, Material.REDSTONE_ORE, v12, 22);
+		//追加
+		setMineStackButton(inventory, playerdata.minestack.diamond_ore, Material.DIAMOND_ORE, v12, 23);
+
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1940,8 +1958,79 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
 
+		// MineStack2ページ目を開く(追加)
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack2ページ目へ");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowDown");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(35,itemstack);
+
+
 		return inventory;
 	}
+
+	//追加(Minestack2ページ目)
+	public static Inventory getMineStackMenu2(Player p){
+		//プレイヤーを取得
+		Player player = p.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+
+		int v1 = SeichiAssist.config.getMineStacklevel(1);
+		int v2 = SeichiAssist.config.getMineStacklevel(2);
+		int v3 = SeichiAssist.config.getMineStacklevel(3);
+		int v4 = SeichiAssist.config.getMineStacklevel(4);
+		int v5 = SeichiAssist.config.getMineStacklevel(5);
+		int v6 = SeichiAssist.config.getMineStacklevel(6);
+		int v7 = SeichiAssist.config.getMineStacklevel(7);
+		int v8 = SeichiAssist.config.getMineStacklevel(8);
+		int v9 = SeichiAssist.config.getMineStacklevel(9);
+		int v10 = SeichiAssist.config.getMineStacklevel(10);
+		int v11 = SeichiAssist.config.getMineStacklevel(11);//追加
+		int v12 = SeichiAssist.config.getMineStacklevel(12);//追加
+
+		setMineStackButton(inventory, playerdata.minestack.log, Material.LOG, v4, 0);
+
+		setMineStackButton(inventory, playerdata.minestack.log_2, Material.LOG_2, v4, 1);
+
+		setMineStackButton(inventory, playerdata.minestack.wood, Material.WOOD, v5, 2);
+
+		setMineStackButton(inventory, playerdata.minestack.hard_clay, Material.HARD_CLAY, v5, 3);
+
+		setMineStackButton(inventory, playerdata.minestack.stained_clay, Material.STAINED_CLAY, v5, 4);
+
+		setMineStackButton(inventory, playerdata.minestack.fence, Material.FENCE, v5, 5);
+
+		// MineStack1ページ目を開く
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Minestack1ページ目へ");
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowUp");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(27,itemstack);
+
+		return inventory;
+	}
+
+
+
+
+
 	// MineStackトグルボタン
 	public static ItemMeta MineStackToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<String>();
