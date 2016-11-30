@@ -1928,6 +1928,8 @@ public class MenuInventoryData {
 
 		setMineStackButton(inventory, playerdata.minestack.quartz_ore, Material.QUARTZ_ORE, v10, 17);
 
+		setMineStackButton(inventory, playerdata.minestack.lapis_lazuli, new ItemStack(Material.INK_SACK, 1, (short)4), v9, 18);
+
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
@@ -1972,6 +1974,7 @@ public class MenuInventoryData {
 	}
 	//MineStackボタン作成 ItemStack版
 	public static Inventory setMineStackButton(Inventory inv,int minestack,ItemStack itemstack,int level,int set){
+		itemstack.setAmount(1);
 		ItemMeta itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + itemmeta.getDisplayName());
 		List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + minestack +"個"
