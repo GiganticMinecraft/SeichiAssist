@@ -1630,6 +1630,11 @@ public class PlayerInventoryListener implements Listener {
 				open_flag=0;
 			}
 
+			//lapis_lazuli
+			else if(itemstackcurrent.getType().equals((Material.INK_SACK)) || itemstackcurrent.getDurability() == 4){
+				playerdata.minestack.lapis_lazuli = giveMineStack(player,playerdata.minestack.lapis_lazuli,new ItemStack(Material.INK_SACK, 1, (short)4));
+			}
+
 			//quartz
 			else if(itemstackcurrent.getType().equals(Material.QUARTZ)){
 				playerdata.minestack.quartz = giveMineStack(player,playerdata.minestack.quartz,Material.QUARTZ);
@@ -1838,6 +1843,23 @@ public class PlayerInventoryListener implements Listener {
 			minestack -= minestack;
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 		}
+		return minestack;
+	}
+
+	//minestackの1stack付与 ItemStack版
+	private int giveMineStack(Player player,int minestack,ItemStack itemstack){
+		if (minestack == 0){
+			return minestack;
+		}
+		else if(minestack >= 64)
+			itemstack.setAmount(64);
+		if(!Util.isPlayerInventryFill(player)){
+			Util.addItem(player,itemstack);
+		}else{
+			Util.dropItem(player,itemstack);
+		}
+		minestack -= 64;
+		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 		return minestack;
 	}
 
