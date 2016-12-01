@@ -30,7 +30,7 @@ public class MineStack {
 	public int hard_clay; //追加
 	public int stained_clay; //追加
 	public int fence; //追加
-	
+	public int lapis_lazuli;
 
 	public MineStack(){
 		stone = 0;
@@ -62,5 +62,6 @@ public class MineStack {
 		hard_clay = 0; //追加
 		stained_clay = 0; //追加
 		fence = 0; //追加
+		lapis_lazuli = 0;
 	}
 }

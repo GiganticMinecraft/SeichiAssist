@@ -160,6 +160,12 @@ public class PlayerPickupItemListener implements Listener {
 				}
 				playerdata.minestack.iron_ore += amount;
 				break;
+			case INK_SACK:
+				if(playerdata.level < v9 || itemstack.getDurability() == 4){
+					return;
+				}
+				playerdata.minestack.lapis_lazuli += amount;
+				break;
 			case QUARTZ:
 				if(playerdata.level < v10){
 					return;

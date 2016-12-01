@@ -1946,6 +1946,8 @@ public class MenuInventoryData {
 		setMineStackButton(inventory, playerdata.minestack.diamond_ore, Material.DIAMOND_ORE, v12, 23);
 
 
+		setMineStackButton(inventory, playerdata.minestack.lapis_lazuli, new ItemStack(Material.INK_SACK, 1, (short)4), v9, 18);
+
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
@@ -2046,11 +2048,24 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		return itemmeta;
 	}
-	//MineStackボタン作成
+	//MineStackボタン作成 Material版
 	public static Inventory setMineStackButton(Inventory inv,int minestack,Material type,int level,int set){
 		ItemStack itemstack = new ItemStack(type,1);
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(type);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + type.toString());
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + minestack +"個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "Lv" + level + "以上でスタック可能"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inv.setItem(set,itemstack);
+		return inv;
+	}
+	//MineStackボタン作成 ItemStack版
+	public static Inventory setMineStackButton(Inventory inv,int minestack,ItemStack itemstack,int level,int set){
+		itemstack.setAmount(1);
+		ItemMeta itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + itemmeta.getDisplayName());
 		List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + minestack +"個"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "Lv" + level + "以上でスタック可能"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
