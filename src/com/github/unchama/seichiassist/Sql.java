@@ -273,17 +273,37 @@ public class Sql{
 				",add column if not exists stack_coal_ore int default 0" +
 				",add column if not exists stack_iron_ore int default 0" +
 				",add column if not exists stack_packed_ice int default 0" +
-				",add column if not exists stack_gold_ore int default 0" + //追加
-				",add column if not exists stack_lapis_ore int default 0" + //追加
-				",add column if not exists stack_emerald_ore int default 0" + //追加
-				",add column if not exists stack_redstone_ore int default 0" + //追加
-				",add column if not exists stack_diamond_ore int default 0" + //追加
-				",add column if not exists stack_log int default 0" + //追加
-				",add column if not exists stack_log_2 int default 0" + //追加
-				",add column if not exists stack_wood int default 0" + //追加
-				",add column if not exists stack_hard_clay int default 0" + //追加
-				",add column if not exists stack_stained_clay int default 0" + //追加
-				",add column if not exists stack_fence int default 0" + //追加
+				",add column if not exists stack_gold_ore int default 0" +
+				",add column if not exists stack_lapis_ore int default 0" +
+				",add column if not exists stack_emerald_ore int default 0" +
+				",add column if not exists stack_redstone_ore int default 0" +
+				",add column if not exists stack_diamond_ore int default 0" +
+				",add column if not exists stack_log int default 0" +
+				",add column if not exists stack_log_2 int default 0" +
+				",add column if not exists stack_wood int default 0" +
+				",add column if not exists stack_hard_clay int default 0" +
+				",add column if not exists stack_stained_clay int default 0" +
+				",add column if not exists stack_fence int default 0" +
+				",add column if not exists stack_lapis_lazuli int default 0" + //テスト
+				",add column if not exists stack_granite int default 0" + //追加
+				",add column if not exists stack_diorite int default 0" + //追加
+				",add column if not exists stack_andesite int default 0" + //追加
+				",add column if not exists stack_red_sand int default 0" + //追加
+				",add column if not exists stack_red_sandstone int default 0" + //追加
+				",add column if not exists stack_log1 int default 0" + //追加
+				",add column if not exists stack_log2 int default 0" + //追加
+				",add column if not exists stack_log3 int default 0" + //追加
+				",add column if not exists stack_log_21 int default 0" + //追加
+				",add column if not exists stack_stained_clay1 int default 0" + //追加
+				",add column if not exists stack_stained_clay4 int default 0" + //追加
+				",add column if not exists stack_stained_clay8 int default 0" + //追加
+				",add column if not exists stack_stained_clay12 int default 0" + //追加
+				",add column if not exists stack_stained_clay14 int default 0" + //追加
+				",add column if not exists stack_emerald int default 0" + //追加
+				",add column if not exists stack_redstone int default 0" + //追加
+				",add column if not exists stack_diamond int default 0" + //追加
+				",add column if not exists stack_clay int default 0" + //追加
+				",add column if not exists stack_glowstone int default 0" + //追加
 				",add column if not exists playtick int default 0" +
 				",add column if not exists killlogflag boolean default false" +
 				",add column if not exists pvpflag boolean default false" +
