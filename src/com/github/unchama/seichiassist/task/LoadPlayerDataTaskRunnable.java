@@ -177,7 +177,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.minestack.sandstone = rs.getInt("stack_sandstone");
  				playerdata.minestack.netherrack = rs.getInt("stack_netherrack");
  				playerdata.minestack.ender_stone = rs.getInt("stack_ender_stone");
- 				playerdata.minestack.obsidian = rs.getInt("stack_obsidian"); //追加
+ 				playerdata.minestack.obsidian = rs.getInt("stack_obsidian");
  				playerdata.minestack.grass = rs.getInt("stack_grass");
  				playerdata.minestack.quartz = rs.getInt("stack_quartz");
  				playerdata.minestack.quartz_ore = rs.getInt("stack_quartz_ore");
@@ -187,19 +187,37 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.minestack.coal_ore = rs.getInt("stack_coal_ore");
  				playerdata.minestack.iron_ore = rs.getInt("stack_iron_ore");
  				playerdata.minestack.packed_ice = rs.getInt("stack_packed_ice");
- 				playerdata.minestack.gold_ore = rs.getInt("stack_gold_ore"); //追加
- 				playerdata.minestack.lapis_ore = rs.getInt("stack_lapis_ore"); //追加
- 				playerdata.minestack.emerald_ore = rs.getInt("stack_emerald_ore"); //追加
- 				playerdata.minestack.redstone_ore = rs.getInt("stack_redstone_ore"); //追加
- 				playerdata.minestack.diamond_ore = rs.getInt("stack_diamond_ore"); //追加
- 				playerdata.minestack.log = rs.getInt("stack_log"); //追加
- 				playerdata.minestack.log_2 = rs.getInt("stack_log_2"); //追加
- 				playerdata.minestack.wood = rs.getInt("stack_wood"); //追加
- 				playerdata.minestack.hard_clay = rs.getInt("stack_hard_clay"); //追加
- 				playerdata.minestack.stained_clay = rs.getInt("stack_stained_clay"); //追加
- 				playerdata.minestack.fence = rs.getInt("stack_fence"); //追加
- 				
- 				
+ 				playerdata.minestack.gold_ore = rs.getInt("stack_gold_ore");
+ 				playerdata.minestack.lapis_ore = rs.getInt("stack_lapis_ore");
+ 				playerdata.minestack.emerald_ore = rs.getInt("stack_emerald_ore");
+ 				playerdata.minestack.redstone_ore = rs.getInt("stack_redstone_ore");
+ 				playerdata.minestack.diamond_ore = rs.getInt("stack_diamond_ore");
+ 				playerdata.minestack.log = rs.getInt("stack_log");
+ 				playerdata.minestack.log_2 = rs.getInt("stack_log_2");
+ 				playerdata.minestack.wood = rs.getInt("stack_wood");
+ 				playerdata.minestack.hard_clay = rs.getInt("stack_hard_clay");
+ 				playerdata.minestack.stained_clay = rs.getInt("stack_stained_clay");
+ 				playerdata.minestack.fence = rs.getInt("stack_fence");
+ 				playerdata.minestack.lapis_lazuli = rs.getInt("stack_lapis_lazuli"); //テスト
+ 				playerdata.minestack.granite = rs.getInt("stack_granite"); //追加
+ 				playerdata.minestack.diorite = rs.getInt("stack_diorite"); //追加
+ 				playerdata.minestack.andesite = rs.getInt("stack_andesite"); //追加
+ 				playerdata.minestack.red_sand = rs.getInt("stack_red_sand"); //追加
+ 				playerdata.minestack.red_sandstone = rs.getInt("stack_red_sandstone"); //追加
+ 				playerdata.minestack.log1 = rs.getInt("stack_log1"); //追加
+ 				playerdata.minestack.log2 = rs.getInt("stack_log2"); //追加
+ 				playerdata.minestack.log3 = rs.getInt("stack_log3"); //追加
+ 				playerdata.minestack.log_21 = rs.getInt("stack_log_21"); //追加
+ 				playerdata.minestack.stained_clay1 = rs.getInt("stack_stained_clay1"); //追加
+ 				playerdata.minestack.stained_clay4 = rs.getInt("stack_stained_clay4"); //追加
+ 				playerdata.minestack.stained_clay8 = rs.getInt("stack_stained_clay8"); //追加
+ 				playerdata.minestack.stained_clay12 = rs.getInt("stack_stained_clay12"); //追加
+ 				playerdata.minestack.stained_clay14 = rs.getInt("stack_stained_clay14"); //追加
+ 				playerdata.minestack.emerald = rs.getInt("stack_emerald"); //追加
+ 				playerdata.minestack.redstone = rs.getInt("stack_redstone"); //追加
+ 				playerdata.minestack.diamond = rs.getInt("stack_diamond"); //追加
+ 				playerdata.minestack.clay = rs.getInt("stack_clay"); //追加
+ 				playerdata.minestack.glowstone = rs.getInt("stack_glowstone"); //追加
 			  }
 			rs.close();
 		} catch (SQLException | IOException e) {

@@ -19,18 +19,38 @@ public class MineStack {
 	public int iron_ore;
 	public int coal;
 	public int packed_ice;
-	public int gold_ore; //追加
-	public int lapis_ore; //追加
-	public int emerald_ore; //追加
-	public int redstone_ore; //追加
-	public int diamond_ore; //追加
-	public int log; //追加
-	public int log_2; //追加
-	public int wood; //追加
-	public int hard_clay; //追加
-	public int stained_clay; //追加
-	public int fence; //追加
+	public int gold_ore;
+	public int lapis_ore;
+	public int emerald_ore;
+	public int redstone_ore;
+	public int diamond_ore;
+	public int log;
+	public int log_2;
+	public int wood;
+	public int hard_clay;
+	public int stained_clay;
+	public int fence;
 	public int lapis_lazuli;
+	public int emerald; //追加
+	public int redstone; //追加
+	public int diamond; //追加
+	public int granite; //追加
+	public int diorite; //追加
+	public int andesite; //追加
+	public int red_sand; //追加
+	public int red_sandstone; //追加
+	public int log1; //追加
+	public int log2; //追加
+	public int log3; //追加
+	public int log_21; //追加
+	public int stained_clay1; //追加
+	public int stained_clay4; //追加
+	public int stained_clay8; //追加
+	public int stained_clay12; //追加
+	public int stained_clay14; //追加
+	public int clay; //追加
+	public int glowstone; //追加
+
 
 	public MineStack(){
 		stone = 0;
@@ -51,17 +71,36 @@ public class MineStack {
 		iron_ore = 0;
 		coal = 0;
 		packed_ice = 0;
-		gold_ore = 0; //追加
-		lapis_ore = 0; //追加
-		emerald_ore = 0; //追加
-		redstone_ore = 0; //追加
-		diamond_ore = 0; //追加
-		log = 0; //追加
-		log_2 = 0; //追加
-		wood = 0; //追加
-		hard_clay = 0; //追加
-		stained_clay = 0; //追加
-		fence = 0; //追加
+		gold_ore = 0;
+		lapis_ore = 0;
+		emerald_ore = 0;
+		redstone_ore = 0;
+		diamond_ore = 0;
+		log = 0;
+		log_2 = 0;
+		wood = 0;
+		hard_clay = 0;
+		stained_clay = 0;
+		fence = 0;
 		lapis_lazuli = 0;
+		emerald = 0; //追加
+		redstone = 0; //追加
+		diamond = 0; //追加
+		granite = 0; //追加
+		diorite = 0; //追加
+		andesite = 0; //追加
+		red_sand = 0; //追加
+		red_sandstone = 0; //追加
+		log1 = 0; //追加
+		log2 = 0; //追加
+		log3 = 0; //追加
+		log_21 = 0; //追加
+		stained_clay1 = 0; //追加
+		stained_clay4 = 0; //追加
+		stained_clay8 = 0; //追加
+		stained_clay12 = 0; //追加
+		stained_clay14 = 0; //追加
+		clay = 0; //追加
+		glowstone = 0; //追加
 	}
 }

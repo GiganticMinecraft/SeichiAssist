@@ -149,11 +149,13 @@ public class BreakUtil {
 		int v8 = config.getMineStacklevel(8);
 		int v9 = config.getMineStacklevel(9);
 		int v10 = config.getMineStacklevel(10);
+		int v11 = config.getMineStacklevel(11);//追加
+		int v12 = config.getMineStacklevel(12);//追加
 
 
 		switch(material){
 			case DIRT:
-				if(playerdata.level < v1){
+				if(playerdata.level < v1 || itemstack.getDurability() != 0){
 					return false;
 				}
 				playerdata.minestack.dirt += amount;
@@ -180,13 +182,29 @@ public class BreakUtil {
 				if(playerdata.level < v3){
 					return false;
 				}
-				playerdata.minestack.stone += amount;
+				if(itemstack.getDurability() == 0){
+					playerdata.minestack.stone += amount;
+				} else if(itemstack.getDurability() == 1){
+					playerdata.minestack.granite += amount;
+				} else if(itemstack.getDurability() == 3){
+					playerdata.minestack.diorite += amount;
+				} else if(itemstack.getDurability() == 5){
+					playerdata.minestack.andesite += amount;
+				} else {
+					return false;
+				}
 				break;
 			case SAND:
 				if(playerdata.level < v4){
 					return false;
 				}
-				playerdata.minestack.sand += amount;
+				if(itemstack.getDurability() == 0){
+					playerdata.minestack.sand += amount;
+				} else if(itemstack.getDurability() == 1){
+					playerdata.minestack.red_sand += amount;
+				} else {
+					return false;
+				}
 				break;
 			case PACKED_ICE:
 				if(playerdata.level < v4){
@@ -195,10 +213,22 @@ public class BreakUtil {
 				playerdata.minestack.packed_ice += amount;
 				break;
 			case SANDSTONE:
-				if(playerdata.level < v4){
+				if(playerdata.level < v4 || itemstack.getDurability() != 0){
 					return false;
 				}
 				playerdata.minestack.sandstone += amount;
+				break;
+			case RED_SANDSTONE: //追加
+				if(playerdata.level < v4 || itemstack.getDurability() != 0){
+					return false;
+				}
+				playerdata.minestack.red_sandstone += amount;
+				break;	
+			case CLAY:
+				if(playerdata.level < v5){
+					return false;
+				}
+				playerdata.minestack.clay += amount;
 				break;
 			case NETHERRACK:
 				if(playerdata.level < v5){
@@ -224,8 +254,20 @@ public class BreakUtil {
 				}
 				playerdata.minestack.ender_stone += amount;
 				break;
+			case OBSIDIAN:
+				if(playerdata.level < v7){
+					return false;
+				}
+				playerdata.minestack.obsidian += amount;
+				break;
+			case GLOWSTONE:
+				if(playerdata.level < v7){
+					return false;
+				}
+				playerdata.minestack.glowstone += amount;
+				break;
 			case COAL:
-				if(playerdata.level < v8){
+				if(playerdata.level < v8 || itemstack.getDurability() != 0){
 					return false;
 				}
 				playerdata.minestack.coal += amount;
@@ -253,6 +295,127 @@ public class BreakUtil {
 					return false;
 				}
 				playerdata.minestack.quartz_ore += amount;
+				break;
+			case GOLD_ORE:
+				if(playerdata.level < v11){
+					return false;
+				}
+				playerdata.minestack.gold_ore += amount;
+				break;
+				
+			case LOG:
+				if(playerdata.level < v4){
+					return false;
+				}
+				if(itemstack.getDurability() == 0){
+					playerdata.minestack.log += amount;
+				} else if(itemstack.getDurability() == 1){
+					playerdata.minestack.log1 += amount;
+				} else if(itemstack.getDurability() == 2){
+					playerdata.minestack.log2 += amount;
+				} else if(itemstack.getDurability() == 3){
+					playerdata.minestack.log3 += amount;
+				} else {
+					return false;
+				}
+				break;
+			case LOG_2:
+				if(playerdata.level < v4){
+					return false;
+				}
+				if(itemstack.getDurability() == 0){
+					playerdata.minestack.log_2 += amount;
+				} else if(itemstack.getDurability() == 1){
+					playerdata.minestack.log_21 += amount;
+				} else {
+					return false;
+				}
+				break;
+			case WOOD:
+				if(playerdata.level < v5 || itemstack.getDurability() != 0){
+					return false;
+				}
+				playerdata.minestack.wood += amount;
+				break;
+			case FENCE:
+				if(playerdata.level < v5){
+					return false;
+				}
+				playerdata.minestack.fence += amount;
+				break;
+			case HARD_CLAY:
+				if(playerdata.level < v5){
+					return false;
+				}
+				playerdata.minestack.hard_clay += amount;
+				break;
+			case STAINED_CLAY:
+				if(playerdata.level < v5){
+					return false;
+				}
+				if(itemstack.getDurability() == 0){
+					playerdata.minestack.stained_clay += amount;
+				} else if(itemstack.getDurability() == 1){
+					playerdata.minestack.stained_clay1 += amount;
+				} else if(itemstack.getDurability() == 4){
+					playerdata.minestack.stained_clay4 += amount;
+				} else if(itemstack.getDurability() == 8){
+					playerdata.minestack.stained_clay8 += amount;
+				} else if(itemstack.getDurability() == 12){
+					playerdata.minestack.stained_clay12 += amount;
+				} else if(itemstack.getDurability() == 14){
+					playerdata.minestack.stained_clay14 += amount;
+				} else {
+					return false;
+				}
+				break;
+			case INK_SACK:
+				if(playerdata.level < v11 || itemstack.getDurability() != 4){
+					return false;
+				}
+				playerdata.minestack.lapis_lazuli += amount;
+				break;
+			case LAPIS_ORE:
+				if(playerdata.level < v11){
+					return false;
+				}
+				playerdata.minestack.lapis_ore += amount;
+				break;
+			case EMERALD:
+				if(playerdata.level < v11){
+					return false;
+				}
+				playerdata.minestack.emerald += amount;
+				break;
+			case EMERALD_ORE:
+				if(playerdata.level < v11){
+					return false;
+				}
+				playerdata.minestack.emerald_ore += amount;
+				break;
+			case REDSTONE:
+				if(playerdata.level < v12){
+					return false;
+				}
+				playerdata.minestack.redstone += amount;
+				break;
+			case REDSTONE_ORE:
+				if(playerdata.level < v12){
+					return false;
+				}
+				playerdata.minestack.redstone_ore += amount;
+				break;
+			case DIAMOND:
+				if(playerdata.level < v12){
+					return false;
+				}
+				playerdata.minestack.diamond += amount;
+				break;
+			case DIAMOND_ORE:
+				if(playerdata.level < v12){
+					return false;
+				}
+				playerdata.minestack.diamond_ore += amount;
 				break;
 			default:
 				return false;

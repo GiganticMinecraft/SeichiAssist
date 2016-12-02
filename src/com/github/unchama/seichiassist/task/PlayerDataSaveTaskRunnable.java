@@ -106,7 +106,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",stack_sandstone = " + Integer.toString(playerdata.minestack.sandstone)
 				+ ",stack_netherrack = " + Integer.toString(playerdata.minestack.netherrack)
 				+ ",stack_ender_stone = " + Integer.toString(playerdata.minestack.ender_stone)
-				+ ",stack_obsidian = " + Integer.toString(playerdata.minestack.obsidian) //追加
+				+ ",stack_obsidian = " + Integer.toString(playerdata.minestack.obsidian)
 				+ ",stack_grass = " + Integer.toString(playerdata.minestack.grass)
 				+ ",stack_quartz = " + Integer.toString(playerdata.minestack.quartz)
 				+ ",stack_quartz_ore = " + Integer.toString(playerdata.minestack.quartz_ore)
@@ -116,19 +116,37 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",stack_coal_ore = " + Integer.toString(playerdata.minestack.coal_ore)
 				+ ",stack_iron_ore = " + Integer.toString(playerdata.minestack.iron_ore)
 				+ ",stack_packed_ice = " + Integer.toString(playerdata.minestack.packed_ice)
-				+ ",stack_gold_ore = " + Integer.toString(playerdata.minestack.gold_ore) //追加
-				+ ",stack_lapis_ore = " + Integer.toString(playerdata.minestack.lapis_ore) //追加
-				+ ",stack_emerald_ore = " + Integer.toString(playerdata.minestack.emerald_ore) //追加
-				+ ",stack_redstone_ore = " + Integer.toString(playerdata.minestack.redstone_ore) //追加
-				+ ",stack_diamond_ore = " + Integer.toString(playerdata.minestack.diamond_ore) //追加
-				+ ",stack_log = " + Integer.toString(playerdata.minestack.log) //追加
-				+ ",stack_log_2 = " + Integer.toString(playerdata.minestack.log_2) //追加
-				+ ",stack_wood = " + Integer.toString(playerdata.minestack.wood) //追加
-				+ ",stack_hard_clay = " + Integer.toString(playerdata.minestack.hard_clay) //追加
-				+ ",stack_stained_clay = " + Integer.toString(playerdata.minestack.stained_clay) //追加
-				+ ",stack_fence = " + Integer.toString(playerdata.minestack.fence) //追加
-				
-				
+				+ ",stack_gold_ore = " + Integer.toString(playerdata.minestack.gold_ore)
+				+ ",stack_lapis_ore = " + Integer.toString(playerdata.minestack.lapis_ore)
+				+ ",stack_emerald_ore = " + Integer.toString(playerdata.minestack.emerald_ore)
+				+ ",stack_redstone_ore = " + Integer.toString(playerdata.minestack.redstone_ore)
+				+ ",stack_diamond_ore = " + Integer.toString(playerdata.minestack.diamond_ore)
+				+ ",stack_log = " + Integer.toString(playerdata.minestack.log)
+				+ ",stack_log_2 = " + Integer.toString(playerdata.minestack.log_2)
+				+ ",stack_wood = " + Integer.toString(playerdata.minestack.wood)
+				+ ",stack_hard_clay = " + Integer.toString(playerdata.minestack.hard_clay)
+				+ ",stack_stained_clay = " + Integer.toString(playerdata.minestack.stained_clay)
+				+ ",stack_fence = " + Integer.toString(playerdata.minestack.fence)
+				+ ",stack_lapis_lazuli = " + Integer.toString(playerdata.minestack.lapis_lazuli) //テスト
+				+ ",stack_granite = " + Integer.toString(playerdata.minestack.granite) //追加
+				+ ",stack_diorite = " + Integer.toString(playerdata.minestack.diorite) //追加
+				+ ",stack_andesite = " + Integer.toString(playerdata.minestack.andesite) //追加
+				+ ",stack_red_sand = " + Integer.toString(playerdata.minestack.red_sand) //追加
+				+ ",stack_red_sandstone = " + Integer.toString(playerdata.minestack.red_sandstone) //追加
+				+ ",stack_log1 = " + Integer.toString(playerdata.minestack.log1) //追加
+				+ ",stack_log2 = " + Integer.toString(playerdata.minestack.log2) //追加
+				+ ",stack_log3 = " + Integer.toString(playerdata.minestack.log3) //追加
+				+ ",stack_log_21 = " + Integer.toString(playerdata.minestack.log_21) //追加
+				+ ",stack_stained_clay1 = " + Integer.toString(playerdata.minestack.stained_clay1) //追加
+				+ ",stack_stained_clay4 = " + Integer.toString(playerdata.minestack.stained_clay4) //追加
+				+ ",stack_stained_clay8 = " + Integer.toString(playerdata.minestack.stained_clay8) //追加
+				+ ",stack_stained_clay12 = " + Integer.toString(playerdata.minestack.stained_clay12) //追加
+				+ ",stack_stained_clay14 = " + Integer.toString(playerdata.minestack.stained_clay14) //追加
+				+ ",stack_emerald = " + Integer.toString(playerdata.minestack.emerald) //追加
+				+ ",stack_redstone = " + Integer.toString(playerdata.minestack.redstone) //追加
+				+ ",stack_diamond = " + Integer.toString(playerdata.minestack.diamond) //追加
+				+ ",stack_clay = " + Integer.toString(playerdata.minestack.clay) //追加
+				+ ",stack_glowstone = " + Integer.toString(playerdata.minestack.glowstone) //追加
 
 				//サブホームのデータ
 				+ ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'";
