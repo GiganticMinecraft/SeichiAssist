@@ -12,10 +12,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerPickupItemListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -458,6 +460,20 @@ public class PlayerPickupItemListener implements Listener {
 				} else {
 					return;
 				}
+				break;
+			case GOLDEN_APPLE: //追加
+				if(playerdata.level < v1 || itemstack.getDurability() != 0){
+					return;
+				}
+				ItemMeta meta = itemstack.getItemMeta();
+				if(meta==null || meta.getDisplayName()==null || meta.getLore()== null){
+					return;
+				}
+				if( !(meta.getDisplayName().equals(Util.getGachaimoName()))
+						|| !(meta.getLore().equals(Util.getGachaimoLore())) ){
+					return;
+				}
+				playerdata.minestack.gachaimo += amount;
 				break;
 
 			default:

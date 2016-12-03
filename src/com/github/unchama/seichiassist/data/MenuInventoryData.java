@@ -2119,7 +2119,7 @@ public class MenuInventoryData {
 		int v13 = SeichiAssist.config.getMineStacklevel(13);//追加
 		int v14 = SeichiAssist.config.getMineStacklevel(14);//追加
 		int v15 = SeichiAssist.config.getMineStacklevel(15);//追加
-		
+
 		setMineStackButton(inventory, playerdata.minestack.dirt1, new ItemStack(Material.DIRT, 1, (short)1), v1, 0);
 
 		setMineStackButton(inventory, playerdata.minestack.dirt2, new ItemStack(Material.DIRT, 1, (short)2), v1, 1);
@@ -2161,18 +2161,20 @@ public class MenuInventoryData {
 		setMineStackButton(inventory, playerdata.minestack.sapling5, new ItemStack(Material.SAPLING, 1, (short)5), v4, 19);
 
 		setMineStackButton(inventory, playerdata.minestack.leaves, new ItemStack(Material.LEAVES, 1, (short)0), v15, 20);
-		
+
 		setMineStackButton(inventory, playerdata.minestack.leaves1, new ItemStack(Material.LEAVES, 1, (short)1), v15, 21);
-		
+
 		setMineStackButton(inventory, playerdata.minestack.leaves2, new ItemStack(Material.LEAVES, 1, (short)2), v15, 22);
-		
+
 		setMineStackButton(inventory, playerdata.minestack.leaves3, new ItemStack(Material.LEAVES, 1, (short)3), v15, 23);
-		
+
 		setMineStackButton(inventory, playerdata.minestack.leaves_2, new ItemStack(Material.LEAVES_2, 1, (short)0), v15, 24);
-		
+
 		setMineStackButton(inventory, playerdata.minestack.leaves_21, new ItemStack(Material.LEAVES_2, 1, (short)1), v15, 25);
-		
-		
+
+		setMineStackButton(inventory, playerdata.minestack.gachaimo, new ItemStack(Material.GOLDEN_APPLE, 1, (short)0), v1, 26, "がちゃりんご");
+
+
 		// MineStack2ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);

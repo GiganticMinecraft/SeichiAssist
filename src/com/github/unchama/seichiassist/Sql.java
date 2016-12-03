@@ -330,6 +330,7 @@ public class Sql{
 				",add column if not exists stack_leaves3 int default 0" + //
 				",add column if not exists stack_leaves_2 int default 0" + //
 				",add column if not exists stack_leaves_21 int default 0" + //
+				",add column if not exists stack_gachaimo int default 0" + //
 
 				",add column if not exists playtick int default 0" +
 				",add column if not exists killlogflag boolean default false" +

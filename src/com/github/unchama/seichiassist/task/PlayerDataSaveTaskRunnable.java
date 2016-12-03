@@ -173,7 +173,8 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",stack_leaves3 = " + Integer.toString(playerdata.minestack.leaves3)
 				+ ",stack_leaves_2 = " + Integer.toString(playerdata.minestack.leaves_2)
 				+ ",stack_leaves_21 = " + Integer.toString(playerdata.minestack.leaves_21)
-
+				+ ",stack_gachaimo = " + Integer.toString(playerdata.minestack.gachaimo)
+				
 				//サブホームのデータ
 				+ ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'";
 

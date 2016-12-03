@@ -244,7 +244,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.minestack.leaves3 = rs.getInt("stack_leaves3");
  				playerdata.minestack.leaves_2 = rs.getInt("stack_leaves_2");
  				playerdata.minestack.leaves_21 = rs.getInt("stack_leaves_21");
-
+ 				playerdata.minestack.gachaimo = rs.getInt("stack_gachaimo");
+ 				
 			  }
 			rs.close();
 		} catch (SQLException | IOException e) {

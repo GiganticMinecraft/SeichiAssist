@@ -21,6 +21,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Dye;
 
 import com.github.unchama.seichiassist.Config;
@@ -549,6 +550,20 @@ public class BreakUtil {
 						return false;
 					}
 					break;
+				case GOLDEN_APPLE: //追加
+					if(playerdata.level < v1 || itemstack.getDurability() != 0){
+						return false;
+					}
+					ItemMeta meta = itemstack.getItemMeta();
+					if(meta==null || meta.getDisplayName()==null || meta.getLore()== null){
+						return false;
+					}
+					if( !(meta.getDisplayName().equals(Util.getGachaimoName()))
+							|| !(meta.getLore().equals(Util.getGachaimoLore())) ){
+						return false;
+					}
+					playerdata.minestack.gachaimo += amount;
+					break;
 
 			default:
 				return false;
@@ -841,6 +856,17 @@ public class BreakUtil {
 		return null;
 		}
 	}
+	
+	public static boolean BlockEqualsMaterialList(Block b){
+		List<Material> m = SeichiAssist.materiallist;
+		for(int i=0; i<m.size(); i++){
+			if(b.getType().equals(m.get(i))){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static double getGravity(Player player, Block block, int breakyloc, int weight) {
 		int gravity = 2;
 		while(!SeichiAssist.transparentmateriallist.contains(block.getRelative(0,gravity,0).getType())){

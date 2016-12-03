@@ -81,7 +81,7 @@ public class MineStack {
 	public int huge_mushroom_2;
 	public int web;
 	public int string;
-
+	public int gachaimo; //がちゃりんごテスト用
 
 
 
@@ -161,6 +161,7 @@ public class MineStack {
 		huge_mushroom_2 = 0;
 		web = 0;
 		string = 0;
+		gachaimo = 0;
 
 	}
 }

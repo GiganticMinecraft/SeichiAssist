@@ -1759,7 +1759,7 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.minestack.wood = giveMineStack(player,playerdata.minestack.wood,new ItemStack(Material.WOOD, 1, (short)0));
 				open_flag=1;
 			}
-			
+
 			//fence
 			else if(itemstackcurrent.getType().equals(Material.FENCE)){
 				playerdata.minestack.fence = giveMineStack(player,playerdata.minestack.fence,Material.FENCE);
@@ -1933,73 +1933,73 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.minestack.string = giveMineStack(player,playerdata.minestack.string,Material.STRING);
 				open_flag=2;
 			}
-			
+
 			//wood5
 			else if(itemstackcurrent.getType().equals(Material.WOOD) && itemstackcurrent.getDurability() == 5){
 				playerdata.minestack.wood5 = giveMineStack(player,playerdata.minestack.wood5,new ItemStack(Material.WOOD, 1, (short)5));
 				open_flag=2;
 			}
-			
+
 			//sapling
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 0){
 				playerdata.minestack.sapling = giveMineStack(player,playerdata.minestack.sapling,new ItemStack(Material.SAPLING, 1, (short)0));
 				open_flag=2;
 			}
-			
+
 			//sapling1
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 1){
 				playerdata.minestack.sapling1 = giveMineStack(player,playerdata.minestack.sapling1,new ItemStack(Material.SAPLING, 1, (short)1));
 				open_flag=2;
 			}
-			
+
 			//sapling2
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 2){
 				playerdata.minestack.sapling2 = giveMineStack(player,playerdata.minestack.sapling2,new ItemStack(Material.SAPLING, 1, (short)2));
 				open_flag=2;
 			}
-			
+
 			//sapling3
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 3){
 				playerdata.minestack.sapling3 = giveMineStack(player,playerdata.minestack.sapling3,new ItemStack(Material.SAPLING, 1, (short)3));
 				open_flag=2;
 			}
-			
+
 			//sapling4
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 4){
 				playerdata.minestack.sapling4 = giveMineStack(player,playerdata.minestack.sapling4,new ItemStack(Material.SAPLING, 1, (short)4));
 				open_flag=2;
 			}
-			
+
 			//sapling5
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 5){
 				playerdata.minestack.sapling5 = giveMineStack(player,playerdata.minestack.sapling5,new ItemStack(Material.SAPLING, 1, (short)5));
 				open_flag=2;
 			}
-			
+
 			//leaves
 			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 0){
 				playerdata.minestack.leaves = giveMineStack(player,playerdata.minestack.leaves,new ItemStack(Material.LEAVES, 1, (short)0));
 				open_flag=2;
 			}
-			
+
 			//leaves1
 			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 1){
 				playerdata.minestack.leaves1 = giveMineStack(player,playerdata.minestack.leaves1,new ItemStack(Material.LEAVES, 1, (short)1));
 				open_flag=2;
 			}
-			
+
 			//leaves2
 			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 2){
 				playerdata.minestack.leaves2 = giveMineStack(player,playerdata.minestack.leaves2,new ItemStack(Material.LEAVES, 1, (short)2));
 				open_flag=2;
 			}
-			
+
 			//leaves3
 			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 3){
 				playerdata.minestack.leaves3 = giveMineStack(player,playerdata.minestack.leaves3,new ItemStack(Material.LEAVES, 1, (short)3));
 				open_flag=2;
 			}
-			
+
 			//leaves_2
 			else if(itemstackcurrent.getType().equals(Material.LEAVES_2) && itemstackcurrent.getDurability() == 0){
 				playerdata.minestack.leaves_2 = giveMineStack(player,playerdata.minestack.leaves_2,new ItemStack(Material.LEAVES_2, 1, (short)0));
@@ -2009,6 +2009,12 @@ public class PlayerInventoryListener implements Listener {
 			//leaves_21
 			else if(itemstackcurrent.getType().equals(Material.LEAVES_2) && itemstackcurrent.getDurability() == 1){
 				playerdata.minestack.leaves_21 = giveMineStack(player,playerdata.minestack.leaves_21,new ItemStack(Material.LEAVES_2, 1, (short)1));
+				open_flag=2;
+			}
+
+			//gachaimo
+			else if(itemstackcurrent.getType().equals(Material.GOLDEN_APPLE) && itemstackcurrent.getDurability() == 0){
+				playerdata.minestack.gachaimo = giveMineStackNameLore(player,playerdata.minestack.gachaimo,new ItemStack(Material.GOLDEN_APPLE, 1, (short)0),0);
 				open_flag=2;
 			}
 
@@ -2151,6 +2157,46 @@ public class PlayerInventoryListener implements Listener {
 
 	//minestackの1stack付与 ItemStack版
 	private int giveMineStack(Player player,int minestack,ItemStack itemstack){
+		if(minestack >= 64){
+			itemstack.setAmount(64);
+			if(!Util.isPlayerInventryFill(player)){
+				Util.addItem(player,itemstack);
+			}else{
+				Util.dropItem(player,itemstack);
+			}
+			minestack -= 64;
+			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+		}else if(minestack == 0){
+			return minestack;
+		}else{
+			itemstack.setAmount(minestack);
+			if(!Util.isPlayerInventryFill(player)){
+				Util.addItem(player,itemstack);
+			}else{
+				Util.dropItem(player,itemstack);
+			}
+			minestack -= minestack;
+			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+		}
+		return minestack;
+	}
+
+	//minestackの1stack付与 ItemStack版(名前、説明文付き専用)
+	private int giveMineStackNameLore(Player player,int minestack,ItemStack itemstack, int num){
+		ItemMeta meta = itemstack.getItemMeta();
+		if(num==0){//がちゃりんごの場合
+			//ItemStack gachaimo;
+			//ItemMeta meta;
+			itemstack = new ItemStack(Material.GOLDEN_APPLE,1);
+			meta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
+			meta.setDisplayName(Util.getGachaimoName());
+			List<String> lore = Util.getGachaimoLore();
+			meta.setLore(lore);
+			itemstack.setItemMeta(meta);
+
+			meta.setDisplayName(Util.getGachaimoName());
+			meta.setLore(Util.getGachaimoLore());
+		}
 		if(minestack >= 64){
 			itemstack.setAmount(64);
 			if(!Util.isPlayerInventryFill(player)){
