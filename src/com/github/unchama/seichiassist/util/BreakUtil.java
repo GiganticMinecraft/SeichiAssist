@@ -551,7 +551,7 @@ public class BreakUtil {
 					}
 					break;
 				case GOLDEN_APPLE: //追加
-					if(playerdata.level < v1 || itemstack.getDurability() != 0){
+					if(playerdata.level < v14 || itemstack.getDurability() != 0){
 						return false;
 					}
 					ItemMeta meta = itemstack.getItemMeta();

@@ -1640,6 +1640,96 @@ public class PlayerInventoryListener implements Listener {
 				open_flag=0;
 			}
 
+			//log
+			else if(itemstackcurrent.getType().equals(Material.LOG) && itemstackcurrent.getDurability() == 0){
+				playerdata.minestack.log = giveMineStack(player,playerdata.minestack.log,new ItemStack(Material.LOG, 1, (short)0));
+				open_flag=0;
+			}
+
+			//log1
+			else if(itemstackcurrent.getType().equals(Material.LOG) && itemstackcurrent.getDurability() == 1){
+				playerdata.minestack.log1 = giveMineStack(player,playerdata.minestack.log1,new ItemStack(Material.LOG, 1, (short)1));
+				open_flag=0;
+			}
+
+			//log2
+			else if(itemstackcurrent.getType().equals(Material.LOG) && itemstackcurrent.getDurability() == 2){
+				playerdata.minestack.log2 = giveMineStack(player,playerdata.minestack.log2,new ItemStack(Material.LOG, 1, (short)2));
+				open_flag=0;
+			}
+
+			//log3
+			else if(itemstackcurrent.getType().equals(Material.LOG) && itemstackcurrent.getDurability() == 3){
+				playerdata.minestack.log3 = giveMineStack(player,playerdata.minestack.log3,new ItemStack(Material.LOG, 1, (short)3));
+				open_flag=0;
+			}
+
+			//log_2
+			else if(itemstackcurrent.getType().equals(Material.LOG_2) && itemstackcurrent.getDurability() == 0){
+				playerdata.minestack.log_2 = giveMineStack(player,playerdata.minestack.log_2,new ItemStack(Material.LOG_2, 1, (short)0));
+				open_flag=0;
+			}
+
+			//log_21
+			else if(itemstackcurrent.getType().equals(Material.LOG_2) && itemstackcurrent.getDurability() == 1){
+				playerdata.minestack.log_21 = giveMineStack(player,playerdata.minestack.log_21,new ItemStack(Material.LOG_2, 1, (short)1));
+				open_flag=0;
+			}
+
+			//wood
+			else if(itemstackcurrent.getType().equals(Material.WOOD) && itemstackcurrent.getDurability() == 0){
+				playerdata.minestack.wood = giveMineStack(player,playerdata.minestack.wood,new ItemStack(Material.WOOD, 1, (short)0));
+				open_flag=0;
+			}
+
+			//fence
+			else if(itemstackcurrent.getType().equals(Material.FENCE)){
+				playerdata.minestack.fence = giveMineStack(player,playerdata.minestack.fence,Material.FENCE);
+				open_flag=0;
+			}
+
+			//hard_clay
+			else if(itemstackcurrent.getType().equals(Material.HARD_CLAY)){
+				playerdata.minestack.hard_clay = giveMineStack(player,playerdata.minestack.hard_clay,Material.HARD_CLAY);
+				open_flag=0;
+			}
+
+			//stained_clay
+			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 0){
+				playerdata.minestack.stained_clay = giveMineStack(player,playerdata.minestack.stained_clay,new ItemStack(Material.STAINED_CLAY, 1, (short)0));
+				open_flag=0;
+			}
+
+			//stained_clay1
+			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 1){
+				playerdata.minestack.stained_clay1 = giveMineStack(player,playerdata.minestack.stained_clay1,new ItemStack(Material.STAINED_CLAY, 1, (short)1));
+				open_flag=0;
+			}
+
+			//stained_clay4
+			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 4){
+				playerdata.minestack.stained_clay4 = giveMineStack(player,playerdata.minestack.stained_clay4,new ItemStack(Material.STAINED_CLAY, 1, (short)4));
+				open_flag=0;
+			}
+
+			//stained_clay8
+			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 8){
+				playerdata.minestack.stained_clay8 = giveMineStack(player,playerdata.minestack.stained_clay8,new ItemStack(Material.STAINED_CLAY, 1, (short)8));
+				open_flag=0;
+			}
+
+			//stained_clay12
+			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 12){
+				playerdata.minestack.stained_clay12 = giveMineStack(player,playerdata.minestack.stained_clay12,new ItemStack(Material.STAINED_CLAY, 1, (short)12));
+				open_flag=0;
+			}
+
+			//stained_clay14
+			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 14){
+				playerdata.minestack.stained_clay14 = giveMineStack(player,playerdata.minestack.stained_clay14,new ItemStack(Material.STAINED_CLAY, 1, (short)14));
+				open_flag=0;
+			}
+
 			//clay(追加)
 			else if(itemstackcurrent.getType().equals(Material.CLAY)){
 				playerdata.minestack.clay = giveMineStack(player,playerdata.minestack.clay,Material.CLAY);
@@ -1717,308 +1807,222 @@ public class PlayerInventoryListener implements Listener {
 				open_flag=0;
 			}
 
-
-			//log
-			else if(itemstackcurrent.getType().equals(Material.LOG) && itemstackcurrent.getDurability() == 0){
-				playerdata.minestack.log = giveMineStack(player,playerdata.minestack.log,new ItemStack(Material.LOG, 1, (short)0));
-				open_flag=1;
-			}
-
-			//log1
-			else if(itemstackcurrent.getType().equals(Material.LOG) && itemstackcurrent.getDurability() == 1){
-				playerdata.minestack.log1 = giveMineStack(player,playerdata.minestack.log1,new ItemStack(Material.LOG, 1, (short)1));
-				open_flag=1;
-			}
-
-			//log2
-			else if(itemstackcurrent.getType().equals(Material.LOG) && itemstackcurrent.getDurability() == 2){
-				playerdata.minestack.log2 = giveMineStack(player,playerdata.minestack.log2,new ItemStack(Material.LOG, 1, (short)2));
-				open_flag=1;
-			}
-
-			//log3
-			else if(itemstackcurrent.getType().equals(Material.LOG) && itemstackcurrent.getDurability() == 3){
-				playerdata.minestack.log3 = giveMineStack(player,playerdata.minestack.log3,new ItemStack(Material.LOG, 1, (short)3));
-				open_flag=1;
-			}
-
-			//log_2
-			else if(itemstackcurrent.getType().equals(Material.LOG_2) && itemstackcurrent.getDurability() == 0){
-				playerdata.minestack.log_2 = giveMineStack(player,playerdata.minestack.log_2,new ItemStack(Material.LOG_2, 1, (short)0));
-				open_flag=1;
-			}
-
-			//log_21
-			else if(itemstackcurrent.getType().equals(Material.LOG_2) && itemstackcurrent.getDurability() == 1){
-				playerdata.minestack.log_21 = giveMineStack(player,playerdata.minestack.log_21,new ItemStack(Material.LOG_2, 1, (short)1));
-				open_flag=1;
-			}
-
-			//wood
-			else if(itemstackcurrent.getType().equals(Material.WOOD) && itemstackcurrent.getDurability() == 0){
-				playerdata.minestack.wood = giveMineStack(player,playerdata.minestack.wood,new ItemStack(Material.WOOD, 1, (short)0));
-				open_flag=1;
-			}
-
-			//fence
-			else if(itemstackcurrent.getType().equals(Material.FENCE)){
-				playerdata.minestack.fence = giveMineStack(player,playerdata.minestack.fence,Material.FENCE);
-				open_flag=1;
-			}
-
-			//hard_clay
-			else if(itemstackcurrent.getType().equals(Material.HARD_CLAY)){
-				playerdata.minestack.hard_clay = giveMineStack(player,playerdata.minestack.hard_clay,Material.HARD_CLAY);
-				open_flag=1;
-			}
-
-			//stained_clay
-			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 0){
-				playerdata.minestack.stained_clay = giveMineStack(player,playerdata.minestack.stained_clay,new ItemStack(Material.STAINED_CLAY, 1, (short)0));
-				open_flag=1;
-			}
-
-			//stained_clay1
-			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 1){
-				playerdata.minestack.stained_clay1 = giveMineStack(player,playerdata.minestack.stained_clay1,new ItemStack(Material.STAINED_CLAY, 1, (short)1));
-				open_flag=1;
-			}
-
-			//stained_clay4
-			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 4){
-				playerdata.minestack.stained_clay4 = giveMineStack(player,playerdata.minestack.stained_clay4,new ItemStack(Material.STAINED_CLAY, 1, (short)4));
-				open_flag=1;
-			}
-
-			//stained_clay8
-			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 8){
-				playerdata.minestack.stained_clay8 = giveMineStack(player,playerdata.minestack.stained_clay8,new ItemStack(Material.STAINED_CLAY, 1, (short)8));
-				open_flag=1;
-			}
-
-			//stained_clay12
-			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 12){
-				playerdata.minestack.stained_clay12 = giveMineStack(player,playerdata.minestack.stained_clay12,new ItemStack(Material.STAINED_CLAY, 1, (short)12));
-				open_flag=1;
-			}
-
-			//stained_clay14
-			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 14){
-				playerdata.minestack.stained_clay14 = giveMineStack(player,playerdata.minestack.stained_clay14,new ItemStack(Material.STAINED_CLAY, 1, (short)14));
-				open_flag=1;
-			}
-
 			//lapis_lazuli
 			else if(itemstackcurrent.getType().equals(Material.INK_SACK) && itemstackcurrent.getDurability() == 4){
 				playerdata.minestack.lapis_lazuli = giveMineStack(player,playerdata.minestack.lapis_lazuli,new ItemStack(Material.INK_SACK, 1, (short)4));
-				open_flag=1;
+				open_flag=0;
 			}
 
 			//lapis_ore
 			else if(itemstackcurrent.getType().equals(Material.LAPIS_ORE)){
 				playerdata.minestack.lapis_ore = giveMineStack(player,playerdata.minestack.lapis_ore,Material.LAPIS_ORE);
-				open_flag=1;
+				open_flag=0;
 			}
 
 			//emerald
 			else if(itemstackcurrent.getType().equals(Material.EMERALD)){
 				playerdata.minestack.emerald = giveMineStack(player,playerdata.minestack.emerald,Material.EMERALD);
-				open_flag=1;
+				open_flag=0;
 			}
+
+
 
 			//emerald_ore
 			else if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
 				playerdata.minestack.emerald_ore = giveMineStack(player,playerdata.minestack.emerald_ore,Material.EMERALD_ORE);
-				open_flag=1;
+				open_flag=0;
 			}
 
 			//redstone
 			else if(itemstackcurrent.getType().equals(Material.REDSTONE)){
 				playerdata.minestack.redstone = giveMineStack(player,playerdata.minestack.redstone,Material.REDSTONE);
-				open_flag=1;
+				open_flag=0;
 			}
 
 			//redstone_ore
 			else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
 				playerdata.minestack.redstone_ore = giveMineStack(player,playerdata.minestack.redstone_ore,Material.REDSTONE_ORE);
-				open_flag=1;
+				open_flag=0;
 			}
 
 			//diamond
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND)){
 				playerdata.minestack.diamond = giveMineStack(player,playerdata.minestack.diamond,Material.DIAMOND);
-				open_flag=1;
+				open_flag=0;
 			}
 
 			//diamond_ore
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
 				playerdata.minestack.diamond_ore = giveMineStack(player,playerdata.minestack.diamond_ore,Material.DIAMOND_ORE);
+				open_flag=0;
+			}
+			
+			
+			
+			//dirt1
+			else if(itemstackcurrent.getType().equals(Material.DIRT) && itemstackcurrent.getDurability() == 1){
+				playerdata.minestack.dirt1 = giveMineStack(player,playerdata.minestack.dirt1,new ItemStack(Material.DIRT, 1, (short)1));
 				open_flag=1;
 			}
 
-			//coarse_dirt
-			else if(itemstackcurrent.getType().equals(Material.DIRT) && itemstackcurrent.getDurability() == 1){
-				playerdata.minestack.dirt1 = giveMineStack(player,playerdata.minestack.dirt1,new ItemStack(Material.DIRT, 1, (short)1));
-				open_flag=2;
-			}
-
-			//podzol
+			//dirt2
 			else if(itemstackcurrent.getType().equals(Material.DIRT) && itemstackcurrent.getDurability() == 2){
 				playerdata.minestack.dirt2 = giveMineStack(player,playerdata.minestack.dirt2,new ItemStack(Material.DIRT, 1, (short)2));
-				open_flag=2;
+				open_flag=1;
 			}
-
-			//mycelium
-			else if(itemstackcurrent.getType().equals(Material.MYCEL)){
-				playerdata.minestack.mycel = giveMineStack(player,playerdata.minestack.mycel,Material.MYCEL);
-				open_flag=2;
-			}
-
-			//snow_block
-			else if(itemstackcurrent.getType().equals(Material.SNOW_BLOCK)){
-				playerdata.minestack.snow_block = giveMineStack(player,playerdata.minestack.snow_block,Material.SNOW_BLOCK);
-				open_flag=2;
-			}
-
-			//ice
-			else if(itemstackcurrent.getType().equals(Material.ICE)){
-				playerdata.minestack.ice = giveMineStack(player,playerdata.minestack.ice,Material.ICE);
-				open_flag=2;
-			}
-
-			//dark_oak_fence
-			else if(itemstackcurrent.getType().equals(Material.DARK_OAK_FENCE)){
-				playerdata.minestack.dark_oak_fence = giveMineStack(player,playerdata.minestack.dark_oak_fence,Material.DARK_OAK_FENCE);
-				open_flag=2;
-			}
-
-			//mossy_cobblestone
-			else if(itemstackcurrent.getType().equals(Material.MOSSY_COBBLESTONE)){
-				playerdata.minestack.mossy_cobblestone = giveMineStack(player,playerdata.minestack.mossy_cobblestone,Material.MOSSY_COBBLESTONE);
-				open_flag=2;
-			}
-
-			//rail
-			else if(itemstackcurrent.getType().equals(Material.RAILS)){
-				playerdata.minestack.rails = giveMineStack(player,playerdata.minestack.rails,Material.RAILS);
-				open_flag=2;
-			}
-
-			//exp_bottle
-			else if(itemstackcurrent.getType().equals(Material.EXP_BOTTLE)){
-				playerdata.minestack.exp_bottle = giveMineStack(player,playerdata.minestack.exp_bottle,Material.EXP_BOTTLE);
-				open_flag=2;
-			}
-
-			//huge_mushroom_1
-			else if(itemstackcurrent.getType().equals(Material.HUGE_MUSHROOM_1)){
-				playerdata.minestack.huge_mushroom_1 = giveMineStack(player,playerdata.minestack.huge_mushroom_1,Material.HUGE_MUSHROOM_1);
-				open_flag=2;
-			}
-
-			//huge_mushroom_2
-			else if(itemstackcurrent.getType().equals(Material.HUGE_MUSHROOM_2)){
-				playerdata.minestack.huge_mushroom_2 = giveMineStack(player,playerdata.minestack.huge_mushroom_2,Material.HUGE_MUSHROOM_2);
-				open_flag=2;
-			}
-
-			//web
-			else if(itemstackcurrent.getType().equals(Material.WEB)){
-				playerdata.minestack.web = giveMineStack(player,playerdata.minestack.web,Material.WEB);
-				open_flag=2;
-			}
-
-			//string
-			else if(itemstackcurrent.getType().equals(Material.STRING)){
-				playerdata.minestack.string = giveMineStack(player,playerdata.minestack.string,Material.STRING);
-				open_flag=2;
-			}
-
-			//wood5
-			else if(itemstackcurrent.getType().equals(Material.WOOD) && itemstackcurrent.getDurability() == 5){
-				playerdata.minestack.wood5 = giveMineStack(player,playerdata.minestack.wood5,new ItemStack(Material.WOOD, 1, (short)5));
-				open_flag=2;
-			}
-
+			
 			//sapling
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 0){
 				playerdata.minestack.sapling = giveMineStack(player,playerdata.minestack.sapling,new ItemStack(Material.SAPLING, 1, (short)0));
-				open_flag=2;
+				open_flag=1;
 			}
 
 			//sapling1
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 1){
 				playerdata.minestack.sapling1 = giveMineStack(player,playerdata.minestack.sapling1,new ItemStack(Material.SAPLING, 1, (short)1));
-				open_flag=2;
+				open_flag=1;
 			}
 
 			//sapling2
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 2){
 				playerdata.minestack.sapling2 = giveMineStack(player,playerdata.minestack.sapling2,new ItemStack(Material.SAPLING, 1, (short)2));
-				open_flag=2;
+				open_flag=1;
 			}
 
 			//sapling3
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 3){
 				playerdata.minestack.sapling3 = giveMineStack(player,playerdata.minestack.sapling3,new ItemStack(Material.SAPLING, 1, (short)3));
-				open_flag=2;
+				open_flag=1;
 			}
 
 			//sapling4
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 4){
 				playerdata.minestack.sapling4 = giveMineStack(player,playerdata.minestack.sapling4,new ItemStack(Material.SAPLING, 1, (short)4));
-				open_flag=2;
+				open_flag=1;
 			}
 
 			//sapling5
 			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 5){
 				playerdata.minestack.sapling5 = giveMineStack(player,playerdata.minestack.sapling5,new ItemStack(Material.SAPLING, 1, (short)5));
-				open_flag=2;
+				open_flag=1;
+			}
+			
+			//wood5
+			else if(itemstackcurrent.getType().equals(Material.WOOD) && itemstackcurrent.getDurability() == 5){
+				playerdata.minestack.wood5 = giveMineStack(player,playerdata.minestack.wood5,new ItemStack(Material.WOOD, 1, (short)5));
+				open_flag=1;
+			}
+			
+			//ice
+			else if(itemstackcurrent.getType().equals(Material.ICE)){
+				playerdata.minestack.ice = giveMineStack(player,playerdata.minestack.ice,Material.ICE);
+				open_flag=1;
+			}
+			
+			//rails
+			else if(itemstackcurrent.getType().equals(Material.RAILS)){
+				playerdata.minestack.rails = giveMineStack(player,playerdata.minestack.rails,Material.RAILS);
+				open_flag=1;
+			}
+			
+			//web
+			else if(itemstackcurrent.getType().equals(Material.WEB)){
+				playerdata.minestack.web = giveMineStack(player,playerdata.minestack.web,Material.WEB);
+				open_flag=1;
 			}
 
+			//string
+			else if(itemstackcurrent.getType().equals(Material.STRING)){
+				playerdata.minestack.string = giveMineStack(player,playerdata.minestack.string,Material.STRING);
+				open_flag=1;
+			}
+			
+			//mycel
+			else if(itemstackcurrent.getType().equals(Material.MYCEL)){
+				playerdata.minestack.mycel = giveMineStack(player,playerdata.minestack.mycel,Material.MYCEL);
+				open_flag=1;
+			}
+
+			//snow_block
+			else if(itemstackcurrent.getType().equals(Material.SNOW_BLOCK)){
+				playerdata.minestack.snow_block = giveMineStack(player,playerdata.minestack.snow_block,Material.SNOW_BLOCK);
+				open_flag=1;
+			}
+			
+			//dark_oak_fence
+			else if(itemstackcurrent.getType().equals(Material.DARK_OAK_FENCE)){
+				playerdata.minestack.dark_oak_fence = giveMineStack(player,playerdata.minestack.dark_oak_fence,Material.DARK_OAK_FENCE);
+				open_flag=1;
+			}
+			
+			//huge_mushroom_1
+			else if(itemstackcurrent.getType().equals(Material.HUGE_MUSHROOM_1)){
+				playerdata.minestack.huge_mushroom_1 = giveMineStack(player,playerdata.minestack.huge_mushroom_1,Material.HUGE_MUSHROOM_1);
+				open_flag=1;
+			}
+
+			//huge_mushroom_2
+			else if(itemstackcurrent.getType().equals(Material.HUGE_MUSHROOM_2)){
+				playerdata.minestack.huge_mushroom_2 = giveMineStack(player,playerdata.minestack.huge_mushroom_2,Material.HUGE_MUSHROOM_2);
+				open_flag=1;
+			}
+			
+			//mossy_cobblestone
+			else if(itemstackcurrent.getType().equals(Material.MOSSY_COBBLESTONE)){
+				playerdata.minestack.mossy_cobblestone = giveMineStack(player,playerdata.minestack.mossy_cobblestone,Material.MOSSY_COBBLESTONE);
+				open_flag=1;
+			}
+			
+			//exp_bottle
+			else if(itemstackcurrent.getType().equals(Material.EXP_BOTTLE)){
+				playerdata.minestack.exp_bottle = giveMineStack(player,playerdata.minestack.exp_bottle,Material.EXP_BOTTLE);
+				open_flag=1;
+			}
+			
+			//gachaimo
+			else if(itemstackcurrent.getType().equals(Material.GOLDEN_APPLE) && itemstackcurrent.getDurability() == 0){
+				playerdata.minestack.gachaimo = giveMineStackNameLore(player,playerdata.minestack.gachaimo,new ItemStack(Material.GOLDEN_APPLE, 1, (short)0),0);
+				open_flag=1;
+			}
+			
 			//leaves
 			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 0){
 				playerdata.minestack.leaves = giveMineStack(player,playerdata.minestack.leaves,new ItemStack(Material.LEAVES, 1, (short)0));
-				open_flag=2;
+				open_flag=1;
 			}
 
 			//leaves1
 			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 1){
 				playerdata.minestack.leaves1 = giveMineStack(player,playerdata.minestack.leaves1,new ItemStack(Material.LEAVES, 1, (short)1));
-				open_flag=2;
+				open_flag=1;
 			}
 
 			//leaves2
 			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 2){
 				playerdata.minestack.leaves2 = giveMineStack(player,playerdata.minestack.leaves2,new ItemStack(Material.LEAVES, 1, (short)2));
-				open_flag=2;
+				open_flag=1;
 			}
 
 			//leaves3
 			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 3){
 				playerdata.minestack.leaves3 = giveMineStack(player,playerdata.minestack.leaves3,new ItemStack(Material.LEAVES, 1, (short)3));
-				open_flag=2;
+				open_flag=1;
 			}
 
 			//leaves_2
 			else if(itemstackcurrent.getType().equals(Material.LEAVES_2) && itemstackcurrent.getDurability() == 0){
 				playerdata.minestack.leaves_2 = giveMineStack(player,playerdata.minestack.leaves_2,new ItemStack(Material.LEAVES_2, 1, (short)0));
-				open_flag=2;
+				open_flag=1;
 			}
 
 			//leaves_21
 			else if(itemstackcurrent.getType().equals(Material.LEAVES_2) && itemstackcurrent.getDurability() == 1){
 				playerdata.minestack.leaves_21 = giveMineStack(player,playerdata.minestack.leaves_21,new ItemStack(Material.LEAVES_2, 1, (short)1));
-				open_flag=2;
+				open_flag=1;
 			}
-
-			//gachaimo
-			else if(itemstackcurrent.getType().equals(Material.GOLDEN_APPLE) && itemstackcurrent.getDurability() == 0){
-				playerdata.minestack.gachaimo = giveMineStackNameLore(player,playerdata.minestack.gachaimo,new ItemStack(Material.GOLDEN_APPLE, 1, (short)0),0);
-				open_flag=2;
-			}
-
-
+			
+			
+			
 			if(open_flag==0){
 				player.openInventory(MenuInventoryData.getMineStackMenu(player));
 				open_flag=-1;

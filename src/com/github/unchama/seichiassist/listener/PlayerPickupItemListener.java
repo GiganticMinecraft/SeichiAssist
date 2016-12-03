@@ -462,7 +462,7 @@ public class PlayerPickupItemListener implements Listener {
 				}
 				break;
 			case GOLDEN_APPLE: //追加
-				if(playerdata.level < v1 || itemstack.getDurability() != 0){
+				if(playerdata.level < v14 || itemstack.getDurability() != 0){
 					return;
 				}
 				ItemMeta meta = itemstack.getItemMeta();
