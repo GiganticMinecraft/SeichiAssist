@@ -147,6 +147,32 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",stack_diamond = " + Integer.toString(playerdata.minestack.diamond) //追加
 				+ ",stack_clay = " + Integer.toString(playerdata.minestack.clay) //追加
 				+ ",stack_glowstone = " + Integer.toString(playerdata.minestack.glowstone) //追加
+				+ ",stack_dirt1 = " + Integer.toString(playerdata.minestack.dirt1)
+				+ ",stack_dirt2 = " + Integer.toString(playerdata.minestack.dirt2)
+				+ ",stack_mycel = " + Integer.toString(playerdata.minestack.mycel)
+				+ ",stack_snow_block = " + Integer.toString(playerdata.minestack.snow_block)
+				+ ",stack_ice = " + Integer.toString(playerdata.minestack.ice)
+				+ ",stack_dark_oak_fence = " + Integer.toString(playerdata.minestack.dark_oak_fence)
+				+ ",stack_mossy_cobblestone = " + Integer.toString(playerdata.minestack.mossy_cobblestone)
+				+ ",stack_rails = " + Integer.toString(playerdata.minestack.rails)
+				+ ",stack_exp_bottle = " + Integer.toString(playerdata.minestack.exp_bottle)
+				+ ",stack_huge_mushroom_1 = " + Integer.toString(playerdata.minestack.huge_mushroom_1)
+				+ ",stack_huge_mushroom_2 = " + Integer.toString(playerdata.minestack.huge_mushroom_2)
+				+ ",stack_web = " + Integer.toString(playerdata.minestack.web)
+				+ ",stack_string = " + Integer.toString(playerdata.minestack.string)
+				+ ",stack_wood5 = " + Integer.toString(playerdata.minestack.wood5)
+				+ ",stack_sapling = " + Integer.toString(playerdata.minestack.sapling)
+				+ ",stack_sapling1 = " + Integer.toString(playerdata.minestack.sapling1)
+				+ ",stack_sapling2 = " + Integer.toString(playerdata.minestack.sapling2)
+				+ ",stack_sapling3 = " + Integer.toString(playerdata.minestack.sapling3)
+				+ ",stack_sapling4 = " + Integer.toString(playerdata.minestack.sapling4)
+				+ ",stack_sapling5 = " + Integer.toString(playerdata.minestack.sapling5)
+				+ ",stack_leaves = " + Integer.toString(playerdata.minestack.leaves)
+				+ ",stack_leaves1 = " + Integer.toString(playerdata.minestack.leaves1)
+				+ ",stack_leaves2 = " + Integer.toString(playerdata.minestack.leaves2)
+				+ ",stack_leaves3 = " + Integer.toString(playerdata.minestack.leaves3)
+				+ ",stack_leaves_2 = " + Integer.toString(playerdata.minestack.leaves_2)
+				+ ",stack_leaves_21 = " + Integer.toString(playerdata.minestack.leaves_21)
 
 				//サブホームのデータ
 				+ ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'";

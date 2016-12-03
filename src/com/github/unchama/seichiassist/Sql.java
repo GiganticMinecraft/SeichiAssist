@@ -304,6 +304,33 @@ public class Sql{
 				",add column if not exists stack_diamond int default 0" + //追加
 				",add column if not exists stack_clay int default 0" + //追加
 				",add column if not exists stack_glowstone int default 0" + //追加
+				",add column if not exists stack_dirt1 int default 0" + //
+				",add column if not exists stack_dirt2 int default 0" + //
+				",add column if not exists stack_mycel int default 0" + //
+				",add column if not exists stack_snow_block int default 0" + //
+				",add column if not exists stack_ice int default 0" + //
+				",add column if not exists stack_dark_oak_fence int default 0" + //
+				",add column if not exists stack_mossy_cobblestone int default 0" + //
+				",add column if not exists stack_rails int default 0" + //
+				",add column if not exists stack_exp_bottle int default 0" + //
+				",add column if not exists stack_huge_mushroom_1 int default 0" + //
+				",add column if not exists stack_huge_mushroom_2 int default 0" + //
+				",add column if not exists stack_web int default 0" + //
+				",add column if not exists stack_string int default 0" + //
+				",add column if not exists stack_wood5 int default 0" + //
+				",add column if not exists stack_sapling int default 0" + //
+				",add column if not exists stack_sapling1 int default 0" + //
+				",add column if not exists stack_sapling2 int default 0" + //
+				",add column if not exists stack_sapling3 int default 0" + //
+				",add column if not exists stack_sapling4 int default 0" + //
+				",add column if not exists stack_sapling5 int default 0" + //
+				",add column if not exists stack_leaves int default 0" + //
+				",add column if not exists stack_leaves1 int default 0" + //
+				",add column if not exists stack_leaves2 int default 0" + //
+				",add column if not exists stack_leaves3 int default 0" + //
+				",add column if not exists stack_leaves_2 int default 0" + //
+				",add column if not exists stack_leaves_21 int default 0" + //
+
 				",add column if not exists playtick int default 0" +
 				",add column if not exists killlogflag boolean default false" +
 				",add column if not exists pvpflag boolean default false" +

@@ -218,6 +218,33 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.minestack.diamond = rs.getInt("stack_diamond"); //追加
  				playerdata.minestack.clay = rs.getInt("stack_clay"); //追加
  				playerdata.minestack.glowstone = rs.getInt("stack_glowstone"); //追加
+ 				playerdata.minestack.dirt1 = rs.getInt("stack_dirt1");
+ 				playerdata.minestack.dirt2 = rs.getInt("stack_dirt2");
+ 				playerdata.minestack.mycel = rs.getInt("stack_mycel");
+ 				playerdata.minestack.snow_block = rs.getInt("stack_snow_block");
+ 				playerdata.minestack.ice = rs.getInt("stack_ice");
+ 				playerdata.minestack.dark_oak_fence = rs.getInt("stack_dark_oak_fence");
+ 				playerdata.minestack.mossy_cobblestone = rs.getInt("stack_mossy_cobblestone");
+ 				playerdata.minestack.rails = rs.getInt("stack_rails");
+ 				playerdata.minestack.exp_bottle = rs.getInt("stack_exp_bottle");
+ 				playerdata.minestack.huge_mushroom_1 = rs.getInt("stack_huge_mushroom_1");
+ 				playerdata.minestack.huge_mushroom_2 = rs.getInt("stack_huge_mushroom_2");
+ 				playerdata.minestack.web = rs.getInt("stack_web");
+ 				playerdata.minestack.string = rs.getInt("stack_string");
+ 				playerdata.minestack.wood5 = rs.getInt("stack_wood5");
+ 				playerdata.minestack.sapling = rs.getInt("stack_sapling");
+ 				playerdata.minestack.sapling1 = rs.getInt("stack_sapling1");
+ 				playerdata.minestack.sapling2 = rs.getInt("stack_sapling2");
+ 				playerdata.minestack.sapling3 = rs.getInt("stack_sapling3");
+ 				playerdata.minestack.sapling4 = rs.getInt("stack_sapling4");
+ 				playerdata.minestack.sapling5 = rs.getInt("stack_sapling5");
+ 				playerdata.minestack.leaves = rs.getInt("stack_leaves");
+ 				playerdata.minestack.leaves1 = rs.getInt("stack_leaves1");
+ 				playerdata.minestack.leaves2 = rs.getInt("stack_leaves2");
+ 				playerdata.minestack.leaves3 = rs.getInt("stack_leaves3");
+ 				playerdata.minestack.leaves_2 = rs.getInt("stack_leaves_2");
+ 				playerdata.minestack.leaves_21 = rs.getInt("stack_leaves_21");
+
 			  }
 			rs.close();
 		} catch (SQLException | IOException e) {

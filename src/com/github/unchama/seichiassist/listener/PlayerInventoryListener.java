@@ -1478,9 +1478,17 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 		//インベントリサイズが36でない時終了
+		/*
 		if(topinventory.getSize() != 36){
 			return;
 		}
+		*/
+		//インベントリサイズが54でない時終了
+		if(topinventory.getSize() != 54){
+			return;
+		}
+
+
 		Player player = (Player)he;
 		UUID uuid = player.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
@@ -1508,17 +1516,31 @@ public class PlayerInventoryListener implements Listener {
 
 			//追加
 			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
-				//開く音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getMineStackMenu2(player));
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				if(itemmeta.getDisplayName().contains("MineStack2ページ目")){//移動するページの種類を判定
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getMineStackMenu2(player));
+				} else if(itemmeta.getDisplayName().contains("MineStack3ページ目")){//移動するページの種類を判定
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getMineStackMenu3(player));
+				}
 				return;
 			}
 
 			//追加
 			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
-				//開く音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getMineStackMenu(player));
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				if(itemmeta.getDisplayName().contains("MineStack1ページ目")){//移動するページの種類を判定
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getMineStackMenu(player));
+				} else if(itemmeta.getDisplayName().contains("MineStack2ページ目")){//移動するページの種類を判定
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getMineStackMenu2(player));
+				}
 				return;
 			}
 
@@ -1538,7 +1560,6 @@ public class PlayerInventoryListener implements Listener {
 
 			//dirt
 			else if(itemstackcurrent.getType().equals(Material.DIRT) && itemstackcurrent.getDurability() == 0){
-				//playerdata.minestack.dirt = giveMineStack(player,playerdata.minestack.dirt,Material.DIRT);
 				playerdata.minestack.dirt = giveMineStack(player,playerdata.minestack.dirt,new ItemStack(Material.DIRT, 1, (short)0));
 				open_flag=0;
 			}
@@ -1624,7 +1645,7 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.minestack.clay = giveMineStack(player,playerdata.minestack.clay,Material.CLAY);
 				open_flag=0;
 			}
-			
+
 			//netherrack
 			else if(itemstackcurrent.getType().equals(Material.NETHERRACK)){
 				playerdata.minestack.netherrack = giveMineStack(player,playerdata.minestack.netherrack,Material.NETHERRACK);
@@ -1654,13 +1675,13 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.minestack.obsidian = giveMineStack(player,playerdata.minestack.obsidian,Material.OBSIDIAN);
 				open_flag=0;
 			}
-			
+
 			//glowstone
 			else if(itemstackcurrent.getType().equals(Material.GLOWSTONE)){
 				playerdata.minestack.glowstone = giveMineStack(player,playerdata.minestack.glowstone,Material.GLOWSTONE);
 				open_flag=0;
 			}
-			
+
 			//coal
 			else if(itemstackcurrent.getType().equals(Material.COAL) && itemstackcurrent.getDurability() == 0){
 				playerdata.minestack.coal = giveMineStack(player,playerdata.minestack.coal,new ItemStack(Material.COAL, 1, (short)0));
@@ -1738,7 +1759,7 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.minestack.wood = giveMineStack(player,playerdata.minestack.wood,new ItemStack(Material.WOOD, 1, (short)0));
 				open_flag=1;
 			}
-
+			
 			//fence
 			else if(itemstackcurrent.getType().equals(Material.FENCE)){
 				playerdata.minestack.fence = giveMineStack(player,playerdata.minestack.fence,Material.FENCE);
@@ -1756,31 +1777,31 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.minestack.stained_clay = giveMineStack(player,playerdata.minestack.stained_clay,new ItemStack(Material.STAINED_CLAY, 1, (short)0));
 				open_flag=1;
 			}
-			
+
 			//stained_clay1
 			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 1){
 				playerdata.minestack.stained_clay1 = giveMineStack(player,playerdata.minestack.stained_clay1,new ItemStack(Material.STAINED_CLAY, 1, (short)1));
 				open_flag=1;
 			}
-			
+
 			//stained_clay4
 			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 4){
 				playerdata.minestack.stained_clay4 = giveMineStack(player,playerdata.minestack.stained_clay4,new ItemStack(Material.STAINED_CLAY, 1, (short)4));
 				open_flag=1;
 			}
-			
+
 			//stained_clay8
 			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 8){
 				playerdata.minestack.stained_clay8 = giveMineStack(player,playerdata.minestack.stained_clay8,new ItemStack(Material.STAINED_CLAY, 1, (short)8));
 				open_flag=1;
 			}
-			
+
 			//stained_clay12
 			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 12){
 				playerdata.minestack.stained_clay12 = giveMineStack(player,playerdata.minestack.stained_clay12,new ItemStack(Material.STAINED_CLAY, 1, (short)12));
 				open_flag=1;
 			}
-			
+
 			//stained_clay14
 			else if(itemstackcurrent.getType().equals(Material.STAINED_CLAY) && itemstackcurrent.getDurability() == 14){
 				playerdata.minestack.stained_clay14 = giveMineStack(player,playerdata.minestack.stained_clay14,new ItemStack(Material.STAINED_CLAY, 1, (short)14));
@@ -1816,7 +1837,7 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.minestack.redstone = giveMineStack(player,playerdata.minestack.redstone,Material.REDSTONE);
 				open_flag=1;
 			}
-			
+
 			//redstone_ore
 			else if(itemstackcurrent.getType().equals(Material.REDSTONE_ORE)){
 				playerdata.minestack.redstone_ore = giveMineStack(player,playerdata.minestack.redstone_ore,Material.REDSTONE_ORE);
@@ -1828,18 +1849,178 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.minestack.diamond = giveMineStack(player,playerdata.minestack.diamond,Material.DIAMOND);
 				open_flag=1;
 			}
-			
+
 			//diamond_ore
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
 				playerdata.minestack.diamond_ore = giveMineStack(player,playerdata.minestack.diamond_ore,Material.DIAMOND_ORE);
 				open_flag=1;
 			}
 
+			//coarse_dirt
+			else if(itemstackcurrent.getType().equals(Material.DIRT) && itemstackcurrent.getDurability() == 1){
+				playerdata.minestack.dirt1 = giveMineStack(player,playerdata.minestack.dirt1,new ItemStack(Material.DIRT, 1, (short)1));
+				open_flag=2;
+			}
+
+			//podzol
+			else if(itemstackcurrent.getType().equals(Material.DIRT) && itemstackcurrent.getDurability() == 2){
+				playerdata.minestack.dirt2 = giveMineStack(player,playerdata.minestack.dirt2,new ItemStack(Material.DIRT, 1, (short)2));
+				open_flag=2;
+			}
+
+			//mycelium
+			else if(itemstackcurrent.getType().equals(Material.MYCEL)){
+				playerdata.minestack.mycel = giveMineStack(player,playerdata.minestack.mycel,Material.MYCEL);
+				open_flag=2;
+			}
+
+			//snow_block
+			else if(itemstackcurrent.getType().equals(Material.SNOW_BLOCK)){
+				playerdata.minestack.snow_block = giveMineStack(player,playerdata.minestack.snow_block,Material.SNOW_BLOCK);
+				open_flag=2;
+			}
+
+			//ice
+			else if(itemstackcurrent.getType().equals(Material.ICE)){
+				playerdata.minestack.ice = giveMineStack(player,playerdata.minestack.ice,Material.ICE);
+				open_flag=2;
+			}
+
+			//dark_oak_fence
+			else if(itemstackcurrent.getType().equals(Material.DARK_OAK_FENCE)){
+				playerdata.minestack.dark_oak_fence = giveMineStack(player,playerdata.minestack.dark_oak_fence,Material.DARK_OAK_FENCE);
+				open_flag=2;
+			}
+
+			//mossy_cobblestone
+			else if(itemstackcurrent.getType().equals(Material.MOSSY_COBBLESTONE)){
+				playerdata.minestack.mossy_cobblestone = giveMineStack(player,playerdata.minestack.mossy_cobblestone,Material.MOSSY_COBBLESTONE);
+				open_flag=2;
+			}
+
+			//rail
+			else if(itemstackcurrent.getType().equals(Material.RAILS)){
+				playerdata.minestack.rails = giveMineStack(player,playerdata.minestack.rails,Material.RAILS);
+				open_flag=2;
+			}
+
+			//exp_bottle
+			else if(itemstackcurrent.getType().equals(Material.EXP_BOTTLE)){
+				playerdata.minestack.exp_bottle = giveMineStack(player,playerdata.minestack.exp_bottle,Material.EXP_BOTTLE);
+				open_flag=2;
+			}
+
+			//huge_mushroom_1
+			else if(itemstackcurrent.getType().equals(Material.HUGE_MUSHROOM_1)){
+				playerdata.minestack.huge_mushroom_1 = giveMineStack(player,playerdata.minestack.huge_mushroom_1,Material.HUGE_MUSHROOM_1);
+				open_flag=2;
+			}
+
+			//huge_mushroom_2
+			else if(itemstackcurrent.getType().equals(Material.HUGE_MUSHROOM_2)){
+				playerdata.minestack.huge_mushroom_2 = giveMineStack(player,playerdata.minestack.huge_mushroom_2,Material.HUGE_MUSHROOM_2);
+				open_flag=2;
+			}
+
+			//web
+			else if(itemstackcurrent.getType().equals(Material.WEB)){
+				playerdata.minestack.web = giveMineStack(player,playerdata.minestack.web,Material.WEB);
+				open_flag=2;
+			}
+
+			//string
+			else if(itemstackcurrent.getType().equals(Material.STRING)){
+				playerdata.minestack.string = giveMineStack(player,playerdata.minestack.string,Material.STRING);
+				open_flag=2;
+			}
+			
+			//wood5
+			else if(itemstackcurrent.getType().equals(Material.WOOD) && itemstackcurrent.getDurability() == 5){
+				playerdata.minestack.wood5 = giveMineStack(player,playerdata.minestack.wood5,new ItemStack(Material.WOOD, 1, (short)5));
+				open_flag=2;
+			}
+			
+			//sapling
+			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 0){
+				playerdata.minestack.sapling = giveMineStack(player,playerdata.minestack.sapling,new ItemStack(Material.SAPLING, 1, (short)0));
+				open_flag=2;
+			}
+			
+			//sapling1
+			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 1){
+				playerdata.minestack.sapling1 = giveMineStack(player,playerdata.minestack.sapling1,new ItemStack(Material.SAPLING, 1, (short)1));
+				open_flag=2;
+			}
+			
+			//sapling2
+			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 2){
+				playerdata.minestack.sapling2 = giveMineStack(player,playerdata.minestack.sapling2,new ItemStack(Material.SAPLING, 1, (short)2));
+				open_flag=2;
+			}
+			
+			//sapling3
+			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 3){
+				playerdata.minestack.sapling3 = giveMineStack(player,playerdata.minestack.sapling3,new ItemStack(Material.SAPLING, 1, (short)3));
+				open_flag=2;
+			}
+			
+			//sapling4
+			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 4){
+				playerdata.minestack.sapling4 = giveMineStack(player,playerdata.minestack.sapling4,new ItemStack(Material.SAPLING, 1, (short)4));
+				open_flag=2;
+			}
+			
+			//sapling5
+			else if(itemstackcurrent.getType().equals(Material.SAPLING) && itemstackcurrent.getDurability() == 5){
+				playerdata.minestack.sapling5 = giveMineStack(player,playerdata.minestack.sapling5,new ItemStack(Material.SAPLING, 1, (short)5));
+				open_flag=2;
+			}
+			
+			//leaves
+			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 0){
+				playerdata.minestack.leaves = giveMineStack(player,playerdata.minestack.leaves,new ItemStack(Material.LEAVES, 1, (short)0));
+				open_flag=2;
+			}
+			
+			//leaves1
+			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 1){
+				playerdata.minestack.leaves1 = giveMineStack(player,playerdata.minestack.leaves1,new ItemStack(Material.LEAVES, 1, (short)1));
+				open_flag=2;
+			}
+			
+			//leaves2
+			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 2){
+				playerdata.minestack.leaves2 = giveMineStack(player,playerdata.minestack.leaves2,new ItemStack(Material.LEAVES, 1, (short)2));
+				open_flag=2;
+			}
+			
+			//leaves3
+			else if(itemstackcurrent.getType().equals(Material.LEAVES) && itemstackcurrent.getDurability() == 3){
+				playerdata.minestack.leaves3 = giveMineStack(player,playerdata.minestack.leaves3,new ItemStack(Material.LEAVES, 1, (short)3));
+				open_flag=2;
+			}
+			
+			//leaves_2
+			else if(itemstackcurrent.getType().equals(Material.LEAVES_2) && itemstackcurrent.getDurability() == 0){
+				playerdata.minestack.leaves_2 = giveMineStack(player,playerdata.minestack.leaves_2,new ItemStack(Material.LEAVES_2, 1, (short)0));
+				open_flag=2;
+			}
+
+			//leaves_21
+			else if(itemstackcurrent.getType().equals(Material.LEAVES_2) && itemstackcurrent.getDurability() == 1){
+				playerdata.minestack.leaves_21 = giveMineStack(player,playerdata.minestack.leaves_21,new ItemStack(Material.LEAVES_2, 1, (short)1));
+				open_flag=2;
+			}
+
+
 			if(open_flag==0){
 				player.openInventory(MenuInventoryData.getMineStackMenu(player));
 				open_flag=-1;
 			} else if(open_flag==1){
 				player.openInventory(MenuInventoryData.getMineStackMenu2(player));
+				open_flag=-1;
+			} else if(open_flag==2){
+				player.openInventory(MenuInventoryData.getMineStackMenu3(player));
 				open_flag=-1;
 			}
 
