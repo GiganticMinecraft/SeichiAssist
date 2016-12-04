@@ -90,6 +90,10 @@ public class Config{
 	public int getGravitylevel() {
 		return Util.toInt(config.getString("gravitylevel"));
 	}
+	
+	public int getMultipleIDBlockBreaklevel(){
+		return Util.toInt(config.getString("multipleidblockbreaklevel"));
+	}
 
 	public double getDropExplevel(int i){
 		return Util.toDouble(config.getString("dropexplevel" + i,""));

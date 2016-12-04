@@ -144,6 +144,10 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.rgnum = rs.getInt("rgnum");
  				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
+ 				playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag");
+ 				
+ 				playerdata.multipleidbreakflag = rs.getBoolean("multipleidbreakflag");
+ 				
  				playerdata.pvpflag = rs.getBoolean("pvpflag");
  				playerdata.totalbreaknum = rs.getInt("totalbreaknum");
  				playerdata.playtick = rs.getInt("playtick");

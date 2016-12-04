@@ -334,6 +334,10 @@ public class Sql{
 
 				",add column if not exists playtick int default 0" +
 				",add column if not exists killlogflag boolean default false" +
+				",add column if not exists worldguardlogflag boolean default true" +//
+				
+				",add column if not exists multipleidbreakflag boolean default false" +
+				
 				",add column if not exists pvpflag boolean default false" +
 				",add column if not exists loginflag boolean default false" +
 				",add column if not exists p_vote int default 0" +

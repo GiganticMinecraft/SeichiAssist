@@ -93,6 +93,10 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",playtick = " + Integer.toString(playerdata.playtick)
 				+ ",lastquit = cast( now() as datetime )"
 				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
+				+ ",worldguardlogflag = " + Boolean.toString(playerdata.dispworldguardlogflag)
+				
+				+ ",multipleidbreakflag = " + Boolean.toString(playerdata.multipleidbreakflag)
+				
 				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
 				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
 				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana())
