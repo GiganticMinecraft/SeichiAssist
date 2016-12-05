@@ -190,6 +190,7 @@ public class BreakUtil {
 				}
 				if(itemstack.getDurability() == 0){
 					playerdata.minestack.dirt += amount;
+					break;
 				}
 				if(playerdata.level < v26){
 					return false;
@@ -226,6 +227,7 @@ public class BreakUtil {
 				}
 				if(itemstack.getDurability() == 0){
 					playerdata.minestack.stone += amount;
+					break;
 				}
 				if(playerdata.level < v3){
 					return false;
@@ -383,6 +385,7 @@ public class BreakUtil {
 				}
 				if(itemstack.getDurability() == 0){
 					playerdata.minestack.wood += amount;
+					break;
 				}
 				if(playerdata.level < v27){
 					return false;
