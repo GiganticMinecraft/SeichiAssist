@@ -179,7 +179,12 @@ public class PlayerPickupItemListener implements Listener {
 				}
 				if(itemstack.getDurability() == 0){
 					playerdata.minestack.sand += amount;
-				} else if(itemstack.getDurability() == 1){
+					break;
+				}
+				if(playerdata.level < v20){
+					return;
+				}
+				if(itemstack.getDurability() == 1){
 					playerdata.minestack.red_sand += amount;
 				} else {
 					return;
