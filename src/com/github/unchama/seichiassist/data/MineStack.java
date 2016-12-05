@@ -31,13 +31,18 @@ public class MineStack {
 	public int stained_clay;
 	public int fence;
 	public int lapis_lazuli;
+	//public int ink_sack4;
 	public int emerald; //追加
 	public int redstone; //追加
 	public int diamond; //追加
 	public int granite; //追加
+	//public int stone1;
 	public int diorite; //追加
+	//public int stone3;
 	public int andesite; //追加
+	//public int stone5;
 	public int red_sand; //追加
+	//public int sand1; //追加
 	public int red_sandstone; //追加
 	public int log1; //追加
 	public int log2; //追加
@@ -50,6 +55,34 @@ public class MineStack {
 	public int stained_clay14; //追加
 	public int clay; //追加
 	public int glowstone; //追加
+	public int dirt1;
+	public int dirt2;
+	public int mycel;
+	public int snow_block;
+	public int ice;
+	public int wood5;
+	public int dark_oak_fence;
+	public int mossy_cobblestone;
+	public int rails;
+	public int leaves;
+	public int leaves1;
+	public int leaves2;
+	public int leaves3;
+	public int leaves_2;
+	public int leaves_21;
+	public int sapling;
+	public int sapling1;
+	public int sapling2;
+	public int sapling3;
+	public int sapling4;
+	public int sapling5;
+	public int exp_bottle;
+	public int huge_mushroom_1;
+	public int huge_mushroom_2;
+	public int web;
+	public int string;
+	public int gachaimo; //がちゃりんごテスト用
+
 
 
 	public MineStack(){
@@ -102,5 +135,33 @@ public class MineStack {
 		stained_clay14 = 0; //追加
 		clay = 0; //追加
 		glowstone = 0; //追加
+		dirt1 = 0;
+		dirt2 = 0;
+		mycel = 0;
+		snow_block = 0;
+		ice = 0;
+		wood5 = 0;
+		dark_oak_fence = 0;
+		mossy_cobblestone = 0;
+		rails = 0;
+		leaves = 0;
+		leaves1 = 0;
+		leaves2 = 0;
+		leaves3 = 0;
+		leaves_2 = 0;
+		leaves_21 = 0;
+		sapling = 0;
+		sapling1 = 0;
+		sapling2 = 0;
+		sapling3 = 0;
+		sapling4 = 0;
+		sapling5 = 0;
+		exp_bottle = 0;
+		huge_mushroom_1 = 0;
+		huge_mushroom_2 = 0;
+		web = 0;
+		string = 0;
+		gachaimo = 0;
+
 	}
 }

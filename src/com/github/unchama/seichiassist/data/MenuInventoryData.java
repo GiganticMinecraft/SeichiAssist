@@ -507,6 +507,15 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(dispKillLogToggleMeta(playerdata,itemmeta));
 		inventory.setItem(14,itemstack);
 
+		//ワールドガード保護表示のトグルボタン
+		itemstack = new ItemStack(Material.BARRIER,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BARRIER);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ワールドガード保護メッセージ表示切替");
+		//itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		itemstack.setItemMeta(dispWorldGuardLogToggleMeta(playerdata,itemmeta));
+		inventory.setItem(15,itemstack);
+
+
 		// ver0.3.2 hubコマンド
 		itemstack = new ItemStack(Material.NETHER_STAR,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
@@ -667,11 +676,19 @@ public class MenuInventoryData {
 	//パッシブスキルメニュー
 	public static Inventory getPassiveSkillMenuData(Player p){
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキル選択");
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキル切り替え");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
 		List<String> lore = new ArrayList<String>();
+
+		//プレイヤーを取得
+		Player player = p.getPlayer();
+
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -685,6 +702,16 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
 
+		//複数種類同時破壊スキルのトグルボタン
+		itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "複数種類同時破壊スキル切替");
+		//itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(MultipleIDBlockBreakToggleMeta(playerdata,itemmeta));
+		inventory.setItem(0,itemstack);
+
+		/*
 		itemstack = new ItemStack(Material.COAL_ORE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -730,10 +757,11 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PACKED_ICE);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "フリーズ");
+		 */
 		/*lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "16×16×256マス破壊"
 										, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + config.getGravitylevel()
 										, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：2000");*/
-
+		/*
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "未実装"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "水を凍らせる"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：35"
@@ -961,6 +989,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(18,itemstack);
+		*/
 
 		return inventory;
 	}
@@ -1865,7 +1894,7 @@ public class MenuInventoryData {
 
 
 
-
+	//Minestack1ページ目
 	public static Inventory getMineStackMenu(Player p){
 		//プレイヤーを取得
 		Player player = p.getPlayer();
@@ -1874,7 +1903,10 @@ public class MenuInventoryData {
 		//プレイヤーデータ
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
+		//インベントリ作成
+		//Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
+		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
+
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 
@@ -1898,60 +1930,81 @@ public class MenuInventoryData {
 		int v10 = SeichiAssist.config.getMineStacklevel(10);
 		int v11 = SeichiAssist.config.getMineStacklevel(11);//追加
 		int v12 = SeichiAssist.config.getMineStacklevel(12);//追加
+		int v13 = SeichiAssist.config.getMineStacklevel(13);//追加
+		int v14 = SeichiAssist.config.getMineStacklevel(14);//追加
+		int v15 = SeichiAssist.config.getMineStacklevel(15);//追加
+		int v16 = SeichiAssist.config.getMineStacklevel(16);
+		int v17 = SeichiAssist.config.getMineStacklevel(17);
+		int v18 = SeichiAssist.config.getMineStacklevel(18);
+		int v19 = SeichiAssist.config.getMineStacklevel(19);
+		int v20 = SeichiAssist.config.getMineStacklevel(20);
+		int v21 = SeichiAssist.config.getMineStacklevel(21);
+		int v22 = SeichiAssist.config.getMineStacklevel(22);
+		int v23 = SeichiAssist.config.getMineStacklevel(23);
+		int v24 = SeichiAssist.config.getMineStacklevel(24);
+		int v25 = SeichiAssist.config.getMineStacklevel(25);
+		int v26 = SeichiAssist.config.getMineStacklevel(26);
+		int v27 = SeichiAssist.config.getMineStacklevel(27);
+		int v28 = SeichiAssist.config.getMineStacklevel(28);
+		int v29 = SeichiAssist.config.getMineStacklevel(29);
+		int v30 = SeichiAssist.config.getMineStacklevel(30);
+		int v31 = SeichiAssist.config.getMineStacklevel(31);
+		int v32 = SeichiAssist.config.getMineStacklevel(32);
+		int v33 = SeichiAssist.config.getMineStacklevel(33);
+		int v34 = SeichiAssist.config.getMineStacklevel(34);
+		int v35 = SeichiAssist.config.getMineStacklevel(35);
+		int v36 = SeichiAssist.config.getMineStacklevel(36);
+		int v37 = SeichiAssist.config.getMineStacklevel(37);
+		int v38 = SeichiAssist.config.getMineStacklevel(38);
 
-		//setMineStackButton(inventory, playerdata.minestack.dirt, Material.DIRT, v1, 1);
+		//1から
+
 		setMineStackButton(inventory, playerdata.minestack.dirt, new ItemStack(Material.DIRT, 1, (short)0), v1, 1, "土");
-
 		setMineStackButton(inventory, playerdata.minestack.grass, Material.GRASS, v1, 2, "草ブロック");
+		setMineStackButton(inventory, playerdata.minestack.cobblestone, Material.COBBLESTONE, v2, 3, "丸石");
+		setMineStackButton(inventory, playerdata.minestack.stone, new ItemStack(Material.STONE, 1, (short)0), v2, 4, "石");
+		setMineStackButton(inventory, playerdata.minestack.granite, new ItemStack(Material.STONE, 1, (short)1), v3, 5, "花崗岩");
+		setMineStackButton(inventory, playerdata.minestack.diorite, new ItemStack(Material.STONE, 1, (short)3), v3, 6, "閃緑岩");
+		setMineStackButton(inventory, playerdata.minestack.andesite, new ItemStack(Material.STONE, 1, (short)5), v3, 7, "安山岩");
+		setMineStackButton(inventory, playerdata.minestack.log, new ItemStack(Material.LOG, 1, (short)0), v4, 8, "オークの原木");
+		setMineStackButton(inventory, playerdata.minestack.log1, new ItemStack(Material.LOG, 1, (short)1), v4, 9, "マツの原木");
+		setMineStackButton(inventory, playerdata.minestack.log2, new ItemStack(Material.LOG, 1, (short)2), v4, 10, "シラカバの原木");
+		setMineStackButton(inventory, playerdata.minestack.log3, new ItemStack(Material.LOG, 1, (short)3), v4, 11, "ジャングルの原木");
+		setMineStackButton(inventory, playerdata.minestack.log_2, new ItemStack(Material.LOG_2, 1, (short)0), v4, 12, "アカシアの原木");
+		setMineStackButton(inventory, playerdata.minestack.log_21, new ItemStack(Material.LOG_2, 1, (short)1), v4, 13, "ダークオークの原木");
+		setMineStackButton(inventory, playerdata.minestack.gravel, Material.GRAVEL, v5, 14, "砂利");
+		setMineStackButton(inventory, playerdata.minestack.sand, new ItemStack(Material.SAND, 1, (short)0),v5, 15, "砂");
+		setMineStackButton(inventory, playerdata.minestack.sandstone, new ItemStack(Material.SANDSTONE, 1, (short)0), v5, 16, "砂岩");
+		setMineStackButton(inventory, playerdata.minestack.netherrack, Material.NETHERRACK, v6, 17, "ネザーラック");
+		setMineStackButton(inventory, playerdata.minestack.soul_sand, Material.SOUL_SAND, v6, 18, "ソウルサンド");
+		setMineStackButton(inventory, playerdata.minestack.coal, new ItemStack(Material.COAL, 1, (short)0), v7, 19, "石炭");
+		setMineStackButton(inventory, playerdata.minestack.coal_ore, Material.COAL_ORE, v7, 20, "石炭鉱石");
+		setMineStackButton(inventory, playerdata.minestack.ender_stone, Material.ENDER_STONE, v8, 21, "エンドストーン");
+		setMineStackButton(inventory, playerdata.minestack.iron_ore, Material.IRON_ORE, v9, 22, "鉄鉱石");
+		setMineStackButton(inventory, playerdata.minestack.obsidian, Material.OBSIDIAN, v9, 23, "黒曜石");
+		setMineStackButton(inventory, playerdata.minestack.packed_ice, Material.PACKED_ICE,v10, 24, "氷塊");
+		setMineStackButton(inventory, playerdata.minestack.quartz, Material.QUARTZ, v11, 25, "ネザー水晶");
+		setMineStackButton(inventory, playerdata.minestack.quartz_ore, Material.QUARTZ_ORE, v11, 26, "ネザー水晶鉱石");
+		setMineStackButton(inventory, playerdata.minestack.magma, Material.MAGMA, v12, 27, "マグマブロック");
+		setMineStackButton(inventory, playerdata.minestack.gold_ore, Material.GOLD_ORE, v13, 28, "金鉱石");
+		setMineStackButton(inventory, playerdata.minestack.glowstone, Material.GLOWSTONE, v13, 29, "グロウストーン");
+		setMineStackButton(inventory, playerdata.minestack.wood, new ItemStack(Material.WOOD, 1, (short)0), v14, 30, "オークの木材");
+		setMineStackButton(inventory, playerdata.minestack.fence, Material.FENCE, v14, 31, "オークのフェンス");
+		setMineStackButton(inventory, playerdata.minestack.redstone, Material.REDSTONE, v15, 32, "レッドストーン");
+		setMineStackButton(inventory, playerdata.minestack.redstone_ore, Material.REDSTONE_ORE, v15, 33, "レッドストーン鉱石");
+		setMineStackButton(inventory, playerdata.minestack.lapis_lazuli, new ItemStack(Material.INK_SACK, 1, (short)4), v16, 34, "ラピスラズリ");
+		setMineStackButton(inventory, playerdata.minestack.lapis_ore, Material.LAPIS_ORE, v16, 35, "ラピスラズリ鉱石");
+		setMineStackButton(inventory, playerdata.minestack.diamond, Material.DIAMOND, v17, 36, "ダイヤモンド");
+		setMineStackButton(inventory, playerdata.minestack.diamond_ore, Material.DIAMOND_ORE, v17, 37, "ダイヤモンド鉱石");
+		setMineStackButton(inventory, playerdata.minestack.emerald, Material.EMERALD, v18, 38, "エメラルド");
+		setMineStackButton(inventory, playerdata.minestack.emerald_ore, Material.EMERALD_ORE, v18, 39, "エメラルド鉱石");
+		setMineStackButton(inventory, playerdata.minestack.gachaimo, new ItemStack(Material.GOLDEN_APPLE, 1, (short)0), v19, 40, "がちゃりんご");
+		setMineStackButton(inventory, playerdata.minestack.exp_bottle, Material.EXP_BOTTLE, v19, 41, "エンチャントの瓶");
+		setMineStackButton(inventory, playerdata.minestack.red_sand, new ItemStack(Material.SAND, 1, (short)1),v20, 42, "赤い砂");
+		setMineStackButton(inventory, playerdata.minestack.red_sandstone, new ItemStack(Material.RED_SANDSTONE, 1, (short)0), v20, 43, "赤い砂岩");
+		setMineStackButton(inventory, playerdata.minestack.hard_clay, Material.HARD_CLAY, v21, 44, "堅焼き粘土");
+		//44まで
 
-		setMineStackButton(inventory, playerdata.minestack.gravel, Material.GRAVEL, v2, 3, "砂利");
-
-		setMineStackButton(inventory, playerdata.minestack.cobblestone, Material.COBBLESTONE, v3, 4, "丸石");
-
-		//setMineStackButton(inventory, playerdata.minestack.stone, Material.STONE, v3, 5);
-		setMineStackButton(inventory, playerdata.minestack.stone, new ItemStack(Material.STONE, 1, (short)0), v3, 5, "石");
-
-		setMineStackButton(inventory, playerdata.minestack.granite, new ItemStack(Material.STONE, 1, (short)1), v3, 6, "花崗岩");
-
-		setMineStackButton(inventory, playerdata.minestack.diorite, new ItemStack(Material.STONE, 1, (short)3), v3, 7, "閃緑岩");
-
-		setMineStackButton(inventory, playerdata.minestack.andesite, new ItemStack(Material.STONE, 1, (short)5), v3, 8, "安山岩");
-
-		setMineStackButton(inventory, playerdata.minestack.sand, new ItemStack(Material.SAND, 1, (short)0),v4, 9, "砂");
-
-		setMineStackButton(inventory, playerdata.minestack.red_sand, new ItemStack(Material.SAND, 1, (short)1),v4, 10, "赤い砂");
-
-		setMineStackButton(inventory, playerdata.minestack.packed_ice, Material.PACKED_ICE,v4, 11, "氷塊");
-
-		setMineStackButton(inventory, playerdata.minestack.sandstone, new ItemStack(Material.SANDSTONE, 1, (short)0), v4, 12, "砂岩");
-
-		setMineStackButton(inventory, playerdata.minestack.red_sandstone, new ItemStack(Material.RED_SANDSTONE, 1, (short)0), v4, 13, "赤い砂岩");
-
-		setMineStackButton(inventory, playerdata.minestack.clay, Material.CLAY, v5, 14, "粘土");
-		
-		setMineStackButton(inventory, playerdata.minestack.netherrack, Material.NETHERRACK, v5, 15, "ネザーラック");
-
-		setMineStackButton(inventory, playerdata.minestack.soul_sand, Material.SOUL_SAND, v6, 16, "ソウルサンド");
-
-		setMineStackButton(inventory, playerdata.minestack.magma, Material.MAGMA, v6, 17, "マグマブロック");
-
-		setMineStackButton(inventory, playerdata.minestack.ender_stone, Material.ENDER_STONE, v7, 18, "エンドストーン");
-
-		setMineStackButton(inventory, playerdata.minestack.obsidian, Material.OBSIDIAN, v7, 19, "黒曜石");
-
-		setMineStackButton(inventory, playerdata.minestack.glowstone, Material.GLOWSTONE, v7, 20, "グロウストーン");
-		
-		setMineStackButton(inventory, playerdata.minestack.coal, new ItemStack(Material.COAL, 1, (short)0), v8, 21, "石炭");
-
-		setMineStackButton(inventory, playerdata.minestack.coal_ore, Material.COAL_ORE, v8, 22, "石炭鉱石");
-
-		setMineStackButton(inventory, playerdata.minestack.iron_ore, Material.IRON_ORE, v9, 23, "鉄鉱石");
-
-		setMineStackButton(inventory, playerdata.minestack.quartz, Material.QUARTZ, v10, 24, "ネザー水晶");
-
-		setMineStackButton(inventory, playerdata.minestack.quartz_ore, Material.QUARTZ_ORE, v10, 25, "ネザー水晶鉱石");
-
-		setMineStackButton(inventory, playerdata.minestack.gold_ore, Material.GOLD_ORE, v11, 26, "金鉱石");
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1963,7 +2016,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(27,itemstack);
+		inventory.setItem(45,itemstack);
 
 		// MineStack2ページ目を開く(追加)
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1975,7 +2028,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowDown");
 		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(35,itemstack);
+		inventory.setItem(53,itemstack);
 
 
 		return inventory;
@@ -1990,7 +2043,10 @@ public class MenuInventoryData {
 		//プレイヤーデータ
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
+		//インベントリ作成
+		//Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
+		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
+
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 
@@ -2006,69 +2062,161 @@ public class MenuInventoryData {
 		int v10 = SeichiAssist.config.getMineStacklevel(10);
 		int v11 = SeichiAssist.config.getMineStacklevel(11);//追加
 		int v12 = SeichiAssist.config.getMineStacklevel(12);//追加
+		int v13 = SeichiAssist.config.getMineStacklevel(13);//追加
+		int v14 = SeichiAssist.config.getMineStacklevel(14);//追加
+		int v15 = SeichiAssist.config.getMineStacklevel(15);//追加
+		int v16 = SeichiAssist.config.getMineStacklevel(16);
+		int v17 = SeichiAssist.config.getMineStacklevel(17);
+		int v18 = SeichiAssist.config.getMineStacklevel(18);
+		int v19 = SeichiAssist.config.getMineStacklevel(19);
+		int v20 = SeichiAssist.config.getMineStacklevel(20);
+		int v21 = SeichiAssist.config.getMineStacklevel(21);
+		int v22 = SeichiAssist.config.getMineStacklevel(22);
+		int v23 = SeichiAssist.config.getMineStacklevel(23);
+		int v24 = SeichiAssist.config.getMineStacklevel(24);
+		int v25 = SeichiAssist.config.getMineStacklevel(25);
+		int v26 = SeichiAssist.config.getMineStacklevel(26);
+		int v27 = SeichiAssist.config.getMineStacklevel(27);
+		int v28 = SeichiAssist.config.getMineStacklevel(28);
+		int v29 = SeichiAssist.config.getMineStacklevel(29);
+		int v30 = SeichiAssist.config.getMineStacklevel(30);
+		int v31 = SeichiAssist.config.getMineStacklevel(31);
+		int v32 = SeichiAssist.config.getMineStacklevel(32);
+		int v33 = SeichiAssist.config.getMineStacklevel(33);
+		int v34 = SeichiAssist.config.getMineStacklevel(34);
+		int v35 = SeichiAssist.config.getMineStacklevel(35);
+		int v36 = SeichiAssist.config.getMineStacklevel(36);
+		int v37 = SeichiAssist.config.getMineStacklevel(37);
+		int v38 = SeichiAssist.config.getMineStacklevel(38);
 
-		setMineStackButton(inventory, playerdata.minestack.log, new ItemStack(Material.LOG, 1, (short)0), v4, 0, "オークの原木");
 
-		setMineStackButton(inventory, playerdata.minestack.log1, new ItemStack(Material.LOG, 1, (short)1), v4, 1, "マツの原木");
+		//0から
+		setMineStackButton(inventory, playerdata.minestack.stained_clay, new ItemStack(Material.STAINED_CLAY, 1, (short)0), v22, 0, "白色の堅焼き粘土");
+		setMineStackButton(inventory, playerdata.minestack.stained_clay1, new ItemStack(Material.STAINED_CLAY, 1, (short)1), v22, 1, "橙色の堅焼き粘土");
+		setMineStackButton(inventory, playerdata.minestack.stained_clay4, new ItemStack(Material.STAINED_CLAY, 1, (short)4), v22, 2, "黄色の堅焼き粘土");
+		setMineStackButton(inventory, playerdata.minestack.stained_clay8, new ItemStack(Material.STAINED_CLAY, 1, (short)8), v22, 3, "薄灰色の堅焼き粘土");
+		setMineStackButton(inventory, playerdata.minestack.stained_clay12, new ItemStack(Material.STAINED_CLAY, 1, (short)12), v22, 4, "茶色の堅焼き粘土");
+		setMineStackButton(inventory, playerdata.minestack.stained_clay14, new ItemStack(Material.STAINED_CLAY, 1, (short)14), v22, 5, "赤色の堅焼き粘土");
+		setMineStackButton(inventory, playerdata.minestack.clay, Material.CLAY, v23, 6, "粘土");
+		setMineStackButton(inventory, playerdata.minestack.mossy_cobblestone, Material.MOSSY_COBBLESTONE, v24, 7, "苔石");
+		setMineStackButton(inventory, playerdata.minestack.ice, Material.ICE, v25, 8, "氷");
+		setMineStackButton(inventory, playerdata.minestack.dirt1, new ItemStack(Material.DIRT, 1, (short)1), v26, 9, "粗い土");
+		setMineStackButton(inventory, playerdata.minestack.dirt2, new ItemStack(Material.DIRT, 1, (short)2), v26, 10, "ポドゾル");
+		setMineStackButton(inventory, playerdata.minestack.wood5, new ItemStack(Material.WOOD, 1, (short)5), v27, 11, "ダークオークの木材");
+		setMineStackButton(inventory, playerdata.minestack.dark_oak_fence, Material.DARK_OAK_FENCE, v27, 12, "ダークオークのフェンス");
+		setMineStackButton(inventory, playerdata.minestack.web, Material.WEB, v28, 13, "クモの巣");
+		setMineStackButton(inventory, playerdata.minestack.string, Material.STRING, v28, 14, "糸");
+		setMineStackButton(inventory, playerdata.minestack.rails, Material.RAILS, v29, 15, "レール");
+		setMineStackButton(inventory, playerdata.minestack.leaves, new ItemStack(Material.LEAVES, 1, (short)0), v30, 16, "オークの葉");
+		setMineStackButton(inventory, playerdata.minestack.leaves1, new ItemStack(Material.LEAVES, 1, (short)1), v30, 17, "マツの葉");
+		setMineStackButton(inventory, playerdata.minestack.leaves2, new ItemStack(Material.LEAVES, 1, (short)2), v30, 18, "シラカバの葉");
+		setMineStackButton(inventory, playerdata.minestack.leaves3, new ItemStack(Material.LEAVES, 1, (short)3), v30, 19, "ジャングルの葉");
+		setMineStackButton(inventory, playerdata.minestack.leaves_2, new ItemStack(Material.LEAVES_2, 1, (short)0), v30, 20, "アカシアの葉");
+		setMineStackButton(inventory, playerdata.minestack.leaves_21, new ItemStack(Material.LEAVES_2, 1, (short)1), v30, 21, "ダークオークの葉");
+		setMineStackButton(inventory, playerdata.minestack.snow_block, Material.SNOW_BLOCK, v31, 22, "雪");
+		setMineStackButton(inventory, playerdata.minestack.huge_mushroom_1, Material.HUGE_MUSHROOM_1, v32, 23, "キノコ");
+		setMineStackButton(inventory, playerdata.minestack.huge_mushroom_2, Material.HUGE_MUSHROOM_2, v32, 24, "キノコ");
+		setMineStackButton(inventory, playerdata.minestack.mycel, Material.MYCEL, v33, 25, "菌糸");
+		setMineStackButton(inventory, playerdata.minestack.sapling, new ItemStack(Material.SAPLING, 1, (short)0), v34, 26, "オークの苗木");
+		setMineStackButton(inventory, playerdata.minestack.sapling1, new ItemStack(Material.SAPLING, 1, (short)1), v34, 27, "マツの苗木");
+		setMineStackButton(inventory, playerdata.minestack.sapling2, new ItemStack(Material.SAPLING, 1, (short)2), v34, 28, "シラカバの苗木");
+		setMineStackButton(inventory, playerdata.minestack.sapling3, new ItemStack(Material.SAPLING, 1, (short)3), v34, 29, "ジャングルの苗木");
+		setMineStackButton(inventory, playerdata.minestack.sapling4, new ItemStack(Material.SAPLING, 1, (short)4), v34, 30, "アカシアの苗木");
+		setMineStackButton(inventory, playerdata.minestack.sapling5, new ItemStack(Material.SAPLING, 1, (short)5), v34, 31, "ダークオークの苗木");
 
-		setMineStackButton(inventory, playerdata.minestack.log2, new ItemStack(Material.LOG, 1, (short)2), v4, 2, "シラカバの原木");
 
-		setMineStackButton(inventory, playerdata.minestack.log3, new ItemStack(Material.LOG, 1, (short)3), v4, 3, "ジャングルの原木");
 
-		setMineStackButton(inventory, playerdata.minestack.log_2, new ItemStack(Material.LOG_2, 1, (short)0), v4, 4, "アカシアの原木");
 
-		setMineStackButton(inventory, playerdata.minestack.log_21, new ItemStack(Material.LOG_2, 1, (short)1), v4, 5, "ダークオークの原木");
 
-		setMineStackButton(inventory, playerdata.minestack.wood, new ItemStack(Material.WOOD, 1, (short)0), v5, 6, "オークの木材");
 
-		setMineStackButton(inventory, playerdata.minestack.fence, Material.FENCE, v5, 7, "オークのフェンス");
 
-		setMineStackButton(inventory, playerdata.minestack.hard_clay, Material.HARD_CLAY, v5, 8, "堅焼き粘土");
 
-		setMineStackButton(inventory, playerdata.minestack.stained_clay, new ItemStack(Material.STAINED_CLAY, 1, (short)0), v5, 9, "白色の堅焼き粘土");
 
-		setMineStackButton(inventory, playerdata.minestack.stained_clay1, new ItemStack(Material.STAINED_CLAY, 1, (short)1), v5, 10, "橙色の堅焼き粘土");
-		
-		setMineStackButton(inventory, playerdata.minestack.stained_clay4, new ItemStack(Material.STAINED_CLAY, 1, (short)4), v5, 11, "黄色の堅焼き粘土");
-		
-		setMineStackButton(inventory, playerdata.minestack.stained_clay8, new ItemStack(Material.STAINED_CLAY, 1, (short)8), v5, 12, "薄灰色の堅焼き粘土");
-		
-		setMineStackButton(inventory, playerdata.minestack.stained_clay12, new ItemStack(Material.STAINED_CLAY, 1, (short)12), v5, 13, "茶色の堅焼き粘土");
-		
-		setMineStackButton(inventory, playerdata.minestack.stained_clay14, new ItemStack(Material.STAINED_CLAY, 1, (short)14), v5, 14, "赤色の堅焼き粘土");
 
-		//setMineStackButton(inventory, playerdata.minestack.lapis_lazuli, new ItemStack(Material.INK_SACK, 1, (short)4), v11, 15);
-		setMineStackButton(inventory, playerdata.minestack.lapis_lazuli, new ItemStack(Material.INK_SACK, 1, (short)4), v11, 15, "ラピスラズリ");
 
-		setMineStackButton(inventory, playerdata.minestack.lapis_ore, Material.LAPIS_ORE, v11, 16, "ラピスラズリ鉱石");
-
-		setMineStackButton(inventory, playerdata.minestack.emerald, Material.EMERALD, v11, 17, "エメラルド");
-		
-		setMineStackButton(inventory, playerdata.minestack.emerald_ore, Material.EMERALD_ORE, v11, 18, "エメラルド鉱石");
-
-		setMineStackButton(inventory, playerdata.minestack.redstone, Material.REDSTONE, v12, 19, "レッドストーン");
-		
-		setMineStackButton(inventory, playerdata.minestack.redstone_ore, Material.REDSTONE_ORE, v12, 20, "レッドストーン鉱石");
-
-		setMineStackButton(inventory, playerdata.minestack.diamond, Material.DIAMOND, v12, 21, "ダイヤモンド");
-		
-		setMineStackButton(inventory, playerdata.minestack.diamond_ore, Material.DIAMOND_ORE, v12, 22, "ダイヤモンド鉱石");
 
 		// MineStack1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Minestack1ページ目へ");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack1ページ目へ");
 		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowUp");
 		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(27,itemstack);
+		inventory.setItem(45,itemstack);
+
+		// MineStack3ページ目を開く(追加)
+		/*
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack3ページ目へ");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowDown");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(53,itemstack);
+		*/
 
 		return inventory;
 	}
 
+
+	//追加(Minestack3ページ目)
+	public static Inventory getMineStackMenu3(Player p){
+		//プレイヤーを取得
+		Player player = p.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+
+		//インベントリ作成
+		//Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
+		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
+
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+
+		//レベル
+		/*
+		int v1 = SeichiAssist.config.getMineStacklevel(1);
+		int v2 = SeichiAssist.config.getMineStacklevel(2);
+		int v3 = SeichiAssist.config.getMineStacklevel(3);
+		int v4 = SeichiAssist.config.getMineStacklevel(4);
+		int v5 = SeichiAssist.config.getMineStacklevel(5);
+		int v6 = SeichiAssist.config.getMineStacklevel(6);
+		int v7 = SeichiAssist.config.getMineStacklevel(7);
+		int v8 = SeichiAssist.config.getMineStacklevel(8);
+		int v9 = SeichiAssist.config.getMineStacklevel(9);
+		int v10 = SeichiAssist.config.getMineStacklevel(10);
+		int v11 = SeichiAssist.config.getMineStacklevel(11);//追加
+		int v12 = SeichiAssist.config.getMineStacklevel(12);//追加
+		int v13 = SeichiAssist.config.getMineStacklevel(13);//追加
+		int v14 = SeichiAssist.config.getMineStacklevel(14);//追加
+		int v15 = SeichiAssist.config.getMineStacklevel(15);//追加
+		*/
+
+		//setMineStackButtonここから
+
+
+		// MineStack2ページ目を開く
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack2ページ目へ");
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowUp");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(45,itemstack);
+
+		return inventory;
+	}
 
 
 
@@ -2165,6 +2313,49 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		return itemmeta;
 	}
+
+	// ワールドガード保護メッセージ表示トグルボタン(追加)
+	public static ItemMeta dispWorldGuardLogToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
+		List<String> lore = new ArrayList<String>();
+		if(playerdata.dispworldguardlogflag){
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "表示する");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで隠す");
+		}else{
+			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "隠す");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで表示する");
+		}
+		itemmeta.setLore(lore);
+		return itemmeta;
+	}
+
+	// 複数種類ブロック同時破壊トグルボタン(追加)
+	public static ItemMeta MultipleIDBlockBreakToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
+		List<String> lore = new ArrayList<String>();
+		if(playerdata.multipleidbreakflag){
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "複数種類ブロック同時破壊");
+					//ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getMultipleIDBlockBreaklevel());
+					//	ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：***"
+					//	ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "ON");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
+		}else{
+			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "複数種類ブロック同時破壊");
+			//ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
+	lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getMultipleIDBlockBreaklevel());
+			//	ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：***"
+			//	ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "OFF");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
+		}
+		itemmeta.setLore(lore);
+		return itemmeta;
+	}
+
 	// PvPトグルボタン
 	public static ItemMeta dispPvPToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<String>();

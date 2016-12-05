@@ -10,7 +10,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.Statistic;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -64,6 +63,12 @@ public class PlayerData {
 	public int playtick;
 	//キルログ表示トグル
 	public boolean dispkilllogflag;
+
+	//ワールドガード保護ログ表示トグル
+	public boolean dispworldguardlogflag;
+	//複数種類破壊トグル
+	public boolean multipleidbreakflag;
+
 	//PvPトグル
 	public boolean pvpflag;
 	//現在座標
@@ -111,6 +116,8 @@ public class PlayerData {
 		this.servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
 		this.playtick = 0;
 		this.dispkilllogflag = false;
+		this.dispworldguardlogflag = true;
+		this.multipleidbreakflag = false;
 		this.pvpflag = false;
 		this.loc = null;
 		this.idletime = 0;
@@ -123,7 +130,7 @@ public class PlayerData {
 		this.p_givenvote = 0;
 		this.votecooldownflag = true;
 		this.gachacooldownflag = true;
-		
+
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
 			this.sub_home[x] = null;
@@ -405,8 +412,8 @@ public class PlayerData {
 		}
 	}
 
-	
-	
+
+
 	//サブホームの位置をセットする
 	public void SetSubHome(Location l,int x){
 		if(x >= 0 & x < SeichiAssist.config.getSubHomeMax() ){
@@ -422,7 +429,7 @@ public class PlayerData {
 			return null;
 		}
 	}
-	
+
 	//文字列からサブデータを読み込む（DB用）
 	public void SetSubHome(String str){
 		String[] s = str.split(",", -1);
@@ -475,5 +482,5 @@ public class PlayerData {
 		}
 		return s;
 	}
-	
+
 }
