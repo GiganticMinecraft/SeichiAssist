@@ -121,6 +121,7 @@ public class PlayerPickupItemListener implements Listener {
 				}
 				if(itemstack.getDurability() == 0){
 					playerdata.minestack.dirt += amount;
+					break;
 				} 
 				if(playerdata.level < v26){
 					return;
@@ -157,6 +158,7 @@ public class PlayerPickupItemListener implements Listener {
 				}
 				if(itemstack.getDurability() == 0){
 					playerdata.minestack.stone += amount;
+					break;
 				}
 				if(playerdata.level < v3){
 					return;
@@ -177,7 +179,12 @@ public class PlayerPickupItemListener implements Listener {
 				}
 				if(itemstack.getDurability() == 0){
 					playerdata.minestack.sand += amount;
-				} else if(itemstack.getDurability() == 1){
+					break;
+				} 
+				if(playerdata.level < v20){
+					return;
+				}
+				if(itemstack.getDurability() == 1){
 					playerdata.minestack.red_sand += amount;
 				} else {
 					return;
@@ -314,6 +321,7 @@ public class PlayerPickupItemListener implements Listener {
 				}
 				if(itemstack.getDurability() == 0){
 					playerdata.minestack.wood += amount;
+					break;
 				} 
 				if(playerdata.level < v27){
 					return;
