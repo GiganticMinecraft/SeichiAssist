@@ -811,6 +811,7 @@ public class PlayerInventoryListener implements Listener {
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 					itemstackcurrent.setItemMeta(MenuInventoryData.MultipleIDBlockBreakToggleMeta(playerdata,itemmeta));
 				} else {
+					player.sendMessage("整地レベルが足りません");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
 			}
