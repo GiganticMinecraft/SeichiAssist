@@ -2319,7 +2319,7 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 		if(playerdata.dispworldguardlogflag){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			
+
 			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "スキル使用時のワールドガード保護警告メッセージ");
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "表示する");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで隠す");
@@ -2339,6 +2339,8 @@ public class MenuInventoryData {
 		if(playerdata.multipleidbreakflag){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "複数種類ブロック同時破壊");
+			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
+			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "破壊可能な全種類のブロックを同時に破壊します");
 					//ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
 			if(playerdata.level>=SeichiAssist.config.getMultipleIDBlockBreaklevel()){
 				lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getMultipleIDBlockBreaklevel());
@@ -2353,10 +2355,12 @@ public class MenuInventoryData {
 					lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "ON");
 				}
 			}
-			
+
 		}else{
 			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "複数種類ブロック同時破壊");
+			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
+			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "破壊可能な全種類のブロックを同時に破壊します");
 			//ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
 			if(playerdata.level>=SeichiAssist.config.getMultipleIDBlockBreaklevel()){
 				lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getMultipleIDBlockBreaklevel());
