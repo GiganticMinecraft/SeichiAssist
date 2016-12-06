@@ -89,7 +89,7 @@ public class PlayerPickupItemListener implements Listener {
 		int v36 = config.getMineStacklevel(36);
 		int v37 = config.getMineStacklevel(37);
 		int v38 = config.getMineStacklevel(38);
-		
+
 		//ここにガチャアイテム(ItemStack型)判定を作成するかも
 		/*
 		if(playerdata!=null){
@@ -112,7 +112,7 @@ public class PlayerPickupItemListener implements Listener {
 		    }
 		}
 		*/
-		
+
 		//Material型判定
 		switch(material){
 			case DIRT:
@@ -122,7 +122,7 @@ public class PlayerPickupItemListener implements Listener {
 				if(itemstack.getDurability() == 0){
 					playerdata.minestack.dirt += amount;
 					break;
-				} 
+				}
 				if(playerdata.level < v26){
 					return;
 				}
@@ -180,7 +180,7 @@ public class PlayerPickupItemListener implements Listener {
 				if(itemstack.getDurability() == 0){
 					playerdata.minestack.sand += amount;
 					break;
-				} 
+				}
 				if(playerdata.level < v20){
 					return;
 				}
@@ -322,7 +322,7 @@ public class PlayerPickupItemListener implements Listener {
 				if(itemstack.getDurability() == 0){
 					playerdata.minestack.wood += amount;
 					break;
-				} 
+				}
 				if(playerdata.level < v27){
 					return;
 				}
