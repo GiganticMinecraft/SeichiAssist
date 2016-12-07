@@ -224,9 +224,9 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		Coordinate start = assaultarea.getStartList().get(0);
 		Coordinate end = assaultarea.getEndList().get(0);
 
-		for(int x = start.x ; x <= end.x ; x++){
-			for(int z = start.z ; z <= end.z ; z++){
-				for(int y = start.y; y <= end.y ; y++){
+		for(int y = end.y; y >= start.y ; y--){ //上から
+			for(int x = start.x ; x <= end.x ; x++){
+				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
 					boolean lava_materialflag = breakblock.getType().equals(Material.STATIONARY_LAVA)
 												|| breakblock.getType().equals(Material.LAVA);

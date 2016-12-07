@@ -167,6 +167,8 @@ public class EntityListener implements Listener {
 
 	private void runArrowSkillofHitBlock(Player player,Projectile proj,
 			Block block, ItemStack tool) {
+		/*遠距離破壊スキルリスナー*/
+		
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
@@ -204,29 +206,43 @@ public class EntityListener implements Listener {
 		//１回の全て破壊したときのブロック数
 		final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
 
-
-		for(int x = start.x ; x <= end.x ; x++){
-			for(int z = start.z ; z <= end.z ; z++){
-				for(int y = start.y; y <= end.y ; y++){
+		for(int y = end.y; y >=start.y ; y--){ //上から処理に変更
+			for(int x = start.x ; x <= end.x ; x++){
+				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
-					//player.sendMessage("x:" + x + "y:" + y + "z:" + z + "Type:"+ breakblock.getType().name());
-					//もし壊されるブロックがもともとのブロックと同じ種類だった場合
-					if(breakblock.getType().equals(material)
-							|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
-							|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
-							|| (block.getType().equals(Material.GLOWING_REDSTONE_ORE)&&breakblock.getType().equals(Material.REDSTONE_ORE))
-							|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
-							|| breakblock.getType().equals(Material.STATIONARY_LAVA)
-							){
-						if(BreakUtil.canBreak(player, breakblock)){
-							if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
-								lavalist.add(breakblock);
-							}else{
-								breaklist.add(breakblock);
-								SeichiAssist.allblocklist.add(breakblock);
+					
+					if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && playerdata.multipleidbreakflag) { //追加テスト(複数種類一括破壊スキル)
+						if(!breakblock.getType().equals(Material.AIR) && !breakblock.getType().equals(Material.BEDROCK)) {
+							if(breakblock.getType().equals(Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(breakblock)){
+								if(BreakUtil.canBreak(player, breakblock)){
+									if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+										lavalist.add(breakblock);
+									}else{
+										breaklist.add(breakblock);
+										SeichiAssist.allblocklist.add(breakblock);
+									}
+								}
 							}
 						}
-
+					} else { //条件を満たしていない
+						//player.sendMessage("x:" + x + "y:" + y + "z:" + z + "Type:"+ breakblock.getType().name());
+						//もし壊されるブロックがもともとのブロックと同じ種類だった場合
+						if(breakblock.getType().equals(material)
+								|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
+								|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
+								|| (block.getType().equals(Material.GLOWING_REDSTONE_ORE)&&breakblock.getType().equals(Material.REDSTONE_ORE))
+								|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
+								|| breakblock.getType().equals(Material.STATIONARY_LAVA)
+								){
+							if(BreakUtil.canBreak(player, breakblock)){
+								if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+									lavalist.add(breakblock);
+								}else{
+									breaklist.add(breakblock);
+									SeichiAssist.allblocklist.add(breakblock);
+								}
+							}
+						}
 					}
 				}
 			}

@@ -70,6 +70,7 @@ public class MultiBreakTaskRunnable extends BukkitRunnable{
 					SeichiAssist.allblocklist.remove(b);
 				}
 			}
+
 			//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
 			else if(playerdata.activeskilldata.effectnum <= 100){
 				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();

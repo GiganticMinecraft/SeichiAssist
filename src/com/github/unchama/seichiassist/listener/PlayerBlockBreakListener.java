@@ -251,9 +251,10 @@ public class PlayerBlockBreakListener implements Listener {
 			lavalist.clear();
 			Coordinate start = startlist.get(i);
 			Coordinate end = endlist.get(i);
-			for(int x = start.x ; x <= end.x ; x++){
-				for(int z = start.z ; z <= end.z ; z++){
-					for(int y = start.y; y <= end.y ; y++){
+			//for(int y = start.y; y <= end.y ; y++){
+			for(int y = end.y; y >= start.y ; y--){ //上から処理に変更
+				for(int x = start.x ; x <= end.x ; x++){
+					for(int z = start.z ; z <= end.z ; z++){
 						breakblock = block.getRelative(x, y, z);
 						if(x == 0 && y == 0 && z == 0)continue;
 
@@ -413,9 +414,10 @@ public class PlayerBlockBreakListener implements Listener {
 		List<Block> lavalist = new ArrayList<Block>();
 
 		//範囲内の破壊されるブロックを取得
-		for(int x = start.x ; x <= end.x ; x++){
-			for(int z = start.z ; z <= end.z ; z++){
-				for(int y = start.y; y <= end.y ; y++){
+		//for(int y = start.y; y <= end.y ; y++){
+		for(int y = end.y; y >= start.y ; y--){ //上から処理に変更
+			for(int x = start.x ; x <= end.x ; x++){
+				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
 					if(x == 0 && y == 0 && z == 0)continue;
 
