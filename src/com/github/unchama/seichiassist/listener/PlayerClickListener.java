@@ -137,6 +137,8 @@ public class PlayerClickListener implements Listener {
 			        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
 			        if(cooldown > 5){
 			        	new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+			        }else{
+			        	new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
 			        }
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){

@@ -196,7 +196,7 @@ public class SeichiAssist extends JavaPlugin{
 	//スキル破壊ブロック分のcoreprotectログ保存処理を除外するワールドリスト(coreprotectログデータ肥大化の軽減が目的)
 	//スキル自体はメインワールドと各整地ワールドのみ(world_SWで始まるワールドのみ)で発動する(ここの設定は無視する)
 	public static final List<String> ignoreWorldlist = new ArrayList<String>(Arrays.asList(
-			"world_SW","world_SW_2","world_SW_nether"
+			"world_SW","world_SW_2","world_SW_nether","world_SW_the_end"
 			));
 	@Override
 	public void onEnable(){
