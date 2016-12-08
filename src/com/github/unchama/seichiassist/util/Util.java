@@ -51,8 +51,12 @@ public class Util {
 		//プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)にいる場合
 		if(player.getWorld().getName().toLowerCase().startsWith(worldname)
 				|| player.getWorld().getName().equalsIgnoreCase("world")
+				|| player.getWorld().getName().equalsIgnoreCase("world_2")
 				|| player.getWorld().getName().equalsIgnoreCase("world_nether")
 				|| player.getWorld().getName().equalsIgnoreCase("world_the_end")
+				|| player.getWorld().getName().equalsIgnoreCase("world_TT")
+				|| player.getWorld().getName().equalsIgnoreCase("world_nether_TT")
+				|| player.getWorld().getName().equalsIgnoreCase("world_the_end_TT")
 				){
 			return true;
 		}
@@ -103,7 +107,7 @@ public class Util {
 		gachaimo.setItemMeta(meta);
 		return gachaimo;
 	}
-	
+
 	//がちゃりんごの名前を取得
 	public static String getGachaimoName(){
 		String name = ChatColor.GOLD + "" + ChatColor.BOLD + "がちゃりんご";

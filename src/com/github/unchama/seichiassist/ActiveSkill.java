@@ -373,7 +373,7 @@ public enum ActiveSkill{
 		case "ARROW":
 			switch(skillnum){
 			case 4:
-				cooldowntime = 0.8;
+				cooldowntime = 0.2;
 				break;
 			case 5:
 				cooldowntime = 1.3;
