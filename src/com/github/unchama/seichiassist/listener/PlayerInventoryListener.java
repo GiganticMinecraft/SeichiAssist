@@ -2319,17 +2319,10 @@ public class PlayerInventoryListener implements Listener {
 
 
 
-			if(open_flag==0){
-				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0));
-				open_flag=-1;
-			} else if(open_flag==1){
-				player.openInventory(MenuInventoryData.getMineStackMenu(player, 1));
-				open_flag=-1;
-			} else if(open_flag==2){
-				player.openInventory(MenuInventoryData.getMineStackMenu(player, 2));
+			if(open_flag!=-1){
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, open_flag));
 				open_flag=-1;
 			}
-
 		}
 	}
 
