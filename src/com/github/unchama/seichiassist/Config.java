@@ -90,6 +90,10 @@ public class Config{
 	public int getGravitylevel() {
 		return Util.toInt(config.getString("gravitylevel"));
 	}
+	
+	public int getMultipleIDBlockBreaklevel(){
+		return Util.toInt(config.getString("multipleidblockbreaklevel"));
+	}
 
 	public double getDropExplevel(int i){
 		return Util.toDouble(config.getString("dropexplevel" + i,""));
@@ -129,5 +133,14 @@ public class Config{
 		return config.getString("lv" + i + "message","");
 	}
 
+	//サーバー番号取得
+	public int getServerNum() {
+		return Util.toInt(config.getString("servernum"));
+	}
+	
+	//サブホーム最大数取得
+	public int getSubHomeMax() {
+		return Util.toInt(config.getString("subhomemax"));
+	}
 
 }

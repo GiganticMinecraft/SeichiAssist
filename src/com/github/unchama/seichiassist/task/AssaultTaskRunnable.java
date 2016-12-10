@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -22,6 +23,7 @@ import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BreakUtil;
+import com.github.unchama.seichiassist.util.Util;
 
 public class AssaultTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -41,6 +43,10 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	int ifallbreaknum;
 	//破壊エリアデータ
 	BreakArea assaultarea;
+	//放置判定用位置データ
+	Location lastloc;
+	//放置判定用int
+	int idletime;
 
 	boolean errorflag = false;
 
@@ -50,6 +56,8 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		this.player = player;
 		this.uuid = player.getUniqueId();
 		this.playerdata = playermap.get(uuid);
+		lastloc = player.getLocation();
+		idletime = 0;
 
 
 		//念のためエラー分岐
@@ -73,13 +81,8 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			return;
 		}
 
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
-		}
-
 		//整地ワールドではない時スキルを発動しない。
-		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
+		if(!Util.isSkillEnable(player)){
 			player.sendMessage(ChatColor.GREEN + "スキルは整地ワールドでのみ使用可能です。");
 			errorflag = true;
 			return;
@@ -156,16 +159,38 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			setCancel();
 			return;
 		}
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
-		}
+
 		//整地ワールドではない時スキルを発動しない。
-		if(!player.getWorld().getName().toLowerCase().startsWith(worldname)){
+		if(!Util.isSkillEnable(player)){
 			player.sendMessage(ChatColor.GREEN + "スキルは整地ワールドでのみ使用可能です。");
 			setCancel();
 			return;
 		}
+
+		//放置判定、動いてなかったら処理終了
+		if(
+				((lastloc.getBlockX()-10) < player.getLocation().getBlockX())
+				&&((lastloc.getBlockX()+10) > player.getLocation().getBlockX())
+				&&((lastloc.getBlockY()-10) < player.getLocation().getBlockY())
+				&&((lastloc.getBlockY()+10) > player.getLocation().getBlockY())
+				&&((lastloc.getBlockZ()-10) < player.getLocation().getBlockZ())
+				&&((lastloc.getBlockZ()+10) > player.getLocation().getBlockZ())
+				){
+			if(SeichiAssist.DEBUG){
+				player.sendMessage(ChatColor.RED + "放置を検出");
+			}
+			idletime ++;
+			if(idletime > 20){
+				player.sendMessage(ChatColor.YELLOW + "アサルトスキルがOFFになりました");
+				setCancel();
+				return;
+			}
+		}else{
+			//動いてたら次回判定用に場所更新しとく
+			lastloc = player.getLocation();
+			idletime = 0;
+		}
+
 		List<Block> breaklist = new ArrayList<Block>();
 		List<Block> lavalist = new ArrayList<Block>();
 		List<Block> waterlist = new ArrayList<Block>();
@@ -199,9 +224,9 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		Coordinate start = assaultarea.getStartList().get(0);
 		Coordinate end = assaultarea.getEndList().get(0);
 
-		for(int x = start.x ; x <= end.x ; x++){
-			for(int z = start.z ; z <= end.z ; z++){
-				for(int y = start.y; y <= end.y ; y++){
+		for(int y = end.y; y >= start.y ; y--){ //上から
+			for(int x = start.x ; x <= end.x ; x++){
+				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
 					boolean lava_materialflag = breakblock.getType().equals(Material.STATIONARY_LAVA)
 												|| breakblock.getType().equals(Material.LAVA);

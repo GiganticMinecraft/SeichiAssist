@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -25,6 +26,13 @@ public class GachaItemListener implements Listener {
 	public void onPlayerItemConsumeEvent(PlayerItemConsumeEvent e){
 		Player player = e.getPlayer();
 		PlayerData playerdata = playermap.get(player.getUniqueId());
+		//念のためエラー分岐
+		if(playerdata == null){
+			Util.sendPlayerDataNullMessage(player);
+			Bukkit.getLogger().warning(player.getName() + " -> PlayerData not found.");
+			Bukkit.getLogger().warning("GachaItemListener.onPlayerItemConsumeEvent");
+			return;
+		}
 		int level = playerdata.level;
 		Mana mana = playerdata.activeskilldata.mana;
 		ItemStack i = e.getItem();

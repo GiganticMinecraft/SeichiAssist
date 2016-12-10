@@ -26,10 +26,12 @@ public class PlayerJoinListener implements Listener {
 		sql.loadPlayerData(player);
 
 		//初見さんへの処理
+		/*
 		if(!player.hasPlayedBefore()){
 			//初見さんへのメッセージ文
 			player.sendMessage(SeichiAssist.config.getLvMessage(1));
 		}
+		*/
 	}
 
 }

@@ -144,6 +144,10 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.rgnum = rs.getInt("rgnum");
  				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
+ 				playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag");
+
+ 				playerdata.multipleidbreakflag = rs.getBoolean("multipleidbreakflag");
+
  				playerdata.pvpflag = rs.getBoolean("pvpflag");
  				playerdata.totalbreaknum = rs.getInt("totalbreaknum");
  				playerdata.playtick = rs.getInt("playtick");
@@ -152,6 +156,9 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint");
  				//マナの情報
  				playerdata.activeskilldata.mana.setMana(rs.getDouble("mana"));
+
+ 				//subhomeの情報
+ 				playerdata.SetSubHome(rs.getString("homepoint_" + SeichiAssist.config.getServerNum()));
 
  				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
  				for(int i = 0 ; i < activeskilleffect.length ; i++){
@@ -166,6 +173,15 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  					playerdata.activeskilldata.premiumeffectflagmap.put(num, rs.getBoolean(sqlname));
  				}
  				//MineStack機能の数値
+
+				//MineStack関連をすべてfor文に変更
+ 				if(SeichiAssist.minestack_sql_enable==true){
+ 					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
+ 						int temp_num = rs.getInt("stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName());
+ 						playerdata.minestack.setNum(i, temp_num);
+ 					}
+ 				}
+ 				/*
  				playerdata.minestack.dirt = rs.getInt("stack_dirt");
  				playerdata.minestack.gravel = rs.getInt("stack_gravel");
  				playerdata.minestack.cobblestone = rs.getInt("stack_cobblestone");
@@ -174,6 +190,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.minestack.sandstone = rs.getInt("stack_sandstone");
  				playerdata.minestack.netherrack = rs.getInt("stack_netherrack");
  				playerdata.minestack.ender_stone = rs.getInt("stack_ender_stone");
+ 				playerdata.minestack.obsidian = rs.getInt("stack_obsidian");
  				playerdata.minestack.grass = rs.getInt("stack_grass");
  				playerdata.minestack.quartz = rs.getInt("stack_quartz");
  				playerdata.minestack.quartz_ore = rs.getInt("stack_quartz_ore");
@@ -183,6 +200,65 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.minestack.coal_ore = rs.getInt("stack_coal_ore");
  				playerdata.minestack.iron_ore = rs.getInt("stack_iron_ore");
  				playerdata.minestack.packed_ice = rs.getInt("stack_packed_ice");
+ 				playerdata.minestack.gold_ore = rs.getInt("stack_gold_ore");
+ 				playerdata.minestack.lapis_ore = rs.getInt("stack_lapis_ore");
+ 				playerdata.minestack.emerald_ore = rs.getInt("stack_emerald_ore");
+ 				playerdata.minestack.redstone_ore = rs.getInt("stack_redstone_ore");
+ 				playerdata.minestack.diamond_ore = rs.getInt("stack_diamond_ore");
+ 				playerdata.minestack.log = rs.getInt("stack_log");
+ 				playerdata.minestack.log_2 = rs.getInt("stack_log_2");
+ 				playerdata.minestack.wood = rs.getInt("stack_wood");
+ 				playerdata.minestack.hard_clay = rs.getInt("stack_hard_clay");
+ 				playerdata.minestack.stained_clay = rs.getInt("stack_stained_clay");
+ 				playerdata.minestack.fence = rs.getInt("stack_fence");
+ 				playerdata.minestack.lapis_lazuli = rs.getInt("stack_lapis_lazuli"); //テスト
+ 				playerdata.minestack.granite = rs.getInt("stack_granite"); //追加
+ 				playerdata.minestack.diorite = rs.getInt("stack_diorite"); //追加
+ 				playerdata.minestack.andesite = rs.getInt("stack_andesite"); //追加
+ 				playerdata.minestack.red_sand = rs.getInt("stack_red_sand"); //追加
+ 				playerdata.minestack.red_sandstone = rs.getInt("stack_red_sandstone"); //追加
+ 				playerdata.minestack.log1 = rs.getInt("stack_log1"); //追加
+ 				playerdata.minestack.log2 = rs.getInt("stack_log2"); //追加
+ 				playerdata.minestack.log3 = rs.getInt("stack_log3"); //追加
+ 				playerdata.minestack.log_21 = rs.getInt("stack_log_21"); //追加
+ 				playerdata.minestack.stained_clay1 = rs.getInt("stack_stained_clay1"); //追加
+ 				playerdata.minestack.stained_clay4 = rs.getInt("stack_stained_clay4"); //追加
+ 				playerdata.minestack.stained_clay8 = rs.getInt("stack_stained_clay8"); //追加
+ 				playerdata.minestack.stained_clay12 = rs.getInt("stack_stained_clay12"); //追加
+ 				playerdata.minestack.stained_clay14 = rs.getInt("stack_stained_clay14"); //追加
+ 				playerdata.minestack.emerald = rs.getInt("stack_emerald"); //追加
+ 				playerdata.minestack.redstone = rs.getInt("stack_redstone"); //追加
+ 				playerdata.minestack.diamond = rs.getInt("stack_diamond"); //追加
+ 				playerdata.minestack.clay = rs.getInt("stack_clay"); //追加
+ 				playerdata.minestack.glowstone = rs.getInt("stack_glowstone"); //追加
+ 				playerdata.minestack.dirt1 = rs.getInt("stack_dirt1");
+ 				playerdata.minestack.dirt2 = rs.getInt("stack_dirt2");
+ 				playerdata.minestack.mycel = rs.getInt("stack_mycel");
+ 				playerdata.minestack.snow_block = rs.getInt("stack_snow_block");
+ 				playerdata.minestack.ice = rs.getInt("stack_ice");
+ 				playerdata.minestack.dark_oak_fence = rs.getInt("stack_dark_oak_fence");
+ 				playerdata.minestack.mossy_cobblestone = rs.getInt("stack_mossy_cobblestone");
+ 				playerdata.minestack.rails = rs.getInt("stack_rails");
+ 				playerdata.minestack.exp_bottle = rs.getInt("stack_exp_bottle");
+ 				playerdata.minestack.huge_mushroom_1 = rs.getInt("stack_huge_mushroom_1");
+ 				playerdata.minestack.huge_mushroom_2 = rs.getInt("stack_huge_mushroom_2");
+ 				playerdata.minestack.web = rs.getInt("stack_web");
+ 				playerdata.minestack.string = rs.getInt("stack_string");
+ 				playerdata.minestack.wood5 = rs.getInt("stack_wood5");
+ 				playerdata.minestack.sapling = rs.getInt("stack_sapling");
+ 				playerdata.minestack.sapling1 = rs.getInt("stack_sapling1");
+ 				playerdata.minestack.sapling2 = rs.getInt("stack_sapling2");
+ 				playerdata.minestack.sapling3 = rs.getInt("stack_sapling3");
+ 				playerdata.minestack.sapling4 = rs.getInt("stack_sapling4");
+ 				playerdata.minestack.sapling5 = rs.getInt("stack_sapling5");
+ 				playerdata.minestack.leaves = rs.getInt("stack_leaves");
+ 				playerdata.minestack.leaves1 = rs.getInt("stack_leaves1");
+ 				playerdata.minestack.leaves2 = rs.getInt("stack_leaves2");
+ 				playerdata.minestack.leaves3 = rs.getInt("stack_leaves3");
+ 				playerdata.minestack.leaves_2 = rs.getInt("stack_leaves_2");
+ 				playerdata.minestack.leaves_21 = rs.getInt("stack_leaves_21");
+ 				playerdata.minestack.gachaimo = rs.getInt("stack_gachaimo");
+ 				*/
 			  }
 			rs.close();
 		} catch (SQLException | IOException e) {

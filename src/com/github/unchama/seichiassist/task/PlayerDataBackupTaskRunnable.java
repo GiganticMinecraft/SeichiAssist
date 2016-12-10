@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.task;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,8 +37,8 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 			PlayerData playerdata = playermap.get(uuid);
 			//念のためエラー分岐
 			if(playerdata == null){
-				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[15分Save処理]でエラー発生");
-				plugin.getLogger().warning(Util.getName(p)+ "のplayerdataがありません。開発者に報告してください");
+				Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
+				Bukkit.getLogger().warning("PlayerDataBackupTaskRunnable");
 				continue;
 			}
 			sql.savePlayerData(playerdata);

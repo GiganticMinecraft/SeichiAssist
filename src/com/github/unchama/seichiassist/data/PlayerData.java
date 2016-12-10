@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,7 +54,9 @@ public class PlayerData {
 	public int rgnum;
 
 	//MineStack
-	public MineStack minestack;
+	//public MineStack minestack;
+	
+	public MineStack minestack = new MineStack();
 	//MineStackFlag
 	public boolean minestackflag;
 	//プレイ時間差分計算用int
@@ -62,6 +65,12 @@ public class PlayerData {
 	public int playtick;
 	//キルログ表示トグル
 	public boolean dispkilllogflag;
+
+	//ワールドガード保護ログ表示トグル
+	public boolean dispworldguardlogflag;
+	//複数種類破壊トグル
+	public boolean multipleidbreakflag;
+
 	//PvPトグル
 	public boolean pvpflag;
 	//現在座標
@@ -82,6 +91,9 @@ public class PlayerData {
 
 	//ガチャボタン連打防止用
 	public boolean gachacooldownflag;
+
+	//サブのホームポイント
+	private Location[] sub_home = new Location[SeichiAssist.config.getSubHomeMax()];
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -106,6 +118,8 @@ public class PlayerData {
 		this.servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
 		this.playtick = 0;
 		this.dispkilllogflag = false;
+		this.dispworldguardlogflag = true;
+		this.multipleidbreakflag = false;
 		this.pvpflag = false;
 		this.loc = null;
 		this.idletime = 0;
@@ -118,6 +132,11 @@ public class PlayerData {
 		this.p_givenvote = 0;
 		this.votecooldownflag = true;
 		this.gachacooldownflag = true;
+
+		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
+//			this.sub_home[x] = new Location(null, 0, 0, 0);
+			this.sub_home[x] = null;
+		}
 
 	}
 
@@ -309,29 +328,25 @@ public class PlayerData {
 			//DIRTとGRASSは二重カウントされているので半分に
 			result *= 0.5;
 			break;
-		/*
+
 		case NETHERRACK:
 			//ネザーラックの重み分け
-			result *= 0.7;
+			result *= 0.2;
 			break;
+		/*
 		case ENDER_STONE:
 			//エンドストーンの重み分け
-			result *= 0.7;
+			result *= 0.5;
 			break;
 		*/
+
 		default:
 			break;
 		}
-		/*
-		if(p.getWorld().getName().equalsIgnoreCase("world_s")
-				|| p.getWorld().getName().equalsIgnoreCase("world_nether_s")
-				|| p.getWorld().getName().equalsIgnoreCase("world_the_end_s")){
-			if(SeichiAssist.DEBUG){
-				p.sendMessage("ワールドによる削減前の値:" + result);
-			}
-			result *= 0.5;
+		//整地ワールド外では整地数が反映されない
+		if(!Util.isGainSeichiExp(p)){
+			result *= 0.0;
 		}
-		*/
 		return result;
 	}
 
@@ -380,7 +395,11 @@ public class PlayerData {
 	}
 	//四次元ポケットのサイズを取得
 	public int getPocketSize() {
-		if (level < 26){
+		if (level < 6){
+			return 9*3;
+		}else if (level < 16){
+			return 9*3;
+		}else if (level < 26){
 			return 9*3;
 		}else if (level < 36){
 			return 9*3;
@@ -396,5 +415,74 @@ public class PlayerData {
 	}
 
 
+
+	//サブホームの位置をセットする
+	public void SetSubHome(Location l,int x){
+		if(x >= 0 & x < SeichiAssist.config.getSubHomeMax() ){
+			this.sub_home[x] = l;
+		}
+	}
+
+	//サブホームの位置を読み込む
+	public Location GetSubHome(int x){
+		if(x >= 0 & x < SeichiAssist.config.getSubHomeMax() ){
+			return this.sub_home[x];
+		}else{
+			return null;
+		}
+	}
+
+	//文字列からサブデータを読み込む（DB用）
+	public void SetSubHome(String str){
+		String[] s = str.split(",", -1);
+		for( int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
+			if (s.length < x*4+3){
+				break;
+			}
+//			if(s[x*4] != "" && s[x*4+1] != "" && s[x*4+2] != "" && s[x*4+3] != ""){	//未設定項目を飛ばす　何故かうまく動かない
+			if(s[x*4].length() > 0 && s[x*4+1].length() > 0 && s[x*4+2].length() > 0 && s[x*4+3].length() > 0 ){
+
+				Location l = new Location( Bukkit.getWorld(s[x*4+3]) , Integer.parseInt(s[x*4]) , Integer.parseInt(s[x*4+1]) , Integer.parseInt(s[x*4+2]) );
+				this.sub_home[x] = l;
+			}
+		}
+	}
+
+	//文字列からサブデータを読み込む・デバッグ版（DB用）
+	public void SetSubHome(String str , Player player){
+		String[] s = str.split(",", -1);
+		player.sendMessage(str );
+		player.sendMessage("配列数" + s.length );
+		for( int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
+			if (s.length < x*4+3){
+				break;
+			}
+			player.sendMessage("x:" + s[x*4] + " y:" +s[x*4+1]+ " z:" +s[x*4+2]+ " w:"+s[x*4+3] );
+//			if(s[x*4] != "" && s[x*4+1] != "" && s[x*4+2] != "" && s[x*4+3] != ""){
+			if(s[x*4].length() > 0 && s[x*4+1].length() > 0 && s[x*4+2].length() > 0 && s[x*4+3].length() > 0 ){
+				player.sendMessage("読み込み");
+				Location l = new Location( Bukkit.getWorld(s[x*4+3]) , Integer.parseInt(s[x*4]) , Integer.parseInt(s[x*4+1]) , Integer.parseInt(s[x*4+2]) );
+				this.sub_home[x] = l;
+			}
+		}
+	}
+
+	//サブホームデータを文字列で返す（DB用）
+	public String SubHomeToString(){
+		String s = "";
+		for( int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
+			if (this.sub_home[x] == null){
+				//設定されてない場合
+				s += ",,,,";
+			}else{
+				//設定されてる場合
+				s += String.valueOf( (int)sub_home[x].getX() ) +",";
+				s += String.valueOf( (int)sub_home[x].getY() ) +",";
+				s += String.valueOf( (int)sub_home[x].getZ() ) +",";
+				s += sub_home[x].getWorld().getName() +",";
+			}
+		}
+		return s;
+	}
 
 }
