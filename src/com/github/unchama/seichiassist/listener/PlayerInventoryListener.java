@@ -122,7 +122,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getMineStackMenu(player));
+				player.openInventory(MenuInventoryData.getMineStackMenu(player,0));
 				return;
 			}
 			//スキルメニューを開く
@@ -1747,30 +1747,53 @@ public class PlayerInventoryListener implements Listener {
 			//追加
 			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				if(itemmeta.getDisplayName().contains("MineStack") &&
+					itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
+					int page_display = Integer.parseInt(itemmeta.getDisplayName().replaceAll("[^0-9]","")); //数字以外を全て消す
+
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1));
+
+				}
+				/*
 				if(itemmeta.getDisplayName().contains("MineStack2ページ目")){//移動するページの種類を判定
 					//開く音を再生
 					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-					player.openInventory(MenuInventoryData.getMineStackMenu2(player));
+					player.openInventory(MenuInventoryData.getMineStackMenu(player, 1));
 				} else if(itemmeta.getDisplayName().contains("MineStack3ページ目")){//移動するページの種類を判定
 					//開く音を再生
 					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-					player.openInventory(MenuInventoryData.getMineStackMenu3(player));
+					player.openInventory(MenuInventoryData.getMineStackMenu(player, 2));
 				}
+				*/
 				return;
 			}
 
 			//追加
 			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+
+				if(itemmeta.getDisplayName().contains("MineStack") &&
+						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
+						int page_display = Integer.parseInt(itemmeta.getDisplayName().replaceAll("[^0-9]","")); //数字以外を全て消す
+
+						//開く音を再生
+						player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1));
+
+					}
+				/*
 				if(itemmeta.getDisplayName().contains("MineStack1ページ目")){//移動するページの種類を判定
 					//開く音を再生
 					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-					player.openInventory(MenuInventoryData.getMineStackMenu(player));
+					player.openInventory(MenuInventoryData.getMineStackMenu(player, 0));
 				} else if(itemmeta.getDisplayName().contains("MineStack2ページ目")){//移動するページの種類を判定
 					//開く音を再生
 					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-					player.openInventory(MenuInventoryData.getMineStackMenu2(player));
+					player.openInventory(MenuInventoryData.getMineStackMenu(player, 1));
 				}
+				*/
 				return;
 			}
 
@@ -1788,6 +1811,26 @@ public class PlayerInventoryListener implements Listener {
 				itemstackcurrent.setItemMeta(MenuInventoryData.MineStackToggleMeta(playerdata,itemmeta));
 			}
 
+			else {
+				for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
+					if(itemstackcurrent.getType().equals(SeichiAssist.minestacklist.get(i).getMaterial())
+							&& itemstackcurrent.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){
+
+						if(SeichiAssist.minestacklist.get(i).nameloreflag==false){
+							playerdata.minestack.setNum(i, (giveMineStack(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability() ))) );
+						} else { //名前と説明文がある
+							if(SeichiAssist.minestacklist.get(i).getGachatype()==-1){//ガチャアイテムにはない（がちゃりんご）
+								playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability()),0)));
+							} else { //ガチャアイテム
+
+							}
+						}
+						open_flag = (i+1)/45;
+					}
+				}
+			}
+
+			/*
 			//dirt
 			else if(itemstackcurrent.getType().equals(Material.DIRT) && itemstackcurrent.getDurability() == 0){
 				playerdata.minestack.dirt = giveMineStack(player,playerdata.minestack.dirt,new ItemStack(Material.DIRT, 1, (short)0));
@@ -2249,6 +2292,7 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.minestack.sapling5 = giveMineStack(player,playerdata.minestack.sapling5,new ItemStack(Material.SAPLING, 1, (short)5));
 				open_flag=1;
 			}
+			*/
 
 			//ここにガチャアイテム関連を書き込むかも
 			/*
@@ -2276,13 +2320,13 @@ public class PlayerInventoryListener implements Listener {
 
 
 			if(open_flag==0){
-				player.openInventory(MenuInventoryData.getMineStackMenu(player));
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0));
 				open_flag=-1;
 			} else if(open_flag==1){
-				player.openInventory(MenuInventoryData.getMineStackMenu2(player));
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, 1));
 				open_flag=-1;
 			} else if(open_flag==2){
-				player.openInventory(MenuInventoryData.getMineStackMenu3(player));
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, 2));
 				open_flag=-1;
 			}
 
