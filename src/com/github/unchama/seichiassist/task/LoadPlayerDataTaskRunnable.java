@@ -145,9 +145,9 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
  				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
  				playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag");
- 				
+
  				playerdata.multipleidbreakflag = rs.getBoolean("multipleidbreakflag");
- 				
+
  				playerdata.pvpflag = rs.getBoolean("pvpflag");
  				playerdata.totalbreaknum = rs.getInt("totalbreaknum");
  				playerdata.playtick = rs.getInt("playtick");
@@ -173,6 +173,15 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  					playerdata.activeskilldata.premiumeffectflagmap.put(num, rs.getBoolean(sqlname));
  				}
  				//MineStack機能の数値
+
+				//MineStack関連をすべてfor文に変更
+ 				if(SeichiAssist.minestack_sql_enable==true){
+ 					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
+ 						int temp_num = rs.getInt("stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName());
+ 						playerdata.minestack.setNum(i, temp_num);
+ 					}
+ 				}
+ 				/*
  				playerdata.minestack.dirt = rs.getInt("stack_dirt");
  				playerdata.minestack.gravel = rs.getInt("stack_gravel");
  				playerdata.minestack.cobblestone = rs.getInt("stack_cobblestone");
@@ -249,7 +258,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.minestack.leaves_2 = rs.getInt("stack_leaves_2");
  				playerdata.minestack.leaves_21 = rs.getInt("stack_leaves_21");
  				playerdata.minestack.gachaimo = rs.getInt("stack_gachaimo");
- 				
+ 				*/
 			  }
 			rs.close();
 		} catch (SQLException | IOException e) {

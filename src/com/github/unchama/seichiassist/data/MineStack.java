@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.data;
 
+import com.github.unchama.seichiassist.SeichiAssist;
+
 public class MineStack {
+	private int[] nums;
+	/*
 	public int stone;
 	public int dirt;
 	public int gravel;
@@ -82,10 +86,11 @@ public class MineStack {
 	public int web;
 	public int string;
 	public int gachaimo; //がちゃりんごテスト用
-
-
+	*/
 
 	public MineStack(){
+		nums = new int[SeichiAssist.minestacksize];
+		/*
 		stone = 0;
 		dirt = 0;
 		gravel = 0;
@@ -162,6 +167,15 @@ public class MineStack {
 		web = 0;
 		string = 0;
 		gachaimo = 0;
-
+		*/
+	}
+	public int getNum(int idx){
+		return nums[idx];
+	}
+	public void setNum(int idx, int num){
+		nums[idx]=num;;
+	}
+	public void addNum(int idx, int num){
+		nums[idx]=nums[idx]+num;;
 	}
 }
