@@ -51,6 +51,7 @@ public class PlayerPickupItemListener implements Listener {
 		int amount = itemstack.getAmount();
 		Material material = itemstack.getType();
 
+		/*
 		int v1 = config.getMineStacklevel(1);
 		int v2 = config.getMineStacklevel(2);
 		int v3 = config.getMineStacklevel(3);
@@ -89,6 +90,7 @@ public class PlayerPickupItemListener implements Listener {
 		int v36 = config.getMineStacklevel(36);
 		int v37 = config.getMineStacklevel(37);
 		int v38 = config.getMineStacklevel(38);
+		*/
 
 		//ここにガチャアイテム(ItemStack型)判定を作成するかも
 		/*
@@ -113,7 +115,47 @@ public class PlayerPickupItemListener implements Listener {
 		}
 		*/
 
+
+		for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
+			if(material.equals(SeichiAssist.minestacklist.get(i).getMaterial()) &&
+				itemstack.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){
+				//この時点でIDとサブIDが一致している
+				if(SeichiAssist.minestacklist.get(i).getNameloreflag()==false){//名前と説明文が無いアイテム
+					if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+						//レベルを満たしていない
+						return;
+					} else {
+						playerdata.minestack.addNum(i, amount);
+						break;
+					}
+				} else {
+					//名前・説明文付き
+					ItemMeta meta = itemstack.getItemMeta();
+					if(meta==null || meta.getDisplayName()==null || meta.getLore()== null){
+						return;
+					}
+					//この時点で名前と説明文がある
+						if(SeichiAssist.minestacklist.get(i).getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
+							if( !(meta.getDisplayName().equals(Util.getGachaimoName()))
+								|| !(meta.getLore().equals(Util.getGachaimoLore())) ){
+								return;
+							}
+							if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+								//レベルを満たしていない
+								return;
+							} else {
+								playerdata.minestack.addNum(i, amount);
+								break;
+							}
+						} else {
+							//ガチャ品
+						}
+				}
+			}
+		}
+
 		//Material型判定
+		/*
 		switch(material){
 			case DIRT:
 				if(playerdata.level < v1){
@@ -545,6 +587,7 @@ public class PlayerPickupItemListener implements Listener {
 			default:
 				return;
 		}
+		*/
 		event.setCancelled(true);
 		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
 		item.remove();

@@ -54,7 +54,9 @@ public class PlayerData {
 	public int rgnum;
 
 	//MineStack
-	public MineStack minestack;
+	//public MineStack minestack;
+	
+	public MineStack minestack = new MineStack();
 	//MineStackFlag
 	public boolean minestackflag;
 	//プレイ時間差分計算用int

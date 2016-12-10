@@ -94,14 +94,24 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",lastquit = cast( now() as datetime )"
 				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
 				+ ",worldguardlogflag = " + Boolean.toString(playerdata.dispworldguardlogflag)
-				
+
 				+ ",multipleidbreakflag = " + Boolean.toString(playerdata.multipleidbreakflag)
-				
+
 				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
 				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
-				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana())
+				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana());
 
 				//MineStack機能の数値更新処理
+
+				//MineStack関連は全てfor文に変更
+				if(SeichiAssist.minestack_sql_enable==true){
+					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
+						command += ",stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName()+ " = "
+							+ Integer.toString(playerdata.minestack.getNum(i));
+					}
+				}
+
+				/*
 				+ ",stack_dirt = " + Integer.toString(playerdata.minestack.dirt)
 				+ ",stack_gravel = " + Integer.toString(playerdata.minestack.gravel)
 				+ ",stack_cobblestone = " + Integer.toString(playerdata.minestack.cobblestone)
@@ -178,9 +188,10 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",stack_leaves_2 = " + Integer.toString(playerdata.minestack.leaves_2)
 				+ ",stack_leaves_21 = " + Integer.toString(playerdata.minestack.leaves_21)
 				+ ",stack_gachaimo = " + Integer.toString(playerdata.minestack.gachaimo)
-				
+				*/
+
 				//サブホームのデータ
-				+ ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'";
+				command +=  ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'";
 
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
