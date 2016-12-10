@@ -1816,7 +1816,7 @@ public class PlayerInventoryListener implements Listener {
 					if(itemstackcurrent.getType().equals(SeichiAssist.minestacklist.get(i).getMaterial())
 							&& itemstackcurrent.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){
 
-						if(SeichiAssist.minestacklist.get(i).nameloreflag==false){
+						if(SeichiAssist.minestacklist.get(i).getNameloreflag()==false){
 							playerdata.minestack.setNum(i, (giveMineStack(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability() ))) );
 						} else { //名前と説明文がある
 							if(SeichiAssist.minestacklist.get(i).getGachatype()==-1){//ガチャアイテムにはない（がちゃりんご）
