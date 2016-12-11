@@ -224,7 +224,8 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.COOKIE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COOKIE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキングを見る");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "(整地レベル100以上のプレイヤーのみ表記されます)"
+				,ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2583,17 +2584,21 @@ public class MenuInventoryData {
 	}
 	//ランキングリスト
 	public static Inventory getRankingList(Player p){
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
+		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		List<String> lore = new ArrayList<String>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
-		for(int count = 0;count < 27;count++){
+		for(int count = 0,count2=0;count < 50;count++,count2++){
 			if(count > SeichiAssist.ranklist.size() - 1){
 				break;
 			}
+			if(count2==44){count2+=3;}
 			rankdata = SeichiAssist.ranklist.get(count);
+			if(rankdata.level<100){
+				break;
+			}
 			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (count+1) +"位:" + "" + ChatColor.WHITE + rankdata.name);
 			lore.clear();
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "整地レベル:" + rankdata.level);
@@ -2602,8 +2607,21 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner(rankdata.name);
 			itemstack.setItemMeta(skullmeta);
-			inventory.setItem(count,itemstack);
+			inventory.setItem(count2,itemstack);
+
 		}
+
+
+
+		// 整地紳ランキング2ページ目を開く
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地紳ランキング２ページ目へ");
+		lore.clear();
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowDown");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(52,itemstack);
 
 		// 1ページ目を開く
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ");
@@ -2612,9 +2630,10 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(27,itemstack);
+		inventory.setItem(45,itemstack);
 
-		// 1ページ目を開く
+		// 総整地量の表記
+
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地鯖統計データ");
 		lore.clear();
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "全プレイヤー総整地量:"
@@ -2623,10 +2642,139 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("unchama");
 		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(35,itemstack);
+		inventory.setItem(53,itemstack);
 
 		return inventory;
 	}
+	//ランキングリスト２ページ目
+	public static Inventory getRankingList2(Player p){
+		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
+		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		List<String> lore = new ArrayList<String>();
+		itemstack.setDurability((short) 3);
+		RankData rankdata = null;
+		for(int count = 50,count2=0;count < 101 || rankdata.level>=99;count++,count2++){
+			if(count > SeichiAssist.ranklist.size() - 1){
+				break;
+			}
+			if(count2==44){count2+=3;}
+			rankdata = SeichiAssist.ranklist.get(count);
+			if(rankdata.level<100){
+				break;
+			}
+			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (count+1) +"位:" + "" + ChatColor.WHITE + rankdata.name);
+			lore.clear();
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "整地レベル:" + rankdata.level);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "総整地量:" + rankdata.totalbreaknum);
+
+			skullmeta.setLore(lore);
+			skullmeta.setOwner(rankdata.name);
+			itemstack.setItemMeta(skullmeta);
+			inventory.setItem(count2,itemstack);
+
+		}
+
+
+
+		// 整地紳ランキング1ページ目を開く;
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地紳ランキング１ページ目へ");
+		lore.clear();
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowUp");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(45,itemstack);
+
+		// 整地紳ランキング３ページ目を開く
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地紳ランキング３ページ目へ");
+		lore.clear();
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowDown");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(52,itemstack);
+
+		// 総整地量の表記
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地鯖統計データ");
+		lore.clear();
+		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "全プレイヤー総整地量:"
+				,ChatColor.RESET + "" +  ChatColor.AQUA + SeichiAssist.allplayerbreakblockint
+				));
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("unchama");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(53,itemstack);
+
+		return inventory;
+	}
+
+	//ランキングリスト２ページ目
+	public static Inventory getRankingList3(Player p){
+		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
+		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		List<String> lore = new ArrayList<String>();
+		itemstack.setDurability((short) 3);
+		RankData rankdata = null;
+		for(int count = 101,count2=0;count < 151 || rankdata.level>=99;count++,count2++){
+			if(count > SeichiAssist.ranklist.size() - 1){
+				break;
+			}
+			if(count2==44){count2+=3;}
+			rankdata = SeichiAssist.ranklist.get(count);
+			if(rankdata.level<100){
+				break;
+			}
+			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (count+1) +"位:" + "" + ChatColor.WHITE + rankdata.name);
+			lore.clear();
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "整地レベル:" + rankdata.level);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "総整地量:" + rankdata.totalbreaknum);
+
+			skullmeta.setLore(lore);
+			skullmeta.setOwner(rankdata.name);
+			itemstack.setItemMeta(skullmeta);
+			inventory.setItem(count2,itemstack);
+
+		}
+
+
+
+		// 整地紳ランキング２ページ目を開く;
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地紳ランキング２ページ目へ");
+		lore.clear();
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowUp");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(45,itemstack);
+
+			/* 整地紳ランキング4ページ目を開く
+			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地紳ランキング３ページ目へ");
+			lore.clear();
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+					);
+			skullmeta.setLore(lore);
+			skullmeta.setOwner("MHF_ArrowDown");
+			itemstack.setItemMeta(skullmeta);
+			inventory.setItem(52,itemstack);
+
+		*/
+		// 総整地量の表記
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地鯖統計データ");
+		lore.clear();
+		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "全プレイヤー総整地量:"
+				,ChatColor.RESET + "" +  ChatColor.AQUA + SeichiAssist.allplayerbreakblockint
+				));
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("unchama");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(53,itemstack);
+
+		return inventory;
+	}
+
 	//エフェクト選択メニュー
 	public static Inventory getActiveSkillEffectMenuData(Player p) {
 		//プレイヤーを取得
