@@ -9,8 +9,8 @@ public class MineStackObj {
 	private int level;
 	private Material material;
 	private int durability;
-	public boolean nameloreflag;
-	public int gachatype;
+	private boolean nameloreflag;
+	private int gachatype;
 
 	public MineStackObj(String objname, String japanesename,
 			int level, Material material, int durability,

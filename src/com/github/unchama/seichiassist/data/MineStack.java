@@ -173,9 +173,9 @@ public class MineStack {
 		return nums[idx];
 	}
 	public void setNum(int idx, int num){
-		nums[idx]=num;;
+		nums[idx]=num;
 	}
 	public void addNum(int idx, int num){
-		nums[idx]=nums[idx]+num;;
+		nums[idx]=nums[idx]+num;
 	}
 }
