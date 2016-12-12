@@ -98,9 +98,10 @@ public class Mana {
 			return;
 		}
 		double t_max = 1;
-		//レベルが10行っていない時レベルの値で処理を終了
+		//レベルが10行っていない時レベルの値で処理を終了(修正:マナは0)
 		if(level < 10){
-			this.max = level;
+			//this.max = level;
+			this.max = 0.0;
 			return;
 		}
 		//１０行ってる時の処理
@@ -118,6 +119,47 @@ public class Mana {
 		this.max = t_max;
 		return;
 	}
+
+	/**
+	 * @param level
+	 * レベル
+	 *
+	 * @return
+	 * 最大マナ
+	 */
+	//マナ最大値を計算する処理
+	public double calcMaxManaOnly(int level){
+		/*
+		if(SeichiAssist.DEBUG){
+			max = 100000;
+			return;
+		}
+		*/
+		double t_max = 1;
+		//レベルが10行っていない時レベルの値で処理を終了
+		if(level < 10){
+			//temp_max = level;
+			max=0.0;
+			return 0.0;
+		}
+		//１０行ってる時の処理
+		t_max = 100;
+		int increase = 10;
+		int inc_inc = 2;
+		//１１以降の処理
+		for(int i = 10 ; i < level;i++){
+			if(i%10 == 0 && i<=110 && i != 10){
+				increase += inc_inc;
+				inc_inc *= 2;
+			}
+			t_max += increase;
+		}
+		max=t_max;
+		return t_max;
+	}
+
+
+
 	//マナを最大値まで回復する処理
 	public void fullMana(Player player,int level){
 		this.m = this.max;

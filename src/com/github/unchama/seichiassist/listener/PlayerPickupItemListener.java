@@ -149,6 +149,7 @@ public class PlayerPickupItemListener implements Listener {
 							}
 						} else {
 							//ガチャ品
+							//gachadata.itemstack.isSimilar(itemstack)でスタックサイズ以外が一致しているか判定可能
 						}
 				}
 			}

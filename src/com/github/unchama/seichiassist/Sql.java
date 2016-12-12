@@ -788,6 +788,47 @@ public class Sql{
 		return putCommand(command);
 	}
 
+	//プレイヤーのレベルと整地量をセット
+	public boolean resetPlayerLevelandBreaknum(UUID uuid){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = uuid.toString();
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		int level = playerdata.level;
+		int totalbreaknum = playerdata.totalbreaknum;
+
+		String command = "update " + db + "." + table
+				+ " set"
+
+				+ " level = " + Integer.toString(level)
+				+ ",totalbreaknum = " + Integer.toString(totalbreaknum);
+
+		//最後の処理
+		command = command + " where uuid like '" + struuid + "'";
+
+		return putCommand(command);
+	}
+	
+	//プレイヤーのレベルと整地量をセット(プレイヤーデータが無い場合)
+	public boolean resetPlayerLevelandBreaknum(UUID uuid, int level){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = uuid.toString();
+		//PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		int totalbreaknum = SeichiAssist.levellist.get(level-1);
+
+		String command = "update " + db + "." + table
+				+ " set"
+
+				+ " level = " + Integer.toString(level)
+				+ ",totalbreaknum = " + Integer.toString(totalbreaknum);
+
+		//最後の処理
+		command = command + " where uuid like '" + struuid + "'";
+
+		return putCommand(command);
+	}
+
+
+
 	//全員に詫びガチャの配布
 	public boolean addAllPlayerBug(int amount){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;

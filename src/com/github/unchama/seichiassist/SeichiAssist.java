@@ -238,10 +238,12 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackObj("sapling3","ジャングルの苗木",34,Material.SAPLING,3,false,-1)
 			,new MineStackObj("sapling4","アカシアの苗木",34,Material.SAPLING,4,false,-1)
 			,new MineStackObj("sapling5","ダークオークの苗木",34,Material.SAPLING,5,false,-1)
+
+			,new MineStackObj("ender_pearl","エンダーパール",1,Material.ENDER_PEARL,0,false,-1)
 			));
 
 	public static final int minestacksize=minestacklist.size();
-	public static final boolean minestack_sql_enable=true; //ここは必ずtrue(falseのときはSQL初期設定+SQL入出力しない[デバッグ用])
+	public static final boolean minestack_sql_enable=false; //ここは必ずtrue(falseのときはSQL初期設定+SQL入出力しない[デバッグ用])
 
 
 	public static final List<Material> materiallist = new ArrayList<Material>(Arrays.asList(

@@ -2452,14 +2452,14 @@ public class PlayerInventoryListener implements Listener {
 	}
 	//minestackの1stack付与の処理
 	private int giveMineStack(Player player,int minestack,Material type){
-		if(minestack >= 64){
-			ItemStack itemstack = new ItemStack(type,64);
+		if(minestack >= type.getMaxStackSize()){ //スタックサイズが64でないアイテムにも対応
+			ItemStack itemstack = new ItemStack(type,type.getMaxStackSize());
 			if(!Util.isPlayerInventryFill(player)){
 				Util.addItem(player,itemstack);
 			}else{
 				Util.dropItem(player,itemstack);
 			}
-			minestack -= 64;
+			minestack -= type.getMaxStackSize();
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 		}else if(minestack == 0){
 			return minestack;
@@ -2478,14 +2478,14 @@ public class PlayerInventoryListener implements Listener {
 
 	//minestackの1stack付与 ItemStack版
 	private int giveMineStack(Player player,int minestack,ItemStack itemstack){
-		if(minestack >= 64){
-			itemstack.setAmount(64);
+		if(minestack >= itemstack.getMaxStackSize()){ //スタック数が64でないアイテムにも対応
+			itemstack.setAmount(itemstack.getMaxStackSize());
 			if(!Util.isPlayerInventryFill(player)){
 				Util.addItem(player,itemstack);
 			}else{
 				Util.dropItem(player,itemstack);
 			}
-			minestack -= 64;
+			minestack -= itemstack.getMaxStackSize();
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 		}else if(minestack == 0){
 			return minestack;
@@ -2518,14 +2518,14 @@ public class PlayerInventoryListener implements Listener {
 			meta.setDisplayName(Util.getGachaimoName());
 			meta.setLore(Util.getGachaimoLore());
 		}
-		if(minestack >= 64){
-			itemstack.setAmount(64);
+		if(minestack >= itemstack.getMaxStackSize()){ //スタック数が64でないアイテムにも対応
+			itemstack.setAmount(itemstack.getMaxStackSize());
 			if(!Util.isPlayerInventryFill(player)){
 				Util.addItem(player,itemstack);
 			}else{
 				Util.dropItem(player,itemstack);
 			}
-			minestack -= 64;
+			minestack -= itemstack.getMaxStackSize();
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 		}else if(minestack == 0){
 			return minestack;

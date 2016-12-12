@@ -20,7 +20,7 @@ commands:
       permission-message: You don't have <permission>
   level:
       description: This is a level command.
-      usage: /<command> <reset>
+      usage: /<command> <help>
       permission: multiseichiplugin.level
       permission-message: You don't have <permission>
   lastquit:

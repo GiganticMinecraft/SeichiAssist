@@ -50,6 +50,8 @@ public class gachaCommand implements TabExecutor{
 			sender.sendMessage(ChatColor.DARK_GRAY + "※ゲーム内でのみ実行できます");
 			sender.sendMessage(ChatColor.RED + "/gacha list");
 			sender.sendMessage("現在のガチャリストを表示");
+			sender.sendMessage(ChatColor.RED + "/gacha detaillist <番号>");
+			sender.sendMessage("現在のガチャリスト該当番号の詳細を表示(デバッグモード時のみ使用可能)");
 			sender.sendMessage(ChatColor.RED + "/gacha remove <番号>");
 			sender.sendMessage("リスト該当番号のガチャ景品を削除");
 			sender.sendMessage(ChatColor.RED + "/gacha setamount <番号> <個数>");
@@ -269,7 +271,27 @@ public class gachaCommand implements TabExecutor{
 			}
 			Gachalist(sender);
 			return true;
-		}else if(args[0].equalsIgnoreCase("clear")){
+		} else if(args[0].equalsIgnoreCase("detaillist")){
+			if(SeichiAssist.DEBUG){
+				if(args.length != 2){
+					sender.sendMessage("/gacha detailllst 2 のように、閲覧したいリスト番号を入力してください");
+					return true;
+				} else if(args.length == 1 || args.length > 2){
+					sender.sendMessage("/gacha detaillist <番号> で現在登録されている指定されたガチャアイテムの詳細を表示します");
+					return true;
+				}
+				if(SeichiAssist.gachadatalist.isEmpty()){
+					sender.sendMessage("ガチャが設定されていません");
+					return true;
+				}
+				int num = Util.toInt(args[1]);
+				num--;
+				detailGachalist(sender,num);
+			} else {
+				sender.sendMessage("このコマンドはデバッグモード時のみ使用可能です");
+			}
+			return true;
+		} else if(args[0].equalsIgnoreCase("clear")){
 			if(args.length != 1){
 				sender.sendMessage("/gacha clear で現在登録されているガチャアイテムを削除します");
 			}
@@ -343,6 +365,39 @@ public class gachaCommand implements TabExecutor{
 		}
 		sender.sendMessage(ChatColor.RED + "合計確率:" + totalprobability + "(" + (totalprobability*100) + "%)");
 		sender.sendMessage(ChatColor.RED + "合計確率は100%以内に収まるようにしてください");
+	}
+	private void detailGachalist(CommandSender sender, int num){
+		//int i = 1;
+		//double totalprobability = 0.0;
+		//sender.sendMessage(ChatColor.RED + "アイテム番号|アイテム名|アイテム数|出現確率");
+		//for (GachaData gachadata : SeichiAssist.gachadatalist) {
+		if(num!=-1 && num < SeichiAssist.gachadatalist.size()){
+			GachaData gachadata = SeichiAssist.gachadatalist.get(num);
+
+				sender.sendMessage("ID: " + (num+1));
+				sender.sendMessage("入手量: " + gachadata.amount);
+				sender.sendMessage("確率: " + gachadata.probability + "(" + (gachadata.probability*100) + "%)" );
+				sender.sendMessage("ItemStack: " + gachadata.itemstack.toString());
+				sender.sendMessage("ItemStackの量: " + gachadata.itemstack.getAmount());
+				sender.sendMessage("サブID(耐久値): " + gachadata.itemstack.getDurability());
+				sender.sendMessage("最大スタック量: " + gachadata.itemstack.getMaxStackSize());
+				sender.sendMessage("MaterialData: " + gachadata.itemstack.getData());
+				sender.sendMessage("エンチャント: " + gachadata.itemstack.getEnchantments());
+				//sender.sendMessage("エンチャント: " + gachadata.itemstack.getEnchantments().get(key));
+				sender.sendMessage("メタデータ: " + gachadata.itemstack.getItemMeta());
+				sender.sendMessage("表示名: " + gachadata.itemstack.getItemMeta().getDisplayName());
+				sender.sendMessage("エンチャント: " + gachadata.itemstack.getItemMeta().getEnchants());
+				sender.sendMessage("ItemFlag: " + gachadata.itemstack.getItemMeta().getItemFlags());
+				sender.sendMessage("説明: " + gachadata.itemstack.getItemMeta().getLore());
+				sender.sendMessage("Material: " + gachadata.itemstack.getType());
+				//totalprobability += gachadata.probability;
+				//i++;
+		} else {
+			sender.sendMessage("指定されたIDは存在しません");
+		}
+		//}
+		//sender.sendMessage(ChatColor.RED + "合計確率:" + totalprobability + "(" + (totalprobability*100) + "%)");
+		//sender.sendMessage(ChatColor.RED + "合計確率は100%以内に収まるようにしてください");
 	}
 	private void Gacharemove(CommandSender sender,int num) {
 		if(num < 1 || SeichiAssist.gachadatalist.size() < num){
