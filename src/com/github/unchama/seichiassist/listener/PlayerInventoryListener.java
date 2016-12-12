@@ -2348,7 +2348,7 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 		//インベントリサイズが36でない時終了
-		if(topinventory.getSize() != 36){
+		if(topinventory.getSize() != 54){
 			return;
 		}
 		Player player = (Player)he;
@@ -2370,6 +2370,34 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
+					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+					if(itemmeta.getDisplayName().contains("整地紳ランキング３ページ目へ")){
+						//開く音を再生
+						player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+						player.openInventory(MenuInventoryData.getRankingList3(player));
+						return;
+					}
+					else{
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getRankingList2(player));
+				return;
+					}
+			}
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				if(itemmeta.getDisplayName().contains("整地紳ランキング２ページ目へ")){
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getRankingList2(player));
+					return;
+				}
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getRankingList(player));
 				return;
 			}
 		}
