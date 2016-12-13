@@ -322,7 +322,6 @@ public class SeichiAssist extends JavaPlugin{
 		//リスト結合(通常+ガチャ品)
 		minestacklist = new ArrayList<MineStackObj>();
 
-
 		//mysqlからMineStack用ガチャデータ読み込み
 		if(!sql.loadMineStackGachaData()){
 			getLogger().info("MineStack用ガチャデータのロードに失敗しました");
@@ -338,6 +337,9 @@ public class SeichiAssist extends JavaPlugin{
 			minestacklist.addAll(minestacklistgacha);
 		}
 
+		if(!sql.connect1()){
+			getLogger().info("データベース初期処理にエラーが発生しました");
+		}
 
 
 

@@ -90,10 +90,12 @@ public class Sql{
 			return false;
 		}
 		*/
+		/*
 		if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
 			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
 			return false;
 		}
+		*/
 
 		if(!createGachaDataTable(SeichiAssist.GACHADATA_TABLENAME)){
 			plugin.getLogger().info("gachadataテーブル作成に失敗しました");
@@ -111,6 +113,14 @@ public class Sql{
 		}
 
 
+		return true;
+	}
+
+	public boolean connect1(){
+		if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
+			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
+			return false;
+		}
 		return true;
 	}
 
