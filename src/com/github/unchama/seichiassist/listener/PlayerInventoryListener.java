@@ -1693,6 +1693,7 @@ public class PlayerInventoryListener implements Listener {
 
 						if(SeichiAssist.minestacklist.get(i).getNameloreflag()==false){
 							playerdata.minestack.setNum(i, (giveMineStack(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability() ))) );
+							open_flag = (i+1)/45;
 						} else { //名前と説明文がある
 							//System.out.println("debug AA");
 							//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
@@ -1729,17 +1730,18 @@ public class PlayerInventoryListener implements Listener {
 								if(SeichiAssist.minestacklist.get(i).getGachatype()==-1){//ガチャアイテムにはない（がちゃりんご）
 									if(itemstack_name.equals(minestack_name)){ //表記はアイテム名だけなのでアイテム名で判定
 										playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability()),-1)));
+										open_flag = (i+1)/45;
 									}
 								} else { //ガチャアイテム(処理は同じでも念のためデバッグ用に分離)
 									if(SeichiAssist.minestacklist.get(i).getGachatype()>=0){
 										if(itemstack_name.equals(minestack_name)){ //表記はアイテム名だけなのでアイテム名で判定
 											playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability()),SeichiAssist.minestacklist.get(i).getGachatype())));
+											open_flag = (i+1)/45;
 										}
 									}
 								}
 							}
 						}
-						open_flag = (i+1)/45;
 					}
 				}
 			}
