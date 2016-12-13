@@ -17,6 +17,9 @@ public class MineStackGachaData {
 	public double probability;
 	//アイテム数
 	public int amount;
+
+	//解放レベル(本来のレベルではないことに注意)
+	public int level;
 	public MineStackGachaData(){
 		itemstack = null;
 		probability = 0.0;
@@ -35,7 +38,7 @@ public class MineStackGachaData {
 		this.probability = gachadata.probability;
 		this.amount = gachadata.amount;
 	}
-	
+
 	public boolean compare(ItemStack m,String name) {
 		List<String> mlore,lore;
 		lore = this.itemstack.getItemMeta().getLore();

@@ -70,6 +70,19 @@ public class MineStackUtil {
 			gachadata.itemstack = (inventory.getItem(0));
 			gachadata.amount = glt.get(i).amount;
 			gachadata.probability = glt.get(i).probability;
+			if(gachadata.probability>=0.1){
+				gachadata.level = 19;
+			} else if(gachadata.probability>=0.01){
+				gachadata.level = 12;
+			} else if(gachadata.probability>=0.001){
+				gachadata.level = 23;
+			} else if(gachadata.probability>=0.0001){
+				gachadata.level = 38;
+			} else if(gachadata.probability>=0.00001){
+				gachadata.level = 38;
+			} else {
+				gachadata.level = 38;
+			}
 			gl.add(gachadata);
 		}
 		return gl;

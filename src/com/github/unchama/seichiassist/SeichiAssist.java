@@ -250,9 +250,6 @@ public class SeichiAssist extends JavaPlugin{
 			//,new MineStackObj("ender_pearl","エンダーパール",1,Material.ENDER_PEARL,0,false,-1)
 			));
 
-	//ガチャ品追加テスト
-	private static final int[] gachalevelindex = new int[]{19,12,23,38,38,38};
-
 	public static List<MineStackObj> minestacklistgacha = null;
 	public static List<MineStackObj> minestacklist = null;
 
@@ -332,7 +329,7 @@ public class SeichiAssist extends JavaPlugin{
 			msgachadatalist.clear();
 			msgachadatalist = MineStackUtil.MineStackCreateGachaTest(); //ここは一度読み込んだらコメントアウトでOK
 			//ここまで
-			minestacklistgacha = creategachaminestacklist(gachalevelindex);
+			minestacklistgacha = creategachaminestacklist();
 			minestacklist.addAll(minestacklistbase);
 			minestacklist.addAll(minestacklistgacha);
 		}
@@ -478,32 +475,16 @@ public class SeichiAssist extends JavaPlugin{
 		}
 	}
 
-	private static List<MineStackObj> creategachaminestacklist(int[] levels){
+	private static List<MineStackObj> creategachaminestacklist(){
 		List<MineStackObj> minestacklist = new ArrayList<MineStackObj>();
 		for(int i=0; i<SeichiAssist.msgachadatalist.size(); i++){
 			MineStackGachaData g = SeichiAssist.msgachadatalist.get(i);
 			int levelsidx = 0;
 			//System.out.println("Debug A");
-			if(levels.length>=6){
-				//System.out.println("Debug B");
-				if(g.probability>=0.1){
-					levelsidx = 0;
-				} else if(g.probability>=0.01){
-					levelsidx = 1;
-				} else if(g.probability>=0.001){
-					levelsidx = 2;
-				} else if(g.probability>=0.0001){
-					levelsidx = 3;
-				} else if(g.probability>=0.00001){
-					levelsidx = 4;
-				} else {
-					levelsidx = 5;
-				}
 				if(!g.itemstack.getType().equals(Material.EXP_BOTTLE)){ //経験値瓶だけはすでにリストにあるので除外
-					minestacklist.add(new MineStackObj(g.obj_name,g.itemstack.getItemMeta().getDisplayName(),levels[levelsidx],g.itemstack.getType(),g.itemstack.getDurability(),true,i,g.itemstack.getItemMeta().getLore()));
+					minestacklist.add(new MineStackObj(g.obj_name,g.itemstack.getItemMeta().getDisplayName(),g.level,g.itemstack.getType(),g.itemstack.getDurability(),true,i,g.itemstack.getItemMeta().getLore()));
 					//System.out.println("Debug C");
 				}
-			}
 		}
 		return minestacklist;
 	}

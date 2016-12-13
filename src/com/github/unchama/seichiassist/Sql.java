@@ -448,6 +448,7 @@ public class Sql{
 		command =
 				"alter table " + db + "." + table +
 				" add column if not exists probability double default 0.0" +
+				",add column if not exists level int(11) default 0" +
 				",add column if not exists obj_name tinytext default null" +
 				",add column if not exists itemstack blob default null" +
 				"";
@@ -772,6 +773,7 @@ public class Sql{
 				Inventory inventory = BukkitSerialization.fromBase64(rs.getString("itemstack").toString());
 				gachadata.itemstack = (inventory.getItem(0));
 				gachadata.amount = rs.getInt("amount");
+				gachadata.level = rs.getInt("level");
 				gachadata.obj_name = rs.getString("obj_name");
 				gachadata.probability = rs.getDouble("probability");
 				gachadatalist.add(gachadata);
@@ -834,10 +836,11 @@ public class Sql{
 			Inventory inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1);
 			inventory.setItem(0,gachadata.itemstack);
 
-			command = "insert into " + db + "." + table + " (probability,amount,obj_name,itemstack)"
+			command = "insert into " + db + "." + table + " (probability,amount,level,obj_name,itemstack)"
 					+ " values"
 					+ "(" + Double.toString(gachadata.probability)
 					+ "," + Integer.toString(gachadata.amount)
+					+ "," + Integer.toString(gachadata.level)
 					+ ",'" + gachadata.obj_name.toString() + "'"
 					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
 					+ ")";
