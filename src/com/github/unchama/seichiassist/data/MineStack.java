@@ -89,7 +89,7 @@ public class MineStack {
 	*/
 
 	public MineStack(){
-		nums = new int[SeichiAssist.minestacksize];
+		nums = new int[SeichiAssist.minestacklist.size()];
 		/*
 		stone = 0;
 		dirt = 0;

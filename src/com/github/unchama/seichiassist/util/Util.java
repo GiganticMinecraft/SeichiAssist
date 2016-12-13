@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.util;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -416,7 +417,52 @@ public class Util {
 		return skull;
 	}
 
+	public static boolean ItemStackContainsOwnerName(ItemStack itemstack, String name) {
 
+		ItemMeta meta = itemstack.getItemMeta();
+		List<String> lore;
+		if(meta.hasLore()){
+			lore = meta.getLore();
+		}else{
+			lore = new ArrayList<String>();
+		}
+
+		for(int i=0; i<lore.size(); i++){
+			if(lore.get(i).indexOf("所有者：")!=-1){ //"所有者:がある"
+				int idx = lore.get(i).lastIndexOf("所有者：");
+					idx += 4; //「所有者：」の右端(名前の左端)までidxを移動
+					String temp = lore.get(i).substring(idx);
+					if(temp.equals(name)){
+						return true;
+					}
+			}
+		}
+		return false;
+	}
+
+	public static ItemStack ItemStackResetName(ItemStack itemstack) {
+
+		ItemStack itemstack_temp = new ItemStack(itemstack);
+		ItemMeta meta = itemstack_temp.getItemMeta();
+		List<String> lore;
+		if(meta != null){
+			if(meta.hasLore()){
+				lore = meta.getLore();
+
+				int i=0;
+				for(i=0; i<lore.size(); i++){
+					if(lore.get(i).indexOf("所有者：")!=-1){ //"所有者:がある"
+						break;
+					}
+				}
+				if(i!=lore.size()){ //所有者表記が無かった場合を除く
+					lore.remove(i);
+					meta.setLore(lore);
+				}
+			}
+		}
+		return itemstack_temp;
+	}
 
 
 }

@@ -7,46 +7,35 @@ import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
 
-public class GachaData {
+public class MineStackGachaData {
+	public String obj_name;
 	//アイテムデータ格納
 	public ItemStack itemstack;
 	//取得確率格納
 	public double probability;
 	//アイテム数
 	public int amount;
-	public GachaData(){
+	public MineStackGachaData(){
 		itemstack = null;
 		probability = 0.0;
 		amount = 0;
 	}
-	public GachaData(ItemStack _itemstack,double _probability,int _amount){
+	public MineStackGachaData(String _obj_name, ItemStack _itemstack,double _probability,int _amount){
+		obj_name = _obj_name;
 		itemstack = _itemstack.clone();
 		probability = _probability;
 		amount = _amount;
 	}
 
-	public GachaData(GachaData gachadata) {
+	public MineStackGachaData(MineStackGachaData gachadata) {
+		this.obj_name = gachadata.obj_name;
 		this.itemstack = gachadata.itemstack.clone();
 		this.probability = gachadata.probability;
 		this.amount = gachadata.amount;
 	}
-	public static GachaData runGacha() {
-		double sum = 1.0;
-		double rand = 0.0;
-
-		rand = Math.random();
-
-		for (GachaData gachadata : SeichiAssist.gachadatalist) {
-		    sum -= gachadata.probability;
-		    if (sum <= rand) {
-                return new GachaData(gachadata);
-            }
-		}
-		return new GachaData(Util.getGachaimo(),1.0,1);
-	}
+	
 	public boolean compare(ItemStack m,String name) {
 		List<String> mlore,lore;
 		lore = this.itemstack.getItemMeta().getLore();

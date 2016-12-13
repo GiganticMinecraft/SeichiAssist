@@ -1903,8 +1903,8 @@ public class MenuInventoryData {
 	public static Inventory getMineStackMenu(Player p, int page){
 
 		//現在の最大ページ数を取得(1ページ=0,2ページ=1,...)
-		int maxpage = (SeichiAssist.minestacksize + 1) / 45;
-		if((SeichiAssist.minestacksize + 1) % 45 == 0){
+		int maxpage = (SeichiAssist.minestacklist.size() + 1) / 45;
+		if((SeichiAssist.minestacklist.size() + 1) % 45 == 0){
 			maxpage--;
 		}
 
@@ -1981,7 +1981,7 @@ public class MenuInventoryData {
 		}
 		int max = 0;
 		if(page==maxpage){
-			max = (SeichiAssist.minestacksize+1)%45;
+			max = (SeichiAssist.minestacklist.size()+1)%45;
 			if(max == 0){
 				max = 45;
 			}
