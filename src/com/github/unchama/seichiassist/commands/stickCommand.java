@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -49,6 +50,7 @@ public class stickCommand implements TabExecutor {
 			itemstack.setAmount(1); //念のため追加
 			if(!Util.isPlayerInventryFill(player)){
 				Util.addItem(player,itemstack);
+				player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, (float)0.1, (float)1);
 			}else{
 				Util.dropItem(player,itemstack);
 			}
