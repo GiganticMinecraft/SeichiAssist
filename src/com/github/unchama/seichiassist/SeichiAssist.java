@@ -25,6 +25,7 @@ import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.lastquitCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
+import com.github.unchama.seichiassist.commands.stickCommand;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -349,6 +350,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("ef",new effectCommand(plugin));
 		commandlist.put("level",new levelCommand(plugin));
 		commandlist.put("lastquit",new lastquitCommand(plugin));
+		commandlist.put("stick",new stickCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
