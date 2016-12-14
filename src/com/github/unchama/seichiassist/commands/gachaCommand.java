@@ -48,6 +48,8 @@ public class gachaCommand implements TabExecutor{
 			sender.sendMessage("寄付者用プレミアムエフェクトポイント配布コマンドです(マルチ鯖対応済)");
 			sender.sendMessage(ChatColor.RED + "/gacha add <確率>");
 			sender.sendMessage("現在のメインハンドをガチャリストに追加。確率は1.0までで指定");
+			sender.sendMessage(ChatColor.RED + "/gacha addms2 <確率> <名前> <レベル>");
+			sender.sendMessage("現在のメインハンドをMineStack用ガチャリストに追加。確率は1.0までで指定");
 			sender.sendMessage(ChatColor.RED + "/gacha addms <名前> <レベル> <ID>");
 			sender.sendMessage("指定したガチャリストのIDを指定した名前とレベル(実際のレベルではないことに注意)でMineStack用ガチャリストに追加");
 			sender.sendMessage(ChatColor.DARK_GRAY + "※ゲーム内でのみ実行できます");
@@ -242,6 +244,27 @@ public class gachaCommand implements TabExecutor{
 			double probability = Util.toDouble(args[1]);
 			Gachaadd(player,probability);
 			return true;
+		}else if(args[0].equalsIgnoreCase("add")){
+			if(args.length != 4){
+				sender.sendMessage("/gacha add 0.05 gacha1 5  のように、追加したいアイテムの出現確率、名前、レベルを入力してください");
+				return true;
+			}
+			/*
+			 * コンソールからのコマンドは処理しない - ここから
+			 */
+			if (!(sender instanceof Player)) {
+				sender.sendMessage("このコマンドはゲーム内から実行してください");
+				return true;
+			}
+			Player player = (Player) sender;
+			/*
+			 * ここまで
+			 */
+
+			double probability = Util.toDouble(args[1]);
+			int level = Util.toInt(args[3]);
+			Gachaaddms2(player,probability, args[2], level);
+			return true;
 		}else if(args[0].equalsIgnoreCase("addms")){
 			if(args.length != 3){
 				sender.sendMessage("/gacha addms <名前> <ID>  のように、追加したいアイテムの名前とIDを入力してください");
@@ -390,6 +413,20 @@ public class gachaCommand implements TabExecutor{
 			sender.sendMessage("/gacha savemsでmysqlに保存してください");
 		}
 		sender.sendMessage("正しくないIDです");
+	}
+
+	private void Gachaaddms2(Player player,double probability, String name, int level) {
+		MineStackGachaData gachadata = new MineStackGachaData();
+		PlayerInventory inventory = player.getInventory();
+		gachadata.itemstack = inventory.getItemInMainHand();
+		gachadata.amount = inventory.getItemInMainHand().getAmount();
+		gachadata.probability = probability;
+		gachadata.obj_name = name;
+		gachadata.level = level;
+
+		SeichiAssist.msgachadatalist.add(gachadata);
+		player.sendMessage(gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + gachadata.amount + "個を確率" + gachadata.probability + "としてMineStack用ガチャリストに追加しました");
+		player.sendMessage("/gacha savemsでmysqlに保存してください");
 	}
 
 	private void Gachalist(CommandSender sender){
