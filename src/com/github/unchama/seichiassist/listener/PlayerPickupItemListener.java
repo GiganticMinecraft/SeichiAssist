@@ -154,14 +154,14 @@ public class PlayerPickupItemListener implements Listener {
 							MineStackGachaData g = SeichiAssist.msgachadatalist.get(SeichiAssist.minestacklist.get(i).getGachatype());
 							String name = playerdata.name; //プレイヤーのネームを見る
 							//player.sendMessage("Debug A");
-							if(!g.itemstack.getType().equals(Material.PAPER)){ //カタログギフト券を除く
+							if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
 								if(!Util.ItemStackContainsOwnerName(itemstack, name)){
 									//所有者の名前が無ければreturn
 									//player.sendMessage("Debug B");
 									return;
 								}
 							}
-							ItemStack itemstack_temp = Util.ItemStackResetName(itemstack);//名前を消しておく
+							//ItemStack itemstack_temp = Util.ItemStackResetName(itemstack);//名前を消しておく
 
 							//GachaData.
 							if(!g.compareonly(itemstack)){ //この1行で対応可能？
