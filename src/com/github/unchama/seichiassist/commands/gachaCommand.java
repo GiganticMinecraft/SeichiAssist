@@ -244,9 +244,9 @@ public class gachaCommand implements TabExecutor{
 			double probability = Util.toDouble(args[1]);
 			Gachaadd(player,probability);
 			return true;
-		}else if(args[0].equalsIgnoreCase("add")){
+		}else if(args[0].equalsIgnoreCase("addms2")){
 			if(args.length != 4){
-				sender.sendMessage("/gacha add 0.05 gacha1 5  のように、追加したいアイテムの出現確率、名前、レベルを入力してください");
+				sender.sendMessage("/gacha addms2 0.05 gacha1 5  のように、追加したいアイテムの出現確率、名前、レベルを入力してください");
 				return true;
 			}
 			/*
