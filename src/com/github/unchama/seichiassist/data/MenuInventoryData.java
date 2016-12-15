@@ -24,6 +24,7 @@ import org.bukkit.potion.PotionType;
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.MineStackObj;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -1990,7 +1991,12 @@ public class MenuInventoryData {
 		}
 		for(int i=start; i<max; i++){ //minestackbuttonのインベントリの位置
 			  int ii = i + page*45 - 1; //minestacklistのindex
-			setMineStackButton(inventory, playerdata.minestack.getNum(ii), new ItemStack(SeichiAssist.minestacklist.get(ii).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(ii).getDurability()),  SeichiAssist.config.getMineStacklevel(SeichiAssist.minestacklist.get(ii).getLevel()), i, SeichiAssist.minestacklist.get(ii).getJapaneseName());
+			MineStackObj msobj = SeichiAssist.minestacklist.get(ii);
+			if(msobj.getItemStack()==null){
+				setMineStackButton(inventory, playerdata.minestack.getNum(ii), new ItemStack(msobj.getMaterial(), 1, (short)msobj.getDurability()),  SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
+			} else {
+				setMineStackButton(inventory, playerdata.minestack.getNum(ii), msobj.getItemStack(), SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
+			}
 		}
 
 		/*

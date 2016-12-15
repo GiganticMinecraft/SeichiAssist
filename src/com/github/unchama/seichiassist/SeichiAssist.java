@@ -43,7 +43,6 @@ import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
-import com.github.unchama.seichiassist.util.MineStackUtil;
 import com.github.unchama.seichiassist.util.Util;
 
 
@@ -326,10 +325,6 @@ public class SeichiAssist extends JavaPlugin{
 			minestacklist.addAll(minestacklistbase);
 		} else { //MineStack用ガチャデータを読み込んだ
 			getLogger().info("MineStack用ガチャデータのロードに成功しました");
-			//ここは消してください(ここから)
-			msgachadatalist.clear();
-			msgachadatalist = MineStackUtil.MineStackCreateGachaTest(); //ここは一度読み込んだらコメントアウトでOK
-			//ここまで
 			minestacklistgacha = creategachaminestacklist();
 			minestacklist.addAll(minestacklistbase);
 			minestacklist.addAll(minestacklistgacha);
@@ -437,10 +432,12 @@ public class SeichiAssist extends JavaPlugin{
 		}
 		*/
 
-		//ここをコメントアウト
+		//マルチサーバー対応の為コメントアウト
+		/*
 		if(!sql.saveMineStackGachaData()){
 			getLogger().info("MineStack用ガチャデータ保存に失敗しました");
 		}
+		*/
 
 		if(!sql.disconnect()){
 			getLogger().info("データベース切断に失敗しました");
@@ -484,8 +481,13 @@ public class SeichiAssist extends JavaPlugin{
 			int levelsidx = 0;
 			//System.out.println("Debug A");
 				if(!g.itemstack.getType().equals(Material.EXP_BOTTLE)){ //経験値瓶だけはすでにリストにあるので除外
+					/*
 					minestacklist.add(new MineStackObj(g.obj_name,g.itemstack.getItemMeta().getDisplayName(),g.level,g.itemstack.getType(),g.itemstack.getDurability(),true,i,g.itemstack.getItemMeta().getLore()));
+					*/
+					minestacklist.add(new MineStackObj(g.obj_name,g.level,g.itemstack,true,i));
 					//System.out.println("Debug C");
+
+
 				}
 		}
 		return minestacklist;

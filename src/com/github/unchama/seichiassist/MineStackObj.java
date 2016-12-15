@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 public class MineStackObj {
 
@@ -14,6 +15,7 @@ public class MineStackObj {
 	private boolean nameloreflag;
 	private int gachatype;
 	private List<String> lore;
+	private ItemStack itemstack;
 
 	public MineStackObj(String objname, String japanesename,
 			int level, Material material, int durability,
@@ -26,6 +28,7 @@ public class MineStackObj {
 		this.nameloreflag = nameloreflag;
 		this.gachatype = gachatype;
 		this.lore = null;
+		this.itemstack = null;
 	}
 
 	public MineStackObj(String objname, String japanesename,
@@ -39,6 +42,19 @@ public class MineStackObj {
 		this.nameloreflag = nameloreflag;
 		this.gachatype = gachatype;
 		this.lore = lore;
+		this.itemstack = null;
+	}
+
+	public MineStackObj(String objname, int level, ItemStack itemstack, boolean nameloreflag, int gachatype){
+		this.objname = objname;
+		this.japanesename = itemstack.getItemMeta().getDisplayName();
+		this.level = level;
+		this.material = itemstack.getType();
+		this.durability = itemstack.getDurability();
+		this.nameloreflag = nameloreflag;
+		this.gachatype = gachatype;
+		this.lore = itemstack.getItemMeta().getLore();
+		this.itemstack = itemstack.clone();
 	}
 
 	public String getMineStackObjName(){
@@ -67,6 +83,9 @@ public class MineStackObj {
 		return lore;
 	}
 
+	public ItemStack getItemStack(){
+		return itemstack;
+	}
 
 
 
