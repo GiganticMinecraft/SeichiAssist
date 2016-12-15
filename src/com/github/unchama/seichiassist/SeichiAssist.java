@@ -25,7 +25,9 @@ import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.lastquitCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
+import com.github.unchama.seichiassist.commands.stickCommand;
 import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.listener.EntityListener;
@@ -41,6 +43,7 @@ import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
+import com.github.unchama.seichiassist.util.MineStackUtil;
 import com.github.unchama.seichiassist.util.Util;
 
 
@@ -55,6 +58,9 @@ public class SeichiAssist extends JavaPlugin{
 	public static final String PLAYERDATA_TABLENAME = "playerdata";
 	public static final String GACHADATA_TABLENAME = "gachadata";
 	public static final String DONATEDATA_TABLENAME = "donatedata";
+
+	//MineStack用ガチャデータを作成する
+	public static final String MINESTACK_GACHADATA_TABLENAME = "msgachadata";
 
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
@@ -71,6 +77,9 @@ public class SeichiAssist extends JavaPlugin{
 
 	//Gachadataに依存するデータリスト
 	public static final List<GachaData> gachadatalist = new ArrayList<GachaData>();
+
+	//(minestackに格納する)Gachadataに依存するデータリスト
+	public static List<MineStackGachaData> msgachadatalist = new ArrayList<MineStackGachaData>();
 
 	//Playerdataに依存するデータリスト
 	public static final HashMap<UUID,PlayerData> playermap = new HashMap<UUID,PlayerData>();
@@ -159,7 +168,7 @@ public class SeichiAssist extends JavaPlugin{
 			82165000,83315000,84465000,85615000,87115000//200
 			));
 
-	public static final List<MineStackObj> minestacklist = new ArrayList<MineStackObj>(Arrays.asList(
+	public static final List<MineStackObj> minestacklistbase = new ArrayList<MineStackObj>(Arrays.asList(
 
 			new MineStackObj("dirt","土",1,Material.DIRT,0,false,-1)
 			,new MineStackObj("grass","草ブロック",1,Material.GRASS,0,false,-1)
@@ -200,7 +209,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackObj("diamond_ore","ダイヤモンド鉱石",17,Material.DIAMOND_ORE,0,false,-1)
 			,new MineStackObj("emerald","エメラルド",18,Material.EMERALD,0,false,-1)
 			,new MineStackObj("emerald_ore","エメラルド鉱石",18,Material.EMERALD_ORE,0,false,-1)
-			,new MineStackObj("gachaimo","がちゃりんご",19,Material.GOLDEN_APPLE,0,true,-1)
+			,new MineStackObj("gachaimo",Util.getGachaimoName(),19,Material.GOLDEN_APPLE,0,true,-1,Util.getGachaimoLore())
 			,new MineStackObj("exp_bottle","エンチャントの瓶",19,Material.EXP_BOTTLE,0,false,-1)
 			,new MineStackObj("red_sand","赤い砂",20,Material.SAND,1,false,-1)
 			,new MineStackObj("red_sandstone","赤い砂岩",20,Material.RED_SANDSTONE,0,false,-1)
@@ -238,9 +247,14 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackObj("sapling3","ジャングルの苗木",34,Material.SAPLING,3,false,-1)
 			,new MineStackObj("sapling4","アカシアの苗木",34,Material.SAPLING,4,false,-1)
 			,new MineStackObj("sapling5","ダークオークの苗木",34,Material.SAPLING,5,false,-1)
+
+			//,new MineStackObj("ender_pearl","エンダーパール",1,Material.ENDER_PEARL,0,false,-1)
 			));
 
-	public static final int minestacksize=minestacklist.size();
+	public static List<MineStackObj> minestacklistgacha = null;
+	public static List<MineStackObj> minestacklist = null;
+
+	//public static final int minestacksize=minestacklist.size();
 	public static final boolean minestack_sql_enable=true; //ここは必ずtrue(falseのときはSQL初期設定+SQL入出力しない[デバッグ用])
 
 
@@ -299,7 +313,35 @@ public class SeichiAssist extends JavaPlugin{
 		//mysqlからガチャデータ読み込み
 		if(!sql.loadGachaData()){
 			getLogger().info("ガチャデータのロードに失敗しました");
+		} else { //ガチャデータを読み込んだ
+
 		}
+
+		//リスト結合(通常+ガチャ品)
+		minestacklist = new ArrayList<MineStackObj>();
+
+		//mysqlからMineStack用ガチャデータ読み込み
+		if(!sql.loadMineStackGachaData()){
+			getLogger().info("MineStack用ガチャデータのロードに失敗しました");
+			minestacklist.addAll(minestacklistbase);
+		} else { //MineStack用ガチャデータを読み込んだ
+			getLogger().info("MineStack用ガチャデータのロードに成功しました");
+			//ここは消してください(ここから)
+			msgachadatalist.clear();
+			msgachadatalist = MineStackUtil.MineStackCreateGachaTest(); //ここは一度読み込んだらコメントアウトでOK
+			//ここまで
+			minestacklistgacha = creategachaminestacklist();
+			minestacklist.addAll(minestacklistbase);
+			minestacklist.addAll(minestacklistgacha);
+		}
+
+		if(!sql.connect1()){
+			getLogger().info("データベース初期処理にエラーが発生しました");
+		}
+
+
+
+		//
 
 		//コマンドの登録
 		commandlist = new HashMap<String, TabExecutor>();
@@ -308,6 +350,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("ef",new effectCommand(plugin));
 		commandlist.put("level",new levelCommand(plugin));
 		commandlist.put("lastquit",new lastquitCommand(plugin));
+		commandlist.put("stick",new stickCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -394,6 +437,11 @@ public class SeichiAssist extends JavaPlugin{
 		}
 		*/
 
+		//ここをコメントアウト
+		if(!sql.saveMineStackGachaData()){
+			getLogger().info("MineStack用ガチャデータ保存に失敗しました");
+		}
+
 		if(!sql.disconnect()){
 			getLogger().info("データベース切断に失敗しました");
 		}
@@ -427,6 +475,20 @@ public class SeichiAssist extends JavaPlugin{
 		for(BukkitTask task:tasklist){
 			task.cancel();
 		}
+	}
+
+	private static List<MineStackObj> creategachaminestacklist(){
+		List<MineStackObj> minestacklist = new ArrayList<MineStackObj>();
+		for(int i=0; i<SeichiAssist.msgachadatalist.size(); i++){
+			MineStackGachaData g = SeichiAssist.msgachadatalist.get(i);
+			int levelsidx = 0;
+			//System.out.println("Debug A");
+				if(!g.itemstack.getType().equals(Material.EXP_BOTTLE)){ //経験値瓶だけはすでにリストにあるので除外
+					minestacklist.add(new MineStackObj(g.obj_name,g.itemstack.getItemMeta().getDisplayName(),g.level,g.itemstack.getType(),g.itemstack.getDurability(),true,i,g.itemstack.getItemMeta().getLore()));
+					//System.out.println("Debug C");
+				}
+		}
+		return minestacklist;
 	}
 
 

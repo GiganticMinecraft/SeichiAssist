@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
@@ -89,21 +90,37 @@ public class Sql{
 			return false;
 		}
 		*/
+		/*
 		if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
 			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
 			return false;
 		}
+		*/
 
 		if(!createGachaDataTable(SeichiAssist.GACHADATA_TABLENAME)){
 			plugin.getLogger().info("gachadataテーブル作成に失敗しました");
 			return false;
 		}
+
+		if(!createMineStackGachaDataTable(SeichiAssist.MINESTACK_GACHADATA_TABLENAME)){
+			plugin.getLogger().info("MineStack用gachadataテーブル作成に失敗しました");
+			return false;
+		}
+
 		if(!createDonateDataTable(SeichiAssist.DONATEDATA_TABLENAME)){
 			plugin.getLogger().info("donatedataテーブル作成に失敗しました");
 			return false;
 		}
 
 
+		return true;
+	}
+
+	public boolean connect1(){
+		if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
+			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
+			return false;
+		}
 		return true;
 	}
 
@@ -392,6 +409,7 @@ public class Sql{
 		return putCommand(command);
 	}
 
+	//ガチャデータテーブル作成
 	public boolean createGachaDataTable(String table){
 		if(table==null){
 			return false;
@@ -412,6 +430,31 @@ public class Sql{
 				"";
 		return putCommand(command);
 	}
+
+	//MineStack用ガチャデータテーブル作成
+	public boolean createMineStackGachaDataTable(String table){
+		if(table==null){
+			return false;
+		}
+		//テーブルが存在しないときテーブルを新規作成
+		String command =
+				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
+				"(id int auto_increment unique,"
+				+ "amount int(11))";
+		if(!putCommand(command)){
+			return false;
+		}
+		//必要なcolumnを随時追加
+		command =
+				"alter table " + db + "." + table +
+				" add column if not exists probability double default 0.0" +
+				",add column if not exists level int(11) default 0" +
+				",add column if not exists obj_name tinytext default null" +
+				",add column if not exists itemstack blob default null" +
+				"";
+		return putCommand(command);
+	}
+
 	public boolean createDonateDataTable(String table){
 		if(table==null){
 			return false;
@@ -717,6 +760,37 @@ public class Sql{
 
 	}
 
+	//MineStack用ガチャデータロード
+	public boolean loadMineStackGachaData(){
+		String table = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
+		List<MineStackGachaData> gachadatalist = new ArrayList<MineStackGachaData>();
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select * from " + db + "." + table;
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				MineStackGachaData gachadata = new MineStackGachaData();
+				Inventory inventory = BukkitSerialization.fromBase64(rs.getString("itemstack").toString());
+				gachadata.itemstack = (inventory.getItem(0));
+				gachadata.amount = rs.getInt("amount");
+				gachadata.level = rs.getInt("level");
+				gachadata.obj_name = rs.getString("obj_name");
+				gachadata.probability = rs.getDouble("probability");
+				gachadatalist.add(gachadata);
+				  }
+			rs.close();
+		} catch (SQLException | IOException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+ 		SeichiAssist.msgachadatalist.clear();
+ 		SeichiAssist.msgachadatalist.addAll(gachadatalist);
+ 		return true;
+
+	}
+
 	//ガチャデータセーブ
 	public boolean saveGachaData(){
 		String table = SeichiAssist.GACHADATA_TABLENAME;
@@ -737,6 +811,37 @@ public class Sql{
 					+ " values"
 					+ "(" + Double.toString(gachadata.probability)
 					+ "," + Integer.toString(gachadata.amount)
+					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
+					+ ")";
+			if(!putCommand(command)){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	//MineStack用ガチャデータセーブ
+	public boolean saveMineStackGachaData(){
+		String table = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
+
+		//まずmysqlのガチャテーブルを初期化(中身全削除)
+		String command = "truncate table " + db + "." + table;
+		if(!putCommand(command)){
+			return false;
+		}
+
+		//次に現在のgachadatalistでmysqlを更新
+		for(MineStackGachaData gachadata : SeichiAssist.msgachadatalist){
+			//Inventory作ってガチャのitemstackに突っ込む
+			Inventory inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1);
+			inventory.setItem(0,gachadata.itemstack);
+
+			command = "insert into " + db + "." + table + " (probability,amount,level,obj_name,itemstack)"
+					+ " values"
+					+ "(" + Double.toString(gachadata.probability)
+					+ "," + Integer.toString(gachadata.amount)
+					+ "," + Integer.toString(gachadata.level)
+					+ ",'" + gachadata.obj_name.toString() + "'"
 					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
 					+ ")";
 			if(!putCommand(command)){
@@ -787,6 +892,47 @@ public class Sql{
 				+ " set level = 1";
 		return putCommand(command);
 	}
+
+	//プレイヤーのレベルと整地量をセット
+	public boolean resetPlayerLevelandBreaknum(UUID uuid){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = uuid.toString();
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		int level = playerdata.level;
+		int totalbreaknum = playerdata.totalbreaknum;
+
+		String command = "update " + db + "." + table
+				+ " set"
+
+				+ " level = " + Integer.toString(level)
+				+ ",totalbreaknum = " + Integer.toString(totalbreaknum);
+
+		//最後の処理
+		command = command + " where uuid like '" + struuid + "'";
+
+		return putCommand(command);
+	}
+
+	//プレイヤーのレベルと整地量をセット(プレイヤーデータが無い場合)
+	public boolean resetPlayerLevelandBreaknum(UUID uuid, int level){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = uuid.toString();
+		//PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		int totalbreaknum = SeichiAssist.levellist.get(level-1);
+
+		String command = "update " + db + "." + table
+				+ " set"
+
+				+ " level = " + Integer.toString(level)
+				+ ",totalbreaknum = " + Integer.toString(totalbreaknum);
+
+		//最後の処理
+		command = command + " where uuid like '" + struuid + "'";
+
+		return putCommand(command);
+	}
+
+
 
 	//全員に詫びガチャの配布
 	public boolean addAllPlayerBug(int amount){

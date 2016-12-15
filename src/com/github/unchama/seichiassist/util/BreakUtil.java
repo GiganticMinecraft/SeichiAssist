@@ -26,6 +26,7 @@ import org.bukkit.material.Dye;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class BreakUtil {
@@ -212,6 +213,30 @@ public class BreakUtil {
 							break;
 						} else {
 							//ガチャ品
+							MineStackGachaData g = SeichiAssist.msgachadatalist.get(SeichiAssist.minestacklist.get(i).getGachatype());
+							String name = playerdata.name; //プレイヤーのネームを見る
+							if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
+								if(!Util.ItemStackContainsOwnerName(itemstack, name)){
+									//所有者の名前が無ければreturn
+									return false;
+								}
+							}
+							//ItemStack itemstack_temp = Util.ItemStackResetName(itemstack);//名前を消しておく
+
+							//GachaData.
+							if(!g.compareonly(itemstack)){ //この1行で対応可能？
+								//gachadata.itemstack.isSimilar(itemstack)でスタックサイズ以外が一致しているか判定可能
+								//continue; //アイテムの中身が違う
+							} else { //中身が同じ場合のみここに入る
+								if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+									//レベルを満たしていない
+									return false;
+								} else {
+									playerdata.minestack.addNum(i, amount);
+									break;
+								}
+							}
+
 						}
 				}
 			}

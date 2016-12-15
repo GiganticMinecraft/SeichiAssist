@@ -1903,8 +1903,8 @@ public class MenuInventoryData {
 	public static Inventory getMineStackMenu(Player p, int page){
 
 		//現在の最大ページ数を取得(1ページ=0,2ページ=1,...)
-		int maxpage = (SeichiAssist.minestacksize + 1) / 45;
-		if((SeichiAssist.minestacksize + 1) % 45 == 0){
+		int maxpage = (SeichiAssist.minestacklist.size() + 1) / 45;
+		if((SeichiAssist.minestacklist.size() + 1) % 45 == 0){
 			maxpage--;
 		}
 
@@ -1981,7 +1981,7 @@ public class MenuInventoryData {
 		}
 		int max = 0;
 		if(page==maxpage){
-			max = (SeichiAssist.minestacksize+1)%45;
+			max = (SeichiAssist.minestacklist.size()+1)%45;
 			if(max == 0){
 				max = 45;
 			}
@@ -2613,8 +2613,8 @@ public class MenuInventoryData {
 
 
 
-		// 整地紳ランキング2ページ目を開く
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地紳ランキング２ページ目へ");
+		// 整地神ランキング2ページ目を開く
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング２ページ目へ");
 		lore.clear();
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
@@ -2677,8 +2677,8 @@ public class MenuInventoryData {
 
 
 
-		// 整地紳ランキング1ページ目を開く;
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地紳ランキング１ページ目へ");
+		// 整地神ランキング1ページ目を開く;
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング１ページ目へ");
 		lore.clear();
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
@@ -2686,8 +2686,8 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(45,itemstack);
 
-		// 整地紳ランキング３ページ目を開く
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地紳ランキング３ページ目へ");
+		// 整地神ランキング３ページ目を開く
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング３ページ目へ");
 		lore.clear();
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
@@ -2741,8 +2741,8 @@ public class MenuInventoryData {
 
 
 
-		// 整地紳ランキング２ページ目を開く;
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地紳ランキング２ページ目へ");
+		// 整地神ランキング２ページ目を開く;
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング２ページ目へ");
 		lore.clear();
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
@@ -2750,8 +2750,8 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(45,itemstack);
 
-			/* 整地紳ランキング4ページ目を開く
-			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地紳ランキング３ページ目へ");
+			/* 整地神ランキング4ページ目を開く
+			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング３ページ目へ");
 			lore.clear();
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 					);

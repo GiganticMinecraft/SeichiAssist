@@ -20,11 +20,16 @@ commands:
       permission-message: You don't have <permission>
   level:
       description: This is a level command.
-      usage: /<command> <reset>
+      usage: /<command> <help>
       permission: multiseichiplugin.level
       permission-message: You don't have <permission>
   lastquit:
       description: This is a lastquit command.
       usage: /<command> <playername>
       permission: multiseichiplugin.lastquit
+      permission-message: You don't have <permission>
+  stick:
+      description: This is a stick command.
+      usage: /<command>
+      permission: multiseichiplugin.stick
       permission-message: You don't have <permission>

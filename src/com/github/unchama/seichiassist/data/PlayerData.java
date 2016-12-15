@@ -229,6 +229,18 @@ public class PlayerData {
 	public void setLevel(int _level) {
 		level = _level;
 	}
+	
+	//プレイヤーのレベルからレベルと総整地量を指定された値に設定
+	/**
+	 * @param _level
+	 * レベル
+	 * 
+	 * ※レベルと総整地量を変更します(取扱注意)
+	 */
+	public void setLevelandTotalbreaknum(int _level) {
+		level = _level;
+		totalbreaknum = SeichiAssist.levellist.get(_level-1);
+	}
 
 
 	//表示される名前に整地レベルを追加
