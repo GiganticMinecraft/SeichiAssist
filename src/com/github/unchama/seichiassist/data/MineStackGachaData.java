@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.block.Banner;
+import org.bukkit.block.banner.Pattern;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.github.unchama.seichiassist.util.Util;
@@ -66,6 +70,23 @@ public class MineStackGachaData {
 		lore = this.itemstack.getItemMeta().getLore();
 		mlore = m.getItemMeta().getLore();
 		if(mlore.containsAll(lore)&&this.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
+			//この時点で名前と内容が一致
+			//盾、バナー用の模様判定
+			if( ( m.getType().equals(Material.SHIELD) || (m.getType().equals(Material.BANNER)) ) && this.itemstack.getType().equals(m.getType())){
+				BlockStateMeta bs0 = (BlockStateMeta) m.getItemMeta();
+				Banner b0 = (Banner) bs0.getBlockState();
+				List<Pattern> p0 = b0.getPatterns();
+
+				BlockStateMeta bs1 = (BlockStateMeta) this.itemstack.getItemMeta();
+				Banner b1 = (Banner) bs1.getBlockState();
+				List<Pattern> p1 = b1.getPatterns();
+
+				if(p0.containsAll(p1)){
+					return true;
+				} else {
+					return false;
+				}
+			}
 			return true;
 		}
 		return false;
