@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.listener;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,28 +29,16 @@ public class PlayerQuitListener implements Listener {
 		PlayerData playerdata = playermap.get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[Quit処理]でエラー発生");
-			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			Bukkit.getLogger().warning(player.getName() + " -> PlayerData not found.");
+			Bukkit.getLogger().warning("PlayerQuitListener.onplayerQuitEvent");
 			return;
 		}
 		//quit時とondisable時、プレイヤーデータを最新の状態に更新
 		playerdata.updateonQuit(player);
 		//タスクをすべて終了する
 		playerdata.activeskilldata.RemoveAllTask();
-
-		//mysqlに送信
-		if(!sql.savePlayerData(playerdata)){
-			plugin.getLogger().warning(playerdata.name + "のデータ保存に失敗しました");
-		}else{
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + player.getName() + "のプレイヤーデータ保存完了");
-		}
-		//ログインフラグ折る
-		if(!sql.logoutPlayerData(playerdata)){
-			plugin.getLogger().warning(playerdata.name + "のloginflag->false化に失敗しました");
-		}else{
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + player.getName() + "のloginflag回収完了");
-		}
+		//saveplayerdata
+		sql.saveQuitPlayerData(playerdata);
 
 		//不要なplayerdataを削除
 		playermap.remove(uuid);

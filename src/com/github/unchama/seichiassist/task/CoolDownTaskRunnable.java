@@ -17,18 +17,22 @@ public class CoolDownTaskRunnable  extends BukkitRunnable{
 	PlayerData playerdata;
 	Boolean voteflag;
 	boolean soundflag;
+	boolean gachaflag;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
-	public CoolDownTaskRunnable(Player player,boolean voteflag,boolean soundflag) {
+	public CoolDownTaskRunnable(Player player,boolean voteflag,boolean soundflag,boolean gachaflag) {
 		this.player = player;
 		this.voteflag = voteflag;
 		this.soundflag = soundflag;
+		this.gachaflag = gachaflag;
 		//UUIDを取得
 		uuid = player.getUniqueId();
 		//playerdataを取得
 		playerdata = playermap.get(uuid);
 		if(voteflag){
 			playerdata.votecooldownflag = false;
+		}else if(gachaflag){
+			playerdata.gachacooldownflag = false;
 		}else{
 			playerdata.activeskilldata.skillcanbreakflag = false;
 		}
@@ -38,6 +42,8 @@ public class CoolDownTaskRunnable  extends BukkitRunnable{
 	public void run() {
 		if(voteflag){
 			playerdata.votecooldownflag = true;
+		}else if(gachaflag){
+			playerdata.gachacooldownflag = true;
 		}else{
 			playerdata.activeskilldata.skillcanbreakflag = true;
 			if(soundflag){

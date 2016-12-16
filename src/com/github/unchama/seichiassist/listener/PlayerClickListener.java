@@ -51,11 +51,8 @@ public class PlayerClickListener implements Listener {
 		//プレイヤーデータを取得
 		PlayerData playerdata = playermap.get(uuid);
 
-		//念のためエラー分岐
+		//playerdataがない場合はreturn
 		if(playerdata == null){
-			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[blockbreaklistener処理]でエラー発生");
-			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		if(equipmentslot==null){
@@ -78,6 +75,10 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
+			return;
+		}
 
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
@@ -98,9 +99,9 @@ public class PlayerClickListener implements Listener {
 			        //クールダウン処理
 			        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
 			        if(cooldown > 5){
-			        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+			        	new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
 			        }else{
-			        	new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,cooldown);
+			        	new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
 			        }
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){
@@ -135,7 +136,9 @@ public class PlayerClickListener implements Listener {
 			        //クールダウン処理
 			        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
 			        if(cooldown > 5){
-			        	new CoolDownTaskRunnable(player,false,true).runTaskLater(plugin,cooldown);
+			        	new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+			        }else{
+			        	new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
 			        }
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){
@@ -198,11 +201,8 @@ public class PlayerClickListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータを取得
 		PlayerData playerdata = playermap.get(uuid);
-		//念のためエラー分岐
+		//playerdataがない場合はreturn
 		if(playerdata == null){
-			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[ガチャを回す処理]でエラー発生");
-			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 
@@ -227,6 +227,15 @@ public class PlayerClickListener implements Listener {
 		event.setCancelled(true);
 
 		//以下サバイバル時のガチャ券の処理↓
+
+		//連打防止クールダウン処理
+		if(!playerdata.gachacooldownflag){
+			return;
+		}else{
+	        //連打による負荷防止の為クールダウン処理
+			new CoolDownTaskRunnable(player,false,false,true).runTaskLater(plugin,4);
+		}
+
 		//オフハンドから実行された時処理を終了
 		if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
 			return;
@@ -241,7 +250,6 @@ public class PlayerClickListener implements Listener {
 			player.sendMessage("ガチャが設定されていません");
 			return;
 		}
-		new CoolDownTaskRunnable(player,false,false).runTaskLater(plugin,5);
 
 		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
 			int count = 1;
@@ -277,7 +285,7 @@ public class PlayerClickListener implements Listener {
 
 				//確率に応じてメッセージを送信
 				if(present.probability < 0.001){
-					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 2);
+					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH,(float)0.5, 2);
 					player.sendMessage(ChatColor.RED + "おめでとう！！！！！Gigantic☆大当たり！" + str);
 					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！\n" + ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
 				}else if(present.probability < 0.01){
@@ -317,13 +325,17 @@ public class PlayerClickListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
-		//念のためエラー分岐
+		//playerdataがない場合はreturn
 		if(playerdata == null){
-			//player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			//plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[スキルスニークトグル処理]でエラー発生");
-			//plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
+
+
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
+			return;
+		}
+
 		//アクティブスキルを発動できるレベルに達していない場合処理終了
 		if( playerdata.level < SeichiAssist.config.getDualBreaklevel()){
 			return;
@@ -513,9 +525,9 @@ public class PlayerClickListener implements Listener {
 			PlayerData playerdata = playermap.get(uuid);
 			//念のためエラー分岐
 			if(playerdata == null){
-				player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[インベントリから四次元ポケットOPEN処理]でエラー発生");
-				plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+				Util.sendPlayerDataNullMessage(player);
+				plugin.getLogger().warning(player.getName() + " -> PlayerData not found.");
+				plugin.getLogger().warning("PlayerClickListener.onPlayerOpenInventorySkillEvent");
 				return;
 			}
 			//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了

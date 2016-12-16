@@ -7,30 +7,39 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
+import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataUpdateOnJoinRunnable;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
-import com.mysql.jdbc.CommunicationsException;
 
 //MySQL操作関数
 public class Sql{
-	private final String url, db, id, pw;
+	private final String url;
+	private final String db;
+	private final String id;
+	private final String pw;
 	public static Connection con = null;
-	private static Statement stmt = null;
+	private Statement stmt = null;
 
 	private ResultSet rs = null;
 
@@ -75,20 +84,43 @@ public class Sql{
 			plugin.getLogger().info("データベース作成に失敗しました");
 			return false;
 		}
+		/*
 		if(!connectDB()){
 			plugin.getLogger().info("データベース接続に失敗しました");
 			return false;
 		}
+		*/
+		/*
 		if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
 			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
 			return false;
 		}
+		*/
 
 		if(!createGachaDataTable(SeichiAssist.GACHADATA_TABLENAME)){
 			plugin.getLogger().info("gachadataテーブル作成に失敗しました");
 			return false;
 		}
 
+		if(!createMineStackGachaDataTable(SeichiAssist.MINESTACK_GACHADATA_TABLENAME)){
+			plugin.getLogger().info("MineStack用gachadataテーブル作成に失敗しました");
+			return false;
+		}
+
+		if(!createDonateDataTable(SeichiAssist.DONATEDATA_TABLENAME)){
+			plugin.getLogger().info("donatedataテーブル作成に失敗しました");
+			return false;
+		}
+
+
+		return true;
+	}
+
+	public boolean connect1(){
+		if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
+			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
+			return false;
+		}
 		return true;
 	}
 
@@ -104,6 +136,34 @@ public class Sql{
 	    	e.printStackTrace();
 	    	return false;
 		}
+		return true;
+	}
+
+	//接続正常ならtrue、そうでなければ再接続試行後正常でtrue、だめならfalseを返す
+	public boolean checkConnection(){
+		try {
+			if(con.isClosed()){
+				plugin.getLogger().warning("sqlConnectionクローズを検出。再接続試行");
+				con = (Connection) DriverManager.getConnection(url, id, pw);
+			}
+			if(stmt.isClosed()){
+				plugin.getLogger().warning("sqlStatementクローズを検出。再接続試行");
+				stmt = con.createStatement();
+				//connectDB();
+			}
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    	//イクセプションった時に接続再試行
+	    	plugin.getLogger().warning("sqlExceptionを検出。再接続試行");
+	    	if(connectMySQL()){
+	    		plugin.getLogger().info("sqlコネクション正常");
+	    		return true;
+	    	}else{
+	    		plugin.getLogger().warning("sqlコネクション不良を検出");
+	    		return false;
+	    	}
+		}
+		//plugin.getLogger().info("sqlコネクション正常");
 		return true;
 	}
 
@@ -129,21 +189,12 @@ public class Sql{
 	//@param command コマンド内容
 	//@return 成否
 	//@throws SQLException
+	//private変更禁止！(処理がバッティングします)
 	private boolean putCommand(String command){
+		checkConnection();
 		try {
 			stmt.executeUpdate(command);
 			return true;
-		}catch(CommunicationsException e){
-			java.lang.System.out.println("sqlの接続に失敗したため、再接続します。");
-			if(connectMySQL()){
-				java.lang.System.out.println("接続成功");
-				return true;
-			}else{
-				java.lang.System.out.println("接続に失敗しました。");
-				exc = e.getMessage();
-				e.printStackTrace();
-				return false;
-			}
 		}catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
@@ -169,11 +220,13 @@ public class Sql{
 		return putCommand(command);
 	}
 
+	/*
 	private boolean connectDB() {
 		String command;
 		command = "use " + db;
 		return putCommand(command);
 	}
+	*/
 
 	/**
 	 * テーブル作成
@@ -188,7 +241,7 @@ public class Sql{
 		}
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
-				"CREATE TABLE IF NOT EXISTS " + table +
+				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
 				"(name varchar(30) unique," +
 				"uuid varchar(128) unique)";
 		if(!putCommand(command)){
@@ -196,7 +249,7 @@ public class Sql{
 		}
 		//必要なcolumnを随時追加
 		command =
-				"alter table " + table +
+				"alter table " + db + "." + table +
 				" add column if not exists effectflag boolean default true" +
 				",add column if not exists minestackflag boolean default true" +
 				",add column if not exists messageflag boolean default false" +
@@ -218,26 +271,116 @@ public class Sql{
 				",add column if not exists inventory blob default null" +
 				",add column if not exists rgnum int default 0" +
 				",add column if not exists totalbreaknum int default 0" +
-				",add column if not exists lastquit datetime default null" +
+				",add column if not exists lastquit datetime default null" ;
+
+				/*
 				",add column if not exists stack_dirt int default 0" +
 				",add column if not exists stack_gravel int default 0" +
 				",add column if not exists stack_cobblestone int default 0" +
 				",add column if not exists stack_stone int default 0" +
 				",add column if not exists stack_sand int default 0" +
+
 				",add column if not exists stack_sandstone int default 0" +
 				",add column if not exists stack_netherrack int default 0" +
 				",add column if not exists stack_ender_stone int default 0" +
+				",add column if not exists stack_obsidian int default 0" + //追加
 				",add column if not exists stack_grass int default 0" +
+
 				",add column if not exists stack_quartz int default 0" +
 				",add column if not exists stack_quartz_ore int default 0" +
 				",add column if not exists stack_soul_sand int default 0" +
 				",add column if not exists stack_magma int default 0" +
 				",add column if not exists stack_coal int default 0" +
+
 				",add column if not exists stack_coal_ore int default 0" +
 				",add column if not exists stack_iron_ore int default 0" +
 				",add column if not exists stack_packed_ice int default 0" +
+				",add column if not exists stack_gold_ore int default 0" +
+				",add column if not exists stack_lapis_ore int default 0" +
+
+				",add column if not exists stack_emerald_ore int default 0" +
+				",add column if not exists stack_redstone_ore int default 0" +
+				",add column if not exists stack_diamond_ore int default 0" +
+				",add column if not exists stack_log int default 0" +
+				",add column if not exists stack_log_2 int default 0" +
+
+				",add column if not exists stack_wood int default 0" +
+				",add column if not exists stack_hard_clay int default 0" +
+				",add column if not exists stack_stained_clay int default 0" +
+				",add column if not exists stack_fence int default 0" +
+				",add column if not exists stack_lapis_lazuli int default 0" + //テスト
+
+				",add column if not exists stack_granite int default 0" + //追加
+				",add column if not exists stack_diorite int default 0" + //追加
+				",add column if not exists stack_andesite int default 0" + //追加
+				",add column if not exists stack_red_sand int default 0" + //追加
+				",add column if not exists stack_red_sandstone int default 0" + //追加
+
+				",add column if not exists stack_log1 int default 0" + //追加
+				",add column if not exists stack_log2 int default 0" + //追加
+				",add column if not exists stack_log3 int default 0" + //追加
+				",add column if not exists stack_log_21 int default 0" + //追加
+				",add column if not exists stack_stained_clay1 int default 0" + //追加
+
+				",add column if not exists stack_stained_clay4 int default 0" + //追加
+				",add column if not exists stack_stained_clay8 int default 0" + //追加
+				",add column if not exists stack_stained_clay12 int default 0" + //追加
+				",add column if not exists stack_stained_clay14 int default 0" + //追加
+				",add column if not exists stack_emerald int default 0" + //追加
+
+				",add column if not exists stack_redstone int default 0" + //追加
+				",add column if not exists stack_diamond int default 0" + //追加
+				",add column if not exists stack_clay int default 0" + //追加
+				",add column if not exists stack_glowstone int default 0" + //追加
+				",add column if not exists stack_dirt1 int default 0" + //
+
+				",add column if not exists stack_dirt2 int default 0" + //
+				",add column if not exists stack_mycel int default 0" + //
+				",add column if not exists stack_snow_block int default 0" + //
+				",add column if not exists stack_ice int default 0" + //
+				",add column if not exists stack_dark_oak_fence int default 0" + //
+
+				",add column if not exists stack_mossy_cobblestone int default 0" + //
+				",add column if not exists stack_rails int default 0" + //
+				",add column if not exists stack_exp_bottle int default 0" + //
+				",add column if not exists stack_huge_mushroom_1 int default 0" + //
+				",add column if not exists stack_huge_mushroom_2 int default 0" + //
+
+				",add column if not exists stack_web int default 0" + //
+				",add column if not exists stack_string int default 0" + //
+				",add column if not exists stack_wood5 int default 0" + //
+				",add column if not exists stack_sapling int default 0" + //
+				",add column if not exists stack_sapling1 int default 0" + //
+
+				",add column if not exists stack_sapling2 int default 0" + //
+				",add column if not exists stack_sapling3 int default 0" + //
+				",add column if not exists stack_sapling4 int default 0" + //
+				",add column if not exists stack_sapling5 int default 0" + //
+				",add column if not exists stack_leaves int default 0" + //
+
+				",add column if not exists stack_leaves1 int default 0" + //
+				",add column if not exists stack_leaves2 int default 0" + //
+				",add column if not exists stack_leaves3 int default 0" + //
+				",add column if not exists stack_leaves_2 int default 0" + //
+				",add column if not exists stack_leaves_21 int default 0" + //
+
+				",add column if not exists stack_gachaimo int default 0"; //
+				*/
+
+				//MineStack関連をすべてfor文に変更
+				if(SeichiAssist.minestack_sql_enable==true){
+					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
+						command += ",add column if not exists stack_" + SeichiAssist.minestacklist.get(i).getMineStackObjName() + " int default 0";
+					}
+				}
+
+				command +=
 				",add column if not exists playtick int default 0" +
 				",add column if not exists killlogflag boolean default false" +
+				",add column if not exists worldguardlogflag boolean default true" +//
+
+				",add column if not exists multipleidbreakflag boolean default false" +
+
 				",add column if not exists pvpflag boolean default false" +
 				",add column if not exists loginflag boolean default false" +
 				",add column if not exists p_vote int default 0" +
@@ -248,7 +391,11 @@ public class Sql{
 				",add index if not exists name_index(name)" +
 				",add index if not exists uuid_index(uuid)" +
 				",add index if not exists ranking_index(totalbreaknum)" +
+				",add column if not exists homepoint_" + SeichiAssist.config.getServerNum() + " varchar(" + SeichiAssist.config.getSubHomeMax() * SeichiAssist.SUB_HOME_DATASIZE + ") default ''"+
+
 				"";
+
+
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 		for(int i = 0; i < activeskilleffect.length ; i++){
 			command = command +
@@ -262,6 +409,76 @@ public class Sql{
 		return putCommand(command);
 	}
 
+	//ガチャデータテーブル作成
+	public boolean createGachaDataTable(String table){
+		if(table==null){
+			return false;
+		}
+		//テーブルが存在しないときテーブルを新規作成
+		String command =
+				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
+				"(id int auto_increment unique,"
+				+ "amount int(11))";
+		if(!putCommand(command)){
+			return false;
+		}
+		//必要なcolumnを随時追加
+		command =
+				"alter table " + db + "." + table +
+				" add column if not exists probability double default 0.0" +
+				",add column if not exists itemstack blob default null" +
+				"";
+		return putCommand(command);
+	}
+
+	//MineStack用ガチャデータテーブル作成
+	public boolean createMineStackGachaDataTable(String table){
+		if(table==null){
+			return false;
+		}
+		//テーブルが存在しないときテーブルを新規作成
+		String command =
+				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
+				"(id int auto_increment unique,"
+				+ "amount int(11))";
+		if(!putCommand(command)){
+			return false;
+		}
+		//必要なcolumnを随時追加
+		command =
+				"alter table " + db + "." + table +
+				" add column if not exists probability double default 0.0" +
+				",add column if not exists level int(11) default 0" +
+				",add column if not exists obj_name tinytext default null" +
+				",add column if not exists itemstack blob default null" +
+				"";
+		return putCommand(command);
+	}
+
+	public boolean createDonateDataTable(String table){
+		if(table==null){
+			return false;
+		}
+		//テーブルが存在しないときテーブルを新規作成
+		String command =
+				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
+				"(id int auto_increment unique)";
+		if(!putCommand(command)){
+			return false;
+		}
+		//必要なcolumnを随時追加
+		command =
+				"alter table " + db + "." + table +
+				" add column if not exists playername varchar(20) default null" +
+				",add column if not exists playeruuid varchar(128) default null" +
+				",add column if not exists effectnum int default null" +
+				",add column if not exists effectname varchar(20) default null" +
+				",add column if not exists getpoint int default 0" +
+				",add column if not exists usepoint int default 0" +
+				",add column if not exists date datetime default null" +
+				"";
+		return putCommand(command);
+	}
 	//投票特典配布時の処理(p_givenvoteの値の更新もココ)
 	public int compareVotePoint(Player player,final PlayerData playerdata){
 
@@ -270,13 +487,13 @@ public class Sql{
 			return 0;
 		}else{
 	        //連打による負荷防止の為クールダウン処理
-	        new CoolDownTaskRunnable(player,true,false).runTaskLater(plugin,1200);
+	        new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
 		}
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
 		int p_vote = 0;
 		int p_givenvote = 0;
-		String command = "select p_vote,p_givenvote from " + table
+		String command = "select p_vote,p_givenvote from " + db + "."  + table
 				+ " where uuid = '" + struuid + "'";
  		try{
 			rs = stmt.executeQuery(command);
@@ -294,7 +511,7 @@ public class Sql{
 		}
  		//比較して差があればその差の値を返す(同時にp_givenvoteも更新しておく)
  		if(p_vote > p_givenvote){
- 			command = "update " + table
+ 			command = "update " + db + "." + table
  					+ " set p_givenvote = " + p_vote
  					+ " where uuid like '" + struuid + "'";
  			if(!putCommand(command)){
@@ -316,12 +533,12 @@ public class Sql{
 			return 0;
 		}else{
 	        //連打による負荷防止の為クールダウン処理
-	        new CoolDownTaskRunnable(player,true,false).runTaskLater(plugin,1200);
+	        new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
 		}
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
 		int numofsorryforbug = 0;
-		String command = "select numofsorryforbug from " + table
+		String command = "select numofsorryforbug from " + db + "." + table
 				+ " where uuid = '" + struuid + "'";
 		try{
 			rs = stmt.executeQuery(command);
@@ -336,9 +553,20 @@ public class Sql{
 			player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
 			return 0;
 		}
- 		//0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
- 		if(numofsorryforbug > 0){
- 			command = "update " + table
+ 		//576より多い場合はその値を返す(同時にnumofsorryforbugから-576)
+ 		if(numofsorryforbug > 576){
+ 			command = "update " + db + "." + table
+ 					+ " set numofsorryforbug = numofsorryforbug - 576"
+ 					+ " where uuid like '" + struuid + "'";
+ 			if(!putCommand(command)){
+ 				player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
+ 				return 0;
+ 			}
+
+ 			return 576;
+ 		}//0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
+ 		else if(numofsorryforbug > 0){
+ 			command = "update " + db + "." + table
  					+ " set numofsorryforbug = 0"
  					+ " where uuid like '" + struuid + "'";
  			if(!putCommand(command)){
@@ -358,7 +586,7 @@ public class Sql{
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "";
 
-		command = "update " + table
+		command = "update " + db + "." + table
 				+ " set"
 
 				//1加算
@@ -375,7 +603,7 @@ public class Sql{
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "";
 
-		command = "update " + table
+		command = "update " + db + "." + table
 				+ " set"
 
 				//引数で来たポイント数分加算
@@ -390,33 +618,22 @@ public class Sql{
 	//指定されたプレイヤーにガチャ券を送信する
 	public boolean addPlayerBug(String name,int num) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "update " + table
+		String command = "update " + db + "." + table
 				+ " set numofsorryforbug = numofsorryforbug + " + num
 				+ " where name like '" + name + "'";
 		return putCommand(command);
 	}
 
 
-	public boolean createGachaDataTable(String table){
-		if(table==null){
-			return false;
-		}
-		//テーブルが存在しないときテーブルを新規作成
-		String command =
-				"CREATE TABLE IF NOT EXISTS " + table +
-				"(id int auto_increment unique,"
-				+ "amount int(11))";
-		if(!putCommand(command)){
-			return false;
-		}
-		//必要なcolumnを随時追加
-		command =
-				"alter table " + table +
-				" add column if not exists probability double default 0.0" +
-				",add column if not exists itemstack blob default null" +
-				"";
+	//サブホームを保存
+	/*
+	public boolean UpDataSubHome(String s) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "update " + db + "." + table
+				+ " set homepoint_" + SeichiAssist.config.getServerNum() + " = '" + s + "'";
 		return putCommand(command);
 	}
+*/
 
 	public boolean loadPlayerData(final Player p) {
 		String name = Util.getName(p);
@@ -428,8 +645,10 @@ public class Sql{
  		//uuidがsqlデータ内に存在するか検索
  		//command:
  		//select count(*) from playerdata where uuid = 'struuid'
- 		command = "select count(*) as count from " + table
+ 		command = "select count(*) as count from " + db + "." + table
  				+ " where uuid = '" + struuid + "'";
+ 		//sqlコネクションチェック(mysql接続が切れたときの為のフェイルセーフ機構(ダメならリログすれば直る))
+ 		checkConnection();
  		try{
 			rs = stmt.executeQuery(command);
 			while (rs.next()) {
@@ -448,7 +667,7 @@ public class Sql{
 
  			//新しくuuidとnameを設定し行を作成
  			//insert into playerdata (name,uuid) VALUES('unchima','UNCHAMA')
- 			command = "insert into " + table
+ 			command = "insert into " + db + "." + table
  	 				+ " (name,uuid,loginflag) values('" + name
  	 				+ "','" + struuid+ "','1')";
  			if(!putCommand(command)){
@@ -456,6 +675,12 @@ public class Sql{
  			}
  			//PlayerDataを新規作成
  			playermap.put(uuid, new PlayerData(p));
+ 			//初見さんにLv1メッセージを送信
+ 			p.sendMessage(SeichiAssist.config.getLvMessage(1));
+ 			//初見さんであることを全体告知
+ 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "【初見キタ】" + p.getName() + "のプレイヤーデータ作成完了");
+ 			Util.sendEveryMessage(ChatColor.LIGHT_PURPLE+""+ChatColor.BOLD+name+"さんは初参加です。整地鯖へヨウコソ！" + ChatColor.RESET +" - " + ChatColor.YELLOW + ChatColor.UNDERLINE +  "http://seichi.click");
+ 			Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
  			return true;
 
  		}else if(count == 1){
@@ -463,8 +688,9 @@ public class Sql{
  			if(SeichiAssist.DEBUG){
  				p.sendMessage("sqlにデータが保存されています。");
  			}
- 			new LoadPlayerDataTaskRunnable(p).runTaskTimerAsynchronously(plugin, 0, 10);
- 			new PlayerDataUpdateOnJoinRunnable(p).runTaskTimer(plugin, 10, 10);
+ 			p.sendMessage(ChatColor.YELLOW + "プレイヤーデータを読み込んでいます。しばらくお待ちください…");
+ 			new LoadPlayerDataTaskRunnable(p).runTaskTimerAsynchronously(plugin, 20, 20);
+ 			new PlayerDataUpdateOnJoinRunnable(p).runTaskTimer(plugin, 30, 20);
  			return true;
 
  		}else{
@@ -473,98 +699,26 @@ public class Sql{
  			return false;
  		}
 	}
-	public boolean savePlayerData(PlayerData playerdata) {
-		//引数のplayerdataをsqlにデータを送信
 
-		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String struuid = playerdata.uuid.toString();
-		String command = "";
+	//ondisable"以外"の時のプレイヤーデータセーブ処理(loginflag折りません)
+	public void savePlayerData(PlayerData playerdata){
+		new PlayerDataSaveTaskRunnable(playerdata,false,false).runTaskAsynchronously(plugin);
+	}
 
-		command = "update " + table
-				+ " set"
-
-				//名前更新処理
-				+ " name = '" + playerdata.name + "'"
-
-				//各種数値更新処理
-				+ ",effectflag = " + Boolean.toString(playerdata.effectflag)
-				+ ",minestackflag = " + Boolean.toString(playerdata.minestackflag)
-				+ ",messageflag = " + Boolean.toString(playerdata.messageflag)
-				+ ",activemineflagnum = " + Integer.toString(playerdata.activeskilldata.mineflagnum)
-				+ ",assaultflag = " + Boolean.toString(playerdata.activeskilldata.assaultflag)
-				+ ",activeskilltype = " + Integer.toString(playerdata.activeskilldata.skilltype)
-				+ ",activeskillnum = " + Integer.toString(playerdata.activeskilldata.skillnum)
-				+ ",assaultskilltype = " + Integer.toString(playerdata.activeskilldata.assaulttype)
-				+ ",assaultskillnum = " + Integer.toString(playerdata.activeskilldata.assaultnum)
-				+ ",arrowskill = " + Integer.toString(playerdata.activeskilldata.arrowskill)
-				+ ",multiskill = " + Integer.toString(playerdata.activeskilldata.multiskill)
-				+ ",breakskill = " + Integer.toString(playerdata.activeskilldata.breakskill)
-				+ ",condenskill = " + Integer.toString(playerdata.activeskilldata.condenskill)
-				+ ",effectnum = " + Integer.toString(playerdata.activeskilldata.effectnum)
-				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
-				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
-				+ ",level = " + Integer.toString(playerdata.level)
-				//+ ",numofsorryforbug = " + Integer.toString(playerdata.numofsorryforbug) //仕様変更の為コメントアウト
-				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
-				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
-				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
-				+ ",playtick = " + Integer.toString(playerdata.playtick)
-				+ ",lastquit = cast( now() as datetime )"
-				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
-				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
-				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
-				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana())
-
-				//MineStack機能の数値更新処理
-				+ ",stack_dirt = " + Integer.toString(playerdata.minestack.dirt)
-				+ ",stack_gravel = " + Integer.toString(playerdata.minestack.gravel)
-				+ ",stack_cobblestone = " + Integer.toString(playerdata.minestack.cobblestone)
-				+ ",stack_stone = " + Integer.toString(playerdata.minestack.stone)
-				+ ",stack_sand = " + Integer.toString(playerdata.minestack.sand)
-				+ ",stack_sandstone = " + Integer.toString(playerdata.minestack.sandstone)
-				+ ",stack_netherrack = " + Integer.toString(playerdata.minestack.netherrack)
-				+ ",stack_ender_stone = " + Integer.toString(playerdata.minestack.ender_stone)
-				+ ",stack_grass = " + Integer.toString(playerdata.minestack.grass)
-				+ ",stack_quartz = " + Integer.toString(playerdata.minestack.quartz)
-				+ ",stack_quartz_ore = " + Integer.toString(playerdata.minestack.quartz_ore)
-				+ ",stack_soul_sand = " + Integer.toString(playerdata.minestack.soul_sand)
-				+ ",stack_magma = " + Integer.toString(playerdata.minestack.magma)
-				+ ",stack_coal = " + Integer.toString(playerdata.minestack.coal)
-				+ ",stack_coal_ore = " + Integer.toString(playerdata.minestack.coal_ore)
-				+ ",stack_iron_ore = " + Integer.toString(playerdata.minestack.iron_ore)
-				+ ",stack_packed_ice = " + Integer.toString(playerdata.minestack.packed_ice);
-
-
-		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
-		for(int i = 0; i < activeskilleffect.length ; i++){
-			String sqlname = activeskilleffect[i].getsqlName();
-			int num = activeskilleffect[i].getNum();
-			Boolean flag = playerdata.activeskilldata.effectflagmap.get(num);
-			command = command +
-					"," + sqlname + " = " + Boolean.toString(flag);
-		}
-		ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-		for(int i = 0; i < premiumeffect.length ; i++){
-			String sqlname = premiumeffect[i].getsqlName();
-			int num = premiumeffect[i].getNum();
-			Boolean flag = playerdata.activeskilldata.premiumeffectflagmap.get(num);
-			command = command +
-					"," + sqlname + " = " + Boolean.toString(flag);
-		}
-		//最後の処理
-		command = command + " where uuid like '" + struuid + "'";
-
-		return putCommand(command);
+	//ondisable"以外"の時のプレイヤーデータセーブ処理(ログアウト時に使用、loginflag折ります)
+	public void saveQuitPlayerData(PlayerData playerdata){
+		new PlayerDataSaveTaskRunnable(playerdata,false,true).runTaskAsynchronously(plugin);
 	}
 
 
 	//loginflagのフラグ折る処理(ondisable時とquit時に実行させる)
+	/*
 	public boolean logoutPlayerData(PlayerData playerdata) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
 		String command = "";
 
-		command = "update " + table
+		command = "update " + db + "." + table
 				+ " set"
 
 				//ログインフラグ折る
@@ -575,13 +729,14 @@ public class Sql{
 		return putCommand(command);
 
 	}
+	*/
 
 	//ガチャデータロード
 	public boolean loadGachaData(){
 		String table = SeichiAssist.GACHADATA_TABLENAME;
 		List<GachaData> gachadatalist = new ArrayList<GachaData>();
 		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
-		String command = "select * from " + table;
+		String command = "select * from " + db + "." + table;
  		try{
 			rs = stmt.executeQuery(command);
 			while (rs.next()) {
@@ -605,12 +760,43 @@ public class Sql{
 
 	}
 
+	//MineStack用ガチャデータロード
+	public boolean loadMineStackGachaData(){
+		String table = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
+		List<MineStackGachaData> gachadatalist = new ArrayList<MineStackGachaData>();
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select * from " + db + "." + table;
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				MineStackGachaData gachadata = new MineStackGachaData();
+				Inventory inventory = BukkitSerialization.fromBase64(rs.getString("itemstack").toString());
+				gachadata.itemstack = (inventory.getItem(0));
+				gachadata.amount = rs.getInt("amount");
+				gachadata.level = rs.getInt("level");
+				gachadata.obj_name = rs.getString("obj_name");
+				gachadata.probability = rs.getDouble("probability");
+				gachadatalist.add(gachadata);
+				  }
+			rs.close();
+		} catch (SQLException | IOException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+ 		SeichiAssist.msgachadatalist.clear();
+ 		SeichiAssist.msgachadatalist.addAll(gachadatalist);
+ 		return true;
+
+	}
+
 	//ガチャデータセーブ
 	public boolean saveGachaData(){
 		String table = SeichiAssist.GACHADATA_TABLENAME;
 
 		//まずmysqlのガチャテーブルを初期化(中身全削除)
-		String command = "truncate table " + table;
+		String command = "truncate table " + db + "." + table;
 		if(!putCommand(command)){
 			return false;
 		}
@@ -621,7 +807,7 @@ public class Sql{
 			Inventory inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1);
 			inventory.setItem(0,gachadata.itemstack);
 
-			command = "insert into " + table + " (probability,amount,itemstack)"
+			command = "insert into " + db + "." + table + " (probability,amount,itemstack)"
 					+ " values"
 					+ "(" + Double.toString(gachadata.probability)
 					+ "," + Integer.toString(gachadata.amount)
@@ -634,9 +820,40 @@ public class Sql{
 		return true;
 	}
 
+	//MineStack用ガチャデータセーブ
+	public boolean saveMineStackGachaData(){
+		String table = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
+
+		//まずmysqlのガチャテーブルを初期化(中身全削除)
+		String command = "truncate table " + db + "." + table;
+		if(!putCommand(command)){
+			return false;
+		}
+
+		//次に現在のgachadatalistでmysqlを更新
+		for(MineStackGachaData gachadata : SeichiAssist.msgachadatalist){
+			//Inventory作ってガチャのitemstackに突っ込む
+			Inventory inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1);
+			inventory.setItem(0,gachadata.itemstack);
+
+			command = "insert into " + db + "." + table + " (probability,amount,level,obj_name,itemstack)"
+					+ " values"
+					+ "(" + Double.toString(gachadata.probability)
+					+ "," + Integer.toString(gachadata.amount)
+					+ "," + Integer.toString(gachadata.level)
+					+ ",'" + gachadata.obj_name.toString() + "'"
+					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
+					+ ")";
+			if(!putCommand(command)){
+				return false;
+			}
+		}
+		return true;
+	}
+
 	//ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
 	public boolean setRanking() {
-		plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
 		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		List<RankData> ranklist = SeichiAssist.ranklist;
@@ -644,7 +861,7 @@ public class Sql{
 		SeichiAssist.allplayerbreakblockint = 0;
 
 		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
-		String command = "select name,level,totalbreaknum from " + table
+		String command = "select name,level,totalbreaknum from " + db + "." + table
 				+ " order by totalbreaknum desc";
  		try{
 			rs = stmt.executeQuery(command);
@@ -663,7 +880,7 @@ public class Sql{
 			e.printStackTrace();
 			return false;
 		}
-		plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
 		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
  		return true;
 	}
@@ -671,15 +888,56 @@ public class Sql{
 	//プレイヤーレベル全リセット
 	public boolean resetAllPlayerLevel(){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "update " + table
+		String command = "update " + db + "." + table
 				+ " set level = 1";
 		return putCommand(command);
 	}
 
+	//プレイヤーのレベルと整地量をセット
+	public boolean resetPlayerLevelandBreaknum(UUID uuid){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = uuid.toString();
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		int level = playerdata.level;
+		int totalbreaknum = playerdata.totalbreaknum;
+
+		String command = "update " + db + "." + table
+				+ " set"
+
+				+ " level = " + Integer.toString(level)
+				+ ",totalbreaknum = " + Integer.toString(totalbreaknum);
+
+		//最後の処理
+		command = command + " where uuid like '" + struuid + "'";
+
+		return putCommand(command);
+	}
+
+	//プレイヤーのレベルと整地量をセット(プレイヤーデータが無い場合)
+	public boolean resetPlayerLevelandBreaknum(UUID uuid, int level){
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = uuid.toString();
+		//PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		int totalbreaknum = SeichiAssist.levellist.get(level-1);
+
+		String command = "update " + db + "." + table
+				+ " set"
+
+				+ " level = " + Integer.toString(level)
+				+ ",totalbreaknum = " + Integer.toString(totalbreaknum);
+
+		//最後の処理
+		command = command + " where uuid like '" + struuid + "'";
+
+		return putCommand(command);
+	}
+
+
+
 	//全員に詫びガチャの配布
 	public boolean addAllPlayerBug(int amount){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "update " + table
+		String command = "update " + db + "." + table
 				+ " set numofsorryforbug = numofsorryforbug + " + amount;
 		return putCommand(command);
 	}
@@ -689,7 +947,7 @@ public class Sql{
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = uuid.toString();
 		Inventory inventory = null;
-		String command = "select inventory from " + table
+		String command = "select inventory from " + db + "." + table
 					+ " where uuid like '" + struuid + "'";
 			try{
 				rs = stmt.executeQuery(command);
@@ -710,7 +968,7 @@ public class Sql{
 	public String selectLastQuit(String name){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String lastquit = "";
-		String command = "select lastquit from " + table
+		String command = "select lastquit from " + db + "." + table
 				+ " where name = '" + name + "'";
 			try{
 				rs = stmt.executeQuery(command);
@@ -725,6 +983,85 @@ public class Sql{
 				return null;
 			}
 		return lastquit;
+	}
+
+	//
+	public boolean addPremiumEffectBuy(PlayerData playerdata,
+			ActiveSkillPremiumEffect effect) {
+		String table = SeichiAssist.DONATEDATA_TABLENAME;
+		//
+		String command = "insert into " + db + "." + table
+					+ " (playername,playeruuid,effectnum,effectname,usepoint,date) "
+					+ "value("
+					+ "'" + playerdata.name + "',"
+					+ "'" + playerdata.uuid.toString() + "',"
+					+ Integer.toString(effect.getNum()) + ","
+					+ "'" + effect.getsqlName() + "',"
+					+ Integer.toString(effect.getUsePoint()) + ","
+					+ "cast( now() as datetime )"
+					+ ")";
+		return putCommand(command);
+	}
+	public boolean addDonate(String name,int point) {
+		String table = SeichiAssist.DONATEDATA_TABLENAME;
+		String command = "insert into " + db + "." + table
+					+ " (playername,getpoint,date) "
+					+ "value("
+					+ "'" + name + "',"
+					+ Integer.toString(point) + ","
+					+ "cast( now() as datetime )"
+					+ ")";
+		return putCommand(command);
+	}
+
+	public boolean loadDonateData(PlayerData playerdata, Inventory inventory) {
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		Material material;
+		List<String> lore = new ArrayList<String>();
+		int count = 0;
+		ActiveSkillPremiumEffect effect[] = ActiveSkillPremiumEffect.values();
+
+		String table = SeichiAssist.DONATEDATA_TABLENAME;
+		String command = "select * from " + db + "." + table + " where playername = '" + playerdata.name + "'";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				//ポイント購入の処理
+				if(rs.getInt("getpoint")>0){
+					itemstack = new ItemStack(Material.DIAMOND);
+					itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND);
+					itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付");
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "" + "金額：" + rs.getInt("getpoint")*100,
+							ChatColor.RESET + "" +  ChatColor.GREEN + "" + "プレミアムエフェクトポイント：+" + rs.getInt("getpoint"),
+							ChatColor.RESET + "" +  ChatColor.GREEN + "" + "日時：" + rs.getString("date")
+							);
+					itemmeta.setLore(lore);
+					itemstack.setItemMeta(itemmeta);
+					inventory.setItem(count,itemstack);
+				}else if(rs.getInt("usepoint")>0){
+					int num = rs.getInt("effectnum")-1;
+					material = effect[num].getMaterial();
+					itemstack = new ItemStack(material);
+					itemmeta = Bukkit.getItemFactory().getItemMeta(material);
+					itemmeta.setDisplayName(ChatColor.RESET + "" +  ChatColor.YELLOW + "購入エフェクト：" + effect[num].getName());
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GOLD + "" + "プレミアムエフェクトポイント： -" + rs.getInt("usepoint"),
+							ChatColor.RESET + "" +  ChatColor.GOLD + "" + "日時：" + rs.getString("date")
+							);
+					itemmeta.setLore(lore);
+					itemstack.setItemMeta(itemmeta);
+					inventory.setItem(count,itemstack);
+				}
+				count ++;
+			}
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+ 		return true;
 	}
 
 }

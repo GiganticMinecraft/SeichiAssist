@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.listener;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,10 +12,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerPickupItemListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -34,9 +36,6 @@ public class PlayerPickupItemListener implements Listener {
 		PlayerData playerdata = playermap.get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[PickupItem処理]でエラー発生");
-			plugin.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return;
 		}
 		//レベルが足りない場合処理終了
@@ -53,6 +52,7 @@ public class PlayerPickupItemListener implements Listener {
 		int amount = itemstack.getAmount();
 		Material material = itemstack.getType();
 
+		/*
 		int v1 = config.getMineStacklevel(1);
 		int v2 = config.getMineStacklevel(2);
 		int v3 = config.getMineStacklevel(3);
@@ -63,114 +63,130 @@ public class PlayerPickupItemListener implements Listener {
 		int v8 = config.getMineStacklevel(8);
 		int v9 = config.getMineStacklevel(9);
 		int v10 = config.getMineStacklevel(10);
+		int v11 = config.getMineStacklevel(11);//追加
+		int v12 = config.getMineStacklevel(12);//追加
+		int v13 = config.getMineStacklevel(13);//追加
+		int v14 = config.getMineStacklevel(14);//追加
+		int v15 = config.getMineStacklevel(15);//追加
+		int v16 = config.getMineStacklevel(16);
+		int v17 = config.getMineStacklevel(17);
+		int v18 = config.getMineStacklevel(18);
+		int v19 = config.getMineStacklevel(19);
+		int v20 = config.getMineStacklevel(20);
+		int v21 = config.getMineStacklevel(21);
+		int v22 = config.getMineStacklevel(22);
+		int v23 = config.getMineStacklevel(23);
+		int v24 = config.getMineStacklevel(24);
+		int v25 = config.getMineStacklevel(25);
+		int v26 = config.getMineStacklevel(26);
+		int v27 = config.getMineStacklevel(27);
+		int v28 = config.getMineStacklevel(28);
+		int v29 = config.getMineStacklevel(29);
+		int v30 = config.getMineStacklevel(30);
+		int v31 = config.getMineStacklevel(31);
+		int v32 = config.getMineStacklevel(32);
+		int v33 = config.getMineStacklevel(33);
+		int v34 = config.getMineStacklevel(34);
+		int v35 = config.getMineStacklevel(35);
+		int v36 = config.getMineStacklevel(36);
+		int v37 = config.getMineStacklevel(37);
+		int v38 = config.getMineStacklevel(38);
+		*/
 
-
-		switch(material){
-			case DIRT:
-				if(playerdata.level < v1){
-					return;
-				}
-				playerdata.minestack.dirt += amount;
-				break;
-			case GRASS:
-				if(playerdata.level < v1){
-					return;
-				}
-				playerdata.minestack.grass += amount;
-				break;
-			case GRAVEL:
-				if(playerdata.level < v2){
-					return;
-				}
-				playerdata.minestack.gravel += amount;
-				break;
-			case COBBLESTONE:
-				if(playerdata.level < v3){
-					return;
-				}
-				playerdata.minestack.cobblestone += amount;
-				break;
-			case STONE:
-				if(playerdata.level < v3){
-					return;
-				}
-				playerdata.minestack.stone += amount;
-				break;
-			case SAND:
-				if(playerdata.level < v4){
-					return;
-				}
-				playerdata.minestack.sand += amount;
-				break;
-			case PACKED_ICE:
-				if(playerdata.level < v4){
-					return;
-				}
-				playerdata.minestack.packed_ice += amount;
-				break;
-			case SANDSTONE:
-				if(playerdata.level < v4){
-					return;
-				}
-				playerdata.minestack.sandstone += amount;
-				break;
-			case NETHERRACK:
-				if(playerdata.level < v5){
-					return;
-				}
-				playerdata.minestack.netherrack += amount;
-				break;
-			case SOUL_SAND:
-				if(playerdata.level < v6){
-					return;
-				}
-				playerdata.minestack.soul_sand += amount;
-				break;
-			case MAGMA:
-				if(playerdata.level < v6){
-					return;
-				}
-				playerdata.minestack.magma += amount;
-				break;
-			case ENDER_STONE:
-				if(playerdata.level < v7){
-					return;
-				}
-				playerdata.minestack.ender_stone += amount;
-				break;
-			case COAL:
-				if(playerdata.level < v8){
-					return;
-				}
-				playerdata.minestack.coal += amount;
-				break;
-			case COAL_ORE:
-				if(playerdata.level < v8){
-					return;
-				}
-				playerdata.minestack.coal_ore += amount;
-				break;
-			case IRON_ORE:
-				if(playerdata.level < v9){
-					return;
-				}
-				playerdata.minestack.iron_ore += amount;
-				break;
-			case QUARTZ:
-				if(playerdata.level < v10){
-					return;
-				}
-				playerdata.minestack.quartz += amount;
-				break;
-			case QUARTZ_ORE:
-				if(playerdata.level < v10){
-					return;
-				}
-				playerdata.minestack.quartz_ore += amount;
-				break;
-			default:
-				return;
+		//ここにガチャアイテム(ItemStack型)判定を作成するかも
+		/*
+		if(playerdata!=null){
+			String name = playerdata.name;
+		    for(GachaData gachadata : gachadatalist){
+		        if(!gachadata.itemstack.hasItemMeta()){
+		             continue;
+		        }else if(!gachadata.itemstack.getItemMeta().hasLore()){
+		             continue;
+		        }
+		        //ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
+		        if(gachadata.compare(itemstack,name)){
+		        	if(SeichiAssist.DEBUG){
+		        		player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
+		            }
+		        if(gachadata.itemstack.getItemMeta().getLore().equals(itemstack.getItemMeta().getLore())
+		          &&gachadata.itemstack.getItemMeta().getDisplayName().equals(itemstack.getItemMeta().getDisplayName())){
+		            }
+		        }
+		    }
 		}
+		*/
+
+
+		int i=0;
+		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
+			if(material.equals(SeichiAssist.minestacklist.get(i).getMaterial()) &&
+				itemstack.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){
+				//この時点でIDとサブIDが一致している
+				if(SeichiAssist.minestacklist.get(i).getNameloreflag()==false){//名前と説明文が無いアイテム
+					if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+						//レベルを満たしていない
+						return;
+					} else {
+						playerdata.minestack.addNum(i, amount);
+						break;
+					}
+				} else {
+					//名前・説明文付き
+					ItemMeta meta = itemstack.getItemMeta();
+					if(meta==null || meta.getDisplayName()==null || meta.getLore()== null){
+						return;
+					}
+					//この時点で名前と説明文がある
+						if(SeichiAssist.minestacklist.get(i).getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
+							if( !(meta.getDisplayName().equals(Util.getGachaimoName()))
+								|| !(meta.getLore().equals(Util.getGachaimoLore())) ){
+								return;
+							}
+							if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+								//レベルを満たしていない
+								return;
+							} else {
+								playerdata.minestack.addNum(i, amount);
+								break;
+							}
+						} else {
+							//ガチャ品
+							MineStackGachaData g = SeichiAssist.msgachadatalist.get(SeichiAssist.minestacklist.get(i).getGachatype());
+							String name = playerdata.name; //プレイヤーのネームを見る
+							//player.sendMessage("Debug A");
+							if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
+								if(!Util.ItemStackContainsOwnerName(itemstack, name)){
+									//所有者の名前が無ければreturn
+									//player.sendMessage("Debug B");
+									return;
+								}
+							}
+							//ItemStack itemstack_temp = Util.ItemStackResetName(itemstack);//名前を消しておく
+
+							//GachaData.
+							if(!g.compareonly(itemstack)){ //この1行で対応可能？
+								//player.sendMessage("Debug C");
+								//gachadata.itemstack.isSimilar(itemstack)でスタックサイズ以外が一致しているか判定可能
+								//continue; //アイテムの中身が違う
+							} else { //中身が同じ場合のみここに入る
+								//player.sendMessage("Debug D");
+								if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+									//レベルを満たしていない
+									return;
+								} else {
+									playerdata.minestack.addNum(i, amount);
+									break;
+								}
+							}
+
+						}
+				}
+			}
+		}
+		if(i==SeichiAssist.minestacklist.size()){
+			return;
+		}
+
 		event.setCancelled(true);
 		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
 		item.remove();

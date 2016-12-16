@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.util;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -36,6 +37,50 @@ public class Util {
 		FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST,
 		FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR, };
 
+	public static void sendPlayerDataNullMessage(Player player){
+		player.sendMessage(ChatColor.RED + "初回ログイン時の読み込み中か、読み込みに失敗しています");
+		player.sendMessage(ChatColor.RED + "再接続しても改善されない場合はお問い合わせフォームからお知らせ下さい");
+	}
+
+	//スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
+	public static boolean isSkillEnable(Player player){
+		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+		//プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)にいる場合
+		if(player.getWorld().getName().toLowerCase().startsWith(worldname)
+				|| player.getWorld().getName().equalsIgnoreCase("world")
+				|| player.getWorld().getName().equalsIgnoreCase("world_2")
+				|| player.getWorld().getName().equalsIgnoreCase("world_nether")
+				|| player.getWorld().getName().equalsIgnoreCase("world_the_end")
+				|| player.getWorld().getName().equalsIgnoreCase("world_TT")
+				|| player.getWorld().getName().equalsIgnoreCase("world_nether_TT")
+				|| player.getWorld().getName().equalsIgnoreCase("world_the_end_TT")
+				){
+			return true;
+		}
+		//それ以外のワールドの場合
+		return false;
+	}
+
+	//整地レベルへの整地量反映可否の処理(反映されるならtrue、反映されないならfalse)
+	public static boolean isGainSeichiExp(Player player){
+		//デバッグモード時は全ワールドで整地数が反映される(DEBUGWORLDNAME = worldの場合)
+		String worldname = SeichiAssist.SEICHIWORLDNAME;
+		if(SeichiAssist.DEBUG){
+			worldname = SeichiAssist.DEBUGWORLDNAME;
+		}
+		//整地ワールドでは反映されるのでtrue
+		if(player.getWorld().getName().toLowerCase().startsWith(worldname)){
+			return true;
+		}
+
+		//それ以外のワールドの場合
+		return false;
+	}
+
 	//ガチャ券アイテムスタック型の取得
 	public static ItemStack getskull(String name){
 		ItemStack skull;
@@ -57,12 +102,23 @@ public class Util {
 		ItemMeta meta;
 		gachaimo = new ItemStack(Material.GOLDEN_APPLE,1);
 		meta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
-		meta.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "がちゃりんご");
-		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "序盤に重宝します。"
-				, ChatColor.RESET + "" +  ChatColor.AQUA + "マナ回復（小）");
+		meta.setDisplayName(getGachaimoName());
+		List<String> lore = getGachaimoLore();
 		meta.setLore(lore);
 		gachaimo.setItemMeta(meta);
 		return gachaimo;
+	}
+
+	//がちゃりんごの名前を取得
+	public static String getGachaimoName(){
+		String name = ChatColor.GOLD + "" + ChatColor.BOLD + "がちゃりんご";
+		return name;
+	}
+	//がちゃりんごの説明を取得
+	public static List<String> getGachaimoLore(){
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "序盤に重宝します。"
+				, ChatColor.RESET + "" +  ChatColor.AQUA + "マナ回復（小）");
+		return lore;
 	}
 
 	//String -> double
@@ -359,6 +415,53 @@ public class Util {
 		skullmeta.setOwner("unchama");
 		skull.setItemMeta(skullmeta);
 		return skull;
+	}
+
+	public static boolean ItemStackContainsOwnerName(ItemStack itemstack, String name) {
+
+		ItemMeta meta = itemstack.getItemMeta();
+		List<String> lore;
+		if(meta.hasLore()){
+			lore = meta.getLore();
+		}else{
+			lore = new ArrayList<String>();
+		}
+
+		for(int i=0; i<lore.size(); i++){
+			if(lore.get(i).indexOf("所有者：")!=-1){ //"所有者:がある"
+				int idx = lore.get(i).lastIndexOf("所有者：");
+					idx += 4; //「所有者：」の右端(名前の左端)までidxを移動
+					String temp = lore.get(i).substring(idx);
+					if(temp.equals(name)){
+						return true;
+					}
+			}
+		}
+		return false;
+	}
+
+	public static ItemStack ItemStackResetName(ItemStack itemstack) {
+
+		ItemStack itemstack_temp = new ItemStack(itemstack);
+		ItemMeta meta = itemstack_temp.getItemMeta();
+		List<String> lore;
+		if(meta != null){
+			if(meta.hasLore()){
+				lore = meta.getLore();
+
+				int i=0;
+				for(i=0; i<lore.size(); i++){
+					if(lore.get(i).indexOf("所有者：")!=-1){ //"所有者:がある"
+						break;
+					}
+				}
+				if(i!=lore.size()){ //所有者表記が無かった場合を除く
+					lore.remove(i);
+					meta.setLore(lore);
+				}
+			}
+		}
+		return itemstack_temp;
 	}
 
 
