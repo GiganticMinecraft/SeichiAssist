@@ -2693,7 +2693,7 @@ public class MenuInventoryData {
 		inventory.setItem(45,itemstack);
 
 		// 整地神ランキング３ページ目を開く
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング３ページ目へ");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング3ページ目");
 		lore.clear();
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
@@ -2716,7 +2716,7 @@ public class MenuInventoryData {
 		return inventory;
 	}
 
-	//ランキングリスト２ページ目
+	//ランキングリスト３ページ目
 	public static Inventory getRankingList3(Player p){
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -2748,7 +2748,7 @@ public class MenuInventoryData {
 
 
 		// 整地神ランキング２ページ目を開く;
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング２ページ目へ");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地紳ランキング2ページ目");
 		lore.clear();
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
