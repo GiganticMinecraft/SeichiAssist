@@ -160,6 +160,13 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				//subhomeの情報
  				playerdata.SetSubHome(rs.getString("homepoint_" + SeichiAssist.config.getServerNum()));
 
+ 				//建築
+ 				playerdata.build_lv_set(rs.getInt("build_lv"));
+ 				playerdata.build_count_set(rs.getInt("build_count"));
+ 				playerdata.build_count_flg_set(1,rs.getBoolean("build_count_flg1"));
+ 				playerdata.build_count_flg_set(2,rs.getBoolean("build_count_flg2"));
+ 				
+ 				
  				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
  				for(int i = 0 ; i < activeskilleffect.length ; i++){
  					int num = activeskilleffect[i].getNum();

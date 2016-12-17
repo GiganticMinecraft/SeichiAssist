@@ -191,7 +191,12 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				*/
 
 				//サブホームのデータ
-				command +=  ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'";
+				command +=  ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'"
+				//建築
+				+ ",build_lv = " + Integer.toString(playerdata.build_lv_get())
+				+ ",build_count = " + Integer.toString(playerdata.build_count_get())
+				+ ",build_count_flg1 = " + Boolean.toString(playerdata.build_count_flg_get(1))
+				+ ",build_count_flg2 = " + Boolean.toString(playerdata.build_count_flg_get(2));
 
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();

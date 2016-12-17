@@ -95,6 +95,15 @@ public class PlayerData {
 	//サブのホームポイント
 	private Location[] sub_home = new Location[SeichiAssist.config.getSubHomeMax()];
 
+	//建築LV
+	private int build_lv;
+	//設置ブロック数
+	private int build_count;
+	//サーバー1統合フラグ
+	private boolean build_count_flg1;
+	//サーバー2統合フラグ
+	private boolean build_count_flg2;
+	
 	public PlayerData(Player player){
 		//初期値を設定
 		this.name = Util.getName(player);
@@ -137,7 +146,10 @@ public class PlayerData {
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
 			this.sub_home[x] = null;
 		}
-
+		this.build_lv = 1;
+		this.build_count = 0;
+		this.build_count_flg1 = false;
+		this.build_count_flg2 = false;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -460,25 +472,6 @@ public class PlayerData {
 		}
 	}
 
-	//文字列からサブデータを読み込む・デバッグ版（DB用）
-	public void SetSubHome(String str , Player player){
-		String[] s = str.split(",", -1);
-		player.sendMessage(str );
-		player.sendMessage("配列数" + s.length );
-		for( int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
-			if (s.length < x*4+3){
-				break;
-			}
-			player.sendMessage("x:" + s[x*4] + " y:" +s[x*4+1]+ " z:" +s[x*4+2]+ " w:"+s[x*4+3] );
-//			if(s[x*4] != "" && s[x*4+1] != "" && s[x*4+2] != "" && s[x*4+3] != ""){
-			if(s[x*4].length() > 0 && s[x*4+1].length() > 0 && s[x*4+2].length() > 0 && s[x*4+3].length() > 0 ){
-				player.sendMessage("読み込み");
-				Location l = new Location( Bukkit.getWorld(s[x*4+3]) , Integer.parseInt(s[x*4]) , Integer.parseInt(s[x*4+1]) , Integer.parseInt(s[x*4+2]) );
-				this.sub_home[x] = l;
-			}
-		}
-	}
-
 	//サブホームデータを文字列で返す（DB用）
 	public String SubHomeToString(){
 		String s = "";
@@ -495,6 +488,35 @@ public class PlayerData {
 			}
 		}
 		return s;
+	}
+	
+	public void build_count_flg_set(int x,boolean f){
+		if(x == 1 ){
+			build_count_flg1 = f;
+		}else if(x == 2){
+			build_count_flg2 = f;
+		}
+	} 
+	public boolean build_count_flg_get(int x){
+		if(x == 1 ){
+			return build_count_flg1;
+		}else if(x == 2){
+			return build_count_flg2;
+		}
+		return true;
+	} 
+	public void build_lv_set(int lv){
+		build_lv = lv;
+	}
+	public int build_lv_get(){
+		SeichiAssist.plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "test");
+		return build_lv;
+	}
+	public void build_count_set(int count){
+		build_count = count;
+	}
+	public int build_count_get(){
+		return build_count;
 	}
 
 }
