@@ -47,6 +47,7 @@ import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
+import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -653,6 +654,14 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
 				//インベントリを開く
 				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください"));
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.END_CRYSTAL)){
+				//実績メニューを開く
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				//インベントリを開く
+				player.openInventory(MenuInventoryData.getTitleMenuData(player));
 			}
 
 		}
@@ -2138,5 +2147,122 @@ public class PlayerInventoryListener implements Listener {
                 player.sendMessage(ChatColor.GREEN + ""+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
             }
         }
+
+    }
+    //実績メニューの処理
+    @EventHandler
+    public void onPlayerClickTitleMenuEvent(InventoryClickEvent event){
+    	//外枠のクリック処理なら終了
+    	if(event.getClickedInventory() == null){
+    		return;
+    	}
+
+    	ItemStack itemstackcurrent = event.getCurrentItem();
+    	InventoryView view = event.getView();
+    	HumanEntity he = view.getPlayer();
+    	//インベントリを開けたのがプレイヤーではない時終了
+    	if(!he.getType().equals(EntityType.PLAYER)){
+    		return;
+    	}
+
+    	Inventory topinventory = view.getTopInventory();
+    	//インベントリが存在しない時終了
+    	if(topinventory == null){
+    		return;
+    	}
+    	//インベントリサイズが36でない時終了
+    	if(topinventory.getSize() != 36){
+    		return;
+    	}
+    	Player player = (Player)he;
+    	UUID uuid = player.getUniqueId();
+    	PlayerData playerdata = playermap.get(uuid);
+
+    	//経験値変更用のクラスを設定
+    	ExperienceManager expman = new ExperienceManager(player);
+
+
+    	//インベントリ名が以下の時処理
+    	if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績・二つ名システム")){
+    		event.setCancelled(true);
+
+    		//プレイヤーインベントリのクリックの場合終了
+    		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+    			return;
+    		}
+
+    		/*
+    		 * クリックしたボタンに応じた各処理内容の記述ここから
+    		 */
+
+    		//表示内容をLVと二つ名で切り替えるための処理
+			if(itemstackcurrent.getType().equals(Material.REDSTONE_TORCH_ON)){
+				if(playerdata.displayTypeLv){
+					playerdata.displayTypeLv = false;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.openInventory(MenuInventoryData.getTitleMenuData(player));
+				}else{
+					playerdata.displayTypeLv = true ;
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.openInventory(MenuInventoryData.getTitleMenuData(player));
+				}
+			}
+
+			//実績「整地神ランキング」を開く
+			else if(itemstackcurrent.getType().equals(Material.DIAMOND_PICKAXE)){
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getTitleRankData(player));
+			}
+
+    		//ホームメニューに戻る
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+    	}
+
+
+    	//インベントリ名が以下の時処理
+    	if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「整地神ランキング」")){
+    		event.setCancelled(true);
+
+    		//実績解除処理部分の読みこみ
+    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//プレイヤーインベントリのクリックの場合終了
+    		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+    			return;
+    		}
+
+    		/*
+    		 * クリックしたボタンに応じた各処理内容の記述ここから
+    		 */
+
+    		if(itemstackcurrent.getType().equals(Material.BEDROCK)){
+    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			if(itemmeta.getDisplayName().contains("No1001「???」")){
+    				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    				player.sendMessage("このスキルは自動解禁式です。毎分の処理をお待ちください。");
+    				TUTR.TryTitle(player,1001);
+    				player.openInventory(MenuInventoryData.getTitleRankData(player));
+
+    			}
+    		}
+    		else if (itemstackcurrent.getType().equals(Material.DIAMOND_BLOCK)){
+    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			if(itemmeta.getDisplayName().contains("No1001「"+ SeichiAssist.config.getTitle(1001) +"」")){
+    				playerdata.displayTitleNo = 1001 ;
+    				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(1001) +"」が設定されました。");
+    				player.openInventory(MenuInventoryData.getTitleRankData(player));
+    			}
+    		}
+    		//ホームメニューに戻る
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getTitleMenuData(player));
+				return;
+			}
+    	}
     }
 }
