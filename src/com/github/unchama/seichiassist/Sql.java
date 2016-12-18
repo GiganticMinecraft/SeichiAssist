@@ -274,7 +274,7 @@ public class Sql{
 				",add column if not exists lastquit datetime default null" ;
 				//",add column if not exists displayTypeLv boolean default true" +
 				//",add column if not exists displayTitleNo int default 0" +
-				//",add column if not exists TitleFlags bitset default 0" ;
+				//",add column if not exists TitleFlags blob default null" ;
 
 				/*
 				",add column if not exists stack_dirt int default 0" +
