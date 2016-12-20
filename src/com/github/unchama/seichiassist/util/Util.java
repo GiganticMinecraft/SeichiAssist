@@ -49,6 +49,12 @@ public class Util {
 		if(SeichiAssist.DEBUG){
 			worldname = SeichiAssist.DEBUGWORLDNAME;
 		}
+
+		//整地ワールドzeroではスキル発動不可
+		if(player.getWorld().getName().equalsIgnoreCase("world_sw_zero")){
+			return false;
+		}
+
 		//プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)にいる場合
 		if(player.getWorld().getName().toLowerCase().startsWith(worldname)
 				|| player.getWorld().getName().equalsIgnoreCase("world")
