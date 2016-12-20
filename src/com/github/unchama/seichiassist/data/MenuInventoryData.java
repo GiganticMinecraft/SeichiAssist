@@ -2588,6 +2588,86 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		return itemmeta;
 	}
+
+	//ランキングリスト
+	public static Inventory getRankingList(Player p, int page){
+		int maxpage=2;
+		final int MIN_LEVEL = 100;
+		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
+		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		List<String> lore = new ArrayList<String>();
+		itemstack.setDurability((short) 3);
+		RankData rankdata = null;
+		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+			if(count >= SeichiAssist.ranklist.size()){
+				break;
+			}
+			if(count2==45){count2+=2;}
+			rankdata = SeichiAssist.ranklist.get(count);
+			if(rankdata.totalbreaknum<SeichiAssist.levellist.get(MIN_LEVEL-1)){ //レベル100相当の総整地量判定に変更
+				break;
+			}
+
+			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (count+1) +"位:" + "" + ChatColor.WHITE + rankdata.name);
+			lore.clear();
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "整地レベル:" + rankdata.level);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "総整地量:" + rankdata.totalbreaknum);
+
+			skullmeta.setLore(lore);
+			skullmeta.setOwner(rankdata.name);
+			itemstack.setItemMeta(skullmeta);
+			inventory.setItem(count2,itemstack);
+		}
+
+		if(page!=maxpage){
+		// 整地神ランキング次ページ目を開く
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング"+(page+2)+"ページ目へ");
+		lore.clear();
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowDown");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(52,itemstack);
+		}
+
+		// 1ページ目を開く
+		if(page==0){
+			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ");
+			lore.clear();
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
+			skullmeta.setLore(lore);
+			skullmeta.setOwner("MHF_ArrowLeft");
+			itemstack.setItemMeta(skullmeta);
+			inventory.setItem(45,itemstack);
+		} else {
+			// 整地神ランキング前ページ目を開く;
+			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング"+page+"ページ目へ");
+			lore.clear();
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
+			skullmeta.setLore(lore);
+			skullmeta.setOwner("MHF_ArrowUp");
+			itemstack.setItemMeta(skullmeta);
+			inventory.setItem(45,itemstack);
+		}
+
+		// 総整地量の表記
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地鯖統計データ");
+		lore.clear();
+		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "全プレイヤー総整地量:"
+				,ChatColor.RESET + "" +  ChatColor.AQUA + SeichiAssist.allplayerbreakblockint
+				));
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("unchama");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(53,itemstack);
+
+		return inventory;
+	}
+
+
+	/*
 	//ランキングリスト
 	public static Inventory getRankingList(Player p){
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
@@ -2755,7 +2835,7 @@ public class MenuInventoryData {
 		skullmeta.setOwner("MHF_ArrowUp");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(45,itemstack);
-
+	*/
 			/* 整地神ランキング4ページ目を開く
 			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング３ページ目へ");
 			lore.clear();
@@ -2767,6 +2847,7 @@ public class MenuInventoryData {
 			inventory.setItem(52,itemstack);
 
 		*/
+	/*
 		// 総整地量の表記
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地鯖統計データ");
 		lore.clear();
@@ -2780,6 +2861,7 @@ public class MenuInventoryData {
 
 		return inventory;
 	}
+	*/
 
 	//エフェクト選択メニュー
 	public static Inventory getActiveSkillEffectMenuData(Player p) {
