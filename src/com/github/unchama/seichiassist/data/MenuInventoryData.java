@@ -2596,11 +2596,11 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
-		for(int count = 0,count2=0;count < 50;count++,count2++){
+		for(int count = 0,count2=0;count < 51;count++,count2++){
 			if(count > SeichiAssist.ranklist.size() - 1){
 				break;
 			}
-			if(count2==44){count2+=3;}
+			if(count2==45){count2+=3;}
 			rankdata = SeichiAssist.ranklist.get(count);
 			if(rankdata.level<100){
 				break;
@@ -2664,7 +2664,7 @@ public class MenuInventoryData {
 			if(count > SeichiAssist.ranklist.size() - 1){
 				break;
 			}
-			if(count2==44){count2+=3;}
+			if(count2==45){count2+=3;}
 			rankdata = SeichiAssist.ranklist.get(count);
 			if(rankdata.level<100){
 				break;
@@ -2724,11 +2724,11 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
-		for(int count = 101,count2=0;count < 151 || rankdata.level>=99;count++,count2++){
+		for(int count = 100,count2=0;count < 151 || rankdata.level>=99;count++,count2++){
 			if(count > SeichiAssist.ranklist.size() - 1){
 				break;
 			}
-			if(count2==44){count2+=3;}
+			if(count2==45){count2+=3;}
 			rankdata = SeichiAssist.ranklist.get(count);
 			if(rankdata.level<100){
 				break;
