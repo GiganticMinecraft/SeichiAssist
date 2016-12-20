@@ -148,7 +148,7 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.COOKIE)){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getRankingList(player));
+				player.openInventory(MenuInventoryData.getRankingList(player, 0));
 				return;
 			}
 
@@ -1819,31 +1819,27 @@ public class PlayerInventoryListener implements Listener {
 			}
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-					if(itemmeta.getDisplayName().contains("整地神ランキング3ページ目")){
-						//開く音を再生
-						player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-						player.openInventory(MenuInventoryData.getRankingList3(player));
-						return;
-					}
-					else{
-						//開く音を再生
-						player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-						player.openInventory(MenuInventoryData.getRankingList2(player));
-						return;
-					}
+					if(itemmeta.getDisplayName().contains("整地神ランキング") &&
+							itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
+							int page_display = Integer.parseInt(itemmeta.getDisplayName().replaceAll("[^0-9]","")); //数字以外を全て消す
+
+							//開く音を再生
+							player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+							player.openInventory(MenuInventoryData.getRankingList(player, page_display-1));
+
+						}
 			}
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-				if(itemmeta.getDisplayName().contains("整地紳ランキング2ページ目")){
-					//開く音を再生
-					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-					player.openInventory(MenuInventoryData.getRankingList2(player));
-					return;
+				if(itemmeta.getDisplayName().contains("整地神ランキング") &&
+						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
+						int page_display = Integer.parseInt(itemmeta.getDisplayName().replaceAll("[^0-9]","")); //数字以外を全て消す
+
+						//開く音を再生
+						player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+						player.openInventory(MenuInventoryData.getRankingList(player, page_display-1));
+
 				}
-				//開く音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getRankingList(player));
-				return;
 			}
 		}
 	}
