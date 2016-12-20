@@ -509,7 +509,6 @@ public class PlayerData {
 		build_lv = lv;
 	}
 	public int build_lv_get(){
-		SeichiAssist.plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "test");
 		return build_lv;
 	}
 	public void build_count_set(int count){
