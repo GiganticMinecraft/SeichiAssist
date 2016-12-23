@@ -28,6 +28,11 @@ commands:
       usage: /<command> <playername>
       permission: multiseichiplugin.lastquit
       permission-message: You don't have <permission>
+  rmp:
+      description: This is a remove protect command.
+      usage: /<command> <playername>
+      permission: multiseichiplugin.rmp
+      permission-message: You don't have <permission>
   stick:
       description: This is a stick command.
       usage: /<command>
