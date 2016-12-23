@@ -26,6 +26,7 @@ import com.github.unchama.seichiassist.commands.lastquitCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.commands.stickCommand;
+import com.github.unchama.seichiassist.commands.rmpCommand;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -346,6 +347,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("level",new levelCommand(plugin));
 		commandlist.put("lastquit",new lastquitCommand(plugin));
 		commandlist.put("stick",new stickCommand(plugin));
+		commandlist.put("rmp",new rmpCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
