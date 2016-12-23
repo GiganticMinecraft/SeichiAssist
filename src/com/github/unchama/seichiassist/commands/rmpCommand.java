@@ -20,7 +20,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.md_5.bungee.api.ChatColor;
 
 public class rmpCommand implements TabExecutor {
-	static Sql sql = SeichiAssist.plugin.sql;
+	private Sql sql = SeichiAssist.plugin.sql;
 	private Map<UUID, String> leavers;
 
 	public rmpCommand(SeichiAssist plugin){
@@ -35,15 +35,30 @@ public class rmpCommand implements TabExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 	String label, String[] args) {
-		//rmp <Days> 以外の呼び出し
-		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "/rmp <日数>");
+		if (args.length > 2) {
+			sender.sendMessage(ChatColor.RED + "/rmp <日数> <削除フラグ: true/false>");
 			sender.sendMessage("全Ownerが<日数>間ログインしていないRegionを表示します");
+			sender.sendMessage("削除フラグがtrueの場合、該当Regionを削除します(整地ワールドのみ)");
+			return true;
+		} else if (!(sender instanceof Player)) {
+			//プレイヤーからの送信でない時処理終了
+			sender.sendMessage(ChatColor.GREEN + "このコマンドはゲーム内から実行してください");
 			return true;
 		} else {
 			try {
+				int days = 7;
+				boolean removeFlg = false;
+
 				//<日数>を数値変換
-				int days = Integer.parseInt(args[0]);
+				if (args.length > 0) days = Integer.parseInt(args[0]);
+				//<削除フラグ>を判定(整地ワールドに限る)
+				if ((args.length > 1) && (args[1].equals("true"))) {
+					if(SeichiAssist.ignoreWorldlist.contains(((Player)sender).getWorld().getName())) {
+						removeFlg = true;
+					} else {
+						sender.sendMessage(ChatColor.RED + "削除フラグは整地ワールドでのみ使用出来ます");
+					}
+				}
 				//mysqlからログインしていないプレイヤーリストを取得
 				leavers = sql.selectLeavers(days);
 				if (leavers == null) {
@@ -65,15 +80,23 @@ public class rmpCommand implements TabExecutor {
 					if (isAllLeave(regions.get(id).getOwners())) targets.add(id);
 				}
 
-				//結果表示
-				targets.forEach(target -> {
-					sender.sendMessage(ChatColor.YELLOW.toString() + target);
-					//領域削除機能…要/rg remove権限
-//					((Player)sender).chat("/rg remove " + target);
-				});
+				//結果処理
+				if (targets.size() == 0) {
+					sender.sendMessage(ChatColor.GREEN + "該当Regionは存在しません");
+				} else if (removeFlg) {
+					//該当領域削除
+					targets.forEach(target -> {
+						((Player)sender).chat("/rg remove " + target);
+					});
+				} else {
+					//一覧表示
+					targets.forEach(target -> {
+						sender.sendMessage(ChatColor.YELLOW.toString() + target);
+					});
+				}
 			} catch (NumberFormatException e) {
 				//parseIntエラー
-				sender.sendMessage("<日数>には整数を入力してください");
+				sender.sendMessage(ChatColor.RED + "<日数>には整数を入力してください");
 				return true;
 			}
 			return true;
