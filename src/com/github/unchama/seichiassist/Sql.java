@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -271,10 +272,10 @@ public class Sql{
 				",add column if not exists inventory blob default null" +
 				",add column if not exists rgnum int default 0" +
 				",add column if not exists totalbreaknum int default 0" +
-				",add column if not exists lastquit datetime default null" ;
-				//",add column if not exists displayTypeLv boolean default true" +
-				//",add column if not exists displayTitleNo int default 0" +
-				//",add column if not exists TitleFlags blob default null" ;
+				",add column if not exists lastquit datetime default null" +
+				",add column if not exists displayTypeLv boolean default true" +
+				",add column if not exists displayTitleNo int default 0" +
+				",add column if not exists TitleFlags text default null" ;
 
 				/*
 				",add column if not exists stack_dirt int default 0" +
@@ -986,6 +987,39 @@ public class Sql{
 				return null;
 			}
 		return lastquit;
+	}
+
+	//lastquitがdays日以上(または未登録)のプレイヤー名を配列で取得
+	public Map<UUID, String> selectLeavers(int days){
+		Map<UUID, String> leavers = new HashMap<>();
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "select name, uuid from " + db + "." + table
+				+ " where ((lastquit <= date_sub(curdate(), interval " + Integer.toString(days) + " day))"
+				+ " or (lastquit is null)) and (name != '') and (uuid != '')";
+			try{
+				rs = stmt.executeQuery(command);
+				while (rs.next()) {
+					try {
+						//結果のStringをUUIDに変換
+						UUID uuid = UUID.fromString(rs.getString("uuid"));
+						if (leavers.containsKey(uuid)) {
+							java.lang.System.out.println("playerdataにUUIDが重複しています: " + rs.getString("uuid"));
+						} else {
+							//HashMapにUUIDとnameを登録
+							leavers.put(uuid, rs.getString("name"));
+						}
+					} catch (IllegalArgumentException e) {
+						java.lang.System.out.println("不適切なUUID: " + rs.getString("name") + ": " + rs.getString("uuid"));
+					}
+				}
+				rs.close();
+			} catch (SQLException e) {
+				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+				exc = e.getMessage();
+				e.printStackTrace();
+				return null;
+			}
+		return leavers;
 	}
 
 	//

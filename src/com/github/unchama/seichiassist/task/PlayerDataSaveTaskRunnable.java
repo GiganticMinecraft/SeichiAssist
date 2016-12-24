@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.task;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -99,7 +100,10 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
 				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
-				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana());
+				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana())
+
+				+",displayTypeLv = " + Boolean.toString(playerdata.displayTypeLv)
+				+",displayTitleNo = " + Integer.toString(playerdata.displayTitleNo);
 
 				//MineStack機能の数値更新処理
 
@@ -192,6 +196,12 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 				//サブホームのデータ
 				command +=  ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'";
+
+				//実績のフラグ(BitSet)保存用変換処理
+				long[] TitleArray = playerdata.TitleFlags.toLongArray();
+		        String[] TitleNums = Arrays.stream(TitleArray).mapToObj(Long::toHexString).toArray(String[]::new);
+		        String FlagString = String.join(",", TitleNums);
+		        command += ",TitleFlags = '" + FlagString + "'" ;
 
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();

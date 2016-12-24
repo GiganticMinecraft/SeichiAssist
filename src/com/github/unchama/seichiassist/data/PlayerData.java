@@ -145,6 +145,7 @@ public class PlayerData {
 		this.displayTypeLv = true;
 		this.displayTitleNo = 0 ;
 		this.TitleFlags = new BitSet(10000);
+		this.TitleFlags.set(1);
 
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);

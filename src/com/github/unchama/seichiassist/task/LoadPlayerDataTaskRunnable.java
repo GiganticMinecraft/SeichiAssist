@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -159,6 +161,24 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
  				//subhomeの情報
  				playerdata.SetSubHome(rs.getString("homepoint_" + SeichiAssist.config.getServerNum()));
+
+ 				//実績、二つ名の情報
+ 				playerdata.displayTypeLv = rs.getBoolean("displayTypeLv");
+ 				playerdata.displayTitleNo = rs.getInt("displayTitleNo");
+ 				//実績解除フラグのBitSet型への復元処理
+ 				//初回nullエラー回避のための分岐
+ 				/*
+ 				if(rs.getString("TitleFlags").toString() == null){
+ 					playerdata.TitleFlags = new BitSet(10000);
+ 					java.lang.System.out.println(playerdata.TitleFlags);
+
+ 				}else {
+ 				*/
+ 				String[] Titlenums = rs.getString("TitleFlags").toString().split(",");
+ 		        long[] Titlearray = Arrays.stream(Titlenums).mapToLong(x -> Long.parseUnsignedLong(x, 16)).toArray();
+ 		        BitSet TitleFlags = BitSet.valueOf(Titlearray);
+ 		        playerdata.TitleFlags = TitleFlags ;
+ 				//}
 
  				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
  				for(int i = 0 ; i < activeskilleffect.length ; i++){
