@@ -167,18 +167,16 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.displayTitleNo = rs.getInt("displayTitleNo");
  				//実績解除フラグのBitSet型への復元処理
  				//初回nullエラー回避のための分岐
- 				/*
- 				if(rs.getString("TitleFlags").toString() == null){
- 					playerdata.TitleFlags = new BitSet(10000);
- 					java.lang.System.out.println(playerdata.TitleFlags);
-
- 				}else {
- 				*/
+ 				try {
  				String[] Titlenums = rs.getString("TitleFlags").toString().split(",");
  		        long[] Titlearray = Arrays.stream(Titlenums).mapToLong(x -> Long.parseUnsignedLong(x, 16)).toArray();
  		        BitSet TitleFlags = BitSet.valueOf(Titlearray);
  		        playerdata.TitleFlags = TitleFlags ;
- 				//}
+ 				}
+ 				catch(NullPointerException e){
+ 					playerdata.TitleFlags = new BitSet(10000);
+ 					playerdata.TitleFlags.set(1);
+ 				}
 
  				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
  				for(int i = 0 ; i < activeskilleffect.length ; i++){

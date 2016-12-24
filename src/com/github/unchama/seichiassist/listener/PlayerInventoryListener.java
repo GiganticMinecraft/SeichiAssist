@@ -2405,7 +2405,7 @@ public class PlayerInventoryListener implements Listener {
     			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。");
-    			player.openInventory(MenuInventoryData.getTitleRankData(player));
+    			player.openInventory(MenuInventoryData.getTitleTimeData(player));
     		}
     		else if (itemstackcurrent.getType().equals(Material.DIAMOND_BLOCK)){
     			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
@@ -2450,7 +2450,7 @@ public class PlayerInventoryListener implements Listener {
     				playerdata.displayTitleNo = 4010 ;
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(4010) +"」が設定されました。");
     			}
-    			player.openInventory(MenuInventoryData.getTitleRankData(player));
+    			player.openInventory(MenuInventoryData.getTitleTimeData(player));
     		}
     		//実績メニューに戻る
     		else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
