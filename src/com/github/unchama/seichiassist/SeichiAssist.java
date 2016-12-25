@@ -27,6 +27,7 @@ import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.rmpCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.commands.stickCommand;
+import com.github.unchama.seichiassist.commands.rmpCommand;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;

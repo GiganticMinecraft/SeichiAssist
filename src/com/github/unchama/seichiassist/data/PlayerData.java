@@ -369,19 +369,23 @@ public class PlayerData {
 			//ネザーラックの重み分け
 			result *= 0.2;
 			break;
-		/*
+
 		case ENDER_STONE:
 			//エンドストーンの重み分け
-			result *= 0.5;
+			result *= 0.2;
 			break;
-		*/
+
 
 		default:
 			break;
 		}
-		//整地ワールド外では整地数が反映されない
-		if(!Util.isGainSeichiExp(p)){
+
+		if(!Util.isSeichiWorld(p)){
+			//整地ワールド外では整地数が反映されない
 			result *= 0.0;
+		}else if(p.getWorld().getName().equalsIgnoreCase("world_sw_zero")){
+			//整地ワールドzeroでは整地量2.0倍
+			result *= 2.0;
 		}
 		return result;
 	}

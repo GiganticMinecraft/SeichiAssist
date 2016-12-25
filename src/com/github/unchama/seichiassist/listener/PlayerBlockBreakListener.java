@@ -70,18 +70,10 @@ public class PlayerBlockBreakListener implements Listener {
 		if(!Util.isSkillEnable(player)){
 			return;
 		}
-
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
-		}
-
-		//重力値によるキャンセル判定
-		if(player.getWorld().getName().equalsIgnoreCase(worldname) &&
-			!SeichiAssist.gravitymateriallist.contains(block.getType()) &&
-			!SeichiAssist.cancelledmateriallist.contains(block.getType())){
-
-
+		//整地ワールドでは重力値によるキャンセル判定を行う
+		if(Util.isSeichiWorld(player) &&
+		!SeichiAssist.gravitymateriallist.contains(block.getType()) &&
+		!SeichiAssist.cancelledmateriallist.contains(block.getType())){
 			int type = playerdata.activeskilldata.skilltype-1;
 			if(type < 0){
 				type = 0;
