@@ -54,7 +54,8 @@ public class rmpCommand implements TabExecutor {
 				//<削除フラグ>を判定(整地ワールドに限る)
 				if ((args.length > 1) && (args[1].equals("true"))) {
 					if(SeichiAssist.ignoreWorldlist.contains(((Player)sender).getWorld().getName())) {
-						removeFlg = true;
+						sender.sendMessage(ChatColor.RED + "削除フラグを検知しましたが、現在運用停止中です");
+						//removeFlg = true;
 					} else {
 						sender.sendMessage(ChatColor.RED + "削除フラグは整地ワールドでのみ使用出来ます");
 					}
@@ -85,9 +86,11 @@ public class rmpCommand implements TabExecutor {
 					sender.sendMessage(ChatColor.GREEN + "該当Regionは存在しません");
 				} else if (removeFlg) {
 					//該当領域削除
+					/*(コメントアウト中)
 					targets.forEach(target -> {
 						((Player)sender).chat("/rg remove " + target);
 					});
+					*/
 				} else {
 					//一覧表示
 					targets.forEach(target -> {
