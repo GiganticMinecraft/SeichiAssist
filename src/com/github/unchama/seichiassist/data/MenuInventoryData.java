@@ -71,7 +71,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum));
 		}
 		//整地ワールド外では整地数が反映されない
-		if(!Util.isGainSeichiExp(p)){
+		if(!Util.isSeichiWorld(p)){
 			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "整地ワールド以外では");
 			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "整地量とガチャ券は増えません");
 		}

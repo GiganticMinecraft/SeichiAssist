@@ -380,7 +380,7 @@ public class PlayerData {
 			break;
 		}
 
-		if(!Util.isGainSeichiExp(p)){
+		if(!Util.isSeichiWorld(p)){
 			//整地ワールド外では整地数が反映されない
 			result *= 0.0;
 		}else if(p.getWorld().getName().equalsIgnoreCase("world_sw_zero")){

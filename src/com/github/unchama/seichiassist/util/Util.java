@@ -71,14 +71,14 @@ public class Util {
 		return false;
 	}
 
-	//整地レベルへの整地量反映可否の処理(反映されるならtrue、反映されないならfalse)
-	public static boolean isGainSeichiExp(Player player){
-		//デバッグモード時は全ワールドで整地数が反映される(DEBUGWORLDNAME = worldの場合)
+	//プレイヤーが整地ワールドにいるかどうかの判定処理(整地ワールド=true、それ以外=false)
+	public static boolean isSeichiWorld(Player player){
+		//デバッグモード時は全ワールドtrue(DEBUGWORLDNAME = worldの場合)
 		String worldname = SeichiAssist.SEICHIWORLDNAME;
 		if(SeichiAssist.DEBUG){
 			worldname = SeichiAssist.DEBUGWORLDNAME;
 		}
-		//整地ワールドでは反映されるのでtrue
+		//整地ワールドではtrue
 		if(player.getWorld().getName().toLowerCase().startsWith(worldname)){
 			return true;
 		}
