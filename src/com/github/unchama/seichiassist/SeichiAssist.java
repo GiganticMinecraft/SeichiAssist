@@ -24,6 +24,7 @@ import com.github.unchama.seichiassist.commands.effectCommand;
 import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.lastquitCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
+import com.github.unchama.seichiassist.commands.rmpCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.commands.stickCommand;
 import com.github.unchama.seichiassist.commands.rmpCommand;

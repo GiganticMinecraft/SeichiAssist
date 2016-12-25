@@ -190,6 +190,34 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				Util.sendEveryMessage(playerdata.name + "のガチャ処理が成功");
 			}
 
+			//実績解除判定
+			//実績解除処理部分の読みこみ
+    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//No1000系統の解禁チェック
+    		int checkNo = 1001 ;
+    		for(;checkNo < 1010 ;){
+    			if(!playerdata.TitleFlags.get(checkNo)){
+    				TUTR.TryTitle(player,checkNo);
+    			}
+    			checkNo ++ ;
+    		}
+    		//No3000系統の解禁チェック
+    		checkNo = 3001 ;
+    		for(;checkNo < 3012 ;){
+    			if(!playerdata.TitleFlags.get(checkNo)){
+    				TUTR.TryTitle(player,checkNo);
+    			}
+    			checkNo ++ ;
+    		}
+    		//No4000系統の解禁チェック
+    		checkNo = 4001 ;
+    		for(;checkNo < 4011 ;){
+    			if(!playerdata.TitleFlags.get(checkNo)){
+    				TUTR.TryTitle(player,checkNo);
+    			}
+    			checkNo ++ ;
+    		}
+
 		}
 
 	}

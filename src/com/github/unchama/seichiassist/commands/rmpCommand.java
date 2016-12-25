@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -17,10 +19,8 @@ import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import net.md_5.bungee.api.ChatColor;
-
 public class rmpCommand implements TabExecutor {
-	private Sql sql = SeichiAssist.plugin.sql;
+	static Sql sql = SeichiAssist.plugin.sql;
 	private Map<UUID, String> leavers;
 
 	public rmpCommand(SeichiAssist plugin){

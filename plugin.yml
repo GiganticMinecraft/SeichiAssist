@@ -1,6 +1,6 @@
 name: SeichiAssist
 main: com.github.unchama.seichiassist.SeichiAssist
-version: 0.8.8
+version: 0.8.9
 
 commands:
   gacha:
@@ -29,10 +29,10 @@ commands:
       permission: multiseichiplugin.lastquit
       permission-message: You don't have <permission>
   rmp:
-      description: This is a remove protect command.
-      usage: /<command> <playername>
-      permission: multiseichiplugin.rmp
-      permission-message: You don't have <permission>
+      description: This is a remove protect command. 
+      usage: /<command> <playername> 
+      permission: multiseichiplugin.rmp 
+      permission-message: You don't have <permission> 
   stick:
       description: This is a stick command.
       usage: /<command>
