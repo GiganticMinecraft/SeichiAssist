@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.data;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,7 +56,7 @@ public class PlayerData {
 
 	//MineStack
 	//public MineStack minestack;
-	
+
 	public MineStack minestack = new MineStack();
 	//MineStackFlag
 	public boolean minestackflag;
@@ -95,6 +96,14 @@ public class PlayerData {
 	//サブのホームポイント
 	private Location[] sub_home = new Location[SeichiAssist.config.getSubHomeMax()];
 
+	//LV・二つ名表示切替用
+	public boolean displayTypeLv;
+	//表示二つ名の指定用
+	public int displayTitleNo;
+	//二つ名解禁フラグ保存用
+	public BitSet TitleFlags;
+
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.name = Util.getName(player);
@@ -132,6 +141,11 @@ public class PlayerData {
 		this.p_givenvote = 0;
 		this.votecooldownflag = true;
 		this.gachacooldownflag = true;
+
+		this.displayTypeLv = true;
+		this.displayTitleNo = 0 ;
+		this.TitleFlags = new BitSet(10000);
+		this.TitleFlags.set(1);
 
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
@@ -229,12 +243,12 @@ public class PlayerData {
 	public void setLevel(int _level) {
 		level = _level;
 	}
-	
+
 	//プレイヤーのレベルからレベルと総整地量を指定された値に設定
 	/**
 	 * @param _level
 	 * レベル
-	 * 
+	 *
 	 * ※レベルと総整地量を変更します(取扱注意)
 	 */
 	public void setLevelandTotalbreaknum(int _level) {
@@ -243,12 +257,22 @@ public class PlayerData {
 	}
 
 
-	//表示される名前に整地レベルを追加
+	//表示される名前に整地レベルor二つ名を追加
 	public void setDisplayName(Player p) {
 		String displayname = Util.getName(p);
 
-		displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
-
+		//表示二つ名が設定されていない場合、LV表示に強制変更
+		if(displayTitleNo == 0){
+			displayTypeLv = true ;
+		}
+		//表示を追加する処理
+		if(displayTypeLv){
+			displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
+		} else {
+			String displayTitle = SeichiAssist.config.getTitle(displayTitleNo);
+			displayname =  "[" + displayTitle + "]" + displayname + ChatColor.WHITE;
+		}
+		//放置時に色を変える
 		if(idletime >= 10){
 			displayname = ChatColor.DARK_GRAY + displayname;
 		}else if(idletime >= 3){
@@ -345,19 +369,23 @@ public class PlayerData {
 			//ネザーラックの重み分け
 			result *= 0.2;
 			break;
-		/*
+
 		case ENDER_STONE:
 			//エンドストーンの重み分け
-			result *= 0.5;
+			result *= 0.2;
 			break;
-		*/
+
 
 		default:
 			break;
 		}
-		//整地ワールド外では整地数が反映されない
-		if(!Util.isGainSeichiExp(p)){
+
+		if(!Util.isSeichiWorld(p)){
+			//整地ワールド外では整地数が反映されない
 			result *= 0.0;
+		}else if(p.getWorld().getName().equalsIgnoreCase("world_sw_zero")){
+			//整地ワールドzeroでは整地量2.0倍
+			result *= 2.0;
 		}
 		return result;
 	}
