@@ -163,8 +163,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				//建築
  				playerdata.build_lv_set(rs.getInt("build_lv"));
  				playerdata.build_count_set(rs.getInt("build_count"));
- 				playerdata.build_count_flg_set(1,rs.getBoolean("build_count_flg1"));
- 				playerdata.build_count_flg_set(2,rs.getBoolean("build_count_flg2"));
+ 				playerdata.build_count_flg_set(rs.getByte("build_count_flg"));
  				
  				
  				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();

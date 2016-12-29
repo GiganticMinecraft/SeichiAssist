@@ -396,9 +396,8 @@ public class Sql{
 				//BuildAssistのデータ
 				",add column if not exists build_lv int default 1" +//
 				",add column if not exists build_count int default 0" +//
-				",add column if not exists build_count_flg1 boolean default false" +//
-				",add column if not exists build_count_flg2 boolean default false" +//
-
+				",add column if not exists build_count_flg TINYINT UNSIGNED default 0" +//
+				
 				"";
 
 

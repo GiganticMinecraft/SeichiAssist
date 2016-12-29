@@ -195,8 +195,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				//建築
 				+ ",build_lv = " + Integer.toString(playerdata.build_lv_get())
 				+ ",build_count = " + Integer.toString(playerdata.build_count_get())
-				+ ",build_count_flg1 = " + Boolean.toString(playerdata.build_count_flg_get(1))
-				+ ",build_count_flg2 = " + Boolean.toString(playerdata.build_count_flg_get(2));
+				+ ",build_count_flg = " + Byte.toString(playerdata.build_count_flg_get());
 
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();

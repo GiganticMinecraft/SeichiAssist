@@ -99,10 +99,8 @@ public class PlayerData {
 	private int build_lv;
 	//設置ブロック数
 	private int build_count;
-	//サーバー1統合フラグ
-	private boolean build_count_flg1;
-	//サーバー2統合フラグ
-	private boolean build_count_flg2;
+	//設置ブロックサーバー統合フラグ
+	private byte build_count_flg;
 	
 	public PlayerData(Player player){
 		//初期値を設定
@@ -148,8 +146,7 @@ public class PlayerData {
 		}
 		this.build_lv = 1;
 		this.build_count = 0;
-		this.build_count_flg1 = false;
-		this.build_count_flg2 = false;
+		this.build_count_flg = 0;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -494,20 +491,11 @@ public class PlayerData {
 		return s;
 	}
 	
-	public void build_count_flg_set(int x,boolean f){
-		if(x == 1 ){
-			build_count_flg1 = f;
-		}else if(x == 2){
-			build_count_flg2 = f;
-		}
+	public void build_count_flg_set(byte x){
+		build_count_flg = x;
 	} 
-	public boolean build_count_flg_get(int x){
-		if(x == 1 ){
-			return build_count_flg1;
-		}else if(x == 2){
-			return build_count_flg2;
-		}
-		return true;
+	public byte build_count_flg_get(){
+		return build_count_flg;
 	} 
 	public void build_lv_set(int lv){
 		build_lv = lv;
