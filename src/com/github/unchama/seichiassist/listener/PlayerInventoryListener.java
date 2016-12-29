@@ -2192,9 +2192,15 @@ public class PlayerInventoryListener implements Listener {
     		//表示内容をLVと二つ名で切り替えるための処理
 			if(itemstackcurrent.getType().equals(Material.REDSTONE_TORCH_ON)){
 				if(playerdata.displayTypeLv){
-					playerdata.displayTypeLv = false;
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					player.openInventory(MenuInventoryData.getTitleMenuData(player));
+					if(!(playerdata.displayTitleNo == 0)){
+						playerdata.displayTypeLv = false ;
+						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+						player.openInventory(MenuInventoryData.getTitleMenuData(player));
+					}else {
+						player.sendMessage("先に利用したい「二つ名」を選択してください。");
+						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+						player.openInventory(MenuInventoryData.getTitleMenuData(player));
+					}
 				}else{
 					playerdata.displayTypeLv = true ;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
@@ -2325,7 +2331,7 @@ public class PlayerInventoryListener implements Listener {
     			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。");
-    			player.openInventory(MenuInventoryData.getTitleRankData(player));
+    			player.openInventory(MenuInventoryData.getTitleAmountData(player));
     		}
     		else if (itemstackcurrent.getType().equals(Material.DIAMOND_BLOCK)){
     			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
@@ -2374,7 +2380,7 @@ public class PlayerInventoryListener implements Listener {
     				playerdata.displayTitleNo = 3011 ;
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(3011) +"」が設定されました。");
     			}
-    			player.openInventory(MenuInventoryData.getTitleRankData(player));
+    			player.openInventory(MenuInventoryData.getTitleAmountData(player));
 
     		}
     		//実績メニューに戻る
