@@ -2210,7 +2210,7 @@ public class PlayerInventoryListener implements Listener {
             		continue;
             	}
             	else if(m.getType().equals(Material.DIAMOND_ORE)){
-            		redstoneore += m.getAmount();
+            		diamondore += m.getAmount();
             		continue;
             	}
             	else if(m.getType().equals(Material.REDSTONE_ORE)){
