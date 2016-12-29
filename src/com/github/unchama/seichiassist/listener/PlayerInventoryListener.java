@@ -2259,47 +2259,61 @@ public class PlayerInventoryListener implements Listener {
             /*
              * step3 非対象商品・余剰鉱石の返却
              */
-            ItemStack c = new ItemStack(Material.COAL_ORE);
-            ItemMeta citemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
-            c.setItemMeta(citemmeta);
-            c.setAmount(coalore - (int)(coalore/128)*128);
-            retore.add(c);
+            if(coalore != 0){
+            	ItemStack c = new ItemStack(Material.COAL_ORE);
+            	ItemMeta citemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
+            	c.setItemMeta(citemmeta);
+            	c.setAmount(coalore - (int)(coalore/128)*128);
+            	retore.add(c);
+            }
             
-            ItemStack i = new ItemStack(Material.IRON_ORE);
-            ItemMeta iitemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_ORE);
-            i.setItemMeta(iitemmeta);
-            i.setAmount(ironore - (int)(ironore/64)*64);
-            retore.add(i);
+            if(ironore != 0){
+            	ItemStack i = new ItemStack(Material.IRON_ORE);
+            	ItemMeta iitemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_ORE);
+            	i.setItemMeta(iitemmeta);
+            	i.setAmount(ironore - (int)(ironore/64)*64);
+            	retore.add(i);
+            }
             
-            ItemStack g = new ItemStack(Material.GOLD_ORE);
-            ItemMeta gitemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_ORE);
-            g.setItemMeta(gitemmeta);
-            g.setAmount(goldore - (int)(goldore/8)*8);
-            retore.add(g);
+            if(goldore != 0){
+            	ItemStack g = new ItemStack(Material.GOLD_ORE);
+            	ItemMeta gitemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_ORE);
+            	g.setItemMeta(gitemmeta);
+            	g.setAmount(goldore - (int)(goldore/8)*8);
+            	retore.add(g);
+            }
             
-            ItemStack l = new ItemStack(Material.LAPIS_ORE);
-            ItemMeta litemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
-            l.setItemMeta(litemmeta);
-            l.setAmount(lapisore - (int)(lapisore/8)*8);
-            retore.add(l);
+            if(lapisore != 0){
+            	ItemStack l = new ItemStack(Material.LAPIS_ORE);
+            	ItemMeta litemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
+            	l.setItemMeta(litemmeta);
+            	l.setAmount(lapisore - (int)(lapisore/8)*8);
+            	retore.add(l);
+            }
             
-            ItemStack d = new ItemStack(Material.DIAMOND_ORE);
-            ItemMeta ditemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
-            d.setItemMeta(ditemmeta);
-            d.setAmount(diamondore - (int)(diamondore/4)*4);
-            retore.add(d);
+            if(diamondore != 0){
+            	ItemStack d = new ItemStack(Material.DIAMOND_ORE);
+            	ItemMeta ditemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
+            	d.setItemMeta(ditemmeta);
+            	d.setAmount(diamondore - (int)(diamondore/4)*4);
+            	retore.add(d);
+            }
             
-            ItemStack r = new ItemStack(Material.REDSTONE_ORE);
-            ItemMeta ritemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
-            r.setItemMeta(ritemmeta);
-            r.setAmount(redstoneore - (int)(redstoneore/64)*64);
-            retore.add(r);
+            if(redstoneore != 0){
+            	ItemStack r = new ItemStack(Material.REDSTONE_ORE);
+            	ItemMeta ritemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
+            	r.setItemMeta(ritemmeta);
+            	r.setAmount(redstoneore - (int)(redstoneore/64)*64);
+            	retore.add(r);
+            }
             
-            ItemStack e = new ItemStack(Material.EMERALD_ORE);
-            ItemMeta eitemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
-            e.setItemMeta(eitemmeta);
-            e.setAmount(emeraldore - (int)(emeraldore/64)*64);
-            retore.add(e);
+            if(emeraldore != 0){
+            	ItemStack e = new ItemStack(Material.EMERALD_ORE);
+            	ItemMeta eitemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
+            	e.setItemMeta(eitemmeta);
+            	e.setAmount(emeraldore - (int)(emeraldore/64)*64);
+            	retore.add(e);
+            }
             
             //返却処理
             for(ItemStack m : dropitem){
@@ -2309,7 +2323,6 @@ public class PlayerInventoryListener implements Listener {
                     Util.dropItem(player,m);
                 }
             }
-            
             for(ItemStack m : retore){
             	if(!Util.isPlayerInventryFill(player)){
             		Util.addItem(player,m);
