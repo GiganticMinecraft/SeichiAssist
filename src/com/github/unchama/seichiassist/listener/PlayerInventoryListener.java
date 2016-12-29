@@ -2291,7 +2291,7 @@ public class PlayerInventoryListener implements Listener {
             	retore.add(l);
             }
             
-            if(diamondore - (int)(diamondore/4)*4) != 0){
+            if((diamondore - (int)(diamondore/4)*4) != 0){
             	ItemStack d = new ItemStack(Material.DIAMOND_ORE);
             	ItemMeta ditemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
             	d.setItemMeta(ditemmeta);
