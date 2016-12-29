@@ -2159,7 +2159,6 @@ public class PlayerInventoryListener implements Listener {
 		if(playerdata == null){
 			return;
 		}
-		String name = playerdata.name;
         Inventory inventory = event.getInventory();
 
         //インベントリサイズが36でない時終了
@@ -2176,6 +2175,8 @@ public class PlayerInventoryListener implements Listener {
             ItemStack[] item = inventory.getContents();
             //ドロップ用アイテムリスト(返却box)作成
             List<ItemStack> dropitem = new ArrayList<ItemStack>();
+            //余剰鉱石返却用アイテムリスト
+            List<ItemStack> retore = new ArrayList<ItemStack>();
             //個数計算用変数(このやり方以外に効率的なやり方があるかもしれません)
             int coalore = 0; //石炭
             int ironore = 0; //鉄
@@ -2184,7 +2185,6 @@ public class PlayerInventoryListener implements Listener {
             int diamondore = 0; //ダイアモンド
             int redstoneore = 0; //レッドストーン
             int emeraldore = 0; //エメラルド
-            
             //for文でインベントリ内のアイテムを1つずつ見る
             //鉱石・交換券変換インベントリスロットを1つずつ見る
             for(ItemStack m : item){
@@ -2213,6 +2213,10 @@ public class PlayerInventoryListener implements Listener {
             		redstoneore += m.getAmount();
             		continue;
             	}
+            	else if(m.getType().equals(Material.REDSTONE_ORE)){
+            		redstoneore += m.getAmount();
+            		continue;
+            	}
             	else if(m.getType().equals(Material.EMERALD_ORE)){
             		emeraldore += m.getAmount();
             		continue;
@@ -2231,17 +2235,7 @@ public class PlayerInventoryListener implements Listener {
             	player.sendMessage(ChatColor.DARK_RED + "交換券" + ChatColor.RESET + "" + ChatColor.GREEN + "を" + giveticket + "枚付与しました");
             }
             /*
-             * step2 非対象商品をインベントリへ
-             */
-            for(ItemStack m : dropitem){
-            	if(!Util.isPlayerInventryFill(player)){
-            		Util.addItem(player,m);
-            	}else{
-            		Util.dropItem(player, m);
-            	}
-            }
-            /*
-             * step3 交換券をインベントリへ
+             * step2 交換券をインベントリへ
              */
             ItemStack exchangeticket = new ItemStack(Material.PAPER);//※交換券の具体的なデータわからなかったので適当にしてますが、直して頂けるとありがたいです。
             ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
@@ -2263,14 +2257,66 @@ public class PlayerInventoryListener implements Listener {
             	player.sendMessage(ChatColor.GREEN + "交換券の付与が終わりました");
             }
             /*
-             * step4 余剰鉱石の返却
+             * step3 非対象商品・余剰鉱石の返却
              */
             ItemStack c = new ItemStack(Material.COAL_ORE);
             ItemMeta citemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
             c.setItemMeta(citemmeta);
-            c.setAmount(coalore - (int)(coalore/128)*2);
-
+            c.setAmount(coalore - (int)(coalore/128)*128);
+            retore.add(c);
+            
+            ItemStack i = new ItemStack(Material.IRON_ORE);
+            ItemMeta iitemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_ORE);
+            i.setItemMeta(iitemmeta);
+            i.setAmount(ironore - (int)(ironore/64)*64);
+            retore.add(i);
+            
+            ItemStack g = new ItemStack(Material.GOLD_ORE);
+            ItemMeta gitemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_ORE);
+            g.setItemMeta(gitemmeta);
+            g.setAmount(goldore - (int)(goldore/8)*8);
+            retore.add(g);
+            
+            ItemStack l = new ItemStack(Material.LAPIS_ORE);
+            ItemMeta litemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
+            l.setItemMeta(litemmeta);
+            l.setAmount(lapisore - (int)(lapisore/8)*8);
+            retore.add(l);
+            
+            ItemStack d = new ItemStack(Material.DIAMOND_ORE);
+            ItemMeta ditemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
+            d.setItemMeta(ditemmeta);
+            d.setAmount(diamondore - (int)(diamondore/4)*4);
+            retore.add(d);
+            
+            ItemStack r = new ItemStack(Material.REDSTONE_ORE);
+            ItemMeta ritemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
+            r.setItemMeta(ritemmeta);
+            r.setAmount(redstoneore - (int)(redstoneore/64)*64);
+            retore.add(r);
+            
+            ItemStack e = new ItemStack(Material.EMERALD_ORE);
+            ItemMeta eitemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
+            e.setItemMeta(eitemmeta);
+            e.setAmount(emeraldore - (int)(emeraldore/64)*64);
+            retore.add(e);
+            
+            //返却処理
+            for(ItemStack m : dropitem){
+                if(!Util.isPlayerInventryFill(player)){
+                    Util.addItem(player,m);
+                }else{
+                    Util.dropItem(player,m);
+                }
+            }
+            
+            for(ItemStack m : retore){
+            	if(!Util.isPlayerInventryFill(player)){
+            		Util.addItem(player,m);
+            	}else{
+            		Util.dropItem(player, m);
+            	}
+            }  
         }
-    }
-    
+    } 
 }
