@@ -53,8 +53,6 @@ public class SeichiAssist extends JavaPlugin{
 	public static Boolean DEBUG = false;
 	//ガチャシステムのメンテナンスフラグ
 	public static Boolean gachamente = false;
-	//鉱石・交換券変換システムのメンテナンスフラグ
-	public static Boolean ticketmente = false;
 
 	public static final String PLAYERDATA_TABLENAME = "playerdata";
 	public static final String GACHADATA_TABLENAME = "gachadata";
