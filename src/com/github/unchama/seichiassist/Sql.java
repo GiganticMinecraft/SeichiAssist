@@ -884,6 +884,111 @@ public class Sql{
  		return true;
 	}
 
+	//ランキング表示用にプレイ時間のカラムだけ全員分引っ張る
+	public boolean setRanking_playtick() {
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		List<RankData> ranklist = SeichiAssist.ranklist_playtick;
+		ranklist.clear();
+		//SeichiAssist.allplayerbreakblockint = 0;
+
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select name,playtick from " + db + "." + table
+				+ " order by playtick desc";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				RankData rankdata = new RankData();
+				rankdata.name = rs.getString("name");
+				//rankdata.level = rs.getInt("level");
+				//rankdata.totalbreaknum = rs.getInt("totalbreaknum");
+				rankdata.playtick = rs.getInt("playtick");
+				ranklist.add(rankdata);
+				//SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
+				  }
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+ 		return true;
+	}
+
+	//ランキング表示用に投票数のカラムだけ全員分引っ張る
+	public boolean setRanking_p_vote() {
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		List<RankData> ranklist = SeichiAssist.ranklist_p_vote;
+		ranklist.clear();
+		//SeichiAssist.allplayerbreakblockint = 0;
+
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select name,p_vote from " + db + "." + table
+				+ " order by p_vote desc";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				RankData rankdata = new RankData();
+				rankdata.name = rs.getString("name");
+				//rankdata.level = rs.getInt("level");
+				//rankdata.totalbreaknum = rs.getInt("totalbreaknum");
+				rankdata.p_vote = rs.getInt("p_vote");
+				ranklist.add(rankdata);
+				//SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
+				  }
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+ 		return true;
+	}
+
+	//ランキング表示用にプレミアムエフェクトポイントのカラムだけ全員分引っ張る
+	public boolean setRanking_premiumeffectpoint() {
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		List<RankData> ranklist = SeichiAssist.ranklist_premiumeffectpoint;
+		ranklist.clear();
+		//SeichiAssist.allplayerbreakblockint = 0;
+
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select name,premiumeffectpoint from " + db + "." + table
+				+ " order by premiumeffectpoint desc";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				RankData rankdata = new RankData();
+				rankdata.name = rs.getString("name");
+				//rankdata.level = rs.getInt("level");
+				//rankdata.totalbreaknum = rs.getInt("totalbreaknum");
+				rankdata.premiumeffectpoint = rs.getInt("premiumeffectpoint");
+				ranklist.add(rankdata);
+				//SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
+				  }
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+ 		return true;
+	}
+
 	//プレイヤーレベル全リセット
 	public boolean resetAllPlayerLevel(){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;

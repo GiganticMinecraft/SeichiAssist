@@ -51,6 +51,18 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 		if(!sql.setRanking()){
 			plugin.getLogger().info("ランキングデータの作成に失敗しました");
 		}
+
+		if(!sql.setRanking_playtick()){
+			plugin.getLogger().info("ランキングデータの作成に失敗しました");
+		}
+
+		if(!sql.setRanking_p_vote()){
+			plugin.getLogger().info("ランキングデータの作成に失敗しました");
+		}
+
+		if(!sql.setRanking_premiumeffectpoint()){
+			plugin.getLogger().info("ランキングデータの作成に失敗しました");
+		}
 	}
 
 }
