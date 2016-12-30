@@ -470,6 +470,17 @@ public class Util {
 		return itemstack_temp;
 	}
 
+	public static int getMineStackTypeindex(int idx){
+		int temp=0;
+		int type=SeichiAssist.minestacklist.get(idx).getStacktype();
+		for(int i=0; i<idx; i++){
+			if(SeichiAssist.minestacklist.get(i).getStacktype()==type){
+				temp++;
+			}
+		}
+		return temp;
+	}
+
 
 
 

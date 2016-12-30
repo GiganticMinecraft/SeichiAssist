@@ -184,8 +184,10 @@ public class BreakUtil {
 		int v37 = config.getMineStacklevel(37);
 		int v38 = config.getMineStacklevel(38);
 		*/
+		//boolean delete_flag=false;
 
-		for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
+		int i=0;
+		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
 			if(material.equals(SeichiAssist.minestacklist.get(i).getMaterial()) &&
 				itemstack.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){
 				//この時点でIDとサブIDが一致している
@@ -195,6 +197,7 @@ public class BreakUtil {
 						return false;
 					} else {
 						playerdata.minestack.addNum(i, amount);
+						//delete_flag=true;
 						break;
 					}
 				} else {
@@ -210,6 +213,7 @@ public class BreakUtil {
 								return false;
 							}
 							playerdata.minestack.addNum(i, amount);
+							//delete_flag=true;
 							break;
 						} else {
 							//ガチャ品
@@ -233,6 +237,7 @@ public class BreakUtil {
 									return false;
 								} else {
 									playerdata.minestack.addNum(i, amount);
+									//delete_flag=true;
 									break;
 								}
 							}
@@ -240,6 +245,9 @@ public class BreakUtil {
 						}
 				}
 			}
+		}
+		if(i==SeichiAssist.minestacklist.size()){
+			return false;
 		}
 
 		/*
