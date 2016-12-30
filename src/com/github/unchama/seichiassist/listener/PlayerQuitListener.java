@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -19,7 +20,7 @@ public class PlayerQuitListener implements Listener {
 	Sql sql = SeichiAssist.plugin.sql;
 
 	//プレイヤーがquitした時に実行
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onplayerQuitEvent(PlayerQuitEvent event){
 		//退出したplayerを取得
 		Player player = event.getPlayer();

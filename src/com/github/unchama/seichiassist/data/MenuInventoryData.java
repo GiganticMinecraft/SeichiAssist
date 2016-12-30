@@ -3247,7 +3247,7 @@ public class MenuInventoryData {
 			inventory.setItem(5,itemstack);
 		}
 		//500位
-		if(playerdata.TitleFlags.get(1006)){
+		if(playerdata.TitleFlags.get(1007)){
 			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1007「"+ SeichiAssist.config.getTitle(1007) +"」" );
