@@ -27,6 +27,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -686,7 +687,7 @@ public class PlayerInventoryListener implements Listener {
 				//インベントリを開く
 				player.openInventory(MenuInventoryData.getTitleMenuData(player));
 			}
-			
+
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
 				//鉱石・交換券変換システムを開く
 				//開く音を再生
@@ -3007,7 +3008,7 @@ public class PlayerInventoryListener implements Listener {
             }
             //チケット計算
             giveticket = giveticket + (int)(coalore/128) + (int)(ironore/64) + (int)(goldore/8) + (int)(lapisore/8) + (int)(diamondore/4) + (int)(redstoneore/64) + (int)(emeraldore/8);
-            
+
             //プレイヤー通知
             if(giveticket == 0){
             	player.sendMessage(ChatColor.YELLOW + "鉱石を認識しなかったか数が不足しています。全てのアイテムを返却します");
@@ -3019,9 +3020,11 @@ public class PlayerInventoryListener implements Listener {
              */
             ItemStack exchangeticket = new ItemStack(Material.PAPER);//※交換券の具体的なデータわからなかったので適当にしてますが、直して頂けるとありがたいです。
             ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
-            itemmeta.setDisplayName(ChatColor.DARK_RED + "交換券");
+            itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.BOLD + "交換券");
+            itemmeta.addEnchant(Enchantment.PROTECTION_FIRE, 1, false);
+            itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             exchangeticket.setItemMeta(itemmeta);
-            
+
             int count = 0;
             while(giveticket > 0){
             	if(player.getInventory().contains(exchangeticket) || !Util.isPlayerInventryFill(player)){
@@ -3046,7 +3049,7 @@ public class PlayerInventoryListener implements Listener {
             	c.setAmount(coalore - (int)(coalore/128)*128);
             	retore.add(c);
             }
-            
+
             if((ironore - (int)(ironore/64)*64) != 0){
             	ItemStack i = new ItemStack(Material.IRON_ORE);
             	ItemMeta iitemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_ORE);
@@ -3054,7 +3057,7 @@ public class PlayerInventoryListener implements Listener {
             	i.setAmount(ironore - (int)(ironore/64)*64);
             	retore.add(i);
             }
-            
+
             if((goldore - (int)(goldore/8)*8) != 0){
             	ItemStack g = new ItemStack(Material.GOLD_ORE);
             	ItemMeta gitemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_ORE);
@@ -3062,7 +3065,7 @@ public class PlayerInventoryListener implements Listener {
             	g.setAmount(goldore - (int)(goldore/8)*8);
             	retore.add(g);
             }
-            
+
             if((lapisore - (int)(lapisore/8)*8) != 0){
             	ItemStack l = new ItemStack(Material.LAPIS_ORE);
             	ItemMeta litemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
@@ -3070,7 +3073,7 @@ public class PlayerInventoryListener implements Listener {
             	l.setAmount(lapisore - (int)(lapisore/8)*8);
             	retore.add(l);
             }
-            
+
             if((diamondore - (int)(diamondore/4)*4) != 0){
             	ItemStack d = new ItemStack(Material.DIAMOND_ORE);
             	ItemMeta ditemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
@@ -3078,7 +3081,7 @@ public class PlayerInventoryListener implements Listener {
             	d.setAmount(diamondore - (int)(diamondore/4)*4);
             	retore.add(d);
             }
-            
+
             if((redstoneore - (int)(redstoneore/64)*64) != 0){
             	ItemStack r = new ItemStack(Material.REDSTONE_ORE);
             	ItemMeta ritemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
@@ -3086,7 +3089,7 @@ public class PlayerInventoryListener implements Listener {
             	r.setAmount(redstoneore - (int)(redstoneore/64)*64);
             	retore.add(r);
             }
-            
+
             if((emeraldore - (int)(emeraldore/64)*64) != 0){
             	ItemStack e = new ItemStack(Material.EMERALD_ORE);
             	ItemMeta eitemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
@@ -3094,7 +3097,7 @@ public class PlayerInventoryListener implements Listener {
             	e.setAmount(emeraldore - (int)(emeraldore/64)*64);
             	retore.add(e);
             }
-            
+
             //返却処理
             for(ItemStack m : dropitem){
                 if(!Util.isPlayerInventryFill(player)){
@@ -3109,7 +3112,7 @@ public class PlayerInventoryListener implements Listener {
             	}else{
             		Util.dropItem(player, m);
             	}
-            }  
+            }
         }
-    } 
+    }
 }
