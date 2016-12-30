@@ -1858,10 +1858,42 @@ public class PlayerInventoryListener implements Listener {
 							&& itemstackcurrent.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){ //MaterialとサブIDが一致
 
 						if(SeichiAssist.minestacklist.get(i).getNameloreflag()==false){
-							playerdata.minestack.setNum(i, (giveMineStack(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability() ))) );
-							open_flag = (Util.getMineStackTypeindex(i)+1)/45;
-							open_flag_type=SeichiAssist.minestacklist.get(i).getStacktype();
-						} else { //名前と説明文がある
+
+							//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
+							int level = SeichiAssist.config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel());
+							int level_ = 0;
+							String temp = null;
+							for(int j=0; j<itemstackcurrent.getItemMeta().getLore().size(); j++){
+								String lore = itemstackcurrent.getItemMeta().getLore().get(j);
+								//System.out.println(j);
+						        Pattern p = Pattern.compile(".*Lv[0-9]+以上でスタック可能.*");
+						        Matcher m = p.matcher(lore);
+						        if(m.matches()){
+						        	//System.out.println(lore);
+						        	String matchstr = lore.replaceAll("^.*Lv","");
+						        	//System.out.println(matchstr);
+						        	level_ = Integer.parseInt(matchstr.replaceAll("[^0-9]+","")); //数字以外を全て消す
+						        	break;
+						        }
+							}
+							//System.out.println(level + " " + level_);
+
+							if(level==level_){
+								//System.out.println("AAA");
+
+								String itemstack_name = itemstackcurrent.getItemMeta().getDisplayName();
+								String minestack_name = SeichiAssist.minestacklist.get(i).getJapaneseName();
+								itemstack_name = itemstack_name.replaceAll("§[0-9A-Za-z]","");
+								minestack_name = minestack_name.replaceAll("§[0-9A-Za-z]","");
+								if(itemstack_name.equals(minestack_name)){ //表記はアイテム名だけなのでアイテム名で判定
+									//System.out.println("BBB");
+
+									playerdata.minestack.setNum(i, (giveMineStack(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability() ))) );
+									open_flag = (Util.getMineStackTypeindex(i)+1)/45;
+									open_flag_type=SeichiAssist.minestacklist.get(i).getStacktype();
+								}
+							}
+						} else if(SeichiAssist.minestacklist.get(i).getNameloreflag()==true && itemstackcurrent.getItemMeta().hasDisplayName()){ //名前と説明文がある
 							//System.out.println("debug AA");
 							//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
 							int level = SeichiAssist.config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel());
