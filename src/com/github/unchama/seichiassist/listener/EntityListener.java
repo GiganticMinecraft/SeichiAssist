@@ -105,12 +105,8 @@ public class EntityListener implements Listener {
 			return;
 		}
 
-		//SEICHIWORLDNAMEのみ重力値によるブロック破壊拒否されることがある処理
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
-		}
-		if(player.getWorld().getName().equalsIgnoreCase(worldname)){
+		//整地ワールドでは重力値によるキャンセル判定を行う
+		if(Util.isSeichiWorld(player)){
 			if(BreakUtil.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
 				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 				return;
@@ -168,7 +164,7 @@ public class EntityListener implements Listener {
 	private void runArrowSkillofHitBlock(Player player,Projectile proj,
 			Block block, ItemStack tool) {
 		/*遠距離破壊スキルリスナー*/
-		
+
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
@@ -210,7 +206,7 @@ public class EntityListener implements Listener {
 			for(int x = start.x ; x <= end.x ; x++){
 				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
-					
+
 					if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && playerdata.multipleidbreakflag) { //追加テスト(複数種類一括破壊スキル)
 						if(!breakblock.getType().equals(Material.AIR) && !breakblock.getType().equals(Material.BEDROCK)) {
 							if(breakblock.getType().equals(Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(breakblock)){

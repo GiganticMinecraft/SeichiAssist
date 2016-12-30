@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -271,7 +272,10 @@ public class Sql{
 				",add column if not exists inventory blob default null" +
 				",add column if not exists rgnum int default 0" +
 				",add column if not exists totalbreaknum int default 0" +
-				",add column if not exists lastquit datetime default null" ;
+				",add column if not exists lastquit datetime default null" +
+				",add column if not exists displayTypeLv boolean default true" +
+				",add column if not exists displayTitleNo int default 0" +
+				",add column if not exists TitleFlags text default null" ;
 
 				/*
 				",add column if not exists stack_dirt int default 0" +
@@ -393,6 +397,11 @@ public class Sql{
 				",add index if not exists ranking_index(totalbreaknum)" +
 				",add column if not exists homepoint_" + SeichiAssist.config.getServerNum() + " varchar(" + SeichiAssist.config.getSubHomeMax() * SeichiAssist.SUB_HOME_DATASIZE + ") default ''"+
 
+				//BuildAssistのデータ
+				",add column if not exists build_lv int default 1" +//
+				",add column if not exists build_count int default 0" +//
+				",add column if not exists build_count_flg TINYINT UNSIGNED default 0" +//
+				
 				"";
 
 
@@ -624,16 +633,6 @@ public class Sql{
 		return putCommand(command);
 	}
 
-
-	//サブホームを保存
-	/*
-	public boolean UpDataSubHome(String s) {
-		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "update " + db + "." + table
-				+ " set homepoint_" + SeichiAssist.config.getServerNum() + " = '" + s + "'";
-		return putCommand(command);
-	}
-*/
 
 	public boolean loadPlayerData(final Player p) {
 		String name = Util.getName(p);
@@ -885,6 +884,111 @@ public class Sql{
  		return true;
 	}
 
+	//ランキング表示用にプレイ時間のカラムだけ全員分引っ張る
+	public boolean setRanking_playtick() {
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		List<RankData> ranklist = SeichiAssist.ranklist_playtick;
+		ranklist.clear();
+		//SeichiAssist.allplayerbreakblockint = 0;
+
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select name,playtick from " + db + "." + table
+				+ " order by playtick desc";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				RankData rankdata = new RankData();
+				rankdata.name = rs.getString("name");
+				//rankdata.level = rs.getInt("level");
+				//rankdata.totalbreaknum = rs.getInt("totalbreaknum");
+				rankdata.playtick = rs.getInt("playtick");
+				ranklist.add(rankdata);
+				//SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
+				  }
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+ 		return true;
+	}
+
+	//ランキング表示用に投票数のカラムだけ全員分引っ張る
+	public boolean setRanking_p_vote() {
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		List<RankData> ranklist = SeichiAssist.ranklist_p_vote;
+		ranklist.clear();
+		//SeichiAssist.allplayerbreakblockint = 0;
+
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select name,p_vote from " + db + "." + table
+				+ " order by p_vote desc";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				RankData rankdata = new RankData();
+				rankdata.name = rs.getString("name");
+				//rankdata.level = rs.getInt("level");
+				//rankdata.totalbreaknum = rs.getInt("totalbreaknum");
+				rankdata.p_vote = rs.getInt("p_vote");
+				ranklist.add(rankdata);
+				//SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
+				  }
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+ 		return true;
+	}
+
+	//ランキング表示用にプレミアムエフェクトポイントのカラムだけ全員分引っ張る
+	public boolean setRanking_premiumeffectpoint() {
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		List<RankData> ranklist = SeichiAssist.ranklist_premiumeffectpoint;
+		ranklist.clear();
+		//SeichiAssist.allplayerbreakblockint = 0;
+
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select name,premiumeffectpoint from " + db + "." + table
+				+ " order by premiumeffectpoint desc";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				RankData rankdata = new RankData();
+				rankdata.name = rs.getString("name");
+				//rankdata.level = rs.getInt("level");
+				//rankdata.totalbreaknum = rs.getInt("totalbreaknum");
+				rankdata.premiumeffectpoint = rs.getInt("premiumeffectpoint");
+				ranklist.add(rankdata);
+				//SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
+				  }
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
+		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+ 		return true;
+	}
+
 	//プレイヤーレベル全リセット
 	public boolean resetAllPlayerLevel(){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
@@ -983,6 +1087,39 @@ public class Sql{
 				return null;
 			}
 		return lastquit;
+	}
+
+	//lastquitがdays日以上(または未登録)のプレイヤー名を配列で取得
+	public Map<UUID, String> selectLeavers(int days){
+		Map<UUID, String> leavers = new HashMap<>();
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "select name, uuid from " + db + "." + table
+				+ " where ((lastquit <= date_sub(curdate(), interval " + Integer.toString(days) + " day))"
+				+ " or (lastquit is null)) and (name != '') and (uuid != '')";
+			try{
+				rs = stmt.executeQuery(command);
+				while (rs.next()) {
+					try {
+						//結果のStringをUUIDに変換
+						UUID uuid = UUID.fromString(rs.getString("uuid"));
+						if (leavers.containsKey(uuid)) {
+							java.lang.System.out.println("playerdataにUUIDが重複しています: " + rs.getString("uuid"));
+						} else {
+							//HashMapにUUIDとnameを登録
+							leavers.put(uuid, rs.getString("name"));
+						}
+					} catch (IllegalArgumentException e) {
+						java.lang.System.out.println("不適切なUUID: " + rs.getString("name") + ": " + rs.getString("uuid"));
+					}
+				}
+				rs.close();
+			} catch (SQLException e) {
+				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+				exc = e.getMessage();
+				e.printStackTrace();
+				return null;
+			}
+		return leavers;
 	}
 
 	//

@@ -53,8 +53,10 @@ public class Mana {
 			reset(level);
 			player.sendMessage(ChatColor.RED + "不正な値がマナとして保存されていたためリセットしました。");
 		}
+		if (!(max == 0||max < 0)){
 		manabar.setProgress(m/max);
 		manabar.addPlayer(player);
+		}
 	}
 	private void reset(int level) {
 		this.calcMaxMana(level);

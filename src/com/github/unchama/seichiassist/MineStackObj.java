@@ -5,7 +5,7 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class MineStackObj {
+public class MineStackObj implements Comparable<MineStackObj>{
 
 	private String objname;
 	private String japanesename;
@@ -16,10 +16,11 @@ public class MineStackObj {
 	private int gachatype;
 	private List<String> lore;
 	private ItemStack itemstack;
+	private int stacktype;
 
 	public MineStackObj(String objname, String japanesename,
 			int level, Material material, int durability,
-			boolean nameloreflag, int gachatype){
+			boolean nameloreflag, int gachatype, int stacktype){
 		this.objname = objname;
 		this.japanesename = japanesename;
 		this.level = level;
@@ -29,11 +30,12 @@ public class MineStackObj {
 		this.gachatype = gachatype;
 		this.lore = null;
 		this.itemstack = null;
+		this.stacktype = stacktype;
 	}
 
 	public MineStackObj(String objname, String japanesename,
 			int level, Material material, int durability,
-			boolean nameloreflag, int gachatype, List<String> lore){
+			boolean nameloreflag, int gachatype, List<String> lore, int stacktype){
 		this.objname = objname;
 		this.japanesename = japanesename;
 		this.level = level;
@@ -43,9 +45,10 @@ public class MineStackObj {
 		this.gachatype = gachatype;
 		this.lore = lore;
 		this.itemstack = null;
+		this.stacktype = stacktype;
 	}
 
-	public MineStackObj(String objname, int level, ItemStack itemstack, boolean nameloreflag, int gachatype){
+	public MineStackObj(String objname, int level, ItemStack itemstack, boolean nameloreflag, int gachatype, int stacktype){
 		this.objname = objname;
 		this.japanesename = itemstack.getItemMeta().getDisplayName();
 		this.level = level;
@@ -55,6 +58,7 @@ public class MineStackObj {
 		this.gachatype = gachatype;
 		this.lore = itemstack.getItemMeta().getLore();
 		this.itemstack = itemstack.clone();
+		this.stacktype = stacktype;
 	}
 
 	public String getMineStackObjName(){
@@ -85,6 +89,16 @@ public class MineStackObj {
 
 	public ItemStack getItemStack(){
 		return itemstack;
+	}
+
+	public int getStacktype(){
+		return stacktype;
+	}
+
+	@Override
+	public int compareTo(MineStackObj o) {
+		// TODO 自動生成されたメソッド・スタブ
+		return this.level-o.level;
 	}
 
 

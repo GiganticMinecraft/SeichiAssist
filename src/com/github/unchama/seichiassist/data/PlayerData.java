@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.data;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,7 +56,7 @@ public class PlayerData {
 
 	//MineStack
 	//public MineStack minestack;
-	
+
 	public MineStack minestack = new MineStack();
 	//MineStackFlag
 	public boolean minestackflag;
@@ -95,6 +96,21 @@ public class PlayerData {
 	//サブのホームポイント
 	private Location[] sub_home = new Location[SeichiAssist.config.getSubHomeMax()];
 
+	//LV・二つ名表示切替用
+	public boolean displayTypeLv;
+	//表示二つ名の指定用
+	public int displayTitleNo;
+	//二つ名解禁フラグ保存用
+	public BitSet TitleFlags;
+
+
+	//建築LV
+	private int build_lv;
+	//設置ブロック数
+	private int build_count;
+	//設置ブロックサーバー統合フラグ
+	private byte build_count_flg;
+	
 	public PlayerData(Player player){
 		//初期値を設定
 		this.name = Util.getName(player);
@@ -133,11 +149,18 @@ public class PlayerData {
 		this.votecooldownflag = true;
 		this.gachacooldownflag = true;
 
+		this.displayTypeLv = true;
+		this.displayTitleNo = 0 ;
+		this.TitleFlags = new BitSet(10000);
+		this.TitleFlags.set(1);
+
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
 			this.sub_home[x] = null;
 		}
-
+		this.build_lv = 1;
+		this.build_count = 0;
+		this.build_count_flg = 0;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -229,12 +252,12 @@ public class PlayerData {
 	public void setLevel(int _level) {
 		level = _level;
 	}
-	
+
 	//プレイヤーのレベルからレベルと総整地量を指定された値に設定
 	/**
 	 * @param _level
 	 * レベル
-	 * 
+	 *
 	 * ※レベルと総整地量を変更します(取扱注意)
 	 */
 	public void setLevelandTotalbreaknum(int _level) {
@@ -243,12 +266,22 @@ public class PlayerData {
 	}
 
 
-	//表示される名前に整地レベルを追加
+	//表示される名前に整地レベルor二つ名を追加
 	public void setDisplayName(Player p) {
 		String displayname = Util.getName(p);
 
-		displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
-
+		//表示二つ名が設定されていない場合、LV表示に強制変更
+		if(displayTitleNo == 0){
+			displayTypeLv = true ;
+		}
+		//表示を追加する処理
+		if(displayTypeLv){
+			displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
+		} else {
+			String displayTitle = SeichiAssist.config.getTitle(displayTitleNo);
+			displayname =  "[" + displayTitle + "]" + displayname + ChatColor.WHITE;
+		}
+		//放置時に色を変える
 		if(idletime >= 10){
 			displayname = ChatColor.DARK_GRAY + displayname;
 		}else if(idletime >= 3){
@@ -345,19 +378,23 @@ public class PlayerData {
 			//ネザーラックの重み分け
 			result *= 0.2;
 			break;
-		/*
+
 		case ENDER_STONE:
 			//エンドストーンの重み分け
-			result *= 0.5;
+			result *= 0.2;
 			break;
-		*/
+
 
 		default:
 			break;
 		}
-		//整地ワールド外では整地数が反映されない
-		if(!Util.isGainSeichiExp(p)){
+
+		if(!Util.isSeichiWorld(p)){
+			//整地ワールド外では整地数が反映されない
 			result *= 0.0;
+		}else if(p.getWorld().getName().equalsIgnoreCase("world_sw_zero")){
+			//整地ワールドzeroでは整地量2.0倍
+			result *= 2.0;
 		}
 		return result;
 	}
@@ -460,25 +497,6 @@ public class PlayerData {
 		}
 	}
 
-	//文字列からサブデータを読み込む・デバッグ版（DB用）
-	public void SetSubHome(String str , Player player){
-		String[] s = str.split(",", -1);
-		player.sendMessage(str );
-		player.sendMessage("配列数" + s.length );
-		for( int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
-			if (s.length < x*4+3){
-				break;
-			}
-			player.sendMessage("x:" + s[x*4] + " y:" +s[x*4+1]+ " z:" +s[x*4+2]+ " w:"+s[x*4+3] );
-//			if(s[x*4] != "" && s[x*4+1] != "" && s[x*4+2] != "" && s[x*4+3] != ""){
-			if(s[x*4].length() > 0 && s[x*4+1].length() > 0 && s[x*4+2].length() > 0 && s[x*4+3].length() > 0 ){
-				player.sendMessage("読み込み");
-				Location l = new Location( Bukkit.getWorld(s[x*4+3]) , Integer.parseInt(s[x*4]) , Integer.parseInt(s[x*4+1]) , Integer.parseInt(s[x*4+2]) );
-				this.sub_home[x] = l;
-			}
-		}
-	}
-
 	//サブホームデータを文字列で返す（DB用）
 	public String SubHomeToString(){
 		String s = "";
@@ -495,6 +513,25 @@ public class PlayerData {
 			}
 		}
 		return s;
+	}
+	
+	public void build_count_flg_set(byte x){
+		build_count_flg = x;
+	} 
+	public byte build_count_flg_get(){
+		return build_count_flg;
+	} 
+	public void build_lv_set(int lv){
+		build_lv = lv;
+	}
+	public int build_lv_get(){
+		return build_lv;
+	}
+	public void build_count_set(int count){
+		build_count = count;
+	}
+	public int build_count_get(){
+		return build_count;
 	}
 
 }

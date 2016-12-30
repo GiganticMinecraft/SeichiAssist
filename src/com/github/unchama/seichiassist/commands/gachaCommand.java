@@ -46,6 +46,8 @@ public class gachaCommand implements TabExecutor{
 			sender.sendMessage("投票特典配布用コマンドです(マルチ鯖対応済)");
 			sender.sendMessage(ChatColor.RED + "/gacha donate <プレイヤー名> <ポイント数>");
 			sender.sendMessage("寄付者用プレミアムエフェクトポイント配布コマンドです(マルチ鯖対応済)");
+			sender.sendMessage(ChatColor.RED + "/gacha get <ID> (<名前>)");
+			sender.sendMessage("指定したガチャリストのIDを入手 (所有者付きにもできます) IDを0に指定するとガチャリンゴを入手できます");
 			sender.sendMessage(ChatColor.RED + "/gacha add <確率>");
 			sender.sendMessage("現在のメインハンドをガチャリストに追加。確率は1.0までで指定");
 			sender.sendMessage(ChatColor.RED + "/gacha addms2 <確率> <名前> <レベル>");
@@ -224,7 +226,36 @@ public class gachaCommand implements TabExecutor{
 			}
 			return true;
 
-		}else if(args[0].equalsIgnoreCase("add")){
+		}
+
+		else if(args[0].equalsIgnoreCase("get")){
+			if(args.length != 2 && args.length != 3 ){
+				sender.sendMessage("/gacha get 1  または /gacha get 1 unchama のように、入手したいガチャアイテムのID(と名前)を入力してください");
+				return true;
+			}
+			/*
+			 * コンソールからのコマンドは処理しない - ここから
+			 */
+			if (!(sender instanceof Player)) {
+				sender.sendMessage("このコマンドはゲーム内から実行してください");
+				return true;
+			}
+			Player player = (Player) sender;
+			/*
+			 * ここまで
+			 */
+
+			if(args.length==2){
+				int id = Util.toInt(args[1]);
+				Gachaget(player,id,null);
+			} else if(args.length==3){
+				int id = Util.toInt(args[1]);
+				Gachaget(player,id,args[2]);
+			}
+			return true;
+		}
+
+		else if(args[0].equalsIgnoreCase("add")){
 			if(args.length != 2){
 				sender.sendMessage("/gacha add 0.05  のように、追加したいアイテムの出現確率を入力してください");
 				return true;
@@ -386,6 +417,40 @@ public class gachaCommand implements TabExecutor{
 
 		return false;
 	}
+
+	private void Gachaget(Player player,int _id, String name) {
+
+		int id = _id-1;
+		if(id>=-1 && id<SeichiAssist.gachadatalist.size()){
+			//プレゼント用ガチャデータ作成
+			GachaData present;
+			//ガチャ実行
+			if(id>=0){
+				present = new GachaData(SeichiAssist.gachadatalist.get(id));
+			} else {
+				present = new GachaData(Util.getGachaimo(),1.0,1);
+			}
+			if(present.probability < 0.1){
+				if(name!=null){
+					present.addname(name);
+				}
+			}
+			//ガチャデータのitemstackの数を再設定（バグのため）
+			present.itemstack.setAmount(present.amount);
+			//メッセージ設定
+			String str = "";
+
+			//プレゼントを格納orドロップ
+			if(!Util.isPlayerInventryFill(player)){
+				Util.addItem(player,present.itemstack);
+			}else{
+				Util.dropItem(player,present.itemstack);
+				str += ChatColor.AQUA + "ガチャアイテムがドロップしました。";
+			}
+		}
+	}
+
+
 	private void Gachaadd(Player player,double probability) {
 		GachaData gachadata = new GachaData();
 		PlayerInventory inventory = player.getInventory();
