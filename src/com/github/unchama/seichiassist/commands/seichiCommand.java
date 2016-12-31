@@ -77,15 +77,33 @@ public class seichiCommand implements TabExecutor {
 		}else if(args[0].equalsIgnoreCase("debugmode")){
 			//debugフラグ反転処理
 
-			//メッセージフラグを反転
-			SeichiAssist.DEBUG = !SeichiAssist.DEBUG;
-			if (SeichiAssist.DEBUG){
-				sender.sendMessage(ChatColor.GREEN + "デバッグモードを有効にしました");
-			}else{
-				sender.sendMessage(ChatColor.GREEN + "デバッグモードを無効にしました");
+			if(SeichiAssist.config.getDebugMode()==0){
+
+				/*
+				 * コンソールからのコマンドのみ処理する  - ここから
+				 */
+				if ( (sender instanceof Player) ) {
+					sender.sendMessage("このコマンドはゲーム外から実行してください");
+					return true;
+				}
+				//Player player = (Player) sender;
+				/*
+				 * ここまで
+				 */
+
+
+				//メッセージフラグを反転
+				SeichiAssist.DEBUG = !SeichiAssist.DEBUG;
+				if (SeichiAssist.DEBUG){
+					sender.sendMessage(ChatColor.GREEN + "デバッグモードを有効にしました");
+				}else{
+					sender.sendMessage(ChatColor.GREEN + "デバッグモードを無効にしました");
+				}
+				plugin.stopAllTaskRunnable();
+				plugin.startTaskRunnable();
+			} else {
+				sender.sendMessage(ChatColor.RED + "このコマンドは現在の設定では実行できません");
 			}
-			plugin.stopAllTaskRunnable();
-			plugin.startTaskRunnable();
 
 			return true;
 		}else if(args[0].equalsIgnoreCase("openpocket")){
