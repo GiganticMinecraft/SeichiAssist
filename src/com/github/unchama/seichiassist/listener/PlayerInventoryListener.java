@@ -3007,7 +3007,7 @@ public class PlayerInventoryListener implements Listener {
             	}
             }
             //チケット計算
-            giveticket = giveticket + (int)(coalore/128) + (int)(ironore/64) + (int)(goldore/8) + (int)(lapisore/8) + (int)(diamondore/4) + (int)(redstoneore/64) + (int)(emeraldore/8);
+            giveticket = giveticket + (int)(coalore/128) + (int)(ironore/64) + (int)(goldore/8) + (int)(lapisore/8) + (int)(diamondore/4) + (int)(redstoneore/64) + (int)(emeraldore/4);
 
             //プレイヤー通知
             if(giveticket == 0){
@@ -3090,11 +3090,11 @@ public class PlayerInventoryListener implements Listener {
             	retore.add(r);
             }
 
-            if((emeraldore - (int)(emeraldore/8)*8) != 0){
+            if((emeraldore - (int)(emeraldore/4)*4) != 0){
             	ItemStack e = new ItemStack(Material.EMERALD_ORE);
             	ItemMeta eitemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
             	e.setItemMeta(eitemmeta);
-            	e.setAmount(emeraldore - (int)(emeraldore/8)*8);
+            	e.setAmount(emeraldore - (int)(emeraldore/4)*4);
             	retore.add(e);
             }
 
