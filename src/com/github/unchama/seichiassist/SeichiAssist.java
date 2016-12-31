@@ -51,7 +51,7 @@ import com.github.unchama.seichiassist.util.Util;
 public class SeichiAssist extends JavaPlugin{
 
 	public static SeichiAssist plugin;
-	//デバッグフラグ
+	//デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
 	public static Boolean DEBUG = false;
 	//ガチャシステムのメンテナンスフラグ
 	public static Boolean gachamente = false;
@@ -480,6 +480,19 @@ public class SeichiAssist extends JavaPlugin{
 		//コンフィグ系の設定は全てConfig.javaに移動
 		config = new Config(this);
 		config.loadConfig();
+
+		if(SeichiAssist.config.getDebugMode()==1){
+			//debugmode=1の時は最初からデバッグモードで鯖を起動
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "seichiassistをデバッグモードで起動します");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "コンソールから/seichi debugmode");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "を実行するといつでもONOFFを切り替えられます");
+			DEBUG = true;
+		}else{
+			//debugmode=0の時は/seichi debugmodeによる変更コマンドも使えない
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "seichiassistを通常モードで起動します");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "デバッグモードを使用する場合は");
+			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "config.ymlの設定値を書き換えて再起動してください");
+		}
 
 		//MySQL系の設定はすべてSql.javaに移動
 		sql = new Sql(this,config.getURL(), config.getDB(), config.getID(), config.getPW());
