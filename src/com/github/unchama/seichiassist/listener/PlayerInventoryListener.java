@@ -3090,11 +3090,11 @@ public class PlayerInventoryListener implements Listener {
             	retore.add(r);
             }
 
-            if((emeraldore - (int)(emeraldore/64)*64) != 0){
+            if((emeraldore - (int)(emeraldore/8)*8) != 0){
             	ItemStack e = new ItemStack(Material.EMERALD_ORE);
             	ItemMeta eitemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
             	e.setItemMeta(eitemmeta);
-            	e.setAmount(emeraldore - (int)(emeraldore/64)*64);
+            	e.setAmount(emeraldore - (int)(emeraldore/8)*8);
             	retore.add(e);
             }
 
