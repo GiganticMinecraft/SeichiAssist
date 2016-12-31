@@ -166,4 +166,5 @@ Achv4010: "期待の新人"
 Achv9001: "お年玉"
 Achv9002: "サンタさん"
 Achv9003: "おそば"
-debugmode: '1'
+debugmode: '0' 
+# debugmode: 0=デバッグモードオフ, 1=デバッグモードオン

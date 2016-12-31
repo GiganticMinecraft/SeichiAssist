@@ -77,7 +77,7 @@ public class seichiCommand implements TabExecutor {
 		}else if(args[0].equalsIgnoreCase("debugmode")){
 			//debugフラグ反転処理
 
-			if(SeichiAssist.config.getDebugMode()==0){
+			if(SeichiAssist.config.getDebugMode()==1){
 
 				/*
 				 * コンソールからのコマンドのみ処理する  - ここから
