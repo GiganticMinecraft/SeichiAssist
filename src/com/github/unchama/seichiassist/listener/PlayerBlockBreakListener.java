@@ -66,11 +66,7 @@ public class PlayerBlockBreakListener implements Listener {
 		ActiveSkill[] activeskill = ActiveSkill.values();
 
 
-		//スキル発動条件がそろってなければ終了
-		if(!Util.isSkillEnable(player)){
-			return;
-		}
-		//整地ワールドでは重力値によるキャンセル判定を行う
+		//整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
 		if(Util.isSeichiWorld(player) &&
 		!SeichiAssist.gravitymateriallist.contains(block.getType()) &&
 		!SeichiAssist.cancelledmateriallist.contains(block.getType())){
@@ -83,6 +79,10 @@ public class PlayerBlockBreakListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
+		}
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
+			return;
 		}
 
 		//プレイヤーインベントリを取得
