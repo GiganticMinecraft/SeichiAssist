@@ -737,7 +737,7 @@ public class MenuInventoryData {
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント"+  (x+1) + "にワープ");
 
 			Location l = playerdata.GetSubHome(x);
-			if (l == null ){
+			if (l == null || l.getWorld() == null){
 				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "あらかじめ設定した"
 						, ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x+1) + "にワープします"
 						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "うまく機能しない時は"

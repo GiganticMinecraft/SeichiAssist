@@ -110,7 +110,7 @@ public class PlayerData {
 	private int build_count;
 	//設置ブロックサーバー統合フラグ
 	private byte build_count_flg;
-	
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.name = Util.getName(player);
@@ -501,7 +501,7 @@ public class PlayerData {
 	public String SubHomeToString(){
 		String s = "";
 		for( int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
-			if (this.sub_home[x] == null){
+			if (this.sub_home[x] == null || sub_home[x].getWorld() == null){
 				//設定されてない場合
 				s += ",,,,";
 			}else{
@@ -514,13 +514,13 @@ public class PlayerData {
 		}
 		return s;
 	}
-	
+
 	public void build_count_flg_set(byte x){
 		build_count_flg = x;
-	} 
+	}
 	public byte build_count_flg_get(){
 		return build_count_flg;
-	} 
+	}
 	public void build_lv_set(int lv){
 		build_lv = lv;
 	}
