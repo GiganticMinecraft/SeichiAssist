@@ -127,6 +127,28 @@ public class Util {
 		return lore;
 	}
 
+	//椎名林檎の取得
+	public static ItemStack getMaxRingo(String name) {
+		ItemStack maxringo;
+		ItemMeta meta;
+		maxringo = new ItemStack(Material.GOLDEN_APPLE,1);
+		maxringo.setDurability((short) 1);
+		meta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
+		meta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.ITALIC + "椎名林檎");
+		List<String> lore = getMaxRingoLore(name);
+		meta.setLore(lore);
+		maxringo.setItemMeta(meta);
+		return maxringo;
+	}
+	//椎名林檎の説明を取得
+	public static List<String> getMaxRingoLore(String name){
+		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "使用するとマナが全回復します"
+				, ChatColor.RESET + "" +  ChatColor.AQUA + "マナ完全回復"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者:" + name
+				, ChatColor.RESET + "" +  ChatColor.GRAY + "ガチャ景品と交換しました。");
+		return lore;
+	}
+
 	//String -> double
 	public static double toDouble(String s){
 		return Double.parseDouble(s);

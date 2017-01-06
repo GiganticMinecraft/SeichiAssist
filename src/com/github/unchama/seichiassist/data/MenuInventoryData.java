@@ -327,7 +327,7 @@ public class MenuInventoryData {
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(31,itemstack);
+		inventory.setItem(16,itemstack);
 
 		// ver0.3.2 homeコマンド
 		itemstack = new ItemStack(Material.COMPASS,1);
@@ -520,7 +520,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(28,itemstack);
-		
+
 		//鉱石・交換券変換システムを開く
 		itemstack = new ItemStack(Material.DIAMOND_ORE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
@@ -536,7 +536,7 @@ public class MenuInventoryData {
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(20,itemstack);
+		inventory.setItem(17,itemstack);
 
 
 		return inventory;
@@ -706,6 +706,28 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
+
+
+		//椎名林檎変換システムを開く
+		itemstack = new ItemStack(Material.GOLDEN_APPLE,1);
+		itemstack.setDurability((short) 1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "GT景品→椎名林檎変換システム");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "不必要なGT大当り景品を"
+				, ChatColor.RESET + "" + ChatColor.GOLD + "椎名林檎" + ChatColor.RESET + ChatColor.GREEN + "と交換できます"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "出てきたインベントリ―に"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "交換したい景品を入れて"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "escキーを押してください"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "たまにアイテムが消失しますが"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "補償はしていません(ごめんなさい)"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "神に祈りながら交換しよう"
+				, ChatColor.RESET + "現在の交換レート:GT景品1つにつき" + SeichiAssist.config.rateGiganticToRingo() + "個"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(35,itemstack);
+
 
 		//サブホーム関係
 		for(int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){

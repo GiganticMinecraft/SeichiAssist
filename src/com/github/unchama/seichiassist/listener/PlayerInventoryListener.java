@@ -696,6 +696,14 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい鉱石を入れてください"));
 			}
 
+			else if(itemstackcurrent.getType().equals(Material.GOLDEN_APPLE)){
+				//椎名林檎変換システムを開く
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
+				//インベントリを開く
+				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ"));
+			}
+
 		}
 	}
 
@@ -3115,4 +3123,139 @@ public class PlayerInventoryListener implements Listener {
             }
         }
     }
+
+    //ギガンティック→椎名林檎交換システム
+    @EventHandler
+    public void onGachaRingoEvent(InventoryCloseEvent event){
+        Player player = (Player)event.getPlayer();
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+		//エラー分岐
+		if(playerdata == null){
+			return;
+		}
+		String name = playerdata.name;
+        Inventory inventory = event.getInventory();
+
+        //インベントリサイズが36でない時終了
+        if(inventory.getSize() != 36){
+            return;
+        }
+        if(inventory.getTitle().equals(ChatColor.GOLD + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ")){
+            //PlayerInventory pinventory = player.getInventory();
+            //ItemStack itemstack = pinventory.getItemInMainHand();
+            int giveringo = 0;
+            /*この分岐処理必要かなぁ…とりあえずコメントアウト
+            if(itemstack.getType().equals(Material.STICK)){
+            }
+            */
+            /*
+             * step1 for文でinventory内に対象商品がないか検索
+             * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
+             */
+            //ガチャ景品交換インベントリの中身を取得
+            ItemStack[] item = inventory.getContents();
+            //ドロップ用アイテムリスト(返却box)作成
+            List<ItemStack> dropitem = new ArrayList<ItemStack>();
+            //カウント用
+            int giga = 0;
+            //for文で１個ずつ対象アイテムか見る
+            //ガチャ景品交換インベントリを一個ずつ見ていくfor文
+            for (ItemStack m : item) {
+                //無いなら次へ
+                if(m == null){
+                    continue;
+                }else if(SeichiAssist.gachamente){
+                    //ガチャシステムメンテナンス中は全て返却する
+                    dropitem.add(m);
+                    continue;
+                }else if(!m.hasItemMeta()){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                    continue;
+                }else if(!m.getItemMeta().hasLore()){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                    continue;
+                }else if(m.getType().equals(Material.SKULL_ITEM)){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                    continue;
+                }
+                //ガチャ景品リストにアイテムがあった時にtrueになるフラグ
+                boolean flag = false;
+                //ガチャ景品リストを一個ずつ見ていくfor文
+                for(GachaData gachadata : gachadatalist){
+                    if(!gachadata.itemstack.hasItemMeta()){
+                        continue;
+                    }else if(!gachadata.itemstack.getItemMeta().hasLore()){
+                        continue;
+                    }
+                    //ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
+                    if(gachadata.compare(m,name)){
+                    	if(SeichiAssist.DEBUG){
+                    		player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
+                    	}
+                    //if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())
+                           // &&gachadata.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
+                        flag = true;
+                        int amount = m.getAmount();
+                        if(gachadata.probability < 0.001){
+                            //ギガンティック大当たりの部分
+                            //1個につき椎名林檎n個と交換する
+                        	giveringo += (SeichiAssist.config.rateGiganticToRingo()*amount);
+                            giga++;
+                        }else{
+                            //それ以外アイテム返却
+                            dropitem.add(m);
+                        }
+                        break;
+                    }
+                }
+                //ガチャ景品リストに対象アイテムが無かった場合
+                if(!flag){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                }
+            }
+            //ガチャシステムメンテナンス中は全て返却する
+            if(SeichiAssist.gachamente){
+                player.sendMessage(ChatColor.RED + "ガチャシステムメンテナンス中の為全てのアイテムを返却します");
+            }else if(!(giga > 0)){
+                player.sendMessage(ChatColor.YELLOW + "ギガンティック大当り景品を認識しませんでした。全てのアイテムを返却します");
+            }else{
+                player.sendMessage(ChatColor.GREEN + "ギガンティック大当り景品を" + giga + "個認識しました");
+            }
+            /*
+             * step2 非対象商品をインベントリに戻す
+             */
+            for(ItemStack m : dropitem){
+                if(!Util.isPlayerInventryFill(player)){
+                    Util.addItem(player,m);
+                }else{
+                    Util.dropItem(player,m);
+                }
+            }
+            /*
+             * step3 椎名林檎をインベントリへ
+             */
+            ItemStack ringo = Util.getMaxRingo(Util.getName(player));
+            int count = 0;
+            while(giveringo > 0){
+                if(player.getInventory().contains(ringo) || !Util.isPlayerInventryFill(player)){
+                    Util.addItem(player,ringo);
+                }else{
+                    Util.dropItem(player,ringo);
+                }
+                giveringo--;
+                count++;
+            }
+            if(count > 0){
+                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+                player.sendMessage(ChatColor.GREEN + ""+count+ "個の" + ChatColor.GOLD + "椎名林檎" + ChatColor.WHITE + "を受け取りました");
+            }
+        }
+
+    }
+
 }
