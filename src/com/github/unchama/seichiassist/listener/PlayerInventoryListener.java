@@ -8,6 +8,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -50,8 +52,6 @@ import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldedit.bukkit.selections.Selection;
-
-import net.md_5.bungee.api.ChatColor;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -167,19 +167,20 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getRankingList_p_vote(player,0));
 				return;
 			}
-			else if(SeichiAssist.DEBUG){
-				//整地神番付を開く
-				if(itemstackcurrent.getType().equals(Material.COOKIE) && itemstackcurrent.getItemMeta().getDisplayName().contains("寄付神")){
+			/*
+			else if(itemstackcurrent.getType().equals(Material.COOKIE) && itemstackcurrent.getItemMeta().getDisplayName().contains("寄付神")){
+				if(SeichiAssist.DEBUG){
 					//開く音を再生
 					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 					player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(player,0));
 					return;
 				}
 			}
-
+			*/
 
 			//溜まったガチャ券をインベントリへ
-			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("unchama")){
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)
+					&& ((SkullMeta)itemstackcurrent.getItemMeta()).getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地報酬ガチャ券を受け取る")){
 				//連打防止クールダウン処理
 				if(!playerdata.gachacooldownflag){
 					return;
@@ -213,7 +214,8 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//運営からのガチャ券受け取り
-			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("whitecat_haru")){
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)
+					&& ((SkullMeta)itemstackcurrent.getItemMeta()).getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る")){
 
 				//nは最新のnumofsorryforbugの値になる(上限値576個)
 				int n = sql.givePlayerBug(player,playerdata);

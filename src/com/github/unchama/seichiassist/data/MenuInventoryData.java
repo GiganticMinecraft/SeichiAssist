@@ -268,6 +268,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(34,itemstack);
 
+		/*
 		if(SeichiAssist.DEBUG){
 			// 整地神番付を開く
 			itemstack = new ItemStack(Material.COOKIE,1);
@@ -276,14 +277,11 @@ public class MenuInventoryData {
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "(寄付しているプレイヤーのみ表記されます)"
 				,ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
 				);
-		/*
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
-				);
-		*/
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(16,itemstack);
 		}
+		*/
 
 
 		//運営からの詫びガチャ配布ボタン
