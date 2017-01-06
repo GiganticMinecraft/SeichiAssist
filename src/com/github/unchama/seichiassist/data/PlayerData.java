@@ -80,6 +80,8 @@ public class PlayerData {
 	public int idletime;
 	//トータル破壊ブロック
 	public int totalbreaknum;
+	//経験値バー
+	public ExpBar expbar;
 	//各統計値差分計算用配列
 	private List<Integer> staticdata;
 	//特典受け取り済み投票数
@@ -145,6 +147,7 @@ public class PlayerData {
 			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
 		}
 		this.activeskilldata = new ActiveSkillData();
+		this.expbar = new ExpBar(this, player);
 		this.p_givenvote = 0;
 		this.votecooldownflag = true;
 		this.gachacooldownflag = true;
@@ -182,6 +185,7 @@ public class PlayerData {
 		calcPlayTick(player);
 
 		activeskilldata.updateonQuit(player);
+		expbar.remove();
 	}
 
 	/*
@@ -245,6 +249,7 @@ public class PlayerData {
 	public void updataLevel(Player p) {
 		calcPlayerLevel(p);
 		setDisplayName(p);
+		expbar.calculate();
 	}
 
 

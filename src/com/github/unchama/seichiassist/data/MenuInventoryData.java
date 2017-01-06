@@ -92,9 +92,15 @@ public class MenuInventoryData {
 		lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "各サバイバルサーバー間で");
 		lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "共有されます");
 
+		//ExpBar用ダミー
+		lore.add("");
+		lore.add("");
+		lore.add("");
+
 		skullmeta.setLore(lore);
 		skullmeta.setOwner(playerdata.name);
-		itemstack.setItemMeta(skullmeta);
+		//ExpBarトグル追加
+		itemstack.setItemMeta(dispExpBarToggleMeta(playerdata,skullmeta));
 		inventory.setItem(0,itemstack);
 
 		//採掘速度上昇効果のトグルボタン
@@ -2540,6 +2546,21 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		return itemmeta;
 	}
+
+	// ExpBarトグルボタン
+	public static SkullMeta dispExpBarToggleMeta(PlayerData playerdata,SkullMeta skullmeta){
+		List<String> lore = skullmeta.getLore();
+		if(playerdata.expbar.isVisible()){
+			lore.set(lore.size() - 2, ChatColor.RESET + "" +  ChatColor.GREEN + "整地量バーを表示");
+			lore.set(lore.size() - 1, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで非表示");
+		}else{
+			lore.set(lore.size() - 2, ChatColor.RESET + "" +  ChatColor.RED + "整地量バーを非表示");
+			lore.set(lore.size() - 1, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで表示");
+		}
+		skullmeta.setLore(lore);
+		return skullmeta;
+	}
+
 	//ランキングリスト
 	public static Inventory getRankingList(Player p, int page){
 		int maxpage=2;
