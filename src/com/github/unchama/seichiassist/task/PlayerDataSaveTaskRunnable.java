@@ -102,6 +102,8 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
 				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana())
 				+ ",expvisible = " + Boolean.toString(playerdata.expbar.isVisible())
+				+ ",totalexp = " + Integer.toString(playerdata.totalexp)
+				+ ",expmarge = " + Byte.toString(playerdata.expmarge)
 
 				+",displayTypeLv = " + Boolean.toString(playerdata.displayTypeLv)
 				+",displayTitleNo = " + Integer.toString(playerdata.displayTitleNo);

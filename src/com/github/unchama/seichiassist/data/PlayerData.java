@@ -80,8 +80,14 @@ public class PlayerData {
 	public int idletime;
 	//トータル破壊ブロック
 	public int totalbreaknum;
-	//経験値バー
+	//整地量バー
 	public ExpBar expbar;
+	//合計経験値
+	public int totalexp;
+	//経験値マネージャ
+	public ExperienceManager expmanager;
+	//合計経験値統合済みフラグ
+	public byte expmarge;
 	//各統計値差分計算用配列
 	private List<Integer> staticdata;
 	//特典受け取り済み投票数
@@ -148,6 +154,7 @@ public class PlayerData {
 		}
 		this.activeskilldata = new ActiveSkillData();
 		this.expbar = new ExpBar(this, player);
+		this.expmanager = new ExperienceManager(player);
 		this.p_givenvote = 0;
 		this.votecooldownflag = true;
 		this.gachacooldownflag = true;
@@ -174,6 +181,8 @@ public class PlayerData {
 		updataLevel(player);
 		NotifySorryForBug(player);
 		activeskilldata.updateonJoin(player, level);
+		//サーバー保管経験値をクライアントに読み込み
+		loadTotalExp();
 	}
 
 
@@ -186,6 +195,8 @@ public class PlayerData {
 
 		activeskilldata.updateonQuit(player);
 		expbar.remove();
+		//クライアント経験値をサーバー保管
+		saveTotalExp();
 	}
 
 	/*
@@ -539,4 +550,19 @@ public class PlayerData {
 		return build_count;
 	}
 
+	private void saveTotalExp() {
+		totalexp = expmanager.getTotalExperience();
+	}
+
+	private void loadTotalExp() {
+		int server_num = SeichiAssist.config.getServerNum();
+		//経験値が統合されてない場合は統合する
+		if (expmarge != 0x07 && server_num >= 1 && server_num <= 3) {
+			if ((expmarge & (0x01 << (server_num - 1))) == 0 ) {
+				totalexp += expmanager.getTotalExperience();
+				expmarge = (byte) (expmarge | (0x01 << (server_num - 1)));
+			}
+		}
+		expmanager.setTotalExperience(totalexp);
+	}
 }

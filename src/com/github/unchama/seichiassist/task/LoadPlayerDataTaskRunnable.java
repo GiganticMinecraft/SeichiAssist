@@ -159,6 +159,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				//マナの情報
  				playerdata.activeskilldata.mana.setMana(rs.getDouble("mana"));
  				playerdata.expbar.setVisible(rs.getBoolean("expvisible"));
+ 				playerdata.totalexp = rs.getInt("totalexp");
+ 				playerdata.expmarge = rs.getByte("expmarge");
 
  				//subhomeの情報
  				playerdata.SetSubHome(rs.getString("homepoint_" + SeichiAssist.config.getServerNum()));
