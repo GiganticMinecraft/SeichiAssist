@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
 
@@ -557,7 +558,7 @@ public class PlayerData {
 	}
 
 	private void saveTotalExp() {
-		totalexp = expmanager.getTotalExperience();
+		totalexp = expmanager.getCurrentExp();
 	}
 
 	private void loadTotalExp() {
@@ -565,10 +566,15 @@ public class PlayerData {
 		//経験値が統合されてない場合は統合する
 		if (expmarge != 0x07 && server_num >= 1 && server_num <= 3) {
 			if ((expmarge & (0x01 << (server_num - 1))) == 0 ) {
-				totalexp += expmanager.getTotalExperience();
+				if(expmarge == 0) {
+					// 初回は加算じゃなくベースとして代入にする
+					totalexp = expmanager.getCurrentExp();
+				} else {
+					totalexp += expmanager.getCurrentExp();
+				}
 				expmarge = (byte) (expmarge | (0x01 << (server_num - 1)));
 			}
 		}
-		expmanager.setTotalExperience(totalexp);
+		expmanager.setExp(totalexp);
 	}
 }

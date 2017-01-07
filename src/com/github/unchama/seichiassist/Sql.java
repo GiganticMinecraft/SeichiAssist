@@ -1212,7 +1212,7 @@ public class Sql{
 			return false;
 		}
 		//連打による負荷防止の為クールダウン処理
-        new CoolDownTaskRunnable(player, CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin, 1200);
+		new CoolDownTaskRunnable(player, CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin, 1200);
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
 		String command = "SELECT shareinv FROM " + db + "." + table + " " +
@@ -1247,7 +1247,7 @@ public class Sql{
 			return null;
 		}
 		//連打による負荷防止の為クールダウン処理
-        new CoolDownTaskRunnable(player,CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin,1200);
+		new CoolDownTaskRunnable(player,CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin,1200);
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
 		String command = "SELECT shareinv FROM " + db + "." + table + " " +
