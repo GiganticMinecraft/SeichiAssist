@@ -395,6 +395,8 @@ public class Sql{
 				",add column if not exists expvisible boolean default false" +
 				",add column if not exists totalexp int default 0" +
 				",add column if not exists expmarge tinyint unsigned default 0" +
+				",add column if not exists shareinv blob" +
+
 				",add index if not exists name_index(name)" +
 				",add index if not exists uuid_index(uuid)" +
 				",add index if not exists ranking_index(totalbreaknum)" +
@@ -1204,4 +1206,76 @@ public class Sql{
  		return true;
 	}
 
+	public boolean saveShareInv(Player player, PlayerData playerdata, String data) {
+		if (!playerdata.shareinvcooldownflag) {
+			player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
+			return false;
+		}
+		//連打による負荷防止の為クールダウン処理
+        new CoolDownTaskRunnable(player, CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin, 1200);
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		String command = "SELECT shareinv FROM " + db + "." + table + " " +
+				"WHERE uuid = '" + struuid + "'";
+ 		try {
+			rs = stmt.executeQuery(command);
+			rs.next();
+			String shareinv = rs.getString("shareinv");
+			rs.close();
+			if (shareinv != "" && shareinv != null) {
+				player.sendMessage(ChatColor.RED + "既にアイテムが収納されています");
+				return false;
+			}
+			command = "UPDATE " + db + "." + table + " " +
+					"SET shareinv = '" + data + "' " +
+					"WHERE uuid = '" + struuid + "'";
+			if (!putCommand(command)) {
+				player.sendMessage(ChatColor.RED + "アイテムの収納に失敗しました");
+				return false;
+			}
+ 		} catch (SQLException e) {
+			player.sendMessage(ChatColor.RED + "共有インベントリにアクセスできません");
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public String loadShareInv(Player player, PlayerData playerdata) {
+		if(!playerdata.shareinvcooldownflag){
+			player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
+			return null;
+		}
+		//連打による負荷防止の為クールダウン処理
+        new CoolDownTaskRunnable(player,CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin,1200);
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		String command = "SELECT shareinv FROM " + db + "." + table + " " +
+				"WHERE uuid = '" + struuid + "'";
+		String shareinv = null;
+ 		try {
+			rs = stmt.executeQuery(command);
+			rs.next();
+			shareinv = rs.getString("shareinv");
+			rs.close();
+ 		} catch (SQLException e) {
+			player.sendMessage(ChatColor.RED + "共有インベントリにアクセスできません");
+			e.printStackTrace();
+		}
+		return shareinv;
+	}
+
+	public boolean clearShareInv(Player player, PlayerData playerdata) {
+		//連打による負荷防止の為クールダウン処理
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		String command = "UPDATE " + db + "." + table + " " +
+					"SET shareinv = '' " +
+					"WHERE uuid = '" + struuid + "'";
+		if (!putCommand(command)) {
+			player.sendMessage(ChatColor.RED + "アイテムのクリアに失敗しました");
+			return false;
+		}
+		return true;
+	}
 }

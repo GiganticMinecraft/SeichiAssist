@@ -101,6 +101,11 @@ public class PlayerData {
 	//ガチャボタン連打防止用
 	public boolean gachacooldownflag;
 
+	//インベントリ共有トグル
+	public boolean shareinv;
+	//インベントリ共有ボタン連打防止用
+	public boolean shareinvcooldownflag;
+
 	//サブのホームポイント
 	private Location[] sub_home = new Location[SeichiAssist.config.getSubHomeMax()];
 
@@ -158,6 +163,7 @@ public class PlayerData {
 		this.p_givenvote = 0;
 		this.votecooldownflag = true;
 		this.gachacooldownflag = true;
+		this.shareinvcooldownflag = true;
 
 		this.displayTypeLv = true;
 		this.displayTitleNo = 0 ;
