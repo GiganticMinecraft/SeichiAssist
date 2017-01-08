@@ -770,8 +770,12 @@ public class MenuInventoryData {
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(20+x,itemstack);
-
 		}
+
+		// インベントリ共有ボタン
+		itemstack = new ItemStack(Material.TRAPPED_CHEST,1);
+		itemstack.setItemMeta(dispShareInvMeta(playerdata));
+		inventory.setItem(6,itemstack);
 
 		return inventory;
 	}
@@ -1290,6 +1294,28 @@ public class MenuInventoryData {
 		}
 		skullmeta.setLore(lore);
 		return skullmeta;
+	}
+
+	// インベントリ共有トグルボタン
+	public static ItemMeta dispShareInvMeta(PlayerData playerdata){
+		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.TRAPPED_CHEST);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "インベントリ共有");
+		List<String> lore = new ArrayList<String>();
+		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在の装備・アイテムを移動します。"
+				, ChatColor.RESET + "" + "サーバー間のアイテム移動にご利用ください。"
+				, ""
+				));
+
+		if(playerdata.shareinv){
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "収納中");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでアイテムを取り出します。");
+			lore.add(ChatColor.RESET + "" + ChatColor.RED + "現在の装備・アイテムが空であることを確認してください。");
+		}else{
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "非収納中");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでアイテムを収納します。");
+		}
+		itemmeta.setLore(lore);
+		return itemmeta;
 	}
 
 	//ランキングリスト

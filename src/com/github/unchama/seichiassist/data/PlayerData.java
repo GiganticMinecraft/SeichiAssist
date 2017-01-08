@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
 
@@ -80,8 +81,14 @@ public class PlayerData {
 	public int idletime;
 	//トータル破壊ブロック
 	public int totalbreaknum;
-	//経験値バー
+	//整地量バー
 	public ExpBar expbar;
+	//合計経験値
+	public int totalexp;
+	//経験値マネージャ
+	public ExperienceManager expmanager;
+	//合計経験値統合済みフラグ
+	public byte expmarge;
 	//各統計値差分計算用配列
 	private List<Integer> staticdata;
 	//特典受け取り済み投票数
@@ -94,6 +101,11 @@ public class PlayerData {
 
 	//ガチャボタン連打防止用
 	public boolean gachacooldownflag;
+
+	//インベントリ共有トグル
+	public boolean shareinv;
+	//インベントリ共有ボタン連打防止用
+	public boolean shareinvcooldownflag;
 
 	//サブのホームポイント
 	private Location[] sub_home = new Location[SeichiAssist.config.getSubHomeMax()];
@@ -148,9 +160,11 @@ public class PlayerData {
 		}
 		this.activeskilldata = new ActiveSkillData();
 		this.expbar = new ExpBar(this, player);
+		this.expmanager = new ExperienceManager(player);
 		this.p_givenvote = 0;
 		this.votecooldownflag = true;
 		this.gachacooldownflag = true;
+		this.shareinvcooldownflag = true;
 
 		this.displayTypeLv = true;
 		this.displayTitleNo = 0 ;
@@ -174,6 +188,8 @@ public class PlayerData {
 		updataLevel(player);
 		NotifySorryForBug(player);
 		activeskilldata.updateonJoin(player, level);
+		//サーバー保管経験値をクライアントに読み込み
+		loadTotalExp();
 	}
 
 
@@ -186,6 +202,8 @@ public class PlayerData {
 
 		activeskilldata.updateonQuit(player);
 		expbar.remove();
+		//クライアント経験値をサーバー保管
+		saveTotalExp();
 	}
 
 	/*
@@ -539,4 +557,24 @@ public class PlayerData {
 		return build_count;
 	}
 
+	private void saveTotalExp() {
+		totalexp = expmanager.getCurrentExp();
+	}
+
+	private void loadTotalExp() {
+		int server_num = SeichiAssist.config.getServerNum();
+		//経験値が統合されてない場合は統合する
+		if (expmarge != 0x07 && server_num >= 1 && server_num <= 3) {
+			if ((expmarge & (0x01 << (server_num - 1))) == 0 ) {
+				if(expmarge == 0) {
+					// 初回は加算じゃなくベースとして代入にする
+					totalexp = expmanager.getCurrentExp();
+				} else {
+					totalexp += expmanager.getCurrentExp();
+				}
+				expmarge = (byte) (expmarge | (0x01 << (server_num - 1)));
+			}
+		}
+		expmanager.setExp(totalexp);
+	}
 }
