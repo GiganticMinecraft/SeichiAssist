@@ -206,7 +206,6 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackObj("gold_ore","金鉱石",13,Material.GOLD_ORE,0,false,-1,0)
 			,new MineStackObj("glowstone","グロウストーン",13,Material.GLOWSTONE,0,false,-1,0)
 
-			,new MineStackObj("redstone","レッドストーン",15,Material.REDSTONE,0,false,-1,0)
 			,new MineStackObj("redstone_ore","レッドストーン鉱石",15,Material.REDSTONE_ORE,0,false,-1,0)
 			,new MineStackObj("lapis_lazuli","ラピスラズリ",16,Material.INK_SACK,4,false,-1,0)
 			,new MineStackObj("lapis_ore","ラピスラズリ鉱石",16,Material.LAPIS_ORE,0,false,-1,0)
@@ -416,11 +415,55 @@ public class SeichiAssist extends JavaPlugin{
 
 			));
 
+	public static final List<MineStackObj> minestacklistrs = new ArrayList<MineStackObj>(Arrays.asList(
+
+			//以下レッドストーン系ブロック
+			new MineStackObj("redstone","レッドストーン",15,Material.REDSTONE,0,false,-1,4)
+			,new MineStackObj("stone_button","ボタン",16,Material.STONE_BUTTON,0,false,-1,4)
+			,new MineStackObj("wood_button","ボタン",16,Material.WOOD_BUTTON,0,false,-1,4)
+			,new MineStackObj("stone_plate","石の感圧版",17,Material.STONE_PLATE,0,false,-1,4)
+			,new MineStackObj("wood_plate","木の感圧版",17,Material.WOOD_PLATE,0,false,-1,4)
+			,new MineStackObj("fence_gate","オークのフェンスゲート",18,Material.FENCE_GATE,0,false,-1,4)
+			,new MineStackObj("spruce_fence_gate","マツのフェンスゲート",18,Material.SPRUCE_FENCE_GATE,0,false,-1,4)
+			,new MineStackObj("birch_fence_gate","シラカバのフェンスゲート",18,Material.BIRCH_FENCE_GATE,0,false,-1,4)
+			,new MineStackObj("jungle_fence_gate","ジャングルのフェンスゲート",18,Material.JUNGLE_FENCE_GATE,0,false,-1,4)
+			,new MineStackObj("dark_oak_fence_gate","ダークオークのフェンスゲート",18,Material.DARK_OAK_FENCE_GATE,0,false,-1,4)
+			,new MineStackObj("acacia_fence_gate","アカシアのフェンスゲート",18,Material.ACACIA_FENCE_GATE,0,false,-1,4)
+			,new MineStackObj("redstone_block","レッドストーンブロック",18,Material.REDSTONE_BLOCK,0,false,-1,4)
+			,new MineStackObj("lever","レバー",19,Material.LEVER,0,false,-1,4)
+			,new MineStackObj("redstone_torch_on","レッドストーントーチ",19,Material.REDSTONE_TORCH_ON,0,false,-1,4)
+			,new MineStackObj("trap_door","木のトラップドア",19,Material.TRAP_DOOR,0,false,-1,4)
+			,new MineStackObj("stone_button","鉄のトラップドア",19,Material.IRON_TRAPDOOR,0,false,-1,4)
+			,new MineStackObj("gold_plate","重量感圧版 (軽) ",19,Material.GOLD_PLATE,0,false,-1,4)
+			,new MineStackObj("iron_plate","重量感圧版 (重) ",19,Material.IRON_PLATE,0,false,-1,4)
+			,new MineStackObj("wood_door","オークのドア",19,Material.WOOD_DOOR,0,false,-1,4)
+			,new MineStackObj("spruce_door_item","マツのドア",19,Material.SPRUCE_DOOR_ITEM,0,false,-1,4)
+			,new MineStackObj("birch_door_item","シラカバのドア",19,Material.BIRCH_DOOR_ITEM,0,false,-1,4)
+			,new MineStackObj("jungle_door_item","ジャングルのドア",19,Material.JUNGLE_DOOR_ITEM,0,false,-1,4)
+			,new MineStackObj("acacia_door_item","アカシアのドア",19,Material.ACACIA_DOOR_ITEM,0,false,-1,4)
+			,new MineStackObj("dark_oak_door_item","ダークオークのドア",19,Material.DARK_OAK_DOOR_ITEM,0,false,-1,4)
+			,new MineStackObj("note_block","音符ブロック",20,Material.NOTE_BLOCK,0,false,-1,4)
+			,new MineStackObj("redstone_lamp_off","レッドストーンランプ",20,Material.REDSTONE_LAMP_OFF,0,false,-1,4)
+			,new MineStackObj("tripwire_hook","トリップワイヤーフック",20,Material.TRIPWIRE_HOOK,0,false,-1,4)
+			,new MineStackObj("dropper","ドロッパー",23,Material.DROPPER,0,false,-1,4)
+			,new MineStackObj("piston_sticky_base","粘着ピストン",24,Material.PISTON_STICKY_BASE,0,false,-1,4)
+			,new MineStackObj("piston_base","ピストン",24,Material.PISTON_BASE,0,false,-1,4)
+			,new MineStackObj("tnt","TNT",24,Material.TNT,0,false,-1,4)
+			,new MineStackObj("trapped_chest","トラップチェスト",26,Material.TRAPPED_CHEST,0,false,-1,4)
+			,new MineStackObj("daylight_detector","日照センサー",27,Material.DAYLIGHT_DETECTOR,0,false,-1,4)
+			,new MineStackObj("iron_door","鉄のドア",27,Material.IRON_DOOR,0,false,-1,4)
+			,new MineStackObj("diode","レッドストーンリピーター",29,Material.DIODE,0,false,-1,4)
+			,new MineStackObj("dispenser","ディスペンサー",30,Material.DISPENSER,0,false,-1,4)
+			,new MineStackObj("hopper","ホッパー",30,Material.HOPPER,0,false,-1,4)
+			,new MineStackObj("redstone_comparator","レッドストーンコンパレーター",34,Material.REDSTONE_COMPARATOR,0,false,-1,4)
+
+			));
+
 	public static List<MineStackObj> minestacklistgacha =  new ArrayList<MineStackObj>(Arrays.asList(
 
 			//以下ガチャ系アイテム
-			new MineStackObj("gachaimo",Util.getGachaimoName(),19,Material.GOLDEN_APPLE,0,true,-1,Util.getGachaimoLore(),4)
-			,new MineStackObj("exp_bottle","エンチャントの瓶",19,Material.EXP_BOTTLE,0,false,-1,4)
+			new MineStackObj("gachaimo",Util.getGachaimoName(),19,Material.GOLDEN_APPLE,0,true,-1,Util.getGachaimoLore(),5)
+			,new MineStackObj("exp_bottle","エンチャントの瓶",19,Material.EXP_BOTTLE,0,false,-1,5)
 
 			));
 
@@ -527,6 +570,7 @@ public class SeichiAssist extends JavaPlugin{
 			minestacklist.addAll(minestacklistdrop);
 			minestacklist.addAll(minestacklistfarm);
 			minestacklist.addAll(minestacklistbuild);
+			minestacklist.addAll(minestacklistrs);
 
 			Collections.sort(minestacklistgacha);
 
@@ -701,7 +745,7 @@ public class SeichiAssist extends JavaPlugin{
 					/*
 					minestacklist.add(new MineStackObj(g.obj_name,g.itemstack.getItemMeta().getDisplayName(),g.level,g.itemstack.getType(),g.itemstack.getDurability(),true,i,g.itemstack.getItemMeta().getLore()));
 					*/
-					minestacklist.add(new MineStackObj(g.obj_name,g.level,g.itemstack,true,i,4));
+					minestacklist.add(new MineStackObj(g.obj_name,g.level,g.itemstack,true,i,5));
 					//System.out.println("Debug C");
 
 
