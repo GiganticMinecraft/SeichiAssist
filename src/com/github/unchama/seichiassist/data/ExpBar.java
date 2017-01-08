@@ -45,7 +45,15 @@ public class ExpBar {
 				String bartext = ChatColor.GOLD + "" + ChatColor.BOLD + "Lv " + Integer.toString(pd.level) + "(" + String.format("%,d", pd.totalbreaknum) + "/"
 						+ String.format("%,d", SeichiAssist.levellist.get(pd.level).intValue()) + ")";
 				expbar = p.getServer().createBossBar(bartext, BarColor.YELLOW, BarStyle.SOLID);
-				expbar.setProgress((double) exp / expmax);
+				// 範囲チェック
+				if(exp >= expmax) {
+					// レベルアップ前にログアウトした場合、次回ログイン時のレベルアップ処理までに100%を超えている場合がある
+					expbar.setProgress(1.0);
+				} else if(exp <= 0) {
+					expbar.setProgress(0.0);
+				} else {
+					expbar.setProgress((double) exp / expmax);
+				}
 			}
 			// 描画処理
 			expbar.addPlayer(p);
