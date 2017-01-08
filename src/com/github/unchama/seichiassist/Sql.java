@@ -1079,18 +1079,18 @@ public class Sql{
 		String lastquit = "";
 		String command = "select lastquit from " + db + "." + table
 				+ " where name = '" + name + "'";
-			try{
-				rs = stmt.executeQuery(command);
-				while (rs.next()) {
-					lastquit = rs.getString("lastquit");
-				  }
-				rs.close();
-			} catch (SQLException e) {
-				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-				exc = e.getMessage();
-				e.printStackTrace();
-				return null;
-			}
+		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				lastquit = rs.getString("lastquit");
+			  }
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return null;
+		}
 		return lastquit;
 	}
 
@@ -1212,7 +1212,7 @@ public class Sql{
 			return false;
 		}
 		//連打による負荷防止の為クールダウン処理
-		new CoolDownTaskRunnable(player, CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin, 1200);
+		new CoolDownTaskRunnable(player, CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin, 200);
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
 		String command = "SELECT shareinv FROM " + db + "." + table + " " +
@@ -1231,10 +1231,12 @@ public class Sql{
 					"WHERE uuid = '" + struuid + "'";
 			if (!putCommand(command)) {
 				player.sendMessage(ChatColor.RED + "アイテムの収納に失敗しました");
+				Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> saveShareInv(putCommand failed)");
 				return false;
 			}
  		} catch (SQLException e) {
 			player.sendMessage(ChatColor.RED + "共有インベントリにアクセスできません");
+			Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> clearShareInv(SQLException)");
 			e.printStackTrace();
 			return false;
 		}
@@ -1260,13 +1262,13 @@ public class Sql{
 			rs.close();
  		} catch (SQLException e) {
 			player.sendMessage(ChatColor.RED + "共有インベントリにアクセスできません");
+			Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> loadShareInv");
 			e.printStackTrace();
 		}
 		return shareinv;
 	}
 
 	public boolean clearShareInv(Player player, PlayerData playerdata) {
-		//連打による負荷防止の為クールダウン処理
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
 		String command = "UPDATE " + db + "." + table + " " +
@@ -1274,6 +1276,7 @@ public class Sql{
 					"WHERE uuid = '" + struuid + "'";
 		if (!putCommand(command)) {
 			player.sendMessage(ChatColor.RED + "アイテムのクリアに失敗しました");
+			Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> clearShareInv");
 			return false;
 		}
 		return true;

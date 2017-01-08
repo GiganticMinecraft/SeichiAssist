@@ -8,6 +8,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,8 +55,6 @@ import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.SerializeItemList;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldedit.bukkit.selections.Selection;
-
-import net.md_5.bungee.api.ChatColor;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -775,6 +775,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata.shareinv = false;
 						itemstackcurrent.setItemMeta(MenuInventoryData.dispShareInvMeta(playerdata));
 						player.sendMessage(ChatColor.GREEN + "アイテムを取得しました。手持ちにあったアイテムはドロップしました。");
+						Bukkit.getLogger().info(Util.getName(player) + "がアイテム取り出しを実施(SQL送信成功)");
 					}
 				}
 				// 収納処理
@@ -811,7 +812,8 @@ public class PlayerInventoryListener implements Listener {
 							// インベントリ共有ボタンをトグル
 							playerdata.shareinv = true;
 							itemstackcurrent.setItemMeta(MenuInventoryData.dispShareInvMeta(playerdata));
-							player.sendMessage(ChatColor.GREEN + "アイテムを収納しました。1分以上後に、手持ちを空にして取り出してください。");
+							player.sendMessage(ChatColor.GREEN + "アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。");
+							Bukkit.getLogger().info(Util.getName(player) + "がアイテム収納を実施(SQL送信成功)");
 						}
 					}
 				}
