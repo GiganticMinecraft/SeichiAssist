@@ -8,8 +8,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -55,6 +53,8 @@ import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.SerializeItemList;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -1818,10 +1818,17 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 
-			if(itemstackcurrent.getType().equals(Material.GOLDEN_APPLE)){
+			if(itemstackcurrent.getType().equals(Material.REDSTONE)){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0, 4));
+				return;
+			}
+
+			if(itemstackcurrent.getType().equals(Material.GOLDEN_APPLE)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0, 5));
 				return;
 			}
 
@@ -1912,8 +1919,10 @@ public class PlayerInventoryListener implements Listener {
 						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,2));
 					} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "建築系MineStack")){
 						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,3));
-					} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ガチャ系MineStack")){
+					} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "レッドストーン系MineStack")){
 						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,4));
+					} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ガチャ系MineStack")){
+						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,5));
 					}
 
 				}
@@ -1949,8 +1958,10 @@ public class PlayerInventoryListener implements Listener {
 							player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,2));
 						} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "建築系MineStack")){
 							player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,3));
-						} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ガチャ系MineStack")){
+						} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "レッドストーン系MineStack")){
 							player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,4));
+						} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ガチャ系MineStack")){
+							player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,5));
 						}
 					}
 				/*
