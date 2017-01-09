@@ -162,6 +162,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.totalexp = rs.getInt("totalexp");
  				playerdata.expmarge = rs.getByte("expmarge");
  				playerdata.shareinv = (rs.getString("shareinv") != "" && rs.getString("shareinv") != null);
+ 				playerdata.everysoundflag = rs.getBoolean("everysound");
 
  				//subhomeの情報
  				playerdata.SetSubHome(rs.getString("homepoint_" + SeichiAssist.config.getServerNum()));

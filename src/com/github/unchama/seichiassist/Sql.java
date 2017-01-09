@@ -396,6 +396,7 @@ public class Sql{
 				",add column if not exists totalexp int default 0" +
 				",add column if not exists expmarge tinyint unsigned default 0" +
 				",add column if not exists shareinv blob" +
+				",add column if not exists everysound boolean default false" +
 
 				",add index if not exists name_index(name)" +
 				",add index if not exists uuid_index(uuid)" +
