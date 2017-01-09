@@ -423,6 +423,20 @@ public class PlayerInventoryListener implements Listener {
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispKillLogToggleMeta(playerdata,itemmeta));
 			}
 
+			else if(itemstackcurrent.getType().equals(Material.JUKEBOX)){
+				// 全体通知音消音トグル
+				playerdata.everysoundflag = !playerdata.everysoundflag;
+				if(playerdata.everysoundflag){
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.GREEN + "消音可能な全体通知音を消音します");
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.sendMessage(ChatColor.RED + "消音設定を解除しました");
+				}
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.dispWinSoundToggleMeta(playerdata,itemmeta));
+			}
+
 			//追加
 			else if(itemstackcurrent.getType().equals(Material.BARRIER)){
 				// ワールドガード保護表示トグル

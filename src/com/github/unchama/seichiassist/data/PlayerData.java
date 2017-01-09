@@ -67,7 +67,8 @@ public class PlayerData {
 	public int playtick;
 	//キルログ表示トグル
 	public boolean dispkilllogflag;
-
+	//全体通知音消音トグル
+	public boolean everysoundflag;
 	//ワールドガード保護ログ表示トグル
 	public boolean dispworldguardlogflag;
 	//複数種類破壊トグル

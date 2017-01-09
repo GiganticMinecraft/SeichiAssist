@@ -6,9 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import net.coreprotect.CoreProtect;
-import net.coreprotect.CoreProtectAPI;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -26,11 +23,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
-import zedly.zenchantments.Zenchantments;
-
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+
+import net.coreprotect.CoreProtect;
+import net.coreprotect.CoreProtectAPI;
+import zedly.zenchantments.Zenchantments;
 
 public class Util {
 	static private FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
@@ -195,6 +194,14 @@ public class Util {
 		SeichiAssist plugin = SeichiAssist.plugin;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.playSound(player.getLocation(), str, a, b);
+		}
+	}
+	public static void sendEverySoundWithoutIgnore(Sound str, float a, float b){
+		SeichiAssist plugin = SeichiAssist.plugin;
+		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+			if (!SeichiAssist.playermap.get(player.getUniqueId()).everysoundflag) {
+				player.playSound(player.getLocation(), str, a, b);
+			}
 		}
 	}
 
