@@ -140,6 +140,15 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
+		//Lumberをエンチャントしていたら終了
+		Zenchantments Ze = Util.getZenchantments();
+		if(Ze == null){
+			player.sendMessage("取得エラー");
+		}
+		if(Ze.isCompatible("木こり", tool)){
+			return;
+		}
+
 
 		//これ以前の終了処理はマナは回復しません
 		//追加マナ獲得
@@ -148,15 +157,6 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0){
-			return;
-		}
-
-		//Lumberをエンチャントしていたら終了
-		Zenchantments Ze = Util.getZenchantments();
-		if(Ze == null){
-			player.sendMessage("取得エラー");
-		}
-		if(Ze.isCompatible("木こり", tool)){
 			return;
 		}
 
