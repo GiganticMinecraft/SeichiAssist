@@ -199,7 +199,7 @@ public class Util {
 	public static void sendEverySoundWithoutIgnore(Sound str, float a, float b){
 		SeichiAssist plugin = SeichiAssist.plugin;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
-			if (!SeichiAssist.playermap.get(player.getUniqueId()).everysoundflag) {
+			if (SeichiAssist.playermap.get(player.getUniqueId()).everysoundflag) {
 				player.playSound(player.getLocation(), str, a, b);
 			}
 		}

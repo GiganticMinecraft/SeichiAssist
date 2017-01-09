@@ -2464,13 +2464,13 @@ public class MenuInventoryData {
 	public static ItemMeta dispWinSoundToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<String>();
 		if(playerdata.everysoundflag){
-			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "消音する");
-			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで解除");
-		}else{
 			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
-			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "消音しない");
-			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで設定");
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "消音しない");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで設定");
+		}else{
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "消音する");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで解除");
 		}
 		itemmeta.setLore(lore);
 		return itemmeta;
