@@ -392,6 +392,12 @@ public class Sql{
 				",add column if not exists effectpoint int default 0" +
 				",add column if not exists premiumeffectpoint int default 0" +
 				",add column if not exists mana double default 0.0" +
+				",add column if not exists expvisible boolean default true" +
+				",add column if not exists totalexp int default 0" +
+				",add column if not exists expmarge tinyint unsigned default 0" +
+				",add column if not exists shareinv blob" +
+				",add column if not exists everysound boolean default true" +
+
 				",add index if not exists name_index(name)" +
 				",add index if not exists uuid_index(uuid)" +
 				",add index if not exists ranking_index(totalbreaknum)" +
@@ -401,7 +407,7 @@ public class Sql{
 				",add column if not exists build_lv int default 1" +//
 				",add column if not exists build_count int default 0" +//
 				",add column if not exists build_count_flg TINYINT UNSIGNED default 0" +//
-				
+
 				"";
 
 
@@ -680,6 +686,11 @@ public class Sql{
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "【初見キタ】" + p.getName() + "のプレイヤーデータ作成完了");
  			Util.sendEveryMessage(ChatColor.LIGHT_PURPLE+""+ChatColor.BOLD+name+"さんは初参加です。整地鯖へヨウコソ！" + ChatColor.RESET +" - " + ChatColor.YELLOW + ChatColor.UNDERLINE +  "http://seichi.click");
  			Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+ 			//初見プレイヤーに木の棒、エリトラ、ピッケルを配布
+ 			p.getInventory().addItem(new ItemStack(Material.STICK));
+ 			p.getInventory().addItem(new ItemStack(Material.ELYTRA));
+ 			p.getInventory().addItem(new ItemStack(Material.DIAMOND_PICKAXE));
+ 			p.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
  			return true;
 
  		}else if(count == 1){
@@ -1074,18 +1085,18 @@ public class Sql{
 		String lastquit = "";
 		String command = "select lastquit from " + db + "." + table
 				+ " where name = '" + name + "'";
-			try{
-				rs = stmt.executeQuery(command);
-				while (rs.next()) {
-					lastquit = rs.getString("lastquit");
-				  }
-				rs.close();
-			} catch (SQLException e) {
-				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-				exc = e.getMessage();
-				e.printStackTrace();
-				return null;
-			}
+		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				lastquit = rs.getString("lastquit");
+			  }
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return null;
+		}
 		return lastquit;
 	}
 
@@ -1201,4 +1212,79 @@ public class Sql{
  		return true;
 	}
 
+	public boolean saveShareInv(Player player, PlayerData playerdata, String data) {
+		if (!playerdata.shareinvcooldownflag) {
+			player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
+			return false;
+		}
+		//連打による負荷防止の為クールダウン処理
+		new CoolDownTaskRunnable(player, CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin, 200);
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		String command = "SELECT shareinv FROM " + db + "." + table + " " +
+				"WHERE uuid = '" + struuid + "'";
+ 		try {
+			rs = stmt.executeQuery(command);
+			rs.next();
+			String shareinv = rs.getString("shareinv");
+			rs.close();
+			if (shareinv != "" && shareinv != null) {
+				player.sendMessage(ChatColor.RED + "既にアイテムが収納されています");
+				return false;
+			}
+			command = "UPDATE " + db + "." + table + " " +
+					"SET shareinv = '" + data + "' " +
+					"WHERE uuid = '" + struuid + "'";
+			if (!putCommand(command)) {
+				player.sendMessage(ChatColor.RED + "アイテムの収納に失敗しました");
+				Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> saveShareInv(putCommand failed)");
+				return false;
+			}
+ 		} catch (SQLException e) {
+			player.sendMessage(ChatColor.RED + "共有インベントリにアクセスできません");
+			Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> clearShareInv(SQLException)");
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public String loadShareInv(Player player, PlayerData playerdata) {
+		if(!playerdata.shareinvcooldownflag){
+			player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
+			return null;
+		}
+		//連打による負荷防止の為クールダウン処理
+		new CoolDownTaskRunnable(player,CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin,200);
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		String command = "SELECT shareinv FROM " + db + "." + table + " " +
+				"WHERE uuid = '" + struuid + "'";
+		String shareinv = null;
+ 		try {
+			rs = stmt.executeQuery(command);
+			rs.next();
+			shareinv = rs.getString("shareinv");
+			rs.close();
+ 		} catch (SQLException e) {
+			player.sendMessage(ChatColor.RED + "共有インベントリにアクセスできません");
+			Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> loadShareInv");
+			e.printStackTrace();
+		}
+		return shareinv;
+	}
+
+	public boolean clearShareInv(Player player, PlayerData playerdata) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String struuid = playerdata.uuid.toString();
+		String command = "UPDATE " + db + "." + table + " " +
+					"SET shareinv = '' " +
+					"WHERE uuid = '" + struuid + "'";
+		if (!putCommand(command)) {
+			player.sendMessage(ChatColor.RED + "アイテムのクリアに失敗しました");
+			Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> clearShareInv");
+			return false;
+		}
+		return true;
+	}
 }

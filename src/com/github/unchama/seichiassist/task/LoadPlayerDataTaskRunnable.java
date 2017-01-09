@@ -158,6 +158,11 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint");
  				//マナの情報
  				playerdata.activeskilldata.mana.setMana(rs.getDouble("mana"));
+ 				playerdata.expbar.setVisible(rs.getBoolean("expvisible"));
+ 				playerdata.totalexp = rs.getInt("totalexp");
+ 				playerdata.expmarge = rs.getByte("expmarge");
+ 				playerdata.shareinv = (rs.getString("shareinv") != "" && rs.getString("shareinv") != null);
+ 				playerdata.everysoundflag = rs.getBoolean("everysound");
 
  				//subhomeの情報
  				playerdata.SetSubHome(rs.getString("homepoint_" + SeichiAssist.config.getServerNum()));
@@ -182,8 +187,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.build_lv_set(rs.getInt("build_lv"));
  				playerdata.build_count_set(rs.getInt("build_count"));
  				playerdata.build_count_flg_set(rs.getByte("build_count_flg"));
- 				
- 				
+
+
  				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
  				for(int i = 0 ; i < activeskilleffect.length ; i++){
  					int num = activeskilleffect[i].getNum();
