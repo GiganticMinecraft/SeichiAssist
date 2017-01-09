@@ -12,6 +12,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.ThrownExpBottle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -552,12 +553,12 @@ public class PlayerClickListener implements Listener {
 	}
 
 	//　経験値瓶を持った状態でのShift右クリック…一括使用
-	/*
 	@EventHandler
 	public void onPlayerRightClickExpBottleEvent(PlayerInteractEvent event){
 		// 経験値瓶を持った状態でShift右クリックをした場合
 		if (event.getPlayer().isSneaking() && event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
 				&& (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
+			event.setCancelled(true);
 			int num = event.getItem().getAmount();
 			for(int cnt = 0; cnt < num; cnt++) {
 				event.getPlayer().launchProjectile(ThrownExpBottle.class);
@@ -565,7 +566,6 @@ public class PlayerClickListener implements Listener {
 			event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 		}
 	}
-	*/
 
 /*
 	//芋を食べる
