@@ -428,10 +428,10 @@ public class PlayerInventoryListener implements Listener {
 				playerdata.everysoundflag = !playerdata.everysoundflag;
 				if(playerdata.everysoundflag){
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					player.sendMessage(ChatColor.GREEN + "消音可能な全体通知音を消音します");
+					player.sendMessage(ChatColor.GREEN + "消音設定を解除しました");
 				}else{
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					player.sendMessage(ChatColor.RED + "消音設定を解除しました");
+					player.sendMessage(ChatColor.RED + "消音可能な全体通知音を消音します");
 				}
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispWinSoundToggleMeta(playerdata,itemmeta));

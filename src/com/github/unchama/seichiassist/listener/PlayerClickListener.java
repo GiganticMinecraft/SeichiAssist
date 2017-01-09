@@ -287,7 +287,7 @@ public class PlayerClickListener implements Listener {
 				//確率に応じてメッセージを送信
 				if(present.probability < 0.001){
 					Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH,(float)0.5, 2);
-					if (playerdata.everysoundflag) {
+					if (!playerdata.everysoundflag) {
 						player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, (float) 0.5, 2);
 					}
 					player.sendMessage(ChatColor.RED + "おめでとう！！！！！Gigantic☆大当たり！" + str);
