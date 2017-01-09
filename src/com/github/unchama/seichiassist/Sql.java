@@ -685,6 +685,11 @@ public class Sql{
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "【初見キタ】" + p.getName() + "のプレイヤーデータ作成完了");
  			Util.sendEveryMessage(ChatColor.LIGHT_PURPLE+""+ChatColor.BOLD+name+"さんは初参加です。整地鯖へヨウコソ！" + ChatColor.RESET +" - " + ChatColor.YELLOW + ChatColor.UNDERLINE +  "http://seichi.click");
  			Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+ 			//初見プレイヤーに木の棒、エリトラ、ピッケルを配布
+ 			p.getInventory().addItem(new ItemStack(Material.STICK));
+ 			p.getInventory().addItem(new ItemStack(Material.ELYTRA));
+ 			p.getInventory().addItem(new ItemStack(Material.DIAMOND_PICKAXE));
+ 			p.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
  			return true;
 
  		}else if(count == 1){
