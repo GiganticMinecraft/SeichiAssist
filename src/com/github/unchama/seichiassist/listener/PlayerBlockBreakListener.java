@@ -19,8 +19,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import zedly.zenchantments.Zenchantments;
-
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
@@ -33,6 +31,8 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.MultiBreakTaskRunnable;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
+
+import zedly.zenchantments.Zenchantments;
 
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -135,25 +135,16 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-
-		//追加マナ獲得
-		playerdata.activeskilldata.mana.increaseMana(BreakUtil.calcManaDrop(playerdata),player,playerdata.level);
-
-
-		//これ以前の終了処理はパッシブの追加経験値はもらえません
-		/*マナに書き換え
-		//経験値変更用のクラスを設定
-		ExperienceManager expman = new ExperienceManager(player);
-		//passiveskill[追加経験値獲得]処理実行
-		int exp = Util.calcExpDrop(playerdata);
-		expman.changeExp(exp);
-*/
-
-		//これ以降の終了処理は経験値はもらえます
 		//ブロックタイプがmateriallistに登録されていなければ処理終了
 		if(!SeichiAssist.materiallist.contains(material)){
 			return;
 		}
+
+
+		//これ以前の終了処理はマナは回復しません
+		//追加マナ獲得
+		playerdata.activeskilldata.mana.increaseMana(BreakUtil.calcManaDrop(playerdata),player,playerdata.level);
+		//これ以降の終了処理はマナが回復します
 
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0){
