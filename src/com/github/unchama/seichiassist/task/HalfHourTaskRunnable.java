@@ -39,7 +39,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			//プレイヤー型を取得
 			Player player = plugin.getServer().getPlayer(playerdata.uuid);
 			//プレイヤーがオンラインの時の処理
-			if(player != null){
+			if(player != null && playerdata.loaded){
 				//現在の統計量を取得
 				int mines = playerdata.totalbreaknum;
 				//現在の統計量を設定(after)
@@ -48,6 +48,10 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 				playerdata.halfhourblock.setIncrease();
 				//現在の統計量を設定（before)
 				playerdata.halfhourblock.before = mines;
+			}else if(!playerdata.loaded){
+				//debug用…このメッセージ視認後に大量集計されないかを確認する
+				plugin.getServer().getConsoleSender().sendMessage("Apple Pen !");
+				playerdata.halfhourblock.increase = 0;
 			}else{
 				//ﾌﾟﾚｲﾔｰがオフラインの時の処理
 				//前回との差を０に設定
@@ -85,11 +89,11 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		Util.sendEveryMessage("この30分間の総破壊量は " + ChatColor.AQUA + all + ChatColor.WHITE + "個でした");
 		for(Entry<UUID,PlayerData> e : entries){
 			if(count == 1){
-				Util.sendEveryMessage("破壊量第1位は" + ChatColor.DARK_PURPLE + e.getValue().name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
+				Util.sendEveryMessage("破壊量第1位は" + ChatColor.DARK_PURPLE + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}else if(count == 2){
-				Util.sendEveryMessage("破壊量第2位は" + ChatColor.BLUE + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
+				Util.sendEveryMessage("破壊量第2位は" + ChatColor.BLUE + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}else if(count == 3){
-				Util.sendEveryMessage("破壊量第3位は" + ChatColor.DARK_AQUA + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
+				Util.sendEveryMessage("破壊量第3位は" + ChatColor.DARK_AQUA + "[ Lv" + Integer.toString(e.getValue().level) +"]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}
 			count++;
 		}
