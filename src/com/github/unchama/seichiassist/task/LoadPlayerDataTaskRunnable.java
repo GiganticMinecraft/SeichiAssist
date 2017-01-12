@@ -125,6 +125,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			rs = stmt.executeQuery(command);
 			while (rs.next()) {
 				//各種数値
+				playerdata.loaded = true;
  				playerdata.effectflag = rs.getBoolean("effectflag");
  				playerdata.minestackflag = rs.getBoolean("minestackflag");
  				playerdata.messageflag = rs.getBoolean("messageflag");

@@ -22,6 +22,8 @@ import com.github.unchama.seichiassist.util.Util;
 
 
 public class PlayerData {
+	//読み込み済みフラグ
+	public boolean loaded = false;
 	//プレイヤー名
 	public String name;
 	//UUID
@@ -128,6 +130,7 @@ public class PlayerData {
 
 	public PlayerData(Player player){
 		//初期値を設定
+		this.loaded = false;
 		this.name = Util.getName(player);
 		this.uuid = player.getUniqueId();
 		this.effectflag = true;
