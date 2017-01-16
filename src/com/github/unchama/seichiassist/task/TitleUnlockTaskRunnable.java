@@ -309,6 +309,84 @@ public class TitleUnlockTaskRunnable {
 				player.sendMessage("実績No4010解除！おめでとうございます！");
 				}
 			}
+		//投票数(No6000系統)
+		}else if(TryTitleNo == 6001){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.p_vote_forT > 364){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No6001解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 6002){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.p_vote_forT > 199){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No6002解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 6003){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.p_vote_forT > 99){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No6003解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 6004){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.p_vote_forT > 49){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No6004解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 6005){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.p_vote_forT > 24){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No6005解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 6006){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.p_vote_forT > 9){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No6006解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 6007){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.p_vote_forT > 4){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No6007解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 6008){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.p_vote_forT > 0){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No6008解除！おめでとうございます！");
+				}
+			}
+
+
+		//特殊解禁(No9000系統)
+
+		//日付解禁
 		}else if(TryTitleNo == 9001){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
