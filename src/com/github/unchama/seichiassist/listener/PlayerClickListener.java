@@ -12,6 +12,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.ThrownExpBottle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -285,7 +286,10 @@ public class PlayerClickListener implements Listener {
 
 				//確率に応じてメッセージを送信
 				if(present.probability < 0.001){
-					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH,(float)0.5, 2);
+					Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH,(float)0.5, 2);
+					if (!playerdata.everysoundflag) {
+						player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, (float) 0.5, 2);
+					}
 					player.sendMessage(ChatColor.RED + "おめでとう！！！！！Gigantic☆大当たり！" + str);
 					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！\n" + ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
 				}else if(present.probability < 0.01){
@@ -545,6 +549,21 @@ public class PlayerClickListener implements Listener {
 					//インベントリを開く
 					player.openInventory(playerdata.inventory);
 			}
+		}
+	}
+
+	//　経験値瓶を持った状態でのShift右クリック…一括使用
+	@EventHandler
+	public void onPlayerRightClickExpBottleEvent(PlayerInteractEvent event){
+		// 経験値瓶を持った状態でShift右クリックをした場合
+		if (event.getPlayer().isSneaking() && event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
+				&& (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
+			event.setCancelled(true);
+			int num = event.getItem().getAmount();
+			for(int cnt = 0; cnt < num; cnt++) {
+				event.getPlayer().launchProjectile(ThrownExpBottle.class);
+			}
+			event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 		}
 	}
 

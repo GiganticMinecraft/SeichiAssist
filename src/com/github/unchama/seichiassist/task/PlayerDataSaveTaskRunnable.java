@@ -101,6 +101,10 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
 				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
 				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana())
+				+ ",expvisible = " + Boolean.toString(playerdata.expbar.isVisible())
+				+ ",totalexp = " + Integer.toString(playerdata.totalexp)
+				+ ",expmarge = " + Byte.toString(playerdata.expmarge)
+				+ ",everysound = " + Boolean.toString(playerdata.everysoundflag)
 
 				+",displayTypeLv = " + Boolean.toString(playerdata.displayTypeLv)
 				+",displayTitleNo = " + Integer.toString(playerdata.displayTitleNo);
@@ -195,7 +199,11 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				*/
 
 				//サブホームのデータ
-				command +=  ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'";
+				command +=  ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'"
+				//建築
+				+ ",build_lv = " + Integer.toString(playerdata.build_lv_get())
+				+ ",build_count = " + Integer.toString(playerdata.build_count_get())
+				+ ",build_count_flg = " + Byte.toString(playerdata.build_count_flg_get());
 
 				//実績のフラグ(BitSet)保存用変換処理
 				long[] TitleArray = playerdata.TitleFlags.toLongArray();

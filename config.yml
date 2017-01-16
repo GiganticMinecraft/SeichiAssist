@@ -1,9 +1,19 @@
-﻿host: 'localhost'
+﻿# seichiassist 設定ファイル
+# このファイルを削除orリネームしてからサーバを起動するとデフォルトの設定ファイルが再生成されます(エラーが出たときは真っ先に試しましょう)
+
+# MySQLデータベースへの接続設定
+# xamppの設定を変えていなければデフォルトの値で問題ありません
+host: 'localhost'
 port: '3306'
 db: 'seichiassist'
 id: 'root'
 pw: ''
+
+# サーバ識別設定
+# 複数サーバ構成にする場合はこの値をサーバごとに変更します
 servernum: '1'
+
+# 色々な設定、説明は割愛
 defaultmineamount: '3'
 minutespeedamount: '0.01'
 onlineplayersamount: '0.5'
@@ -28,6 +38,8 @@ dropexplevel9: '94'
 dropexplevel10: '114'
 passiveportalinventorylevel: '1'
 dokodemoenderlevel: '25'
+
+# MineStackの開放レベルの設定
 minestacklevel1: '12'
 minestacklevel2: '17'
 minestacklevel3: '22'
@@ -66,6 +78,8 @@ minestacklevel35: '182'
 minestacklevel36: '187'
 minestacklevel37: '192'
 minestacklevel38: '197'
+
+# レベルアップ時にプレイヤーに表示されるメッセージの設定
 lv1message: "整地鯖では整地をするとレベルが上がり、様々な恩恵が受けられます。\n初めての方は整地ワールドで掘ってレベルを上げてみましょう！\n木の棒を右クリックしてメニューを開き右上のビーコンボタンをクリック！"
 lv2message: "おめでとうございます！最初のレベルアップです！\nレベル8に到達すると整地するだけで経験値がもらえるようになります。"
 lv3message: "やけに早く掘れる気がする…？それは仕様です＾＾\n整地鯖では接続人数や採掘量に応じて採掘速度にブーストが掛かります。"
@@ -132,7 +146,12 @@ lv162message: "MineStack機能の対象ブロックが増えました！\n新た
 lv167message: "MineStack機能の対象ブロックが増えました！\n新たに巨大キノコブロックがスタックされるようになります。"
 lv172message: "MineStack機能の対象ブロックが増えました！\n新たに菌糸がスタックされるようになります。"
 lv177message: "MineStack機能の対象ブロックが増えました！\n新たに各種苗木がスタックされるようになります。"
+
+# サブホームポイント数の設定
+# 3から変更しないで！！
 subhomemax: 3
+
+# 実績名の名称設定
 Achv1001: "整地神"
 Achv1002: "四天王"
 Achv1003: "重鎮"
@@ -166,3 +185,12 @@ Achv4010: "期待の新人"
 Achv9001: "お年玉"
 Achv9002: "サンタさん"
 Achv9003: "おそば"
+
+# デバッグモードの設定
+# debugmode: 0=デバッグモードオフ, 1=デバッグモードオン
+# 変更値を反映させるにはサーバを再起動するか/reloadしてください
+debugmode: '0'
+
+# ギガンティック→椎名林檎交換レートの設定
+# デフォルト値はギガンティック1個につき椎名林檎4個
+rategigantictoringo: '4'

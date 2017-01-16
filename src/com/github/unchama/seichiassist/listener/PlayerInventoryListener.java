@@ -8,8 +8,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,6 +25,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,6 +40,7 @@ import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.data.ActiveSkillInventoryData;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
@@ -51,6 +51,8 @@ import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -128,7 +130,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getMineStackMenu(player,0));
+				player.openInventory(MenuInventoryData.getMineStackMainMenu(player));
 				return;
 			}
 			//スキルメニューを開く
@@ -136,7 +138,7 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				//アクティブスキルとパッシブスキルの分岐
 				if(itemmeta.getDisplayName().contains("アクティブ")){
-					player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+					player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 				}else if(itemmeta.getDisplayName().contains("パッシブ")){
 					//player.sendMessage("未実装ナリよ");
 					player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player));
@@ -146,16 +148,40 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 			//整地神番付を開く
-			else if(itemstackcurrent.getType().equals(Material.COOKIE)){
+			else if(itemstackcurrent.getType().equals(Material.COOKIE) && itemstackcurrent.getItemMeta().getDisplayName().contains("整地神")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getRankingList(player,0));
 				return;
 			}
-
+			//整地神番付を開く
+			else if(itemstackcurrent.getType().equals(Material.COOKIE) && itemstackcurrent.getItemMeta().getDisplayName().contains("ログイン神")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getRankingList_playtick(player,0));
+				return;
+			}
+			//整地神番付を開く
+			else if(itemstackcurrent.getType().equals(Material.COOKIE) && itemstackcurrent.getItemMeta().getDisplayName().contains("投票神")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getRankingList_p_vote(player,0));
+				return;
+			}
+			/*
+			else if(itemstackcurrent.getType().equals(Material.COOKIE) && itemstackcurrent.getItemMeta().getDisplayName().contains("寄付神")){
+				if(SeichiAssist.DEBUG){
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(player,0));
+					return;
+				}
+			}
+			*/
 
 			//溜まったガチャ券をインベントリへ
-			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("unchama")){
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)
+					&& ((SkullMeta)itemstackcurrent.getItemMeta()).getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地報酬ガチャ券を受け取る")){
 				//連打防止クールダウン処理
 				if(!playerdata.gachacooldownflag){
 					return;
@@ -189,7 +215,8 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//運営からのガチャ券受け取り
-			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("whitecat_haru")){
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)
+					&& ((SkullMeta)itemstackcurrent.getItemMeta()).getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る")){
 
 				//nは最新のnumofsorryforbugの値になる(上限値576個)
 				int n = sql.givePlayerBug(player,playerdata);
@@ -394,6 +421,20 @@ public class PlayerInventoryListener implements Listener {
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispKillLogToggleMeta(playerdata,itemmeta));
 			}
 
+			else if(itemstackcurrent.getType().equals(Material.JUKEBOX)){
+				// 全体通知音消音トグル
+				playerdata.everysoundflag = !playerdata.everysoundflag;
+				if(playerdata.everysoundflag){
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.GREEN + "消音設定を解除しました");
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.sendMessage(ChatColor.RED + "消音可能な全体通知音を消音します");
+				}
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.dispWinSoundToggleMeta(playerdata,itemmeta));
+			}
+
 			//追加
 			else if(itemstackcurrent.getType().equals(Material.BARRIER)){
 				// ワールドガード保護表示トグル
@@ -421,6 +462,20 @@ public class PlayerInventoryListener implements Listener {
 				}
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispPvPToggleMeta(playerdata,itemmeta));
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ")){
+				// 整地量表示トグル
+				playerdata.expbar.setVisible(!playerdata.expbar.isVisible());
+				if(playerdata.expbar.isVisible()){
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.GREEN + "整地量バー表示");
+				}else{
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.sendMessage(ChatColor.RED + "整地量バー非表示");
+				}
+				SkullMeta skullmeta = (SkullMeta)itemstackcurrent.getItemMeta();
+				itemstackcurrent.setItemMeta(MenuInventoryData.dispExpBarToggleMeta(playerdata,skullmeta));
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.BEACON)){
@@ -664,6 +719,28 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getTitleMenuData(player));
 			}
 
+			else if(itemstackcurrent.getType().equals(Material.DIAMOND_ORE)){
+				//鉱石・交換券変換システムを開く
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
+				//インベントリを開く
+				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい鉱石を入れてください"));
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.GOLDEN_APPLE)){
+				//椎名林檎変換システムを開く
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
+				//インベントリを開く
+				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ"));
+			}
+
+			// インベントリ共有ボタン
+			else if(itemstackcurrent.getType().equals(Material.TRAPPED_CHEST)&&
+					itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "インベントリ共有")){
+				player.chat("/shareinv");
+				itemstackcurrent.setItemMeta(MenuInventoryData.dispShareInvMeta(playerdata));
+			}
 		}
 	}
 
@@ -908,7 +985,7 @@ public class PlayerInventoryListener implements Listener {
 					//メッセージを流す
 					player.sendMessage(ChatColor.LIGHT_PURPLE + "アクティブスキルポイントをリセットしました");
 					//メニューを開く
-					player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+					player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 				}
 			}
 			else if(itemstackcurrent.getType().equals(Material.GLASS)){
@@ -974,7 +1051,7 @@ public class PlayerInventoryListener implements Listener {
 			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+				player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 				return;
 			}else if(itemstackcurrent.getType().equals(Material.GLASS)){
 				if(playerdata.activeskilldata.effectnum == 0){
@@ -1122,7 +1199,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ホーリー・ショット")){
 					skilllevel = 5;
@@ -1138,7 +1215,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ツァーリ・ボンバ")){
 					skilllevel = 6;
@@ -1154,7 +1231,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アーク・ブラスト")){
 					skilllevel = 7;
@@ -1170,7 +1247,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ファンタズム・レイ")){
 					skilllevel = 8;
@@ -1186,7 +1263,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("スーパー・ノヴァ")){
 					skilllevel = 9;
@@ -1207,7 +1284,7 @@ public class PlayerInventoryListener implements Listener {
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
 						}
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("トム・ボウイ")){
 					skilllevel = 4;
@@ -1223,7 +1300,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("サンダー・ストーム")){
 					skilllevel = 5;
@@ -1239,7 +1316,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("スターライト・ブレイカー")){
 					skilllevel = 6;
@@ -1255,7 +1332,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アース・ディバイド")){
 					skilllevel = 7;
@@ -1271,7 +1348,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ヘヴン・ゲイボルグ")){
 					skilllevel = 8;
@@ -1287,7 +1364,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ディシジョン")){
 					skilllevel = 9;
@@ -1308,7 +1385,7 @@ public class PlayerInventoryListener implements Listener {
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
 						}
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("デュアル・ブレイク")){
 					skilllevel = 1;
@@ -1321,7 +1398,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("トリアル・ブレイク")){
 					skilllevel = 2;
@@ -1337,7 +1414,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("エクスプロージョン")){
 					skilllevel = 3;
@@ -1353,7 +1430,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ミラージュ・フレア")){
 					skilllevel = 4;
@@ -1369,7 +1446,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ドッ・カーン")){
 					skilllevel = 5;
@@ -1385,7 +1462,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ギガンティック・ボム")){
 					skilllevel = 6;
@@ -1401,7 +1478,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ブリリアント・デトネーション")){
 					skilllevel = 7;
@@ -1417,7 +1494,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("レムリア・インパクト")){
 					skilllevel = 8;
@@ -1433,7 +1510,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("エターナル・ヴァイス")){
 					skilllevel = 9;
@@ -1454,7 +1531,7 @@ public class PlayerInventoryListener implements Listener {
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
 						}
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ホワイト・ブレス")){
 					skilllevel = 4;
@@ -1470,7 +1547,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アブソリュート・ゼロ")){
 					skilllevel = 5;
@@ -1486,7 +1563,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ダイアモンド・ダスト")){
 					skilllevel = 6;
@@ -1502,7 +1579,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ラヴァ・コンデンセーション")){
 					skilllevel = 7;
@@ -1518,7 +1595,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("モエラキ・ボールダーズ")){
 					skilllevel = 8;
@@ -1534,7 +1611,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("エルト・フェットル")){
 					skilllevel = 9;
@@ -1555,7 +1632,7 @@ public class PlayerInventoryListener implements Listener {
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
 						}
-						player.openInventory(MenuInventoryData.getActiveSkillMenuData(player));
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アサルト・アーマー")){
 
@@ -1565,9 +1642,10 @@ public class PlayerInventoryListener implements Listener {
 			}
 		}
 	}
-	//マインスタックメニュー
+
+	//マインスタックメインメニュー
 	@EventHandler
-	public void onPlayerClickMineStackMenuEvent(InventoryClickEvent event){
+	public void onPlayerClickMineStackMainMenuEvent(InventoryClickEvent event){
 		//外枠のクリック処理なら終了
 		if(event.getClickedInventory() == null){
 			return;
@@ -1576,8 +1654,6 @@ public class PlayerInventoryListener implements Listener {
 		ItemStack itemstackcurrent = event.getCurrentItem();
 		InventoryView view = event.getView();
 		HumanEntity he = view.getPlayer();
-
-		int open_flag=-1;
 
 		//インベントリを開けたのがプレイヤーではない時終了
 		if(!he.getType().equals(EntityType.PLAYER)){
@@ -1607,7 +1683,8 @@ public class PlayerInventoryListener implements Listener {
 
 		//インベントリ名が以下の時処理
 
-		if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack")){
+		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackメインメニュー")){
+		//if(topinventory.getTitle().contains("MineStack")){
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
@@ -1630,6 +1707,126 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+
+			if(itemstackcurrent.getType().equals(Material.STONE)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0, 0));
+				return;
+			}
+
+			if(itemstackcurrent.getType().equals(Material.ENDER_PEARL)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0, 1));
+				return;
+			}
+
+			if(itemstackcurrent.getType().equals(Material.SEEDS)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0, 2));
+				return;
+			}
+
+			if(itemstackcurrent.getType().equals(Material.SMOOTH_BRICK)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0, 3));
+				return;
+			}
+
+			if(itemstackcurrent.getType().equals(Material.REDSTONE)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0, 4));
+				return;
+			}
+
+			if(itemstackcurrent.getType().equals(Material.GOLDEN_APPLE)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0, 5));
+				return;
+			}
+
+		}
+	}
+
+	//マインスタックメニュー
+	@EventHandler
+	public void onPlayerClickMineStackMenuEvent(InventoryClickEvent event){
+		//外枠のクリック処理なら終了
+		if(event.getClickedInventory() == null){
+			return;
+		}
+
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+
+		int open_flag=-1;
+		int open_flag_type=-1;
+
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
+
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが36でない時終了
+		/*
+		if(topinventory.getSize() != 36){
+			return;
+		}
+		*/
+		//インベントリサイズが54でない時終了
+		if(topinventory.getSize() != 54){
+			return;
+		}
+
+
+		Player player = (Player)he;
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+
+		//インベントリ名が以下の時処理
+
+		//if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack")){
+		if(!topinventory.getTitle().contains("メインメニュー") && topinventory.getTitle().contains("MineStack")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("MineStackSize = " + SeichiAssist.minestacklist.size());
+			}
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMainMenu(player));
+				return;
+			}
+
 			//追加
 			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
@@ -1639,7 +1836,19 @@ public class PlayerInventoryListener implements Listener {
 
 					//開く音を再生
 					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-					player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1));
+					if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "採掘系MineStack")){
+						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,0));
+					} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ドロップ系MineStack")){
+						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,1));
+					} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "農業系MineStack")){
+						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,2));
+					} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "建築系MineStack")){
+						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,3));
+					} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "レッドストーン系MineStack")){
+						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,4));
+					} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ガチャ系MineStack")){
+						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,5));
+					}
 
 				}
 				/*
@@ -1666,8 +1875,19 @@ public class PlayerInventoryListener implements Listener {
 
 						//開く音を再生
 						player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-						player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1));
-
+						if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "採掘系MineStack")){
+							player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,0));
+						} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ドロップ系MineStack")){
+							player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,1));
+						} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "農業系MineStack")){
+							player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,2));
+						} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "建築系MineStack")){
+							player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,3));
+						} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "レッドストーン系MineStack")){
+							player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,4));
+						} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ガチャ系MineStack")){
+							player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display-1,5));
+						}
 					}
 				/*
 				if(itemmeta.getDisplayName().contains("MineStack1ページ目")){//移動するページの種類を判定
@@ -1703,9 +1923,42 @@ public class PlayerInventoryListener implements Listener {
 							&& itemstackcurrent.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){ //MaterialとサブIDが一致
 
 						if(SeichiAssist.minestacklist.get(i).getNameloreflag()==false){
-							playerdata.minestack.setNum(i, (giveMineStack(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability() ))) );
-							open_flag = (i+1)/45;
-						} else { //名前と説明文がある
+
+							//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
+							int level = SeichiAssist.config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel());
+							int level_ = 0;
+							String temp = null;
+							for(int j=0; j<itemstackcurrent.getItemMeta().getLore().size(); j++){
+								String lore = itemstackcurrent.getItemMeta().getLore().get(j);
+								//System.out.println(j);
+						        Pattern p = Pattern.compile(".*Lv[0-9]+以上でスタック可能.*");
+						        Matcher m = p.matcher(lore);
+						        if(m.matches()){
+						        	//System.out.println(lore);
+						        	String matchstr = lore.replaceAll("^.*Lv","");
+						        	//System.out.println(matchstr);
+						        	level_ = Integer.parseInt(matchstr.replaceAll("[^0-9]+","")); //数字以外を全て消す
+						        	break;
+						        }
+							}
+							//System.out.println(level + " " + level_);
+
+							if(level==level_){
+								//System.out.println("AAA");
+
+								String itemstack_name = itemstackcurrent.getItemMeta().getDisplayName();
+								String minestack_name = SeichiAssist.minestacklist.get(i).getJapaneseName();
+								itemstack_name = itemstack_name.replaceAll("§[0-9A-Za-z]","");
+								minestack_name = minestack_name.replaceAll("§[0-9A-Za-z]","");
+								if(itemstack_name.equals(minestack_name)){ //表記はアイテム名だけなのでアイテム名で判定
+									//System.out.println("BBB");
+
+									playerdata.minestack.setNum(i, (giveMineStack(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability() ))) );
+									open_flag = (Util.getMineStackTypeindex(i)+1)/45;
+									open_flag_type=SeichiAssist.minestacklist.get(i).getStacktype();
+								}
+							}
+						} else if(SeichiAssist.minestacklist.get(i).getNameloreflag()==true && itemstackcurrent.getItemMeta().hasDisplayName()){ //名前と説明文がある
 							//System.out.println("debug AA");
 							//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
 							int level = SeichiAssist.config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel());
@@ -1741,7 +1994,8 @@ public class PlayerInventoryListener implements Listener {
 								if(SeichiAssist.minestacklist.get(i).getGachatype()==-1){//ガチャアイテムにはない（がちゃりんご）
 									if(itemstack_name.equals(minestack_name)){ //表記はアイテム名だけなのでアイテム名で判定
 										playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability()),-1)));
-										open_flag = (i+1)/45;
+										open_flag = (Util.getMineStackTypeindex(i)+1)/45;
+										open_flag_type=SeichiAssist.minestacklist.get(i).getStacktype();
 									}
 								} else { //ガチャアイテム(処理は同じでも念のためデバッグ用に分離)
 									if(SeichiAssist.minestacklist.get(i).getGachatype()>=0){
@@ -1758,11 +2012,13 @@ public class PlayerInventoryListener implements Listener {
 
 												if(p0.containsAll(p1)){
 													playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability()),SeichiAssist.minestacklist.get(i).getGachatype())));
-													open_flag = (i+1)/45;
+													open_flag = (Util.getMineStackTypeindex(i)+1)/45;
+													open_flag_type=SeichiAssist.minestacklist.get(i).getStacktype();
 												}
 											} else {
 												playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability()),SeichiAssist.minestacklist.get(i).getGachatype())));
-												open_flag = (i+1)/45;
+												open_flag = (Util.getMineStackTypeindex(i)+1)/45;
+												open_flag_type=SeichiAssist.minestacklist.get(i).getStacktype();
 											}
 										}
 									}
@@ -1774,7 +2030,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			if(open_flag!=-1){
-				player.openInventory(MenuInventoryData.getMineStackMenu(player, open_flag));
+				player.openInventory(MenuInventoryData.getMineStackMenu(player, open_flag, open_flag_type));
 				open_flag=-1;
 			}
 		}
@@ -1850,6 +2106,220 @@ public class PlayerInventoryListener implements Listener {
 			}
 		}
 	}
+
+	//ランキングメニュー
+	@EventHandler
+	public void onPlayerClickSeichiRankingMenuEvent1(InventoryClickEvent event){
+		//外枠のクリック処理なら終了
+		if(event.getClickedInventory() == null){
+			return;
+		}
+
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
+
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが36でない時終了
+		if(topinventory.getSize() != 54){
+			return;
+		}
+		Player player = (Player)he;
+
+		//インベントリ名が以下の時処理
+		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ログイン神ランキング")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				if(itemmeta.getDisplayName().contains("ログイン神ランキング") &&
+						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
+					int page_display = Integer.parseInt(itemmeta.getDisplayName().replaceAll("[^0-9]","")); //数字以外を全て消す
+
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getRankingList_playtick(player, page_display-1));
+				}
+			}
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				if(itemmeta.getDisplayName().contains("ログイン神ランキング") &&
+						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
+					int page_display = Integer.parseInt(itemmeta.getDisplayName().replaceAll("[^0-9]","")); //数字以外を全て消す
+
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getRankingList_playtick(player, page_display-1));
+				}
+			}
+		}
+	}
+
+	//ランキングメニュー
+	@EventHandler
+	public void onPlayerClickSeichiRankingMenuEvent2(InventoryClickEvent event){
+		//外枠のクリック処理なら終了
+		if(event.getClickedInventory() == null){
+			return;
+		}
+
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
+
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが36でない時終了
+		if(topinventory.getSize() != 54){
+			return;
+		}
+		Player player = (Player)he;
+
+		//インベントリ名が以下の時処理
+		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票神ランキング")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				if(itemmeta.getDisplayName().contains("投票神ランキング") &&
+						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
+					int page_display = Integer.parseInt(itemmeta.getDisplayName().replaceAll("[^0-9]","")); //数字以外を全て消す
+
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getRankingList_p_vote(player, page_display-1));
+				}
+			}
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				if(itemmeta.getDisplayName().contains("投票神ランキング") &&
+						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
+					int page_display = Integer.parseInt(itemmeta.getDisplayName().replaceAll("[^0-9]","")); //数字以外を全て消す
+
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getRankingList_p_vote(player, page_display-1));
+				}
+			}
+		}
+	}
+
+	//ランキングメニュー
+	@EventHandler
+	public void onPlayerClickSeichiRankingMenuEvent3(InventoryClickEvent event){
+		//外枠のクリック処理なら終了
+		if(event.getClickedInventory() == null){
+			return;
+		}
+
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
+
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが36でない時終了
+		if(topinventory.getSize() != 54){
+			return;
+		}
+		Player player = (Player)he;
+
+		//インベントリ名が以下の時処理
+		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "寄付神ランキング")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			//ページ変更処理
+			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMenuData(player));
+				return;
+			}
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				if(itemmeta.getDisplayName().contains("寄付神ランキング") &&
+						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
+					int page_display = Integer.parseInt(itemmeta.getDisplayName().replaceAll("[^0-9]","")); //数字以外を全て消す
+
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(player, page_display-1));
+				}
+			}
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				if(itemmeta.getDisplayName().contains("寄付神ランキング") &&
+						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
+					int page_display = Integer.parseInt(itemmeta.getDisplayName().replaceAll("[^0-9]","")); //数字以外を全て消す
+
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+					player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(player, page_display-1));
+				}
+			}
+		}
+	}
+
 	//購入履歴メニュー
 	@EventHandler
 	public void onPlayerClickPremiumLogMenuEvent(InventoryClickEvent event){
@@ -2516,4 +2986,324 @@ public class PlayerInventoryListener implements Listener {
 			}
     	}
     }
+  //鉱石・交換券変換システム
+    @EventHandler
+    public void onOreTradeEvent(InventoryCloseEvent event){
+        Player player = (Player)event.getPlayer();
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+		//エラー分岐
+		if(playerdata == null){
+			return;
+		}
+        Inventory inventory = event.getInventory();
+
+        //インベントリサイズが36でない時終了
+        if(inventory.getSize() != 36){
+            return;
+        }
+        if(inventory.getTitle().equals(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい鉱石を入れてください")){
+            int giveticket = 0;
+            /*
+             * step1 for文でinventory内の対象商品の個数を計算
+             * 非対象商品は返却boxへ
+             */
+            //ガチャ景品交換インベントリの中身を取得
+            ItemStack[] item = inventory.getContents();
+            //ドロップ用アイテムリスト(返却box)作成
+            List<ItemStack> dropitem = new ArrayList<ItemStack>();
+            //余剰鉱石返却用アイテムリスト
+            List<ItemStack> retore = new ArrayList<ItemStack>();
+            //個数計算用変数(このやり方以外に効率的なやり方があるかもしれません)
+            int coalore = 0; //石炭
+            int ironore = 0; //鉄
+            int goldore = 0; //金
+            int lapisore = 0; //ラピスラズリ
+            int diamondore = 0; //ダイアモンド
+            int redstoneore = 0; //レッドストーン
+            int emeraldore = 0; //エメラルド
+            //for文でインベントリ内のアイテムを1つずつ見る
+            //鉱石・交換券変換インベントリスロットを1つずつ見る
+            for(ItemStack m : item){
+            	//ないなら次へ
+            	if(m == null){
+            		continue;
+            	}
+            	else if(m.getType().equals(Material.COAL_ORE)){
+            		//石炭なら個数分だけcoaloreを増やす(以下同様)
+            		coalore += m.getAmount();
+            		continue;
+            	}
+            	else if(m.getType().equals(Material.IRON_ORE)){
+            		ironore += m.getAmount();
+            		continue;
+            	}
+            	else if(m.getType().equals(Material.GOLD_ORE)){
+            		goldore += m.getAmount();
+            		continue;
+            	}
+            	else if(m.getType().equals(Material.LAPIS_ORE)){
+            		lapisore += m.getAmount();
+            		continue;
+            	}
+            	else if(m.getType().equals(Material.DIAMOND_ORE)){
+            		diamondore += m.getAmount();
+            		continue;
+            	}
+            	else if(m.getType().equals(Material.REDSTONE_ORE)){
+            		redstoneore += m.getAmount();
+            		continue;
+            	}
+            	else if(m.getType().equals(Material.EMERALD_ORE)){
+            		emeraldore += m.getAmount();
+            		continue;
+            	}
+            	else{
+            		dropitem.add(m);
+            	}
+            }
+            //チケット計算
+            giveticket = giveticket + (int)(coalore/128) + (int)(ironore/64) + (int)(goldore/8) + (int)(lapisore/8) + (int)(diamondore/4) + (int)(redstoneore/64) + (int)(emeraldore/4);
+
+            //プレイヤー通知
+            if(giveticket == 0){
+            	player.sendMessage(ChatColor.YELLOW + "鉱石を認識しなかったか数が不足しています。全てのアイテムを返却します");
+            }else{
+            	player.sendMessage(ChatColor.DARK_RED + "交換券" + ChatColor.RESET + "" + ChatColor.GREEN + "を" + giveticket + "枚付与しました");
+            }
+            /*
+             * step2 交換券をインベントリへ
+             */
+            ItemStack exchangeticket = new ItemStack(Material.PAPER);//※交換券の具体的なデータわからなかったので適当にしてますが、直して頂けるとありがたいです。
+            ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
+            itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.BOLD + "交換券");
+            itemmeta.addEnchant(Enchantment.PROTECTION_FIRE, 1, false);
+            itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            exchangeticket.setItemMeta(itemmeta);
+
+            int count = 0;
+            while(giveticket > 0){
+            	if(player.getInventory().contains(exchangeticket) || !Util.isPlayerInventryFill(player)){
+            		Util.addItem(player, exchangeticket);
+            	}else{
+            		Util.dropItem(player, exchangeticket);
+            	}
+            	giveticket--;
+            	count ++;
+            }
+            if(count > 0){
+            	player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+            	player.sendMessage(ChatColor.GREEN + "交換券の付与が終わりました");
+            }
+            /*
+             * step3 非対象商品・余剰鉱石の返却
+             */
+            if((coalore - (int)(coalore/128)*128) != 0){
+            	ItemStack c = new ItemStack(Material.COAL_ORE);
+            	ItemMeta citemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
+            	c.setItemMeta(citemmeta);
+            	c.setAmount(coalore - (int)(coalore/128)*128);
+            	retore.add(c);
+            }
+
+            if((ironore - (int)(ironore/64)*64) != 0){
+            	ItemStack i = new ItemStack(Material.IRON_ORE);
+            	ItemMeta iitemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_ORE);
+            	i.setItemMeta(iitemmeta);
+            	i.setAmount(ironore - (int)(ironore/64)*64);
+            	retore.add(i);
+            }
+
+            if((goldore - (int)(goldore/8)*8) != 0){
+            	ItemStack g = new ItemStack(Material.GOLD_ORE);
+            	ItemMeta gitemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_ORE);
+            	g.setItemMeta(gitemmeta);
+            	g.setAmount(goldore - (int)(goldore/8)*8);
+            	retore.add(g);
+            }
+
+            if((lapisore - (int)(lapisore/8)*8) != 0){
+            	ItemStack l = new ItemStack(Material.LAPIS_ORE);
+            	ItemMeta litemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
+            	l.setItemMeta(litemmeta);
+            	l.setAmount(lapisore - (int)(lapisore/8)*8);
+            	retore.add(l);
+            }
+
+            if((diamondore - (int)(diamondore/4)*4) != 0){
+            	ItemStack d = new ItemStack(Material.DIAMOND_ORE);
+            	ItemMeta ditemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
+            	d.setItemMeta(ditemmeta);
+            	d.setAmount(diamondore - (int)(diamondore/4)*4);
+            	retore.add(d);
+            }
+
+            if((redstoneore - (int)(redstoneore/64)*64) != 0){
+            	ItemStack r = new ItemStack(Material.REDSTONE_ORE);
+            	ItemMeta ritemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
+            	r.setItemMeta(ritemmeta);
+            	r.setAmount(redstoneore - (int)(redstoneore/64)*64);
+            	retore.add(r);
+            }
+
+            if((emeraldore - (int)(emeraldore/4)*4) != 0){
+            	ItemStack e = new ItemStack(Material.EMERALD_ORE);
+            	ItemMeta eitemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
+            	e.setItemMeta(eitemmeta);
+            	e.setAmount(emeraldore - (int)(emeraldore/4)*4);
+            	retore.add(e);
+            }
+
+            //返却処理
+            for(ItemStack m : dropitem){
+                if(!Util.isPlayerInventryFill(player)){
+                    Util.addItem(player,m);
+                }else{
+                    Util.dropItem(player,m);
+                }
+            }
+            for(ItemStack m : retore){
+            	if(!Util.isPlayerInventryFill(player)){
+            		Util.addItem(player,m);
+            	}else{
+            		Util.dropItem(player, m);
+            	}
+            }
+        }
+    }
+
+    //ギガンティック→椎名林檎交換システム
+    @EventHandler
+    public void onGachaRingoEvent(InventoryCloseEvent event){
+        Player player = (Player)event.getPlayer();
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+		//エラー分岐
+		if(playerdata == null){
+			return;
+		}
+		String name = playerdata.name;
+        Inventory inventory = event.getInventory();
+
+        //インベントリサイズが36でない時終了
+        if(inventory.getSize() != 36){
+            return;
+        }
+        if(inventory.getTitle().equals(ChatColor.GOLD + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ")){
+            //PlayerInventory pinventory = player.getInventory();
+            //ItemStack itemstack = pinventory.getItemInMainHand();
+            int giveringo = 0;
+            /*この分岐処理必要かなぁ…とりあえずコメントアウト
+            if(itemstack.getType().equals(Material.STICK)){
+            }
+            */
+            /*
+             * step1 for文でinventory内に対象商品がないか検索
+             * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
+             */
+            //ガチャ景品交換インベントリの中身を取得
+            ItemStack[] item = inventory.getContents();
+            //ドロップ用アイテムリスト(返却box)作成
+            List<ItemStack> dropitem = new ArrayList<ItemStack>();
+            //カウント用
+            int giga = 0;
+            //for文で１個ずつ対象アイテムか見る
+            //ガチャ景品交換インベントリを一個ずつ見ていくfor文
+            for (ItemStack m : item) {
+                //無いなら次へ
+                if(m == null){
+                    continue;
+                }else if(SeichiAssist.gachamente){
+                    //ガチャシステムメンテナンス中は全て返却する
+                    dropitem.add(m);
+                    continue;
+                }else if(!m.hasItemMeta()){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                    continue;
+                }else if(!m.getItemMeta().hasLore()){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                    continue;
+                }else if(m.getType().equals(Material.SKULL_ITEM)){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                    continue;
+                }
+                //ガチャ景品リストにアイテムがあった時にtrueになるフラグ
+                boolean flag = false;
+                //ガチャ景品リストを一個ずつ見ていくfor文
+                for(GachaData gachadata : gachadatalist){
+                    if(!gachadata.itemstack.hasItemMeta()){
+                        continue;
+                    }else if(!gachadata.itemstack.getItemMeta().hasLore()){
+                        continue;
+                    }
+                    //ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
+                    if(gachadata.compare(m,name)){
+                    	if(SeichiAssist.DEBUG){
+                    		player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
+                    	}
+                    //if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())
+                           // &&gachadata.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
+                        flag = true;
+                        int amount = m.getAmount();
+                        if(gachadata.probability < 0.001){
+                            //ギガンティック大当たりの部分
+                            //1個につき椎名林檎n個と交換する
+                        	giveringo += (SeichiAssist.config.rateGiganticToRingo()*amount);
+                            giga++;
+                        }else{
+                            //それ以外アイテム返却
+                            dropitem.add(m);
+                        }
+                        break;
+                    }
+                }
+                //ガチャ景品リストに対象アイテムが無かった場合
+                if(!flag){
+                    //丁重にお返しする
+                    dropitem.add(m);
+                }
+            }
+            //ガチャシステムメンテナンス中は全て返却する
+            if(SeichiAssist.gachamente){
+                player.sendMessage(ChatColor.RED + "ガチャシステムメンテナンス中の為全てのアイテムを返却します");
+            }else if(!(giga > 0)){
+                player.sendMessage(ChatColor.YELLOW + "ギガンティック大当り景品を認識しませんでした。全てのアイテムを返却します");
+            }else{
+                player.sendMessage(ChatColor.GREEN + "ギガンティック大当り景品を" + giga + "個認識しました");
+            }
+            /*
+             * step2 非対象商品をインベントリに戻す
+             */
+            for(ItemStack m : dropitem){
+                if(!Util.isPlayerInventryFill(player)){
+                    Util.addItem(player,m);
+                }else{
+                    Util.dropItem(player,m);
+                }
+            }
+            /*
+             * step3 椎名林檎をインベントリへ
+             */
+            ItemStack ringo = Util.getMaxRingo(Util.getName(player));
+            int count = 0;
+            while(giveringo > 0){
+                if(player.getInventory().contains(ringo) || !Util.isPlayerInventryFill(player)){
+                    Util.addItem(player,ringo);
+                }else{
+                    Util.dropItem(player,ringo);
+                }
+                giveringo--;
+                count++;
+            }
+            if(count > 0){
+                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
+                player.sendMessage(ChatColor.GREEN + ""+count+ "個の" + ChatColor.GOLD + "椎名林檎" + ChatColor.WHITE + "を受け取りました");
+            }
+        }
+
+    }
+
 }

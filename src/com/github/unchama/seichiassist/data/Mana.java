@@ -2,8 +2,6 @@ package com.github.unchama.seichiassist.data;
 
 
 
-import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -11,6 +9,8 @@ import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
+
+import net.md_5.bungee.api.ChatColor;
 
 
 
@@ -40,7 +40,7 @@ public class Mana {
 
 	}
 	//現在マナをマナバーに表示させる
-	private void displayMana(Player player,int level){
+	public void displayMana(Player player,int level){
 		if(!loadflag)return;
 		removeBar();
 		setManaBar(player,level);

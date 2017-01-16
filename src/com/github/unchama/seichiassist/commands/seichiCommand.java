@@ -44,6 +44,7 @@ public class seichiCommand implements TabExecutor {
 			sender.sendMessage("config.ymlの設定値を再読み込みします");
 			sender.sendMessage(ChatColor.RED + "/seichi debugmode");
 			sender.sendMessage("デバッグモードのON,OFFを切り替えます");
+			sender.sendMessage("config.ymlのdebugmodeの値が1の場合のみ、コンソールから使用可能");
 			sender.sendMessage(ChatColor.RED + "/seichi <playername/all> <duration(tick)> <amplifier(double)> <id>");
 			sender.sendMessage("指定されたプレイヤーに採掘速度上昇効果を付与します");
 			sender.sendMessage("all指定で全プレイヤー対象");
@@ -76,16 +77,20 @@ public class seichiCommand implements TabExecutor {
 			return true;
 		}else if(args[0].equalsIgnoreCase("debugmode")){
 			//debugフラグ反転処理
-
-			//メッセージフラグを反転
-			SeichiAssist.DEBUG = !SeichiAssist.DEBUG;
-			if (SeichiAssist.DEBUG){
-				sender.sendMessage(ChatColor.GREEN + "デバッグモードを有効にしました");
-			}else{
-				sender.sendMessage(ChatColor.GREEN + "デバッグモードを無効にしました");
+			if(SeichiAssist.config.getDebugMode()==1){
+				//メッセージフラグを反転
+				SeichiAssist.DEBUG = !SeichiAssist.DEBUG;
+				if (SeichiAssist.DEBUG){
+					sender.sendMessage(ChatColor.GREEN + "デバッグモードを有効にしました");
+				}else{
+					sender.sendMessage(ChatColor.GREEN + "デバッグモードを無効にしました");
+				}
+				plugin.stopAllTaskRunnable();
+				plugin.startTaskRunnable();
+			} else {
+				sender.sendMessage(ChatColor.RED + "このコマンドは現在の設定では実行できません");
+				sender.sendMessage(ChatColor.RED + "config.ymlのdebugmodeの値を1に書き換えて再起動またはreloadしてください");
 			}
-			plugin.stopAllTaskRunnable();
-			plugin.startTaskRunnable();
 
 			return true;
 		}else if(args[0].equalsIgnoreCase("openpocket")){

@@ -4,6 +4,10 @@ public class RankData {
 	public String name;
 	public int level;
 	public int totalbreaknum;
+	//追加ランキングデータ
+	public int playtick;
+	public int p_vote;
+	public int premiumeffectpoint;
 
 	public RankData(){
 		name = null;

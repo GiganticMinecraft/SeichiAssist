@@ -147,4 +147,12 @@ public class Config{
 		return Util.toInt(config.getString("subhomemax"));
 	}
 
+	public int getDebugMode() {
+		return Util.toInt(config.getString("debugmode"));
+	}
+
+	public int rateGiganticToRingo() {
+		return Util.toInt(config.getString("rategigantictoringo"));
+	}
+
 }

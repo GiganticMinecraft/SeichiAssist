@@ -15,12 +15,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
 
 
 
 public class PlayerData {
+	//読み込み済みフラグ
+	public boolean loaded = false;
 	//プレイヤー名
 	public String name;
 	//UUID
@@ -66,7 +69,8 @@ public class PlayerData {
 	public int playtick;
 	//キルログ表示トグル
 	public boolean dispkilllogflag;
-
+	//全体通知音消音トグル
+	public boolean everysoundflag;
 	//ワールドガード保護ログ表示トグル
 	public boolean dispworldguardlogflag;
 	//複数種類破壊トグル
@@ -80,6 +84,14 @@ public class PlayerData {
 	public int idletime;
 	//トータル破壊ブロック
 	public int totalbreaknum;
+	//整地量バー
+	public ExpBar expbar;
+	//合計経験値
+	public int totalexp;
+	//経験値マネージャ
+	public ExperienceManager expmanager;
+	//合計経験値統合済みフラグ
+	public byte expmarge;
 	//各統計値差分計算用配列
 	private List<Integer> staticdata;
 	//特典受け取り済み投票数
@@ -93,6 +105,11 @@ public class PlayerData {
 	//ガチャボタン連打防止用
 	public boolean gachacooldownflag;
 
+	//インベントリ共有トグル
+	public boolean shareinv;
+	//インベントリ共有ボタン連打防止用
+	public boolean shareinvcooldownflag;
+
 	//サブのホームポイント
 	private Location[] sub_home = new Location[SeichiAssist.config.getSubHomeMax()];
 
@@ -104,8 +121,16 @@ public class PlayerData {
 	public BitSet TitleFlags;
 
 
+	//建築LV
+	private int build_lv;
+	//設置ブロック数
+	private int build_count;
+	//設置ブロックサーバー統合フラグ
+	private byte build_count_flg;
+
 	public PlayerData(Player player){
 		//初期値を設定
+		this.loaded = false;
 		this.name = Util.getName(player);
 		this.uuid = player.getUniqueId();
 		this.effectflag = true;
@@ -138,9 +163,12 @@ public class PlayerData {
 			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
 		}
 		this.activeskilldata = new ActiveSkillData();
+		this.expbar = new ExpBar(this, player);
+		this.expmanager = new ExperienceManager(player);
 		this.p_givenvote = 0;
 		this.votecooldownflag = true;
 		this.gachacooldownflag = true;
+		this.shareinvcooldownflag = true;
 
 		this.displayTypeLv = true;
 		this.displayTitleNo = 0 ;
@@ -151,7 +179,9 @@ public class PlayerData {
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
 			this.sub_home[x] = null;
 		}
-
+		this.build_lv = 1;
+		this.build_count = 0;
+		this.build_count_flg = 0;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -162,6 +192,8 @@ public class PlayerData {
 		updataLevel(player);
 		NotifySorryForBug(player);
 		activeskilldata.updateonJoin(player, level);
+		//サーバー保管経験値をクライアントに読み込み
+		loadTotalExp();
 	}
 
 
@@ -173,6 +205,9 @@ public class PlayerData {
 		calcPlayTick(player);
 
 		activeskilldata.updateonQuit(player);
+		expbar.remove();
+		//クライアント経験値をサーバー保管
+		saveTotalExp();
 	}
 
 	/*
@@ -236,6 +271,7 @@ public class PlayerData {
 	public void updataLevel(Player p) {
 		calcPlayerLevel(p);
 		setDisplayName(p);
+		expbar.calculate();
 	}
 
 
@@ -488,30 +524,11 @@ public class PlayerData {
 		}
 	}
 
-	//文字列からサブデータを読み込む・デバッグ版（DB用）
-	public void SetSubHome(String str , Player player){
-		String[] s = str.split(",", -1);
-		player.sendMessage(str );
-		player.sendMessage("配列数" + s.length );
-		for( int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
-			if (s.length < x*4+3){
-				break;
-			}
-			player.sendMessage("x:" + s[x*4] + " y:" +s[x*4+1]+ " z:" +s[x*4+2]+ " w:"+s[x*4+3] );
-//			if(s[x*4] != "" && s[x*4+1] != "" && s[x*4+2] != "" && s[x*4+3] != ""){
-			if(s[x*4].length() > 0 && s[x*4+1].length() > 0 && s[x*4+2].length() > 0 && s[x*4+3].length() > 0 ){
-				player.sendMessage("読み込み");
-				Location l = new Location( Bukkit.getWorld(s[x*4+3]) , Integer.parseInt(s[x*4]) , Integer.parseInt(s[x*4+1]) , Integer.parseInt(s[x*4+2]) );
-				this.sub_home[x] = l;
-			}
-		}
-	}
-
 	//サブホームデータを文字列で返す（DB用）
 	public String SubHomeToString(){
 		String s = "";
 		for( int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
-			if (this.sub_home[x] == null){
+			if (this.sub_home[x] == null || sub_home[x].getWorld() == null){
 				//設定されてない場合
 				s += ",,,,";
 			}else{
@@ -525,4 +542,43 @@ public class PlayerData {
 		return s;
 	}
 
+	public void build_count_flg_set(byte x){
+		build_count_flg = x;
+	}
+	public byte build_count_flg_get(){
+		return build_count_flg;
+	}
+	public void build_lv_set(int lv){
+		build_lv = lv;
+	}
+	public int build_lv_get(){
+		return build_lv;
+	}
+	public void build_count_set(int count){
+		build_count = count;
+	}
+	public int build_count_get(){
+		return build_count;
+	}
+
+	private void saveTotalExp() {
+		totalexp = expmanager.getCurrentExp();
+	}
+
+	private void loadTotalExp() {
+		int server_num = SeichiAssist.config.getServerNum();
+		//経験値が統合されてない場合は統合する
+		if (expmarge != 0x07 && server_num >= 1 && server_num <= 3) {
+			if ((expmarge & (0x01 << (server_num - 1))) == 0 ) {
+				if(expmarge == 0) {
+					// 初回は加算じゃなくベースとして代入にする
+					totalexp = expmanager.getCurrentExp();
+				} else {
+					totalexp += expmanager.getCurrentExp();
+				}
+				expmarge = (byte) (expmarge | (0x01 << (server_num - 1)));
+			}
+		}
+		expmanager.setExp(totalexp);
+	}
 }
