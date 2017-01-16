@@ -3019,7 +3019,18 @@ public class PlayerInventoryListener implements Listener {
     				TUTR.TryTitle(player,9002);
     			}else if(itemmeta.getDisplayName().contains("No9003「???」")){
     				TUTR.TryTitle(player,9003);
+    			}else if(itemmeta.getDisplayName().contains("No9004「???」")){
+    				TUTR.TryTitle(player,9004);
+    			}else if(itemmeta.getDisplayName().contains("No9005「???」")){
+    				TUTR.TryTitle(player,9005);
+    			}else if(itemmeta.getDisplayName().contains("No9006「???」")){
+    				TUTR.TryTitle(player,9006);
+    			}else if(itemmeta.getDisplayName().contains("No9007「???」")){
+    				TUTR.TryTitle(player,9007);
+    			}else if(itemmeta.getDisplayName().contains("No9008「???」")){
+    				TUTR.TryTitle(player,9008);
     			}
+
     			player.openInventory(MenuInventoryData.getTitleExtraData(player));
     		}
     		else if (itemstackcurrent.getType().equals(Material.DIAMOND_BLOCK)){
@@ -3036,6 +3047,26 @@ public class PlayerInventoryListener implements Listener {
     			else if(itemmeta.getDisplayName().contains("No9003「"+ SeichiAssist.config.getTitle(9003) +"」")){
     				playerdata.displayTitleNo = 9003 ;
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(9003) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No9004「"+ SeichiAssist.config.getTitle(9004) +"」")){
+    				playerdata.displayTitleNo = 9004 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(9004) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No9005「"+ SeichiAssist.config.getTitle(9005) +"」")){
+    				playerdata.displayTitleNo = 9005 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(9005) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No9006「"+ SeichiAssist.config.getTitle(9006) +"」")){
+    				playerdata.displayTitleNo = 9006 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(9006) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No9007「"+ SeichiAssist.config.getTitle(9007) +"」")){
+    				playerdata.displayTitleNo = 9007 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(9007) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No9008「"+ SeichiAssist.config.getTitle(9008) +"」")){
+    				playerdata.displayTitleNo = 9008 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(9008) +"」が設定されました。");
     			}
     			player.openInventory(MenuInventoryData.getTitleExtraData(player));
     		}
