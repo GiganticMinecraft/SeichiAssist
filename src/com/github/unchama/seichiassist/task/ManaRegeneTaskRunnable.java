@@ -7,6 +7,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
 
+// マナ自動回復用タスク
+// 現在リスナー停止により無効化中
 public class ManaRegeneTaskRunnable extends BukkitRunnable {
 	private Player p;
 	public ManaRegeneTaskRunnable(Player player) {

@@ -42,7 +42,6 @@ import com.github.unchama.seichiassist.listener.PlayerClickListener;
 import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
 import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
 import com.github.unchama.seichiassist.listener.PlayerJoinListener;
-import com.github.unchama.seichiassist.listener.PlayerMoveListener;
 import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
 import com.github.unchama.seichiassist.listener.PlayerQuitListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
@@ -611,7 +610,8 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerPickupItemListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
 		getServer().getPluginManager().registerEvents(new GachaItemListener(), this);
-		getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
+		// マナ自動回復用リスナー…無効化中
+		// getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
 		// BungeeCordとのI/F
 		Bukkit.getMessenger().registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this));
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "SeichiAssistBungee");
