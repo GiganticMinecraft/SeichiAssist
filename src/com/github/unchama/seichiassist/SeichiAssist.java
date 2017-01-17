@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,12 +22,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.effectCommand;
 import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.lastquitCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
 import com.github.unchama.seichiassist.commands.rmpCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
+import com.github.unchama.seichiassist.commands.shareinvCommand;
 import com.github.unchama.seichiassist.commands.stickCommand;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
@@ -595,6 +598,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("lastquit",new lastquitCommand(plugin));
 		commandlist.put("stick",new stickCommand(plugin));
 		commandlist.put("rmp",new rmpCommand(plugin));
+		commandlist.put("shareinv",new shareinvCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -606,6 +610,10 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerPickupItemListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
 		getServer().getPluginManager().registerEvents(new GachaItemListener(), this);
+		// BungeeCordとのI/F
+		Bukkit.getMessenger().registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this));
+		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "SeichiAssistBungee");
+
 
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){

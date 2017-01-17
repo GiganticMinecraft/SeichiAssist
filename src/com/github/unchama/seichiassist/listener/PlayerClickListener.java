@@ -558,6 +558,7 @@ public class PlayerClickListener implements Listener {
 		// 経験値瓶を持った状態でShift右クリックをした場合
 		if (event.getPlayer().isSneaking() && event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
 				&& (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
+			event.setCancelled(true);
 			int num = event.getItem().getAmount();
 			for(int cnt = 0; cnt < num; cnt++) {
 				event.getPlayer().launchProjectile(ThrownExpBottle.class);
