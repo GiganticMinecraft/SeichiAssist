@@ -610,6 +610,8 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerPickupItemListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
 		getServer().getPluginManager().registerEvents(new GachaItemListener(), this);
+		// マナ自動回復用リスナー…無効化中
+		// getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
 		// BungeeCordとのI/F
 		Bukkit.getMessenger().registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this));
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "SeichiAssistBungee");

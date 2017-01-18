@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
@@ -22,6 +23,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	private Config config = SeichiAssist.config;
+	Sql sql = SeichiAssist.plugin.sql;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public MinuteTaskRunnable() {
@@ -190,6 +192,9 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				Util.sendEveryMessage(playerdata.name + "のガチャ処理が成功");
 			}
 
+
+
+
 			//実績解除判定
 			//実績解除処理部分の読みこみ
     		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -212,6 +217,14 @@ public class MinuteTaskRunnable extends BukkitRunnable{
     		//No4000系統の解禁チェック
     		checkNo = 4001 ;
     		for(;checkNo < 4011 ;){
+    			if(!playerdata.TitleFlags.get(checkNo)){
+    				TUTR.TryTitle(player,checkNo);
+    			}
+    			checkNo ++ ;
+    		}
+    		//No6000系統の解禁チェック
+    		checkNo = 6001 ;
+    		for(;checkNo < 6009 ;){
     			if(!playerdata.TitleFlags.get(checkNo)){
     				TUTR.TryTitle(player,checkNo);
     			}

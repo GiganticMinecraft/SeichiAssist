@@ -119,6 +119,8 @@ public class PlayerData {
 	public int displayTitleNo;
 	//二つ名解禁フラグ保存用
 	public BitSet TitleFlags;
+	//二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
+	public int p_vote_forT ;
 
 
 	//建築LV
@@ -174,6 +176,8 @@ public class PlayerData {
 		this.displayTitleNo = 0 ;
 		this.TitleFlags = new BitSet(10000);
 		this.TitleFlags.set(1);
+		this.p_vote_forT = 0 ;
+
 
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
@@ -297,12 +301,8 @@ public class PlayerData {
 	public void setDisplayName(Player p) {
 		String displayname = Util.getName(p);
 
-		//表示二つ名が設定されていない場合、LV表示に強制変更
-		if(displayTitleNo == 0){
-			displayTypeLv = true ;
-		}
 		//表示を追加する処理
-		if(displayTypeLv){
+		if(displayTitleNo == 0){
 			displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
 		} else {
 			String displayTitle = SeichiAssist.config.getTitle(displayTitleNo);
