@@ -93,7 +93,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			}else if(count == 2){
 				Util.sendEveryMessage("破壊量第2位は" + ChatColor.BLUE + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}else if(count == 3){
-				Util.sendEveryMessage("破壊量第3位は" + ChatColor.DARK_AQUA + "[ Lv" + Integer.toString(e.getValue().level) +"]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
+				Util.sendEveryMessage("破壊量第3位は" + ChatColor.DARK_AQUA + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
 			}
 			count++;
 		}
