@@ -519,6 +519,12 @@ public class SeichiAssist extends JavaPlugin{
 	public static final List<String> ignoreWorldlist = new ArrayList<String>(Arrays.asList(
 			"world_SW","world_SW_2","world_SW_nether","world_SW_the_end"
 			));
+
+	//保護を掛けて整地するワールドのリスト
+	public static final List<String> rgSeichiWorldlist = new ArrayList<String>(Arrays.asList(
+			"world_SW_2","world_SW_nether","world_SW_the_end"
+			));
+
 	@Override
 	public void onEnable(){
 		plugin = this;
