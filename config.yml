@@ -25,7 +25,7 @@ thunderstormlevel: '40'
 blizzardlevel: '50'
 meteolevel: '60'
 gravitylevel: '100'
-multipleidblockbreaklevel: '135'
+multipleidblockbreaklevel: '1'
 dropexplevel1: '6'
 dropexplevel2: '10'
 dropexplevel3: '16'
@@ -182,9 +182,22 @@ Achv4007: "完徹マン"
 Achv4008: "さらば終電"
 Achv4009: "減らぬ課題"
 Achv4010: "期待の新人"
+Achv6001: "狂信者"
+Achv6002: "全身全霊"
+Achv6003: "洗脳済"
+Achv6004: "虜となった"
+Achv6005: "魅惑の"
+Achv6006: "投票魔"
+Achv6007: "熱烈な"
+Achv6008: "お気に入り"
 Achv9001: "お年玉"
 Achv9002: "サンタさん"
 Achv9003: "おそば"
+Achv9004: "殷春"
+Achv9005: "梅見"
+Achv9006: "鬼"
+Achv9007: "ガチビルダー"
+Achv9008: "友チョコ０枚"
 
 # デバッグモードの設定
 # debugmode: 0=デバッグモードオフ, 1=デバッグモードオン

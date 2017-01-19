@@ -519,6 +519,12 @@ public class SeichiAssist extends JavaPlugin{
 	public static final List<String> ignoreWorldlist = new ArrayList<String>(Arrays.asList(
 			"world_SW","world_SW_2","world_SW_nether","world_SW_the_end"
 			));
+
+	//保護を掛けて整地するワールドのリスト
+	public static final List<String> rgSeichiWorldlist = new ArrayList<String>(Arrays.asList(
+			"world_SW_2","world_SW_nether","world_SW_the_end"
+			));
+
 	@Override
 	public void onEnable(){
 		plugin = this;
@@ -610,6 +616,8 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerPickupItemListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
 		getServer().getPluginManager().registerEvents(new GachaItemListener(), this);
+		// マナ自動回復用リスナー…無効化中
+		// getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
 		// BungeeCordとのI/F
 		Bukkit.getMessenger().registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this));
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "SeichiAssistBungee");
