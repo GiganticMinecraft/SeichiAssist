@@ -1259,6 +1259,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "複数種類ブロック同時破壊");
 			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
 			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "破壊可能な全種類のブロックを同時に破壊します");
+			lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "OFFにしても整地ワールドでは同時破壊されます");
 					//ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
 			if(playerdata.level>=SeichiAssist.config.getMultipleIDBlockBreaklevel()){
 				lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getMultipleIDBlockBreaklevel());
