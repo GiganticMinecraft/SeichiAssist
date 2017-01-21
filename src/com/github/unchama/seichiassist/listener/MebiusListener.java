@@ -383,10 +383,10 @@ public class MebiusListener implements Listener {
 			Arrays.asList("スキルって気持ち良いよね！", "マナが吸い取られるけどね。"), Arrays.asList("メインワールドの探検しようよー！", "息抜きは大切だね。"), Arrays.asList("宿題も大切だよ？", "何の話をしてるんだろう…"),
 			Arrays.asList("空を自由に飛びたいなー！", "はい、タケコプター！"), Arrays.asList("ジュースが飲みたいよー！", "どこから飲むつもりだろう。"), Arrays.asList("君の頭って落ち着くねぇ。", "君のお喋りにも慣れたなぁ。"),
 			Arrays.asList("APOLLO様みたいになれるかな？", "どんな関係があるんだろう…"), Arrays.asList("僕って役に立つでしょー！", "静かならもっといいんだけどね。"), Arrays.asList("赤いりんごがあるらしいよ！？", "りんごは普通赤いんだよ。"),
-			Arrays.asList("ヘルメット式電動耳掃除か…", "何を怖いことを言っている…"), Arrays.asList("ここまで育つなんて", "なんか感慨深いねえ！でしょ？"), Arrays.asList("動きすぎると酔っちゃうよね。", "無理はしちゃだめだね。"),
+			Arrays.asList("ヘルメット式電動耳掃除か…", "何を怖いことを言っている…"), Arrays.asList("ここまで育つなんてね！", "立派になったもんだね。"), Arrays.asList("動きすぎると酔っちゃうよね。", "三半規管はあるのかな。"),
 			Arrays.asList("僕は整地神様に生み出されたんだよ！", "整地神ってお喋りなのかな…"), Arrays.asList("君とドラゴンを倒す夢を見たよ…", "エンダードラゴンのことかな。"), Arrays.asList("君は僕が育てたと胸を張って言えるね！", "逆でしょう。"),
 			Arrays.asList("ああー饅頭が怖いなあ！", "落語でも見た？あげないよ。"), Arrays.asList("僕にも手足があったらなー…！", "被れなくなるでしょ。"), Arrays.asList("このフィット感…着心地抜群だよね？", "もう少し静かだったらね。"),
-			Arrays.asList("餃子っておいしいんだねえ！", "ニンニク臭がこもってるよ…"), Arrays.asList("次でTipsはおしまい！", "少し、静かになるな…"), Arrays.asList("育ててくれてありがとう！", "ある意味、最強のヘルメット。"));
+			Arrays.asList("餃子っておいしいんだねえ！", "ニンニク臭がこもってるよ…"), Arrays.asList("君も立派になったねえ", "同じこと思ってたとこ。"), Arrays.asList("育ててくれてありがとう！", "ある意味、最強のヘルメット。"));
 
 	// Talk更新
 	private static void updateTalkDest(List<String> lore, int level) {
