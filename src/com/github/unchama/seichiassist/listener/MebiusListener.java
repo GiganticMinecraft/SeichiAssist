@@ -28,6 +28,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -49,6 +50,13 @@ public class MebiusListener implements Listener {
 		me = this;
 		// Tipsリストを読み込む
 		loadTips();
+	}
+
+	// プレイヤーログアウト時
+	@EventHandler
+	public void onQuit(PlayerQuitEvent event){
+		Player player = event.getPlayer();
+		getPlayerData(player).mebius.cancel();
 	}
 
 	// 経験値瓶を投げた時
