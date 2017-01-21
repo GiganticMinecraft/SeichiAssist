@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -102,6 +103,9 @@ public class PlayerData {
 	//アクティブスキル関連データ
 	public ActiveSkillData activeskilldata;
 
+	//MebiusTask
+	public MebiusTaskRunnable mebius;
+
 	//ガチャボタン連打防止用
 	public boolean gachacooldownflag;
 
@@ -144,6 +148,7 @@ public class PlayerData {
 		this.lastminespeedlv = 0;
 		this.effectdatalist = new ArrayList<EffectData>();
 		this.level = 1;
+		this.mebius = new MebiusTaskRunnable(this);
 		this.numofsorryforbug = 0;
 		this.inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 		this.rgnum = 0;
