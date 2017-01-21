@@ -26,6 +26,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
+import com.github.unchama.seichiassist.listener.MebiusListener;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
@@ -691,6 +692,7 @@ public class Sql{
  			p.getInventory().addItem(new ItemStack(Material.ELYTRA));
  			p.getInventory().addItem(new ItemStack(Material.DIAMOND_PICKAXE));
  			p.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
+ 			MebiusListener.give(p);
  			return true;
 
  		}else if(count == 1){
