@@ -41,9 +41,12 @@ public class MebiusListener implements Listener {
 	// Instanceアクセス用
 	public static MebiusListener me;
 	// Tipsリスト
-	private static final List<String> tips = new ArrayList<String>();
+	private static List<String> tips = new ArrayList<String>();
 	// 経験値瓶をボーナスするLv(EXPBONUS未満)
 	private static final int EXPBONUS = 50;
+	// デバッグフラグ
+	private static final boolean DEBUGENABLE = false;
+	private static boolean debugFlg = false;
 
 	// 起動時
 	public MebiusListener() {
@@ -52,9 +55,34 @@ public class MebiusListener implements Listener {
 		loadTips();
 	}
 
+	// リロード
+	public static void reload() {
+		tips.clear();
+		loadTips();
+	}
+
+	// デバッグ
+	public static void debug(Player player) {
+		if (DEBUGENABLE) {
+			if (debugFlg) {
+				player.sendMessage("デバッグモードが解除されました。");
+			} else {
+				player.sendMessage("サーバー全体がデバッグモードになりました。");
+			}
+			debugFlg = !debugFlg;
+		}
+	}
+
+	// デバッグgive
+	public static void debugGive(Player player) {
+		if (debugFlg) {
+			give(player);
+		}
+	}
+
 	// プレイヤーログアウト時
 	@EventHandler
-	public void onQuit(PlayerQuitEvent event){
+	public void onQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		getPlayerData(player).mebius.cancel();
 	}
@@ -234,26 +262,18 @@ public class MebiusListener implements Listener {
 	private static void discovery(Player player) {
 		ItemStack mebius = create(null, player);
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "おめでとうございます。採掘中にMEBIUSを発見しました。");
+		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "MEBIUSはプレイヤーと共に成長するヘルメットです。");
+		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなただけのMEBIUSを育てましょう！");
 		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.plugin, new Runnable() {
 			public void run() {
-				player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "MEBIUSはプレイヤーと共に成長するヘルメットです。");
-				Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.plugin, new Runnable() {
-					public void run() {
-						player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなただけのMEBIUSを育てましょう！");
-						Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.plugin, new Runnable() {
-							public void run() {
-								getPlayerData(player).mebius.speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！");
-							}
-						}, 10);
-					}
-				}, 10);
+				getPlayerData(player).mebius.speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！");
 			}
 		}, 10);
-		player.playSound(player.getLocation(), Sound.BLOCK_GRASS_HIT, 1f, 1f);
+		player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
 		if (!Util.isPlayerInventryFill(player)) {
 			Util.addItem(player, mebius);
 		} else {
-			player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "所持しきれないためMEBIUSをドロップしました。");
+			player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "所持しきれないためMEBIUSをドロップしました。");
 			Util.dropItem(player, mebius);
 		}
 	}
@@ -270,13 +290,16 @@ public class MebiusListener implements Listener {
 
 	// Mebiusレベルアップ確率テーブル
 	private static final List<Integer> lvPer = Arrays.asList(
-	Integer.valueOf(500), Integer.valueOf(500), Integer.valueOf(500), Integer.valueOf(500), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(1700),
-	Integer.valueOf(1700), Integer.valueOf(1700), Integer.valueOf(1700), Integer.valueOf(1700), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(2200),
-	Integer.valueOf(2200), Integer.valueOf(2200), Integer.valueOf(2200), Integer.valueOf(2200), Integer.valueOf(2600), Integer.valueOf(2600), Integer.valueOf(2600), Integer.valueOf(2600), Integer.valueOf(3000), Integer.valueOf(3000));
+			Integer.valueOf(500), Integer.valueOf(500), Integer.valueOf(500), Integer.valueOf(500), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(1700),
+			Integer.valueOf(1700), Integer.valueOf(1700), Integer.valueOf(1700), Integer.valueOf(1700), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(2200),
+			Integer.valueOf(2200), Integer.valueOf(2200), Integer.valueOf(2200), Integer.valueOf(2200), Integer.valueOf(2600), Integer.valueOf(2600), Integer.valueOf(2600), Integer.valueOf(2600), Integer.valueOf(3000), Integer.valueOf(3000));
 
 	// MebiusLvアップ判定
 	private static boolean isLevelUp(Player player) {
 		int chk = new Random().nextInt(lvPer.get(getIl(player.getInventory().getHelmet()) - 1));
+		if (debugFlg) {
+			chk /= 100;
+		}
 		if (chk == 0) {
 			return true;
 		}
@@ -288,7 +311,11 @@ public class MebiusListener implements Listener {
 
 	// Mebiusドロップ判定
 	private static boolean isDrop() {
-		if (new Random().nextInt(dropPer) == 0) {
+		int chk = new Random().nextInt(dropPer);
+		if (debugFlg) {
+			chk /= 100;
+		}
+		if (chk == 0) {
 			return true;
 		}
 		return false;
@@ -447,6 +474,7 @@ public class MebiusListener implements Listener {
 			List<String> lore = meta.getLore();
 			lore.add(UNBREAK);
 			meta.setLore(lore);
+			player.sendMessage(ChatColor.RESET + "" + ChatColor.GREEN + "おめでとうございます。" + meta.getDisplayName() + ChatColor.RESET + "" + ChatColor.GREEN + "のレベルが最大になりました。");
 			player.sendMessage(UNBREAK + ChatColor.RESET + "が付与されました。");
 			return;
 		}
@@ -484,6 +512,14 @@ public class MebiusListener implements Listener {
 		}
 	}
 
+	// Mebius Tips
+	private static final List<String> MTIPS = Arrays.asList(
+			"僕の名前は、/mebius naming <名前> コマンドで変更できるよ！<名前>の代わりに新しい名前を入れてね！",
+			"僕は整地によって成長するんだー。アイテムレベル30まであるんだよ！いつかなれるかなー？",
+			"僕たち兄弟のステータスはみんなバラバラなんだ。僕はどんなヘルメットに育つんだろう…？",
+			"Lv50までは、経験値瓶を投げるときは僕を装備してね！瓶の数を2倍にしてあげるよ！",
+			"僕たちはこの世界のどこかに埋まってるんだー。整地して僕の兄弟も見つけて欲しいな！");
+
 	// webからTipsリスト読み込み
 	private static void loadTips() {
 		try {
@@ -514,5 +550,6 @@ public class MebiusListener implements Listener {
 		} catch (Exception e) {
 			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Tipsの読み込みに失敗");
 		}
+		tips.addAll(MTIPS);
 	}
 }

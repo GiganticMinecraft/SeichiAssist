@@ -22,8 +22,12 @@ public class mebiusCommand implements TabExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (args.length == 1 && args[0].equals("get")) {
-			MebiusListener.give((Player) sender);
+		if (sender.isOp() && args.length == 1 && args[0].equals("get")) {
+			MebiusListener.debugGive((Player) sender);
+		} else if (sender.isOp() && args.length == 1 && args[0].equals("reload")) {
+			MebiusListener.reload();
+		} else if (sender.isOp() && args.length == 1 && args[0].equals("debug")) {
+			MebiusListener.debug((Player) sender);
 		} else if (args.length == 2 && args[0].equals("naming")) {
 			if (!MebiusListener.setName((Player) sender, args[1])) {
 				sender.sendMessage("命名はMEBIUSを装備して行ってください。");
