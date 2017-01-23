@@ -29,10 +29,10 @@ commands:
       permission: multiseichiplugin.lastquit
       permission-message: You don't have <permission>
   rmp:
-      description: This is a remove protect command. 
-      usage: /<command> <playername> 
-      permission: multiseichiplugin.rmp 
-      permission-message: You don't have <permission> 
+      description: This is a remove protect command.
+      usage: /<command> <playername>
+      permission: multiseichiplugin.rmp
+      permission-message: You don't have <permission>
   stick:
       description: This is a stick command.
       usage: /<command>
@@ -40,6 +40,11 @@ commands:
       permission-message: You don't have <permission>
   shareinv:
       description: This is a share inventory command.
+      usage: /<command>
+      default-permission: NOT_OP
+      permission-message: You don't have <permission>
+  mebius:
+      description: This is a mebius command.
       usage: /<command>
       default-permission: NOT_OP
       permission-message: You don't have <permission>

@@ -51,13 +51,12 @@ public class rmpCommand implements TabExecutor {
 
 				//<日数>を数値変換
 				if (args.length > 0) days = Integer.parseInt(args[0]);
-				//<削除フラグ>を判定(整地ワールドに限る)
+				//<削除フラグ>を判定(保護を掛けて整地する整地ワールドに限る)
 				if ((args.length > 1) && (args[1].equals("true"))) {
-					if(SeichiAssist.ignoreWorldlist.contains(((Player)sender).getWorld().getName())) {
-						sender.sendMessage(ChatColor.RED + "削除フラグを検知しましたが、現在運用停止中です");
-						//removeFlg = true;
+					if(SeichiAssist.rgSeichiWorldlist.contains(((Player)sender).getWorld().getName())) {
+						removeFlg = true;
 					} else {
-						sender.sendMessage(ChatColor.RED + "削除フラグは整地ワールドでのみ使用出来ます");
+						sender.sendMessage(ChatColor.RED + "削除フラグは保護をかけて整地する整地ワールドでのみ使用出来ます");
 					}
 				}
 				//mysqlからログインしていないプレイヤーリストを取得
@@ -77,6 +76,8 @@ public class rmpCommand implements TabExecutor {
 				for (String id : regions.keySet()) {
 					//__global__Regionは除外
 					if (id.equals("__global__")) continue;
+					//spawnRegionも除外
+					if (id.equals("spawn")) continue;
 					//Region内の全OwnerがLeaverなら該当するRegionのIDを結果Listに格納する
 					if (isAllLeave(regions.get(id).getOwners())) targets.add(id);
 				}
@@ -86,11 +87,9 @@ public class rmpCommand implements TabExecutor {
 					sender.sendMessage(ChatColor.GREEN + "該当Regionは存在しません");
 				} else if (removeFlg) {
 					//該当領域削除
-					/*(コメントアウト中)
 					targets.forEach(target -> {
 						((Player)sender).chat("/rg remove " + target);
 					});
-					*/
 				} else {
 					//一覧表示
 					targets.forEach(target -> {
