@@ -468,7 +468,7 @@ public class MebiusListener implements Listener {
 			new Enchant(Enchantment.PROTECTION_FIRE, 6, 10, "火炎耐性"),
 			new Enchant(Enchantment.PROTECTION_PROJECTILE, 6, 10, "飛び道具耐性"),
 			new Enchant(Enchantment.PROTECTION_EXPLOSIONS, 6, 10, "爆発耐性"),
-			new Enchant(Enchantment.OXYGEN, 15, 10, "水中呼吸"),
+			new Enchant(Enchantment.OXYGEN, 15, 3, "水中呼吸"),
 			new Enchant(Enchantment.WATER_WORKER, 15, 1, "水中採掘"),
 			new Enchant(Enchantment.DURABILITY, 2, 10, "耐久力")));
 	private static final String UNBREAK = ChatColor.RESET + "" + ChatColor.AQUA + "耐久無限";
