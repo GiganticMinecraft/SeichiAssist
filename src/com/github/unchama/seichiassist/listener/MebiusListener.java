@@ -45,12 +45,20 @@ public class MebiusListener implements Listener {
 	// 経験値瓶をボーナスするLv(EXPBONUS未満)
 	private static final int EXPBONUS = 50;
 	// デバッグフラグ
-	private static final boolean DEBUGENABLE = false;
+	private static boolean DEBUGENABLE = false;
 	private static boolean debugFlg = false;
 
 	// 起動時
 	public MebiusListener() {
 		me = this;
+		if(SeichiAssist.config.getMebiusDebug()==1){
+			//mebiusdebug=1の時はコマンドでトグル可能
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "メビウス帽子のdebugモードトグル機能：有効");
+			DEBUGENABLE = true;
+		}else{
+			//debugmode=0の時はトグル不可能
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "メビウス帽子のdebugモードトグル機能：無効");
+		}
 		// Tipsリストを読み込む
 		loadTips();
 	}
@@ -65,9 +73,9 @@ public class MebiusListener implements Listener {
 	public static void debug(Player player) {
 		if (DEBUGENABLE) {
 			if (debugFlg) {
-				player.sendMessage("デバッグモードが解除されました。");
+				player.sendMessage("メビウス帽子：デバッグモードが解除されました。");
 			} else {
-				player.sendMessage("サーバー全体がデバッグモードになりました。");
+				player.sendMessage("メビウス帽子：サーバー全体がデバッグモードになりました。");
 			}
 			debugFlg = !debugFlg;
 		}
