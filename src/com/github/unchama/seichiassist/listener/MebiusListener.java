@@ -37,6 +37,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
+import de.tr7zw.itemnbtapi.NBTItem;
+
 public class MebiusListener implements Listener {
 	// Instanceアクセス用
 	public static MebiusListener me;
@@ -415,6 +417,13 @@ public class MebiusListener implements Listener {
 		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 		mebius.setItemMeta(meta);
+
+		//ちょちょっとな
+		NBTItem nbti = new NBTItem(mebius);
+		nbti.setInteger("RepairCost", 100);
+		mebius = nbti.getItem();
+
+
 		return mebius;
 	}
 
