@@ -25,7 +25,7 @@ public class MebiusTaskRunnable extends BukkitRunnable {
 		if (MebiusListener.isEquip(p)) {
 			speak("おかえり" + p.getName() + "！待ってたよ！");
 		}
-		runTaskTimerAsynchronously(SeichiAssist.plugin, 2400, 2400);
+		runTaskTimerAsynchronously(SeichiAssist.plugin, 240, 240);
 	}
 
 	// 2分周期で呼び出される
