@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.DyeColor;
-import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -81,42 +81,17 @@ public class MagicTaskRunnable extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		for (int x = start.x + 1; x < end.x; x = x + 2) {
-			for (int z = start.z + 1; z < end.z; z = z + 2) {
-				for (int y = start.y + 1; y < end.y; y = y + 2) {
-					effectloc = droploc.clone();
-					effectloc.add(x, y, z);
-					if (isBreakBlock(effectloc)) {
-						Chicken e = (Chicken) player.getWorld().spawnEntity(effectloc, EntityType.CHICKEN);
-						SeichiAssist.entitylist.add((Entity) e);
-						e.playEffect(EntityEffect.WITCH_MAGIC);
-						e.setInvulnerable(true);
-						new EntityRemoveTaskRunnable((Entity) e).runTaskLater(plugin, 100);
-						player.getWorld().playSound(effectloc, Sound.ENTITY_WITCH_AMBIENT, 1, 1.5F);
-					}
-				}
-			}
-		}
+		Chicken e = (Chicken) player.getWorld().spawnEntity(centerbreakloc, EntityType.CHICKEN);
+		SeichiAssist.entitylist.add((Entity) e);
+		e.playEffect(EntityEffect.WITCH_MAGIC);
+		e.setInvulnerable(true);
+		new EntityRemoveTaskRunnable((Entity) e).runTaskLater(plugin, 100);
+		player.getWorld().playSound(effectloc, Sound.ENTITY_WITCH_AMBIENT, 1, 1.5F);
+
 		for (Block b : breaklist) {
 			b.setType(Material.AIR);
-			b.getWorld().playEffect(b.getLocation().add(0.5, 0.5, 0.5), Effect.NOTE, 1);
+			b.getWorld().spawnParticle(Particle.NOTE, b.getLocation().add(0.5, 0.5, 0.5), 1);
 			SeichiAssist.allblocklist.remove(b);
 		}
-
-	}
-
-	private boolean isBreakBlock(Location loc) {
-		Block b = loc.getBlock();
-		if (breaklist.contains(b))
-			return true;
-		for (int x = -1; x < 2; x++) {
-			for (int z = -1; z < 2; z++) {
-				for (int y = -1; y < 2; y++) {
-					if (breaklist.contains(b.getRelative(x, y, z)))
-						return true;
-				}
-			}
-		}
-		return false;
 	}
 }

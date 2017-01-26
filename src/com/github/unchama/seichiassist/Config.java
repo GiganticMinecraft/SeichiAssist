@@ -151,6 +151,10 @@ public class Config{
 		return Util.toInt(config.getString("debugmode"));
 	}
 
+	public int getMebiusDebug() {
+		return Util.toInt(config.getString("mebiusdebug"));
+	}
+
 	public int rateGiganticToRingo() {
 		return Util.toInt(config.getString("rategigantictoringo"));
 	}

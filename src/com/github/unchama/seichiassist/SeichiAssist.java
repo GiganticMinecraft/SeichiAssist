@@ -27,6 +27,7 @@ import com.github.unchama.seichiassist.commands.effectCommand;
 import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.lastquitCommand;
 import com.github.unchama.seichiassist.commands.levelCommand;
+import com.github.unchama.seichiassist.commands.mebiusCommand;
 import com.github.unchama.seichiassist.commands.rmpCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.commands.shareinvCommand;
@@ -37,6 +38,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.listener.EntityListener;
 import com.github.unchama.seichiassist.listener.GachaItemListener;
+import com.github.unchama.seichiassist.listener.MebiusListener;
 import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
 import com.github.unchama.seichiassist.listener.PlayerClickListener;
 import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
@@ -490,7 +492,7 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.MONSTER_EGGS,Material.WEB,Material.WOOD,Material.FENCE,Material.DARK_OAK_FENCE,Material.RAILS //追加
 			,Material.MYCEL,Material.SNOW_BLOCK,Material.HUGE_MUSHROOM_1,Material.HUGE_MUSHROOM_2,Material.BONE_BLOCK //追加
 			,Material.PURPUR_BLOCK,Material.PURPUR_PILLAR,Material.SEA_LANTERN,Material.PRISMARINE //追加
-			,Material.SMOOTH_BRICK //追加
+			,Material.SMOOTH_BRICK,Material.GLOWSTONE //追加
 			));
 	public static final List<Material> luckmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.COAL_ORE,Material.DIAMOND_ORE,Material.LAPIS_ORE,Material.EMERALD_ORE,
@@ -605,6 +607,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("stick",new stickCommand(plugin));
 		commandlist.put("rmp",new rmpCommand(plugin));
 		commandlist.put("shareinv",new shareinvCommand(plugin));
+		commandlist.put("mebius",new mebiusCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -616,6 +619,7 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerPickupItemListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
 		getServer().getPluginManager().registerEvents(new GachaItemListener(), this);
+		getServer().getPluginManager().registerEvents(new MebiusListener(), this);
 		// マナ自動回復用リスナー…無効化中
 		// getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
 		// BungeeCordとのI/F
