@@ -28,6 +28,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -53,12 +54,12 @@ public class MebiusListener implements Listener {
 	// 起動時
 	public MebiusListener() {
 		me = this;
-		if(SeichiAssist.config.getMebiusDebug()==1){
-			//mebiusdebug=1の時はコマンドでトグル可能
+		if (SeichiAssist.config.getMebiusDebug() == 1) {
+			// mebiusdebug=1の時はコマンドでトグル可能
 			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "メビウス帽子のdebugモードトグル機能：有効");
 			DEBUGENABLE = true;
-		}else{
-			//debugmode=0の時はトグル不可能
+		} else {
+			// debugmode=0の時はトグル不可能
 			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "メビウス帽子のdebugモードトグル機能：無効");
 		}
 		// Tipsリストを読み込む
@@ -140,30 +141,81 @@ public class MebiusListener implements Listener {
 	// ダメージを受けた時
 	@EventHandler
 	public void onDamage(EntityDamageByEntityEvent event) {
-		// プレイヤーがモンスターからダメージを受けた場合以外は除外
-		if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Monster)) {
-			return;
-		}
-		Player player = (Player) event.getEntity();
-		Monster monster = (Monster) event.getDamager();
-		// プレイヤーがMebiusを装備していない場合は除外
-		if (!isEquip(player)) {
-			return;
-		}
+		final List<String> breakmsgs = Arrays.asList(
+				"いたた…もうすぐ壊れちゃいそうだ…",
+				"もうダメかも…こんなところで、悔しいなぁ",
+				"お願い、修繕して欲しいよ…",
+				"ごめんね…これ以上は[str1]のこと、守ってあげられそうにないよ…",
+				"もっと[str1]と、旅したかったなぁ",
+				"まだ平気…壊れるまでは、[str1]のことを守るんだ…");
+		final List<String> warnmsgs = Arrays.asList(
+				"[str2]からの攻撃だ！気を付けて！",
+				"お前なんか余裕なんだからなー！さあ[str1]、やっちゃえ！",
+				"びっくりしたなー！人が休んでるときにー！",
+				"もーなんで今攻撃してくるのさあああ！",
+				"いったーいっ、今僕の小指踏んだなー！？",
+				"いてっ！やめろよー！僕を怒らせたら怖いぞー！");
 
-		ItemStack mebius = player.getInventory().getHelmet();
-		short max = mebius.getType().getMaxDurability();
-		short dur = mebius.getDurability();
-		if (dur >= max - 10) {
-			getPlayerData((Player) event.getEntity()).mebius.speakForce("いたた…もうすぐ壊れちゃいそうだ…");
+		// プレイヤーがダメージを受けた場合
+		if (event.getEntity() instanceof Player) {
+			Player player = (Player) event.getEntity();
+			// プレイヤーがMebiusを装備していない場合は除外
+			if (!isEquip(player)) {
+				return;
+			}
+
+			ItemStack mebius = player.getInventory().getHelmet();
+			// 耐久無限じゃない場合
+			if (!mebius.getItemMeta().spigot().isUnbreakable()) {
+				// 耐久閾値を超えていたら破損警告
+				short max = mebius.getType().getMaxDurability();
+				short dur = mebius.getDurability();
+				if (dur >= max - 10) {
+					getPlayerData((Player) event.getEntity()).mebius.speak(getMessage(breakmsgs, player.getName(), ""));
+				}
+			}
+
+			// モンスターからダメージを受けた場合
+			if (event.getDamager() instanceof Monster) {
+				Monster monster = (Monster) event.getDamager();
+				// 対モンスターメッセージ
+				getPlayerData((Player) event.getEntity()).mebius.speak(getMessage(warnmsgs, player.getName(), monster.getName()));
+			}
 		}
-		getPlayerData((Player) event.getEntity()).mebius.speak(monster.getName() + ChatColor.RESET + "からの攻撃だ！気を付けて！");
+	}
+
+	// 壊れたとき
+	@EventHandler
+	public void onBreak(PlayerItemBreakEvent event) {
+		final List<String> msgs = Arrays.asList(
+				"ここまでかぁっ…[str1]と一緒に旅したこと、すごく楽しかったなぁ…",
+				"この先[str1]のこと、守ってあげられなくなっちゃった…ごめんね…",
+				"僕、少しは[str1]の役に立てたかなぁ…もしそうだったら、嬉しいなぁ",
+				"[str1]のおかげで最期まで防具としていられたんだぁ…使ってくれて、ありがとう。",
+				"最期まで[str1]の頭にいれたことって、すごく幸せなことだよ",
+				"もし生まれ変わっても、また[str1]と…");
+		ItemStack item = event.getBrokenItem();
+		// 壊れたアイテムがMEBIUSなら
+		if (isMebius(item)) {
+			Player player = event.getPlayer();
+			getPlayerData(event.getPlayer()).mebius.speak(getMessage(msgs, player.getName(), ""));
+			player.sendMessage(getName(item) + ChatColor.RESET + "が旅立ちました。");
+			// エンドラが叫ぶ
+			player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 0.1f);
+		}
 	}
 
 	// モンスターを倒した時
 	@EventHandler
 	public void onKill(EntityDeathEvent event) {
 		try {
+			final List<String> msgs = Arrays.asList(
+					"さすが[str1]！[str2]なんて敵じゃないね！",
+					"僕にかかれば[str2]なんてこんなもんだよー！",
+					"モンスターってなんで人間を襲うんだろう…？",
+					"ねえ[str1]、今の僕のおかげだよね！ね？",
+					"たまにはやられてみたいもんだねー、ふふん！",
+					"[str2]なんて僕の力を出すまでもなかったね！");
 			// プレイヤーがモンスターを倒した場合以外は除外
 			if (!(event.getEntity() instanceof Monster) || !(event.getEntity().getKiller() instanceof Player)) {
 				return;
@@ -174,7 +226,7 @@ public class MebiusListener implements Listener {
 			if (!isEquip(player)) {
 				return;
 			}
-			getPlayerData(player).mebius.speak("さすが" + player.getName() + ChatColor.RESET + "！" + monster.getName() + ChatColor.RESET + "なんて敵じゃないね！");
+			getPlayerData(player).mebius.speak(getMessage(msgs, player.getName(), monster.getName()));
 		} catch (NullPointerException e) {
 		}
 	}
@@ -182,9 +234,16 @@ public class MebiusListener implements Listener {
 	// ブロックを破壊した時
 	@EventHandler
 	public void onBreak(BlockBreakEvent event) {
+		final List<String> msgs = Arrays.asList(
+				"ポコポコポコポコ…整地の音って、落ち着くねえ。",
+				"頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
+				"一生懸命掘ってると、いつの間にか無心になっちゃうよねえ…！",
+				"なんだか眠たくなってきちゃったー、[str1]は平気ー？",
+				"今日はどこまで掘るのかなー？",
+				"[str1]と一緒に整地するの、楽しいねえ！");
 		Player player = event.getPlayer();
 		if (isEquip(player)) {
-			getPlayerData(player).mebius.speak("ポコポコポコポコ…整地の音って、落ち着くねえ。");
+			getPlayerData(player).mebius.speak(getMessage(msgs, player.getName(), ""));
 			// Lvup
 			if (isLevelUp(player)) {
 				levelUp(player);
@@ -211,9 +270,9 @@ public class MebiusListener implements Listener {
 			ItemStack mebius = player.getInventory().getHelmet();
 			ItemMeta meta = mebius.getItemMeta();
 			meta.setDisplayName(NAMEHEAD + name);
+			player.sendMessage(getName(mebius) + ChatColor.RESET + "に命名しました。");
 			mebius.setItemMeta(meta);
 			player.getInventory().setHelmet(mebius);
-			player.sendMessage("MEBIUSに命名しました。");
 			getPlayerData(player).mebius.speakForce("わーい、ありがとう！今日から僕は" + NAMEHEAD + name + ChatColor.RESET + "だ！");
 			return true;
 		}
@@ -223,7 +282,9 @@ public class MebiusListener implements Listener {
 	// MebiusのDisplayNameを取得
 	public static String getName(ItemStack mebius) {
 		try {
-			return mebius.getItemMeta().getDisplayName();
+			if (isMebius(mebius)) {
+				return mebius.getItemMeta().getDisplayName();
+			}
 		} catch (NullPointerException e) {
 		}
 		return NAMEHEAD + DEFNAME;
@@ -435,7 +496,7 @@ public class MebiusListener implements Listener {
 			Arrays.asList("スキルって気持ち良いよね！", "マナが吸い取られるけどね。"), Arrays.asList("メインワールドの探検しようよー！", "息抜きは大切だね。"), Arrays.asList("宿題も大切だよ？", "何の話をしてるんだろう…"),
 			Arrays.asList("空を自由に飛びたいなー！", "はい、タケコプター！"), Arrays.asList("ジュースが飲みたいよー！", "どこから飲むつもりだろう。"), Arrays.asList("君の頭って落ち着くねぇ。", "君のお喋りにも慣れたなぁ。"),
 			Arrays.asList("APOLLO様みたいになれるかな？", "どんな関係があるんだろう…"), Arrays.asList("僕って役に立つでしょー！", "静かならもっといいんだけどね。"), Arrays.asList("赤いりんごがあるらしいよ！？", "りんごは普通赤いんだよ。"),
-			Arrays.asList("ヘルメット式電動耳掃除か…", "何を怖いことを言っている…"), Arrays.asList("ここまで育つなんてね！", "立派になったもんだね。"), Arrays.asList("動きすぎると酔っちゃうよね。", "三半規管はあるのかな。"),
+			Arrays.asList("ヘルメット式電動耳掃除…", "何を怖いことを言っている…"), Arrays.asList("ここまで育つなんてね！", "立派になったもんだね。"), Arrays.asList("動きすぎると酔っちゃうよね。", "三半規管はあるのかな。"),
 			Arrays.asList("僕は整地神様に生み出されたんだよ！", "整地神ってお喋りなのかな…"), Arrays.asList("君とドラゴンを倒す夢を見たよ…", "エンダードラゴンのことかな。"), Arrays.asList("君は僕が育てたと胸を張って言えるね！", "逆でしょう。"),
 			Arrays.asList("ああー饅頭が怖いなあ！", "落語でも見た？あげないよ。"), Arrays.asList("僕にも手足があったらなー…！", "被れなくなるでしょ。"), Arrays.asList("このフィット感…着心地抜群だよね？", "もう少し静かだったらね。"),
 			Arrays.asList("餃子っておいしいんだねえ！", "ニンニク臭がこもってるよ…"), Arrays.asList("君も立派になったねえ", "同じこと思ってたとこ。"), Arrays.asList("育ててくれてありがとう！", "ある意味、最強のヘルメット。"));
@@ -532,9 +593,9 @@ public class MebiusListener implements Listener {
 	// Mebius Tips
 	private static final List<String> MTIPS = Arrays.asList(
 			"僕の名前は、/mebius naming <名前> コマンドで変更できるよ！<名前>の代わりに新しい名前を入れてね！",
-			"僕は整地によって成長するんだー。アイテムレベル30まであるんだよ！いつかなれるかなー？",
-			"僕たち兄弟のステータスはみんなバラバラなんだ。僕はどんなヘルメットに育つんだろう…？",
-			"Lv50までは、経験値瓶を投げるときは僕を装備してね！瓶の数を2倍にしてあげるよ！",
+			"僕は整地によって成長するんだー。アイテムレベル30まであるんだよ！",
+			"僕たち兄弟のステータスはみんなバラバラなんだよー！",
+			"整地レベル50までは、経験値瓶を投げるときは僕を装備してね！瓶の数を2倍にしてみせるよ！",
 			"僕たちはこの世界のどこかに埋まってるんだー。整地して僕の兄弟も見つけて欲しいな！");
 
 	// webからTipsリスト読み込み
@@ -568,5 +629,17 @@ public class MebiusListener implements Listener {
 			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Tipsの読み込みに失敗");
 		}
 		tips.addAll(MTIPS);
+	}
+
+	// メッセージリストからランダムに取り出し、タグを置換する
+	private static String getMessage(List<String> messages, String str1, String str2) {
+		String msg = messages.get(new Random().nextInt(messages.size()));
+		if (!str1.isEmpty()) {
+			msg = msg.replace("[str1]", str1 + ChatColor.RESET);
+		}
+		if (!str2.isEmpty()) {
+			msg = msg.replace("[str2]", str2 + ChatColor.RESET);
+		}
+		return msg;
 	}
 }
