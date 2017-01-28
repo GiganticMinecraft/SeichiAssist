@@ -27,9 +27,13 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -37,8 +41,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
-
-import de.tr7zw.itemnbtapi.NBTItem;
 
 public class MebiusListener implements Listener {
 	// Instanceアクセス用
@@ -252,6 +254,49 @@ public class MebiusListener implements Listener {
 		// 取得判定
 		if (isDrop()) {
 			discovery(player);
+		}
+	}
+
+	// 金床配置時（クリック）
+	@EventHandler
+	public void onRename(InventoryClickEvent event) {
+		// 金床じゃなければreturn
+		Inventory inv = event.getClickedInventory();
+		if (!(inv instanceof AnvilInventory)) {
+			return;
+		}
+		// mebiusを選択中じゃなければreturn
+		ItemStack item = event.getCursor();
+		if (!isMebius(item)) {
+			return;
+		}
+		// mebiusを左枠に置いた場合はcancel
+		int rawSlot = event.getRawSlot();
+		if (rawSlot == event.getView().convertSlot(rawSlot) && rawSlot == 0) {
+			event.setCancelled(true);
+			event.getWhoClicked().sendMessage(ChatColor.RED + "MEBIUSへの命名は" + ChatColor.RESET + "/mebius naming <name>" + ChatColor.RED + "で行ってください。");
+		}
+	}
+
+	// 金床配置時（ドラッグ）
+	@EventHandler
+	public void onDrag(InventoryDragEvent event) {
+		// 金床じゃなければreturn
+		Inventory inv = event.getInventory();
+		if (!(inv instanceof AnvilInventory)) {
+			return;
+		}
+		// mebiusを選択中じゃなければreturn
+		ItemStack item = event.getOldCursor();
+		if (!isMebius(item)) {
+			return;
+		}
+		// mebiusを左枠に置いた場合はcancel
+		for (Integer rawSlot : event.getRawSlots()) {
+			if (rawSlot == event.getView().convertSlot(rawSlot) && rawSlot == 0) {
+				event.setCancelled(true);
+				event.getWhoClicked().sendMessage(ChatColor.RED + "MEBIUSへの命名は" + ChatColor.RESET + "/mebius naming <name>" + ChatColor.RED + "で行ってください。");
+			}
 		}
 	}
 
@@ -478,12 +523,6 @@ public class MebiusListener implements Listener {
 		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 		mebius.setItemMeta(meta);
-
-		//ちょちょっとな
-		NBTItem nbti = new NBTItem(mebius);
-		nbti.setInteger("RepairCost", 100);
-		mebius = nbti.getItem();
-
 
 		return mebius;
 	}
