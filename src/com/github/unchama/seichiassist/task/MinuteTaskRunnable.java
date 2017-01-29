@@ -133,7 +133,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 					}
 				}
 				//実際のeffect値をsum-1の切り捨て整数値に設定
-				minespeedlv = (int)(sum - 1 + 500);
+				minespeedlv = (int)(sum - 1);
 
 				//effect上限値を判定
 				int maxSpeed = 0;
