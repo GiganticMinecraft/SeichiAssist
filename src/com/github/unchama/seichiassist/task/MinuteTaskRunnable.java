@@ -118,7 +118,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			int minespeedlv = 0;
 
 			//effectflag ONの時のみ実行
-			if(playerdata.effectflag != 2){
+			if(playerdata.effectflag != 4){
 				//合計effect量
 				double sum = 0;
 				//最大持続時間
@@ -140,7 +140,11 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				if(playerdata.effectflag == 0){
 					maxSpeed = 25565;
 				}else if(playerdata.effectflag == 1){
-					maxSpeed = 100;
+					maxSpeed = 200;
+				}else if(playerdata.effectflag == 2){
+					maxSpeed = 400;
+				}else if(playerdata.effectflag == 3){
+					maxSpeed = 600;
 				}
 
 				//effect追加の処理

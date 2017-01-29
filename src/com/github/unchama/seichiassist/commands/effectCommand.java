@@ -44,11 +44,15 @@ public class effectCommand implements TabExecutor {
 			return true;
 		}else if(args.length == 0){
 			//エフェクトフラグを反転
-			int effectflag = (playerdata.effectflag + 1) % 3;
+			int effectflag = (playerdata.effectflag + 1) % 5;
 			if (effectflag == 0){
 				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(無制限)");
 			}else if(effectflag == 1){
-				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(100制限)");
+				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(200制限)");
+			}else if(effectflag == 2){
+				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(400制限)");
+			}else if(effectflag == 3){
+				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(600制限)");
 			}else{
 				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:OFF");
 			}
