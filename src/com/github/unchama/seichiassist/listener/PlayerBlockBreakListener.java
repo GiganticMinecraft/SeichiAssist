@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.listener;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import zedly.zenchantments.Zenchantments;
+
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
@@ -31,8 +34,6 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.MultiBreakTaskRunnable;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
-
-import zedly.zenchantments.Zenchantments;
 
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -48,6 +49,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//壊されるブロックを取得
 		Block block = event.getBlock();
+
 
 		//他人の保護がかかっている場合は処理を終了
 		if(!Util.getWorldGuard().canBuild(player, block.getLocation()))return;
@@ -80,10 +82,7 @@ public class PlayerBlockBreakListener implements Listener {
 				return;
 			}
 		}
-		//スキル発動条件がそろってなければ終了
-		if(!Util.isSkillEnable(player)){
-			return;
-		}
+
 
 		//プレイヤーインベントリを取得
 		PlayerInventory inventory = player.getInventory();
@@ -96,6 +95,31 @@ public class PlayerBlockBreakListener implements Listener {
 		boolean mainhandtoolflag = SeichiAssist.breakmateriallist.contains(mainhanditem.getType());
 		//オフハンドにツールがあるか
 		boolean offhandtoolflag = SeichiAssist.breakmateriallist.contains(offhanditem.getType());
+
+
+
+		//スキル発動条件がそろってなければ終了
+		//スキルが発動しなくてもインベントリに直行させる
+		if(!Util.isSkillEnable(player)){
+			Collection<ItemStack> dropItems;
+			dropItems = block.getDrops(mainhanditem);
+
+			//if(mainhanditem)
+
+			player.sendMessage(ChatColor.RED + Integer.toString(dropItems.size()));
+
+			//正しいツールで壊すと、値が0より大きくなることを利用したツール判定
+			if(dropItems.size() > 0){
+				ItemStack dropItem = BreakUtil.dropItemOnTool(block, mainhanditem);
+				HashMap<Integer,ItemStack> exceededItems = inventory.addItem(dropItem);
+				for(Integer i:exceededItems.keySet()){
+					player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
+					block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5),exceededItems.get(i));
+				}
+				block.setType(Material.AIR);
+			}
+			return;
+		}
 
 		//場合分け
 		if(mainhandtoolflag){
@@ -157,7 +181,24 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0){
-			return;
+
+			Collection<ItemStack> dropItems;
+			dropItems = block.getDrops(mainhanditem);
+
+			//if(mainhanditem)
+
+			player.sendMessage(ChatColor.RED + Integer.toString(dropItems.size()));
+
+			//正しいツールで壊すと、値が0より大きくなることを利用したツール判定
+			if(dropItems.size() > 0){
+				ItemStack dropItem = BreakUtil.dropItemOnTool(block, mainhanditem);
+				HashMap<Integer,ItemStack> exceededItems = inventory.addItem(dropItem);
+				for(Integer i:exceededItems.keySet()){
+					player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
+					block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5),exceededItems.get(i));
+				}
+				block.setType(Material.AIR);
+			}return;
 		}
 
 
@@ -239,7 +280,7 @@ public class PlayerBlockBreakListener implements Listener {
 				for(int x = start.x ; x <= end.x ; x++){
 					for(int z = start.z ; z <= end.z ; z++){
 						breakblock = block.getRelative(x, y, z);
-						if(x == 0 && y == 0 && z == 0)continue;
+						//if(x == 0 && y == 0 && z == 0)continue;
 
 						if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && playerdata.multipleidbreakflag) { //追加テスト(複数種類一括破壊スキル)
 							if(!breakblock.getType().equals(Material.AIR) && !breakblock.getType().equals(Material.BEDROCK)) {
@@ -338,8 +379,8 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breakblocknum==0){
-			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
-			SeichiAssist.allblocklist.remove(block);
+			//BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
+			//SeichiAssist.allblocklist.remove(block);
 			return;
 		}//スキルの処理
 		else{
@@ -402,7 +443,7 @@ public class PlayerBlockBreakListener implements Listener {
 			for(int x = start.x ; x <= end.x ; x++){
 				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
-					if(x == 0 && y == 0 && z == 0)continue;
+					//if(x == 0 && y == 0 && z == 0)continue;
 
 					if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && (Util.isSeichiWorld(player) || playerdata.multipleidbreakflag)) { //追加テスト(複数種類一括破壊スキル)
 						if(!breakblock.getType().equals(Material.AIR) && !breakblock.getType().equals(Material.BEDROCK)) {
@@ -512,7 +553,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breaklist.size()==0){
-			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
+			//BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
 			return;
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.activeskilldata.effectnum == 0){

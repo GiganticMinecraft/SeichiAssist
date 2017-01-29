@@ -99,7 +99,12 @@ public class BreakUtil {
 		if(itemstack != null){
 			//アイテムをドロップさせる
 			if(!addItemtoMineStack(player,itemstack)){
-				breakblock.getWorld().dropItemNaturally(centerofblock,itemstack);
+				HashMap<Integer,ItemStack> exceededItems = player.getInventory().addItem(itemstack);
+				for(Integer i:exceededItems.keySet()){
+					player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
+					breakblock.getWorld().dropItemNaturally(centerofblock,exceededItems.get(i));
+				}
+
 			}
 		}
 
