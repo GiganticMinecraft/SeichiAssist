@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.commands;
 
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -32,6 +33,10 @@ public class mebiusCommand implements TabExecutor {
 			if (!MebiusListener.setName((Player) sender, args[1])) {
 				sender.sendMessage("命名はMEBIUSを装備して行ってください。");
 			}
+		} else {
+			sender.sendMessage(ChatColor.RED + "[Usage]");
+			sender.sendMessage(ChatColor.RED + "/mebius naming <name>");
+			sender.sendMessage(ChatColor.RED + "  現在頭に装着中のMEBIUSに<name>を命名します。");
 		}
 		return true;
 	}
