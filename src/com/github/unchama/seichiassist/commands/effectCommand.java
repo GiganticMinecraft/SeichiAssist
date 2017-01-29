@@ -43,15 +43,16 @@ public class effectCommand implements TabExecutor {
 			sender.sendMessage(ChatColor.GREEN + "このコマンドはゲーム内から実行してください。");
 			return true;
 		}else if(args.length == 0){
-			//コマンド長が０の時の処理
-
 			//エフェクトフラグを反転
-			boolean effectflag = !playerdata.effectflag;
-			if (effectflag){
-				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
+			int effectflag = (playerdata.effectflag + 1) % 3;
+			if (effectflag == 0){
+				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(無制限)");
+			}else if(effectflag == 1){
+				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(100制限)");
 			}else{
-				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:OFF(ONに戻したい時は再度コマンドを実行します。)");
+				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:OFF");
 			}
+			sender.sendMessage(ChatColor.GREEN + "再度コマンドを実行することでトグルします。");
 			//反転したフラグで更新
 			playerdata.effectflag = effectflag;
 			return true;

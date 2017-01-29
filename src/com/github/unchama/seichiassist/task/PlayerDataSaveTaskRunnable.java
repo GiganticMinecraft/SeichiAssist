@@ -71,7 +71,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ " name = '" + playerdata.name + "'"
 
 				//各種数値更新処理
-				+ ",effectflag = " + Boolean.toString(playerdata.effectflag)
+				+ ",effectflag = " + Integer.toString(playerdata.effectflag)
 				+ ",minestackflag = " + Boolean.toString(playerdata.minestackflag)
 				+ ",messageflag = " + Boolean.toString(playerdata.messageflag)
 				+ ",activemineflagnum = " + Integer.toString(playerdata.activeskilldata.mineflagnum)
