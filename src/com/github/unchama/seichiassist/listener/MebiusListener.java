@@ -20,14 +20,12 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.AnvilInventory;
@@ -99,8 +97,8 @@ public class MebiusListener implements Listener {
 	}
 
 	// 経験値瓶を投げた時
-	@EventHandler(priority = EventPriority.LOW)	// onPlayerRightClickExpBottleEventより先に呼び出す
-	public void onExpBottle(PlayerInteractEvent event) {
+//	@EventHandler(priority = EventPriority.LOW)	// onPlayerRightClickExpBottleEventより先に呼び出す
+//	public void onExpBottle(PlayerInteractEvent event) {
 //		// PlayerのLvがEXPBONUS以上なら抜ける
 //		if (getPlayerData(event.getPlayer()).level >= EXPBONUS) {
 //			return;
@@ -130,7 +128,7 @@ public class MebiusListener implements Listener {
 //		} catch (NullPointerException e) {
 //			// 万が一NullPointerExceptionが発生した場合、処理無しでOK
 //		}
-	}
+//	}
 
 	// Tipsを呼び出されたとき
 	public static void callTips(Player player) {
