@@ -19,11 +19,9 @@ import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.ThrownExpBottle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -103,35 +101,35 @@ public class MebiusListener implements Listener {
 	// 経験値瓶を投げた時
 	@EventHandler(priority = EventPriority.LOW)	// onPlayerRightClickExpBottleEventより先に呼び出す
 	public void onExpBottle(PlayerInteractEvent event) {
-		// PlayerのLvがEXPBONUS以上なら抜ける
-		if (getPlayerData(event.getPlayer()).level >= EXPBONUS) {
-			return;
-		}
-		// PlayerがMebiusを装備してなければ抜ける
-		if (!isEquip(event.getPlayer())) {
-			return;
-		}
-		// メインハンドにアイテムを持っていなければ抜ける
-		if (event.getPlayer().getInventory() == null || event.getPlayer().getInventory().getItemInMainHand() == null) {
-			return;
-		}
-		try {
-			// 経験値瓶を投げる時
-			if (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
-					&& (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
-				int amount = 1;
-				// スニーク状態
-				if (event.getPlayer().isSneaking()) {
-					amount = event.getItem().getAmount();
-				}
-				// 投げる個数分追加で投げる
-				for (int cnt = 0; cnt < amount; cnt++) {
-					event.getPlayer().launchProjectile(ThrownExpBottle.class);
-				}
-			}
-		} catch (NullPointerException e) {
-			// 万が一NullPointerExceptionが発生した場合、処理無しでOK
-		}
+//		// PlayerのLvがEXPBONUS以上なら抜ける
+//		if (getPlayerData(event.getPlayer()).level >= EXPBONUS) {
+//			return;
+//		}
+//		// PlayerがMebiusを装備してなければ抜ける
+//		if (!isEquip(event.getPlayer())) {
+//			return;
+//		}
+//		// メインハンドにアイテムを持っていなければ抜ける
+//		if (event.getPlayer().getInventory() == null || event.getPlayer().getInventory().getItemInMainHand() == null) {
+//			return;
+//		}
+//		try {
+//			// 経験値瓶を投げる時
+//			if (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
+//					&& (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
+//				int amount = 1;
+//				// スニーク状態
+//				if (event.getPlayer().isSneaking()) {
+//					amount = event.getItem().getAmount();
+//				}
+//				// 投げる個数分追加で投げる
+//				for (int cnt = 0; cnt < amount; cnt++) {
+//					event.getPlayer().launchProjectile(ThrownExpBottle.class);
+//				}
+//			}
+//		} catch (NullPointerException e) {
+//			// 万が一NullPointerExceptionが発生した場合、処理無しでOK
+//		}
 	}
 
 	// Tipsを呼び出されたとき
@@ -352,6 +350,8 @@ public class MebiusListener implements Listener {
 	private static final List<String> LOREFIRST = Arrays.asList(
 			ChatColor.RESET + "" + ChatColor.GRAY + "経験値瓶 効果2倍" + ChatColor.RED + "(整地レベル" + Integer.toString(EXPBONUS) + "未満限定)", "",
 			ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", "");
+	private static final List<String> LOREFIRST2 = Arrays.asList(
+			ChatColor.RESET + "", ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", "");
 	private static final int LV = 4, TALK = 5, DEST = 6, OWNER = 8;
 	private static final String NAMEHEAD = ChatColor.RESET + "" + ChatColor.GOLD + "" + ChatColor.BOLD + "";
 	private static final String ILHEAD = ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "アイテムLv. ";
@@ -368,7 +368,7 @@ public class MebiusListener implements Listener {
 	private static boolean isMebius(ItemStack item) {
 		try {
 			List<String> lore = item.getItemMeta().getLore();
-			if (lore.containsAll(LOREFIRST)) {
+			if (lore.containsAll(LOREFIRST2) || lore.containsAll(LOREFIRST)) {
 				return true;
 			}
 		} catch (NullPointerException e) {
@@ -518,7 +518,7 @@ public class MebiusListener implements Listener {
 		ItemMeta meta = Bukkit.getItemFactory().getItemMeta(APPEARANCE.get(level));
 		meta.setDisplayName(name);
 		// Lore生成
-		List<String> lore = new ArrayList<String>(LOREFIRST);
+		List<String> lore = new ArrayList<String>(LOREFIRST2);
 		lore.addAll(Arrays.asList(ILHEAD + Integer.toString(level), "", "", "", OWNERHEAD + player.getName().toLowerCase()));
 		updateTalkDest(lore, level);
 		meta.setLore(lore);
