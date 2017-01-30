@@ -830,14 +830,26 @@ public class MenuInventoryData {
 	// 採掘速度トグルボタン
 	public static ItemMeta EFButtonMeta(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<String>();
-		if(playerdata.effectflag){
+		if(playerdata.effectflag == 0){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在ONです");
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在有効です(無制限)");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで200制限");
+		}else if(playerdata.effectflag == 1){
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在有効です" + ChatColor.YELLOW + "(200制限)");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで400制限");
+		}else if(playerdata.effectflag == 2){
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在有効です" + ChatColor.YELLOW + "(400制限)");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで600制限");
+		}else if(playerdata.effectflag == 3){
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在有効です" + ChatColor.YELLOW + "(600制限)");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
 		}else{
 			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
 			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "現在OFFです");
-			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで無制限");
 		}
 		lore.addAll(
 				Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"

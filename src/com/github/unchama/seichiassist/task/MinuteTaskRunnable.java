@@ -117,8 +117,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//実際に適用されるeffect量
 			int minespeedlv = 0;
 
-			//effectflag=trueの時のみ実行
-			if(playerdata.effectflag){
+			//effectflag ONの時のみ実行
+			if(playerdata.effectflag != 4){
 				//合計effect量
 				double sum = 0;
 				//最大持続時間
@@ -135,12 +135,30 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				//実際のeffect値をsum-1の切り捨て整数値に設定
 				minespeedlv = (int)(sum - 1);
 
+				//effect上限値を判定
+				int maxSpeed = 0;
+				if(playerdata.effectflag == 0){
+					maxSpeed = 25565;
+				}else if(playerdata.effectflag == 1){
+					maxSpeed = 200;
+				}else if(playerdata.effectflag == 2){
+					maxSpeed = 400;
+				}else if(playerdata.effectflag == 3){
+					maxSpeed = 600;
+				}
+
+				//effect追加の処理
 				//実際のeffect値が0より小さいときはeffectを適用しない
-				if(minespeedlv < 0){
+				if(minespeedlv < 0 || maxSpeed == 0){
 					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
 				}else{
-					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, minespeedlv, false, false), true);
+					if(minespeedlv > maxSpeed) {
+						player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, maxSpeed, false, false), true);
+					}else{
+						player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, minespeedlv, false, false), true);
+					}
 				}
+
 				//プレイヤーデータを更新
 				playerdata.minespeedlv = minespeedlv;
 			}

@@ -252,7 +252,7 @@ public class Sql{
 		//必要なcolumnを随時追加
 		command =
 				"alter table " + db + "." + table +
-				" add column if not exists effectflag boolean default true" +
+				" add column if not exists effectflag tinyint default 0" +
 				",add column if not exists minestackflag boolean default true" +
 				",add column if not exists messageflag boolean default false" +
 				",add column if not exists activemineflagnum int default 0" +

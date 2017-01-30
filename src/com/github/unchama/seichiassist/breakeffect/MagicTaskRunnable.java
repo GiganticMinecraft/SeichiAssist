@@ -81,12 +81,14 @@ public class MagicTaskRunnable extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		Chicken e = (Chicken) player.getWorld().spawnEntity(centerbreakloc, EntityType.CHICKEN);
-		SeichiAssist.entitylist.add((Entity) e);
-		e.playEffect(EntityEffect.WITCH_MAGIC);
-		e.setInvulnerable(true);
-		new EntityRemoveTaskRunnable((Entity) e).runTaskLater(plugin, 100);
-		player.getWorld().playSound(effectloc, Sound.ENTITY_WITCH_AMBIENT, 1, 1.5F);
+		if (SeichiAssist.entitylist.isEmpty()) {
+			Chicken e = (Chicken) player.getWorld().spawnEntity(centerbreakloc, EntityType.CHICKEN);
+			SeichiAssist.entitylist.add((Entity) e);
+			e.playEffect(EntityEffect.WITCH_MAGIC);
+			e.setInvulnerable(true);
+			new EntityRemoveTaskRunnable((Entity) e).runTaskLater(plugin, 100);
+			player.getWorld().playSound(effectloc, Sound.ENTITY_WITCH_AMBIENT, 1, 1.5F);
+		}
 
 		for (Block b : breaklist) {
 			b.setType(Material.AIR);

@@ -19,17 +19,17 @@ import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.ThrownExpBottle;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -37,8 +37,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
-
-import de.tr7zw.itemnbtapi.NBTItem;
 
 public class MebiusListener implements Listener {
 	// Instanceアクセス用
@@ -99,30 +97,38 @@ public class MebiusListener implements Listener {
 	}
 
 	// 経験値瓶を投げた時
-	@EventHandler(priority = EventPriority.LOW)	// onPlayerRightClickExpBottleEventより先に呼び出す
-	public void onExpBottle(PlayerInteractEvent event) {
-		// PlayerのLvがEXPBONUS以上なら抜ける
-		if (getPlayerData(event.getPlayer()).level >= EXPBONUS) {
-			return;
-		}
-		// PlayerがMebiusを装備してなければ抜ける
-		if (!isEquip(event.getPlayer())) {
-			return;
-		}
-		// 経験値瓶を投げる時
-		if (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
-				&& (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
-			int amount = 1;
-			// スニーク状態
-			if (event.getPlayer().isSneaking()) {
-				amount = event.getItem().getAmount();
-			}
-			// 投げる個数分追加で投げる
-			for (int cnt = 0; cnt < amount; cnt++) {
-				event.getPlayer().launchProjectile(ThrownExpBottle.class);
-			}
-		}
-	}
+//	@EventHandler(priority = EventPriority.LOW)	// onPlayerRightClickExpBottleEventより先に呼び出す
+//	public void onExpBottle(PlayerInteractEvent event) {
+//		// PlayerのLvがEXPBONUS以上なら抜ける
+//		if (getPlayerData(event.getPlayer()).level >= EXPBONUS) {
+//			return;
+//		}
+//		// PlayerがMebiusを装備してなければ抜ける
+//		if (!isEquip(event.getPlayer())) {
+//			return;
+//		}
+//		// メインハンドにアイテムを持っていなければ抜ける
+//		if (event.getPlayer().getInventory() == null || event.getPlayer().getInventory().getItemInMainHand() == null) {
+//			return;
+//		}
+//		try {
+//			// 経験値瓶を投げる時
+//			if (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
+//					&& (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
+//				int amount = 1;
+//				// スニーク状態
+//				if (event.getPlayer().isSneaking()) {
+//					amount = event.getItem().getAmount();
+//				}
+//				// 投げる個数分追加で投げる
+//				for (int cnt = 0; cnt < amount; cnt++) {
+//					event.getPlayer().launchProjectile(ThrownExpBottle.class);
+//				}
+//			}
+//		} catch (NullPointerException e) {
+//			// 万が一NullPointerExceptionが発生した場合、処理無しでOK
+//		}
+//	}
 
 	// Tipsを呼び出されたとき
 	public static void callTips(Player player) {
@@ -255,6 +261,49 @@ public class MebiusListener implements Listener {
 		}
 	}
 
+	// 金床配置時（クリック）
+	@EventHandler
+	public void onRename(InventoryClickEvent event) {
+		// 金床じゃなければreturn
+		Inventory inv = event.getClickedInventory();
+		if (!(inv instanceof AnvilInventory)) {
+			return;
+		}
+		// mebiusを選択中じゃなければreturn
+		ItemStack item = event.getCursor();
+		if (!isMebius(item)) {
+			return;
+		}
+		// mebiusを左枠に置いた場合はcancel
+		int rawSlot = event.getRawSlot();
+		if (rawSlot == event.getView().convertSlot(rawSlot) && rawSlot == 0) {
+			event.setCancelled(true);
+			event.getWhoClicked().sendMessage(ChatColor.RED + "MEBIUSへの命名は" + ChatColor.RESET + "/mebius naming <name>" + ChatColor.RED + "で行ってください。");
+		}
+	}
+
+	// 金床配置時（ドラッグ）
+	@EventHandler
+	public void onDrag(InventoryDragEvent event) {
+		// 金床じゃなければreturn
+		Inventory inv = event.getInventory();
+		if (!(inv instanceof AnvilInventory)) {
+			return;
+		}
+		// mebiusを選択中じゃなければreturn
+		ItemStack item = event.getOldCursor();
+		if (!isMebius(item)) {
+			return;
+		}
+		// mebiusを左枠に置いた場合はcancel
+		for (Integer rawSlot : event.getRawSlots()) {
+			if (rawSlot == event.getView().convertSlot(rawSlot) && rawSlot == 0) {
+				event.setCancelled(true);
+				event.getWhoClicked().sendMessage(ChatColor.RED + "MEBIUSへの命名は" + ChatColor.RESET + "/mebius naming <name>" + ChatColor.RED + "で行ってください。");
+			}
+		}
+	}
+
 	// Mebiusを装備しているか
 	public static boolean isEquip(Player player) {
 		try {
@@ -299,6 +348,8 @@ public class MebiusListener implements Listener {
 	private static final List<String> LOREFIRST = Arrays.asList(
 			ChatColor.RESET + "" + ChatColor.GRAY + "経験値瓶 効果2倍" + ChatColor.RED + "(整地レベル" + Integer.toString(EXPBONUS) + "未満限定)", "",
 			ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", "");
+	private static final List<String> LOREFIRST2 = Arrays.asList(
+			ChatColor.RESET + "", ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", "");
 	private static final int LV = 4, TALK = 5, DEST = 6, OWNER = 8;
 	private static final String NAMEHEAD = ChatColor.RESET + "" + ChatColor.GOLD + "" + ChatColor.BOLD + "";
 	private static final String ILHEAD = ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "アイテムLv. ";
@@ -315,7 +366,7 @@ public class MebiusListener implements Listener {
 	private static boolean isMebius(ItemStack item) {
 		try {
 			List<String> lore = item.getItemMeta().getLore();
-			if (lore.containsAll(LOREFIRST)) {
+			if (lore.containsAll(LOREFIRST2) || lore.containsAll(LOREFIRST)) {
 				return true;
 			}
 		} catch (NullPointerException e) {
@@ -465,7 +516,7 @@ public class MebiusListener implements Listener {
 		ItemMeta meta = Bukkit.getItemFactory().getItemMeta(APPEARANCE.get(level));
 		meta.setDisplayName(name);
 		// Lore生成
-		List<String> lore = new ArrayList<String>(LOREFIRST);
+		List<String> lore = new ArrayList<String>(LOREFIRST2);
 		lore.addAll(Arrays.asList(ILHEAD + Integer.toString(level), "", "", "", OWNERHEAD + player.getName().toLowerCase()));
 		updateTalkDest(lore, level);
 		meta.setLore(lore);
@@ -478,12 +529,6 @@ public class MebiusListener implements Listener {
 		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 		mebius.setItemMeta(meta);
-
-		//ちょちょっとな
-		NBTItem nbti = new NBTItem(mebius);
-		nbti.setInteger("RepairCost", 100);
-		mebius = nbti.getItem();
-
 
 		return mebius;
 	}
