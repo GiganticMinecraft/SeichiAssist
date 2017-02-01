@@ -21,7 +21,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Dye;
 
@@ -100,12 +99,7 @@ public class BreakUtil {
 		if(itemstack != null){
 			//アイテムをドロップさせる
 			if(!addItemtoMineStack(player,itemstack)){
-				HashMap<Integer,ItemStack> exceededItems = player.getInventory().addItem(itemstack);
-				for(Integer i:exceededItems.keySet()){
-					player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-					breakblock.getWorld().dropItemNaturally(centerofblock,exceededItems.get(i));
-				}
-
+				breakblock.getWorld().dropItemNaturally(centerofblock,itemstack);
 			}
 		}
 
@@ -1022,19 +1016,5 @@ public class BreakUtil {
 			return false;
 		}
 		return true;
-	}
-	public static void addItemToPlayerDirectry(Player player,Block block,ItemStack tool){
-		ItemStack dropItem = dropItemOnTool(block, tool);
-		PlayerInventory inventory = player.getInventory();
-		if(!addItemtoMineStack(player,dropItem)){
-			HashMap<Integer,ItemStack> exceededItems = inventory.addItem(dropItem);
-			for(Integer i:exceededItems.keySet()){
-				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-				block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5),exceededItems.get(i));
-			}
-
-		}
-		block.setType(Material.AIR);
-
 	}
 }

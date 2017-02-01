@@ -19,8 +19,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import zedly.zenchantments.Zenchantments;
-
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
@@ -33,6 +31,8 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.MultiBreakTaskRunnable;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
+
+import zedly.zenchantments.Zenchantments;
 
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -48,7 +48,6 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//壊されるブロックを取得
 		Block block = event.getBlock();
-
 
 		//他人の保護がかかっている場合は処理を終了
 		if(!Util.getWorldGuard().canBuild(player, block.getLocation()))return;
@@ -81,7 +80,10 @@ public class PlayerBlockBreakListener implements Listener {
 				return;
 			}
 		}
-
+		//スキル発動条件がそろってなければ終了
+		if(!Util.isSkillEnable(player)){
+			return;
+		}
 
 		//プレイヤーインベントリを取得
 		PlayerInventory inventory = player.getInventory();
@@ -94,15 +96,6 @@ public class PlayerBlockBreakListener implements Listener {
 		boolean mainhandtoolflag = SeichiAssist.breakmateriallist.contains(mainhanditem.getType());
 		//オフハンドにツールがあるか
 		boolean offhandtoolflag = SeichiAssist.breakmateriallist.contains(offhanditem.getType());
-
-
-
-		//スキル発動条件がそろってなければ終了
-		//スキルが発動しなくてもインベントリに直行させる
-		if(!Util.isSkillEnable(player)){
-			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
-			return;
-		}
 
 		//場合分け
 		if(mainhandtoolflag){
@@ -138,7 +131,6 @@ public class PlayerBlockBreakListener implements Listener {
 		//クールダウンタイム中は処理を終了
 		if(!playerdata.activeskilldata.skillcanbreakflag){
 			//SEを再生
-			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
 			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
@@ -167,20 +159,17 @@ public class PlayerBlockBreakListener implements Listener {
 		MebiusListener.onBreak(event);
 
 		//アクティブスキルフラグがオフの時処理を終了
-		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0 || playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-
-			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
+		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0){
 			return;
 		}
 
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, block, tool);
-			event.setCancelled(true);
 
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
 			runBreakSkill(player, block, tool);
-			event.setCancelled(true);
+
 		}
 	}
 	//複数範囲破壊
@@ -352,15 +341,14 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breakblocknum==0){
-			BreakUtil.addItemToPlayerDirectry(player, block, tool);
+			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
 			SeichiAssist.allblocklist.remove(block);
 			return;
 		}//スキルの処理
 		else{
-			multibreaklist.get(0).add(block);
-			SeichiAssist.allblocklist.add(block);
 			new MultiBreakTaskRunnable(player,block,tool,multibreaklist,multilavalist,startlist,endlist).runTaskTimer(plugin,0,4);
 		}
+
 
 		//経験値を減らす
 		mana.decreaseMana(useAllMana,player,playerdata.level);
@@ -527,12 +515,10 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breaklist.size()==0){
-			BreakUtil.addItemToPlayerDirectry(player, block, tool);
+			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
 			return;
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.activeskilldata.effectnum == 0){
-			breaklist.add(block);
-			SeichiAssist.allblocklist.add(block);
 			for(Block b:breaklist){
 				BreakUtil.BreakBlock(player, b, centerofblock, tool,true);
 				SeichiAssist.allblocklist.remove(b);
@@ -540,8 +526,6 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
 		else if(playerdata.activeskilldata.effectnum <= 100){
-			breaklist.add(block);
-			SeichiAssist.allblocklist.add(block);
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
 		}

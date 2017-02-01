@@ -1,0 +1,15 @@
+﻿Revert "Merge pull request #121 from Swordroot/Schwert_Wurzel"
+
+This reverts commit 08a771460d7559965c6b5e96adbd9ce9affccadb, reversing
+changes made to b41300002fcc6bcfaa063ef16c7602497b083648.
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# Changes to be committed:
+#	modified:   src/com/github/unchama/seichiassist/listener/PlayerBlockBreakListener.java
+#	modified:   src/com/github/unchama/seichiassist/util/BreakUtil.java
+#
+
