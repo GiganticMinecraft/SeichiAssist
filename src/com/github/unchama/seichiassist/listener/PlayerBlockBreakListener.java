@@ -122,11 +122,7 @@ public class PlayerBlockBreakListener implements Listener {
 		if(tool.getDurability() > tool.getType().getMaxDurability() && !tool.getItemMeta().spigot().isUnbreakable()){
 			return;
 		}
-		//もしサバイバルでなければ処理を終了
-		//もしフライ中なら終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
-			return;
-		}
+
 
 		//スキルで破壊されるブロックの時処理を終了
 		if(SeichiAssist.allblocklist.contains(block)){
@@ -140,6 +136,14 @@ public class PlayerBlockBreakListener implements Listener {
 		//ブロックタイプがmateriallistに登録されていなければ処理終了
 		if(!SeichiAssist.materiallist.contains(material)){
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "破壊対象でない");
+			return;
+		}
+
+		//もしサバイバルでなければ処理を終了
+		//もしフライ中なら終了
+		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
+			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "fly中の破壊");
+			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
 			return;
 		}
 
@@ -183,10 +187,10 @@ public class PlayerBlockBreakListener implements Listener {
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, block, tool);
-
+			event.setCancelled(true);
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
 			runBreakSkill(player, block, tool);
-
+			event.setCancelled(true);
 		}
 	}
 	//複数範囲破壊
@@ -359,10 +363,11 @@ public class PlayerBlockBreakListener implements Listener {
 		//自身のみしか壊さない時自然に処理する
 		if(breakblocknum==0){
 			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
-			SeichiAssist.allblocklist.remove(block);
 			return;
 		}//スキルの処理
 		else{
+			multibreaklist.get(0).add(block);
+			SeichiAssist.allblocklist.add(block);
 			new MultiBreakTaskRunnable(player,block,tool,multibreaklist,multilavalist,startlist,endlist).runTaskTimer(plugin,0,4);
 		}
 
@@ -536,6 +541,8 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.activeskilldata.effectnum == 0){
+			breaklist.add(block);
+			SeichiAssist.allblocklist.add(block);
 			for(Block b:breaklist){
 				BreakUtil.BreakBlock(player, b, centerofblock, tool,true);
 				SeichiAssist.allblocklist.remove(b);
@@ -543,6 +550,8 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
 		else if(playerdata.activeskilldata.effectnum <= 100){
+			breaklist.add(block);
+			SeichiAssist.allblocklist.add(block);
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
 		}
