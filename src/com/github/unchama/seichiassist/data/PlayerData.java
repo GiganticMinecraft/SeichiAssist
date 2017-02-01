@@ -408,12 +408,12 @@ public class PlayerData {
 
 		case NETHERRACK:
 			//ネザーラックの重み分け
-			result *= 0.2;
+			result *= 1.0;
 			break;
 
 		case ENDER_STONE:
 			//エンドストーンの重み分け
-			result *= 0.2;
+			result *= 1.0;
 			break;
 
 
