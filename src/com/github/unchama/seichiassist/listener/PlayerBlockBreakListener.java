@@ -19,6 +19,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import zedly.zenchantments.Zenchantments;
+
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
@@ -31,8 +33,6 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.MultiBreakTaskRunnable;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
-
-import zedly.zenchantments.Zenchantments;
 
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -97,6 +97,15 @@ public class PlayerBlockBreakListener implements Listener {
 		//オフハンドにツールがあるか
 		boolean offhandtoolflag = SeichiAssist.breakmateriallist.contains(offhanditem.getType());
 
+
+		//スキル発動条件がそろってなければ終了
+		//スキルが発動しなくてもインベントリに直行させる
+		if(!Util.isSkillEnable(player)){
+
+			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
+			return;
+		}
+
 		//場合分け
 		if(mainhandtoolflag){
 			//メインハンドの時
@@ -128,17 +137,22 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
+		//ブロックタイプがmateriallistに登録されていなければ処理終了
+		if(!SeichiAssist.materiallist.contains(material)){
+			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "破壊対象でない");
+			return;
+		}
+
 		//クールダウンタイム中は処理を終了
 		if(!playerdata.activeskilldata.skillcanbreakflag){
 			//SEを再生
+			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "クールタイムの破壊");
+			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
 			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
 
-		//ブロックタイプがmateriallistに登録されていなければ処理終了
-		if(!SeichiAssist.materiallist.contains(material)){
-			return;
-		}
+
 
 		//Lumberをエンチャントしていたら終了
 		Zenchantments Ze = Util.getZenchantments();
@@ -155,11 +169,14 @@ public class PlayerBlockBreakListener implements Listener {
 		playerdata.activeskilldata.mana.increaseMana(BreakUtil.calcManaDrop(playerdata),player,playerdata.level);
 		//これ以降の終了処理はマナが回復します
 
+
 		// 有効ブロック破壊時のみMebiusListenerを呼び出す
 		MebiusListener.onBreak(event);
 
 		//アクティブスキルフラグがオフの時処理を終了
-		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0){
+		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0 || playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
+			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "スキルオフ時の破壊");
+			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
 			return;
 		}
 
@@ -532,6 +549,8 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
 		else if(playerdata.activeskilldata.effectnum > 100){
+			breaklist.add(block);
+			SeichiAssist.allblocklist.add(block);
 			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
 			premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
 		}
