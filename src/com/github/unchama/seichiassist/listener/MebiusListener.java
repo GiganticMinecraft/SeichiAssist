@@ -97,38 +97,42 @@ public class MebiusListener implements Listener {
 	}
 
 	// 経験値瓶を投げた時
-//	@EventHandler(priority = EventPriority.LOW)	// onPlayerRightClickExpBottleEventより先に呼び出す
-//	public void onExpBottle(PlayerInteractEvent event) {
-//		// PlayerのLvがEXPBONUS以上なら抜ける
-//		if (getPlayerData(event.getPlayer()).level >= EXPBONUS) {
-//			return;
-//		}
-//		// PlayerがMebiusを装備してなければ抜ける
-//		if (!isEquip(event.getPlayer())) {
-//			return;
-//		}
-//		// メインハンドにアイテムを持っていなければ抜ける
-//		if (event.getPlayer().getInventory() == null || event.getPlayer().getInventory().getItemInMainHand() == null) {
-//			return;
-//		}
-//		try {
-//			// 経験値瓶を投げる時
-//			if (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
-//					&& (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
-//				int amount = 1;
-//				// スニーク状態
-//				if (event.getPlayer().isSneaking()) {
-//					amount = event.getItem().getAmount();
-//				}
-//				// 投げる個数分追加で投げる
-//				for (int cnt = 0; cnt < amount; cnt++) {
-//					event.getPlayer().launchProjectile(ThrownExpBottle.class);
-//				}
-//			}
-//		} catch (NullPointerException e) {
-//			// 万が一NullPointerExceptionが発生した場合、処理無しでOK
-//		}
-//	}
+	// @EventHandler(priority = EventPriority.LOW) //
+	// onPlayerRightClickExpBottleEventより先に呼び出す
+	// public void onExpBottle(PlayerInteractEvent event) {
+	// // PlayerのLvがEXPBONUS以上なら抜ける
+	// if (getPlayerData(event.getPlayer()).level >= EXPBONUS) {
+	// return;
+	// }
+	// // PlayerがMebiusを装備してなければ抜ける
+	// if (!isEquip(event.getPlayer())) {
+	// return;
+	// }
+	// // メインハンドにアイテムを持っていなければ抜ける
+	// if (event.getPlayer().getInventory() == null ||
+	// event.getPlayer().getInventory().getItemInMainHand() == null) {
+	// return;
+	// }
+	// try {
+	// // 経験値瓶を投げる時
+	// if
+	// (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
+	// && (event.getAction().equals(Action.RIGHT_CLICK_AIR) ||
+	// event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
+	// int amount = 1;
+	// // スニーク状態
+	// if (event.getPlayer().isSneaking()) {
+	// amount = event.getItem().getAmount();
+	// }
+	// // 投げる個数分追加で投げる
+	// for (int cnt = 0; cnt < amount; cnt++) {
+	// event.getPlayer().launchProjectile(ThrownExpBottle.class);
+	// }
+	// }
+	// } catch (NullPointerException e) {
+	// // 万が一NullPointerExceptionが発生した場合、処理無しでOK
+	// }
+	// }
 
 	// Tipsを呼び出されたとき
 	public static void callTips(Player player) {
@@ -238,8 +242,7 @@ public class MebiusListener implements Listener {
 	}
 
 	// ブロックを破壊した時
-	@EventHandler
-	public void onBreak(BlockBreakEvent event) {
+	public static void onBreak(BlockBreakEvent event) {
 		final List<String> msgs = Arrays.asList(
 				"ポコポコポコポコ…整地の音って、落ち着くねえ。",
 				"頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
@@ -349,7 +352,7 @@ public class MebiusListener implements Listener {
 			ChatColor.RESET + "" + ChatColor.GRAY + "経験値瓶 効果2倍" + ChatColor.RED + "(整地レベル" + Integer.toString(EXPBONUS) + "未満限定)", "",
 			ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", "");
 	private static final List<String> LOREFIRST2 = Arrays.asList(
-			ChatColor.RESET + "", ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", "");
+			ChatColor.RESET + "", ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", ChatColor.RESET + "" + ChatColor.AQUA + "整地により成長する。", "");
 	private static final int LV = 4, TALK = 5, DEST = 6, OWNER = 8;
 	private static final String NAMEHEAD = ChatColor.RESET + "" + ChatColor.GOLD + "" + ChatColor.BOLD + "";
 	private static final String ILHEAD = ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "アイテムLv. ";
@@ -548,6 +551,9 @@ public class MebiusListener implements Listener {
 
 	// Talk更新
 	private static void updateTalkDest(List<String> lore, int level) {
+		for (int cnt = 0; cnt < LOREFIRST2.size(); cnt++) {
+			lore.set(cnt, LOREFIRST2.get(cnt));
+		}
 		lore.set(LV, ILHEAD + Integer.toString(level));
 		lore.set(TALK, TALKHEAD + "「" + TALKDEST.get(level - 1).get(TALK - TALK) + "」");
 		lore.set(DEST, DESTHEAD + TALKDEST.get(level - 1).get(DEST - TALK));
@@ -640,7 +646,6 @@ public class MebiusListener implements Listener {
 			"僕の名前は、/mebius naming <名前> コマンドで変更できるよ！<名前>の代わりに新しい名前を入れてね！",
 			"僕は整地によって成長するんだー。アイテムレベル30まであるんだよ！",
 			"僕たち兄弟のステータスはみんなバラバラなんだよー！",
-			"整地レベル50までは、経験値瓶を投げるときは僕を装備してね！瓶の数を2倍にしてみせるよ！",
 			"僕たちはこの世界のどこかに埋まってるんだー。整地して僕の兄弟も見つけて欲しいな！");
 
 	// webからTipsリスト読み込み

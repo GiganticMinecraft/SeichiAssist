@@ -163,6 +163,9 @@ public class PlayerBlockBreakListener implements Listener {
 		playerdata.activeskilldata.mana.increaseMana(BreakUtil.calcManaDrop(playerdata),player,playerdata.level);
 		//これ以降の終了処理はマナが回復します
 
+		// 有効ブロック破壊時のみMebiusListenerを呼び出す
+		MebiusListener.onBreak(event);
+
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0 || playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
 
