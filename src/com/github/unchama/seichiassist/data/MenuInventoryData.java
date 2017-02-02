@@ -687,14 +687,16 @@ public class MenuInventoryData {
 		// ver0.3.2 掲示板を表示
 		itemstack = new ItemStack(Material.SIGN,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SIGN);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "掲示板を見る");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "管理人へのお問い合わせは"
-				, ChatColor.RESET + "" +  ChatColor.GREEN + "掲示板に書き込みをｵﾈｶﾞｲｼﾅｽ"
-				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄に"
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "JapanMinecraftServerリンク");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄に"
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "URLが表示されますので"
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してから"
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
 				);
+		//現在掲示板は存在しないので、名前を変更して「JapanMinecraftServerリンク」とする
+		//消去部分
+		//Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "管理人へのお問い合わせは"
+		//, ChatColor.RESET + "" +  ChatColor.GREEN + "掲示板に書き込みをｵﾈｶﾞｲｼﾅｽ"
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(3,itemstack);
@@ -1292,6 +1294,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "複数種類ブロック同時破壊");
 			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
 			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "破壊可能な全種類のブロックを同時に破壊します");
+			lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "整地ワールドではON/OFFに関わらず同時破壊されます");
 			//ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
 			if(playerdata.level>=SeichiAssist.config.getMultipleIDBlockBreaklevel()){
 				lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.config.getMultipleIDBlockBreaklevel());
