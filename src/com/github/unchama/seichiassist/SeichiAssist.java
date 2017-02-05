@@ -229,7 +229,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackObj("stained_clay8","薄灰色の堅焼き粘土",22,Material.STAINED_CLAY,8,false,-1,0)
 			,new MineStackObj("stained_clay12","茶色の堅焼き粘土",22,Material.STAINED_CLAY,12,false,-1,0)
 			,new MineStackObj("stained_clay14","赤色の堅焼き粘土",22,Material.STAINED_CLAY,14,false,-1,0)
-			,new MineStackObj("clay","粘土",23,Material.CLAY,0,false,-1,0)
+			,new MineStackObj("clay","粘土(ブロック)",23,Material.CLAY,0,false,-1,0)
 			,new MineStackObj("mossy_cobblestone","苔石",24,Material.MOSSY_COBBLESTONE,0,false,-1,0)
 			,new MineStackObj("ice","氷",25,Material.ICE,0,false,-1,0)
 			,new MineStackObj("dirt1","粗い土",26,Material.DIRT,1,false,-1,0)
@@ -365,7 +365,7 @@ public class SeichiAssist extends JavaPlugin{
 
 			,new MineStackObj("iron_ingot","鉄インゴット",9,Material.IRON_INGOT,0,false,-1,3)
 
-			,new MineStackObj("nether_brick","ネザーレンガ",10,Material.NETHER_BRICK,0,false,-1,3)
+			,new MineStackObj("nether_brick","ネザーレンガ(ブロック)",10,Material.NETHER_BRICK,0,false,-1,3)
 			,new MineStackObj("nether_brick_fence","ネザーレンガのフェンス",10,Material.NETHER_FENCE,0,false,-1,3)
 			,new MineStackObj("nether_brick_stairs","ネザーレンガの階段",10,Material.NETHER_BRICK_STAIRS,0,false,-1,3)
 
@@ -418,6 +418,18 @@ public class SeichiAssist extends JavaPlugin{
 
 			,new MineStackObj("step5","石レンガハーフブロック",32,Material.STEP,5,false,-1,3)
 
+			,new MineStackObj("clay_ball"			,"粘土"			,23,Material.CLAY_BALL,0,false,-1,3)
+			,new MineStackObj("brick"				,"レンガ(ブロック)"	,23,Material.BRICK,0,false,-1,3)
+			,new MineStackObj("brick_item"			,"レンガ"			,23,Material.CLAY_BRICK,0,false,-1,3)
+			,new MineStackObj("nether_brick_item"	,"ネザーレンガ"		,10,Material.NETHER_BRICK_ITEM,0,false,-1,3)
+			,new MineStackObj("glass"				,"ガラス"			,5,Material.GLASS,0,false,-1,3)
+			,new MineStackObj("polished_granite"	,"磨かれた花崗岩"	,3,Material.STONE,2,false,-1,3)
+			,new MineStackObj("polished_diorite"	,"磨かれた閃緑岩"	,3,Material.STONE,4,false,-1,3)
+			,new MineStackObj("polished_andesite"	,"磨かれた安山岩"	,3,Material.STONE,6,false,-1,3)
+			,new MineStackObj("quartz_block"		,"ネザー水晶ブロック"	,11,Material.QUARTZ_BLOCK,0,false,-1,3)
+			,new MineStackObj("red_nether_brick"	,"赤いネザーレンガ"	,36,Material.RED_NETHER_BRICK,0,false,-1,3)
+			
+			
 			));
 
 	public static final List<MineStackObj> minestacklistrs = new ArrayList<MineStackObj>(Arrays.asList(
