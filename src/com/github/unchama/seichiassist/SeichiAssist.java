@@ -229,7 +229,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackObj("stained_clay8","薄灰色の堅焼き粘土",22,Material.STAINED_CLAY,8,false,-1,0)
 			,new MineStackObj("stained_clay12","茶色の堅焼き粘土",22,Material.STAINED_CLAY,12,false,-1,0)
 			,new MineStackObj("stained_clay14","赤色の堅焼き粘土",22,Material.STAINED_CLAY,14,false,-1,0)
-			,new MineStackObj("clay","粘土",23,Material.CLAY,0,false,-1,0)
+			,new MineStackObj("clay","粘土(ブロック)",23,Material.CLAY,0,false,-1,0)
 			,new MineStackObj("mossy_cobblestone","苔石",24,Material.MOSSY_COBBLESTONE,0,false,-1,0)
 			,new MineStackObj("ice","氷",25,Material.ICE,0,false,-1,0)
 			,new MineStackObj("dirt1","粗い土",26,Material.DIRT,1,false,-1,0)
@@ -353,6 +353,10 @@ public class SeichiAssist extends JavaPlugin{
 			new MineStackObj("step0","石ハーフブロック",2,Material.STEP,0,false,-1,3)
 			,new MineStackObj("step3","丸石ハーフブロック",2,Material.STEP,3,false,-1,3)
 
+			,new MineStackObj("polished_granite"	,"磨かれた花崗岩"	,3,Material.STONE,2,false,-1,3)
+			,new MineStackObj("polished_diorite"	,"磨かれた閃緑岩"	,3,Material.STONE,4,false,-1,3)
+			,new MineStackObj("polished_andesite"	,"磨かれた安山岩"	,3,Material.STONE,6,false,-1,3)
+
 			,new MineStackObj("wood_step0","オークの木材ハーフブロック",4,Material.WOOD_STEP,0,false,-1,3)
 			,new MineStackObj("wood_step1","マツの木材ハーフブロック",4,Material.WOOD_STEP,1,false,-1,3)
 			,new MineStackObj("wood_step2","シラカバの木材ハーフブロック",4,Material.WOOD_STEP,2,false,-1,3)
@@ -362,10 +366,11 @@ public class SeichiAssist extends JavaPlugin{
 
 			,new MineStackObj("flint","火打石",5,Material.FLINT,0,false,-1,3)
 			,new MineStackObj("step1","砂岩ハーフブロック",5,Material.STEP,1,false,-1,3)
+			,new MineStackObj("glass"				,"ガラス"			,5,Material.GLASS,0,false,-1,3)
 
 			,new MineStackObj("iron_ingot","鉄インゴット",9,Material.IRON_INGOT,0,false,-1,3)
 
-			,new MineStackObj("nether_brick","ネザーレンガ",10,Material.NETHER_BRICK,0,false,-1,3)
+			,new MineStackObj("nether_brick","ネザーレンガ(ブロック)",10,Material.NETHER_BRICK,0,false,-1,3)
 			,new MineStackObj("nether_brick_fence","ネザーレンガのフェンス",10,Material.NETHER_FENCE,0,false,-1,3)
 			,new MineStackObj("nether_brick_stairs","ネザーレンガの階段",10,Material.NETHER_BRICK_STAIRS,0,false,-1,3)
 
@@ -373,8 +378,10 @@ public class SeichiAssist extends JavaPlugin{
 
 			,new MineStackObj("torch","松明",10,Material.TORCH,0,false,-1,3)
 			,new MineStackObj("jack_o_lantern","ジャック・オ・ランタン",10,Material.JACK_O_LANTERN,0,false,-1,3)
+			,new MineStackObj("nether_brick_item"	,"ネザーレンガ"		,10,Material.NETHER_BRICK_ITEM,0,false,-1,3)
 
 			,new MineStackObj("step7","ネザー水晶ハーフブロック",11,Material.STEP,7,false,-1,3)
+			,new MineStackObj("quartz_block"		,"ネザー水晶ブロック"	,11,Material.QUARTZ_BLOCK,0,false,-1,3)
 
 			,new MineStackObj("end_bricks","エンドストーンレンガ",12,Material.END_BRICKS,0,false,-1,3)
 
@@ -404,6 +411,9 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackObj("sea_lantern","シーランタン",21,Material.SEA_LANTERN,0,false,-1,3)
 
 			,new MineStackObj("step4","レンガハーフブロック",23,Material.STEP,4,false,-1,3)
+			,new MineStackObj("clay_ball"			,"粘土"			,23,Material.CLAY_BALL,0,false,-1,3)
+			,new MineStackObj("brick"				,"レンガ(ブロック)"	,23,Material.BRICK,0,false,-1,3)
+			,new MineStackObj("brick_item"			,"レンガ"			,23,Material.CLAY_BRICK,0,false,-1,3)
 
 			,new MineStackObj("wood5","ダークオークの木材",27,Material.WOOD,5,false,-1,3)
 			,new MineStackObj("dark_oak_fence","ダークオークのフェンス",27,Material.DARK_OAK_FENCE,0,false,-1,3)
@@ -418,6 +428,9 @@ public class SeichiAssist extends JavaPlugin{
 
 			,new MineStackObj("step5","石レンガハーフブロック",32,Material.STEP,5,false,-1,3)
 
+			,new MineStackObj("red_nether_brick"	,"赤いネザーレンガ"	,36,Material.RED_NETHER_BRICK,0,false,-1,3)
+			
+			
 			));
 
 	public static final List<MineStackObj> minestacklistrs = new ArrayList<MineStackObj>(Arrays.asList(
