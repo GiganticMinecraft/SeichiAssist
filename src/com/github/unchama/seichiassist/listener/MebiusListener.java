@@ -242,7 +242,7 @@ public class MebiusListener implements Listener {
 	}
 
 	// ブロックを破壊した時
-	public static void onBreak(BlockBreakEvent event) {
+	public static void onBlockBreak(BlockBreakEvent event) {
 		final List<String> msgs = Arrays.asList(
 				"ポコポコポコポコ…整地の音って、落ち着くねえ。",
 				"頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
@@ -267,21 +267,31 @@ public class MebiusListener implements Listener {
 	// 金床配置時（クリック）
 	@EventHandler
 	public void onRename(InventoryClickEvent event) {
-		// 金床じゃなければreturn
+		// 金床を開いていない場合return
+		if (!(event.getView().getTopInventory() instanceof AnvilInventory)) {
+			return;
+		}
 		Inventory inv = event.getClickedInventory();
-		if (!(inv instanceof AnvilInventory)) {
-			return;
-		}
-		// mebiusを選択中じゃなければreturn
-		ItemStack item = event.getCursor();
-		if (!isMebius(item)) {
-			return;
-		}
-		// mebiusを左枠に置いた場合はcancel
-		int rawSlot = event.getRawSlot();
-		if (rawSlot == event.getView().convertSlot(rawSlot) && rawSlot == 0) {
-			event.setCancelled(true);
-			event.getWhoClicked().sendMessage(ChatColor.RED + "MEBIUSへの命名は" + ChatColor.RESET + "/mebius naming <name>" + ChatColor.RED + "で行ってください。");
+		if (inv instanceof AnvilInventory) {
+			// mebiusを選択中
+			ItemStack item = event.getCursor();
+			if (isMebius(item)) {
+				// mebiusを左枠に置いた場合はcancel
+				int rawSlot = event.getRawSlot();
+				if (rawSlot == event.getView().convertSlot(rawSlot) && rawSlot == 0) {
+					event.setCancelled(true);
+					event.getWhoClicked().sendMessage(ChatColor.RED + "MEBIUSへの命名は" + ChatColor.RESET + "/mebius naming <name>" + ChatColor.RED + "で行ってください。");
+				}
+			}
+		} else {
+			// mebiusをShiftクリックした場合
+			if (event.getClick().isShiftClick() && isMebius(event.getCurrentItem())) {
+				// 左枠が空いている場合はcancel
+				if (event.getView().getTopInventory().getItem(0) == null) {
+					event.setCancelled(true);
+					event.getWhoClicked().sendMessage(ChatColor.RED + "MEBIUSへの命名は" + ChatColor.RESET + "/mebius naming <name>" + ChatColor.RED + "で行ってください。");
+				}
+			}
 		}
 	}
 

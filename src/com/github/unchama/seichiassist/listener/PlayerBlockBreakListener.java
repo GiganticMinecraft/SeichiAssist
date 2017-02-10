@@ -19,8 +19,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import zedly.zenchantments.Zenchantments;
-
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
@@ -33,6 +31,8 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.MultiBreakTaskRunnable;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
+
+import zedly.zenchantments.Zenchantments;
 
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -80,6 +80,10 @@ public class PlayerBlockBreakListener implements Listener {
 				return;
 			}
 		}
+
+		// 保護と重力値に問題無い場合MebiusListenerを呼び出す
+		MebiusListener.onBlockBreak(event);
+
 		//スキル発動条件がそろってなければ終了
 		if(!Util.isSkillEnable(player)){
 			return;
@@ -172,10 +176,6 @@ public class PlayerBlockBreakListener implements Listener {
 		//追加マナ獲得
 		playerdata.activeskilldata.mana.increaseMana(BreakUtil.calcManaDrop(playerdata),player,playerdata.level);
 		//これ以降の終了処理はマナが回復します
-
-
-		// 有効ブロック破壊時のみMebiusListenerを呼び出す
-		MebiusListener.onBreak(event);
 
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0 || playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){

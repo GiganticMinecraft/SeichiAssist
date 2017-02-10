@@ -477,6 +477,9 @@ public class TitleUnlockTaskRunnable {
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9008解除！おめでとうございます！");
+				// ↓バレンタイン限定
+				com.github.unchama.seasonalevents.events.valentine.Valentine.giveChoco(player);
+				// ↑バレンタイン限定
 				}else{
 					player.sendMessage("実績No9008は条件を満たしていません。");
 				}
