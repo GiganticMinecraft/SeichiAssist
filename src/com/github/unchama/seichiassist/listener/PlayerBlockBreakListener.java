@@ -12,12 +12,16 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExpEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+
+import zedly.zenchantments.Zenchantments;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
@@ -31,8 +35,6 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.MultiBreakTaskRunnable;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
-
-import zedly.zenchantments.Zenchantments;
 
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -181,6 +183,10 @@ public class PlayerBlockBreakListener implements Listener {
 		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0 || playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "スキルオフ時の破壊");
 			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
+			if(BreakUtil.isInventoryFull){
+				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
+				BreakUtil.isInventoryFull = false;
+			}
 			return;
 		}
 
@@ -363,6 +369,10 @@ public class PlayerBlockBreakListener implements Listener {
 		//自身のみしか壊さない時自然に処理する
 		if(breakblocknum==0){
 			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
+			if(BreakUtil.isInventoryFull){
+				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
+				BreakUtil.isInventoryFull = false;
+			}
 			return;
 		}//スキルの処理
 		else{
@@ -538,6 +548,10 @@ public class PlayerBlockBreakListener implements Listener {
 		//自身のみしか壊さない時自然に処理する
 		if(breaklist.size()==0){
 			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
+			if(BreakUtil.isInventoryFull){
+				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
+				BreakUtil.isInventoryFull = false;
+			}
 			return;
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.activeskilldata.effectnum == 0){
@@ -546,6 +560,10 @@ public class PlayerBlockBreakListener implements Listener {
 			for(Block b:breaklist){
 				BreakUtil.BreakBlock(player, b, centerofblock, tool,true);
 				SeichiAssist.allblocklist.remove(b);
+			}
+			if(BreakUtil.isInventoryFull){
+				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
+				BreakUtil.isInventoryFull = false;
 			}
 		}
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
@@ -576,4 +594,17 @@ public class PlayerBlockBreakListener implements Listener {
 			new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
 		}
 	}
+	@EventHandler
+	public void onBlockGenerteExpEvent(BlockExpEvent event){
+		int exp = event.getExpToDrop();
+		Block block = event.getBlock();
+
+		Location loc = block.getLocation();
+		if(exp > 0){
+			ExperienceOrb orb = loc.getWorld().spawn(loc, ExperienceOrb.class);
+			orb.setExperience(exp);
+		}
+	}
+
+
 }

@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.breakeffect;
 
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -54,6 +55,10 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 				BreakUtil.BreakBlock(player, b, droploc, tool, true);
 				SeichiAssist.allblocklist.remove(b);
 			}
+		}
+		if(BreakUtil.isInventoryFull){
+			player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
+			BreakUtil.isInventoryFull = false;
 		}
 		soundradius = 5;
 
