@@ -429,8 +429,8 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackObj("step5","石レンガハーフブロック",32,Material.STEP,5,false,-1,3)
 
 			,new MineStackObj("red_nether_brick"	,"赤いネザーレンガ"	,36,Material.RED_NETHER_BRICK,0,false,-1,3)
-			
-			
+
+
 			));
 
 	public static final List<MineStackObj> minestacklistrs = new ArrayList<MineStackObj>(Arrays.asList(

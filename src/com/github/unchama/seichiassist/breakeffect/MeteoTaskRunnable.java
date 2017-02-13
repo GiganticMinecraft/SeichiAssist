@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -136,7 +137,10 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 				SeichiAssist.allblocklist.remove(b);
 			}
 		}
-
+		if(BreakUtil.isInventoryFull){
+			player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
+			BreakUtil.isInventoryFull = false;
+		}
 	}
 	private boolean isBreakBlock(Location loc) {
 		Block b = loc.getBlock();
