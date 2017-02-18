@@ -48,6 +48,9 @@ public class PlayerBlockBreakListener implements Listener {
 		//デバッグ用
 		if(SeichiAssist.DEBUG)player.sendMessage("ブロックブレイクイベントが呼び出されました");
 
+		//インベントリ一杯フラグを初期化
+		BreakUtil.isInventoryFull = false;
+
 		//壊されるブロックを取得
 		Block block = event.getBlock();
 

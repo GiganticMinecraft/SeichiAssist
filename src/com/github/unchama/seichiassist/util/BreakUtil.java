@@ -1030,7 +1030,6 @@ public class BreakUtil {
 		if(SeichiAssist.DEBUG){
 			player.sendMessage(ChatColor.RED + block.toString());
 			player.sendMessage(ChatColor.RED + dropItem.toString());
-
 		}
 		PlayerInventory inventory = player.getInventory();
 		if(!addItemtoMineStack(player,dropItem)){
