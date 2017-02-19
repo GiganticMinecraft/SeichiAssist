@@ -104,7 +104,7 @@ public class BreakUtil {
 				HashMap<Integer,ItemStack> exceededItems = player.getInventory().addItem(itemstack);
 				for(Integer i:exceededItems.keySet()){
 					//player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-					isInventoryFull = true;
+					//isInventoryFull = true;
 					breakblock.getWorld().dropItemNaturally(centerofblock,exceededItems.get(i));
 				}
 
