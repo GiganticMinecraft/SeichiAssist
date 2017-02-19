@@ -131,6 +131,10 @@ public class BreakUtil {
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
 			return false;
 		}
+		if(SeichiAssist.DEBUG){
+			player.sendMessage(ChatColor.RED + "minestackAdd:" + itemstack.toString());
+			player.sendMessage(ChatColor.RED + "mineDurability:" + itemstack.getDurability());
+		}
 		UUID uuid = player.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
 		//念のためエラー分岐
@@ -193,6 +197,15 @@ public class BreakUtil {
 		int v38 = config.getMineStacklevel(38);
 		*/
 		//boolean delete_flag=false;
+
+		//線路・キノコなどの、拾った時と壊した時とでサブIDが違う場合の処理
+		//拾った時のサブIDに合わせる
+		if(itemstack.getType() == Material.RAILS
+			|| itemstack.getType() == Material.HUGE_MUSHROOM_1
+			|| itemstack.getType() == Material.HUGE_MUSHROOM_2){
+
+			itemstack.setDurability((short)0);
+		}
 
 		int i=0;
 		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
