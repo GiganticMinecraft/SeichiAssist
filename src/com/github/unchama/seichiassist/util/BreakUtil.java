@@ -104,7 +104,7 @@ public class BreakUtil {
 				HashMap<Integer,ItemStack> exceededItems = player.getInventory().addItem(itemstack);
 				for(Integer i:exceededItems.keySet()){
 					//player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-					isInventoryFull = true;
+					//isInventoryFull = true;
 					breakblock.getWorld().dropItemNaturally(centerofblock,exceededItems.get(i));
 				}
 
@@ -130,6 +130,10 @@ public class BreakUtil {
 		//もしサバイバルでなければ処理を終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
 			return false;
+		}
+		if(SeichiAssist.DEBUG){
+			player.sendMessage(ChatColor.RED + "minestackAdd:" + itemstack.toString());
+			player.sendMessage(ChatColor.RED + "mineDurability:" + itemstack.getDurability());
 		}
 		UUID uuid = player.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
@@ -193,6 +197,15 @@ public class BreakUtil {
 		int v38 = config.getMineStacklevel(38);
 		*/
 		//boolean delete_flag=false;
+
+		//線路・キノコなどの、拾った時と壊した時とでサブIDが違う場合の処理
+		//拾った時のサブIDに合わせる
+		if(itemstack.getType() == Material.RAILS
+			|| itemstack.getType() == Material.HUGE_MUSHROOM_1
+			|| itemstack.getType() == Material.HUGE_MUSHROOM_2){
+
+			itemstack.setDurability((short)0);
+		}
 
 		int i=0;
 		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
@@ -1030,14 +1043,13 @@ public class BreakUtil {
 		if(SeichiAssist.DEBUG){
 			player.sendMessage(ChatColor.RED + block.toString());
 			player.sendMessage(ChatColor.RED + dropItem.toString());
-
 		}
 		PlayerInventory inventory = player.getInventory();
 		if(!addItemtoMineStack(player,dropItem)){
 			HashMap<Integer,ItemStack> exceededItems = inventory.addItem(dropItem);
 			for(Integer i:exceededItems.keySet()){
 				//player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-				isInventoryFull = true;
+				//isInventoryFull = true;
 				block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5),exceededItems.get(i));
 			}
 
