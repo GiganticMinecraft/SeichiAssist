@@ -376,7 +376,9 @@ public class PlayerBlockBreakListener implements Listener {
 		mana.decreaseMana(useAllMana,player,playerdata.level);
 
 		//耐久値を減らす
-		tool.setDurability(alldurability);
+		if(!tool.getItemMeta().spigot().isUnbreakable()){
+			tool.setDurability(alldurability);
+		}
 
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = (long) ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
@@ -568,7 +570,9 @@ public class PlayerBlockBreakListener implements Listener {
 		mana.decreaseMana(useMana,player,playerdata.level);
 
 		//耐久値を減らす
-		tool.setDurability(durability);
+		if(!tool.getItemMeta().spigot().isUnbreakable()){
+			tool.setDurability(durability);
+		}
 
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = (long) ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;

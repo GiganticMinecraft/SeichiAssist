@@ -300,10 +300,9 @@ public class EntityListener implements Listener {
 		mana.decreaseMana(useMana,player,playerdata.level);
 
 		//耐久値を減らす
-		tool.setDurability(durability);
-
-
-
+		if(!tool.getItemMeta().spigot().isUnbreakable()){
+			tool.setDurability(durability);
+		}
 
 		//以降破壊する処理
 
