@@ -246,7 +246,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//一回の破壊の範囲
 		final Coordinate breaklength = area.getBreakLength();
 		//１回の全て破壊したときのブロック数
-		final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
+		final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z * breaknum);
 
 		//全てのマナ消費量
 		double useAllMana = 0;
