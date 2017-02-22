@@ -98,14 +98,11 @@ public class EntityListener implements Listener {
 			Bukkit.getLogger().warning("EntityListener.onPlayerActiveSkillEvent");
 			return;
 		}
-		ActiveSkill[] activeskill = ActiveSkill.values();
 
 		//整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
-		if(Util.isSeichiWorld(player)){
-			if(BreakUtil.getGravity(player, block, activeskill[playerdata.activeskilldata.skilltype-1].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
-				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
-				return;
-			}
+		if(BreakUtil.getGravity(player, block, false) > 15){
+			player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
+			return;
 		}
 		//スキル発動条件がそろってなければ終了
 		if(!Util.isSkillEnable(player)){
@@ -245,7 +242,7 @@ public class EntityListener implements Listener {
 
 
 		//重力値計算
-		double gravity = BreakUtil.getGravity(player,block,end.y,1);
+		double gravity = BreakUtil.getGravity(player,block,false);
 
 
 		//減る経験値計算

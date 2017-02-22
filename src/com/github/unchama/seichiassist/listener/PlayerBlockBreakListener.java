@@ -63,18 +63,11 @@ public class PlayerBlockBreakListener implements Listener {
 		if(playerdata == null){
 			return;
 		}
-		ActiveSkill[] activeskill = ActiveSkill.values();
 
-
-		//整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
-		if(Util.isSeichiWorld(player) &&
-		!SeichiAssist.gravitymateriallist.contains(block.getType()) &&
+		//重力値によるキャンセル判定(スキル判定より先に判定させること)
+		if(!SeichiAssist.gravitymateriallist.contains(block.getType()) &&
 		!SeichiAssist.cancelledmateriallist.contains(block.getType())){
-			int type = playerdata.activeskilldata.skilltype-1;
-			if(type < 0){
-				type = 0;
-			}
-			if(BreakUtil.getGravity(player, block, activeskill[type].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
+			if(BreakUtil.getGravity(player, block, false) > 15){
 				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 				event.setCancelled(true);
 				return;
@@ -307,7 +300,7 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 
 			//重力値計算
-			double gravity = BreakUtil.getGravity(player,block,end.y,1);
+			double gravity = BreakUtil.getGravity(player,block,false);
 
 
 			//減る経験値計算
@@ -475,7 +468,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//重力値計算
-		double gravity = BreakUtil.getGravity(player,block,end.y,1);
+		double gravity = BreakUtil.getGravity(player,block,false);
 
 
 		//減るマナ計算

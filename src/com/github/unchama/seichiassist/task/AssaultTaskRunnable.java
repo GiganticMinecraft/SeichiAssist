@@ -252,7 +252,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			}
 		}
 		//重力値計算
-		double gravity = BreakUtil.getGravity(player,block,end.y,1);
+		int gravity = BreakUtil.getGravity(player,block,true);
 
 		// 実際に破壊するブロック数の計算分岐
 		int breaksum = 0;
@@ -267,7 +267,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		//減る経験値計算
 		//実際に破壊するブロック数 * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-		double useMana = (double)breaksum * gravity
+		double useMana = (double)breaksum * (double)gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum)
 				/(ifallbreaknum) ;
 
