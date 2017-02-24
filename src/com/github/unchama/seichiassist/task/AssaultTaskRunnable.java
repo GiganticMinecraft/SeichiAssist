@@ -267,7 +267,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		//減る経験値計算
 		//実際に破壊するブロック数 * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-		double useMana = (double)breaksum * (double)gravity
+		double useMana = (double)breaksum * (double) gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum)
 				/(ifallbreaknum) ;
 
@@ -279,9 +279,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 		//重力値の判定
 		if(gravity > 15){
-			if(SeichiAssist.DEBUG){
-				player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-			}
+			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
 			SeichiAssist.allblocklist.removeAll(breaklist);
 			setCancel();
 			return;

@@ -68,7 +68,7 @@ public class SeichiAssist extends JavaPlugin{
 	//MineStack用ガチャデータを作成する
 	public static final String MINESTACK_GACHADATA_TABLENAME = "msgachadata";
 
-	public static final String SEICHIWORLDNAME = "world_sw";
+	public static final String SEICHIWORLDNAME = "world";
 	public static final String DEBUGWORLDNAME = "world";
 
 	private HashMap<String, TabExecutor> commandlist;
@@ -429,8 +429,8 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackObj("step5","石レンガハーフブロック",32,Material.STEP,5,false,-1,3)
 
 			,new MineStackObj("red_nether_brick"	,"赤いネザーレンガ"	,36,Material.RED_NETHER_BRICK,0,false,-1,3)
-			
-			
+
+
 			));
 
 	public static final List<MineStackObj> minestacklistrs = new ArrayList<MineStackObj>(Arrays.asList(

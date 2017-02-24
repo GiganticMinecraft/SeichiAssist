@@ -1013,61 +1013,80 @@ public class BreakUtil {
 			return 0;
 		}
 
-		// 1. 破壊要因判定
-		/** 破壊要因スキルタイプ */
-		int breakSkillType;
-		/** 破壊要因スキルレベル */
-		int breakSkillLevel;
-		/** 破壊スキル使用判定 */
-		boolean isBreakSkill;
+		// 2. 破壊要因判定
 		/** 該当プレイヤーのPlayerData */
 		PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
 		/** ActiveSkillのリスト */
 		ActiveSkill[] skilllist = ActiveSkill.values();
-		// Activeスキルの場合
-		if (!isAssault) {
-			// スキルタイプ取得
-			breakSkillType = playerdata.activeskilldata.skilltype;
-			// スキルレベル取得
-			breakSkillLevel = playerdata.activeskilldata.skillnum;
-			// 破壊スキル使用判定
-			isBreakSkill = (breakSkillType > 0) && (playerdata.activeskilldata.mineflagnum > 0);
-		}
-		// Assaultスキルの場合
-		else {
-			// スキルタイプ取得
-			breakSkillType = playerdata.activeskilldata.assaulttype;
-			// スキルレベル取得
-			breakSkillLevel = playerdata.activeskilldata.assaultnum;
-			// 破壊スキル使用判定(isAssault=trueは破壊スキル使用が前提)
-			isBreakSkill = true;
-		}
-
-		// 2. 重力値を計算開始するBlockのために、startY(blockのY方向offset値)を計算
 		/** 重力値の計算を始めるY座標 */
 		int startY;
-		// 破壊スキルが選択されていなければignoreGravityは0
-		if (!isBreakSkill) {
-			startY = block.getY();
-		} else {
-			/** 該当プレイヤーが向いている方向 */
-			String dir = BreakUtil.getCardinalDirection(player);
-			// 下向きによる発動 or 上向きによる発動
-			if (dir.equals("D") || dir.equals("U")) {
-				// block＝破壊範囲の最下層ブロックまたは最上層ブロックにつき、startはblock.y+1
-				startY = block.getY();
+		// Activeスキルの場合
+		if (!isAssault) {
+			/** 破壊要因スキルタイプ */
+			int breakSkillType = playerdata.activeskilldata.skilltype;
+			/** 破壊要因スキルレベル */
+			int breakSkillLevel = playerdata.activeskilldata.skillnum;
+			/** 破壊スキル使用判定 */
+			boolean isBreakSkill = (breakSkillType > 0) && (playerdata.activeskilldata.mineflagnum > 0);
+			// 重力値を計算開始するBlockのために、startY(blockのY方向offset値)を計算
+			// 破壊スキルが選択されていなければ初期座標は破壊ブロックと同値
+			if (!isBreakSkill) {
+				startY = 0;
 			}
-			// 横向きによる発動のうち、デュアルorトリアルのmineflagnumが1(上破壊)
-			else if ((breakSkillType == 1 || breakSkillLevel == 2) && playerdata.activeskilldata.mineflagnum == 1) {
-				// 破壊ブロックの1マス上が破壊されるので、startは2段目から
-				startY = block.getY() + 1;
-			}
-			// その他横向き発動時
-			else {
+			// 遠距離スキルの場合向きに依らずblock中心の横範囲となる
+			else if (breakSkillType == ActiveSkill.ARROW.gettypenum()) {
 				/** 選択中のスキルの破壊範囲 */
 				Coordinate skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel);
 				// 破壊ブロックの高さ＋破壊範囲の高さ－2（2段目が手動破壊対象となるため）
-				startY = block.getY() + skillBreakArea.y - 2;
+				startY = skillBreakArea.y - 2;
+			}
+			// 単範囲/複数範囲破壊スキルの場合
+			else {
+				/** 該当プレイヤーが向いている方向 */
+				String dir = BreakUtil.getCardinalDirection(player);
+				// 下向きによる発動
+				if (dir.equals("D")) {
+					// block＝破壊範囲の最上層ブロックにつき、startは0
+					startY = 0;
+				}
+				// 上向きによる発動
+				else if (dir.equals("U")) {
+					/** 選択中のスキルの破壊範囲 */
+					Coordinate skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel);
+					// block＝破壊範囲の最下層ブロックにつき、startは破壊範囲の高さ
+					startY = skillBreakArea.y;
+				}
+				// 横向きによる発動のうち、デュアルorトリアルのmineflagnumが1(上破壊)
+				else if ((breakSkillLevel == 1 || breakSkillLevel == 2) && playerdata.activeskilldata.mineflagnum == 1) {
+					// 破壊ブロックの1マス上が破壊されるので、startは2段目から
+					startY = 1;
+				}
+				// その他横向き発動時
+				else {
+					/** 選択中のスキルの破壊範囲 */
+					Coordinate skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel);
+					// 破壊ブロックの高さ＋破壊範囲の高さ－2（2段目が手動破壊対象となるため）
+					startY = skillBreakArea.y - 2;
+				}
+			}
+		}
+		// Assaultスキルの場合
+		else {
+			/** 破壊要因スキルタイプ */
+			int breakSkillType = playerdata.activeskilldata.assaulttype;
+			/** 破壊要因スキルレベル */
+			int breakSkillLevel = playerdata.activeskilldata.assaultnum;
+			/** 選択中のスキルの破壊範囲 */
+			Coordinate skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel);
+			// アサルトアーマーの場合
+			if (breakSkillType == ActiveSkill.ARMOR.gettypenum()) {
+				// スキル高さ - 足位置で1 - blockが1段目なので1
+				startY = skillBreakArea.y - 2;
+			}
+			// その他のアサルトスキルの場合
+			else {
+				// 高さはスキル/2の切り上げ…blockが1段目なので-1してプラマイゼロ
+				startY = (skillBreakArea.y - 1) / 2;
 			}
 		}
 

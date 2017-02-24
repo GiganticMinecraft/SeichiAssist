@@ -300,13 +300,13 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 
 			//重力値計算
-			double gravity = BreakUtil.getGravity(player,block,false);
+			int gravity = BreakUtil.getGravity(player,block,false);
 
 
 			//減る経験値計算
 			//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-			useAllMana += (double) (breaklist.size() + 1) * gravity
+			useAllMana += (double) (breaklist.size() + 1) * (double) gravity
 					* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 					/(ifallbreaknum * breaknum) ;
 
@@ -468,14 +468,14 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//重力値計算
-		double gravity = BreakUtil.getGravity(player,block,false);
+		int gravity = BreakUtil.getGravity(player,block,false);
 
 
 		//減るマナ計算
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 		Coordinate breaklength = area.getBreakLength();
 		int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
-		double useMana = (double) (breaklist.size()+1) * gravity
+		double useMana = (double) (breaklist.size()+1) * (double) gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 				/ifallbreaknum ;
 		if(SeichiAssist.DEBUG){

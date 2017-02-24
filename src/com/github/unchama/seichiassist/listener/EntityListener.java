@@ -100,7 +100,7 @@ public class EntityListener implements Listener {
 		}
 
 		//整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
-		if(BreakUtil.getGravity(player, block, false) > 15){
+		if(BreakUtil.getGravity(player, block, false) > 3){
 			player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 			return;
 		}
@@ -242,13 +242,13 @@ public class EntityListener implements Listener {
 
 
 		//重力値計算
-		double gravity = BreakUtil.getGravity(player,block,false);
+		int gravity = BreakUtil.getGravity(player,block,false);
 
 
 		//減る経験値計算
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-		double useMana = (double) (breaklist.size()) * gravity
+		double useMana = (double) (breaklist.size()) * (double) gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 				/(ifallbreaknum) ;
 		if(SeichiAssist.DEBUG){
