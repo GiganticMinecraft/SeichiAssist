@@ -1115,8 +1115,6 @@ public class BreakUtil {
 			}
 		}
 
-		// debug
-		player.sendMessage("重力値：" + gravity);
 		return gravity;
 	}
 

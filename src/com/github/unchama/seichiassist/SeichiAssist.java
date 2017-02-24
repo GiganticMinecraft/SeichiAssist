@@ -68,7 +68,7 @@ public class SeichiAssist extends JavaPlugin{
 	//MineStack用ガチャデータを作成する
 	public static final String MINESTACK_GACHADATA_TABLENAME = "msgachadata";
 
-	public static final String SEICHIWORLDNAME = "world";
+	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
 
 	private HashMap<String, TabExecutor> commandlist;
