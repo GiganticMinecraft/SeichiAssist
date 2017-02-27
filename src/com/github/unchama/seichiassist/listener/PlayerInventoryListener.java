@@ -326,9 +326,6 @@ public class PlayerInventoryListener implements Listener {
 				SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 				skull.setDurability((short) 3);
 				skullmeta.setOwner(player.getName());
-				// ↓バレンタイン限定
-				skullmeta = com.github.unchama.seasonalevents.events.valentine.Valentine.playerHeadLore(skullmeta);
-				// ↑バレンタイン限定
 				skull.setItemMeta(skullmeta);
 
 				//渡すか、落とすか

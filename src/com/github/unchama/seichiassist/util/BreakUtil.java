@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import net.coreprotect.CoreProtectAPI;
-
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
@@ -25,10 +23,14 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Dye;
 
+import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
+
+import net.coreprotect.CoreProtectAPI;
 
 public class BreakUtil {
 	public static boolean isInventoryFull = false;
@@ -1009,17 +1011,128 @@ public class BreakUtil {
 		return false;
 	}
 
-	public static double getGravity(Player player, Block block, int breakyloc, int weight) {
-		int gravity = 2;
-		while(!SeichiAssist.transparentmateriallist.contains(block.getRelative(0,gravity,0).getType())){
-			gravity++;
+	/**
+	 * @param player	破壊プレイヤー
+	 * @param block		手動破壊対象またはアサルト/遠距離の指定座標
+	 * @param isAssault	true:	アサルトアーマーによる破壊
+	 * 					false:	アクティブスキルまたは手動による破壊
+	 * @return 重力値（破壊範囲の上に積まれているブロック数）
+	 */
+	public static int getGravity(Player player, Block block, boolean isAssault) {
+		/** OPENHEIGHTマス以上のtransparentmateriallistブロックの連続により、地上判定とする。 */
+		final int OPENHEIGHT = 3;
+
+		// 1. 重力値を適用すべきか判定
+		// 整地ワールド判定
+		if (!Util.isSeichiWorld(player)) {
+			return 0;
 		}
-		gravity --;
-		gravity -= breakyloc;
-		gravity= gravity*weight + 1;
-		if(gravity < 1)gravity = 1;
+
+		// 2. 破壊要因判定
+		/** 該当プレイヤーのPlayerData */
+		PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
+		/** ActiveSkillのリスト */
+		ActiveSkill[] skilllist = ActiveSkill.values();
+		/** 重力値の計算を始めるY座標 */
+		int startY;
+		// Activeスキルの場合
+		if (!isAssault) {
+			/** 破壊要因スキルタイプ */
+			int breakSkillType = playerdata.activeskilldata.skilltype;
+			/** 破壊要因スキルレベル */
+			int breakSkillLevel = playerdata.activeskilldata.skillnum;
+			/** 破壊スキル使用判定 */
+			boolean isBreakSkill = (breakSkillType > 0) && (playerdata.activeskilldata.mineflagnum > 0);
+			// 重力値を計算開始するBlockのために、startY(blockのY方向offset値)を計算
+			// 破壊スキルが選択されていなければ初期座標は破壊ブロックと同値
+			if (!isBreakSkill) {
+				startY = 0;
+			}
+			// 遠距離スキルの場合向きに依らずblock中心の横範囲となる
+			else if (breakSkillType == ActiveSkill.ARROW.gettypenum()) {
+				/** 選択中のスキルの破壊範囲 */
+				Coordinate skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel);
+				// 破壊ブロックの高さ＋破壊範囲の高さ－2（2段目が手動破壊対象となるため）
+				startY = skillBreakArea.y - 2;
+			}
+			// 単範囲/複数範囲破壊スキルの場合
+			else {
+				/** 該当プレイヤーが向いている方向 */
+				String dir = BreakUtil.getCardinalDirection(player);
+				// 下向きによる発動
+				if (dir.equals("D")) {
+					// block＝破壊範囲の最上層ブロックにつき、startは0
+					startY = 0;
+				}
+				// 上向きによる発動
+				else if (dir.equals("U")) {
+					/** 選択中のスキルの破壊範囲 */
+					Coordinate skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel);
+					// block＝破壊範囲の最下層ブロックにつき、startは破壊範囲の高さ
+					startY = skillBreakArea.y;
+				}
+				// 横向きによる発動のうち、デュアルorトリアルのmineflagnumが1(上破壊)
+				else if ((breakSkillLevel == 1 || breakSkillLevel == 2) && playerdata.activeskilldata.mineflagnum == 1) {
+					// 破壊ブロックの1マス上が破壊されるので、startは2段目から
+					startY = 1;
+				}
+				// その他横向き発動時
+				else {
+					/** 選択中のスキルの破壊範囲 */
+					Coordinate skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel);
+					// 破壊ブロックの高さ＋破壊範囲の高さ－2（2段目が手動破壊対象となるため）
+					startY = skillBreakArea.y - 2;
+				}
+			}
+		}
+		// Assaultスキルの場合
+		else {
+			/** 破壊要因スキルタイプ */
+			int breakSkillType = playerdata.activeskilldata.assaulttype;
+			/** 破壊要因スキルレベル */
+			int breakSkillLevel = playerdata.activeskilldata.assaultnum;
+			/** 選択中のスキルの破壊範囲 */
+			Coordinate skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel);
+			// アサルトアーマーの場合
+			if (breakSkillType == ActiveSkill.ARMOR.gettypenum()) {
+				// スキル高さ - 足位置で1 - blockが1段目なので1
+				startY = skillBreakArea.y - 2;
+			}
+			// その他のアサルトスキルの場合
+			else {
+				// 高さはスキル/2の切り上げ…blockが1段目なので-1してプラマイゼロ
+				startY = (skillBreakArea.y - 1) / 2;
+			}
+		}
+
+		// 3. 重力値計算
+		/** OPENHEIGHTに達したかの計測カウンタ */
+		int openCount = 0;
+		/** 重力値 */
+		int gravity = 0;
+		/** 最大ループ数 */
+		final int YMAX = 255;
+		for (int checkPointer = 1; checkPointer < YMAX; checkPointer++) {
+			/** 確認対象ブロック */
+			Block target = block.getRelative(0, startY + checkPointer, 0);
+			// 対象ブロックが地上判定ブロックの場合
+			if (SeichiAssist.transparentmateriallist.contains(target.getType())) {
+				// カウンタを加算
+				openCount++;
+				if (openCount >= OPENHEIGHT) {
+					break;
+				}
+			} else {
+				// カウンタをクリア
+				openCount = 0;
+				// 重力値を加算
+				gravity++;
+			}
+		}
+
 		return gravity;
 	}
+
 	@SuppressWarnings("deprecation")
 	public static boolean logPlace(Player player, Block placeblock) {
 		//設置するブロックの状態を取得

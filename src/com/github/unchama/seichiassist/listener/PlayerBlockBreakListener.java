@@ -68,18 +68,11 @@ public class PlayerBlockBreakListener implements Listener {
 		if(playerdata == null){
 			return;
 		}
-		ActiveSkill[] activeskill = ActiveSkill.values();
 
-
-		//整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
-		if(Util.isSeichiWorld(player) &&
-		!SeichiAssist.gravitymateriallist.contains(block.getType()) &&
+		//重力値によるキャンセル判定(スキル判定より先に判定させること)
+		if(!SeichiAssist.gravitymateriallist.contains(block.getType()) &&
 		!SeichiAssist.cancelledmateriallist.contains(block.getType())){
-			int type = playerdata.activeskilldata.skilltype-1;
-			if(type < 0){
-				type = 0;
-			}
-			if(BreakUtil.getGravity(player, block, activeskill[type].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
+			if(BreakUtil.getGravity(player, block, false) > 15){
 				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 				event.setCancelled(true);
 				return;
@@ -255,7 +248,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//一回の破壊の範囲
 		final Coordinate breaklength = area.getBreakLength();
 		//１回の全て破壊したときのブロック数
-		final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
+		final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z * breaknum);
 
 		//全てのマナ消費量
 		double useAllMana = 0;
@@ -316,13 +309,13 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 
 			//重力値計算
-			double gravity = BreakUtil.getGravity(player,block,end.y,1);
+			int gravity = BreakUtil.getGravity(player,block,false);
 
 
 			//減る経験値計算
 			//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-			useAllMana += (double) (breaklist.size() + 1) * gravity
+			useAllMana += (double) (breaklist.size() + 1) * (double) gravity
 					* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 					/(ifallbreaknum * breaknum) ;
 
@@ -389,7 +382,9 @@ public class PlayerBlockBreakListener implements Listener {
 		mana.decreaseMana(useAllMana,player,playerdata.level);
 
 		//耐久値を減らす
-		tool.setDurability(alldurability);
+		if(!tool.getItemMeta().spigot().isUnbreakable()){
+			tool.setDurability(alldurability);
+		}
 
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = (long) ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
@@ -486,14 +481,14 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//重力値計算
-		double gravity = BreakUtil.getGravity(player,block,end.y,1);
+		int gravity = BreakUtil.getGravity(player,block,false);
 
 
 		//減るマナ計算
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 		Coordinate breaklength = area.getBreakLength();
 		int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
-		double useMana = (double) (breaklist.size()+1) * gravity
+		double useMana = (double) (breaklist.size()+1) * (double) gravity
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 				/ifallbreaknum ;
 		if(SeichiAssist.DEBUG){
@@ -589,7 +584,9 @@ public class PlayerBlockBreakListener implements Listener {
 		mana.decreaseMana(useMana,player,playerdata.level);
 
 		//耐久値を減らす
-		tool.setDurability(durability);
+		if(!tool.getItemMeta().spigot().isUnbreakable()){
+			tool.setDurability(durability);
+		}
 
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = (long) ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
