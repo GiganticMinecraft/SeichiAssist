@@ -26,6 +26,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
+import com.github.unchama.seichiassist.listener.MebiusListener;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
@@ -251,7 +252,7 @@ public class Sql{
 		//必要なcolumnを随時追加
 		command =
 				"alter table " + db + "." + table +
-				" add column if not exists effectflag boolean default true" +
+				" add column if not exists effectflag tinyint default 0" +
 				",add column if not exists minestackflag boolean default true" +
 				",add column if not exists messageflag boolean default false" +
 				",add column if not exists activemineflagnum int default 0" +
@@ -691,6 +692,7 @@ public class Sql{
  			p.getInventory().addItem(new ItemStack(Material.ELYTRA));
  			p.getInventory().addItem(new ItemStack(Material.DIAMOND_PICKAXE));
  			p.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
+ 			MebiusListener.give(p);
  			return true;
 
  		}else if(count == 1){

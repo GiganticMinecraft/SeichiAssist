@@ -25,7 +25,7 @@ thunderstormlevel: '40'
 blizzardlevel: '50'
 meteolevel: '60'
 gravitylevel: '100'
-multipleidblockbreaklevel: '135'
+multipleidblockbreaklevel: '1'
 dropexplevel1: '6'
 dropexplevel2: '10'
 dropexplevel3: '16'
@@ -136,7 +136,6 @@ lv117message: "MineStack機能の対象ブロックが増えました！\n新た
 lv122message: "MineStack機能の対象ブロックが増えました！\n新たに粘土がスタックされるようになります。"
 lv127message: "MineStack機能の対象ブロックが増えました！\n新たに苔石がスタックされるようになります。"
 lv132message: "MineStack機能の対象ブロックが増えました！\n新たに氷がスタックされるようになります。"
-lv135message: "ブロック破壊スキルで複数種類を一括破壊できるようになりました。"
 lv137message: "MineStack機能の対象ブロックが増えました！\n新たに粗い土とポドゾルがスタックされるようになります。"
 lv142message: "MineStack機能の対象ブロックが増えました！\n新たにダークオークの木材とダークオークのフェンスがスタックされるようになります。"
 lv147message: "MineStack機能の対象ブロックが増えました！\n新たにクモの巣と糸がスタックされるようになります。"
@@ -203,6 +202,11 @@ Achv9008: "友チョコ０枚"
 # debugmode: 0=デバッグモードオフ, 1=デバッグモードオン
 # 変更値を反映させるにはサーバを再起動するか/reloadしてください
 debugmode: '0'
+
+# デバッグモード(メビウス帽子専用)の設定
+# debugmode: 0=デバッグモードオフ, 1=デバッグモードオン
+# 変更値を反映させるにはサーバを再起動するか/reloadしてください
+mebiusdebug: '0'
 
 # ギガンティック→椎名林檎交換レートの設定
 # デフォルト値はギガンティック1個につき椎名林檎4個

@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -29,7 +30,7 @@ public class PlayerData {
 	//UUID
 	public UUID uuid;
 	//エフェクトのフラグ
-	public boolean effectflag;
+	public int effectflag;
 	//内訳メッセージを出すフラグ
 	public boolean messageflag;
 	//1分間のデータを保存するincrease:１分間の採掘量
@@ -102,6 +103,9 @@ public class PlayerData {
 	//アクティブスキル関連データ
 	public ActiveSkillData activeskilldata;
 
+	//MebiusTask
+	public MebiusTaskRunnable mebius;
+
 	//ガチャボタン連打防止用
 	public boolean gachacooldownflag;
 
@@ -135,7 +139,7 @@ public class PlayerData {
 		this.loaded = false;
 		this.name = Util.getName(player);
 		this.uuid = player.getUniqueId();
-		this.effectflag = true;
+		this.effectflag = 0;
 		this.messageflag = false;
 		//this.minuteblock = new MineBlock();
 		this.halfhourblock = new MineBlock();
@@ -146,6 +150,7 @@ public class PlayerData {
 		this.lastminespeedlv = 0;
 		this.effectdatalist = new ArrayList<EffectData>();
 		this.level = 1;
+		this.mebius = new MebiusTaskRunnable(this);
 		this.numofsorryforbug = 0;
 		this.inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 		this.rgnum = 0;
@@ -403,12 +408,12 @@ public class PlayerData {
 
 		case NETHERRACK:
 			//ネザーラックの重み分け
-			result *= 0.2;
+			result *= 1.0;
 			break;
 
 		case ENDER_STONE:
 			//エンドストーンの重み分け
-			result *= 0.2;
+			result *= 1.0;
 			break;
 
 

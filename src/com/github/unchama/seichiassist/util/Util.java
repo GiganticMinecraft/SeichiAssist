@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import net.coreprotect.CoreProtect;
+import net.coreprotect.CoreProtectAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -23,13 +26,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
+import zedly.zenchantments.Zenchantments;
+
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-
-import net.coreprotect.CoreProtect;
-import net.coreprotect.CoreProtectAPI;
-import zedly.zenchantments.Zenchantments;
 
 public class Util {
 	static private FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
@@ -340,6 +341,7 @@ public class Util {
             return (Zenchantments)pl;
         else return null;
     }
+
 	//ガチャアイテムを含んでいるか調べる
 	public static boolean containsGachaTicket(Player player) {
 		org.bukkit.inventory.ItemStack[] inventory = player.getInventory().getStorageContents();

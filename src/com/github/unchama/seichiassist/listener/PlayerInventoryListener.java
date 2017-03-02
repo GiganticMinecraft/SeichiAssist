@@ -8,8 +8,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,6 +51,8 @@ import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -364,44 +364,55 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND_PICKAXE)){
 				// ver0.3.2 採掘速度上昇効果トグル
-				playerdata.effectflag = !playerdata.effectflag;
-				if(playerdata.effectflag){
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				playerdata.effectflag = (playerdata.effectflag + 1) % 5;
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 
-					//effect追加の処理
-					//実際に適用されるeffect量
-					int minespeedlv = 0;
-					//合計effect量
-					double sum = 0;
-					//最大持続時間
-					int maxduration = 0;
-					//effectdatalistにある全てのeffectについて計算
-					for(EffectData ed :playerdata.effectdatalist){
-						//effect量を加算
-						sum += ed.amplifier;
-						//持続時間の最大値を取得
-						if(maxduration < ed.duration){
-							maxduration = ed.duration;
-						}
+				// 採掘速度上昇量計算
+				//実際に適用されるeffect量
+				int minespeedlv = 0;
+				//合計effect量
+				double sum = 0;
+				//最大持続時間
+				int maxduration = 0;
+				//effectdatalistにある全てのeffectについて計算
+				for(EffectData ed :playerdata.effectdatalist){
+					//effect量を加算
+					sum += ed.amplifier;
+					//持続時間の最大値を取得
+					if(maxduration < ed.duration){
+						maxduration = ed.duration;
 					}
-					//実際のeffect値をsum-1の切り捨て整数値に設定
-					minespeedlv = (int)(sum - 1);
+				}
+				//実際のeffect値をsum-1の切り捨て整数値に設定
+				minespeedlv = (int)(sum - 1);
 
-					//実際のeffect値が0より小さいときはeffectを適用しない
-					if(minespeedlv < 0){
-						player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
+				int maxSpeed = 0;
+				if(playerdata.effectflag == 0){
+					maxSpeed = 25565;
+					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
+				}else if(playerdata.effectflag == 1){
+					maxSpeed = 200;
+					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(200制限)");
+				}else if(playerdata.effectflag == 2){
+					maxSpeed = 400;
+					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(400制限)");
+				}else if(playerdata.effectflag == 3){
+					maxSpeed = 600;
+					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(600制限)");
+				}else{
+					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
+				}
+
+				//effect追加の処理
+				//実際のeffect値が0より小さいときはeffectを適用しない
+				if(minespeedlv < 0 || maxSpeed == 0){
+					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
+				}else{
+					if(minespeedlv > maxSpeed) {
+						player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, maxSpeed, false, false), true);
 					}else{
 						player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, minespeedlv, false, false), true);
 					}
-
-					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-
-					//現在の採掘速度上昇効果を削除する
-					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
-
-					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
 				}
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				itemstackcurrent.setItemMeta(MenuInventoryData.EFButtonMeta(playerdata,itemmeta));
@@ -620,7 +631,7 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
 				// 投票リンク表示
-				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/play.seichi.click/vote");
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
@@ -641,9 +652,8 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.SIGN)){
-				// 掲示板リンク表示
-				player.sendMessage(ChatColor.DARK_GRAY + "開いたら下の方までスクロールしてください\n"
-						+ ChatColor.RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/play.seichi.click"
+				//JMSリンク表示
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7"
 						);
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();

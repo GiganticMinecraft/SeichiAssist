@@ -7,7 +7,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -29,15 +28,6 @@ public class BungeeReceiver implements PluginMessageListener {
 		try {
 			String subchannel = in.readUTF();
 			switch (subchannel) {
-			// サウンド再生要求の場合
-			case "PlaySound":
-				// データ内容はUUIDが登録されている
-				String uuid = in.readUTF();
-				// 受信UUIDからプレイヤーを特定
-				Player p = plugin.getServer().getPlayer(UUID.fromString(uuid));
-				// プレイヤーに対しレベルアップ音を再生する
-				p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-				break;
 			case "GetLocation":
 				getLocation(in.readUTF(), in.readUTF(), in.readUTF());
 				break;
@@ -61,8 +51,7 @@ public class BungeeReceiver implements PluginMessageListener {
 			out.writeUTF(wanter);
 			// プレイヤーの座標を返却
 			out.writeUTF(p.getName() + ": 整地Lv" + Integer.toString(pd.level) + " (総整地量: " + String.format("%,d", pd.totalbreaknum) + ")");
-			out.writeUTF("Server: " + servername + ", " + "World: " + p.getWorld().getName() + " (" + Integer.toString(p.getLocation().getBlockX()) + ", " + Integer.toString(p.getLocation().getBlockY()) +", " + Integer.toString(p.getLocation().getBlockZ()) + ")");
-			p.sendMessage(wanter + "からプレイヤーデータの要求があったため、データを送信しました。");
+			out.writeUTF("Server: " + servername + ", " + "World: " + p.getWorld().getName() + " (" + Integer.toString(p.getLocation().getBlockX()) + ", " + Integer.toString(p.getLocation().getBlockY()) + ", " + Integer.toString(p.getLocation().getBlockZ()) + ")");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

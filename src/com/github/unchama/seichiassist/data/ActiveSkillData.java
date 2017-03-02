@@ -3,8 +3,6 @@ package com.github.unchama.seichiassist.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -14,6 +12,8 @@ import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.AssaultTaskRunnable;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class ActiveSkillData {
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -45,6 +45,8 @@ public class ActiveSkillData {
 	public int mineflagnum;
 	//アサルトスキル.コンデンススキルのtask
 	public BukkitTask assaulttask;
+	//自然マナ回復のtask
+	public BukkitTask manaregenetask;
 	//アサルトスキルのフラグ
 	public boolean assaultflag;
 	//エフェクトの獲得フラグリスト<エフェクト番号,エフェクト獲得フラグ>
