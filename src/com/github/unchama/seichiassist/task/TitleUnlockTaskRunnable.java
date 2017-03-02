@@ -398,18 +398,16 @@ public class TitleUnlockTaskRunnable {
 					//該当スロットのアイテムデータ取得
 					ItemInInv = player.getInventory().getItem(flag8001) ;
 					if(ItemInInv == null ){
+						flag8001 = 40 ;
 					}else {
-						//アイテムがスカルじゃない場合
 						if(!ItemInInv.getType().equals(Material.SKULL_ITEM)){
 							flag8001 = 40 ;
 						}else {
 							SkullMeta skullmeta = (SkullMeta) ItemInInv.getItemMeta();
 
-							//ownerがいない場合
 							if(!skullmeta.hasOwner()){
 								flag8001 = 40;
 							}
-							//ownerがうんちゃまじゃない時の処理
 							else if(!skullmeta.getOwner().equals("unchama")){
 								flag8001 = 40 ;
 							}
