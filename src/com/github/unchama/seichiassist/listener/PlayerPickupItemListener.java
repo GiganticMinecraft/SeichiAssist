@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.listener;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -51,7 +52,10 @@ public class PlayerPickupItemListener implements Listener {
 		ItemStack itemstack = item.getItemStack();
 		int amount = itemstack.getAmount();
 		Material material = itemstack.getType();
-
+		if(SeichiAssist.DEBUG){
+			player.sendMessage(ChatColor.RED + "pick:" + itemstack.toString());
+			player.sendMessage(ChatColor.RED + "pickDurability:" + itemstack.getDurability());
+		}
 		/*
 		int v1 = config.getMineStacklevel(1);
 		int v2 = config.getMineStacklevel(2);
