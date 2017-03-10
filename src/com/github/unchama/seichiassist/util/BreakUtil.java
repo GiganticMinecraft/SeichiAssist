@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import net.coreprotect.CoreProtectAPI;
+
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
@@ -30,10 +32,7 @@ import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 
-import net.coreprotect.CoreProtectAPI;
-
 public class BreakUtil {
-	public static boolean isInventoryFull = false;
 	//他のプラグインの影響があってもブロックを破壊できるのか
 	@SuppressWarnings("deprecation")
 	public static boolean canBreak(Player player ,Block breakblock) {
@@ -105,8 +104,6 @@ public class BreakUtil {
 			if(!addItemtoMineStack(player,itemstack)){
 				HashMap<Integer,ItemStack> exceededItems = player.getInventory().addItem(itemstack);
 				for(Integer i:exceededItems.keySet()){
-					//player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-					//isInventoryFull = true;
 					breakblock.getWorld().dropItemNaturally(centerofblock,exceededItems.get(i));
 				}
 
@@ -1161,8 +1158,6 @@ public class BreakUtil {
 		if(!addItemtoMineStack(player,dropItem)){
 			HashMap<Integer,ItemStack> exceededItems = inventory.addItem(dropItem);
 			for(Integer i:exceededItems.keySet()){
-				//player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-				//isInventoryFull = true;
 				block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5),exceededItems.get(i));
 			}
 

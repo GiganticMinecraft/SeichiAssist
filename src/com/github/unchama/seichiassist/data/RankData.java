@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.data;
 public class RankData {
 	public String name;
 	public int level;
-	public int totalbreaknum;
+	public long totalbreaknum;
 	//追加ランキングデータ
 	public int playtick;
 	public int p_vote;

@@ -314,7 +314,7 @@ public class EntityListener implements Listener {
 		//エフェクトが指定されていないときの処理
 		if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
-				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,true);
+				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,false);
 				SeichiAssist.allblocklist.remove(b);
 			}
 		}

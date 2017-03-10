@@ -272,7 +272,7 @@ public class Sql{
 				",add column if not exists numofsorryforbug int default 0" +
 				",add column if not exists inventory blob default null" +
 				",add column if not exists rgnum int default 0" +
-				",add column if not exists totalbreaknum int default 0" +
+				",add column if not exists totalbreaknum bigint default 0" +
 				",add column if not exists lastquit datetime default null" +
 				",add column if not exists displayTypeLv boolean default true" +
 				",add column if not exists displayTitleNo int default 0" +
@@ -399,9 +399,6 @@ public class Sql{
 				",add column if not exists shareinv blob" +
 				",add column if not exists everysound boolean default true" +
 
-				",add index if not exists name_index(name)" +
-				",add index if not exists uuid_index(uuid)" +
-				",add index if not exists ranking_index(totalbreaknum)" +
 				",add column if not exists homepoint_" + SeichiAssist.config.getServerNum() + " varchar(" + SeichiAssist.config.getSubHomeMax() * SeichiAssist.SUB_HOME_DATASIZE + ") default ''"+
 
 				//BuildAssistのデータ
@@ -881,7 +878,7 @@ public class Sql{
 				RankData rankdata = new RankData();
 				rankdata.name = rs.getString("name");
 				rankdata.level = rs.getInt("level");
-				rankdata.totalbreaknum = rs.getInt("totalbreaknum");
+				rankdata.totalbreaknum = rs.getLong("totalbreaknum");
 				ranklist.add(rankdata);
 				SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
 				  }
@@ -1016,13 +1013,13 @@ public class Sql{
 		String struuid = uuid.toString();
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		int level = playerdata.level;
-		int totalbreaknum = playerdata.totalbreaknum;
+		long totalbreaknum = playerdata.totalbreaknum;
 
 		String command = "update " + db + "." + table
 				+ " set"
 
 				+ " level = " + Integer.toString(level)
-				+ ",totalbreaknum = " + Integer.toString(totalbreaknum);
+				+ ",totalbreaknum = " + Long.toString(totalbreaknum);
 
 		//最後の処理
 		command = command + " where uuid like '" + struuid + "'";

@@ -41,7 +41,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			//プレイヤーがオンラインの時の処理
 			if(player != null && playerdata.loaded){
 				//現在の統計量を取得
-				int mines = playerdata.totalbreaknum;
+				long mines = playerdata.totalbreaknum;
 				//現在の統計量を設定(after)
 				playerdata.halfhourblock.after = mines;
 				//前回との差を計算し設定(increase)
@@ -78,8 +78,8 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		    //比較関数
 		    @Override
 		    public int compare(Entry<UUID,PlayerData> o1, Entry<UUID,PlayerData> o2) {
-		    	Integer i1 = new Integer(o1.getValue().halfhourblock.increase);
-		    	Integer i2 = new Integer(o2.getValue().halfhourblock.increase);
+		    	Long i1 = new Long(o1.getValue().halfhourblock.increase);
+		    	Long i2 = new Long(o2.getValue().halfhourblock.increase);
 		    	return i2.compareTo(i1);//降順
 		    }
 		});
