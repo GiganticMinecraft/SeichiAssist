@@ -12,12 +12,10 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockExpEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -48,9 +46,6 @@ public class PlayerBlockBreakListener implements Listener {
 		//デバッグ用
 		if(SeichiAssist.DEBUG)player.sendMessage("ブロックブレイクイベントが呼び出されました");
 
-		//インベントリ一杯フラグを初期化
-		BreakUtil.isInventoryFull = false;
-
 		//壊されるブロックを取得
 		Block block = event.getBlock();
 
@@ -68,18 +63,11 @@ public class PlayerBlockBreakListener implements Listener {
 		if(playerdata == null){
 			return;
 		}
-		ActiveSkill[] activeskill = ActiveSkill.values();
 
-
-		//整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
-		if(Util.isSeichiWorld(player) &&
-		!SeichiAssist.gravitymateriallist.contains(block.getType()) &&
+		//重力値によるキャンセル判定(スキル判定より先に判定させること)
+		if(!SeichiAssist.gravitymateriallist.contains(block.getType()) &&
 		!SeichiAssist.cancelledmateriallist.contains(block.getType())){
-			int type = playerdata.activeskilldata.skilltype-1;
-			if(type < 0){
-				type = 0;
-			}
-			if(BreakUtil.getGravity(player, block, activeskill[type].getBreakLength(playerdata.activeskilldata.skillnum).y, 1) > 3){
+			if(BreakUtil.getGravity(player, block, false) > 15){
 				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 				event.setCancelled(true);
 				return;
@@ -108,10 +96,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//スキル発動条件がそろってなければ終了
-		//スキルが発動しなくてもインベントリに直行させる
 		if(!Util.isSkillEnable(player)){
-
-			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
 			return;
 		}
 
@@ -152,7 +137,6 @@ public class PlayerBlockBreakListener implements Listener {
 		//もしフライ中なら終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "fly中の破壊");
-			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
 			return;
 		}
 
@@ -160,7 +144,6 @@ public class PlayerBlockBreakListener implements Listener {
 		if(!playerdata.activeskilldata.skillcanbreakflag){
 			//SEを再生
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "クールタイムの破壊");
-			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
 			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
@@ -185,21 +168,14 @@ public class PlayerBlockBreakListener implements Listener {
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0 || playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "スキルオフ時の破壊");
-			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
-			if(BreakUtil.isInventoryFull){
-				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-				BreakUtil.isInventoryFull = false;
-			}
 			return;
 		}
 
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, block, tool);
-			event.setCancelled(true);
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
 			runBreakSkill(player, block, tool);
-			event.setCancelled(true);
 		}
 	}
 	//複数範囲破壊
@@ -255,7 +231,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//一回の破壊の範囲
 		final Coordinate breaklength = area.getBreakLength();
 		//１回の全て破壊したときのブロック数
-		final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
+		final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z * breaknum);
 
 		//全てのマナ消費量
 		double useAllMana = 0;
@@ -316,13 +292,13 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 
 			//重力値計算
-			double gravity = BreakUtil.getGravity(player,block,end.y,1);
+			int gravity = BreakUtil.getGravity(player,block,false);
 
 
 			//減る経験値計算
 			//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-			useAllMana += (double) (breaklist.size() + 1) * gravity
+			useAllMana += (double) (breaklist.size() + 1) * (double) (gravity + 1)
 					* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 					/(ifallbreaknum * breaknum) ;
 
@@ -371,11 +347,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breakblocknum==0){
-			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
-			if(BreakUtil.isInventoryFull){
-				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-				BreakUtil.isInventoryFull = false;
-			}
+			BreakUtil.BreakBlock(player, block, centerofblock, tool,true);
 			return;
 		}//スキルの処理
 		else{
@@ -389,7 +361,9 @@ public class PlayerBlockBreakListener implements Listener {
 		mana.decreaseMana(useAllMana,player,playerdata.level);
 
 		//耐久値を減らす
-		tool.setDurability(alldurability);
+		if(!tool.getItemMeta().spigot().isUnbreakable()){
+			tool.setDurability(alldurability);
+		}
 
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = (long) ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
@@ -486,14 +460,14 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//重力値計算
-		double gravity = BreakUtil.getGravity(player,block,end.y,1);
+		int gravity = BreakUtil.getGravity(player,block,false);
 
 
 		//減るマナ計算
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 		Coordinate breaklength = area.getBreakLength();
 		int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
-		double useMana = (double) (breaklist.size()+1) * gravity
+		double useMana = (double) (breaklist.size()+1) * (double) (gravity + 1)
 				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
 				/ifallbreaknum ;
 		if(SeichiAssist.DEBUG){
@@ -550,23 +524,15 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breaklist.size()==0){
-			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
-			if(BreakUtil.isInventoryFull){
-				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-				BreakUtil.isInventoryFull = false;
-			}
+			BreakUtil.BreakBlock(player, block, centerofblock, tool,true);
 			return;
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.activeskilldata.effectnum == 0){
 			breaklist.add(block);
 			SeichiAssist.allblocklist.add(block);
 			for(Block b:breaklist){
-				BreakUtil.BreakBlock(player, b, centerofblock, tool,true);
+				BreakUtil.BreakBlock(player, b, centerofblock, tool,false);
 				SeichiAssist.allblocklist.remove(b);
-			}
-			if(BreakUtil.isInventoryFull){
-				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-				BreakUtil.isInventoryFull = false;
 			}
 		}
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
@@ -589,23 +555,14 @@ public class PlayerBlockBreakListener implements Listener {
 		mana.decreaseMana(useMana,player,playerdata.level);
 
 		//耐久値を減らす
-		tool.setDurability(durability);
+		if(!tool.getItemMeta().spigot().isUnbreakable()){
+			tool.setDurability(durability);
+		}
 
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = (long) ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
 		if(cooldown >= 5){
 			new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
-		}
-	}
-	@EventHandler
-	public void onBlockGenerteExpEvent(BlockExpEvent event){
-		int exp = event.getExpToDrop();
-		Block block = event.getBlock();
-
-		Location loc = block.getLocation();
-		if(exp > 0){
-			ExperienceOrb orb = loc.getWorld().spawn(loc, ExperienceOrb.class);
-			orb.setExperience(exp);
 		}
 	}
 

@@ -89,7 +89,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
 				+ ",level = " + Integer.toString(playerdata.level)
 				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
-				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
+				+ ",totalbreaknum = " + Long.toString(playerdata.totalbreaknum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
 				+ ",playtick = " + Integer.toString(playerdata.playtick)
 				+ ",lastquit = cast( now() as datetime )"
