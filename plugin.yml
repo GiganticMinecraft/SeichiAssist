@@ -1,6 +1,6 @@
 name: SeichiAssist
 main: com.github.unchama.seichiassist.SeichiAssist
-version: 0.9.16
+version: 0.9.19
 
 commands:
   gacha:

@@ -84,7 +84,7 @@ public class PlayerData {
 	//放置時間
 	public int idletime;
 	//トータル破壊ブロック
-	public int totalbreaknum;
+	public long totalbreaknum;
 	//整地量バー
 	public ExpBar expbar;
 	//合計経験値
@@ -435,7 +435,7 @@ public class PlayerData {
 	public int calcPlayerRank(Player p){
 		//ランク用関数
 		int i = 0;
-		int t = totalbreaknum;
+		long t = totalbreaknum;
 		if(SeichiAssist.ranklist.size() == 0){
 			return 1;
 		}
