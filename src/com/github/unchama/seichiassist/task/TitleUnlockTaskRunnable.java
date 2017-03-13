@@ -420,7 +420,16 @@ public class TitleUnlockTaskRunnable {
 				if(flag8001 == 36){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No8001解除！おめでとうございます！");
+				player.sendMessage("【極秘任務】実績No8001解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 8002){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.totalbreaknum % 1000000 == 777777){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("【極秘任務】実績No8002解除！おめでとうございます！");
 				}
 			}
 

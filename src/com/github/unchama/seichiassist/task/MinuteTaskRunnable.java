@@ -250,7 +250,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
     		}
     		//No8000系統の解禁チェック
     		checkNo = 8001 ;
-    		for(;checkNo < 8002 ;){
+    		for(;checkNo < 8003 ;){
     			if(!playerdata.TitleFlags.get(checkNo)){
     				TUTR.TryTitle(player,checkNo);
     			}
