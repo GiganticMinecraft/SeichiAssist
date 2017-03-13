@@ -50,6 +50,6 @@ commands:
       permission-message: You don't have <permission>
   unlockachv:
       description: This is a Achievement command.
-      usage: /<command> <Achivement_No> <playername> <server/world/null> 
+      usage: /<command> <Achivement_No> <playername/ALL> <give/deprive/server/world> 
       permission: multiseichiplugin.seichi
       permission-message: You don't have <permission>
