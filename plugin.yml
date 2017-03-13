@@ -48,3 +48,8 @@ commands:
       usage: /<command>
       default-permission: NOT_OP
       permission-message: You don't have <permission>
+  unlockachv:
+      description: This is a Achievement command.
+      usage: /<command> <Achivement_No> <playername> <server/world/null> 
+      permission: multiseichiplugin.seichi
+      permission-message: You don't have <permission>
