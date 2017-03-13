@@ -51,5 +51,5 @@ commands:
   unlockachv:
       description: This is a Achievement command.
       usage: /<command> <Achivement_No> <playername/ALL> <give/deprive/server/world> 
-      permission: multiseichiplugin.seichi
+      permission: multiseichiplugin.achievement
       permission-message: You don't have <permission>
