@@ -179,7 +179,7 @@ public class AchieveCommand implements TabExecutor{
 							//相手がオンラインかどうか
 							Player givenplayer = Bukkit.getServer().getPlayer(args[1]);
 					        if (givenplayer == null) {
-					            sender.sendMessage(args[1] + " は現在同サーバにいないため、予約付与システムを利用します。(未実装)");
+					            sender.sendMessage(args[1] + " は現在同サーバにいないため、予約付与システムを利用します。");
 					            //sqlをusernameで操作
 
 					            //以下コピペ改善
@@ -222,6 +222,7 @@ public class AchieveCommand implements TabExecutor{
 					     				e.printStackTrace();
 					     				return true;
 					     			}
+					     			sender.sendMessage(args[1] + "へ、実績No"+ args[0] + "の付与の予約が完了しました。");
 
 					     		}else {
 					     			sender.sendMessage(args[1] + "のデータには既に予約があるため実行できません。");
