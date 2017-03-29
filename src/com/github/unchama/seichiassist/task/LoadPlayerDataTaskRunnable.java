@@ -174,6 +174,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.displayTypeLv = rs.getBoolean("displayTypeLv");
  				playerdata.displayTitleNo = rs.getInt("displayTitleNo");
  				playerdata.p_vote_forT = rs.getInt("p_vote");
+ 				playerdata.giveachvNo = rs.getInt("giveachvNo");
 
  				//実績解除フラグのBitSet型への復元処理
  				//初回nullエラー回避のための分岐

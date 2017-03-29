@@ -125,6 +125,8 @@ public class PlayerData {
 	public BitSet TitleFlags;
 	//二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
 	public int p_vote_forT ;
+	//二つ名配布予約NOの保存
+	public int giveachvNo;
 
 
 	//建築LV
@@ -182,6 +184,7 @@ public class PlayerData {
 		this.TitleFlags = new BitSet(10000);
 		this.TitleFlags.set(1);
 		this.p_vote_forT = 0 ;
+		this.giveachvNo = 0 ;
 
 
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){

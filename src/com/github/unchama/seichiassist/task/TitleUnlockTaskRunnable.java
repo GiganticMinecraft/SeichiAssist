@@ -624,6 +624,15 @@ public class TitleUnlockTaskRunnable {
 					player.sendMessage("実績No9016は条件を満たしていません。");
 				}
 			}
+
+		//以下予約配布システム用処理
+		}else if(TryTitleNo >= 7001 && TryTitleNo <= 7999){
+			//解禁時のフラグ変更処理
+			playerdata.TitleFlags.set(TryTitleNo);
+			player.sendMessage("【実績システム】運営チームよりNo" + TryTitleNo + "の二つ名がプレゼントされました。");
+
+
+
 		}else {
 		}
 	}
