@@ -1,5 +1,8 @@
 package com.github.unchama.seichiassist.commands;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -13,6 +16,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class AchieveCommand implements TabExecutor{
@@ -20,6 +24,8 @@ public class AchieveCommand implements TabExecutor{
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
 	PlayerData playerdata;
+
+
 
 	public AchieveCommand(SeichiAssist plugin){
 		this.plugin = plugin;
@@ -42,6 +48,30 @@ public class AchieveCommand implements TabExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 	String label, String[] args) {
+
+		Sql sql = SeichiAssist.plugin.sql;
+
+		final String table = SeichiAssist.PLAYERDATA_TABLENAME;
+
+		String sqlname;
+		Player sqlp;
+		final UUID sqluuid;
+		String sqlcommand;
+		int sqlresult;
+		String sqlexc;
+		Boolean sqlflag;
+		int sqli;
+		Statement sqlstmt = null;
+		ResultSet sqlrs = null;
+		String db;
+
+		db = SeichiAssist.config.getDB();
+		sqlcommand = "";
+		sqlresult = 0 ;
+		sqlflag = true;
+		sqli = 0;
+
+
 		//プレイヤーを取得
 		Player sendplayer = (Player)sender;
 
@@ -149,7 +179,53 @@ public class AchieveCommand implements TabExecutor{
 							//相手がオンラインかどうか
 							Player givenplayer = Bukkit.getServer().getPlayer(args[1]);
 					        if (givenplayer == null) {
-					            sender.sendMessage(args[1] + " は現在このサーバーにログインしていません。");
+					            sender.sendMessage(args[1] + " は現在同サーバにいないため、予約付与システムを利用します。(未実装)");
+					            //sqlをusernameで操作
+
+					            //以下コピペ改善
+					    		//sqlコネクションチェック
+					    		sql.checkConnection();
+					    		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
+					    		try {
+					    			sqlstmt = sql.con.createStatement();
+					    		} catch (SQLException e1) {
+					    			e1.printStackTrace();
+					    			return true;
+					    		}
+
+					     		//giveachvnoの確認を行う
+					    		sqlcommand = "select giveachvNo from " + db + "." + table
+					     				+ " where name = '" + args[1] + "'";
+					     		try{
+					    			sqlrs = sqlstmt.executeQuery(sqlcommand);
+					    			while (sqlrs.next()) {
+					    				   sqlresult = sqlrs.getInt("giveachvNo");
+					    				  }
+					    			sqlrs.close();
+					    		} catch (SQLException e) {
+					    			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+					    			sqlexc = e.getMessage();
+					    			e.printStackTrace();
+					    			return true;
+					    		}
+					            //この際sql側のgiveachvNoが「0(初期値)」ではない場合はキャンセル
+					     		if(sqlresult == 0){
+					     		//データベースの値を書き替えちゃうおじさん
+					     			sqlcommand = "update " + db + "." + table
+					     					+ " set giveachvNo = " + args[0]
+					     					+ " where name like '" + args[1] + "'";
+					     			try {
+					     				sqlstmt.executeUpdate(sqlcommand);
+					     			} catch (SQLException e) {
+					     				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+					     				sqlexc = e.getMessage();
+					     				e.printStackTrace();
+					     				return true;
+					     			}
+
+					     		}else {
+					     			sender.sendMessage(args[1] + "のデータには既に予約があるため実行できません。");
+					     		}
 					            return true;
 					        }
 							UUID givenuuid = givenplayer.getUniqueId();
