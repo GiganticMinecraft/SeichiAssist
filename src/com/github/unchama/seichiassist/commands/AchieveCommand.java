@@ -1,13 +1,10 @@
 package com.github.unchama.seichiassist.commands;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-
-import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -18,6 +15,8 @@ import org.bukkit.entity.Player;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class AchieveCommand implements TabExecutor{
 	public SeichiAssist plugin;
@@ -178,56 +177,13 @@ public class AchieveCommand implements TabExecutor{
 							//<プレイヤー名>が"ALL"以外の場合
 							//相手がオンラインかどうか
 							Player givenplayer = Bukkit.getServer().getPlayer(args[1]);
-					        if (givenplayer == null) {
-					            sender.sendMessage(args[1] + " は現在同サーバにいないため、予約付与システムを利用します。");
-					            //sqlをusernameで操作
-
-					            //以下コピペ改善
-					    		//sqlコネクションチェック
-					    		sql.checkConnection();
-					    		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
-					    		try {
-					    			sqlstmt = sql.con.createStatement();
-					    		} catch (SQLException e1) {
-					    			e1.printStackTrace();
-					    			return true;
-					    		}
-
-					     		//giveachvnoの確認を行う
-					    		sqlcommand = "select giveachvNo from " + db + "." + table
-					     				+ " where name = '" + args[1] + "'";
-					     		try{
-					    			sqlrs = sqlstmt.executeQuery(sqlcommand);
-					    			while (sqlrs.next()) {
-					    				   sqlresult = sqlrs.getInt("giveachvNo");
-					    				  }
-					    			sqlrs.close();
-					    		} catch (SQLException e) {
-					    			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-					    			sqlexc = e.getMessage();
-					    			e.printStackTrace();
-					    			return true;
-					    		}
-					            //この際sql側のgiveachvNoが「0(初期値)」ではない場合はキャンセル
-					     		if(sqlresult == 0){
-					     		//データベースの値を書き替えちゃうおじさん
-					     			sqlcommand = "update " + db + "." + table
-					     					+ " set giveachvNo = " + args[0]
-					     					+ " where name like '" + args[1] + "'";
-					     			try {
-					     				sqlstmt.executeUpdate(sqlcommand);
-					     			} catch (SQLException e) {
-					     				java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-					     				sqlexc = e.getMessage();
-					     				e.printStackTrace();
-					     				return true;
-					     			}
-					     			sender.sendMessage(args[1] + "へ、実績No"+ args[0] + "の付与の予約が完了しました。");
-
-					     		}else {
-					     			sender.sendMessage(args[1] + "のデータには既に予約があるため実行できません。");
-					     		}
-					            return true;
+								if (givenplayer == null) {
+									sender.sendMessage(args[1] + " は現在サーバにいないため、予約付与システムを利用します。");
+								//sqlをusernameで操作
+								if (sql.writegiveachvNo((Player) sender, args[1], args[0])) {
+									sender.sendMessage(args[1] + "へ、実績No"+ args[0] + "の付与の予約が完了しました。");
+								}
+								return true;
 					        }
 							UUID givenuuid = givenplayer.getUniqueId();
 							PlayerData givenplayerdata = playermap.get(givenuuid);
