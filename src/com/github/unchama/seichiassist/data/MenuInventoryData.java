@@ -3715,19 +3715,19 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8003「"+ SeichiAssist.config.getTitle(8003) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：きっちり定時でタイムカードを切りましょう"
-					,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：きっちり定時でタイムカードを切りましょ！"
+					,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は手動解禁式です。"
 					,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(2,itemstack);
 		}else{
-			if(playerdata.playtick % 720000 >= 0 && playerdata.playtick % 720000 <= 1199){
+			if(playerdata.playtick % 72000 >= 0 && playerdata.playtick % 72000 <= 1199){
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8003「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：きっちり定時でタイムカードを切りましょう"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：きっちり定時でタイムカードを切りましょ！"
 					,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は手動解禁式です。"
 					,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
