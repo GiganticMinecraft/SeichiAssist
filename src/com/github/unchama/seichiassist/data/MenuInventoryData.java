@@ -1877,15 +1877,17 @@ public class MenuInventoryData {
 
 		//予約付与受け取りボタン
 		if(!(playerdata.giveachvNo == 0)){
-		itemstack = new ItemStack(Material.EMERALD_BLOCK,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_BLOCK);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "【予約付与システム】" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "運営チームからあなたへ、"
-							,ChatColor.RESET + "" +  ChatColor.RED + "「二つ名」のプレゼントが届いています。"
-							,ChatColor.RESET + "" +  ChatColor.YELLOW + "クリックすることで受け取れます！");
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(1,itemstack);
+			itemstack = new ItemStack(Material.SKULL_ITEM,1);
+			skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+			itemstack.setDurability((short) 3);
+			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "【実績付与システム】");
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "運営チームからあなたへ、"
+					,ChatColor.RESET + "" +  ChatColor.RED + "「二つ名」のプレゼントが届いています。"
+					,ChatColor.RESET + "" +  ChatColor.YELLOW + "クリックすることで受け取れます！");
+			skullmeta.setLore(lore);
+			skullmeta.setOwner("MHF_Present2");
+			itemstack.setItemMeta(skullmeta);
+			inventory.setItem(1,itemstack);
 		}
 
 		//実績確認画面へ移動
@@ -2829,8 +2831,10 @@ public class MenuInventoryData {
 		if(playerdata.playtick % 576000 >= 0 && playerdata.playtick % 576000 <= 1199 && !(playerdata.TitleFlags.get(8003))){
 			itemstack = new ItemStack(Material.EMERALD_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "タイムカード、切りましょう？" );
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "タイムカード、切りましょ？" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "※何かが起こります※");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(35,itemstack);
 		}
@@ -3259,6 +3263,19 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(4,itemstack);
 		}
+		//使うか分からんから次回更新時に消すかも
+		if(playerdata.TitleFlags.get(7006)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7006「"+ SeichiAssist.config.getTitle(7006) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：公式イベント「第一回建築コンペ」で配布"
+								,ChatColor.RESET + "" +  ChatColor.RED + "開催テーマは「桜」でした。"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は配布解禁式です");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(5,itemstack);
+		}
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -3604,7 +3621,7 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9016「"+ SeichiAssist.config.getTitle(9016) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：ﾚｯﾂ大掃除ｷｬﾝﾍﾟｰﾝ(日付実績)");
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある掃除デーにプレイ");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -3613,12 +3630,92 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9016「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：ﾚｯﾂ大掃除ｷｬﾝﾍﾟｰﾝ(日付実績)"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある掃除デーにプレイ"
 								,ChatColor.RESET + "" +  ChatColor.GREEN + "※クリックで実績に挑戦できます");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(15,itemstack);
+		}
+		if(playerdata.TitleFlags.get(9017)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9017「"+ SeichiAssist.config.getTitle(9017) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：5月にプレイ");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(16,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9017「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：5月にプレイ"
+								,ChatColor.RESET + "" +  ChatColor.GREEN + "※クリックで実績に挑戦できます");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(16,itemstack);
+		}
+		if(playerdata.TitleFlags.get(9018)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9018「"+ SeichiAssist.config.getTitle(9018) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある子供の日にプレイ");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(17,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9018「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある子供の日にプレイ"
+								,ChatColor.RESET + "" +  ChatColor.GREEN + "※クリックで実績に挑戦できます");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(17,itemstack);
+		}
+		if(playerdata.TitleFlags.get(9019)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9019「"+ SeichiAssist.config.getTitle(9019) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：端午の節句にプレイ");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(18,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9019「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：端午の節句にプレイ"
+								,ChatColor.RESET + "" +  ChatColor.GREEN + "※クリックで実績に挑戦できます");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(18,itemstack);
+		}
+		if(playerdata.TitleFlags.get(9020)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9020「"+ SeichiAssist.config.getTitle(9020) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：母の日にプレイ");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(19,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9020「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：母の日にプレイ"
+								,ChatColor.RESET + "" +  ChatColor.GREEN + "※クリックで実績に挑戦できます");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(19,itemstack);
 		}
 
 		// 1ページ目を開く
