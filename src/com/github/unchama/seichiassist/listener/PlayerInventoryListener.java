@@ -2679,7 +2679,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//予約付与システム受け取り処理
-			if(itemstackcurrent.getType().equals(Material.EMERALD_BLOCK)){
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_Present2")){
 				TUTR.TryTitle(player,playerdata.giveachvNo);
 				playerdata.giveachvNo = 0 ;
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
@@ -3077,6 +3077,10 @@ public class PlayerInventoryListener implements Listener {
     				playerdata.displayTitleNo = 7005 ;
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(7005) +"」が設定されました。");
     			}
+    			else if(itemmeta.getDisplayName().contains("No7006「"+ SeichiAssist.config.getTitle(7006) +"」")){
+    				playerdata.displayTitleNo = 7006 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(7006) +"」が設定されました。");
+    			}
     			player.openInventory(MenuInventoryData.getTitleEventData(player));
 
     		}
@@ -3138,6 +3142,14 @@ public class PlayerInventoryListener implements Listener {
     				TUTR.TryTitle(player,9015);
     			}else if(itemmeta.getDisplayName().contains("No9016「???」")){
     				TUTR.TryTitle(player,9016);
+    			}else if(itemmeta.getDisplayName().contains("No9017「???」")){
+    				TUTR.TryTitle(player,9017);
+    			}else if(itemmeta.getDisplayName().contains("No9018「???」")){
+    				TUTR.TryTitle(player,9018);
+    			}else if(itemmeta.getDisplayName().contains("No9019「???」")){
+    				TUTR.TryTitle(player,9019);
+    			}else if(itemmeta.getDisplayName().contains("No9020「???」")){
+    				TUTR.TryTitle(player,9020);
     			}
 
     			player.openInventory(MenuInventoryData.getTitleExtraData(player));
@@ -3208,6 +3220,22 @@ public class PlayerInventoryListener implements Listener {
     			else if(itemmeta.getDisplayName().contains("No9016「"+ SeichiAssist.config.getTitle(9016) +"」")){
     				playerdata.displayTitleNo = 9016 ;
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(9016) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No9017「"+ SeichiAssist.config.getTitle(9017) +"」")){
+    				playerdata.displayTitleNo = 9017 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(9017) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No9018「"+ SeichiAssist.config.getTitle(9018) +"」")){
+    				playerdata.displayTitleNo = 9018 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(9018) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No9019「"+ SeichiAssist.config.getTitle(9019) +"」")){
+    				playerdata.displayTitleNo = 9019 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(9019) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No9020「"+ SeichiAssist.config.getTitle(9020) +"」")){
+    				playerdata.displayTitleNo = 9020 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle(9020) +"」が設定されました。");
     			}
     			player.openInventory(MenuInventoryData.getTitleExtraData(player));
     		}
