@@ -52,6 +52,8 @@ public class MagicTaskRunnable extends BukkitRunnable {
 	Wool red;
 	BlockState state;
 	Material m;
+	// タスク分岐用int
+	int round;
 
 	public MagicTaskRunnable(Player player, PlayerData playerdata, ItemStack tool, List<Block> breaklist, Coordinate start,
 			Coordinate end, Location droploc) {
@@ -62,38 +64,57 @@ public class MagicTaskRunnable extends BukkitRunnable {
 		this.start = start;
 		this.end = end;
 		this.droploc = droploc.clone();
+		round = 0;
 
 		this.ploc = player.getLocation().clone();
 		this.centerbreakloc = this.droploc.add(start.x + (end.x - start.x) / 2, start.y + (end.y - start.y) / 2, start.z + (end.z - start.z) / 2);
 
-		DyeColor[] colors = { DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN };
-		int rd = new Random().nextInt(colors.length);
-
-		for (Block b : breaklist) {
-			BreakUtil.BreakBlock(player, b, droploc, tool, false);
-			b.setType(Material.WOOL);
-			state = b.getState();
-			red = (Wool) state.getData();
-			red.setColor(colors[rd]);
-			state.update();
-		}
 	}
 
 	@Override
 	public void run() {
-		if (SeichiAssist.entitylist.isEmpty()) {
-			Chicken e = (Chicken) player.getWorld().spawnEntity(centerbreakloc, EntityType.CHICKEN);
-			SeichiAssist.entitylist.add((Entity) e);
-			e.playEffect(EntityEffect.WITCH_MAGIC);
-			e.setInvulnerable(true);
-			new EntityRemoveTaskRunnable((Entity) e).runTaskLater(plugin, 100);
-			player.getWorld().playSound(effectloc, Sound.ENTITY_WITCH_AMBIENT, 1, 1.5F);
+		round++;
+		switch(round){
+		case 1:
+			//1回目のrun
+
+			DyeColor[] colors = { DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN };
+			int rd = new Random().nextInt(colors.length);
+
+			for (Block b : breaklist) {
+				BreakUtil.BreakBlock(player, b, droploc, tool, false);
+				b.setType(Material.WOOL);
+				state = b.getState();
+				red = (Wool) state.getData();
+				red.setColor(colors[rd]);
+				state.update();
+			}
+			break;
+
+		case 2:
+			//2回目のrun
+			if (SeichiAssist.entitylist.isEmpty()) {
+				Chicken e = (Chicken) player.getWorld().spawnEntity(centerbreakloc, EntityType.CHICKEN);
+				SeichiAssist.entitylist.add((Entity) e);
+				e.playEffect(EntityEffect.WITCH_MAGIC);
+				e.setInvulnerable(true);
+				new EntityRemoveTaskRunnable((Entity) e).runTaskLater(plugin, 100);
+				player.getWorld().playSound(effectloc, Sound.ENTITY_WITCH_AMBIENT, 1, 1.5F);
+			}
+
+			for (Block b : breaklist) {
+				b.setType(Material.AIR);
+				b.getWorld().spawnParticle(Particle.NOTE, b.getLocation().add(0.5, 0.5, 0.5), 1);
+				SeichiAssist.allblocklist.remove(b);
+			}
+			cancel();
+			break;
+
+		default:
+			//念のためキャンセル
+			cancel();
+			break;
 		}
 
-		for (Block b : breaklist) {
-			b.setType(Material.AIR);
-			b.getWorld().spawnParticle(Particle.NOTE, b.getLocation().add(0.5, 0.5, 0.5), 1);
-			SeichiAssist.allblocklist.remove(b);
-		}
 	}
 }

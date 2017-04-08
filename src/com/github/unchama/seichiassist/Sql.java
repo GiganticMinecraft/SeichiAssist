@@ -276,7 +276,8 @@ public class Sql{
 				",add column if not exists lastquit datetime default null" +
 				",add column if not exists displayTypeLv boolean default true" +
 				",add column if not exists displayTitleNo int default 0" +
-				",add column if not exists TitleFlags text default null" ;
+				",add column if not exists TitleFlags text default null" +
+				",add column if not exists giveachvNo int default 0" ;
 
 				/*
 				",add column if not exists stack_dirt int default 0" +
@@ -1282,6 +1283,49 @@ public class Sql{
 		if (!putCommand(command)) {
 			player.sendMessage(ChatColor.RED + "アイテムのクリアに失敗しました");
 			Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> clearShareInv");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 実績予約領域書き換え処理
+	 *
+	 * @param sender 発行Player
+	 * @param targetName 対象Playerのname
+	 * @param achvNo 対象実績No
+	 * @return 成否…true: 成功、false: 失敗
+	 */
+	public boolean writegiveachvNo(Player sender, String targetName, String achvNo) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String select = "SELECT giveachvNo FROM " + db + "." + table + " " +
+				"WHERE name LIKE '" + targetName + "'";
+		String update = "UPDATE " + db + "." + table + " " +
+ 				" SET giveachvNo = " + achvNo +
+ 				" WHERE name LIKE '" + targetName + "'";
+
+		// selectで確認
+ 		try {
+			rs = stmt.executeQuery(select);
+			// 初回のnextがnull→データが1件も無い場合
+			if (!rs.next()) {
+				sender.sendMessage(ChatColor.RED + "" + targetName + " はデータベースに登録されていません");
+				return false;
+			}
+			// 現在予約されている値を取得
+			int giveachvNo = rs.getInt("giveachvNo");
+			// 既に予約がある場合
+			if (giveachvNo != 0) {
+				sender.sendMessage(ChatColor.RED + "" + targetName + " には既に実績No " + giveachvNo + " が予約されています");
+				return false;
+			}
+			rs.close();
+			// 実績を予約
+			stmt.executeUpdate(update);
+		} catch (SQLException e) {
+			sender.sendMessage(ChatColor.RED + "実績の予約に失敗しました");
+			Bukkit.getLogger().warning(Util.getName(sender) + " sql failed. -> writegiveachvNo");
+			e.printStackTrace();
 			return false;
 		}
 		return true;
