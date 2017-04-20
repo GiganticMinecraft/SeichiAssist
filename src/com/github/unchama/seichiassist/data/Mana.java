@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist.data;
 
 
 
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -9,8 +11,6 @@ import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
-
-import net.md_5.bungee.api.ChatColor;
 
 
 
@@ -44,7 +44,6 @@ public class Mana {
 		if(!loadflag)return;
 		removeBar();
 		setManaBar(player,level);
-
 	}
 	private void setManaBar(Player player,int level) {
 		manabar = player.getServer().createBossBar(ChatColor.AQUA + "" + ChatColor.BOLD + "マナ(" + Util.Decimal(m) + "/" + max + ")", BarColor.BLUE, BarStyle.SOLID);

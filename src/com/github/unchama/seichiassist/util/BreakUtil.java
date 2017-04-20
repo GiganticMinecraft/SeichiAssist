@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import net.coreprotect.CoreProtectAPI;
+
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
@@ -29,8 +31,6 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
-
-import net.coreprotect.CoreProtectAPI;
 
 public class BreakUtil {
 	public static boolean isInventoryFull = false;
