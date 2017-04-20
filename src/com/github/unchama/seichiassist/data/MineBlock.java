@@ -2,9 +2,9 @@ package com.github.unchama.seichiassist.data;
 
 
 public class MineBlock{
-	public int after;
-	public int before;
-	public int increase;
+	public long after;
+	public long before;
+	public long increase;
 
 	MineBlock(){
 		after = 0;
