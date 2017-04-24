@@ -34,8 +34,12 @@ public class MenuInventoryData {
 	SeichiAssist plugin = SeichiAssist.plugin;
 
 	//二つ名組合せシステム用
-	static boolean nextpageflag = false ;
-	static int checkTitle = 0 ;
+	static boolean nextpageflag1 = false ;
+	static boolean nextpageflag2 = false ;
+	static boolean nextpageflag3 = false ;
+	static int checkTitle1 = 0 ;
+	static int checkTitle2 = 0 ;
+	static int checkTitle3 = 0 ;
 
 	//1ページ目メニュー
 	public static Inventory getMenuData(Player p){
@@ -2131,24 +2135,24 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 
 
-		if(nextpageflag){
-			nextpageflag = false;
+		if(nextpageflag1){
+			nextpageflag1 = false;
 		}else {
-			checkTitle = 1000;
+			checkTitle1 = 1000;
 		}
 
 		//各ボタンの設定
 		//解禁済みの実績をチェック→前パーツがあるかをチェック→あればボタン配置
 		int checkInv = 0 ;
-		for(;checkTitle < 9900 ;){
+		for(;checkTitle1 < 9900 ;){
 			if(checkInv < 27){
-				if(playerdata.TitleFlags.get(checkTitle)){
-					if(SeichiAssist.config.getTitle1(checkTitle) == null || SeichiAssist.config.getTitle1(checkTitle) == ""){
+				if(playerdata.TitleFlags.get(checkTitle1)){
+					if(SeichiAssist.config.getTitle1(checkTitle1) == null || SeichiAssist.config.getTitle1(checkTitle1) == ""){
 					}else{
 						itemstack = new ItemStack(Material.WATER_BUCKET,1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATER_BUCKET);
-						itemmeta.setDisplayName(String.valueOf(checkTitle));
-						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "前パーツ「"+ SeichiAssist.config.getTitle1(checkTitle) +"」");
+						itemmeta.setDisplayName(String.valueOf(checkTitle1));
+						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "前パーツ「"+ SeichiAssist.config.getTitle1(checkTitle1) +"」");
 						itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 						itemmeta.setLore(lore);
 						itemstack.setItemMeta(itemmeta);
@@ -2171,17 +2175,17 @@ public class MenuInventoryData {
 				itemstack.setItemMeta(skullmeta);
 				inventory.setItem(35,itemstack);
 
-				nextpageflag = true ;
+				nextpageflag1 = true ;
 
 				break;
 			}
-			checkTitle ++ ;
+			checkTitle1 ++ ;
 		}
 
 		//パーツ未選択状態にするボタン
 		itemstack = new ItemStack(Material.GRASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツを未選択状態にする");
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツを未選択状態にする");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行"
 				);
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -2226,26 +2230,26 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 
 
-		if(nextpageflag){
-			nextpageflag = false;
+		if(nextpageflag2){
+			nextpageflag2 = false;
 		}else {
-			checkTitle = 9900;
+			checkTitle2 = 9900;
 		}
 
 		//各ボタンの設定
 		//パーツがあるかをチェック→あればボタン配置
 		int checkInv = 0 ;
-		for(;checkTitle < 9999 ;){
+		for(;checkTitle2 < 9999 ;){
 			if(checkInv < 27){
 				//一部の「隠し中パーツ」は取得しているかの確認
-				if(9911 <= checkTitle  && checkTitle <= 9915){
-					if(playerdata.TitleFlags.get(checkTitle)){
-						if(SeichiAssist.config.getTitle2(checkTitle) == null || SeichiAssist.config.getTitle2(checkTitle) == ""){
+				if(9911 <= checkTitle2  && checkTitle2 <= 9915){
+					if(playerdata.TitleFlags.get(checkTitle2)){
+						if(SeichiAssist.config.getTitle2(checkTitle2) == null || SeichiAssist.config.getTitle2(checkTitle2) == ""){
 						}else{
 							itemstack = new ItemStack(Material.MILK_BUCKET,1);
 							itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MILK_BUCKET);
-							itemmeta.setDisplayName(String.valueOf(checkTitle));
-							lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "中パーツ「"+ SeichiAssist.config.getTitle2(checkTitle) +"」");
+							itemmeta.setDisplayName(String.valueOf(checkTitle2));
+							lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "中パーツ「"+ SeichiAssist.config.getTitle2(checkTitle2) +"」");
 							itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 							itemmeta.setLore(lore);
 							itemstack.setItemMeta(itemmeta);
@@ -2254,12 +2258,12 @@ public class MenuInventoryData {
 							checkInv ++ ;
 						}
 					}
-				}else if(SeichiAssist.config.getTitle2(checkTitle) == null || SeichiAssist.config.getTitle2(checkTitle) == ""){
+				}else if(SeichiAssist.config.getTitle2(checkTitle2) == null || SeichiAssist.config.getTitle2(checkTitle2) == ""){
 				}else{
 					itemstack = new ItemStack(Material.MILK_BUCKET,1);
 					itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MILK_BUCKET);
-					itemmeta.setDisplayName(String.valueOf(checkTitle));
-					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "中パーツ「"+ SeichiAssist.config.getTitle2(checkTitle) +"」");
+					itemmeta.setDisplayName(String.valueOf(checkTitle2));
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "中パーツ「"+ SeichiAssist.config.getTitle2(checkTitle2) +"」");
 					itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 					itemmeta.setLore(lore);
 					itemstack.setItemMeta(itemmeta);
@@ -2282,17 +2286,17 @@ public class MenuInventoryData {
 				itemstack.setItemMeta(skullmeta);
 				inventory.setItem(35,itemstack);
 
-				nextpageflag = true ;
+				nextpageflag2 = true ;
 
 				break;
 			}
-			checkTitle ++ ;
+			checkTitle2 ++ ;
 		}
 
 		//パーツ未選択状態にするボタン
 		itemstack = new ItemStack(Material.GRASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツを未選択状態にする");
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "中パーツを未選択状態にする");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行"
 				);
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -2336,24 +2340,24 @@ public class MenuInventoryData {
 		SkullMeta skullmeta;
 		List<String> lore = new ArrayList<String>();
 
-		if(nextpageflag){
-			nextpageflag = false;
+		if(nextpageflag3){
+			nextpageflag3 = false;
 		}else {
-			checkTitle = 1000;
+			checkTitle3 = 1000;
 		}
 
 		//各ボタンの設定
 		//解禁済みの実績をチェック→前パーツがあるかをチェック→あればボタン配置
 		int checkInv = 0 ;
-		for(;checkTitle < 9900 ;){
+		for(;checkTitle3 < 9900 ;){
 			if(checkInv < 27){
-				if(playerdata.TitleFlags.get(checkTitle)){
-					if(SeichiAssist.config.getTitle3(checkTitle) == null || SeichiAssist.config.getTitle3(checkTitle) == ""){
+				if(playerdata.TitleFlags.get(checkTitle3)){
+					if(SeichiAssist.config.getTitle3(checkTitle3) == null || SeichiAssist.config.getTitle3(checkTitle3) == ""){
 					}else{
 						itemstack = new ItemStack(Material.LAVA_BUCKET,1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAVA_BUCKET);
-						itemmeta.setDisplayName(String.valueOf(checkTitle));
-						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "後パーツ「"+ SeichiAssist.config.getTitle3(checkTitle) +"」");
+						itemmeta.setDisplayName(String.valueOf(checkTitle3));
+						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "後パーツ「"+ SeichiAssist.config.getTitle3(checkTitle3) +"」");
 						itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 						itemmeta.setLore(lore);
 						itemstack.setItemMeta(itemmeta);
@@ -2376,11 +2380,11 @@ public class MenuInventoryData {
 				itemstack.setItemMeta(skullmeta);
 				inventory.setItem(35,itemstack);
 
-				nextpageflag = true ;
+				nextpageflag3 = true ;
 
 				break;
 			}
-			checkTitle ++ ;
+			checkTitle3 ++ ;
 		}
 
 		//パーツ未選択状態にするボタン
@@ -2448,7 +2452,7 @@ public class MenuInventoryData {
 		//おしながき
 		int i = 9801 ;
 		int setInv = 1 ;
-		for(;i <= 9810;){
+		for(;i <= 9812;){
 			if(!playerdata.TitleFlags.get(i)){
 				itemstack = new ItemStack(Material.BEDROCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
@@ -2466,13 +2470,13 @@ public class MenuInventoryData {
 			i ++ ;
 		}
 		i = 9911 ;
-		for(;i <= 9915;){
+		for(;i <= 9917;){
 			if(!playerdata.TitleFlags.get(i)){
 				itemstack = new ItemStack(Material.BEDROCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 				itemmeta.setDisplayName(String.valueOf(i));
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "中パーツ「"+ SeichiAssist.config.getTitle2(i) +"」"
-									,ChatColor.RESET + "" +  ChatColor.GREEN + "必要ポイント：50"
+									,ChatColor.RESET + "" +  ChatColor.GREEN + "必要ポイント：35"
 									,ChatColor.RESET + "" +  ChatColor.AQUA + "クリックで購入できます");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);

@@ -2764,7 +2764,7 @@ public class PlayerInventoryListener implements Listener {
     			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			playerdata.achvPointMAX = 0;
-    			for(int i=1000 ; i < 9900; i ++ ){
+    			for(int i=1000 ; i < 9800; i ++ ){
     				if(playerdata.TitleFlags.get(i)){
     					playerdata.achvPointMAX += 10 ;
     				}
@@ -2907,7 +2907,7 @@ public class PlayerInventoryListener implements Listener {
     		//次ページ
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.setFreeTitle1Data(player));
+				player.openInventory(MenuInventoryData.setFreeTitle2Data(player));
 				return;
 			}
 
@@ -2959,7 +2959,7 @@ public class PlayerInventoryListener implements Listener {
     		//次ページ
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.setFreeTitle1Data(player));
+				player.openInventory(MenuInventoryData.setFreeTitle3Data(player));
 				return;
 			}
 
@@ -2986,7 +2986,7 @@ public class PlayerInventoryListener implements Listener {
     			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			playerdata.achvPointMAX = 0;
-    			for(int i=1000 ; i < 9900; i ++ ){
+    			for(int i=1000 ; i < 9800; i ++ ){
     				if(playerdata.TitleFlags.get(i)){
     					playerdata.achvPointMAX += 10 ;
     				}
@@ -3011,12 +3011,12 @@ public class PlayerInventoryListener implements Listener {
 	    				player.openInventory(MenuInventoryData.setTitleShopData(player));
 	    			}
     			}else {
-        			if(playerdata.achvPoint < 50){
+        			if(playerdata.achvPoint < 35){
         				player.sendMessage("実績ポイントが不足しています。");
         			}else {
         				playerdata.TitleFlags.set(Integer.parseInt(itemmeta.getDisplayName()));
-        				playerdata.achvPoint -= 50 ;
-        				playerdata.achvPointUSE += 50 ;
+        				playerdata.achvPoint -= 35 ;
+        				playerdata.achvPointUSE += 35 ;
         				player.sendMessage("パーツ「"+ SeichiAssist.config.getTitle2(Integer.parseInt(itemmeta.getDisplayName())) + "」を購入しました。");
         				player.openInventory(MenuInventoryData.setTitleShopData(player));
         			}
