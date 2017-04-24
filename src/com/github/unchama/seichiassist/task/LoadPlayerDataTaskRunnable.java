@@ -172,9 +172,14 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
  				//実績、二つ名の情報
  				playerdata.displayTypeLv = rs.getBoolean("displayTypeLv");
- 				playerdata.displayTitleNo = rs.getInt("displayTitleNo");
+ 				playerdata.displayTitle1No = rs.getInt("displayTitle1No");
+ 				playerdata.displayTitle2No = rs.getInt("displayTitle2No");
+ 				playerdata.displayTitle3No = rs.getInt("displayTitle3No");
  				playerdata.p_vote_forT = rs.getInt("p_vote");
  				playerdata.giveachvNo = rs.getInt("giveachvNo");
+ 				playerdata.achvPointMAX = rs.getInt("achvPointMAX");
+ 				playerdata.achvPointUSE = rs.getInt("achvPointUSE");
+ 				playerdata.achvPoint = playerdata.achvPointMAX - playerdata.achvPointUSE ;
 
  				//実績解除フラグのBitSet型への復元処理
  				//初回nullエラー回避のための分岐

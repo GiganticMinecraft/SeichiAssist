@@ -107,8 +107,12 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",everysound = " + Boolean.toString(playerdata.everysoundflag)
 
 				+",displayTypeLv = " + Boolean.toString(playerdata.displayTypeLv)
-				+",displayTitleNo = " + Integer.toString(playerdata.displayTitleNo)
-				+",giveachvNo = " + Integer.toString(playerdata.giveachvNo);
+				+",displayTitle1No = " + Integer.toString(playerdata.displayTitle1No)
+				+",displayTitle2No = " + Integer.toString(playerdata.displayTitle2No)
+				+",displayTitle3No = " + Integer.toString(playerdata.displayTitle3No)
+				+",giveachvNo = " + Integer.toString(playerdata.giveachvNo)
+				+",achvPointMAX = " + Integer.toString(playerdata.achvPointMAX)
+				+",achvPointUSE = " + Integer.toString(playerdata.achvPointUSE);
 
 				//MineStack機能の数値更新処理
 

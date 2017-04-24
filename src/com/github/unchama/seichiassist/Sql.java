@@ -276,8 +276,13 @@ public class Sql{
 				",add column if not exists lastquit datetime default null" +
 				",add column if not exists displayTypeLv boolean default true" +
 				",add column if not exists displayTitleNo int default 0" +
+				",add column if not exists displayTitle1No int default 0" +
+				",add column if not exists displayTitle2No int default 0" +
+				",add column if not exists displayTitle3No int default 0" +
 				",add column if not exists TitleFlags text default null" +
-				",add column if not exists giveachvNo int default 0" ;
+				",add column if not exists giveachvNo int default 0" +
+				",add column if not exists achvPointMAX int default 0" +
+				",add column if not exists achvPointUSE int default 0" ;
 
 				/*
 				",add column if not exists stack_dirt int default 0" +
@@ -691,6 +696,7 @@ public class Sql{
  			p.getInventory().addItem(new ItemStack(Material.DIAMOND_PICKAXE));
  			p.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
  			MebiusListener.give(p);
+
  			return true;
 
  		}else if(count == 1){
