@@ -133,6 +133,8 @@ public class PlayerData {
 	public int achvPointMAX ;//累計取得量
 	public int achvPointUSE ;//消費量
 	public int achvPoint ;//現在の残量
+	public int achvChangenum ;//投票ptからの変換回数
+	public boolean samepageflag ;//実績ショップ用
 
 
 	//建築LV

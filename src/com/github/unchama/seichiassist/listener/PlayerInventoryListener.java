@@ -2769,8 +2769,33 @@ public class PlayerInventoryListener implements Listener {
     					playerdata.achvPointMAX += 10 ;
     				}
     			}
-    			playerdata.achvPoint = playerdata.achvPointMAX - playerdata.achvPointUSE ;
+    			playerdata.achvPoint = (playerdata.achvPointMAX + (playerdata.achvChangenum * 3 )) - playerdata.achvPointUSE ;
     			player.openInventory(MenuInventoryData.setFreeTitleMainData(player));
+    		}
+
+    		//エフェクトポイント→実績ポイント変換
+    		if(itemstackcurrent.getType().equals(Material.EMERALD)){
+    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    			//不足してたらスルー
+    			if(playerdata.activeskilldata.effectpoint < 10){
+    				player.sendMessage("エフェクトポイントが不足しています。");
+    			}else {
+    				playerdata.achvChangenum ++ ;
+    				playerdata.activeskilldata.effectpoint -= 10 ;
+    			}
+    			//データ最新化
+    			playerdata.achvPointMAX = 0;
+    			for(int i=1000 ; i < 9800; i ++ ){
+    				if(playerdata.TitleFlags.get(i)){
+    					playerdata.achvPointMAX += 10 ;
+    				}
+    			}
+    			playerdata.achvPoint = (playerdata.achvPointMAX + (playerdata.achvChangenum * 3 )) - playerdata.achvPointUSE ;
+
+    			player.openInventory(MenuInventoryData.setFreeTitleMainData(player));
+
+
     		}
 
     		//パーツショップ
@@ -2991,7 +3016,8 @@ public class PlayerInventoryListener implements Listener {
     					playerdata.achvPointMAX += 10 ;
     				}
     			}
-    			playerdata.achvPoint = playerdata.achvPointMAX - playerdata.achvPointUSE ;
+    			playerdata.achvPoint = (playerdata.achvPointMAX + (playerdata.achvChangenum * 3 )) - playerdata.achvPointUSE ;
+    			playerdata.samepageflag = true;
     			player.openInventory(MenuInventoryData.setTitleShopData(player));
     		}
 
@@ -3008,6 +3034,7 @@ public class PlayerInventoryListener implements Listener {
 	    				playerdata.achvPoint -= 20 ;
 	    				playerdata.achvPointUSE += 20 ;
 	    				player.sendMessage("パーツ「"+ SeichiAssist.config.getTitle1(Integer.parseInt(itemmeta.getDisplayName())) + "」を購入しました。");
+	    				playerdata.samepageflag = true;
 	    				player.openInventory(MenuInventoryData.setTitleShopData(player));
 	    			}
     			}else {
@@ -3018,6 +3045,7 @@ public class PlayerInventoryListener implements Listener {
         				playerdata.achvPoint -= 35 ;
         				playerdata.achvPointUSE += 35 ;
         				player.sendMessage("パーツ「"+ SeichiAssist.config.getTitle2(Integer.parseInt(itemmeta.getDisplayName())) + "」を購入しました。");
+        				playerdata.samepageflag = true;
         				player.openInventory(MenuInventoryData.setTitleShopData(player));
         			}
     			}
@@ -3030,6 +3058,13 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.BARRIER)){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.setFreeTitleMainData(player));
+				return;
+			}
+
+    		//次ページ
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.setTitleShopData(player));
 				return;
 			}
 

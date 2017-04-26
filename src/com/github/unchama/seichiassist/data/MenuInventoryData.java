@@ -37,9 +37,12 @@ public class MenuInventoryData {
 	static boolean nextpageflag1 = false ;
 	static boolean nextpageflag2 = false ;
 	static boolean nextpageflag3 = false ;
+	static boolean nextpageflagS = false ;
 	static int checkTitle1 = 0 ;
 	static int checkTitle2 = 0 ;
 	static int checkTitle3 = 0 ;
+	static int checkTitleS = 0 ;
+	static int NoKeep = 0;
 
 	//1ページ目メニュー
 	public static Inventory getMenuData(Player p){
@@ -2025,13 +2028,22 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 
 		//各ボタンの設定
+		nextpageflag1 = false ;
+		nextpageflag2 = false ;
+		nextpageflag3 = false ;
+		nextpageflagS = false ;
+		checkTitle1 = 0 ;
+		checkTitle2 = 0 ;
+		checkTitle3 = 0 ;
+		checkTitleS = 0 ;
+		NoKeep = 0 ;
 
 		//実績ポイントの最新情報反映ボタン
 		itemstack = new ItemStack(Material.EMERALD_ORE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "クリックで情報を最新化"
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + playerdata.achvPointMAX
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + (playerdata.achvPointMAX + playerdata.achvChangenum * 3)
 							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.achvPointUSE
 							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.achvPoint );
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -2048,6 +2060,21 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(9,itemstack);
+
+		//エフェクトポイントからの変換ボタン
+		itemstack = new ItemStack(Material.EMERALD,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ポイント変換ボタン" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "JMS投票で手に入るポイントを"
+							,ChatColor.RESET + "" +  ChatColor.RED + "実績ポイントに変換できます。"
+							,ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.BOLD + "投票pt 10pt → 実績pt 3pt"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "クリックで変換を一回行います。"
+							,ChatColor.RESET + "" +  ChatColor.GREEN + "所有投票pt :" + playerdata.activeskilldata.effectpoint
+							,ChatColor.RESET + "" +  ChatColor.GREEN + "所有実績pt :" + playerdata.achvPoint);
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(1,itemstack);
 
 
 		itemstack = new ItemStack(Material.BOOK,1);
@@ -2182,6 +2209,7 @@ public class MenuInventoryData {
 			checkTitle1 ++ ;
 		}
 
+
 		//パーツ未選択状態にするボタン
 		itemstack = new ItemStack(Material.GRASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
@@ -2242,7 +2270,7 @@ public class MenuInventoryData {
 		for(;checkTitle2 < 9999 ;){
 			if(checkInv < 27){
 				//一部の「隠し中パーツ」は取得しているかの確認
-				if(9911 <= checkTitle2  && checkTitle2 <= 9915){
+				if(9911 <= checkTitle2  /*&& checkTitle2 <= 9927*/){
 					if(playerdata.TitleFlags.get(checkTitle2)){
 						if(SeichiAssist.config.getTitle2(checkTitle2) == null || SeichiAssist.config.getTitle2(checkTitle2) == ""){
 						}else{
@@ -2286,12 +2314,11 @@ public class MenuInventoryData {
 				itemstack.setItemMeta(skullmeta);
 				inventory.setItem(35,itemstack);
 
-				nextpageflag2 = true ;
-
 				break;
 			}
 			checkTitle2 ++ ;
 		}
+
 
 		//パーツ未選択状態にするボタン
 		itemstack = new ItemStack(Material.GRASS,1);
@@ -2341,7 +2368,6 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 
 		if(nextpageflag3){
-			nextpageflag3 = false;
 		}else {
 			checkTitle3 = 1000;
 		}
@@ -2441,7 +2467,7 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "クリックで情報を最新化"
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + playerdata.achvPointMAX
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + (playerdata.achvPointMAX + playerdata.achvChangenum * 3)
 							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.achvPointUSE
 							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.achvPoint );
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -2450,43 +2476,88 @@ public class MenuInventoryData {
 		inventory.setItem(0,itemstack);
 
 		//おしながき
-		int i = 9801 ;
+		if(playerdata.samepageflag){
+			checkTitleS = NoKeep ;
+		}else if(!nextpageflagS){
+			checkTitleS = 9801 ;
+		}
+		NoKeep = checkTitleS ;
+		playerdata.samepageflag = false;
 		int setInv = 1 ;
-		for(;i <= 9812;){
-			if(!playerdata.TitleFlags.get(i)){
-				itemstack = new ItemStack(Material.BEDROCK,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-				itemmeta.setDisplayName(String.valueOf(i));
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "前・後パーツ「"+ SeichiAssist.config.getTitle1(i) +"」"
-									,ChatColor.RESET + "" +  ChatColor.GREEN + "必要ポイント：20"
-									,ChatColor.RESET + "" +  ChatColor.AQUA + "クリックで購入できます");
-				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-				itemmeta.setLore(lore);
-				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(setInv,itemstack);
+		for(;checkTitleS <= 9826;){
+			if(setInv < 27){
+				if(!playerdata.TitleFlags.get(checkTitleS)){
+					itemstack = new ItemStack(Material.BEDROCK,1);
+					itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+					itemmeta.setDisplayName(String.valueOf(checkTitleS));
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "前・後パーツ「"+ SeichiAssist.config.getTitle1(checkTitleS) +"」"
+										,ChatColor.RESET + "" +  ChatColor.GREEN + "必要ポイント：20"
+										,ChatColor.RESET + "" +  ChatColor.AQUA + "クリックで購入できます");
+					itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+					itemmeta.setLore(lore);
+					itemstack.setItemMeta(itemmeta);
+					inventory.setItem(setInv,itemstack);
 
-				setInv ++ ;
-			}
-			i ++ ;
-		}
-		i = 9911 ;
-		for(;i <= 9917;){
-			if(!playerdata.TitleFlags.get(i)){
-				itemstack = new ItemStack(Material.BEDROCK,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-				itemmeta.setDisplayName(String.valueOf(i));
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "中パーツ「"+ SeichiAssist.config.getTitle2(i) +"」"
-									,ChatColor.RESET + "" +  ChatColor.GREEN + "必要ポイント：35"
-									,ChatColor.RESET + "" +  ChatColor.AQUA + "クリックで購入できます");
-				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-				itemmeta.setLore(lore);
-				itemstack.setItemMeta(itemmeta);
-				inventory.setItem(setInv,itemstack);
+					setInv ++ ;
+				}
+			}else {
+				//次ページへのボタンを配置
+				itemstack = new ItemStack(Material.SKULL_ITEM,1);
+				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+				itemstack.setDurability((short) 3);
+				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+						);
+				skullmeta.setLore(lore);
+				skullmeta.setOwner("MHF_ArrowRight");
+				itemstack.setItemMeta(skullmeta);
+				inventory.setItem(35,itemstack);
 
-				setInv ++ ;
+				nextpageflagS = true ;
+
+				break;
 			}
-			i ++ ;
+			checkTitleS ++ ;
 		}
+		if(checkTitleS < 9911){
+			checkTitleS = 9911 ;
+		}
+		for(;checkTitleS <= 9927;){
+			if(setInv < 27){
+				if(!playerdata.TitleFlags.get(checkTitleS)){
+					itemstack = new ItemStack(Material.BEDROCK,1);
+					itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+					itemmeta.setDisplayName(String.valueOf(checkTitleS));
+					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "中パーツ「"+ SeichiAssist.config.getTitle2(checkTitleS) +"」"
+										,ChatColor.RESET + "" +  ChatColor.GREEN + "必要ポイント：35"
+										,ChatColor.RESET + "" +  ChatColor.AQUA + "クリックで購入できます");
+					itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+					itemmeta.setLore(lore);
+					itemstack.setItemMeta(itemmeta);
+					inventory.setItem(setInv,itemstack);
+
+					setInv ++ ;
+				}
+			}else {
+				//次ページへのボタンを配置
+				itemstack = new ItemStack(Material.SKULL_ITEM,1);
+				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+				itemstack.setDurability((short) 3);
+				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ");
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+						);
+				skullmeta.setLore(lore);
+				skullmeta.setOwner("MHF_ArrowRight");
+				itemstack.setItemMeta(skullmeta);
+				inventory.setItem(35,itemstack);
+
+				nextpageflagS = true ;
+
+				break;
+			}
+			checkTitleS ++ ;
+		}
+
 
 
 

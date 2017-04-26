@@ -112,7 +112,8 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+",displayTitle3No = " + Integer.toString(playerdata.displayTitle3No)
 				+",giveachvNo = " + Integer.toString(playerdata.giveachvNo)
 				+",achvPointMAX = " + Integer.toString(playerdata.achvPointMAX)
-				+",achvPointUSE = " + Integer.toString(playerdata.achvPointUSE);
+				+",achvPointUSE = " + Integer.toString(playerdata.achvPointUSE)
+				+",achvChangenum = " + Integer.toString(playerdata.achvChangenum);
 
 				//MineStack機能の数値更新処理
 

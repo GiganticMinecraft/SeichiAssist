@@ -179,7 +179,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.giveachvNo = rs.getInt("giveachvNo");
  				playerdata.achvPointMAX = rs.getInt("achvPointMAX");
  				playerdata.achvPointUSE = rs.getInt("achvPointUSE");
- 				playerdata.achvPoint = playerdata.achvPointMAX - playerdata.achvPointUSE ;
+ 				playerdata.achvChangenum =rs.getInt("achvChangenum");
+ 				playerdata.achvPoint = (playerdata.achvPointMAX + (playerdata.achvChangenum * 3)) - playerdata.achvPointUSE ;
 
  				//実績解除フラグのBitSet型への復元処理
  				//初回nullエラー回避のための分岐
