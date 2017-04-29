@@ -100,6 +100,11 @@ public class PlayerData {
 	//投票受け取りボタン連打防止用
 	public boolean votecooldownflag;
 
+	//連続・通算ログイン用
+	public String lastcheckdate ;
+	public int ChainJoin ;
+	public int TotalJoin ;
+
 	//アクティブスキル関連データ
 	public ActiveSkillData activeskilldata;
 

@@ -313,6 +313,181 @@ public class TitleUnlockTaskRunnable {
 				}
 			}
 
+		//連続ログイン(No5000系統)
+		}else if(TryTitleNo == 5001){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.ChainJoin >= 100){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5001解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5002){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.ChainJoin >= 50){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5002解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5003){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.ChainJoin >= 30){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5003解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5004){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.ChainJoin >= 20){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5004解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5005){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.ChainJoin >= 10){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5005解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5006){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.ChainJoin >= 5){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5006解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5007){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.ChainJoin >= 3){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5007解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5008){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.ChainJoin >= 2){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5008解除！おめでとうございます！");
+				}
+			}
+
+		//通算ログイン(No5100系統)
+		}else if(TryTitleNo == 5101){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 365){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5101解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5102){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 300){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5102解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5103){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 200){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5103解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5104){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 100){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5104解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5105){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 75){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5105解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5106){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 50){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5106解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5107){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 30){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5107解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5108){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 20){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5108解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5109){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 10){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5109解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5110){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 5){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5110解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5111){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 2){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5111解除！おめでとうございます！");
+				}
+			}
+
 		//投票数(No6000系統)
 		}else if(TryTitleNo == 6001){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
