@@ -117,7 +117,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				//MineStack機能の数値更新処理
 
 				//MineStack関連は全てfor文に変更
-				if(SeichiAssist.minestack_sql_enable==true){
+				if(SeichiAssist.minestack_sql_enable){
 					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
 						command += ",stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName()+ " = "
 							+ Integer.toString(playerdata.minestack.getNum(i));
