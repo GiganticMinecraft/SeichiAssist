@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,7 +18,7 @@ import com.github.unchama.seichiassist.util.BukkitSerialization;
 public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
-	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	//private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private Sql sql = SeichiAssist.plugin.sql;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
