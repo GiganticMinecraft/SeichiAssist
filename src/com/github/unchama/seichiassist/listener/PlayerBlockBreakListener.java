@@ -12,12 +12,10 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockExpEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -47,9 +45,6 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//デバッグ用
 		if(SeichiAssist.DEBUG)player.sendMessage("ブロックブレイクイベントが呼び出されました");
-
-		//インベントリ一杯フラグを初期化
-		BreakUtil.isInventoryFull = false;
 
 		//壊されるブロックを取得
 		Block block = event.getBlock();
@@ -101,10 +96,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//スキル発動条件がそろってなければ終了
-		//スキルが発動しなくてもインベントリに直行させる
 		if(!Util.isSkillEnable(player)){
-
-			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
 			return;
 		}
 
@@ -145,7 +137,6 @@ public class PlayerBlockBreakListener implements Listener {
 		//もしフライ中なら終了
 		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "fly中の破壊");
-			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
 			return;
 		}
 
@@ -153,7 +144,6 @@ public class PlayerBlockBreakListener implements Listener {
 		if(!playerdata.activeskilldata.skillcanbreakflag){
 			//SEを再生
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "クールタイムの破壊");
-			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
 			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
@@ -178,21 +168,14 @@ public class PlayerBlockBreakListener implements Listener {
 		//アクティブスキルフラグがオフの時処理を終了
 		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0 || playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "スキルオフ時の破壊");
-			BreakUtil.addItemToPlayerDirectry(player, block, mainhanditem);
-			if(BreakUtil.isInventoryFull){
-				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-				BreakUtil.isInventoryFull = false;
-			}
 			return;
 		}
 
 
 		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, block, tool);
-			event.setCancelled(true);
 		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
 			runBreakSkill(player, block, tool);
-			event.setCancelled(true);
 		}
 	}
 	//複数範囲破壊
@@ -203,7 +186,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
 		//レベルを取得
-		int skilllevel = playerdata.activeskilldata.skillnum;
+		//int skilllevel = playerdata.activeskilldata.skillnum;
 		//マナを取得
 		Mana mana = playerdata.activeskilldata.mana;
 		//プレイヤーの足のy座標を取得
@@ -364,11 +347,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breakblocknum==0){
-			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
-			if(BreakUtil.isInventoryFull){
-				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-				BreakUtil.isInventoryFull = false;
-			}
+			BreakUtil.BreakBlock(player, block, centerofblock, tool,true);
 			return;
 		}//スキルの処理
 		else{
@@ -400,7 +379,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
 		//レベルを取得
-		int skilllevel = playerdata.activeskilldata.skillnum;
+		//int skilllevel = playerdata.activeskilldata.skillnum;
 		//マナを取得
 		Mana mana = playerdata.activeskilldata.mana;
 		//プレイヤーの足のy座標を取得
@@ -545,23 +524,15 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breaklist.size()==0){
-			BreakUtil.BreakBlock(player, block, centerofblock, tool,false);
-			if(BreakUtil.isInventoryFull){
-				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-				BreakUtil.isInventoryFull = false;
-			}
+			BreakUtil.BreakBlock(player, block, centerofblock, tool,true);
 			return;
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.activeskilldata.effectnum == 0){
 			breaklist.add(block);
 			SeichiAssist.allblocklist.add(block);
 			for(Block b:breaklist){
-				BreakUtil.BreakBlock(player, b, centerofblock, tool,true);
+				BreakUtil.BreakBlock(player, b, centerofblock, tool,false);
 				SeichiAssist.allblocklist.remove(b);
-			}
-			if(BreakUtil.isInventoryFull){
-				player.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
-				BreakUtil.isInventoryFull = false;
 			}
 		}
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
@@ -592,17 +563,6 @@ public class PlayerBlockBreakListener implements Listener {
 		long cooldown = (long) ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
 		if(cooldown >= 5){
 			new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
-		}
-	}
-	@EventHandler
-	public void onBlockGenerteExpEvent(BlockExpEvent event){
-		int exp = event.getExpToDrop();
-		Block block = event.getBlock();
-
-		Location loc = block.getLocation();
-		if(exp > 0){
-			ExperienceOrb orb = loc.getWorld().spawn(loc, ExperienceOrb.class);
-			orb.setExperience(exp);
 		}
 	}
 

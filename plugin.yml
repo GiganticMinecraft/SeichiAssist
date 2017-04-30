@@ -1,6 +1,6 @@
 name: SeichiAssist
 main: com.github.unchama.seichiassist.SeichiAssist
-version: 0.9.17
+version: 0.9.22
 
 commands:
   gacha:
@@ -47,4 +47,9 @@ commands:
       description: This is a mebius command.
       usage: /<command>
       default-permission: NOT_OP
+      permission-message: You don't have <permission>
+  unlockachv:
+      description: This is a Achievement command.
+      usage: /<command> <Achivement_No> <playername/ALL> <give/deprive/server/world>
+      permission: multiseichiplugin.achievement
       permission-message: You don't have <permission>

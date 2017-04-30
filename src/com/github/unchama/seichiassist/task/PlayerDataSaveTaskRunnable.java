@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,7 +18,7 @@ import com.github.unchama.seichiassist.util.BukkitSerialization;
 public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
-	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	//private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private Sql sql = SeichiAssist.plugin.sql;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
@@ -89,7 +87,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
 				+ ",level = " + Integer.toString(playerdata.level)
 				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
-				+ ",totalbreaknum = " + Integer.toString(playerdata.totalbreaknum)
+				+ ",totalbreaknum = " + Long.toString(playerdata.totalbreaknum)
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
 				+ ",playtick = " + Integer.toString(playerdata.playtick)
 				+ ",lastquit = cast( now() as datetime )"
@@ -107,12 +105,22 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",everysound = " + Boolean.toString(playerdata.everysoundflag)
 
 				+",displayTypeLv = " + Boolean.toString(playerdata.displayTypeLv)
-				+",displayTitleNo = " + Integer.toString(playerdata.displayTitleNo);
+				+",displayTitle1No = " + Integer.toString(playerdata.displayTitle1No)
+				+",displayTitle2No = " + Integer.toString(playerdata.displayTitle2No)
+				+",displayTitle3No = " + Integer.toString(playerdata.displayTitle3No)
+				+",giveachvNo = " + Integer.toString(playerdata.giveachvNo)
+				+",achvPointMAX = " + Integer.toString(playerdata.achvPointMAX)
+				+",achvPointUSE = " + Integer.toString(playerdata.achvPointUSE)
+				+",achvChangenum = " + Integer.toString(playerdata.achvChangenum)
+
+				+",lastcheckdate = '" + playerdata.lastcheckdate + "'"
+				+",ChainJoin = " + Integer.toString(playerdata.ChainJoin)
+				+",TotalJoin = " + Integer.toString(playerdata.TotalJoin);
 
 				//MineStack機能の数値更新処理
 
 				//MineStack関連は全てfor文に変更
-				if(SeichiAssist.minestack_sql_enable==true){
+				if(SeichiAssist.minestack_sql_enable){
 					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
 						command += ",stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName()+ " = "
 							+ Integer.toString(playerdata.minestack.getNum(i));

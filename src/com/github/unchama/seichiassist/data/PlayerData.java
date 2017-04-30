@@ -84,7 +84,7 @@ public class PlayerData {
 	//放置時間
 	public int idletime;
 	//トータル破壊ブロック
-	public int totalbreaknum;
+	public long totalbreaknum;
 	//整地量バー
 	public ExpBar expbar;
 	//合計経験値
@@ -99,6 +99,11 @@ public class PlayerData {
 	public int p_givenvote;
 	//投票受け取りボタン連打防止用
 	public boolean votecooldownflag;
+
+	//連続・通算ログイン用
+	public String lastcheckdate ;
+	public int ChainJoin ;
+	public int TotalJoin ;
 
 	//アクティブスキル関連データ
 	public ActiveSkillData activeskilldata;
@@ -120,11 +125,21 @@ public class PlayerData {
 	//LV・二つ名表示切替用
 	public boolean displayTypeLv;
 	//表示二つ名の指定用
-	public int displayTitleNo;
+	public int displayTitle1No;
+	public int displayTitle2No;
+	public int displayTitle3No;
 	//二つ名解禁フラグ保存用
 	public BitSet TitleFlags;
 	//二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
 	public int p_vote_forT ;
+	//二つ名配布予約NOの保存
+	public int giveachvNo;
+	//実績ポイント用
+	public int achvPointMAX ;//累計取得量
+	public int achvPointUSE ;//消費量
+	public int achvPoint ;//現在の残量
+	public int achvChangenum ;//投票ptからの変換回数
+	public boolean samepageflag ;//実績ショップ用
 
 
 	//建築LV
@@ -178,10 +193,13 @@ public class PlayerData {
 		this.shareinvcooldownflag = true;
 
 		this.displayTypeLv = true;
-		this.displayTitleNo = 0 ;
+		this.displayTitle1No = 0 ;
+		this.displayTitle2No = 0 ;
+		this.displayTitle3No = 0 ;
 		this.TitleFlags = new BitSet(10000);
 		this.TitleFlags.set(1);
 		this.p_vote_forT = 0 ;
+		this.giveachvNo = 0 ;
 
 
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
@@ -307,11 +325,13 @@ public class PlayerData {
 		String displayname = Util.getName(p);
 
 		//表示を追加する処理
-		if(displayTitleNo == 0){
+		if(displayTitle1No == 0 && displayTitle2No == 0 && displayTitle3No == 0){
 			displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
 		} else {
-			String displayTitle = SeichiAssist.config.getTitle(displayTitleNo);
-			displayname =  "[" + displayTitle + "]" + displayname + ChatColor.WHITE;
+			String displayTitle1 = SeichiAssist.config.getTitle1(displayTitle1No);
+			String displayTitle2 = SeichiAssist.config.getTitle2(displayTitle2No);
+			String displayTitle3 = SeichiAssist.config.getTitle3(displayTitle3No);
+			displayname =  "[" + displayTitle1 + displayTitle2 + displayTitle3 + "]" + displayname + ChatColor.WHITE;
 		}
 		//放置時に色を変える
 		if(idletime >= 10){
@@ -435,7 +455,7 @@ public class PlayerData {
 	public int calcPlayerRank(Player p){
 		//ランク用関数
 		int i = 0;
-		int t = totalbreaknum;
+		long t = totalbreaknum;
 		if(SeichiAssist.ranklist.size() == 0){
 			return 1;
 		}

@@ -166,7 +166,7 @@ public class EntityListener implements Listener {
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
 		//レベルを取得
-		int skilllevel = playerdata.activeskilldata.skillnum;
+		//int skilllevel = playerdata.activeskilldata.skillnum;
 		//マナを取得
 		Mana mana = playerdata.activeskilldata.mana;
 		//元ブロックのマテリアルを取得
@@ -314,7 +314,7 @@ public class EntityListener implements Listener {
 		//エフェクトが指定されていないときの処理
 		if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
-				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,true);
+				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,false);
 				SeichiAssist.allblocklist.remove(b);
 			}
 		}
