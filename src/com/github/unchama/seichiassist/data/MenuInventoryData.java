@@ -2433,7 +2433,6 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績ポイントショップ");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
-		SkullMeta skullmeta;
 		List<String> lore = new ArrayList<String>();
 
 		//実績ポイントの最新情報反映ボタン

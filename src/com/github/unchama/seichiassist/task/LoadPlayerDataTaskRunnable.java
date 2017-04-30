@@ -215,7 +215,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				//MineStack機能の数値
 
 				//MineStack関連をすべてfor文に変更
- 				if(SeichiAssist.minestack_sql_enable==true){
+ 				if(SeichiAssist.minestack_sql_enable){
  					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
  						int temp_num = rs.getInt("stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName());
  						playerdata.minestack.setNum(i, temp_num);

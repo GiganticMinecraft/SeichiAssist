@@ -379,7 +379,7 @@ public class Sql{
 				*/
 
 				//MineStack関連をすべてfor文に変更
-				if(SeichiAssist.minestack_sql_enable==true){
+				if(SeichiAssist.minestack_sql_enable){
 					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
 						command += ",add column if not exists stack_" + SeichiAssist.minestacklist.get(i).getMineStackObjName() + " int default 0";
 					}

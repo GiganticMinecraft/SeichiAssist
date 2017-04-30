@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -50,25 +48,25 @@ public class AchieveCommand implements TabExecutor{
 
 		Sql sql = SeichiAssist.plugin.sql;
 
-		final String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		//final String table = SeichiAssist.PLAYERDATA_TABLENAME;
 
-		String sqlname;
-		Player sqlp;
-		final UUID sqluuid;
-		String sqlcommand;
-		int sqlresult;
-		String sqlexc;
-		Boolean sqlflag;
-		int sqli;
-		Statement sqlstmt = null;
-		ResultSet sqlrs = null;
-		String db;
+		//String sqlname;
+		//Player sqlp;
+		//final UUID sqluuid;
+		//String sqlcommand;
+		//int sqlresult;
+		//String sqlexc;
+		//Boolean sqlflag;
+		//int sqli;
+		//Statement sqlstmt = null;
+		//ResultSet sqlrs = null;
+		//String db;
 
-		db = SeichiAssist.config.getDB();
-		sqlcommand = "";
-		sqlresult = 0 ;
-		sqlflag = true;
-		sqli = 0;
+		//db = SeichiAssist.config.getDB();
+		//sqlcommand = "";
+		//sqlresult = 0 ;
+		//sqlflag = true;
+		//sqli = 0;
 
 
 		//プレイヤーを取得
