@@ -8,15 +8,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerDataUpdateOnJoinRunnable extends BukkitRunnable{
 
-	private SeichiAssist plugin = SeichiAssist.plugin;
+	//private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	private Sql sql = SeichiAssist.plugin.sql;
+	//private Sql sql = SeichiAssist.plugin.sql;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
 

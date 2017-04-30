@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
 
 public class effectCommand implements TabExecutor {
 	SeichiAssist plugin;
@@ -33,7 +32,7 @@ public class effectCommand implements TabExecutor {
 		//プレイヤーを取得
 		Player player = (Player)sender;
 		//プレイヤーネーム
-		String name = Util.getName(player);
+		//String name = Util.getName(player);
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得

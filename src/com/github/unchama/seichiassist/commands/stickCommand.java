@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.commands;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class stickCommand implements TabExecutor {
@@ -35,11 +33,11 @@ public class stickCommand implements TabExecutor {
 		//プレイヤーを取得
 		Player player = (Player)sender;
 		//プレイヤーネーム
-		String name = Util.getName(player);
+		//String name = Util.getName(player);
 		//UUIDを取得
-		UUID uuid = player.getUniqueId();
+		//UUID uuid = player.getUniqueId();
 		//playerdataを取得
-		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//プレイヤーからの送信でない時処理終了
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.GREEN + "このコマンドはゲーム内から実行してください。");
