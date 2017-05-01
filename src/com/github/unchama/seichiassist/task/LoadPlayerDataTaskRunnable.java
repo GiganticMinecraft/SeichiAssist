@@ -4,8 +4,13 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -179,7 +184,45 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.giveachvNo = rs.getInt("giveachvNo");
  				playerdata.achvPointMAX = rs.getInt("achvPointMAX");
  				playerdata.achvPointUSE = rs.getInt("achvPointUSE");
- 				playerdata.achvPoint = playerdata.achvPointMAX - playerdata.achvPointUSE ;
+ 				playerdata.achvChangenum =rs.getInt("achvChangenum");
+ 				playerdata.achvPoint = (playerdata.achvPointMAX + (playerdata.achvChangenum * 3)) - playerdata.achvPointUSE ;
+
+ 				//連続・通算ログインの情報、およびその更新
+ 		        Calendar cal = Calendar.getInstance();
+ 		        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+ 				if(rs.getString("lastcheckdate") == "" || rs.getString("lastcheckdate") == null){
+ 					playerdata.lastcheckdate = sdf.format(cal.getTime());
+ 				}else {
+ 					playerdata.lastcheckdate = rs.getString("lastcheckdate");
+ 				}
+ 				playerdata.ChainJoin = rs.getInt("ChainJoin");
+ 				playerdata.TotalJoin = rs.getInt("TotalJoin");
+ 				if(playerdata.ChainJoin == 0){
+ 					playerdata.ChainJoin = 1 ;
+ 				}
+ 				if(playerdata.TotalJoin == 0){
+ 					playerdata.TotalJoin = 1 ;
+ 				}
+
+ 		        try {
+					Date TodayDate = DateFormat.getDateInstance().parse(sdf.format(cal.getTime()));
+					Date LastDate = DateFormat.getDateInstance().parse(playerdata.lastcheckdate);
+					long TodayLong = TodayDate.getTime();
+					long LastLong = LastDate.getTime();
+
+					long datediff = (TodayLong - LastLong)/(1000 * 60 * 60 * 24 );
+					if(datediff > 0){
+						playerdata.TotalJoin ++ ;
+						if(datediff == 1 ){
+							playerdata.ChainJoin ++ ;
+						}else {
+							playerdata.ChainJoin = 1 ;
+						}
+					}
+				} catch (ParseException e1) {
+				}
+ 		        playerdata.lastcheckdate = sdf.format(cal.getTime());
+
 
  				//実績解除フラグのBitSet型への復元処理
  				//初回nullエラー回避のための分岐
@@ -215,7 +258,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				//MineStack機能の数値
 
 				//MineStack関連をすべてfor文に変更
- 				if(SeichiAssist.minestack_sql_enable==true){
+ 				if(SeichiAssist.minestack_sql_enable){
  					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
  						int temp_num = rs.getInt("stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName());
  						playerdata.minestack.setNum(i, temp_num);

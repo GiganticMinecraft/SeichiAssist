@@ -774,7 +774,7 @@ public class SeichiAssist extends JavaPlugin{
 		List<MineStackObj> minestacklist = new ArrayList<MineStackObj>();
 		for(int i=0; i<SeichiAssist.msgachadatalist.size(); i++){
 			MineStackGachaData g = SeichiAssist.msgachadatalist.get(i);
-			int levelsidx = 0;
+			//int levelsidx = 0;
 			//System.out.println("Debug A");
 				if(!g.itemstack.getType().equals(Material.EXP_BOTTLE)){ //経験値瓶だけはすでにリストにあるので除外
 					/*

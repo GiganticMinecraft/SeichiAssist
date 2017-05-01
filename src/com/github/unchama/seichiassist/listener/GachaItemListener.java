@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,7 +20,7 @@ import com.github.unchama.seichiassist.util.Util;
 
 public class GachaItemListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	private SeichiAssist plugin = SeichiAssist.plugin;
+	//private SeichiAssist plugin = SeichiAssist.plugin;
 	@EventHandler
 	public void onPlayerItemConsumeEvent(PlayerItemConsumeEvent e){
 		Player player = e.getPlayer();
@@ -36,7 +35,7 @@ public class GachaItemListener implements Listener {
 		int level = playerdata.level;
 		Mana mana = playerdata.activeskilldata.mana;
 		ItemStack i = e.getItem();
-		Material m = i.getType();
+		//Material m = i.getType();
 		ItemMeta itemmeta = i.getItemMeta();
 
 

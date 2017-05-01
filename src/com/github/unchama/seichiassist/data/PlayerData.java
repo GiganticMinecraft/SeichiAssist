@@ -100,6 +100,11 @@ public class PlayerData {
 	//投票受け取りボタン連打防止用
 	public boolean votecooldownflag;
 
+	//連続・通算ログイン用
+	public String lastcheckdate ;
+	public int ChainJoin ;
+	public int TotalJoin ;
+
 	//アクティブスキル関連データ
 	public ActiveSkillData activeskilldata;
 
@@ -133,6 +138,8 @@ public class PlayerData {
 	public int achvPointMAX ;//累計取得量
 	public int achvPointUSE ;//消費量
 	public int achvPoint ;//現在の残量
+	public int achvChangenum ;//投票ptからの変換回数
+	public boolean samepageflag ;//実績ショップ用
 
 
 	//建築LV
