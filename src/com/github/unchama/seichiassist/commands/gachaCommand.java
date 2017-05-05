@@ -438,14 +438,14 @@ public class gachaCommand implements TabExecutor{
 			//ガチャデータのitemstackの数を再設定（バグのため）
 			present.itemstack.setAmount(present.amount);
 			//メッセージ設定
-			String str = "";
+			//String str = "";
 
 			//プレゼントを格納orドロップ
 			if(!Util.isPlayerInventryFill(player)){
 				Util.addItem(player,present.itemstack);
 			}else{
 				Util.dropItem(player,present.itemstack);
-				str += ChatColor.AQUA + "ガチャアイテムがドロップしました。";
+				//str += ChatColor.AQUA + "ガチャアイテムがドロップしました。";
 			}
 		}
 	}
@@ -508,7 +508,7 @@ public class gachaCommand implements TabExecutor{
 	}
 	private void Gachalistms(CommandSender sender){
 		int i = 1;
-		double totalprobability = 0.0;
+		//double totalprobability = 0.0;
 		sender.sendMessage(ChatColor.RED + "アイテム番号|レベル|変数名|アイテム名|アイテム数|出現確率");
 		for (MineStackGachaData gachadata : SeichiAssist.msgachadatalist) {
 			sender.sendMessage(i + "|" + gachadata.level + "|" + gachadata.obj_name + "|" + gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "|" + gachadata.amount + "|" + gachadata.probability + "(" + (gachadata.probability*100) + "%)");

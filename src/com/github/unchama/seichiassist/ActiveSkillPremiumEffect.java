@@ -80,9 +80,9 @@ public enum ActiveSkillPremiumEffect {
 		switch(this.toString()){
 		case "MAGIC":
 			if(SeichiAssist.DEBUG){
-				new MagicTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 100);
+				new MagicTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskTimer(plugin, 0, 100);
 			}else{
-				new MagicTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
+				new MagicTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskTimer(plugin, 0, 10);
 			}
 
 			break;

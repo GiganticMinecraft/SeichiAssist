@@ -23,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
+import com.github.unchama.seichiassist.commands.AchieveCommand;
 import com.github.unchama.seichiassist.commands.effectCommand;
 import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.lastquitCommand;
@@ -621,6 +622,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("rmp",new rmpCommand(plugin));
 		commandlist.put("shareinv",new shareinvCommand(plugin));
 		commandlist.put("mebius",new mebiusCommand(plugin));
+		commandlist.put("unlockachv", new AchieveCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -772,7 +774,7 @@ public class SeichiAssist extends JavaPlugin{
 		List<MineStackObj> minestacklist = new ArrayList<MineStackObj>();
 		for(int i=0; i<SeichiAssist.msgachadatalist.size(); i++){
 			MineStackGachaData g = SeichiAssist.msgachadatalist.get(i);
-			int levelsidx = 0;
+			//int levelsidx = 0;
 			//System.out.println("Debug A");
 				if(!g.itemstack.getType().equals(Material.EXP_BOTTLE)){ //経験値瓶だけはすでにリストにあるので除外
 					/*

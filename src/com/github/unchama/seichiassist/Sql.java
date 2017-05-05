@@ -274,9 +274,20 @@ public class Sql{
 				",add column if not exists rgnum int default 0" +
 				",add column if not exists totalbreaknum bigint default 0" +
 				",add column if not exists lastquit datetime default null" +
+				",add column if not exists lastcheckdate varchar(12) default null" +
+				",add column if not exists ChainJoin int default 0" +
+				",add column if not exists TotalJoin int default 0" +
 				",add column if not exists displayTypeLv boolean default true" +
 				",add column if not exists displayTitleNo int default 0" +
-				",add column if not exists TitleFlags text default null" ;
+				",add column if not exists displayTitle1No int default 0" +
+				",add column if not exists displayTitle2No int default 0" +
+				",add column if not exists displayTitle3No int default 0" +
+				",add column if not exists TitleFlags text default null" +
+				",add column if not exists giveachvNo int default 0" +
+				",add column if not exists achvPointMAX int default 0" +
+				",add column if not exists achvPointUSE int default 0" +
+				",add column if not exists achvChangenum int default 0" ;
+
 
 				/*
 				",add column if not exists stack_dirt int default 0" +
@@ -373,7 +384,7 @@ public class Sql{
 				*/
 
 				//MineStack関連をすべてfor文に変更
-				if(SeichiAssist.minestack_sql_enable==true){
+				if(SeichiAssist.minestack_sql_enable){
 					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
 						command += ",add column if not exists stack_" + SeichiAssist.minestacklist.get(i).getMineStackObjName() + " int default 0";
 					}
@@ -690,6 +701,7 @@ public class Sql{
  			p.getInventory().addItem(new ItemStack(Material.DIAMOND_PICKAXE));
  			p.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
  			MebiusListener.give(p);
+
  			return true;
 
  		}else if(count == 1){
@@ -1282,6 +1294,49 @@ public class Sql{
 		if (!putCommand(command)) {
 			player.sendMessage(ChatColor.RED + "アイテムのクリアに失敗しました");
 			Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> clearShareInv");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 実績予約領域書き換え処理
+	 *
+	 * @param sender 発行Player
+	 * @param targetName 対象Playerのname
+	 * @param achvNo 対象実績No
+	 * @return 成否…true: 成功、false: 失敗
+	 */
+	public boolean writegiveachvNo(Player sender, String targetName, String achvNo) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String select = "SELECT giveachvNo FROM " + db + "." + table + " " +
+				"WHERE name LIKE '" + targetName + "'";
+		String update = "UPDATE " + db + "." + table + " " +
+ 				" SET giveachvNo = " + achvNo +
+ 				" WHERE name LIKE '" + targetName + "'";
+
+		// selectで確認
+ 		try {
+			rs = stmt.executeQuery(select);
+			// 初回のnextがnull→データが1件も無い場合
+			if (!rs.next()) {
+				sender.sendMessage(ChatColor.RED + "" + targetName + " はデータベースに登録されていません");
+				return false;
+			}
+			// 現在予約されている値を取得
+			int giveachvNo = rs.getInt("giveachvNo");
+			// 既に予約がある場合
+			if (giveachvNo != 0) {
+				sender.sendMessage(ChatColor.RED + "" + targetName + " には既に実績No " + giveachvNo + " が予約されています");
+				return false;
+			}
+			rs.close();
+			// 実績を予約
+			stmt.executeUpdate(update);
+		} catch (SQLException e) {
+			sender.sendMessage(ChatColor.RED + "実績の予約に失敗しました");
+			Bukkit.getLogger().warning(Util.getName(sender) + " sql failed. -> writegiveachvNo");
+			e.printStackTrace();
 			return false;
 		}
 		return true;
