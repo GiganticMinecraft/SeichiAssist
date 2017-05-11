@@ -186,7 +186,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
 		//レベルを取得
-		int skilllevel = playerdata.activeskilldata.skillnum;
+		//int skilllevel = playerdata.activeskilldata.skillnum;
 		//マナを取得
 		Mana mana = playerdata.activeskilldata.mana;
 		//プレイヤーの足のy座標を取得
@@ -379,7 +379,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//playerdataを取得
 		PlayerData playerdata = playermap.get(uuid);
 		//レベルを取得
-		int skilllevel = playerdata.activeskilldata.skillnum;
+		//int skilllevel = playerdata.activeskilldata.skillnum;
 		//マナを取得
 		Mana mana = playerdata.activeskilldata.mana;
 		//プレイヤーの足のy座標を取得

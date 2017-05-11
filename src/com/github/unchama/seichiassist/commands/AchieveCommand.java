@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
+import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -15,8 +15,6 @@ import org.bukkit.entity.Player;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
-
-import net.md_5.bungee.api.ChatColor;
 
 public class AchieveCommand implements TabExecutor{
 	public SeichiAssist plugin;
@@ -50,25 +48,25 @@ public class AchieveCommand implements TabExecutor{
 
 		Sql sql = SeichiAssist.plugin.sql;
 
-		final String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		//final String table = SeichiAssist.PLAYERDATA_TABLENAME;
 
-		String sqlname;
-		Player sqlp;
-		final UUID sqluuid;
-		String sqlcommand;
-		int sqlresult;
-		String sqlexc;
-		Boolean sqlflag;
-		int sqli;
-		Statement sqlstmt = null;
-		ResultSet sqlrs = null;
-		String db;
+		//String sqlname;
+		//Player sqlp;
+		//final UUID sqluuid;
+		//String sqlcommand;
+		//int sqlresult;
+		//String sqlexc;
+		//Boolean sqlflag;
+		//int sqli;
+		//Statement sqlstmt = null;
+		//ResultSet sqlrs = null;
+		//String db;
 
-		db = SeichiAssist.config.getDB();
-		sqlcommand = "";
-		sqlresult = 0 ;
-		sqlflag = true;
-		sqli = 0;
+		//db = SeichiAssist.config.getDB();
+		//sqlcommand = "";
+		//sqlresult = 0 ;
+		//sqlflag = true;
+		//sqli = 0;
 
 
 		//プレイヤーを取得
@@ -88,8 +86,9 @@ public class AchieveCommand implements TabExecutor{
 		}else if(isInt(args[0])){
 			if(6999 < Integer.parseInt(args[0]) && Integer.parseInt(args[0]) < 8000){
 				//指定した実績Noの二つ名データがconfigにない場合
-				if(SeichiAssist.config.getTitle(Integer.parseInt(args[0])) == null
-						||SeichiAssist.config.getTitle(Integer.parseInt(args[0])) == ""){
+				if((SeichiAssist.config.getTitle1(Integer.parseInt(args[0])) == null||SeichiAssist.config.getTitle1(Integer.parseInt(args[0])) == "")&&
+					(SeichiAssist.config.getTitle2(Integer.parseInt(args[0])) == null||SeichiAssist.config.getTitle2(Integer.parseInt(args[0])) == "")&&
+					(SeichiAssist.config.getTitle3(Integer.parseInt(args[0])) == null||SeichiAssist.config.getTitle3(Integer.parseInt(args[0])) == "")){
 					sender.sendMessage("【実行エラー】存在しない実績Noが指定されました");
 					return true;
 				}else {
@@ -108,12 +107,10 @@ public class AchieveCommand implements TabExecutor{
 										//該当実績を既に取得している場合処理をスキップ
 										if(!playerdata.TitleFlags.get(Integer.parseInt(args[0]))){
 											playerdata.TitleFlags.set(Integer.parseInt(args[0]));
-											player.sendMessage("運営チームより実績No" + Integer.parseInt(args[0]) + ".「" +
-													SeichiAssist.config.getTitle(Integer.parseInt(args[0])) + "」が配布されました。");
+											player.sendMessage("運営チームよりNo" + args[0] + "の実績が配布されました。");
 										}
 									}
-									sender.sendMessage("【配布完了】「" + SeichiAssist.config.getTitle(Integer.parseInt(args[0])) +
-											"」の二つ名をサーバー内全員に配布しました。");
+									sender.sendMessage("【配布完了】No" + args[0] +"の実績をサーバー内全員に配布しました。");
 									return true;
 								}
 								//「world」全員配布処理
@@ -128,13 +125,11 @@ public class AchieveCommand implements TabExecutor{
 											//該当実績を既に取得している場合処理をスキップ
 											if(!playerdata.TitleFlags.get(Integer.parseInt(args[0]))){
 												playerdata.TitleFlags.set(Integer.parseInt(args[0]));
-												player.sendMessage("運営チームより実績No" + Integer.parseInt(args[0]) + ".「" +
-														SeichiAssist.config.getTitle(Integer.parseInt(args[0])) + "」が配布されました。");
+												player.sendMessage("運営チームよりNo" + args[0] + "の実績が配布されました。");
 											}
 										}
 									}
-									sender.sendMessage("【配布完了】「" + SeichiAssist.config.getTitle(Integer.parseInt(args[0])) +
-											"」の二つ名をワールド内全員に配布しました。");
+									sender.sendMessage("【配布完了】No" + args[0] +"の実績をサーバー内全員に配布しました。");
 									return true;
 
 								}else if(args[2].equals("user")){
@@ -150,10 +145,8 @@ public class AchieveCommand implements TabExecutor{
 									//該当実績を既に取得している場合処理をスキップ
 									if(!givenplayerdata.TitleFlags.get(Integer.parseInt(args[0]))){
 										givenplayerdata.TitleFlags.set(Integer.parseInt(args[0]));
-										givenplayer.sendMessage("運営チームより実績No" + Integer.parseInt(args[0]) + ".「" +
-												SeichiAssist.config.getTitle(Integer.parseInt(args[0])) + "」が配布されました。");
-										sender.sendMessage("【配布完了】「" + SeichiAssist.config.getTitle(Integer.parseInt(args[0])) +
-												"」の二つ名を配布しました。");
+										givenplayer.sendMessage("運営チームよりNo" + args[0] + "の実績が配布されました。");
+										sender.sendMessage("【配布完了】No" + args[0] +"の実績を配布しました。");
 									}else {
 										sender.sendMessage("既に該当実績を獲得しています。");
 									}
@@ -192,10 +185,8 @@ public class AchieveCommand implements TabExecutor{
 									//該当実績を既に取得している場合処理をスキップ
 									if(!givenplayerdata.TitleFlags.get(Integer.parseInt(args[0]))){
 										givenplayerdata.TitleFlags.set(Integer.parseInt(args[0]));
-										givenplayer.sendMessage("運営チームより実績No" + Integer.parseInt(args[0]) + ".「" +
-												SeichiAssist.config.getTitle(Integer.parseInt(args[0])) + "」が配布されました。");
-										sender.sendMessage("【配布完了】「" + SeichiAssist.config.getTitle(Integer.parseInt(args[0])) +
-												"」の二つ名を配布しました。");
+										givenplayer.sendMessage("運営チームよりNo" + args[0] + "の実績が配布されました。");
+										sender.sendMessage("【配布完了】No" + args[0] +"の実績を配布しました。");
 									}else {
 										sender.sendMessage("既に該当実績を獲得しています。");
 									}
@@ -204,8 +195,7 @@ public class AchieveCommand implements TabExecutor{
 									//該当実績を既に取得していない場合処理をスキップ
 									if(givenplayerdata.TitleFlags.get(Integer.parseInt(args[0]))){
 										givenplayerdata.TitleFlags.set(Integer.parseInt(args[0]),false);
-										sender.sendMessage("【剥奪完了】「" + SeichiAssist.config.getTitle(Integer.parseInt(args[0])) +
-												"」の二つ名を剥奪しました。");
+										sender.sendMessage("【剥奪完了】No" + args[0] +"の実績を剥奪しました。");
 									}else {
 										sender.sendMessage("該当実績を獲得していません。");
 									}
