@@ -447,6 +447,22 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(23,itemstack);
 
+		// ver0.9.24 サーバー間移動
+		itemstack = new ItemStack(Material.NETHER_STAR,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
+		itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サーバー間移動メニュー");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "・各サバイバルサーバ"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "・各整地専用サーバ"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "・公共施設サーバ"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "・クリエイティブサーバ"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "・イベントサーバ"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "・各ベータサーバ"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "間を移動する時に使います"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックして開く"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(7,itemstack);
 
 		// ver0.3.2 /spawnコマンド実行
 		itemstack = new ItemStack(Material.BEACON,1);
@@ -455,8 +471,6 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "・メインワールド"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・資源ワールド"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・整地ワールド"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "・ロビーサーバー"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "・各サバイバルサーバー"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "間を移動する時に使います"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします"
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/spawn]"
@@ -4911,6 +4925,106 @@ public class MenuInventoryData {
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
+
+		return inventory;
+	}
+	public static Inventory getServerSwitchMenu(Player p) {
+		//UUID取得
+		UUID uuid = p.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			Util.sendPlayerDataNullMessage(p);
+			Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
+			Bukkit.getLogger().warning("MenuInventoryData.getMenuData");
+			return null;
+		}
+		Inventory inventory = Bukkit.getServer().createInventory(null,2*9,ChatColor.DARK_RED + "" + ChatColor.BOLD + "サーバーを選択してください");
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		SkullMeta skullmeta;
+		List<String> lore = new ArrayList<String>();
+
+		itemstack = new ItemStack(Material.GRASS);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.YELLOW + "第1サバイバルサーバ");
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+
+		inventory.setItem(0,itemstack);
+
+		itemstack = new ItemStack(Material.GRASS);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.YELLOW + "第2サバイバルサーバ");
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+
+		inventory.setItem(1,itemstack);
+
+		itemstack = new ItemStack(Material.GRASS);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.YELLOW + "第3サバイバルサーバ");
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+
+		inventory.setItem(2,itemstack);
+
+		itemstack = new ItemStack(Material.DIAMOND_PICKAXE);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.AQUA + "第1整地専用特設サーバ");
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+
+		inventory.setItem(3,itemstack);
+
+		itemstack = new ItemStack(Material.DIAMOND_PICKAXE);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.AQUA + "第2整地専用特設サーバ");
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+
+		inventory.setItem(4,itemstack);
+
+		itemstack = new ItemStack(Material.GLASS);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.WHITE + "クリエイティブサーバ");
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+
+		inventory.setItem(5,itemstack);
+
+		itemstack = new ItemStack(Material.CAKE);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.DARK_GREEN + "イベントサーバ");
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+
+		inventory.setItem(6,itemstack);
+
+		itemstack = new ItemStack(Material.DIAMOND);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "第1βテストサーバ");
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+
+		inventory.setItem(7,itemstack);
+
+		itemstack = new ItemStack(Material.DIAMOND);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "第2βテストサーバ");
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+
+		inventory.setItem(8,itemstack);
+
+		itemstack = new ItemStack(Material.LOG);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.GREEN + "公共施設サーバ");
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+
+		inventory.setItem(9,itemstack);
 
 		return inventory;
 	}
