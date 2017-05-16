@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -205,8 +204,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				}
 
  		        try {
-					Date TodayDate = DateFormat.getDateInstance().parse(sdf.format(cal.getTime()));
-					Date LastDate = DateFormat.getDateInstance().parse(playerdata.lastcheckdate);
+					Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
+					Date LastDate = sdf.parse(playerdata.lastcheckdate);
 					long TodayLong = TodayDate.getTime();
 					long LastLong = LastDate.getTime();
 
@@ -219,7 +218,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 							playerdata.ChainJoin = 1 ;
 						}
 					}
-				} catch (ParseException e1) {
+				} catch (ParseException e) {
+					e.printStackTrace();
 				}
  		        playerdata.lastcheckdate = sdf.format(cal.getTime());
 
