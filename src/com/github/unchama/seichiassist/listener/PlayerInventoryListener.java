@@ -52,6 +52,8 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class PlayerInventoryListener implements Listener {
@@ -60,7 +62,104 @@ public class PlayerInventoryListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
 	private Config config = SeichiAssist.config;
 	private Sql sql = SeichiAssist.plugin.sql;
+	//棒メニュー
+	@EventHandler
+	public void onPlayerClickServerSwitchMenuEvent(InventoryClickEvent event){
+		//外枠のクリック処理なら終了
+		if(event.getClickedInventory() == null){
+			return;
+		}
 
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
+
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが36でない時終了
+		if(topinventory.getSize() != 2*9){
+			return;
+		}
+		Player player = (Player)he;
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+
+		//インベントリ名が以下の時処理
+		if(topinventory.getTitle().equals(ChatColor.DARK_RED + "" + ChatColor.BOLD + "サーバーを選択してください")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+			ItemMeta meta = itemstackcurrent.getItemMeta();
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			ByteArrayDataOutput byteArrayDataOutput = ByteStreams
+					.newDataOutput();
+			//ページ変更処理
+			if(meta.getDisplayName().contains("第1サバイバルサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s1");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第2サバイバルサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s2");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第3サバイバルサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s3");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第1整地専用特設サーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s5");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第2整地専用特設サーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s6");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("クリエイティブサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("cre");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("イベントサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("eve");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第1βテストサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("g1");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第2βテストサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("g2");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("公共施設サーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s7");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}
+		}
+	}
 	//棒メニュー
 	@EventHandler
 	public void onPlayerClickStickMenuEvent(InventoryClickEvent event){
@@ -107,7 +206,11 @@ public class PlayerInventoryListener implements Listener {
 			 */
 
 			//ページ変更処理
-			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
+			if(itemstackcurrent.getType().equals(Material.NETHER_STAR)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_PORTAL_AMBIENT, 0.6F, (float) 1.5F);
+				player.openInventory(MenuInventoryData.getServerSwitchMenu(player));
+			}else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData2(player));
