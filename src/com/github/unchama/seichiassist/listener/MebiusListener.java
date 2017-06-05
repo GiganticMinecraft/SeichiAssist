@@ -17,6 +17,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -220,23 +221,28 @@ public class MebiusListener implements Listener {
 	public void onKill(EntityDeathEvent event) {
 		try {
 			final List<String> msgs = Arrays.asList(
-					"さすが[str1]！[str2]なんて敵じゃないね！",
-					"僕にかかれば[str2]なんてこんなもんだよー！",
-					"モンスターってなんで人間を襲うんだろう…？",
-					"ねえ[str1]、今の僕のおかげだよね！ね？",
-					"たまにはやられてみたいもんだねー、ふふん！",
-					"[str2]なんて僕の力を出すまでもなかったね！");
+					"さすが[str1]！[str2]なんて敵じゃないね！", "僕にかかれば[str2]なんてこんなもんだよー！",
+					"モンスターってなんで人間を襲うんだろう…？", "ねえ[str1]、今の僕のおかげだよね！ね？",
+					"たまにはやられてみたいもんだねー、ふふん！", "[str2]なんて僕の力を出すまでもなかったね！");
 			// プレイヤーがモンスターを倒した場合以外は除外
-			if (!(event.getEntity() instanceof Monster) || !(event.getEntity().getKiller() instanceof Player)) {
+			if (!(event.getEntity() instanceof Monster || event.getEntity() instanceof LivingEntity)
+					|| !(event.getEntity().getKiller() instanceof Player)) {
 				return;
 			}
 			Player player = (Player) event.getEntity().getKiller();
-			Monster monster = (Monster) event.getEntity();
+			String monsterName = event.getEntity().getName();
+
 			// プレイヤーがMebiusを装備していない場合は除外
 			if (!isEquip(player)) {
 				return;
 			}
-			getPlayerData(player).mebius.speak(getMessage(msgs, player.getName(), monster.getName()));
+
+			//もしモンスター名が取れなければ除外
+			if(monsterName == ""){
+				return;
+			}
+			getPlayerData(player).mebius.speak(getMessage(msgs,
+					player.getName(), monsterName));
 		} catch (NullPointerException e) {
 		}
 	}
