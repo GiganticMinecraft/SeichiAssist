@@ -242,6 +242,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.build_count_set(rs.getInt("build_count"));
  				playerdata.build_count_flg_set(rs.getByte("build_count_flg"));
 
+ 				playerdata.dispkilllogflag = rs.getBoolean("anniversary");
 
  				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
  				for(int i = 0 ; i < activeskilleffect.length ; i++){

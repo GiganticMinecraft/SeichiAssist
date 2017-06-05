@@ -3,10 +3,9 @@ package com.github.unchama.seichiassist.listener;
 import java.util.HashMap;
 import java.util.UUID;
 
-import net.coreprotect.model.Config;
-import net.md_5.bungee.api.ChatColor;
-
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +16,9 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
+
+import net.coreprotect.model.Config;
+import net.md_5.bungee.api.ChatColor;
 
 public class PlayerJoinListener implements Listener {
 	//private SeichiAssist plugin = SeichiAssist.plugin;
@@ -30,6 +32,7 @@ public class PlayerJoinListener implements Listener {
 		Player player = event.getPlayer();
 		// プレイヤーデータ作成
 		sql.loadPlayerData(player);
+		anniversary(player);
 
 		// 初見さんへの処理
 		/*
@@ -69,6 +72,23 @@ public class PlayerJoinListener implements Listener {
 					// トグル音を鳴らす
 					p.playSound(p.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 				}
+			}
+		}
+	}
+
+	private void anniversary(Player player) {
+		PlayerData playerdata = playermap.get(player.getUniqueId());
+		if (playerdata.anniversary) {
+			if (player.getInventory().firstEmpty() == -1) {
+				player.sendMessage("整地サーバ1周年を記念して、アイテムが届いています。");
+				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
+			} else {
+				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+				String command = "/give";
+				Bukkit.dispatchCommand(console, command);
+				player.sendMessage("整地サーバ1周年の記念品を入手しました。");
+				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
+				sql.setAnniversary(false, player.getUniqueId());
 			}
 		}
 	}

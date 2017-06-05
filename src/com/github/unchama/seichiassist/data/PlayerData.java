@@ -149,6 +149,9 @@ public class PlayerData {
 	//設置ブロックサーバー統合フラグ
 	private byte build_count_flg;
 
+	//記念品付与フラグ
+	public boolean anniversary;
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.loaded = false;
@@ -209,6 +212,7 @@ public class PlayerData {
 		this.build_lv = 1;
 		this.build_count = 0;
 		this.build_count_flg = 0;
+		this.anniversary = false;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新

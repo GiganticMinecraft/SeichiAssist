@@ -417,6 +417,8 @@ public class Sql{
 				",add column if not exists build_count int default 0" +//
 				",add column if not exists build_count_flg TINYINT UNSIGNED default 0" +//
 
+				",add column if not exists anniversary boolean default false" +
+
 				"";
 
 
@@ -1337,6 +1339,23 @@ public class Sql{
 			sender.sendMessage(ChatColor.RED + "実績の予約に失敗しました");
 			Bukkit.getLogger().warning(Util.getName(sender) + " sql failed. -> writegiveachvNo");
 			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	// anniversary変更
+	public boolean setAnniversary(boolean anniversary, UUID uuid) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "UPDATE " + db + "." + table + " " +
+				"SET anniversary = " + Boolean.toString(anniversary);
+		if (uuid == null) {
+			command += "WHERE uuid = *";
+		} else {
+			command += "WHERE uuid = '" + uuid.toString() + "'";
+		}
+		if (!putCommand(command)) {
+			Bukkit.getLogger().warning("sql failed. -> setAnniversary");
 			return false;
 		}
 		return true;
