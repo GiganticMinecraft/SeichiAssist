@@ -3,10 +3,8 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -242,9 +240,6 @@ public class seichiCommand implements TabExecutor {
 			// SQLの全登録データをtrueに変更
 			sql.setAnniversary(true, null);
 			sender.sendMessage("Anniversaryアイテムの配布を開始しました。");
-			ConsoleCommandSender console = Bukkit.getConsoleSender();
-			String command = "give EustomaHearts skull 1 3 {display:{Name:\"マインちゃん\",Lore:[\"\", \"" + ChatColor.YELLOW + "整地鯖1周年記念だよ！\"]},SkullOwner:{Id:\"fac7c46e-3e89-4249-bef6-948d5eb528c9\",Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDhmNTQ0OGI0ZDg4ZTQwYjE0YzgyOGM2ZjFiNTliMzg1NDVkZGE5MzNlNzNkZmYzZjY5NWU2ZmI0Mjc4MSJ9fX0=\"}]}}}";
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 			return true;
 		}
 		return false;
