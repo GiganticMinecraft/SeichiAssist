@@ -483,8 +483,8 @@ public class SeichiAssist extends JavaPlugin{
 	public static List<MineStackObj> minestacklistgacha =  new ArrayList<MineStackObj>(Arrays.asList(
 
 			//以下ガチャ系アイテム
-			new MineStackObj("gachaimo",Util.getGachaimoName(),19,Material.GOLDEN_APPLE,0,true,-1,Util.getGachaimoLore(),5)
-			,new MineStackObj("exp_bottle","エンチャントの瓶",19,Material.EXP_BOTTLE,0,false,-1,5)
+			new MineStackObj("gachaimo",Util.getGachaimoName(),1,Material.GOLDEN_APPLE,0,true,-1,Util.getGachaimoLore(),5)
+			,new MineStackObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0,false,-1,5)
 
 			));
 
