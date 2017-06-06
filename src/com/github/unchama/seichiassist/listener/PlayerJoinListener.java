@@ -3,9 +3,6 @@ package com.github.unchama.seichiassist.listener;
 import java.util.HashMap;
 import java.util.UUID;
 
-import net.coreprotect.model.Config;
-import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,6 +14,9 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
+
+import net.coreprotect.model.Config;
+import net.md_5.bungee.api.ChatColor;
 
 public class PlayerJoinListener implements Listener {
 	//private SeichiAssist plugin = SeichiAssist.plugin;
