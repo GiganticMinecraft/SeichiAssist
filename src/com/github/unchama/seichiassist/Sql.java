@@ -1349,10 +1349,8 @@ public class Sql{
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "UPDATE " + db + "." + table + " " +
 				"SET anniversary = " + Boolean.toString(anniversary);
-		if (uuid == null) {
-			command += "WHERE uuid = *";
-		} else {
-			command += "WHERE uuid = '" + uuid.toString() + "'";
+		if (uuid != null) {
+			command += " WHERE uuid = '" + uuid.toString() + "'";
 		}
 		if (!putCommand(command)) {
 			Bukkit.getLogger().warning("sql failed. -> setAnniversary");

@@ -149,7 +149,7 @@ public class PlayerData {
 	//設置ブロックサーバー統合フラグ
 	private byte build_count_flg;
 
-	//記念品付与フラグ
+	// 1周年記念
 	public boolean anniversary;
 
 	public PlayerData(Player player){
