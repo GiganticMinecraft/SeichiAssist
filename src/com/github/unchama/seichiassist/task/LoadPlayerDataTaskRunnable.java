@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -15,6 +14,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -205,8 +205,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				}
 
  		        try {
-					Date TodayDate = DateFormat.getDateInstance().parse(sdf.format(cal.getTime()));
-					Date LastDate = DateFormat.getDateInstance().parse(playerdata.lastcheckdate);
+					Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
+					Date LastDate = sdf.parse(playerdata.lastcheckdate);
 					long TodayLong = TodayDate.getTime();
 					long LastLong = LastDate.getTime();
 
@@ -219,7 +219,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 							playerdata.ChainJoin = 1 ;
 						}
 					}
-				} catch (ParseException e1) {
+				} catch (ParseException e) {
+					e.printStackTrace();
 				}
  		        playerdata.lastcheckdate = sdf.format(cal.getTime());
 
@@ -242,6 +243,11 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.build_count_set(rs.getInt("build_count"));
  				playerdata.build_count_flg_set(rs.getByte("build_count_flg"));
 
+ 				// 1周年記念
+ 				if (playerdata.anniversary = rs.getBoolean("anniversary")) {
+ 					p.sendMessage("整地サーバ1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。http://seichi.click/d/anniversary");
+ 					p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
+ 				}
 
  				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
  				for(int i = 0 ; i < activeskilleffect.length ; i++){
@@ -258,7 +264,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				//MineStack機能の数値
 
 				//MineStack関連をすべてfor文に変更
- 				if(SeichiAssist.minestack_sql_enable==true){
+ 				if(SeichiAssist.minestack_sql_enable){
  					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
  						int temp_num = rs.getInt("stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName());
  						playerdata.minestack.setNum(i, temp_num);
@@ -372,5 +378,4 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 		return;
 	}
-
 }

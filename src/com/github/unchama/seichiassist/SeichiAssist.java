@@ -72,6 +72,8 @@ public class SeichiAssist extends JavaPlugin{
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
 
+	private String pluginChannel = "BungeeCord";
+
 	private HashMap<String, TabExecutor> commandlist;
 	public static Sql sql;
 	public static Config config;
@@ -545,6 +547,10 @@ public class SeichiAssist extends JavaPlugin{
 	public void onEnable(){
 		plugin = this;
 
+		//チャンネルを追加
+		Bukkit.getMessenger().registerOutgoingPluginChannel(this,
+				this.pluginChannel);
+
 		//コンフィグ系の設定は全てConfig.javaに移動
 		config = new Config(this);
 		config.loadConfig();
@@ -774,7 +780,7 @@ public class SeichiAssist extends JavaPlugin{
 		List<MineStackObj> minestacklist = new ArrayList<MineStackObj>();
 		for(int i=0; i<SeichiAssist.msgachadatalist.size(); i++){
 			MineStackGachaData g = SeichiAssist.msgachadatalist.get(i);
-			int levelsidx = 0;
+			//int levelsidx = 0;
 			//System.out.println("Debug A");
 				if(!g.itemstack.getType().equals(Material.EXP_BOTTLE)){ //経験値瓶だけはすでにリストにあるので除外
 					/*

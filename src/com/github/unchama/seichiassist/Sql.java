@@ -384,7 +384,7 @@ public class Sql{
 				*/
 
 				//MineStack関連をすべてfor文に変更
-				if(SeichiAssist.minestack_sql_enable==true){
+				if(SeichiAssist.minestack_sql_enable){
 					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
 						command += ",add column if not exists stack_" + SeichiAssist.minestacklist.get(i).getMineStackObjName() + " int default 0";
 					}
@@ -416,6 +416,8 @@ public class Sql{
 				",add column if not exists build_lv int default 1" +//
 				",add column if not exists build_count int default 0" +//
 				",add column if not exists build_count_flg TINYINT UNSIGNED default 0" +//
+
+				",add column if not exists anniversary boolean default false" +
 
 				"";
 
@@ -1337,6 +1339,21 @@ public class Sql{
 			sender.sendMessage(ChatColor.RED + "実績の予約に失敗しました");
 			Bukkit.getLogger().warning(Util.getName(sender) + " sql failed. -> writegiveachvNo");
 			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	// anniversary変更
+	public boolean setAnniversary(boolean anniversary, UUID uuid) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "UPDATE " + db + "." + table + " " +
+				"SET anniversary = " + Boolean.toString(anniversary);
+		if (uuid != null) {
+			command += " WHERE uuid = '" + uuid.toString() + "'";
+		}
+		if (!putCommand(command)) {
+			Bukkit.getLogger().warning("sql failed. -> setAnniversary");
 			return false;
 		}
 		return true;

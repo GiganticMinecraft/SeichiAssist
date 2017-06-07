@@ -52,6 +52,8 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class PlayerInventoryListener implements Listener {
@@ -60,7 +62,104 @@ public class PlayerInventoryListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
 	private Config config = SeichiAssist.config;
 	private Sql sql = SeichiAssist.plugin.sql;
+	//棒メニュー
+	@EventHandler
+	public void onPlayerClickServerSwitchMenuEvent(InventoryClickEvent event){
+		//外枠のクリック処理なら終了
+		if(event.getClickedInventory() == null){
+			return;
+		}
 
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
+
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが36でない時終了
+		if(topinventory.getSize() != 2*9){
+			return;
+		}
+		Player player = (Player)he;
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+
+		//インベントリ名が以下の時処理
+		if(topinventory.getTitle().equals(ChatColor.DARK_RED + "" + ChatColor.BOLD + "サーバーを選択してください")){
+			event.setCancelled(true);
+
+			//プレイヤーインベントリのクリックの場合終了
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+			ItemMeta meta = itemstackcurrent.getItemMeta();
+
+			/*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+			ByteArrayDataOutput byteArrayDataOutput = ByteStreams
+					.newDataOutput();
+			//ページ変更処理
+			if(meta.getDisplayName().contains("第1サバイバルサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s1");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第2サバイバルサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s2");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第3サバイバルサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s3");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第1整地専用特設サーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s5");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第2整地専用特設サーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s6");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("クリエイティブサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("cre");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("イベントサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("eve");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第1βテストサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("g1");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("第2βテストサーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("g2");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}else if(meta.getDisplayName().contains("公共施設サーバ")){
+				byteArrayDataOutput.writeUTF("Connect");
+				byteArrayDataOutput.writeUTF("s7");
+				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+						byteArrayDataOutput.toByteArray());
+			}
+		}
+	}
 	//棒メニュー
 	@EventHandler
 	public void onPlayerClickStickMenuEvent(InventoryClickEvent event){
@@ -107,7 +206,11 @@ public class PlayerInventoryListener implements Listener {
 			 */
 
 			//ページ変更処理
-			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
+			if(itemstackcurrent.getType().equals(Material.NETHER_STAR)){
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_PORTAL_AMBIENT, 0.6F, (float) 1.5F);
+				player.openInventory(MenuInventoryData.getServerSwitchMenu(player));
+			}else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData2(player));
@@ -785,7 +888,7 @@ public class PlayerInventoryListener implements Listener {
 		PlayerData playerdata = playermap.get(uuid);
 
 		//経験値変更用のクラスを設定
-		ExperienceManager expman = new ExperienceManager(player);
+		//ExperienceManager expman = new ExperienceManager(player);
 
 
 		//インベントリ名が以下の時処理
@@ -1688,8 +1791,8 @@ public class PlayerInventoryListener implements Listener {
 
 
 		Player player = (Player)he;
-		UUID uuid = player.getUniqueId();
-		PlayerData playerdata = playermap.get(uuid);
+		//UUID uuid = player.getUniqueId();
+		//PlayerData playerdata = playermap.get(uuid);
 
 		//インベントリ名が以下の時処理
 
@@ -1937,7 +2040,7 @@ public class PlayerInventoryListener implements Listener {
 							//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
 							int level = SeichiAssist.config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel());
 							int level_ = 0;
-							String temp = null;
+							//String temp = null;
 							for(int j=0; j<itemstackcurrent.getItemMeta().getLore().size(); j++){
 								String lore = itemstackcurrent.getItemMeta().getLore().get(j);
 								//System.out.println(j);
@@ -1973,7 +2076,7 @@ public class PlayerInventoryListener implements Listener {
 							//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
 							int level = SeichiAssist.config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel());
 							int level_ = 0;
-							String temp = null;
+							//String temp = null;
 							for(int j=0; j<itemstackcurrent.getItemMeta().getLore().size(); j++){
 								String lore = itemstackcurrent.getItemMeta().getLore().get(j);
 								//System.out.println(j);
@@ -2378,31 +2481,31 @@ public class PlayerInventoryListener implements Listener {
 			}
 		}
 	}
-	//minestackの1stack付与の処理
-	private int giveMineStack(Player player,int minestack,Material type){
-		if(minestack >= type.getMaxStackSize()){ //スタックサイズが64でないアイテムにも対応
-			ItemStack itemstack = new ItemStack(type,type.getMaxStackSize());
-			if(!Util.isPlayerInventryFill(player)){
-				Util.addItem(player,itemstack);
-			}else{
-				Util.dropItem(player,itemstack);
-			}
-			minestack -= type.getMaxStackSize();
-			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-		}else if(minestack == 0){
-			return minestack;
-		}else{
-			ItemStack itemstack = new ItemStack(type,minestack);
-			if(!Util.isPlayerInventryFill(player)){
-				Util.addItem(player,itemstack);
-			}else{
-				Util.dropItem(player,itemstack);
-			}
-			minestack -= minestack;
-			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-		}
-		return minestack;
-	}
+//	//minestackの1stack付与の処理
+//	private int giveMineStack(Player player,int minestack,Material type){
+//		if(minestack >= type.getMaxStackSize()){ //スタックサイズが64でないアイテムにも対応
+//			ItemStack itemstack = new ItemStack(type,type.getMaxStackSize());
+//			if(!Util.isPlayerInventryFill(player)){
+//				Util.addItem(player,itemstack);
+//			}else{
+//				Util.dropItem(player,itemstack);
+//			}
+//			minestack -= type.getMaxStackSize();
+//			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+//		}else if(minestack == 0){
+//			return minestack;
+//		}else{
+//			ItemStack itemstack = new ItemStack(type,minestack);
+//			if(!Util.isPlayerInventryFill(player)){
+//				Util.addItem(player,itemstack);
+//			}else{
+//				Util.dropItem(player,itemstack);
+//			}
+//			minestack -= minestack;
+//			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+//		}
+//		return minestack;
+//	}
 
 	//minestackの1stack付与 ItemStack版
 	private int giveMineStack(Player player,int minestack,ItemStack itemstack){
@@ -2653,7 +2756,7 @@ public class PlayerInventoryListener implements Listener {
     	PlayerData playerdata = playermap.get(uuid);
 
     	//経験値変更用のクラスを設定
-    	ExperienceManager expman = new ExperienceManager(player);
+    	//ExperienceManager expman = new ExperienceManager(player);
 
 
     	//インベントリ名が以下の時処理
@@ -2755,7 +2858,7 @@ public class PlayerInventoryListener implements Listener {
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//プレイヤーインベントリのクリックの場合終了
     		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
     			return;
@@ -2767,7 +2870,7 @@ public class PlayerInventoryListener implements Listener {
 
     		//実績ポイント最新化
     		if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			playerdata.achvPointMAX = 0;
     			for(int i=1000 ; i < 9800; i ++ ){
@@ -2806,28 +2909,28 @@ public class PlayerInventoryListener implements Listener {
 
     		//パーツショップ
     		if(itemstackcurrent.getType().equals(Material.ITEM_FRAME)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
     			player.openInventory(MenuInventoryData.setTitleShopData(player));
     		}
 
     		//前パーツ
     		if(itemstackcurrent.getType().equals(Material.WATER_BUCKET)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
     			player.openInventory(MenuInventoryData.setFreeTitle1Data(player));
     		}
 
     		//中パーツ
     		if(itemstackcurrent.getType().equals(Material.MILK_BUCKET)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
     			player.openInventory(MenuInventoryData.setFreeTitle2Data(player));
     		}
 
     		//後パーツ
     		if(itemstackcurrent.getType().equals(Material.LAVA_BUCKET)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
     			player.openInventory(MenuInventoryData.setFreeTitle3Data(player));
     		}
@@ -2846,7 +2949,7 @@ public class PlayerInventoryListener implements Listener {
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//プレイヤーインベントリのクリックの場合終了
     		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
     			return;
@@ -2898,7 +3001,7 @@ public class PlayerInventoryListener implements Listener {
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//プレイヤーインベントリのクリックの場合終了
     		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
     			return;
@@ -2950,7 +3053,7 @@ public class PlayerInventoryListener implements Listener {
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//プレイヤーインベントリのクリックの場合終了
     		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
     			return;
@@ -3002,7 +3105,7 @@ public class PlayerInventoryListener implements Listener {
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//プレイヤーインベントリのクリックの場合終了
     		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
     			return;
@@ -3014,7 +3117,7 @@ public class PlayerInventoryListener implements Listener {
 
     		//実績ポイント最新化
     		if(itemstackcurrent.getType().equals(Material.EMERALD_ORE)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			playerdata.achvPointMAX = 0;
     			for(int i=1000 ; i < 9800; i ++ ){
@@ -3082,7 +3185,7 @@ public class PlayerInventoryListener implements Listener {
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//プレイヤーインベントリのクリックの場合終了
     		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
     			return;
@@ -3093,7 +3196,7 @@ public class PlayerInventoryListener implements Listener {
     		 */
 
     		if(itemstackcurrent.getType().equals(Material.BEDROCK)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。");
     			player.openInventory(MenuInventoryData.getTitleRankData(player));
@@ -3179,7 +3282,7 @@ public class PlayerInventoryListener implements Listener {
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//プレイヤーインベントリのクリックの場合終了
     		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
     			return;
@@ -3190,7 +3293,7 @@ public class PlayerInventoryListener implements Listener {
     		 */
 
     		if(itemstackcurrent.getType().equals(Material.BEDROCK)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。");
     			player.openInventory(MenuInventoryData.getTitleAmountData(player));
@@ -3291,7 +3394,7 @@ public class PlayerInventoryListener implements Listener {
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//プレイヤーインベントリのクリックの場合終了
     		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
     			return;
@@ -3302,7 +3405,7 @@ public class PlayerInventoryListener implements Listener {
     		 */
 
     		if(itemstackcurrent.getType().equals(Material.BEDROCK)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。");
     			player.openInventory(MenuInventoryData.getTitleTimeData(player));
@@ -3393,7 +3496,7 @@ public class PlayerInventoryListener implements Listener {
     			player.openInventory(MenuInventoryData.getTitleTimeData(player));
     		}
     		else if(itemstackcurrent.getType().equals(Material.EMERALD_BLOCK)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				playerdata.TitleFlags.set(8003);
 				player.sendMessage("お疲れ様でした！今日のお給料の代わりに二つ名をどうぞ！");
@@ -3592,7 +3695,7 @@ public class PlayerInventoryListener implements Listener {
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//プレイヤーインベントリのクリックの場合終了
     		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
     			return;
@@ -3603,7 +3706,7 @@ public class PlayerInventoryListener implements Listener {
     		 */
 
     		if(itemstackcurrent.getType().equals(Material.BEDROCK)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。");
     			player.openInventory(MenuInventoryData.getTitleSupportData(player));
@@ -3683,7 +3786,7 @@ public class PlayerInventoryListener implements Listener {
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//プレイヤーインベントリのクリックの場合終了
     		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
     			return;
@@ -3694,7 +3797,7 @@ public class PlayerInventoryListener implements Listener {
     		 */
 
     		if(itemstackcurrent.getType().equals(Material.BEDROCK)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			player.sendMessage("この実績は配布解禁式です。運営チームからの配布タイミングを逃さないようご注意ください。");
     			player.openInventory(MenuInventoryData.getTitleEventData(player));
@@ -3990,7 +4093,7 @@ public class PlayerInventoryListener implements Listener {
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+    		//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//プレイヤーインベントリのクリックの場合終了
     		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
     			return;
@@ -4001,7 +4104,7 @@ public class PlayerInventoryListener implements Listener {
     		 */
 
     		if(itemstackcurrent.getType().equals(Material.BEDROCK)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+    			//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
     			player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。");
     			player.openInventory(MenuInventoryData.getTitleSecretData(player));

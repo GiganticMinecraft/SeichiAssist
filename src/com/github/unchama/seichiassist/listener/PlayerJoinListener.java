@@ -19,7 +19,7 @@ import net.coreprotect.model.Config;
 import net.md_5.bungee.api.ChatColor;
 
 public class PlayerJoinListener implements Listener {
-	private SeichiAssist plugin = SeichiAssist.plugin;
+	//private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	private Sql sql = SeichiAssist.plugin.sql;
 

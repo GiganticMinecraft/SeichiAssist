@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,7 +18,7 @@ import com.github.unchama.seichiassist.util.BukkitSerialization;
 public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
-	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	//private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private Sql sql = SeichiAssist.plugin.sql;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
@@ -122,7 +120,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				//MineStack機能の数値更新処理
 
 				//MineStack関連は全てfor文に変更
-				if(SeichiAssist.minestack_sql_enable==true){
+				if(SeichiAssist.minestack_sql_enable){
 					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
 						command += ",stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName()+ " = "
 							+ Integer.toString(playerdata.minestack.getNum(i));
