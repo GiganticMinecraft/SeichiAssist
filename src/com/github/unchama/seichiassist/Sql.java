@@ -274,6 +274,9 @@ public class Sql{
 				",add column if not exists rgnum int default 0" +
 				",add column if not exists totalbreaknum bigint default 0" +
 				",add column if not exists lastquit datetime default null" +
+				",add column if not exists lastcheckdate varchar(12) default null" +
+				",add column if not exists ChainJoin int default 0" +
+				",add column if not exists TotalJoin int default 0" +
 				",add column if not exists displayTypeLv boolean default true" +
 				",add column if not exists displayTitleNo int default 0" +
 				",add column if not exists displayTitle1No int default 0" +
@@ -282,7 +285,9 @@ public class Sql{
 				",add column if not exists TitleFlags text default null" +
 				",add column if not exists giveachvNo int default 0" +
 				",add column if not exists achvPointMAX int default 0" +
-				",add column if not exists achvPointUSE int default 0" ;
+				",add column if not exists achvPointUSE int default 0" +
+				",add column if not exists achvChangenum int default 0" ;
+
 
 				/*
 				",add column if not exists stack_dirt int default 0" +
@@ -411,6 +416,8 @@ public class Sql{
 				",add column if not exists build_lv int default 1" +//
 				",add column if not exists build_count int default 0" +//
 				",add column if not exists build_count_flg TINYINT UNSIGNED default 0" +//
+
+				",add column if not exists anniversary boolean default false" +
 
 				"";
 
@@ -1332,6 +1339,21 @@ public class Sql{
 			sender.sendMessage(ChatColor.RED + "実績の予約に失敗しました");
 			Bukkit.getLogger().warning(Util.getName(sender) + " sql failed. -> writegiveachvNo");
 			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	// anniversary変更
+	public boolean setAnniversary(boolean anniversary, UUID uuid) {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String command = "UPDATE " + db + "." + table + " " +
+				"SET anniversary = " + Boolean.toString(anniversary);
+		if (uuid != null) {
+			command += " WHERE uuid = '" + uuid.toString() + "'";
+		}
+		if (!putCommand(command)) {
+			Bukkit.getLogger().warning("sql failed. -> setAnniversary");
 			return false;
 		}
 		return true;

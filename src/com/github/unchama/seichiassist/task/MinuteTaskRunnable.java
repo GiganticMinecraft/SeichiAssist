@@ -240,6 +240,22 @@ public class MinuteTaskRunnable extends BukkitRunnable{
     			}
     			checkNo ++ ;
     		}
+    		//No5000系統の解禁チェック
+    		checkNo = 5001 ;
+    		for(;checkNo < 5009 ;){
+    			if(!playerdata.TitleFlags.get(checkNo)){
+    				TUTR.TryTitle(player,checkNo);
+    			}
+    			checkNo ++ ;
+    		}
+    		//No5100系統の解禁チェック
+    		checkNo = 5101 ;
+    		for(;checkNo < 5112 ;){
+    			if(!playerdata.TitleFlags.get(checkNo)){
+    				TUTR.TryTitle(player,checkNo);
+    			}
+    			checkNo ++ ;
+    		}
     		//No6000系統の解禁チェック
     		checkNo = 6001 ;
     		for(;checkNo < 6009 ;){

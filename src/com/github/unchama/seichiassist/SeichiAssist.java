@@ -72,6 +72,8 @@ public class SeichiAssist extends JavaPlugin{
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
 
+	private String pluginChannel = "BungeeCord";
+
 	private HashMap<String, TabExecutor> commandlist;
 	public static Sql sql;
 	public static Config config;
@@ -544,6 +546,10 @@ public class SeichiAssist extends JavaPlugin{
 	@Override
 	public void onEnable(){
 		plugin = this;
+
+		//チャンネルを追加
+		Bukkit.getMessenger().registerOutgoingPluginChannel(this,
+				this.pluginChannel);
 
 		//コンフィグ系の設定は全てConfig.javaに移動
 		config = new Config(this);

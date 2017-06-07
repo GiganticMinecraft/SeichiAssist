@@ -100,6 +100,11 @@ public class PlayerData {
 	//投票受け取りボタン連打防止用
 	public boolean votecooldownflag;
 
+	//連続・通算ログイン用
+	public String lastcheckdate ;
+	public int ChainJoin ;
+	public int TotalJoin ;
+
 	//アクティブスキル関連データ
 	public ActiveSkillData activeskilldata;
 
@@ -133,6 +138,8 @@ public class PlayerData {
 	public int achvPointMAX ;//累計取得量
 	public int achvPointUSE ;//消費量
 	public int achvPoint ;//現在の残量
+	public int achvChangenum ;//投票ptからの変換回数
+	public boolean samepageflag ;//実績ショップ用
 
 
 	//建築LV
@@ -141,6 +148,9 @@ public class PlayerData {
 	private int build_count;
 	//設置ブロックサーバー統合フラグ
 	private byte build_count_flg;
+
+	// 1周年記念
+	public boolean anniversary;
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -202,6 +212,7 @@ public class PlayerData {
 		this.build_lv = 1;
 		this.build_count = 0;
 		this.build_count_flg = 0;
+		this.anniversary = false;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新

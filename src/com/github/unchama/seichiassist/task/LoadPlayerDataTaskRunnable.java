@@ -4,12 +4,17 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -179,7 +184,46 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.giveachvNo = rs.getInt("giveachvNo");
  				playerdata.achvPointMAX = rs.getInt("achvPointMAX");
  				playerdata.achvPointUSE = rs.getInt("achvPointUSE");
- 				playerdata.achvPoint = playerdata.achvPointMAX - playerdata.achvPointUSE ;
+ 				playerdata.achvChangenum =rs.getInt("achvChangenum");
+ 				playerdata.achvPoint = (playerdata.achvPointMAX + (playerdata.achvChangenum * 3)) - playerdata.achvPointUSE ;
+
+ 				//連続・通算ログインの情報、およびその更新
+ 		        Calendar cal = Calendar.getInstance();
+ 		        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+ 				if(rs.getString("lastcheckdate") == "" || rs.getString("lastcheckdate") == null){
+ 					playerdata.lastcheckdate = sdf.format(cal.getTime());
+ 				}else {
+ 					playerdata.lastcheckdate = rs.getString("lastcheckdate");
+ 				}
+ 				playerdata.ChainJoin = rs.getInt("ChainJoin");
+ 				playerdata.TotalJoin = rs.getInt("TotalJoin");
+ 				if(playerdata.ChainJoin == 0){
+ 					playerdata.ChainJoin = 1 ;
+ 				}
+ 				if(playerdata.TotalJoin == 0){
+ 					playerdata.TotalJoin = 1 ;
+ 				}
+
+ 		        try {
+					Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
+					Date LastDate = sdf.parse(playerdata.lastcheckdate);
+					long TodayLong = TodayDate.getTime();
+					long LastLong = LastDate.getTime();
+
+					long datediff = (TodayLong - LastLong)/(1000 * 60 * 60 * 24 );
+					if(datediff > 0){
+						playerdata.TotalJoin ++ ;
+						if(datediff == 1 ){
+							playerdata.ChainJoin ++ ;
+						}else {
+							playerdata.ChainJoin = 1 ;
+						}
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+ 		        playerdata.lastcheckdate = sdf.format(cal.getTime());
+
 
  				//実績解除フラグのBitSet型への復元処理
  				//初回nullエラー回避のための分岐
@@ -199,6 +243,11 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.build_count_set(rs.getInt("build_count"));
  				playerdata.build_count_flg_set(rs.getByte("build_count_flg"));
 
+ 				// 1周年記念
+ 				if (playerdata.anniversary = rs.getBoolean("anniversary")) {
+ 					p.sendMessage("整地サーバ1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。http://seichi.click/d/anniversary");
+ 					p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
+ 				}
 
  				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
  				for(int i = 0 ; i < activeskilleffect.length ; i++){
@@ -329,5 +378,4 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 		return;
 	}
-
 }
