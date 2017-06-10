@@ -4354,7 +4354,6 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(7,itemstack);
 		}else{
-			/* ひとまず内部実装。使うことになったらコメントアウト解除。
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7008「???」" );
@@ -4364,7 +4363,6 @@ public class MenuInventoryData {
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(7,itemstack);
-			*/
 		}
 		if(playerdata.TitleFlags.get(7009)){
 			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
@@ -4391,6 +4389,78 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(8,itemstack);
 			*/
+		}
+		if(playerdata.TitleFlags.get(7010)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7010「"+ SeichiAssist.config.getTitle1(7010)
+					+ SeichiAssist.config.getTitle3(7010) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：公式イベント「第三回建築コンペ」で配布"
+								,ChatColor.RESET + "" +  ChatColor.RED + "開催テーマＡは「氷像(夏)」でした。"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は配布解禁式です");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(9,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7010「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：公式イベント「第三回建築コンペ」で配布"
+								,ChatColor.RESET + "" +  ChatColor.RED + "開催テーマＡは「氷像(夏)」でした。"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は配布解禁式です");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(9,itemstack);
+		}
+		if(playerdata.TitleFlags.get(7011)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7011「"+ SeichiAssist.config.getTitle1(7011)
+					+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(7011) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：公式イベント「第三回建築コンペ」で配布"
+								,ChatColor.RESET + "" +  ChatColor.RED + "開催テーマＢは「海岸建築(夏)」でした。"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は配布解禁式です");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(10,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7011「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：公式イベント「第三回建築コンペ」で配布"
+								,ChatColor.RESET + "" +  ChatColor.RED + "開催テーマＢは「海岸建築(夏)」でした。"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は配布解禁式です");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(10,itemstack);
+		}
+		if(playerdata.TitleFlags.get(7012)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7012「"+ SeichiAssist.config.getTitle1(7012)
+					+ SeichiAssist.config.getTitle3(7012) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：公式イベント「第三回建築コンペ」で配布"
+								,ChatColor.RESET + "" +  ChatColor.RED + "開催テーマＣは「海上建築(夏)」でした。"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は配布解禁式です");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(11,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7012「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：公式イベント「第三回建築コンペ」で配布"
+								,ChatColor.RESET + "" +  ChatColor.RED + "開催テーマＣは「海上建築(夏)」でした。"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は配布解禁式です");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(11,itemstack);
 		}
 
 		// 1ページ目を開く
