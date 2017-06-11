@@ -4346,7 +4346,7 @@ public class PlayerInventoryListener implements Listener {
             	}
             }
             //チケット計算
-            giveticket = giveticket + (int)(coalore/128) + (int)(ironore/64) + (int)(goldore/8) + (int)(lapisore/8) + (int)(diamondore/4) + (int)(redstoneore/64) + (int)(emeraldore/4);
+            giveticket = giveticket + (int)(coalore/128) + (int)(ironore/64) + (int)(goldore/8) + (int)(lapisore/8) + (int)(diamondore/4) + (int)(redstoneore/32) + (int)(emeraldore/4);
 
             //プレイヤー通知
             if(giveticket == 0){
@@ -4421,11 +4421,11 @@ public class PlayerInventoryListener implements Listener {
             	retore.add(d);
             }
 
-            if((redstoneore - (int)(redstoneore/64)*64) != 0){
+            if((redstoneore - (int)(redstoneore/32)*32) != 0){
             	ItemStack r = new ItemStack(Material.REDSTONE_ORE);
             	ItemMeta ritemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
             	r.setItemMeta(ritemmeta);
-            	r.setAmount(redstoneore - (int)(redstoneore/64)*64);
+            	r.setAmount(redstoneore - (int)(redstoneore/32)*32);
             	retore.add(r);
             }
 
