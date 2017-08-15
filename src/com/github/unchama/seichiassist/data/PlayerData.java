@@ -152,6 +152,9 @@ public class PlayerData {
 	// 1周年記念
 	public boolean anniversary;
 
+	//ハーフブロック破壊抑制用
+	private boolean halfBreakFlag;
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.loaded = false;
@@ -213,6 +216,8 @@ public class PlayerData {
 		this.build_count = 0;
 		this.build_count_flg = 0;
 		this.anniversary = false;
+
+		this.halfBreakFlag = false;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -609,5 +614,17 @@ public class PlayerData {
 			}
 		}
 		expmanager.setExp(totalexp);
+	}
+
+	public boolean canBreakHalfBlock() {
+		return this.halfBreakFlag;
+	}
+
+	public void toggleHalfBreakFlag() {
+		if (halfBreakFlag) {
+			halfBreakFlag = false;
+		} else {
+			halfBreakFlag = true;
+		}
 	}
 }
