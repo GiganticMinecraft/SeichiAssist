@@ -5,15 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -566,5 +563,49 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 	}
 
+	/**
+	 * y5ハーフブロック破壊抑制
+	 *
+	 * @param event BlockBreakEvent
+	 */
+	@EventHandler(priority = EventPriority.HIGHEST)
+	@SuppressWarnings("deprecation")
+	public void onPlayerBlockHalf(BlockBreakEvent event) {
+		Player p = event.getPlayer();
+		Block b = event.getBlock();
+		World world = p.getWorld();
+		PlayerData data = SeichiAssist.playermap.get(p.getUniqueId());
+
+		if (b.getType().equals(Material.DOUBLE_STEP)) {
+			b.setType(Material.STEP);
+			b.setData((byte) 0);
+
+			Location location = b.getLocation();
+			world.dropItemNaturally(location, new ItemStack(Material.STEP));
+		}
+
+		if (!b.getType().equals(Material.STEP)) {
+			return;
+		}
+
+		if (b.getY() != 5) {
+			return;
+		}
+
+		if (b.getData() != 0) {
+			return;
+		}
+
+		if (!world.getName().toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME)) {
+			return;
+		}
+
+		if (data.canBreakHalfBlock()) {
+			return;
+		}
+
+		event.setCancelled(true);
+		p.sendMessage(ChatColor.RED + "Y5に敷かれたハーフブロックは破壊不可能です.");
+	}
 
 }

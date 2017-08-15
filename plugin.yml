@@ -53,3 +53,8 @@ commands:
       usage: /<command> <Achivement_No> <playername/ALL> <give/deprive/server/world>
       permission: multiseichiplugin.achievement
       permission-message: You don't have <permission>
+  halfguard:
+      description: This is a Halfblockprotect command.
+      usage: /<command>
+      permission: multiseichiplugin.halfguard
+      permission-message: You don't have <permission>
