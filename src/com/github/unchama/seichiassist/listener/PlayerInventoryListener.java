@@ -3223,7 +3223,7 @@ public class PlayerInventoryListener implements Listener {
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1003) +"」が設定されました。");
     			}
     			else if(itemmeta.getDisplayName().contains("No1004「"+ SeichiAssist.config.getTitle1(1004) +"」")){
-    				playerdata.displayTitle1No = 1001 ;
+    				playerdata.displayTitle1No = 1004 ;
     				playerdata.displayTitle2No = 0 ;
     				playerdata.displayTitle3No = 0 ;
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1004) +"」が設定されました。");
