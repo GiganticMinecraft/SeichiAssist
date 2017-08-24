@@ -1,18 +1,15 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.io.IOException;
-import java.util.List;
-
-import com.github.unchama.seichiassist.OfflineUUID;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.List;
 
 public class lastquitCommand implements TabExecutor{
 	public SeichiAssist plugin;

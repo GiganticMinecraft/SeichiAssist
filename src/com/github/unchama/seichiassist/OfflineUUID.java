@@ -1,11 +1,9 @@
 package com.github.unchama.seichiassist;
 
-    import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -13,9 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
     public class OfflineUUID {
        private OfflineUUID() {}
