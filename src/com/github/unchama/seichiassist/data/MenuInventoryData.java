@@ -1,12 +1,9 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.util.ExperienceManager;
+import com.github.unchama.seichiassist.util.Util;
+import com.sk89q.worldedit.bukkit.selections.Selection;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -19,14 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.MineStackObj;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.util.ExperienceManager;
-import com.github.unchama.seichiassist.util.Util;
-import com.sk89q.worldedit.bukkit.selections.Selection;
+import java.util.*;
 
 public class MenuInventoryData {
 	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
@@ -567,6 +557,17 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(17,itemstack);
 
+		//釣りメニュー
+		itemstack = new ItemStack(Material.FISHING_ROD, 1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.FISHING_ROD);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "釣りメニュー");
+		lore = Arrays.asList(ChatColor.DARK_GRAY + "釣り関連メニュー"
+				, ChatColor.DARK_GRAY + "統計の確認、専用インベントリの"
+				, ChatColor.DARK_GRAY + "クーラーボックスを確認できます"
+				, ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(10, itemstack);
 
 		return inventory;
 	}

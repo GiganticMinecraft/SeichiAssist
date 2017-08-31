@@ -1,28 +1,26 @@
 package com.github.unchama.seichiassist.data;
 
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
+import com.github.unchama.seichiassist.util.ExperienceManager;
+import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.Statistic;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
-import com.github.unchama.seichiassist.util.ExperienceManager;
-import com.github.unchama.seichiassist.util.Util;
-
 
 
 
 public class PlayerData {
+	private Config config = SeichiAssist.config;
+
 	//読み込み済みフラグ
 	public boolean loaded = false;
 	//プレイヤー名
@@ -155,6 +153,11 @@ public class PlayerData {
 	//ハーフブロック破壊抑制用
 	private boolean halfBreakFlag;
 
+	//釣りシステム用
+	private boolean fishtoggle;
+	private BigDecimal fishexp;
+	private int fishlevel;
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.loaded = false;
@@ -218,6 +221,11 @@ public class PlayerData {
 		this.anniversary = false;
 
 		this.halfBreakFlag = false;
+
+		//釣り
+		this.fishtoggle = true;
+		this.fishexp = BigDecimal.ZERO;
+		this.fishlevel = 0;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -230,6 +238,7 @@ public class PlayerData {
 		activeskilldata.updateonJoin(player, level);
 		//サーバー保管経験値をクライアントに読み込み
 		loadTotalExp();
+		updateFishLevel()
 	}
 
 
@@ -626,5 +635,82 @@ public class PlayerData {
 		} else {
 			halfBreakFlag = true;
 		}
+	}
+
+	/**
+	 * レベルアップ可能か
+	 *
+	 * @return
+	 */
+	private boolean canLevelupFishLevel() {
+		double temp = this.fishexp.doubleValue();
+		//Bukkit.getServer().getLogger().info("level:"+level+" next:"+levelmap.get(level).getNextExp()+">"+temp);
+		if (level >= config.getMaxFishingLevel()) {
+			return false;
+		}
+		if (SeichiAssist.levelmap.get(level).getNextExp() > temp) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * 初期処理でプレイヤーのレベルを取得します．
+	 *
+	 */
+	public void setFishExp(double exp_) {
+		this.fishexp = new BigDecimal(exp_);
+		this.level = 1;
+		while (this.canLevelupFishLevel()) {
+			this.level++;
+		}
+	}
+
+	public double getFishExp() {
+		return fishexp.doubleValue();
+	}
+
+	/**
+	 * 経験値を加算します.
+	 * @param add
+	 */
+	public void addFishExp(double add) {
+		this.fishexp = this.fishexp.add(new BigDecimal(add));
+		updateFishLevel();
+	}
+
+	/**
+	 * レベルが上がるまでレベルデータを更新します．
+	 *
+	 * @return １でも上がった場合trueとなる．
+	 */
+	public boolean updateFishLevel() {
+		boolean changeflag = false;
+		while (this.canLevelupFishLevel()) {
+			level++;
+			changeflag = true;
+		}
+		return changeflag;
+	}
+
+	/**
+	 * レベルアップまでに必要な経験値を調べます．
+	 *
+	 * @return
+	 */
+	public double getRemainingFishExp() {
+		return this.level < config.getMaxFishingLevel() ? SeichiAssist.levelmap.get(
+				this.level).getNextExp()
+				- this.fishexp.doubleValue() : 0;
+	}
+
+	/**
+	 * 現在のプレイヤーの狩猟レベルを取得します．
+	 *
+	 * @return
+	 */
+	public int getFishLevel() {
+		return this.level;
 	}
 }

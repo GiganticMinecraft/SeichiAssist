@@ -167,4 +167,8 @@ public class Config{
 		return Util.toInt(config.getString("rategigantictoringo"));
 	}
 
+	public int getMaxFishingLevel() {
+		return Util.toInt(config.getString("maxFishingLevel"));
+	}
+
 }
