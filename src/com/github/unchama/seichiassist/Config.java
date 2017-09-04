@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist;
 
-import org.bukkit.configuration.file.FileConfiguration;
-
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class Config{
 	private static FileConfiguration config;
@@ -167,4 +169,14 @@ public class Config{
 		return Util.toInt(config.getString("rategigantictoringo"));
 	}
 
+	public boolean isGridProtectForce(Player player) {
+		List<String> worldlist = config.getStringList("GridProtectForceWorld");
+
+		for (String name : worldlist) {
+			if (player.getWorld().getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
