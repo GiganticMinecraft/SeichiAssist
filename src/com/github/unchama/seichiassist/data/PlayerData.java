@@ -704,13 +704,6 @@ public class PlayerData {
 			return false;
 		}
 
-		/*
-		if (chunkMap.get(chuckType) < LIMIT) {
-			return true;
-		} else {
-			return false;
-		}
-		*/
 	}
 
 	public boolean canGridReduce(ChuckType chuckType) {

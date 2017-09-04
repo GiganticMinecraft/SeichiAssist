@@ -6,12 +6,9 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
-
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.sk89q.worldedit.bukkit.selections.Selection;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.*;
 import org.bukkit.block.Banner;
 import org.bukkit.enchantments.Enchantment;
@@ -655,6 +652,7 @@ public class PlayerInventoryListener implements Listener {
 				player.chat("/fc craft");
 			}
 
+			/*
 			else if(itemstackcurrent.getType().equals(Material.WOOD_AXE)){
 				// wand召喚
 				player.closeInventory();
@@ -711,6 +709,7 @@ public class PlayerInventoryListener implements Listener {
 				player.closeInventory();
 				player.chat("/land");
 			}
+			*/
 
 			else if(itemstackcurrent.getType().equals(Material.BOOK)){
 				// wikiリンク表示

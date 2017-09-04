@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.*;
-import com.github.unchama.seichiassist.data.*;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.listener.*;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
@@ -616,7 +619,7 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
 		getServer().getPluginManager().registerEvents(new GachaItemListener(), this);
 		getServer().getPluginManager().registerEvents(new MebiusListener(), this);
-		getServer().getPluginManager().registerEvents(new PlayerFishInventoryListener(), this);
+		getServer().getPluginManager().registerEvents(new RegionInventoryListener(), this);
 		// マナ自動回復用リスナー…無効化中
 		// getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
 		// BungeeCordとのI/F
@@ -650,10 +653,6 @@ public class SeichiAssist extends JavaPlugin{
 		//タスクスタート
 		startTaskRunnable();
 
-		//釣りシステム用に経験値リストを作成
-		for (int level = 1; level <= config.getMaxFishingLevel(); level++) {
-			levelmap.put(level, new FishingLevel(level));
-		}
 
 		getLogger().info("SeichiAssist is Enabled!");
 	}
