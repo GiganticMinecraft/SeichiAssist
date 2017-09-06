@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
+import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -13,6 +14,7 @@ import java.util.*;
 
 
 public class PlayerData {
+	static Config config = SeichiAssist.config;
 	//読み込み済みフラグ
 	public boolean loaded = false;
 	//プレイヤー名
@@ -665,7 +667,7 @@ public class PlayerData {
 	*/
 
 	public boolean canGridExtend(ChuckType chuckType) {
-		final int LIMIT = 10;//TODO:コンフィグで変更可能に!
+		final int LIMIT = config.getGridLimit();
 		Map<ChuckType, Integer> chunkMap = getGridChuckMap();
 
 		if (chunkMap.get(chuckType) < LIMIT) {
