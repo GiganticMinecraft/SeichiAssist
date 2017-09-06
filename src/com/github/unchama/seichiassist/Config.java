@@ -179,4 +179,8 @@ public class Config{
 		}
 		return false;
 	}
+
+	public int getGridLimit() {
+		return Util.toInt(config.getString("GridLimit"));
+	}
 }
