@@ -7,14 +7,18 @@ import com.github.unchama.seichiassist.data.RegionMenuData;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.ChuckType;
 import com.github.unchama.seichiassist.util.Util.Direction;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.bukkit.WorldConfiguration;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper;
+import com.sk89q.worldguard.bukkit.commands.task.RegionAdder;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.util.DomainInputResolver;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
@@ -273,10 +277,10 @@ public class RegionInventoryListener implements Listener {
                 gridChangeFunction(player, ChuckType.BEHIND, event);
             } else if (itemstackcurrent.getType().equals(Material.WOOL) && itemstackcurrent.getDurability() == 11) {
                 player.chat("//expand vert");
-                player.chat("/rg claim " + player.getName() + "_" + playerData.rgnum);
+                createRegion(player);
                 playerData.rgnum += 1;
-                player.chat("//sel");
                 player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+                player.closeInventory();
             }
         }
     }
@@ -398,5 +402,22 @@ public class RegionInventoryListener implements Listener {
         }
 
         playerData.setCanCreateRegion(true);
+    }
+
+    private void createRegion(Player player) {
+        PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
+        Selection selection = We.getSelection(player);
+
+        ProtectedRegion region = new ProtectedCuboidRegion(player.getName() + "_" + playerData.rgnum,
+                selection.getNativeMinimumPoint().toBlockVector(), selection.getNativeMaximumPoint().toBlockVector());
+        RegionManager manager = Wg.getRegionManager(player.getWorld());
+
+        RegionAdder task = new RegionAdder(Wg, manager, region);
+        task.setLocatorPolicy(DomainInputResolver.UserLocatorPolicy.UUID_ONLY);
+        task.setOwnersInput(new String[]{player.getName()});
+        ListenableFuture<?> future = Wg.getExecutorService().submit(task);
+
+        AsyncCommandHelper.wrap(future, Wg, player).formatUsing(player.getName() + "_" + playerData.rgnum)
+                .registerWithSupervisor("保護申請中").thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗");
     }
 }
