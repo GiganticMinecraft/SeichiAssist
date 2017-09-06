@@ -1,36 +1,28 @@
 package com.github.unchama.seichiassist.util;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
+import org.bukkit.*;
 import org.bukkit.FireworkEffect.Builder;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
-
 import zedly.zenchantments.Zenchantments;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class Util {
 	static private FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
@@ -512,7 +504,101 @@ public class Util {
 		return temp;
 	}
 
+	/**
+	 * GUIメニューアイコン作成用
+	 * @author karayuu
+	 *
+	 * @param material メニューアイコンMaterial, not {@code null}
+	 * @param amount メニューアイコンのアイテム個数
+	 * @param displayName メニューアイコンのDisplayName, not {@code null}
+	 * @param lore メニューアイコンのLore, not {@code null}
+	 * @param isHideFlags 攻撃値・ダメージ値を隠すかどうか(true: 隠す / false: 隠さない)
+	 * @throws IllegalArgumentException Material,DisplayName, Loreのいずれかが {@code null} の時
+	 * @return ItemStack型のメニューアイコン
+	 */
+	public static ItemStack getMenuIcon(Material material, int amount,
+										String displayName, List<String> lore, boolean isHideFlags) {
+		if (material == null || displayName == null || lore == null) {
+			throw new IllegalArgumentException("Material,DisplayName,LoreにNullは指定できません。");
+		}
+		ItemStack menuicon = new ItemStack(material, amount);
+		ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(material);
+		itemMeta.setDisplayName(displayName);
+		itemMeta.setLore(lore);
+		if (isHideFlags) {
+			itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		}
+		menuicon.setItemMeta(itemMeta);
 
+		return menuicon;
+	}
 
+	/**
+	 * GUIメニューアイコン作成用
+	 * @author karayuu
+	 *
+	 * @param material メニューアイコンMaterial, not {@code null}
+	 * @param amount メニューアイコンのアイテム個数
+	 * @param durabity メニューアイコンのダメージ値
+	 * @param displayName メニューアイコンのDisplayName, not {@code null}
+	 * @param lore メニューアイコンのLore, not {@code null}
+	 * @param isHideFlags 攻撃値・ダメージ値を隠すかどうか(true: 隠す / false: 隠さない)
+	 * @throws IllegalArgumentException Material,DisplayName, Loreのいずれかが {@code null} の時
+	 * @return ItemStack型のメニューアイコン
+	 */
+	public static ItemStack getMenuIcon(Material material, int amount, int durabity,
+										String displayName, List<String> lore, boolean isHideFlags) {
+		if (material == null || displayName == null || lore == null) {
+			throw new IllegalArgumentException("Material,DisplayName,LoreにNullは指定できません。");
+		}
+		ItemStack menuicon = new ItemStack(material, amount, (short) durabity);
+		ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(material);
+		itemMeta.setDisplayName(displayName);
+		itemMeta.setLore(lore);
+		if (isHideFlags) {
+			itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		}
+		menuicon.setItemMeta(itemMeta);
 
+		return menuicon;
+	}
+
+	/**
+	 * PlayerDataでチャンク数をゲット・セットするためのenum
+	 */
+	public enum ChuckType {
+		AHEAD,
+		BEHIND,
+		RIGHT,
+		LEFT,
+		;
+	}
+
+	/**
+	 * PlayerDataなどで使用する方角関係のenum
+	 */
+	public enum Direction {
+		NORTH,
+		SOUTH,
+		EAST,
+		WEST,
+		;
+	}
+
+	public static Direction getPlayerDirection(Player player) {
+		Float yaw = player.getLocation().getYaw();
+
+		//0,360:south 90:west 180:north 270:east
+		if (135 <= yaw && yaw < 225) {
+			return Direction.NORTH;
+		} else if (225 <= yaw && yaw < 315) {
+			return Direction.EAST;
+		} else if (315 <= yaw || yaw < 45) {
+			return Direction.SOUTH;
+		} else if (45 <= yaw && yaw < 135) {
+			return Direction.WEST;
+		}
+		//ここに到達はありえない。
+		return null;
+	}
 }

@@ -1,25 +1,15 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.Statistic;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.Util.*;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
-
+import java.util.*;
 
 
 public class PlayerData {
@@ -155,6 +145,13 @@ public class PlayerData {
 	//ハーフブロック破壊抑制用
 	private boolean halfBreakFlag;
 
+	//グリッド式保護関連
+	private int aheadChunk;
+	private int behindChunk;
+	private int rightChunk;
+	private int leftChunk;
+	private boolean canCreateRegion;
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.loaded = false;
@@ -218,6 +215,12 @@ public class PlayerData {
 		this.anniversary = false;
 
 		this.halfBreakFlag = false;
+
+		this.aheadChunk = 0;
+		this.behindChunk = 0;
+		this.rightChunk = 0;
+		this.leftChunk = 0;
+		this.canCreateRegion = true;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -626,5 +629,105 @@ public class PlayerData {
 		} else {
 			halfBreakFlag = true;
 		}
+	}
+
+	public Map<ChuckType,Integer> getGridChuckMap() {
+		Map<ChuckType, Integer> chunkMap = new HashMap<>();
+
+		chunkMap.put(ChuckType.AHEAD, this.aheadChunk);
+		chunkMap.put(ChuckType.BEHIND, this.behindChunk);
+		chunkMap.put(ChuckType.RIGHT, this.rightChunk);
+		chunkMap.put(ChuckType.LEFT, this.leftChunk);
+
+		return chunkMap;
+	}
+
+	public int getGridChunkAmount() {
+		return (this.aheadChunk + 1 + this.behindChunk) * (this.rightChunk + 1 + this.leftChunk);
+	}
+
+	/*
+	public void setAheadChunk(int amount) {
+		this.aheadChunk = amount;
+	}
+
+	public void setBehindChunk(int amount) {
+		this.behindChunk = amount;
+	}
+
+	public void setRightChunk(int amount) {
+		this.rightChunk = amount;
+	}
+
+	public void setLeftChunk(int amount) {
+		this.leftChunk = amount;
+	}
+	*/
+
+	public boolean canGridExtend(ChuckType chuckType) {
+		final int LIMIT = 10;//TODO:コンフィグで変更可能に!
+		Map<ChuckType, Integer> chunkMap = getGridChuckMap();
+
+		if (chunkMap.get(chuckType) < LIMIT) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean canGridReduce(ChuckType chuckType) {
+		Map<ChuckType, Integer> chunkMap = getGridChuckMap();
+
+		if (chunkMap.get(chuckType) <= 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public void setChunkAmount(ChuckType chuckType, int amount) {
+		switch (chuckType) {
+			case AHEAD:
+				this.aheadChunk = amount;
+				break;
+			case BEHIND:
+				this.behindChunk = amount;
+				break;
+			case RIGHT:
+				this.rightChunk = amount;
+				break;
+			case LEFT:
+				this.leftChunk = amount;
+				break;
+			default:
+				//わざと何もしない
+		}
+	}
+
+	public void addChunkAmount(ChuckType chuckType, int addAmount) {
+		switch (chuckType) {
+			case AHEAD:
+				this.aheadChunk += addAmount;
+				break;
+			case BEHIND:
+				this.behindChunk += addAmount;
+				break;
+			case RIGHT:
+				this.rightChunk += addAmount;
+				break;
+			case LEFT:
+				this.leftChunk += addAmount;
+				break;
+			default:
+				//わざと何もしない
+		}
+	}
+
+	public void setCanCreateRegion(boolean flag) {
+		this.canCreateRegion = flag;
+	}
+
+	public boolean canCreateRegion() {
+		return this.canCreateRegion;
 	}
 }
