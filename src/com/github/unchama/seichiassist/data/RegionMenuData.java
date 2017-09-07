@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
+import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.ChuckType;
@@ -27,6 +28,7 @@ import java.util.*;
 public class RegionMenuData {
     static WorldGuardPlugin Wg = Util.getWorldGuard();
     static WorldEditPlugin We = Util.getWorldEdit();
+    static Config config = SeichiAssist.config;
 
     /**
      * 保護メニューを取得します。
@@ -216,7 +218,7 @@ public class RegionMenuData {
         gridInv.setItem(7, menuicon7);
 
         //8マス目
-        if (!player.hasPermission("worldguard.region.claim")) {
+        if (!config.isGridProtectForce(player)) {
             List<String> lore8 = new ArrayList<>();
             lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "このワールドでは保護を作成できません");
             ItemStack menuicon8 = Util.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",
