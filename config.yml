@@ -467,5 +467,5 @@ rategigantictoringo: '4'
 GridProtectForceWorld:
  - world_test
 
-#グリッドの最大チャンク数
-GridLimit: '10'
+#グリッドで指定可能な最大チャンク合計数
+GridLimit: '32'

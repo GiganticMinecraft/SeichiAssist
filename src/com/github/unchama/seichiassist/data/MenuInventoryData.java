@@ -3,6 +3,9 @@ package com.github.unchama.seichiassist.data;
 import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
+import com.sk89q.worldguard.bukkit.WorldConfiguration;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -21,6 +24,7 @@ public class MenuInventoryData {
 	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	static Sql sql = SeichiAssist.sql;
 	SeichiAssist plugin = SeichiAssist.plugin;
+	static WorldGuardPlugin Wg = Util.getWorldGuard();
 
 	//二つ名組合せシステム用
 	static boolean nextpageflag1 = false ;
@@ -560,8 +564,14 @@ public class MenuInventoryData {
 		inventory.setItem(17,itemstack);
 
 		//保護関連メニュー
+		WorldConfiguration wcfg = Wg.getGlobalStateManager().get(player.getWorld());
+		RegionManager manager = Wg.getRegionManager(player.getWorld());
+
 		List<String> lore3 = Arrays.asList(ChatColor.DARK_GRAY + "土地の保護が行えます"
-			, ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く");
+			, ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+			, ChatColor.GRAY + "保護作成上限：" + ChatColor.AQUA + wcfg.getMaxRegionCount(player)
+			, ChatColor.GRAY + "現在のあなたの保護作成数：" + ChatColor.AQUA + manager.getRegionCountOfPlayer(Wg.wrapPlayer(player))
+		);
 		ItemStack icon3 = Util.getMenuIcon(Material.DIAMOND_AXE, 1,
 				ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "土地保護メニュー", lore3, true);
 		inventory.setItem(3, icon3);
