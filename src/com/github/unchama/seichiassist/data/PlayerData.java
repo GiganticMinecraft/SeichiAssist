@@ -5,33 +5,19 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
-<<<<<<< HEAD
+import com.github.unchama.seichiassist.util.Util.ChuckType;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-import java.util.UUID;
-=======
-import com.github.unchama.seichiassist.util.Util.*;
-import org.bukkit.*;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
->>>>>>> master
-
 import java.util.*;
 
 
 public class PlayerData {
-<<<<<<< HEAD
-	private Config config = SeichiAssist.config;
 
-=======
 	static Config config = SeichiAssist.config;
->>>>>>> master
+
 	//読み込み済みフラグ
 	public boolean loaded = false;
 	//プレイヤー名
@@ -164,19 +150,18 @@ public class PlayerData {
 	//ハーフブロック破壊抑制用
 	private boolean halfBreakFlag;
 
-<<<<<<< HEAD
+
 	//釣りシステム用
 	private boolean fishtoggle;
 	private BigDecimal fishexp;
 	private int fishlevel;
-=======
+
 	//グリッド式保護関連
 	private int aheadChunk;
 	private int behindChunk;
 	private int rightChunk;
 	private int leftChunk;
 	private boolean canCreateRegion;
->>>>>>> master
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -242,18 +227,16 @@ public class PlayerData {
 
 		this.halfBreakFlag = false;
 
-<<<<<<< HEAD
 		//釣り
 		this.fishtoggle = true;
 		this.fishexp = BigDecimal.ZERO;
 		this.fishlevel = 0;
-=======
+
 		this.aheadChunk = 0;
 		this.behindChunk = 0;
 		this.rightChunk = 0;
 		this.leftChunk = 0;
 		this.canCreateRegion = true;
->>>>>>> master
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -266,7 +249,7 @@ public class PlayerData {
 		activeskilldata.updateonJoin(player, level);
 		//サーバー保管経験値をクライアントに読み込み
 		loadTotalExp();
-		updateFishLevel()
+		updateFishLevel();
 	}
 
 
