@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -418,6 +419,11 @@ public class Sql{
 				",add column if not exists build_count_flg TINYINT UNSIGNED default 0" +//
 
 				",add column if not exists anniversary boolean default false" +
+
+				//釣りのデータ
+				",add column if not exists fishexp double default 0.0" +
+				",add column if not exists idleFishingCount int default 0" +
+				",add column if not exists activeFishingCount int default 0" +
 
 				"";
 

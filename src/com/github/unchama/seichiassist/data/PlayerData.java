@@ -155,6 +155,8 @@ public class PlayerData {
 	private boolean fishtoggle;
 	private BigDecimal fishexp;
 	private int fishlevel;
+	private int idleFishingCount;
+	private int activeFishingCount;
 
 	//グリッド式保護関連
 	private int aheadChunk;
@@ -231,6 +233,8 @@ public class PlayerData {
 		this.fishtoggle = true;
 		this.fishexp = BigDecimal.ZERO;
 		this.fishlevel = 0;
+		this.idleFishingCount = 0;
+		this.activeFishingCount = 0;
 
 		this.aheadChunk = 0;
 		this.behindChunk = 0;

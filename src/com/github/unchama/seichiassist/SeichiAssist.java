@@ -514,14 +514,8 @@ public class SeichiAssist extends JavaPlugin{
 			));
 
 	//釣りシステム
-	// 各レベルのデータ値を格納します．
-	public static LinkedHashMap<Integer, FishingLevel> levelmap = new LinkedHashMap<Integer, FishingLevel>() {
-		{
-			for (int level = 1; level <= config.getMaxFishingLevel(); level++) {
-				put(level, new FishingLevel(level));
-			}
-		}
-	};
+	//各レベルのデータ値を格納します．
+	public static LinkedHashMap<Integer, FishingLevel> levelmap = new LinkedHashMap<>();
 
 	@Override
 	public void onEnable(){
@@ -656,6 +650,11 @@ public class SeichiAssist extends JavaPlugin{
 
 		//タスクスタート
 		startTaskRunnable();
+
+		//釣りシステム用に経験値リストを作成
+		for (int level = 1; level <= config.getMaxFishingLevel(); level++) {
+			levelmap.put(level, new FishingLevel(level));
+		}
 
 		getLogger().info("SeichiAssist is Enabled!");
 	}
