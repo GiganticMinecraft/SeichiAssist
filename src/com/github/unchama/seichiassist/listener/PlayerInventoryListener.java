@@ -839,10 +839,6 @@ public class PlayerInventoryListener implements Listener {
 					itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "インベントリ共有")){
 				player.chat("/shareinv");
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispShareInvMeta(playerdata));
-			} else if (itemstackcurrent.getType().equals(Material.FISHING_ROD)) {
-				//釣りインベントリを開く
-				player.playSound(player.getLocation(), Sound.ENTITY_BOBBER_SPLASH, 1, (float) 0.5);
-				player.openInventory(FishInventoryData.getFishingInv(player));
 			}
 		}
 	}

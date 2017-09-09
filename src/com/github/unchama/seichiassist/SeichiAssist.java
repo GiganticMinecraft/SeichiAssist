@@ -516,10 +516,6 @@ public class SeichiAssist extends JavaPlugin{
 			"world_SW_2","world_SW_nether","world_SW_the_end"
 			));
 
-	//釣りシステム
-	//各レベルのデータ値を格納します．
-	public static LinkedHashMap<Integer, FishingLevel> levelmap = new LinkedHashMap<>();
-
 	@Override
 	public void onEnable(){
 		plugin = this;
@@ -652,7 +648,6 @@ public class SeichiAssist extends JavaPlugin{
 
 		//タスクスタート
 		startTaskRunnable();
-
 
 		getLogger().info("SeichiAssist is Enabled!");
 	}
