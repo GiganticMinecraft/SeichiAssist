@@ -1,9 +1,8 @@
 package com.github.unchama.seichiassist;
 
-import org.bukkit.configuration.file.FileConfiguration;
-
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class Config{
 	private static FileConfiguration config;
