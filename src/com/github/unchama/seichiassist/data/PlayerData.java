@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
+<<<<<<< HEAD
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -14,13 +15,23 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
+=======
+import com.github.unchama.seichiassist.util.Util.*;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+>>>>>>> master
 
-
+import java.util.*;
 
 
 public class PlayerData {
+<<<<<<< HEAD
 	private Config config = SeichiAssist.config;
 
+=======
+	static Config config = SeichiAssist.config;
+>>>>>>> master
 	//読み込み済みフラグ
 	public boolean loaded = false;
 	//プレイヤー名
@@ -153,10 +164,19 @@ public class PlayerData {
 	//ハーフブロック破壊抑制用
 	private boolean halfBreakFlag;
 
+<<<<<<< HEAD
 	//釣りシステム用
 	private boolean fishtoggle;
 	private BigDecimal fishexp;
 	private int fishlevel;
+=======
+	//グリッド式保護関連
+	private int aheadChunk;
+	private int behindChunk;
+	private int rightChunk;
+	private int leftChunk;
+	private boolean canCreateRegion;
+>>>>>>> master
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -222,10 +242,18 @@ public class PlayerData {
 
 		this.halfBreakFlag = false;
 
+<<<<<<< HEAD
 		//釣り
 		this.fishtoggle = true;
 		this.fishexp = BigDecimal.ZERO;
 		this.fishlevel = 0;
+=======
+		this.aheadChunk = 0;
+		this.behindChunk = 0;
+		this.rightChunk = 0;
+		this.leftChunk = 0;
+		this.canCreateRegion = true;
+>>>>>>> master
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -712,5 +740,141 @@ public class PlayerData {
 	 */
 	public int getFishLevel() {
 		return this.level;
+	}
+
+	public Map<ChuckType,Integer> getGridChuckMap() {
+		Map<ChuckType, Integer> chunkMap = new HashMap<>();
+
+		chunkMap.put(ChuckType.AHEAD, this.aheadChunk);
+		chunkMap.put(ChuckType.BEHIND, this.behindChunk);
+		chunkMap.put(ChuckType.RIGHT, this.rightChunk);
+		chunkMap.put(ChuckType.LEFT, this.leftChunk);
+
+		return chunkMap;
+	}
+
+	public int getGridChunkAmount() {
+		return (this.aheadChunk + 1 + this.behindChunk) * (this.rightChunk + 1 + this.leftChunk);
+	}
+
+	/*
+	public void setAheadChunk(int amount) {
+		this.aheadChunk = amount;
+	}
+
+	public void setBehindChunk(int amount) {
+		this.behindChunk = amount;
+	}
+
+	public void setRightChunk(int amount) {
+		this.rightChunk = amount;
+	}
+
+	public void setLeftChunk(int amount) {
+		this.leftChunk = amount;
+	}
+	*/
+
+	public boolean canGridExtend(ChuckType chuckType) {
+		final int LIMIT = config.getGridLimit();
+		Map<ChuckType, Integer> chunkMap = getGridChuckMap();
+
+		//チャンクを拡大すると仮定する
+		final int assumedAmoont = chunkMap.get(chuckType) + 1;
+		//合計チャンク再計算値
+		int assumedChunkAmount = 0;
+		//一応すべての拡張値を出しておく
+		final int ahead = chunkMap.get(ChuckType.AHEAD);
+		final int behind = chunkMap.get(ChuckType.BEHIND);
+		final int right = chunkMap.get(ChuckType.RIGHT);
+		final int left = chunkMap.get(ChuckType.LEFT);
+
+		switch (chuckType) {
+			case AHEAD:
+				assumedChunkAmount = (assumedAmoont + 1 + behind) * (right + 1 + left);
+				break;
+			case BEHIND:
+				assumedChunkAmount = (ahead + 1 + assumedAmoont) * (right + 1 + left);
+				break;
+			case RIGHT:
+				assumedChunkAmount = (ahead + 1 + behind) * (assumedAmoont + 1 + left);
+				break;
+			case LEFT:
+				assumedChunkAmount = (ahead + 1 + behind) * (right + 1 + assumedAmoont);
+				break;
+			default:
+				//ここに来ることはありえない
+				Bukkit.getLogger().warning("グリッド式保護で予期せぬ動作[チャンク値仮定]。開発者に報告してください。");
+		}
+
+		if (assumedChunkAmount <= LIMIT) {
+			return true;
+		} else {
+			return false;
+		}
+
+		/*
+		if (chunkMap.get(chuckType) < LIMIT) {
+			return true;
+		} else {
+			return false;
+		}
+		*/
+	}
+
+	public boolean canGridReduce(ChuckType chuckType) {
+		Map<ChuckType, Integer> chunkMap = getGridChuckMap();
+
+		if (chunkMap.get(chuckType) <= 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public void setChunkAmount(ChuckType chuckType, int amount) {
+		switch (chuckType) {
+			case AHEAD:
+				this.aheadChunk = amount;
+				break;
+			case BEHIND:
+				this.behindChunk = amount;
+				break;
+			case RIGHT:
+				this.rightChunk = amount;
+				break;
+			case LEFT:
+				this.leftChunk = amount;
+				break;
+			default:
+				//わざと何もしない
+		}
+	}
+
+	public void addChunkAmount(ChuckType chuckType, int addAmount) {
+		switch (chuckType) {
+			case AHEAD:
+				this.aheadChunk += addAmount;
+				break;
+			case BEHIND:
+				this.behindChunk += addAmount;
+				break;
+			case RIGHT:
+				this.rightChunk += addAmount;
+				break;
+			case LEFT:
+				this.leftChunk += addAmount;
+				break;
+			default:
+				//わざと何もしない
+		}
+	}
+
+	public void setCanCreateRegion(boolean flag) {
+		this.canCreateRegion = flag;
+	}
+
+	public boolean canCreateRegion() {
+		return this.canCreateRegion;
 	}
 }
