@@ -191,6 +191,7 @@ public class RegionMenuData {
         lore4.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + chunkMap.get(ChuckType.RIGHT));
         lore4.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + chunkMap.get(ChuckType.LEFT));
         lore4.add(ChatColor.GRAY + "保護チャンク数：" + ChatColor.AQUA + playerData.getGridChunkAmount());
+        lore4.add(ChatColor.GRAY + "保護チャンク上限値：" + ChatColor.RED + config.getGridLimit());
         ItemStack menuicon4 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, ChatColor.DARK_GREEN + "設定",
                 lore4, true);
         gridInv.setItem(4, menuicon4);
@@ -205,6 +206,13 @@ public class RegionMenuData {
         ItemStack menuicon5 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5, ChatColor.DARK_GREEN + "右に1チャンク増やす/減らす",
                 lore5, true);
         gridInv.setItem(5, menuicon5);
+
+        //6マス目
+        List<String> lore6 = new ArrayList<>();
+        lore6.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "取扱注意！！");
+        ItemStack menuicon6 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 4, ChatColor.RED + "全設定リセット",
+                lore6, true);
+        gridInv.setItem(6, menuicon6);
 
         //7マス目
         List<String> lore7 = getGridLore(directionMap.get(ChuckType.BEHIND), chunkMap.get(ChuckType.BEHIND));
@@ -255,26 +263,26 @@ public class RegionMenuData {
     }
 
     private static Map<ChuckType, String> getPlayerDirectionString(Player player) {
-        Float yaw = player.getLocation().getYaw();
+        Float yaw = player.getLocation().getYaw() * (-1);
         Map<ChuckType, String> directionMap = new HashMap<>();
 
         //0,360:south 90:west 180:north 270:east
-        if (135 <= yaw && yaw < 225) {
+        if (-225 <= yaw && yaw < -135) {
             directionMap.put(ChuckType.BEHIND, "南(South)");
             directionMap.put(ChuckType.AHEAD, "北(North)");
             directionMap.put(ChuckType.LEFT, "西(West)");
             directionMap.put(ChuckType.RIGHT, "東(East)");
-        } else if (225 <= yaw && yaw < 315) {
+        } else if (-135 <= yaw && yaw < -45) {
             directionMap.put(ChuckType.RIGHT, "南(South)");
             directionMap.put(ChuckType.LEFT, "北(North)");
             directionMap.put(ChuckType.BEHIND, "西(West)");
             directionMap.put(ChuckType.AHEAD, "東(East)");
-        } else if (315 <= yaw || yaw < 45) {
+        } else if (-45 <= yaw || yaw < -315) {
             directionMap.put(ChuckType.AHEAD, "南(South)");
             directionMap.put(ChuckType.BEHIND, "北(North)");
             directionMap.put(ChuckType.RIGHT, "西(West)");
             directionMap.put(ChuckType.LEFT, "東(East)");
-        } else if (45 <= yaw && yaw < 135) {
+        } else if (-315 <= yaw && yaw < -225) {
             directionMap.put(ChuckType.LEFT, "南(South)");
             directionMap.put(ChuckType.RIGHT, "北(North)");
             directionMap.put(ChuckType.AHEAD, "西(West)");

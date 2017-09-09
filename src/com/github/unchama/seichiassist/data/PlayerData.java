@@ -670,11 +670,47 @@ public class PlayerData {
 		final int LIMIT = config.getGridLimit();
 		Map<ChuckType, Integer> chunkMap = getGridChuckMap();
 
+		//チャンクを拡大すると仮定する
+		final int assumedAmoont = chunkMap.get(chuckType) + 1;
+		//合計チャンク再計算値
+		int assumedChunkAmount = 0;
+		//一応すべての拡張値を出しておく
+		final int ahead = chunkMap.get(ChuckType.AHEAD);
+		final int behind = chunkMap.get(ChuckType.BEHIND);
+		final int right = chunkMap.get(ChuckType.RIGHT);
+		final int left = chunkMap.get(ChuckType.LEFT);
+
+		switch (chuckType) {
+			case AHEAD:
+				assumedChunkAmount = (assumedAmoont + 1 + behind) * (right + 1 + left);
+				break;
+			case BEHIND:
+				assumedChunkAmount = (ahead + 1 + assumedAmoont) * (right + 1 + left);
+				break;
+			case RIGHT:
+				assumedChunkAmount = (ahead + 1 + behind) * (assumedAmoont + 1 + left);
+				break;
+			case LEFT:
+				assumedChunkAmount = (ahead + 1 + behind) * (right + 1 + assumedAmoont);
+				break;
+			default:
+				//ここに来ることはありえない
+				Bukkit.getLogger().warning("グリッド式保護で予期せぬ動作[チャンク値仮定]。開発者に報告してください。");
+		}
+
+		if (assumedChunkAmount <= LIMIT) {
+			return true;
+		} else {
+			return false;
+		}
+
+		/*
 		if (chunkMap.get(chuckType) < LIMIT) {
 			return true;
 		} else {
 			return false;
 		}
+		*/
 	}
 
 	public boolean canGridReduce(ChuckType chuckType) {
