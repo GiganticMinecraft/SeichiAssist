@@ -589,13 +589,13 @@ public class Util {
 		Float yaw = player.getLocation().getYaw();
 
 		//0,360:south 90:west 180:north 270:east
-		if (135 <= yaw && yaw < 225) {
+		if (-225 <= yaw && yaw < -135) {
 			return Direction.NORTH;
-		} else if (225 <= yaw && yaw < 315) {
+		} else if (-135 <= yaw && yaw < -45) {
 			return Direction.EAST;
-		} else if (315 <= yaw || yaw < 45) {
+		} else if (-45 <= yaw || yaw < -315) {
 			return Direction.SOUTH;
-		} else if (45 <= yaw && yaw < 135) {
+		} else if (-315 <= yaw && yaw < -225) {
 			return Direction.WEST;
 		}
 		//ここに到達はありえない。
