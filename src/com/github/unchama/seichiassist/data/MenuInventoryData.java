@@ -3,7 +3,9 @@ package com.github.unchama.seichiassist.data;
 import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
-import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldguard.bukkit.WorldConfiguration;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,6 +24,7 @@ public class MenuInventoryData {
 	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	static Sql sql = SeichiAssist.sql;
 	SeichiAssist plugin = SeichiAssist.plugin;
+	static WorldGuardPlugin Wg = Util.getWorldGuard();
 
 	//二つ名組合せシステム用
 	static boolean nextpageflag1 = false ;
@@ -144,6 +147,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(22,itemstack);
 
+		/*
 		// ver0.3.2 保護設定コマンド
 		itemstack = new ItemStack(Material.GOLD_AXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_AXE);
@@ -188,6 +192,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
+		*/
 
 		// MineStackを開く
 		itemstack = new ItemStack(Material.CHEST,1);
@@ -362,7 +367,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(19,itemstack);
 
-
+		/*
 		// ver0.3.2 //wandコマンド
 		itemstack = new ItemStack(Material.WOOD_AXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD_AXE);
@@ -422,6 +427,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(6,itemstack);
+		*/
 
 		// fastcraftリンク
 		itemstack = new ItemStack(Material.WORKBENCH,1);
@@ -557,17 +563,18 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(17,itemstack);
 
-		//釣りメニュー
-		itemstack = new ItemStack(Material.FISHING_ROD, 1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.FISHING_ROD);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "釣りメニュー");
-		lore = Arrays.asList(ChatColor.DARK_GRAY + "釣り関連メニュー"
-				, ChatColor.DARK_GRAY + "統計の確認、専用インベントリの"
-				, ChatColor.DARK_GRAY + "クーラーボックスを確認できます"
-				, ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く");
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(10, itemstack);
+		//保護関連メニュー
+		WorldConfiguration wcfg = Wg.getGlobalStateManager().get(player.getWorld());
+		RegionManager manager = Wg.getRegionManager(player.getWorld());
+
+		List<String> lore3 = Arrays.asList(ChatColor.DARK_GRAY + "土地の保護が行えます"
+			, ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+			, ChatColor.GRAY + "保護作成上限：" + ChatColor.AQUA + wcfg.getMaxRegionCount(player)
+			, ChatColor.GRAY + "現在のあなたの保護作成数：" + ChatColor.AQUA + manager.getRegionCountOfPlayer(Wg.wrapPlayer(player))
+		);
+		ItemStack icon3 = Util.getMenuIcon(Material.DIAMOND_AXE, 1,
+				ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "土地保護メニュー", lore3, true);
+		inventory.setItem(3, icon3);
 
 		return inventory;
 	}

@@ -39,9 +39,6 @@ dropexplevel10: '114'
 passiveportalinventorylevel: '1'
 dokodemoenderlevel: '25'
 
-#釣りシステム設定
-maxFishingLevel: '50'
-
 # MineStackの開放レベルの設定
 minestacklevel1: '12'
 minestacklevel2: '17'
@@ -464,3 +461,11 @@ mebiusdebug: '0'
 # ギガンティック→椎名林檎交換レートの設定
 # デフォルト値はギガンティック1個につき椎名林檎4個
 rategigantictoringo: '4'
+
+#グリッド式保護を強制するワールド名
+#状況に応じて変更してください
+GridProtectForceWorld:
+ - world_test
+
+#グリッドで指定可能な最大チャンク合計数
+GridLimit: '32'
