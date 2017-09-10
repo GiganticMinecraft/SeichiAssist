@@ -589,13 +589,17 @@ public class Util {
 		Float yaw = player.getLocation().getYaw();
 
 		//0,360:south 90:west 180:north 270:east
-		if (-225 <= yaw && yaw < -135) {
+		if (135 <= yaw && yaw < 225) {
+			//前が北(North)
 			return Direction.NORTH;
-		} else if (-135 <= yaw && yaw < -45) {
+		} else if (225 <= yaw && yaw < 315) {
+			//前が東(East)
 			return Direction.EAST;
-		} else if (-45 <= yaw || yaw < -315) {
+		} else if (315 <= yaw || yaw < 45) {
+			//前が南(South)
 			return Direction.SOUTH;
-		} else if (-315 <= yaw && yaw < -225) {
+		} else if (45 <= yaw && yaw < 135) {
+			//前が西(West)
 			return Direction.WEST;
 		}
 		//ここに到達はありえない。

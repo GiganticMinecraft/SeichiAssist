@@ -263,26 +263,30 @@ public class RegionMenuData {
     }
 
     private static Map<ChuckType, String> getPlayerDirectionString(Player player) {
-        Float yaw = player.getLocation().getYaw() * (-1);
+        Float yaw = player.getLocation().getYaw();
         Map<ChuckType, String> directionMap = new HashMap<>();
 
         //0,360:south 90:west 180:north 270:east
-        if (-225 <= yaw && yaw < -135) {
+        if (135 <= yaw && yaw < 225) {
+            //前が北(North)
             directionMap.put(ChuckType.BEHIND, "南(South)");
             directionMap.put(ChuckType.AHEAD, "北(North)");
             directionMap.put(ChuckType.LEFT, "西(West)");
             directionMap.put(ChuckType.RIGHT, "東(East)");
-        } else if (-135 <= yaw && yaw < -45) {
+        } else if (225 <= yaw && yaw < 315) {
+            //前が東(East)
             directionMap.put(ChuckType.RIGHT, "南(South)");
             directionMap.put(ChuckType.LEFT, "北(North)");
             directionMap.put(ChuckType.BEHIND, "西(West)");
             directionMap.put(ChuckType.AHEAD, "東(East)");
-        } else if (-45 <= yaw || yaw < -315) {
+        } else if (315 <= yaw || yaw < 45) {
+            //前が南(South)
             directionMap.put(ChuckType.AHEAD, "南(South)");
             directionMap.put(ChuckType.BEHIND, "北(North)");
             directionMap.put(ChuckType.RIGHT, "西(West)");
             directionMap.put(ChuckType.LEFT, "東(East)");
-        } else if (-315 <= yaw && yaw < -225) {
+        } else if (45 <= yaw && yaw < 135) {
+            //前が西(West)
             directionMap.put(ChuckType.LEFT, "南(South)");
             directionMap.put(ChuckType.RIGHT, "北(North)");
             directionMap.put(ChuckType.AHEAD, "西(West)");

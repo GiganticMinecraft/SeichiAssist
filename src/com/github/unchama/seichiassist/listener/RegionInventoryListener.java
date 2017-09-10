@@ -292,7 +292,7 @@ public class RegionInventoryListener implements Listener {
                 wgSelect(playerChunk.getBlock(0, 0, 0).getLocation(),
                         playerChunk.getBlock(15,256, 15).getLocation(), player);
                 canCreateRegion(player);
-                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_DESTROY, 1, 1);
+                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_DESTROY, (float) 0.5, 1);
                 player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
             }
         }
