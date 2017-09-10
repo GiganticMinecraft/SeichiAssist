@@ -616,6 +616,7 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new GachaItemListener(), this);
 		getServer().getPluginManager().registerEvents(new MebiusListener(), this);
 		getServer().getPluginManager().registerEvents(new RegionInventoryListener(), this);
+		getServer().getPluginManager().registerEvents(new WorldRegenListener(), this);
 		// マナ自動回復用リスナー…無効化中
 		// getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
 		// BungeeCordとのI/F
