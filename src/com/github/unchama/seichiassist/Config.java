@@ -183,4 +183,16 @@ public class Config{
 	public int getGridLimit() {
 		return Util.toInt(config.getString("GridLimit"));
 	}
+
+	public int getRoadY() {
+		return config.getInt("road_Y");
+	}
+
+	public int getRoadLength() {
+		return config.getInt("road_length");
+	}
+
+	public int getSpaceHeight() {
+		return config.getInt("space_height");
+	}
 }

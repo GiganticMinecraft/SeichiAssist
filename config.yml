@@ -469,3 +469,11 @@ GridProtectForceWorld:
 
 #グリッドで指定可能な最大チャンク合計数
 GridLimit: '32'
+
+##自動再生成時の設定
+#道のY座標
+road_Y: 70
+#道の長さ(チャンク単位)
+road_length: 8
+#道の上の空洞の高さ
+space_height: 5
