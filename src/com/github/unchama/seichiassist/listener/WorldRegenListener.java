@@ -11,13 +11,14 @@ import org.bukkit.event.Listener;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.wimbli.WorldBorder.CoordXZ;
 import com.wimbli.WorldBorder.WorldBorder;
 import com.wimbli.WorldBorder.WorldFillTask;
@@ -33,6 +34,9 @@ public class WorldRegenListener implements Listener {
     private BaseBlock roadBlock;
     private BaseBlock spaceBlock;
 
+    private WorldEdit worldEdit;
+    private WorldGuardPlugin worldGuard;
+
     public WorldRegenListener() {
         Config config = SeichiAssist.config;
         this.roadY = config.getRoadY();
@@ -40,6 +44,9 @@ public class WorldRegenListener implements Listener {
         this.spaceHeight = config.getSpaceHeight();
         this.roadBlock = new BaseBlock(config.getRoadBlockID(), config.getRoadBlockDamage());
         this.spaceBlock = new BaseBlock(0);
+
+        this.worldEdit = WorldEdit.getInstance();
+        this.worldGuard = WorldGuardPlugin.inst();
     }
 
     @SuppressWarnings("deprecation")
@@ -62,22 +69,28 @@ public class WorldRegenListener implements Listener {
             com.wimbli.WorldBorder.Config.fillTask.setTaskID(task);
         }
 
-        WorldEdit worldEdit = WorldEdit.getInstance();
+        RegionManager regionManager = worldGuard.getRegionManager(world);
+        regionManager.getRegions().keySet().stream()
+                .filter(region -> !region.equalsIgnoreCase("__global__"))
+                .forEach(regionManager::removeRegion);
+
         EditSession session = worldEdit.getEditSessionFactory().getEditSession(bukkitWorld, 99999999);
         try {
-            Vector roadBase = new Vector(15, roadY, 15);
-            Vector spaceBase = new Vector(15, roadY + 1, 15);
-            session.setBlocks(new CuboidRegion(bukkitWorld, new Vector(0, roadY + 1, 0), new Vector(16, 76, 16)), spaceBlock);
-            session.setBlocks(new CuboidRegion(bukkitWorld, roadBase, new Vector(16 * roadLength + 16, roadY, 0)), roadBlock);
-            session.setBlocks(new CuboidRegion(bukkitWorld, spaceBase, new Vector(16 * roadLength + 16, roadY + spaceHeight, 0)), spaceBlock);
-            session.setBlocks(new CuboidRegion(bukkitWorld, roadBase, new Vector(-(16 * roadLength), roadY, 0)), roadBlock);
-            session.setBlocks(new CuboidRegion(bukkitWorld, spaceBase, new Vector(-(16 * roadLength), roadY + spaceHeight, 0)), spaceBlock);
-            session.setBlocks(new CuboidRegion(bukkitWorld, roadBase, new Vector(0, roadY, 16 * roadLength + 16)), roadBlock);
-            session.setBlocks(new CuboidRegion(bukkitWorld, spaceBase, new Vector(0, roadY + spaceHeight, 16 * roadLength + 16)), spaceBlock);
-            session.setBlocks(new CuboidRegion(bukkitWorld, roadBase, new Vector(0, roadY, -(16 * roadLength))), roadBlock);
-            session.setBlocks(new CuboidRegion(bukkitWorld, spaceBase, new Vector(0, roadY + spaceHeight, -(16 * roadLength))), spaceBlock);
+            setupRoad(session, world, "spawn", new BlockVector(0, roadY, 0), new BlockVector(15, roadY, 15));
+            setupRoad(session, world, "road1", new BlockVector(16, roadY, 0), new BlockVector(15 + 16 * roadLength, roadY, 15));
+            setupRoad(session, world, "road2", new BlockVector(-1, roadY, 0), new BlockVector(-(16 * roadLength), roadY, 15));
+            setupRoad(session, world, "road3", new BlockVector(0, roadY, 16), new BlockVector(15, roadY, 15 + 16 * roadLength));
+            setupRoad(session, world, "road4", new BlockVector(0, roadY, -1), new BlockVector(15, roadY, -(16 * roadLength)));
         } catch (MaxChangedBlocksException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setupRoad(EditSession session, World world, String protName, BlockVector pos1, BlockVector pos2) throws MaxChangedBlocksException {
+        BukkitWorld bukkitWorld = new BukkitWorld(world);
+        session.setBlocks(new CuboidRegion(bukkitWorld, pos1, pos2), roadBlock);
+        session.setBlocks(new CuboidRegion(bukkitWorld, pos1.add(0, 1, 0), pos2.add(0, 1 + spaceHeight, 0)), spaceBlock);
+        ProtectedRegion region = new ProtectedCuboidRegion(protName, new BlockVector(pos1.getX(), 0, pos1.getZ()), new BlockVector(pos2.getX(), 255, pos2.getZ()));
+        WorldGuardPlugin.inst().getRegionManager(world).addRegion(region);
     }
 }
