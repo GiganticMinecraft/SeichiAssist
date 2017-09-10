@@ -263,34 +263,44 @@ public class RegionMenuData {
     }
 
     private static Map<ChuckType, String> getPlayerDirectionString(Player player) {
-        Float yaw = player.getLocation().getYaw();
+        double rotation = (player.getLocation().getYaw() + 180) % 360;
         Map<ChuckType, String> directionMap = new HashMap<>();
 
+        if (rotation < 0) {
+            rotation += 360;
+        }
+
         //0,360:south 90:west 180:north 270:east
-        if (135 <= yaw && yaw < 225) {
+        if (0.0 <= rotation && rotation < 45.0) {
             //前が北(North)
             directionMap.put(ChuckType.BEHIND, "南(South)");
             directionMap.put(ChuckType.AHEAD, "北(North)");
             directionMap.put(ChuckType.LEFT, "西(West)");
             directionMap.put(ChuckType.RIGHT, "東(East)");
-        } else if (225 <= yaw && yaw < 315) {
+        } else if (45.0 <= rotation && rotation < 135.0) {
             //前が東(East)
             directionMap.put(ChuckType.RIGHT, "南(South)");
             directionMap.put(ChuckType.LEFT, "北(North)");
             directionMap.put(ChuckType.BEHIND, "西(West)");
             directionMap.put(ChuckType.AHEAD, "東(East)");
-        } else if (315 <= yaw || yaw < 45) {
+        } else if (135.0 <= rotation && rotation < 225.0) {
             //前が南(South)
             directionMap.put(ChuckType.AHEAD, "南(South)");
             directionMap.put(ChuckType.BEHIND, "北(North)");
             directionMap.put(ChuckType.RIGHT, "西(West)");
             directionMap.put(ChuckType.LEFT, "東(East)");
-        } else if (45 <= yaw && yaw < 135) {
+        } else if (225.0 <= rotation && rotation < 315.0) {
             //前が西(West)
             directionMap.put(ChuckType.LEFT, "南(South)");
             directionMap.put(ChuckType.RIGHT, "北(North)");
             directionMap.put(ChuckType.AHEAD, "西(West)");
             directionMap.put(ChuckType.BEHIND, "東(East)");
+        } else if (315.0 <= rotation && rotation < 360.0) {
+            //前が北(North)
+            directionMap.put(ChuckType.BEHIND, "南(South)");
+            directionMap.put(ChuckType.AHEAD, "北(North)");
+            directionMap.put(ChuckType.LEFT, "西(West)");
+            directionMap.put(ChuckType.RIGHT, "東(East)");
         }
         return directionMap;
     }
