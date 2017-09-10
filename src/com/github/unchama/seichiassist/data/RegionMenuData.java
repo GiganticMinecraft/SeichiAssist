@@ -161,6 +161,15 @@ public class RegionMenuData {
         Inventory gridInv = Bukkit.createInventory(null, InventoryType.DISPENSER,
                 ChatColor.LIGHT_PURPLE + "グリッド式保護設定メニュー");
 
+        //0マス目
+        List<String> lore0 = new ArrayList<>();
+        lore0.add(ChatColor.GREEN + "現在のチャンク指定量");
+        lore0.add(ChatColor.AQUA + "" +  playerData.getChunkPerGrid() + ChatColor.GREEN + "チャンク/1クリック");
+        lore0.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "クリックで変更");
+        ItemStack menuicon0 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 0,
+                ChatColor.GREEN + "拡張単位の変更", lore0, true);
+        gridInv.setItem(0, menuicon0);
+
         //1マス目
         List<String> lore1 = getGridLore(directionMap.get(ChuckType.AHEAD), chunkMap.get(ChuckType.AHEAD));
         if (!playerData.canGridExtend(ChuckType.AHEAD)) {
@@ -168,8 +177,8 @@ public class RegionMenuData {
         } else if (!playerData.canGridReduce(ChuckType.AHEAD)) {
             lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
-        ItemStack menuicon1 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 14, ChatColor.DARK_GREEN + "前に1チャンク増やす/減らす",
-                lore1, true);
+        ItemStack menuicon1 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 14,
+                ChatColor.DARK_GREEN + "前に" + playerData.getChunkPerGrid() + "チャンク増やす/減らす", lore1, true);
         gridInv.setItem(1, menuicon1);
 
         //3マス目
@@ -179,8 +188,8 @@ public class RegionMenuData {
         } else if (!playerData.canGridReduce(ChuckType.LEFT)) {
             lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
-        ItemStack menuicon3 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 10, ChatColor.DARK_GREEN + "左に1チャンク増やす/減らす",
-                lore3, true);
+        ItemStack menuicon3 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 10,
+                ChatColor.DARK_GREEN + "左に" + playerData.getChunkPerGrid() + "チャンク増やす/減らす", lore3, true);
         gridInv.setItem(3, menuicon3);
 
         //4マス目
@@ -203,8 +212,8 @@ public class RegionMenuData {
         } else if (!playerData.canGridReduce(ChuckType.RIGHT)) {
             lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
-        ItemStack menuicon5 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5, ChatColor.DARK_GREEN + "右に1チャンク増やす/減らす",
-                lore5, true);
+        ItemStack menuicon5 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5,
+                ChatColor.DARK_GREEN + "右に" + playerData.getChunkPerGrid() + "チャンク増やす/減らす", lore5, true);
         gridInv.setItem(5, menuicon5);
 
         //6マス目
@@ -221,8 +230,8 @@ public class RegionMenuData {
         } else if (!playerData.canGridReduce(ChuckType.BEHIND)) {
             lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
-        ItemStack menuicon7 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 13, ChatColor.DARK_GREEN + "後ろに1チャンク増やす/減らす",
-                lore7, true);
+        ItemStack menuicon7 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 13,
+                ChatColor.DARK_GREEN + "後ろに" + playerData.getChunkPerGrid() + "チャンク増やす/減らす", lore7, true);
         gridInv.setItem(7, menuicon7);
 
         //8マス目
@@ -263,30 +272,44 @@ public class RegionMenuData {
     }
 
     private static Map<ChuckType, String> getPlayerDirectionString(Player player) {
-        Float yaw = player.getLocation().getYaw() * (-1);
+        double rotation = (player.getLocation().getYaw() + 180) % 360;
         Map<ChuckType, String> directionMap = new HashMap<>();
 
+        if (rotation < 0) {
+            rotation += 360;
+        }
+
         //0,360:south 90:west 180:north 270:east
-        if (-225 <= yaw && yaw < -135) {
+        if (0.0 <= rotation && rotation < 45.0) {
+            //前が北(North)
             directionMap.put(ChuckType.BEHIND, "南(South)");
             directionMap.put(ChuckType.AHEAD, "北(North)");
             directionMap.put(ChuckType.LEFT, "西(West)");
             directionMap.put(ChuckType.RIGHT, "東(East)");
-        } else if (-135 <= yaw && yaw < -45) {
+        } else if (45.0 <= rotation && rotation < 135.0) {
+            //前が東(East)
             directionMap.put(ChuckType.RIGHT, "南(South)");
             directionMap.put(ChuckType.LEFT, "北(North)");
             directionMap.put(ChuckType.BEHIND, "西(West)");
             directionMap.put(ChuckType.AHEAD, "東(East)");
-        } else if (-45 <= yaw || yaw < -315) {
+        } else if (135.0 <= rotation && rotation < 225.0) {
+            //前が南(South)
             directionMap.put(ChuckType.AHEAD, "南(South)");
             directionMap.put(ChuckType.BEHIND, "北(North)");
             directionMap.put(ChuckType.RIGHT, "西(West)");
             directionMap.put(ChuckType.LEFT, "東(East)");
-        } else if (-315 <= yaw && yaw < -225) {
+        } else if (225.0 <= rotation && rotation < 315.0) {
+            //前が西(West)
             directionMap.put(ChuckType.LEFT, "南(South)");
             directionMap.put(ChuckType.RIGHT, "北(North)");
             directionMap.put(ChuckType.AHEAD, "西(West)");
             directionMap.put(ChuckType.BEHIND, "東(East)");
+        } else if (315.0 <= rotation && rotation < 360.0) {
+            //前が北(North)
+            directionMap.put(ChuckType.BEHIND, "南(South)");
+            directionMap.put(ChuckType.AHEAD, "北(North)");
+            directionMap.put(ChuckType.LEFT, "西(West)");
+            directionMap.put(ChuckType.RIGHT, "東(East)");
         }
         return directionMap;
     }

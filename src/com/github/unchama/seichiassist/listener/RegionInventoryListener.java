@@ -292,7 +292,11 @@ public class RegionInventoryListener implements Listener {
                 wgSelect(playerChunk.getBlock(0, 0, 0).getLocation(),
                         playerChunk.getBlock(15,256, 15).getLocation(), player);
                 canCreateRegion(player);
-                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_DESTROY, 1, 1);
+                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_DESTROY, (float) 0.5, 1);
+                player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
+            } else if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 0) {
+                playerData.toggleChunkPerGrid();
+                player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
                 player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
             }
         }
@@ -303,7 +307,7 @@ public class RegionInventoryListener implements Listener {
         if (event.isLeftClick()) {
             if (playerData.canGridExtend(chunkType)) {
                 player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-                playerData.addChunkAmount(chunkType, 1);
+                playerData.addChunkAmount(chunkType, playerData.getChunkPerGrid());
                 setWGSelection(player);
                 canCreateRegion(player);
                 player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
@@ -311,7 +315,7 @@ public class RegionInventoryListener implements Listener {
         } else if (event.isRightClick()) {
             if (playerData.canGridReduce(chunkType)) {
                 player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-                playerData.addChunkAmount(chunkType, -1);
+                playerData.addChunkAmount(chunkType, playerData.getChunkPerGrid() * (-1));
                 setWGSelection(player);
                 canCreateRegion(player);
                 player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));

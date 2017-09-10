@@ -153,6 +153,7 @@ public class PlayerData {
 	private int rightChunk;
 	private int leftChunk;
 	private boolean canCreateRegion;
+	private int chunkPerGrid;
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -223,6 +224,7 @@ public class PlayerData {
 		this.rightChunk = 0;
 		this.leftChunk = 0;
 		this.canCreateRegion = true;
+		this.chunkPerGrid = 1;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -671,7 +673,7 @@ public class PlayerData {
 		Map<ChuckType, Integer> chunkMap = getGridChuckMap();
 
 		//チャンクを拡大すると仮定する
-		final int assumedAmoont = chunkMap.get(chuckType) + 1;
+		final int assumedAmoont = chunkMap.get(chuckType) + this.chunkPerGrid;
 		//合計チャンク再計算値
 		int assumedChunkAmount = 0;
 		//一応すべての拡張値を出しておく
@@ -704,19 +706,14 @@ public class PlayerData {
 			return false;
 		}
 
-		/*
-		if (chunkMap.get(chuckType) < LIMIT) {
-			return true;
-		} else {
-			return false;
-		}
-		*/
 	}
 
 	public boolean canGridReduce(ChuckType chuckType) {
 		Map<ChuckType, Integer> chunkMap = getGridChuckMap();
 
-		if (chunkMap.get(chuckType) <= 0) {
+		//減らしたと仮定する
+		final int assumedAmount = chunkMap.get(chuckType) - chunkPerGrid;
+		if (assumedAmount < 0) {
 			return false;
 		} else {
 			return true;
@@ -767,5 +764,19 @@ public class PlayerData {
 
 	public boolean canCreateRegion() {
 		return this.canCreateRegion;
+	}
+
+	public void toggleChunkPerGrid () {
+		if (this.chunkPerGrid == 1) {
+			this.chunkPerGrid = 10;
+		} else if (this.chunkPerGrid == 10) {
+			this.chunkPerGrid = 100;
+		} else if (this.chunkPerGrid == 100) {
+			this.chunkPerGrid = 1;
+		}
+	}
+
+	public int getChunkPerGrid() {
+		return this.chunkPerGrid;
 	}
 }
