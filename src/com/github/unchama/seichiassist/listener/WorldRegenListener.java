@@ -68,7 +68,7 @@ public class WorldRegenListener implements Listener {
 
         RegionManager regionManager = worldGuard.getRegionManager(world);
         regionManager.getRegions().keySet().stream()
-                .filter(region -> region.equalsIgnoreCase("__global__"))
+                .filter(region -> !region.equalsIgnoreCase("__global__"))
                 .forEach(regionManager::removeRegion);
 
         EditSession session = worldEdit.getEditSessionFactory().getEditSession(bukkitWorld, 99999999);
