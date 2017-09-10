@@ -586,17 +586,28 @@ public class Util {
 	}
 
 	public static Direction getPlayerDirection(Player player) {
-		Float yaw = player.getLocation().getYaw();
+		double rotation = (player.getLocation().getYaw() + 180) % 360;
+
+		if (rotation < 0) {
+			rotation += 360;
+		}
 
 		//0,360:south 90:west 180:north 270:east
-		if (-225 <= yaw && yaw < -135) {
+		if (0.0 <= rotation && rotation < 45.0) {
+			//前が北(North)
 			return Direction.NORTH;
-		} else if (-135 <= yaw && yaw < -45) {
+		} else if (45.0 <= rotation && rotation < 135.0) {
+			//前が東(East)
 			return Direction.EAST;
-		} else if (-45 <= yaw || yaw < -315) {
+		} else if (135.0 <= rotation && rotation < 225.0) {
+			//前が南(South)
 			return Direction.SOUTH;
-		} else if (-315 <= yaw && yaw < -225) {
+		} else if (225.0 <= rotation && rotation < 315.0) {
+			//前が西(West)
 			return Direction.WEST;
+		} else if (315.0 <= rotation && rotation < 360.0) {
+			//前が北(North)
+			return Direction.NORTH;
 		}
 		//ここに到達はありえない。
 		return null;
