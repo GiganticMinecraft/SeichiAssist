@@ -576,6 +576,15 @@ public class MenuInventoryData {
 				ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "土地保護メニュー", lore3, true);
 		inventory.setItem(3, icon3);
 
+		//釣りメニュー
+		List<String> lore5 = new ArrayList<>();
+		lore5.add(ChatColor.GRAY + "釣り関連メニュー");
+		lore5.add(ChatColor.GRAY + "統計の確認が可能です");
+		lore5.add(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く");
+		ItemStack icon5 = Util.getMenuIcon(Material.FISHING_ROD, 1,
+				ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "釣りメニュー", lore5, true);
+		inventory.setItem(5, icon5);
+
 		return inventory;
 	}
 	//2ページメニュー
