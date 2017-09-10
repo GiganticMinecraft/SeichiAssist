@@ -711,7 +711,9 @@ public class PlayerData {
 	public boolean canGridReduce(ChuckType chuckType) {
 		Map<ChuckType, Integer> chunkMap = getGridChuckMap();
 
-		if (chunkMap.get(chuckType) <= 0) {
+		//減らしたと仮定する
+		final int assumedAmount = chunkMap.get(chuckType) - chunkPerGrid;
+		if (assumedAmount < 0) {
 			return false;
 		} else {
 			return true;
