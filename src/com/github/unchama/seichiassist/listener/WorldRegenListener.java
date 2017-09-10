@@ -28,12 +28,16 @@ public class WorldRegenListener implements Listener {
     private int roadY;
     private int roadLength;
     private int spaceHeight;
+    private BaseBlock roadBlock;
+    private BaseBlock spaceBlock;
 
     public WorldRegenListener() {
         Config config = SeichiAssist.config;
         this.roadLength = config.getRoadY();
         this.roadLength = config.getRoadLength();
         this.spaceHeight = config.getSpaceHeight();
+        this.roadBlock = new BaseBlock(config.getRoadBlockID(), config.getRoadBlockDamage());
+        this.spaceBlock = new BaseBlock(0);
     }
 
     @EventHandler
@@ -58,8 +62,6 @@ public class WorldRegenListener implements Listener {
         WorldEdit worldEdit = WorldEdit.getInstance();
         EditSession session = worldEdit.getEditSessionFactory().getEditSession(bukkitWorld, 99999999);
         try {
-            BaseBlock roadBlock = new BaseBlock(98, 0);
-            BaseBlock spaceBlock = new BaseBlock(0);
             Vector roadBase = new Vector(9, roadY, 9);
             Vector spaceBase = new Vector(9, roadY + 1, 9);
             session.setBlocks(new CuboidRegion(bukkitWorld, new Vector(0, roadY + 1, 0), new Vector(16, 76, 16)), spaceBlock);

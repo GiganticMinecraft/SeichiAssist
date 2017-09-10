@@ -195,4 +195,12 @@ public class Config{
 	public int getSpaceHeight() {
 		return config.getInt("space_height");
 	}
+
+	public int getRoadBlockID() {
+		return config.getInt("road_blockid");
+	}
+
+	public int getRoadBlockDamage() {
+		return config.getInt("road_blockdamage");
+	}
 }

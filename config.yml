@@ -477,3 +477,7 @@ road_Y: 70
 road_length: 8
 #道の上の空洞の高さ
 space_height: 5
+#道のブロックID
+road_blockid: 98
+#道のブロックダメージ値
+road_blockdamage: 0
