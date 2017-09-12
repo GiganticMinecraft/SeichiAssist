@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -323,11 +324,13 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		if(waterflag){
 			for(int waternum = 0 ; waternum <waterlist.size();waternum++){
 				waterlist.get(waternum).setType(Material.PACKED_ICE);
+				player.incrementStatistic(Statistic.MINE_BLOCK, waterlist.get(waternum).getType());
 				BreakUtil.logPlace(player,waterlist.get(waternum));
 			}
 		}else if(lavaflag){
 			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
 				lavalist.get(lavanum).setType(Material.MAGMA);
+				player.incrementStatistic(Statistic.MINE_BLOCK, lavalist.get(lavanum).getType());
 				BreakUtil.logPlace(player,lavalist.get(lavanum));
 			}
 		}else if(breakflag){
