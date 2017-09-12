@@ -72,6 +72,8 @@ public class SeichiAssist extends JavaPlugin{
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
 
+	private String pluginChannel = "BungeeCord";
+
 	private HashMap<String, TabExecutor> commandlist;
 	public static Sql sql;
 	public static Config config;
@@ -481,8 +483,8 @@ public class SeichiAssist extends JavaPlugin{
 	public static List<MineStackObj> minestacklistgacha =  new ArrayList<MineStackObj>(Arrays.asList(
 
 			//以下ガチャ系アイテム
-			new MineStackObj("gachaimo",Util.getGachaimoName(),19,Material.GOLDEN_APPLE,0,true,-1,Util.getGachaimoLore(),5)
-			,new MineStackObj("exp_bottle","エンチャントの瓶",19,Material.EXP_BOTTLE,0,false,-1,5)
+			new MineStackObj("gachaimo",Util.getGachaimoName(),1,Material.GOLDEN_APPLE,0,true,-1,Util.getGachaimoLore(),5)
+			,new MineStackObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0,false,-1,5)
 
 			));
 
@@ -533,7 +535,7 @@ public class SeichiAssist extends JavaPlugin{
 	//スキル破壊ブロック分のcoreprotectログ保存処理を除外するワールドリスト(coreprotectログデータ肥大化の軽減が目的)
 	//スキル自体はメインワールドと各整地ワールドのみ(world_SWで始まるワールドのみ)で発動する(ここの設定は無視する)
 	public static final List<String> ignoreWorldlist = new ArrayList<String>(Arrays.asList(
-			"world_SW","world_SW_2","world_SW_nether","world_SW_the_end"
+			"world_SW","world_SW_2","world_SW_3","world_SW_nether","world_SW_the_end"
 			));
 
 	//保護を掛けて整地するワールドのリスト
@@ -544,6 +546,10 @@ public class SeichiAssist extends JavaPlugin{
 	@Override
 	public void onEnable(){
 		plugin = this;
+
+		//チャンネルを追加
+		Bukkit.getMessenger().registerOutgoingPluginChannel(this,
+				this.pluginChannel);
 
 		//コンフィグ系の設定は全てConfig.javaに移動
 		config = new Config(this);

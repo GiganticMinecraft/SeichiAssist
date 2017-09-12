@@ -3,8 +3,6 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
-import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -16,6 +14,8 @@ import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class seichiCommand implements TabExecutor {
 	SeichiAssist plugin;
@@ -59,6 +59,8 @@ public class seichiCommand implements TabExecutor {
 			sender.sendMessage(ChatColor.RED + "/seichi openpocket <プレイヤー名>");
 			sender.sendMessage("対象プレイヤーの四次元ポケットを開く");
 			sender.sendMessage("編集結果はオンラインのプレイヤーにのみ反映されます");
+			sender.sendMessage(ChatColor.RED + "/seichi anniversary");
+			sender.sendMessage("1周年記念フラグを立てる（コンソール限定コマンド）");
 
 			/*
 			 * id=0 不明な上昇値
@@ -226,6 +228,18 @@ public class seichiCommand implements TabExecutor {
 				//メッセージ送信
 				sender.sendMessage(ChatColor.LIGHT_PURPLE + "全てのプレイヤーに上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました");
 			}
+			return true;
+		}
+
+		// seichi anniversary
+		else if (args[0].equalsIgnoreCase("anniversary")) {
+			if (sender instanceof Player) {
+				sender.sendMessage("コンソール専用コマンドです");
+				return true;
+			}
+			// SQLの全登録データをtrueに変更
+			sql.setAnniversary(true, null);
+			sender.sendMessage("Anniversaryアイテムの配布を開始しました。");
 			return true;
 		}
 		return false;
