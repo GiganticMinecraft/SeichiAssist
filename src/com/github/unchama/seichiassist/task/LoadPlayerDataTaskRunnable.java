@@ -1,36 +1,29 @@
 package com.github.unchama.seichiassist.task;
 
+import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.data.GridTemplate;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.BukkitSerialization;
+import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.UUID;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.BukkitSerialization;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.*;
 
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private Sql sql = SeichiAssist.plugin.sql;
+	private static Config config = SeichiAssist.config;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
 
@@ -348,6 +341,16 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.minestack.leaves_21 = rs.getInt("stack_leaves_21");
  				playerdata.minestack.gachaimo = rs.getInt("stack_gachaimo");
  				*/
+
+				//グリッド式保護の保存データを読み込み
+				Map<Integer, GridTemplate> saveMap = new HashMap<>();
+				for (int i = 0; i <= config.getTemplateKeepAmount() - 1 ; i++) {
+					GridTemplate template = new GridTemplate(rs.getInt("ahead_" + i), rs.getInt("behind_" + i),
+							rs.getInt("right_" + i), rs.getInt("left_" + i));
+					saveMap.put(i, template);
+				}
+				playerdata.setTemplateMap(saveMap);
+
 			  }
 			rs.close();
 		} catch (SQLException | IOException e) {
