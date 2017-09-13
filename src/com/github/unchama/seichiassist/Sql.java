@@ -417,7 +417,7 @@ public class Sql{
 
 				",add column if not exists anniversary boolean default false";
 
-				for (int i = 0; i <= config.getTemplateKeepAmount(); i++) {
+				for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
 					command += ",add column if not exists ahead_" + i + " int default 0";
 					command += ",add column if not exists behind_" + i + " int default 0";
 					command += ",add column if not exists right_" + i + " int default 0";
