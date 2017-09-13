@@ -184,6 +184,10 @@ public class Config{
 		return Util.toInt(config.getString("GridLimit"));
 	}
 
+	public int getTemplateKeepAmount() {
+		return Util.toInt(config.getString("GridTemplateKeepAmount"));
+	}
+
 	public int getRoadY() {
 		return config.getInt("road_Y");
 	}

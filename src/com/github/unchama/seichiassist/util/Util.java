@@ -566,7 +566,7 @@ public class Util {
 	/**
 	 * PlayerDataでチャンク数をゲット・セットするためのenum
 	 */
-	public enum ChuckType {
+	public enum ChunkType {
 		AHEAD,
 		BEHIND,
 		RIGHT,

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.data.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -22,10 +23,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.listener.MebiusListener;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
@@ -48,6 +45,7 @@ public class Sql{
 	public static String exc;
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	private static Config config = SeichiAssist.config;
 
 	//コンストラクタ
 	Sql(SeichiAssist plugin ,String url, String db, String id, String pw){
@@ -417,9 +415,16 @@ public class Sql{
 				",add column if not exists build_count int default 0" +//
 				",add column if not exists build_count_flg TINYINT UNSIGNED default 0" +//
 
-				",add column if not exists anniversary boolean default false" +
+				",add column if not exists anniversary boolean default false";
 
-				"";
+				for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
+					command += ",add column if not exists ahead_" + i + " int default 0";
+					command += ",add column if not exists behind_" + i + " int default 0";
+					command += ",add column if not exists right_" + i + " int default 0";
+					command += ",add column if not exists left_" + i + " int default 0";
+				}
+
+				command += "";
 
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();

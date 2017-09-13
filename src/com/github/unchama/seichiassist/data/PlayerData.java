@@ -154,6 +154,7 @@ public class PlayerData {
 	private int leftChunk;
 	private boolean canCreateRegion;
 	private int chunkPerGrid;
+	private Map<Integer, GridTemplate> templateMap;
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -225,6 +226,7 @@ public class PlayerData {
 		this.leftChunk = 0;
 		this.canCreateRegion = true;
 		this.chunkPerGrid = 1;
+		this.templateMap = new HashMap<>();
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -635,13 +637,13 @@ public class PlayerData {
 		}
 	}
 
-	public Map<ChuckType,Integer> getGridChuckMap() {
-		Map<ChuckType, Integer> chunkMap = new HashMap<>();
+	public Map<ChunkType,Integer> getGridChuckMap() {
+		Map<ChunkType, Integer> chunkMap = new HashMap<>();
 
-		chunkMap.put(ChuckType.AHEAD, this.aheadChunk);
-		chunkMap.put(ChuckType.BEHIND, this.behindChunk);
-		chunkMap.put(ChuckType.RIGHT, this.rightChunk);
-		chunkMap.put(ChuckType.LEFT, this.leftChunk);
+		chunkMap.put(ChunkType.AHEAD, this.aheadChunk);
+		chunkMap.put(ChunkType.BEHIND, this.behindChunk);
+		chunkMap.put(ChunkType.RIGHT, this.rightChunk);
+		chunkMap.put(ChunkType.LEFT, this.leftChunk);
 
 		return chunkMap;
 	}
@@ -668,21 +670,21 @@ public class PlayerData {
 	}
 	*/
 
-	public boolean canGridExtend(ChuckType chuckType) {
+	public boolean canGridExtend(ChunkType chunkType) {
 		final int LIMIT = config.getGridLimit();
-		Map<ChuckType, Integer> chunkMap = getGridChuckMap();
+		Map<ChunkType, Integer> chunkMap = getGridChuckMap();
 
 		//チャンクを拡大すると仮定する
-		final int assumedAmoont = chunkMap.get(chuckType) + this.chunkPerGrid;
+		final int assumedAmoont = chunkMap.get(chunkType) + this.chunkPerGrid;
 		//合計チャンク再計算値
 		int assumedChunkAmount = 0;
 		//一応すべての拡張値を出しておく
-		final int ahead = chunkMap.get(ChuckType.AHEAD);
-		final int behind = chunkMap.get(ChuckType.BEHIND);
-		final int right = chunkMap.get(ChuckType.RIGHT);
-		final int left = chunkMap.get(ChuckType.LEFT);
+		final int ahead = chunkMap.get(ChunkType.AHEAD);
+		final int behind = chunkMap.get(ChunkType.BEHIND);
+		final int right = chunkMap.get(ChunkType.RIGHT);
+		final int left = chunkMap.get(ChunkType.LEFT);
 
-		switch (chuckType) {
+		switch (chunkType) {
 			case AHEAD:
 				assumedChunkAmount = (assumedAmoont + 1 + behind) * (right + 1 + left);
 				break;
@@ -708,11 +710,11 @@ public class PlayerData {
 
 	}
 
-	public boolean canGridReduce(ChuckType chuckType) {
-		Map<ChuckType, Integer> chunkMap = getGridChuckMap();
+	public boolean canGridReduce(ChunkType chunkType) {
+		Map<ChunkType, Integer> chunkMap = getGridChuckMap();
 
 		//減らしたと仮定する
-		final int assumedAmount = chunkMap.get(chuckType) - chunkPerGrid;
+		final int assumedAmount = chunkMap.get(chunkType) - chunkPerGrid;
 		if (assumedAmount < 0) {
 			return false;
 		} else {
@@ -720,8 +722,8 @@ public class PlayerData {
 		}
 	}
 
-	public void setChunkAmount(ChuckType chuckType, int amount) {
-		switch (chuckType) {
+	public void setChunkAmount(ChunkType chunkType, int amount) {
+		switch (chunkType) {
 			case AHEAD:
 				this.aheadChunk = amount;
 				break;
@@ -739,8 +741,8 @@ public class PlayerData {
 		}
 	}
 
-	public void addChunkAmount(ChuckType chuckType, int addAmount) {
-		switch (chuckType) {
+	public void addChunkAmount(ChunkType chunkType, int addAmount) {
+		switch (chunkType) {
 			case AHEAD:
 				this.aheadChunk += addAmount;
 				break;
@@ -778,5 +780,13 @@ public class PlayerData {
 
 	public int getChunkPerGrid() {
 		return this.chunkPerGrid;
+	}
+
+	public void setTemplateMap(Map<Integer, GridTemplate> setMap) {
+		this.templateMap = setMap;
+	}
+
+	public Map<Integer, GridTemplate> getTemplateMap() {
+		return this.templateMap;
 	}
 }
