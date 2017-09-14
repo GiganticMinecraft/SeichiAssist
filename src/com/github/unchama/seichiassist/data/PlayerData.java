@@ -227,6 +227,9 @@ public class PlayerData {
 		this.canCreateRegion = true;
 		this.chunkPerGrid = 1;
 		this.templateMap = new HashMap<>();
+		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
+			this.templateMap.put(i, new GridTemplate(0, 0, 0, 0));
+		}
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
