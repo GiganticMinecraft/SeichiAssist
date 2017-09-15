@@ -1,25 +1,22 @@
 package com.github.unchama.seichiassist.task;
 
+import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.BukkitSerialization;
+import org.bukkit.ChatColor;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-
-import org.bukkit.ChatColor;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.BukkitSerialization;
 
 public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	//private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private Sql sql = SeichiAssist.plugin.sql;
+	private static Config config = SeichiAssist.config;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
 
@@ -218,6 +215,14 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		        String[] TitleNums = Arrays.stream(TitleArray).mapToObj(Long::toHexString).toArray(String[]::new);
 		        String FlagString = String.join(",", TitleNums);
 		        command += ",TitleFlags = '" + FlagString + "'" ;
+
+		//グリッド式保護設定保存
+		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
+			command += ",ahead_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getAheadAmount());
+			command += ",behind_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getBehindAmount());
+			command += ",right_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getRightAmount());
+			command += ",left_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getLeftAmount());
+		}
 
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();

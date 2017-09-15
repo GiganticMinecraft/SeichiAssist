@@ -128,7 +128,6 @@ lv88message: "整地の際に獲得できる経験値量が増えました。"
 lv92message: "MineStack機能の対象ブロックが増えました！\n新たにダイヤモンドとダイヤモンド鉱石がスタックされるようになります。"
 lv97message: "MineStack機能の対象ブロックが増えました！\n新たにエメラルドとエメラルド鉱石がスタックされるようになります。"
 lv98message: "整地の際に獲得できる経験値量が増えました。"
-lv102message: "MineStack機能の対象ブロックが増えました！\n新たにがちゃりんごとエンチャントの瓶がスタックされるようになります。"
 lv107message: "MineStack機能の対象ブロックが増えました！\n新たに赤い砂と赤い砂岩がスタックされるようになります。"
 lv112message: "MineStack機能の対象ブロックが増えました！\n新たに堅焼き粘土がスタックされるようになります。"
 lv117message: "MineStack機能の対象ブロックが増えました！\n新たにメサで採掘可能な色付き堅焼き粘土がスタックされるようになります。"
@@ -462,3 +461,26 @@ mebiusdebug: '0'
 # ギガンティック→椎名林檎交換レートの設定
 # デフォルト値はギガンティック1個につき椎名林檎4個
 rategigantictoringo: '4'
+
+#グリッド式保護を強制するワールド名
+#状況に応じて変更してください
+GridProtectForceWorld:
+ - world_test
+
+#グリッドで指定可能な最大チャンク合計数
+GridLimit: '32'
+
+#グリッド式保護のテンプレート保存最大数
+GridTemplateKeepAmount: '5'
+
+##自動再生成時の設定
+#道のY座標
+road_Y: 70
+#道の長さ(チャンク単位)
+road_length: 8
+#道の上の空洞の高さ
+space_height: 5
+#道のブロックID
+road_blockid: 98
+#道のブロックダメージ値
+road_blockdamage: 0
