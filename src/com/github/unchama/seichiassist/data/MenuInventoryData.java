@@ -5244,11 +5244,13 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
 
 		itemstack = new ItemStack(Material.DIAMOND_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.YELLOW + "第1サバイバルサーバ");
+		itemmeta.setDisplayName(ChatColor.YELLOW + "プルートサーバー");
+		List<String> lore1 = new ArrayList<>();
+		lore1.add(ChatColor.GRAY + "旧第1サバイバルサーバー");
+		itemmeta.setLore(lore1);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5256,7 +5258,10 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND_SPADE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.YELLOW + "第2サバイバルサーバ");
+		itemmeta.setDisplayName(ChatColor.YELLOW + "アポロサーバー");
+		List<String> lore2 = new ArrayList<>();
+		lore2.add(ChatColor.GRAY + "旧第2サバイバルサーバー");
+		itemmeta.setLore(lore2);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5264,7 +5269,10 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND_AXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.YELLOW + "第3サバイバルサーバ");
+		itemmeta.setDisplayName(ChatColor.YELLOW + "ガイアサーバー");
+		List<String> lore3 = new ArrayList<>();
+		lore3.add(ChatColor.GRAY + "旧第3サバイバルサーバー");
+		itemmeta.setLore(lore3);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5272,7 +5280,10 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.IRON_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.AQUA + "第1整地専用特設サーバ");
+		itemmeta.setDisplayName(ChatColor.AQUA + "イカロスサーバー");
+		List<String> lore4 = new ArrayList<>();
+		lore4.add(ChatColor.GRAY + "旧第1整地専用サーバー");
+		itemmeta.setLore(lore4);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5280,7 +5291,10 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.GOLD_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.AQUA + "第2整地専用特設サーバ");
+		itemmeta.setDisplayName(ChatColor.AQUA + "タイタンサーバー");
+		List<String> lore5 = new ArrayList<>();
+		lore5.add(ChatColor.GRAY + "旧第2整地専用サーバー");
+		itemmeta.setLore(lore5);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5320,7 +5334,10 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "公共施設サーバ");
+		itemmeta.setDisplayName(ChatColor.GREEN + "タナトスサーバー");
+		List<String> lore6 = new ArrayList<>();
+		lore6.add(ChatColor.GRAY + "旧公共施設サーバー");
+		itemmeta.setLore(lore6);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
