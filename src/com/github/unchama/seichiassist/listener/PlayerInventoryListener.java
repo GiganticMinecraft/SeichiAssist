@@ -1,20 +1,15 @@
 package com.github.unchama.seichiassist.listener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.data.*;
+import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
+import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
+import com.github.unchama.seichiassist.util.ExperienceManager;
+import com.github.unchama.seichiassist.util.Util;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ChatColor;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Banner;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -36,25 +31,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.data.ActiveSkillInventoryData;
-import com.github.unchama.seichiassist.data.EffectData;
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.MenuInventoryData;
-import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
-import com.github.unchama.seichiassist.util.ExperienceManager;
-import com.github.unchama.seichiassist.util.Util;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import com.sk89q.worldedit.bukkit.selections.Selection;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -206,10 +185,23 @@ public class PlayerInventoryListener implements Listener {
 			 */
 
 			//ページ変更処理
-			if(itemstackcurrent.getType().equals(Material.NETHER_STAR)){
-				//開く音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_PORTAL_AMBIENT, 0.6F, (float) 1.5F);
-				player.openInventory(MenuInventoryData.getServerSwitchMenu(player));
+			if (itemstackcurrent.getType().equals(Material.NETHER_STAR)) {
+				if (itemstackcurrent.getItemMeta().getDisplayName().equals(
+						org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.UNDERLINE + "" + org.bukkit.ChatColor.BOLD + "サーバー間移動メニュー")) {
+					//開く音を再生
+					player.playSound(player.getLocation(), Sound.BLOCK_PORTAL_AMBIENT, 0.6F, (float) 1.5F);
+					player.openInventory(MenuInventoryData.getServerSwitchMenu(player));
+				}
+
+				if (itemstackcurrent.getItemMeta().getDisplayName().equals(
+						org.bukkit.ChatColor.YELLOW + "" + org.bukkit.ChatColor.UNDERLINE + "" + org.bukkit.ChatColor.BOLD + "ロビーサーバーへ移動")) {
+					// hubコマンド実行
+					// player.chat("/hub");
+					player.closeInventory();
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+					player.sendMessage(ChatColor.RESET + "" +  ChatColor.GRAY + "/hubと入力してEnterを押してください");
+				}
+
 			}else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
@@ -660,6 +652,7 @@ public class PlayerInventoryListener implements Listener {
 				player.chat("/fc craft");
 			}
 
+			/*
 			else if(itemstackcurrent.getType().equals(Material.WOOD_AXE)){
 				// wand召喚
 				player.closeInventory();
@@ -716,14 +709,7 @@ public class PlayerInventoryListener implements Listener {
 				player.closeInventory();
 				player.chat("/land");
 			}
-
-			else if(itemstackcurrent.getType().equals(Material.NETHER_STAR)){
-				// hubコマンド実行
-				// player.chat("/hub");
-				player.closeInventory();
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.sendMessage(ChatColor.RESET + "" +  ChatColor.GRAY + "/hubと入力してEnterを押してください");
-			}
+			*/
 
 			else if(itemstackcurrent.getType().equals(Material.BOOK)){
 				// wikiリンク表示
@@ -3223,7 +3209,7 @@ public class PlayerInventoryListener implements Listener {
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1003) +"」が設定されました。");
     			}
     			else if(itemmeta.getDisplayName().contains("No1004「"+ SeichiAssist.config.getTitle1(1004) +"」")){
-    				playerdata.displayTitle1No = 1001 ;
+    				playerdata.displayTitle1No = 1004 ;
     				playerdata.displayTitle2No = 0 ;
     				playerdata.displayTitle3No = 0 ;
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1004) +"」が設定されました。");
@@ -4346,7 +4332,7 @@ public class PlayerInventoryListener implements Listener {
             	}
             }
             //チケット計算
-            giveticket = giveticket + (int)(coalore/128) + (int)(ironore/64) + (int)(goldore/8) + (int)(lapisore/8) + (int)(diamondore/4) + (int)(redstoneore/64) + (int)(emeraldore/4);
+            giveticket = giveticket + (int)(coalore/128) + (int)(ironore/64) + (int)(goldore/8) + (int)(lapisore/8) + (int)(diamondore/4) + (int)(redstoneore/32) + (int)(emeraldore/4);
 
             //プレイヤー通知
             if(giveticket == 0){
@@ -4421,11 +4407,11 @@ public class PlayerInventoryListener implements Listener {
             	retore.add(d);
             }
 
-            if((redstoneore - (int)(redstoneore/64)*64) != 0){
+            if((redstoneore - (int)(redstoneore/32)*32) != 0){
             	ItemStack r = new ItemStack(Material.REDSTONE_ORE);
             	ItemMeta ritemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
             	r.setItemMeta(ritemmeta);
-            	r.setAmount(redstoneore - (int)(redstoneore/64)*64);
+            	r.setAmount(redstoneore - (int)(redstoneore/32)*32);
             	retore.add(r);
             }
 

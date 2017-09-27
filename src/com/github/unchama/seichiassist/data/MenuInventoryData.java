@@ -1,12 +1,11 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.util.ExperienceManager;
+import com.github.unchama.seichiassist.util.Util;
+import com.sk89q.worldguard.bukkit.WorldConfiguration;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -19,19 +18,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.MineStackObj;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.util.ExperienceManager;
-import com.github.unchama.seichiassist.util.Util;
-import com.sk89q.worldedit.bukkit.selections.Selection;
+import java.util.*;
 
 public class MenuInventoryData {
 	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	static Sql sql = SeichiAssist.sql;
 	SeichiAssist plugin = SeichiAssist.plugin;
+	static WorldGuardPlugin Wg = Util.getWorldGuard();
 
 	//二つ名組合せシステム用
 	static boolean nextpageflag1 = false ;
@@ -154,6 +147,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(22,itemstack);
 
+		/*
 		// ver0.3.2 保護設定コマンド
 		itemstack = new ItemStack(Material.GOLD_AXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_AXE);
@@ -198,6 +192,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
+		*/
 
 		// MineStackを開く
 		itemstack = new ItemStack(Material.CHEST,1);
@@ -372,7 +367,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(19,itemstack);
 
-
+		/*
 		// ver0.3.2 //wandコマンド
 		itemstack = new ItemStack(Material.WOOD_AXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD_AXE);
@@ -432,6 +427,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(6,itemstack);
+		*/
 
 		// fastcraftリンク
 		itemstack = new ItemStack(Material.WORKBENCH,1);
@@ -567,6 +563,18 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(17,itemstack);
 
+		//保護関連メニュー
+		WorldConfiguration wcfg = Wg.getGlobalStateManager().get(player.getWorld());
+		RegionManager manager = Wg.getRegionManager(player.getWorld());
+
+		List<String> lore3 = Arrays.asList(ChatColor.DARK_GRAY + "土地の保護が行えます"
+			, ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+			, ChatColor.GRAY + "保護作成上限：" + ChatColor.AQUA + wcfg.getMaxRegionCount(player)
+			, ChatColor.GRAY + "現在のあなたの保護作成数：" + ChatColor.AQUA + manager.getRegionCountOfPlayer(Wg.wrapPlayer(player))
+		);
+		ItemStack icon3 = Util.getMenuIcon(Material.DIAMOND_AXE, 1,
+				ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "土地保護メニュー", lore3, true);
+		inventory.setItem(3, icon3);
 
 		return inventory;
 	}
@@ -991,7 +999,8 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガチャ品");
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(5,itemstack);
-		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		itemstack.setDurability((short) 3);
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 
@@ -3815,7 +3824,7 @@ public class MenuInventoryData {
 		if(playerdata.TitleFlags.get(5107)){
 			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5105「"+ SeichiAssist.config.getTitle1(5107)
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5107「"+ SeichiAssist.config.getTitle1(5107)
 					 + SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(5107) +"」" );
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 30日 に到達"
 								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
@@ -5237,7 +5246,7 @@ public class MenuInventoryData {
 		SkullMeta skullmeta;
 		List<String> lore = new ArrayList<String>();
 
-		itemstack = new ItemStack(Material.GRASS);
+		itemstack = new ItemStack(Material.DIAMOND_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.YELLOW + "第1サバイバルサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -5245,7 +5254,7 @@ public class MenuInventoryData {
 
 		inventory.setItem(0,itemstack);
 
-		itemstack = new ItemStack(Material.GRASS);
+		itemstack = new ItemStack(Material.DIAMOND_SPADE);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.YELLOW + "第2サバイバルサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -5253,7 +5262,7 @@ public class MenuInventoryData {
 
 		inventory.setItem(1,itemstack);
 
-		itemstack = new ItemStack(Material.GRASS);
+		itemstack = new ItemStack(Material.DIAMOND_AXE);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.YELLOW + "第3サバイバルサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -5261,7 +5270,7 @@ public class MenuInventoryData {
 
 		inventory.setItem(2,itemstack);
 
-		itemstack = new ItemStack(Material.DIAMOND_PICKAXE);
+		itemstack = new ItemStack(Material.IRON_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.AQUA + "第1整地専用特設サーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -5269,7 +5278,7 @@ public class MenuInventoryData {
 
 		inventory.setItem(3,itemstack);
 
-		itemstack = new ItemStack(Material.DIAMOND_PICKAXE);
+		itemstack = new ItemStack(Material.GOLD_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.AQUA + "第2整地専用特設サーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -5277,45 +5286,45 @@ public class MenuInventoryData {
 
 		inventory.setItem(4,itemstack);
 
-		itemstack = new ItemStack(Material.GLASS);
+		itemstack = new ItemStack(Material.GRASS);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.WHITE + "クリエイティブサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
-		inventory.setItem(5,itemstack);
+		inventory.setItem(9,itemstack);
 
-		itemstack = new ItemStack(Material.CAKE);
+		itemstack = new ItemStack(Material.CACTUS);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.DARK_GREEN + "イベントサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
-		inventory.setItem(6,itemstack);
+		inventory.setItem(10,itemstack);
 
-		itemstack = new ItemStack(Material.DIAMOND);
+		itemstack = new ItemStack(Material.DIAMOND_ORE);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "第1βテストサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
-		inventory.setItem(7,itemstack);
+		inventory.setItem(16,itemstack);
 
-		itemstack = new ItemStack(Material.DIAMOND);
+		itemstack = new ItemStack(Material.DIAMOND_ORE);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "第2βテストサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
-		inventory.setItem(8,itemstack);
+		inventory.setItem(17,itemstack);
 
-		itemstack = new ItemStack(Material.LOG);
+		itemstack = new ItemStack(Material.DIAMOND);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.GREEN + "公共施設サーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
-		inventory.setItem(9,itemstack);
+		inventory.setItem(8,itemstack);
 
 		return inventory;
 	}

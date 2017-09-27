@@ -1,15 +1,17 @@
 package com.github.unchama.seichiassist;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.bungee.BungeeReceiver;
+import com.github.unchama.seichiassist.commands.*;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.RankData;
+import com.github.unchama.seichiassist.listener.*;
+import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
+import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
+import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
+import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
+import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -22,36 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.github.unchama.seichiassist.bungee.BungeeReceiver;
-import com.github.unchama.seichiassist.commands.AchieveCommand;
-import com.github.unchama.seichiassist.commands.effectCommand;
-import com.github.unchama.seichiassist.commands.gachaCommand;
-import com.github.unchama.seichiassist.commands.lastquitCommand;
-import com.github.unchama.seichiassist.commands.levelCommand;
-import com.github.unchama.seichiassist.commands.mebiusCommand;
-import com.github.unchama.seichiassist.commands.rmpCommand;
-import com.github.unchama.seichiassist.commands.seichiCommand;
-import com.github.unchama.seichiassist.commands.shareinvCommand;
-import com.github.unchama.seichiassist.commands.stickCommand;
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.data.RankData;
-import com.github.unchama.seichiassist.listener.EntityListener;
-import com.github.unchama.seichiassist.listener.GachaItemListener;
-import com.github.unchama.seichiassist.listener.MebiusListener;
-import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
-import com.github.unchama.seichiassist.listener.PlayerClickListener;
-import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
-import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
-import com.github.unchama.seichiassist.listener.PlayerJoinListener;
-import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
-import com.github.unchama.seichiassist.listener.PlayerQuitListener;
-import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
-import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
-import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
-import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.*;
 
 
 public class SeichiAssist extends JavaPlugin{
@@ -483,8 +456,8 @@ public class SeichiAssist extends JavaPlugin{
 	public static List<MineStackObj> minestacklistgacha =  new ArrayList<MineStackObj>(Arrays.asList(
 
 			//以下ガチャ系アイテム
-			new MineStackObj("gachaimo",Util.getGachaimoName(),19,Material.GOLDEN_APPLE,0,true,-1,Util.getGachaimoLore(),5)
-			,new MineStackObj("exp_bottle","エンチャントの瓶",19,Material.EXP_BOTTLE,0,false,-1,5)
+			new MineStackObj("gachaimo",Util.getGachaimoName(),1,Material.GOLDEN_APPLE,0,true,-1,Util.getGachaimoLore(),5)
+			,new MineStackObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0,false,-1,5)
 
 			));
 
@@ -535,7 +508,7 @@ public class SeichiAssist extends JavaPlugin{
 	//スキル破壊ブロック分のcoreprotectログ保存処理を除外するワールドリスト(coreprotectログデータ肥大化の軽減が目的)
 	//スキル自体はメインワールドと各整地ワールドのみ(world_SWで始まるワールドのみ)で発動する(ここの設定は無視する)
 	public static final List<String> ignoreWorldlist = new ArrayList<String>(Arrays.asList(
-			"world_SW","world_SW_2","world_SW_nether","world_SW_the_end"
+			"world_SW","world_SW_2","world_SW_3","world_SW_nether","world_SW_the_end"
 			));
 
 	//保護を掛けて整地するワールドのリスト
@@ -629,6 +602,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("shareinv",new shareinvCommand(plugin));
 		commandlist.put("mebius",new mebiusCommand(plugin));
 		commandlist.put("unlockachv", new AchieveCommand(plugin));
+		commandlist.put("halfguard", new HalfBlockProtectCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -641,6 +615,8 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
 		getServer().getPluginManager().registerEvents(new GachaItemListener(), this);
 		getServer().getPluginManager().registerEvents(new MebiusListener(), this);
+		getServer().getPluginManager().registerEvents(new RegionInventoryListener(), this);
+		getServer().getPluginManager().registerEvents(new WorldRegenListener(), this);
 		// マナ自動回復用リスナー…無効化中
 		// getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
 		// BungeeCordとのI/F

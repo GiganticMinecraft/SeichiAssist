@@ -1,28 +1,20 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.Statistic;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-
+import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.Util.*;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
-
+import java.util.*;
 
 
 public class PlayerData {
+	static Config config = SeichiAssist.config;
 	//読み込み済みフラグ
 	public boolean loaded = false;
 	//プレイヤー名
@@ -152,6 +144,18 @@ public class PlayerData {
 	// 1周年記念
 	public boolean anniversary;
 
+	//ハーフブロック破壊抑制用
+	private boolean halfBreakFlag;
+
+	//グリッド式保護関連
+	private int aheadChunk;
+	private int behindChunk;
+	private int rightChunk;
+	private int leftChunk;
+	private boolean canCreateRegion;
+	private int chunkPerGrid;
+	private Map<Integer, GridTemplate> templateMap;
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.loaded = false;
@@ -213,6 +217,19 @@ public class PlayerData {
 		this.build_count = 0;
 		this.build_count_flg = 0;
 		this.anniversary = false;
+
+		this.halfBreakFlag = false;
+
+		this.aheadChunk = 0;
+		this.behindChunk = 0;
+		this.rightChunk = 0;
+		this.leftChunk = 0;
+		this.canCreateRegion = true;
+		this.chunkPerGrid = 1;
+		this.templateMap = new HashMap<>();
+		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
+			this.templateMap.put(i, new GridTemplate(0, 0, 0, 0));
+		}
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -609,5 +626,170 @@ public class PlayerData {
 			}
 		}
 		expmanager.setExp(totalexp);
+	}
+
+	public boolean canBreakHalfBlock() {
+		return this.halfBreakFlag;
+	}
+
+	public void toggleHalfBreakFlag() {
+		if (halfBreakFlag) {
+			halfBreakFlag = false;
+		} else {
+			halfBreakFlag = true;
+		}
+	}
+
+	public Map<ChunkType,Integer> getGridChuckMap() {
+		Map<ChunkType, Integer> chunkMap = new HashMap<>();
+
+		chunkMap.put(ChunkType.AHEAD, this.aheadChunk);
+		chunkMap.put(ChunkType.BEHIND, this.behindChunk);
+		chunkMap.put(ChunkType.RIGHT, this.rightChunk);
+		chunkMap.put(ChunkType.LEFT, this.leftChunk);
+
+		return chunkMap;
+	}
+
+	public int getGridChunkAmount() {
+		return (this.aheadChunk + 1 + this.behindChunk) * (this.rightChunk + 1 + this.leftChunk);
+	}
+
+	/*
+	public void setAheadChunk(int amount) {
+		this.aheadChunk = amount;
+	}
+
+	public void setBehindChunk(int amount) {
+		this.behindChunk = amount;
+	}
+
+	public void setRightChunk(int amount) {
+		this.rightChunk = amount;
+	}
+
+	public void setLeftChunk(int amount) {
+		this.leftChunk = amount;
+	}
+	*/
+
+	public boolean canGridExtend(ChunkType chunkType) {
+		final int LIMIT = config.getGridLimit();
+		Map<ChunkType, Integer> chunkMap = getGridChuckMap();
+
+		//チャンクを拡大すると仮定する
+		final int assumedAmoont = chunkMap.get(chunkType) + this.chunkPerGrid;
+		//合計チャンク再計算値
+		int assumedChunkAmount = 0;
+		//一応すべての拡張値を出しておく
+		final int ahead = chunkMap.get(ChunkType.AHEAD);
+		final int behind = chunkMap.get(ChunkType.BEHIND);
+		final int right = chunkMap.get(ChunkType.RIGHT);
+		final int left = chunkMap.get(ChunkType.LEFT);
+
+		switch (chunkType) {
+			case AHEAD:
+				assumedChunkAmount = (assumedAmoont + 1 + behind) * (right + 1 + left);
+				break;
+			case BEHIND:
+				assumedChunkAmount = (ahead + 1 + assumedAmoont) * (right + 1 + left);
+				break;
+			case RIGHT:
+				assumedChunkAmount = (ahead + 1 + behind) * (assumedAmoont + 1 + left);
+				break;
+			case LEFT:
+				assumedChunkAmount = (ahead + 1 + behind) * (right + 1 + assumedAmoont);
+				break;
+			default:
+				//ここに来ることはありえない
+				Bukkit.getLogger().warning("グリッド式保護で予期せぬ動作[チャンク値仮定]。開発者に報告してください。");
+		}
+
+		if (assumedChunkAmount <= LIMIT) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	public boolean canGridReduce(ChunkType chunkType) {
+		Map<ChunkType, Integer> chunkMap = getGridChuckMap();
+
+		//減らしたと仮定する
+		final int assumedAmount = chunkMap.get(chunkType) - chunkPerGrid;
+		if (assumedAmount < 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public void setChunkAmount(ChunkType chunkType, int amount) {
+		switch (chunkType) {
+			case AHEAD:
+				this.aheadChunk = amount;
+				break;
+			case BEHIND:
+				this.behindChunk = amount;
+				break;
+			case RIGHT:
+				this.rightChunk = amount;
+				break;
+			case LEFT:
+				this.leftChunk = amount;
+				break;
+			default:
+				//わざと何もしない
+		}
+	}
+
+	public void addChunkAmount(ChunkType chunkType, int addAmount) {
+		switch (chunkType) {
+			case AHEAD:
+				this.aheadChunk += addAmount;
+				break;
+			case BEHIND:
+				this.behindChunk += addAmount;
+				break;
+			case RIGHT:
+				this.rightChunk += addAmount;
+				break;
+			case LEFT:
+				this.leftChunk += addAmount;
+				break;
+			default:
+				//わざと何もしない
+		}
+	}
+
+	public void setCanCreateRegion(boolean flag) {
+		this.canCreateRegion = flag;
+	}
+
+	public boolean canCreateRegion() {
+		return this.canCreateRegion;
+	}
+
+	public void toggleChunkPerGrid () {
+		if (this.chunkPerGrid == 1) {
+			this.chunkPerGrid = 10;
+		} else if (this.chunkPerGrid == 10) {
+			this.chunkPerGrid = 100;
+		} else if (this.chunkPerGrid == 100) {
+			this.chunkPerGrid = 1;
+		}
+	}
+
+	public int getChunkPerGrid() {
+		return this.chunkPerGrid;
+	}
+
+	public void setTemplateMap(Map<Integer, GridTemplate> setMap) {
+		this.templateMap = setMap;
+	}
+
+	public Map<Integer, GridTemplate> getTemplateMap() {
+		return this.templateMap;
 	}
 }
