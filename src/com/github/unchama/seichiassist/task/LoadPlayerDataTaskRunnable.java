@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -233,7 +234,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
  				//建築
  				playerdata.build_lv_set(rs.getInt("build_lv"));
- 				playerdata.build_count_set(rs.getInt("build_count"));
+ 				playerdata.build_count_set(new BigDecimal(rs.getString("build_count")));
  				playerdata.build_count_flg_set(rs.getByte("build_count_flg"));
 
  				// 1周年記念
