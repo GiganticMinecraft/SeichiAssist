@@ -513,6 +513,8 @@ public class RegionInventoryListener implements Listener {
                         playerData.setChunkAmount(ChunkType.BEHIND, template.getBehindAmount());
                         playerData.setChunkAmount(ChunkType.RIGHT, template.getRightAmount());
                         playerData.setChunkAmount(ChunkType.LEFT, template.getLeftAmount());
+                        setWGSelection(player);
+                        canCreateRegion(player);
                         player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
                     }
 

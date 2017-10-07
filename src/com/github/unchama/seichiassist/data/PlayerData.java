@@ -10,6 +10,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -137,7 +138,7 @@ public class PlayerData {
 	//建築LV
 	private int build_lv;
 	//設置ブロック数
-	private int build_count;
+	private BigDecimal build_count;
 	//設置ブロックサーバー統合フラグ
 	private byte build_count_flg;
 
@@ -214,7 +215,7 @@ public class PlayerData {
 			this.sub_home[x] = null;
 		}
 		this.build_lv = 1;
-		this.build_count = 0;
+		this.build_count = BigDecimal.ZERO;
 		this.build_count_flg = 0;
 		this.anniversary = false;
 
@@ -600,10 +601,10 @@ public class PlayerData {
 	public int build_lv_get(){
 		return build_lv;
 	}
-	public void build_count_set(int count){
+	public void build_count_set(BigDecimal count){
 		build_count = count;
 	}
-	public int build_count_get(){
+	public BigDecimal build_count_get(){
 		return build_count;
 	}
 
