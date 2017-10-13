@@ -1,12 +1,23 @@
 package com.github.unchama.seichiassist.util;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Random;
+
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
-import org.bukkit.*;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Builder;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -16,13 +27,12 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
+
 import zedly.zenchantments.Zenchantments;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class Util {
 	static private FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
@@ -612,4 +622,15 @@ public class Util {
 		//ここに到達はありえない。
 		return null;
 	}
+
+	  //時間を数列として取得する
+  	public static long getTime() {
+  		long Time =
+  				(Calendar.getInstance().get(Calendar.YEAR)*100000000L +
+  				(Calendar.getInstance().get(Calendar.MONTH)+1)*1000000L +
+  				Calendar.getInstance().get(Calendar.DATE)*10000 +
+  				Calendar.getInstance().get(Calendar.HOUR_OF_DAY)*100 +
+  				Calendar.getInstance().get(Calendar.MINUTE));
+  		return Time;
+  	}
 }

@@ -1,15 +1,5 @@
 package com.github.unchama.seichiassist.task;
 
-import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.data.GridTemplate;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.BukkitSerialization;
-import com.github.unchama.seichiassist.util.Util;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -17,7 +7,28 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.data.GridTemplate;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.BukkitSerialization;
+import com.github.unchama.seichiassist.util.Util;
 
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
@@ -237,6 +248,12 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.build_count_set(new BigDecimal(rs.getString("build_count")));
  				playerdata.build_count_flg_set(rs.getByte("build_count_flg"));
 
+				//投票
+				playerdata.canVotingFairyUse = rs.getBoolean("canVotingFairyUse");
+				playerdata.VotingFairyTime = rs.getLong("VotingFairyTime");
+				playerdata.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue");
+				playerdata.hasVotingFairyMana = rs.getInt("hasVotingFairyMana");
+
  				// 1周年記念
  				if (playerdata.anniversary = rs.getBoolean("anniversary")) {
  					p.sendMessage("整地サーバ1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。http://seichi.click/d/anniversary");
@@ -380,6 +397,18 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		playermap.put(uuid, playerdata);
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ取得完了");
 
+		//投票妖精の処理
+		if(playerdata.VotingFairyTime + 400 < Util.getTime() && playerdata.canVotingFairyUse == true){
+			playerdata.canVotingFairyUse = false ;
+			p.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
+		}
+		else if(playerdata.canVotingFairyUse == true){
+			p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "おかえり。" + p.getName() );
+			if(playerdata.hasVotingFairyMana > 0)
+				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "僕はまだ君のマナを回復させられるよ" );
+			else
+				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "ガチャりんごがもう無いからまた渡してくれると嬉しいな" );
+		}
 		return;
 	}
 }
