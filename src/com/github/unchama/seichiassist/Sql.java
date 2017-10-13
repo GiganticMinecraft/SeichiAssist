@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.data.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,6 +22,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.listener.MebiusListener;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
@@ -415,7 +418,13 @@ public class Sql{
 				",add column if not exists build_count double default 0" +//
 				",add column if not exists build_count_flg TINYINT UNSIGNED default 0" +//
 
-				",add column if not exists anniversary boolean default false";
+				",add column if not exists anniversary boolean default false" +//
+
+				//投票妖精関連
+				",add column if not exists canVotingFairyUse boolean default false" +//
+				",add column if not exists VotingFairyTime bigint default 0" +///
+				",add column if not exists VotingFairyRecoveryValue int default 0" +//
+				",add column if not exists hasVotingFairyMana int default 0";
 
 				for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
 					command += ",add column if not exists ahead_" + i + " int default 0";
