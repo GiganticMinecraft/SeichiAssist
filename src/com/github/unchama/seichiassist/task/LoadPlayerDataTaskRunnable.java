@@ -1,15 +1,5 @@
 package com.github.unchama.seichiassist.task;
 
-import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.data.GridTemplate;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.BukkitSerialization;
-import com.github.unchama.seichiassist.util.Util;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -17,7 +7,28 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.data.GridTemplate;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.BukkitSerialization;
 
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
@@ -40,11 +51,11 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	ResultSet rs = null;
 	String db;
 
-	public LoadPlayerDataTaskRunnable(Player _p) {
+	public LoadPlayerDataTaskRunnable(PlayerData playerData) {
 		db = SeichiAssist.config.getDB();
-		p = _p;
-		name = Util.getName(p);
-		uuid = p.getUniqueId();
+		p = Bukkit.getPlayer(playerData.uuid);
+		name = playerData.name;
+		uuid = playerData.uuid;
 		struuid = uuid.toString().toLowerCase();
 		command = "";
 		flag = true;

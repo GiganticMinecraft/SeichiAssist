@@ -3,13 +3,13 @@ package com.github.unchama.seichiassist.task;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerDataUpdateOnJoinRunnable extends BukkitRunnable{
 
@@ -25,10 +25,10 @@ public class PlayerDataUpdateOnJoinRunnable extends BukkitRunnable{
 	final String struuid;
 	int i;
 
-	public PlayerDataUpdateOnJoinRunnable(Player _p) {
-		p = _p;
-		name = Util.getName(p);
-		uuid = p.getUniqueId();
+	public PlayerDataUpdateOnJoinRunnable(PlayerData playerData) {
+		name = playerData.name;
+		uuid = playerData.uuid;
+		p = Bukkit.getPlayer(uuid);
 		struuid = uuid.toString().toLowerCase();
 		i = 0;
 	}
