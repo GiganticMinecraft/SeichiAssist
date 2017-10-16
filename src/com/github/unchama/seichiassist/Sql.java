@@ -16,7 +16,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -26,11 +25,13 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
+<<<<<<< HEAD
 import com.github.unchama.seichiassist.listener.MebiusListener;
+=======
+import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTaskRunnable;
+>>>>>>> refs/remotes/unchama/master
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.LoadPlayerDataTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
-import com.github.unchama.seichiassist.task.PlayerDataUpdateOnJoinRunnable;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -40,7 +41,7 @@ public class Sql{
 	private final String db;
 	private final String id;
 	private final String pw;
-	public static Connection con = null;
+	public Connection con = null;
 	private Statement stmt = null;
 
 	private ResultSet rs = null;
@@ -664,77 +665,10 @@ public class Sql{
 		return putCommand(command);
 	}
 
-
-	public boolean loadPlayerData(final Player p) {
-		String name = Util.getName(p);
-		final UUID uuid = p.getUniqueId();
-		final String struuid = uuid.toString().toLowerCase();
-		String command = "";
-		final String table = SeichiAssist.PLAYERDATA_TABLENAME;
- 		int count = -1;
- 		//uuidがsqlデータ内に存在するか検索
- 		//command:
- 		//select count(*) from playerdata where uuid = 'struuid'
- 		command = "select count(*) as count from " + db + "." + table
- 				+ " where uuid = '" + struuid + "'";
- 		//sqlコネクションチェック(mysql接続が切れたときの為のフェイルセーフ機構(ダメならリログすれば直る))
- 		checkConnection();
- 		try{
-			rs = stmt.executeQuery(command);
-			while (rs.next()) {
-				   count = rs.getInt("count");
-				  }
-			rs.close();
-		} catch (SQLException e) {
-			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
-			e.printStackTrace();
-			return false;
-		}
-
- 		if(count == 0){
- 			//uuidが存在しない時の処理
-
- 			//新しくuuidとnameを設定し行を作成
- 			//insert into playerdata (name,uuid) VALUES('unchima','UNCHAMA')
- 			command = "insert into " + db + "." + table
- 	 				+ " (name,uuid,loginflag) values('" + name
- 	 				+ "','" + struuid+ "','1')";
- 			if(!putCommand(command)){
- 				return false;
- 			}
- 			//PlayerDataを新規作成
- 			playermap.put(uuid, new PlayerData(p));
- 			//初見さんにLv1メッセージを送信
- 			p.sendMessage(SeichiAssist.config.getLvMessage(1));
- 			//初見さんであることを全体告知
- 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "【初見キタ】" + p.getName() + "のプレイヤーデータ作成完了");
- 			Util.sendEveryMessage(ChatColor.LIGHT_PURPLE+""+ChatColor.BOLD+name+"さんは初参加です。整地鯖へヨウコソ！" + ChatColor.RESET +" - " + ChatColor.YELLOW + ChatColor.UNDERLINE +  "http://seichi.click");
- 			Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
- 			//初見プレイヤーに木の棒、エリトラ、ピッケルを配布
- 			p.getInventory().addItem(new ItemStack(Material.STICK));
- 			p.getInventory().addItem(new ItemStack(Material.ELYTRA));
- 			p.getInventory().addItem(new ItemStack(Material.DIAMOND_PICKAXE));
- 			p.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
- 			MebiusListener.give(p);
-
- 			return true;
-
- 		}else if(count == 1){
- 			//uuidが存在するときの処理
- 			if(SeichiAssist.DEBUG){
- 				p.sendMessage("sqlにデータが保存されています。");
- 			}
- 			p.sendMessage(ChatColor.YELLOW + "プレイヤーデータを読み込んでいます。しばらくお待ちください…");
- 			new LoadPlayerDataTaskRunnable(p).runTaskTimerAsynchronously(plugin, 20, 20);
- 			new PlayerDataUpdateOnJoinRunnable(p).runTaskTimer(plugin, 30, 20);
- 			return true;
-
- 		}else{
- 			//mysqlに該当するplayerdataが2個以上ある時エラーを吐く
- 			Bukkit.getLogger().info(Util.getName(p) + "のplayerdata読込時に原因不明のエラー発生");
- 			return false;
- 		}
+	public void loadPlayerData(PlayerData playerdata) {
+		Player player = Bukkit.getPlayer(playerdata.uuid);
+		player.sendMessage(ChatColor.YELLOW + "プレイヤーデータ取得中。完了まで動かずお待ち下さい…");
+		new CheckAlreadyExistPlayerDataTaskRunnable(playerdata).runTaskAsynchronously(plugin);
 	}
 
 	//ondisable"以外"の時のプレイヤーデータセーブ処理(loginflag折りません)
