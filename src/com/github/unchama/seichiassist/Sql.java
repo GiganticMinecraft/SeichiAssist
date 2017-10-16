@@ -25,11 +25,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
-<<<<<<< HEAD
-import com.github.unchama.seichiassist.listener.MebiusListener;
-=======
 import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTaskRunnable;
->>>>>>> refs/remotes/unchama/master
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
 import com.github.unchama.seichiassist.util.BukkitSerialization;

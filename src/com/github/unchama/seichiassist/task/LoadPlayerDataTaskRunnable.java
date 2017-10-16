@@ -15,10 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-<<<<<<< HEAD
-=======
 import org.bukkit.Bukkit;
->>>>>>> refs/remotes/unchama/master
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -32,10 +29,7 @@ import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
-<<<<<<< HEAD
 import com.github.unchama.seichiassist.util.Util;
-=======
->>>>>>> refs/remotes/unchama/master
 
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
