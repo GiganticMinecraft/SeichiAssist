@@ -1,17 +1,28 @@
 package com.github.unchama.seichiassist.data;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.Statistic;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
-import com.github.unchama.seichiassist.util.Util.*;
-import org.bukkit.*;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-
-import java.math.BigDecimal;
-import java.util.*;
+import com.github.unchama.seichiassist.util.Util.ChunkType;
 
 
 public class PlayerData {
@@ -157,6 +168,13 @@ public class PlayerData {
 	private int chunkPerGrid;
 	private Map<Integer, GridTemplate> templateMap;
 
+	//投票妖精関連
+	public boolean canVotingFairyUse;
+	public long VotingFairyTime;
+	public int hasVotingFairyMana;
+	public int VotingFairyRecoveryValue;
+	public int giveApple;
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.loaded = false;
@@ -209,7 +227,6 @@ public class PlayerData {
 		this.p_vote_forT = 0 ;
 		this.giveachvNo = 0 ;
 
-
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
 			this.sub_home[x] = null;
@@ -231,6 +248,12 @@ public class PlayerData {
 		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
 			this.templateMap.put(i, new GridTemplate(0, 0, 0, 0));
 		}
+
+		this.canVotingFairyUse = false;
+		this.VotingFairyTime = 0;
+		this.hasVotingFairyMana = 0;
+		this.VotingFairyRecoveryValue = 0;
+		this.giveApple = 0;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -793,4 +816,5 @@ public class PlayerData {
 	public Map<Integer, GridTemplate> getTemplateMap() {
 		return this.templateMap;
 	}
+
 }

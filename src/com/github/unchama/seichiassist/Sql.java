@@ -415,7 +415,13 @@ public class Sql{
 				",add column if not exists build_count double default 0" +//
 				",add column if not exists build_count_flg TINYINT UNSIGNED default 0" +//
 
-				",add column if not exists anniversary boolean default false";
+				",add column if not exists anniversary boolean default false" +//
+
+				//投票妖精関連
+				",add column if not exists canVotingFairyUse boolean default false" +//
+				",add column if not exists VotingFairyTime bigint default 0" +///
+				",add column if not exists VotingFairyRecoveryValue int default 0" +//
+				",add column if not exists hasVotingFairyMana int default 0";
 
 				for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
 					command += ",add column if not exists ahead_" + i + " int default 0";
