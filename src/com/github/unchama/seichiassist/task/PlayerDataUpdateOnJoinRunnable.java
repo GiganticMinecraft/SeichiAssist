@@ -24,13 +24,17 @@ public class PlayerDataUpdateOnJoinRunnable extends BukkitRunnable{
 	final UUID uuid;
 	final String struuid;
 	int i;
+	boolean execLoad;
+	PlayerData loginPlayerData;
 
-	public PlayerDataUpdateOnJoinRunnable(PlayerData playerData) {
+	public PlayerDataUpdateOnJoinRunnable(PlayerData playerData,boolean execLoad) {
 		name = playerData.name;
 		uuid = playerData.uuid;
 		p = Bukkit.getPlayer(uuid);
 		struuid = uuid.toString().toLowerCase();
 		i = 0;
+		this.execLoad = execLoad;
+		this.loginPlayerData = playerData;
 	}
 
 	@Override
@@ -48,6 +52,9 @@ public class PlayerDataUpdateOnJoinRunnable extends BukkitRunnable{
 	 		}else{
 	 			//再試行
 	 			p.sendMessage(ChatColor.YELLOW + "しばらくお待ちください…");
+	 			if(execLoad){
+	 				new LoadPlayerDataTaskRunnable(loginPlayerData).start();
+	 			}
 	 			i++;
 	 			return;
 	 		}
