@@ -419,7 +419,8 @@ public class Sql{
 
 				//投票妖精関連
 				",add column if not exists canVotingFairyUse boolean default false" +//
-				",add column if not exists VotingFairyTime bigint default 0" +///
+				//",add column if not exists VotingFairyTime bigint default 0" +//
+				",add column if not exists newVotingFairyTime varchar(" + SeichiAssist.VOTE_FAIRYTIME_DATASIZE + ") default ''" +//
 				",add column if not exists VotingFairyRecoveryValue int default 0" +//
 				",add column if not exists hasVotingFairyMana int default 0";
 

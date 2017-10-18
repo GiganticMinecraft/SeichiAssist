@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist.util;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -623,14 +625,14 @@ public class Util {
 		return null;
 	}
 
-	  //時間を数列として取得する
-  	public static long getTime() {
-  		long Time =
-  				(Calendar.getInstance().get(Calendar.YEAR)*100000000L +
-  				(Calendar.getInstance().get(Calendar.MONTH)+1)*1000000L +
-  				Calendar.getInstance().get(Calendar.DATE)*10000 +
-  				Calendar.getInstance().get(Calendar.HOUR_OF_DAY)*100 +
-  				Calendar.getInstance().get(Calendar.MINUTE));
-  		return Time;
-  	}
+	public static String showTime(Calendar cal) {
+		  Date date = cal.getTime();
+		  SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		  return format.format(date);
+		}
+
+	public static boolean isVotingFairyPeriod(Calendar start, Calendar end) {
+		Calendar cur = Calendar.getInstance();
+		return cur.after(start) && cur.before(end);
+	}
 }

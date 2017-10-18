@@ -217,7 +217,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 				//投票
 				+ ",canVotingFairyUse = " + Boolean.toString(playerdata.canVotingFairyUse)
-				+ ",VotingFairyTime = " + Long.toString(playerdata.VotingFairyTime)
+				+ ",newVotingFairyTime = '" + playerdata.VotingFairyTimeToString() + "'"
 				+ ",VotingFairyRecoveryValue = " + Integer.toString(playerdata.VotingFairyRecoveryValue)
 				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana);
 

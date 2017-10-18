@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -4732,7 +4734,21 @@ public class PlayerInventoryListener implements Listener {
     			}
 
     			//召喚した時間を取り出す
-    			playerdata.VotingFairyTime = Util.getTime();
+    			playerdata.VotingFairyStartTime = new GregorianCalendar(
+    					Calendar.getInstance().get(Calendar.YEAR),
+    					Calendar.getInstance().get(Calendar.MONTH),
+    					Calendar.getInstance().get(Calendar.DATE),
+    					Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+    					Calendar.getInstance().get(Calendar.MINUTE)
+    					);
+
+    			playerdata.VotingFairyEndTime = new GregorianCalendar(
+    					Calendar.getInstance().get(Calendar.YEAR),
+    					Calendar.getInstance().get(Calendar.MONTH),
+    					Calendar.getInstance().get(Calendar.DATE),
+    					(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+4),
+    					(Calendar.getInstance().get(Calendar.MINUTE)+1)
+    					);
 
     			player.sendMessage(ChatColor.GOLD + "妖精を召喚しました") ;
     			player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2) ;
@@ -4796,7 +4812,8 @@ public class PlayerInventoryListener implements Listener {
 	    		}
 	    		else if(itemstackcurrent.getType().equals(Material.EMERALD)){
 	    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	    			playerdata.VotingFairyTime -= 500;
+	    			player.sendMessage(ChatColor.GOLD + "開始時刻: " + Util.showTime(playerdata.VotingFairyStartTime)) ;
+    				player.sendMessage(ChatColor.GOLD + "終了時刻: " + Util.showTime(playerdata.VotingFairyEndTime)) ;
 	    			player.openInventory(MenuInventoryData.getVotingMenuData(player));
 	    		}
     		}
@@ -4856,7 +4873,7 @@ public class PlayerInventoryListener implements Listener {
     			else if(itemmeta.getDisplayName().contains("渡す量を 10 減らす")){
 	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 	        		if(playerdata.giveApple >= 10)
-	        			playerdata.giveApple += 10 ;
+	        			playerdata.giveApple -= 10 ;
 	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
 	    		}
     			else if(itemmeta.getDisplayName().contains("渡す量を 100 減らす")){
