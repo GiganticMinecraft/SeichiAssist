@@ -590,7 +590,7 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND);
 		itemmeta.addEnchant(Enchantment.DURABILITY, 100, false);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票ptメニュー");
-		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "実装中");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "投票ptに関することはこちらから！");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -758,6 +758,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(3,itemstack);
 
+		/*投票ptメニューへ移動
 		// ver0.3.2 投票ページ表示
 		itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
@@ -772,6 +773,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
+		*/
 
 
 		//椎名林檎変換システムを開く
@@ -5379,6 +5381,21 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(0,itemstack);
 
+		// ver0.3.2 投票ページ表示
+		itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票ページにアクセス");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "投票すると様々な特典が！"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "1日1回投票出来ます"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄に"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "URLが表示されますので"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してから"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(9,itemstack);
+
 		//妖精召喚
 		itemstack = new ItemStack(Material.GHAST_TEAR);
 		itemmeta = itemstack.getItemMeta();
@@ -5413,6 +5430,17 @@ public class MenuInventoryData {
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(28,itemstack);
+
+		//りんご残量
+		itemstack = new ItemStack(Material.BOWL);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "りんごの残り数を尋ねる" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "マナの妖精に渡したりんごが"
+				,ChatColor.RESET + "" +  ChatColor.GRAY + "どれくらい残っているか尋ねます" );
+		itemmeta.setLore(lore);
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(22,itemstack);
 
 		//棒メニューに戻る
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);

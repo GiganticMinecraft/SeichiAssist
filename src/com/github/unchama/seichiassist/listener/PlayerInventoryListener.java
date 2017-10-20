@@ -742,12 +742,14 @@ public class PlayerInventoryListener implements Listener {
 				player.closeInventory();
 			}
 
+			/*投票ptメニューへ移動
 			else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
 				// 投票リンク表示
 				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
+			*/
 
 			else if(itemstackcurrent.getType().equals(Material.PAPER)){
 				// 運営方針とルールリンク表示
@@ -4709,6 +4711,13 @@ public class PlayerInventoryListener implements Listener {
     			player.openInventory(MenuInventoryData.getVotingMenuData(player));
 			}
 
+    		else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
+				// 投票リンク表示
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote");
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.closeInventory();
+			}
+
     		//妖精召喚
     		else if(itemstackcurrent.getType().equals(Material.GHAST_TEAR)){
 
@@ -4783,6 +4792,19 @@ public class PlayerInventoryListener implements Listener {
     			else {
 	    			player.sendMessage(ChatColor.GOLD + "妖精を召喚してください") ;
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
+    			}
+    		}
+
+    		//りんご残量確認
+    		else if(itemstackcurrent.getType().equals(Material.BOWL)){
+    			if(playerdata.canVotingFairyUse == true){
+    				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    				VFTR.askApple(player);
+    			}
+    			else {
+	    			player.sendMessage(ChatColor.GOLD + "妖精を召喚してください") ;
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
+					player.closeInventory();
     			}
     		}
 

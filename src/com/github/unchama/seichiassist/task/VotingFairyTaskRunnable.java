@@ -120,4 +120,40 @@ public class VotingFairyTaskRunnable {
 		}
 	}
 
+	public void askApple(Player p){
+		player = p;
+		UUID uuid = p.getUniqueId();
+		playerdata = playermap.get(uuid);
+		Mana mana = playerdata.activeskilldata.mana;
+		int n;
+
+		if(playerdata.level < 90){
+			n = 300 ;
+		}
+		else if(playerdata.level < 175){
+			n = 200 ;
+		}
+		else{
+			n = 100 ;
+		}
+
+		if(playerdata.hasVotingFairyMana >= 1000){
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "君に貰ったりんごがどのくらい残ってるかって…?");
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "そうだねぇ…大体" + playerdata.hasVotingFairyMana/n + "個くらいかな");
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "もっともらえると嬉しいなぁ…(´▽｀*)");
+			player.closeInventory();
+		}
+		else if(playerdata.hasVotingFairyMana == 0){
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "君に貰ったりんごがどのくらい残ってるかって…?");
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "冗談言うなよ、一つも残ってないさ");
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "はやくもらえると嬉しいなぁ…(´▽｀*)");
+			player.closeInventory();
+		}
+		else{
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "君に貰ったりんごがどのくらい残ってるかって…?");
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "そうだねぇ…もうすぐなくなりそうかな");
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "もっともらえると嬉しいなぁ…(´▽｀*)");
+			player.closeInventory();
+		}
+	}
 }
