@@ -45,7 +45,7 @@ public class ActiveSkillInventoryData {
 			return null;
 		}
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキル選択");
+		Inventory inventory = Bukkit.getServer().createInventory(null,5*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキル選択");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		PotionMeta potionmeta;
@@ -62,7 +62,7 @@ public class ActiveSkillInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(27,itemstack);
+		inventory.setItem(36,itemstack);
 
 		//1行目
 
@@ -675,120 +675,12 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(26,itemstack);
 
 		//4列目
-		if(playerdata.activeskilldata.condenskill >= 4){
+		if(playerdata.activeskilldata.watercondenskill >= 7){
 			itemstack = new ItemStack(Material.SNOW_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SNOW_BLOCK);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホワイト・ブレス");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水7×7×7ブロックを凍らせます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：40"
-											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホワイト・ブレス");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水7×7×7ブロックを凍らせます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：40"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：40"
-					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：エクスプロージョン"
-					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-		}
-		inventory.setItem(30,itemstack);
-
-
-		if(playerdata.activeskilldata.condenskill >= 5){
-			itemstack = new ItemStack(Material.ICE,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ICE);
-			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アブソリュート・ゼロ");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水9×9×9ブロックを凍らせます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：70"
-											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アブソリュート・ゼロ");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水9×9×9ブロックを凍らせます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：70"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：50"
-					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ホワイト・ブレス"
-					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-		}
-		inventory.setItem(31,itemstack);
-
-
-		if(playerdata.activeskilldata.condenskill >= 6){
-			itemstack = new ItemStack(Material.PACKED_ICE,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PACKED_ICE);
-			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ダイアモンド・ダスト");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水11×11×11ブロックを凍らせます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：140"
-											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ダイアモンド・ダスト");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水11×11×11ブロックを凍らせます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：140"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：60"
-					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：アブソリュート・ゼロ"
-					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-		}
-		inventory.setItem(32,itemstack);
-
-
-		if(playerdata.activeskilldata.condenskill >= 7){
-			itemstack = new ItemStack(Material.NETHERRACK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHERRACK);
-			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ラヴァ・コンデンセーション");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩7×7×7ブロックを固めます"
-											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：80"
-											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ラヴァ・コンデンセーション");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩7×7×7ブロックを固めます"
-					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：80"
-					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：70"
-					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ダイアモンド・ダスト"
-					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-		}
-		inventory.setItem(33,itemstack);
-
-
-		if(playerdata.activeskilldata.condenskill >= 8){
-			itemstack = new ItemStack(Material.NETHER_BRICK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_BRICK);
-			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "モエラキ・ボールダーズ");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩9×9×9ブロックを固めます"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：150"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
@@ -797,27 +689,136 @@ public class ActiveSkillInventoryData {
 		}else{
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホワイト・ブレス");
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水7×7×7ブロックを凍らせます"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：150"
+					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：70"
+					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：エクスプロージョン"
+					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+		}
+		inventory.setItem(30,itemstack);
+
+
+		if(playerdata.activeskilldata.watercondenskill >= 8){
+			itemstack = new ItemStack(Material.ICE,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ICE);
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アブソリュート・ゼロ");
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水9×9×9ブロックを凍らせます"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：400"
+											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アブソリュート・ゼロ");
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水9×9×9ブロックを凍らせます"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：400"
+					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：80"
+					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ホワイト・ブレス"
+					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+		}
+		inventory.setItem(31,itemstack);
+
+
+		if(playerdata.activeskilldata.watercondenskill >= 9){
+			itemstack = new ItemStack(Material.PACKED_ICE,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PACKED_ICE);
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ダイアモンド・ダスト");
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水11×11×11ブロックを凍らせます"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：750"
+											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.WHITE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ダイアモンド・ダスト");
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の水11×11×11ブロックを凍らせます"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：750"
+					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：90"
+					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：アブソリュート・ゼロ"
+					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+		}
+		inventory.setItem(32,itemstack);
+
+
+		//五行目
+		if(playerdata.activeskilldata.lavacondenskill >= 7){
+			itemstack = new ItemStack(Material.NETHERRACK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHERRACK);
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ラヴァ・コンデンセーション");
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩7×7×7ブロックを固めます"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：100"
+											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ラヴァ・コンデンセーション");
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩7×7×7ブロックを固めます"
+					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：100"
+					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：70"
+					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ダイアモンド・ダスト"
+					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+		}
+		inventory.setItem(39,itemstack);
+
+
+		if(playerdata.activeskilldata.lavacondenskill >= 8){
+			itemstack = new ItemStack(Material.NETHER_BRICK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_BRICK);
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "モエラキ・ボールダーズ");
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩9×9×9ブロックを固めます"
+											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：200"
+											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "モエラキ・ボールダーズ");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩9×9×9ブロックを固めます"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：150"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：200"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：80"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ラヴァ・コンデンセーション"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 		}
-		inventory.setItem(34,itemstack);
+		inventory.setItem(40,itemstack);
 
 
-		if(playerdata.activeskilldata.condenskill >= 9){
+		if(playerdata.activeskilldata.lavacondenskill >= 9){
 			itemstack = new ItemStack(Material.MAGMA,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MAGMA);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エルト・フェットル");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩11×11×11ブロックを固めます"
 											, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：300"
+											, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：400"
 											, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -827,16 +828,16 @@ public class ActiveSkillInventoryData {
 			itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エルト・フェットル");
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "周囲の溶岩11×11×11ブロックを固めます"
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
-					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：300"
+					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：400"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：90"
 					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：モエラキ・ボールダーズ"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 		}
-		inventory.setItem(35,itemstack);
+		inventory.setItem(41,itemstack);
 
-		if(playerdata.activeskilldata.multiskill >= 9 && playerdata.activeskilldata.breakskill >= 9 && playerdata.activeskilldata.arrowskill >= 9 && playerdata.activeskilldata.condenskill >= 9){
+		if(playerdata.activeskilldata.multiskill >= 9 && playerdata.activeskilldata.breakskill >= 9 && playerdata.activeskilldata.arrowskill >= 9 && playerdata.activeskilldata.watercondenskill >= 9 && playerdata.activeskilldata.lavacondenskill >= 9){
 			itemstack = new ItemStack(Material.DIAMOND_CHESTPLATE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_CHESTPLATE);
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

@@ -141,7 +141,9 @@ public class LoadPlayerDataTaskRunnable extends Thread{
  				playerdata.activeskilldata.arrowskill = rs.getInt("arrowskill");
  				playerdata.activeskilldata.multiskill = rs.getInt("multiskill");
  				playerdata.activeskilldata.breakskill = rs.getInt("breakskill");
- 				playerdata.activeskilldata.condenskill = rs.getInt("condenskill");
+ 				//playerdata.activeskilldata.condenskill = rs.getInt("condenskill");
+ 				playerdata.activeskilldata.watercondenskill = rs.getInt("watercondenskill");
+ 				playerdata.activeskilldata.lavacondenskill = rs.getInt("lavacondenskill");
  				playerdata.activeskilldata.effectnum = rs.getInt("effectnum");
  				playerdata.gachapoint = rs.getInt("gachapoint");
  				playerdata.gachaflag = rs.getBoolean("gachaflag");
