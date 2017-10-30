@@ -1,15 +1,20 @@
 package com.github.unchama.seichiassist.task;
 
-import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.BukkitSerialization;
-import org.bukkit.ChatColor;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+
+import org.bukkit.ChatColor;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.BukkitSerialization;
 
 public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
@@ -207,8 +212,14 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				command +=  ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'"
 				//建築
 				+ ",build_lv = " + Integer.toString(playerdata.build_lv_get())
-				+ ",build_count = " + Integer.toString(playerdata.build_count_get())
-				+ ",build_count_flg = " + Byte.toString(playerdata.build_count_flg_get());
+				+ ",build_count = " + playerdata.build_count_get().toString()
+				+ ",build_count_flg = " + Byte.toString(playerdata.build_count_flg_get())
+
+				//投票
+				+ ",canVotingFairyUse = " + Boolean.toString(playerdata.canVotingFairyUse)
+				+ ",VotingFairyTime = " + Long.toString(playerdata.VotingFairyTime)
+				+ ",VotingFairyRecoveryValue = " + Integer.toString(playerdata.VotingFairyRecoveryValue)
+				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana);
 
 				//実績のフラグ(BitSet)保存用変換処理
 				long[] TitleArray = playerdata.TitleFlags.toLongArray();

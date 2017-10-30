@@ -1,16 +1,28 @@
 package com.github.unchama.seichiassist.data;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.Statistic;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
-import com.github.unchama.seichiassist.util.Util.*;
-import org.bukkit.*;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-
-import java.util.*;
+import com.github.unchama.seichiassist.util.Util.ChunkType;
 
 
 public class PlayerData {
@@ -137,7 +149,7 @@ public class PlayerData {
 	//建築LV
 	private int build_lv;
 	//設置ブロック数
-	private int build_count;
+	private BigDecimal build_count;
 	//設置ブロックサーバー統合フラグ
 	private byte build_count_flg;
 
@@ -155,6 +167,13 @@ public class PlayerData {
 	private boolean canCreateRegion;
 	private int chunkPerGrid;
 	private Map<Integer, GridTemplate> templateMap;
+
+	//投票妖精関連
+	public boolean canVotingFairyUse;
+	public long VotingFairyTime;
+	public int hasVotingFairyMana;
+	public int VotingFairyRecoveryValue;
+	public int giveApple;
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -208,13 +227,12 @@ public class PlayerData {
 		this.p_vote_forT = 0 ;
 		this.giveachvNo = 0 ;
 
-
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
 			this.sub_home[x] = null;
 		}
 		this.build_lv = 1;
-		this.build_count = 0;
+		this.build_count = BigDecimal.ZERO;
 		this.build_count_flg = 0;
 		this.anniversary = false;
 
@@ -230,6 +248,12 @@ public class PlayerData {
 		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
 			this.templateMap.put(i, new GridTemplate(0, 0, 0, 0));
 		}
+
+		this.canVotingFairyUse = false;
+		this.VotingFairyTime = 0;
+		this.hasVotingFairyMana = 0;
+		this.VotingFairyRecoveryValue = 0;
+		this.giveApple = 0;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -600,10 +624,10 @@ public class PlayerData {
 	public int build_lv_get(){
 		return build_lv;
 	}
-	public void build_count_set(int count){
+	public void build_count_set(BigDecimal count){
 		build_count = count;
 	}
-	public int build_count_get(){
+	public BigDecimal build_count_get(){
 		return build_count;
 	}
 
@@ -792,4 +816,5 @@ public class PlayerData {
 	public Map<Integer, GridTemplate> getTemplateMap() {
 		return this.templateMap;
 	}
+
 }

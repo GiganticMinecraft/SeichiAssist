@@ -1,17 +1,15 @@
 package com.github.unchama.seichiassist;
 
-import com.github.unchama.seichiassist.bungee.BungeeReceiver;
-import com.github.unchama.seichiassist.commands.*;
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.data.RankData;
-import com.github.unchama.seichiassist.listener.*;
-import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
-import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
-import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
-import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,7 +22,39 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import com.github.unchama.seichiassist.bungee.BungeeReceiver;
+import com.github.unchama.seichiassist.commands.AchieveCommand;
+import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
+import com.github.unchama.seichiassist.commands.effectCommand;
+import com.github.unchama.seichiassist.commands.gachaCommand;
+import com.github.unchama.seichiassist.commands.lastquitCommand;
+import com.github.unchama.seichiassist.commands.levelCommand;
+import com.github.unchama.seichiassist.commands.mebiusCommand;
+import com.github.unchama.seichiassist.commands.rmpCommand;
+import com.github.unchama.seichiassist.commands.seichiCommand;
+import com.github.unchama.seichiassist.commands.shareinvCommand;
+import com.github.unchama.seichiassist.commands.stickCommand;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.RankData;
+import com.github.unchama.seichiassist.listener.EntityListener;
+import com.github.unchama.seichiassist.listener.GachaItemListener;
+import com.github.unchama.seichiassist.listener.MebiusListener;
+import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.listener.PlayerClickListener;
+import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
+import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
+import com.github.unchama.seichiassist.listener.PlayerJoinListener;
+import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
+import com.github.unchama.seichiassist.listener.PlayerQuitListener;
+import com.github.unchama.seichiassist.listener.RegionInventoryListener;
+import com.github.unchama.seichiassist.listener.WorldRegenListener;
+import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
+import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
+import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
+import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
+import com.github.unchama.seichiassist.util.Util;
 
 
 public class SeichiAssist extends JavaPlugin{
@@ -627,7 +657,7 @@ public class SeichiAssist extends JavaPlugin{
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){
 			//プレイヤーデータを生成
-			sql.loadPlayerData(p);
+			sql.loadPlayerData(new PlayerData(p));
 		}
 
 		//ランキングデータをセット
