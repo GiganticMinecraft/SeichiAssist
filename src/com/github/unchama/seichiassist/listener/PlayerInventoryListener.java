@@ -110,17 +110,17 @@ public class PlayerInventoryListener implements Listener {
 			ByteArrayDataOutput byteArrayDataOutput = ByteStreams
 					.newDataOutput();
 			//ページ変更処理
-			if(meta.getDisplayName().contains("第1サバイバルサーバ")){
+			if(meta.getDisplayName().contains("アルカディアサーバ")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s1");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("第2サバイバルサーバ")){
+			}else if(meta.getDisplayName().contains("エデンサーバ")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s2");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("第3サバイバルサーバ")){
+			}else if(meta.getDisplayName().contains("ヴァルハラサーバ")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s3");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
