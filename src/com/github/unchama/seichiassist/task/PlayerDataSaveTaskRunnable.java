@@ -83,7 +83,9 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",arrowskill = " + Integer.toString(playerdata.activeskilldata.arrowskill)
 				+ ",multiskill = " + Integer.toString(playerdata.activeskilldata.multiskill)
 				+ ",breakskill = " + Integer.toString(playerdata.activeskilldata.breakskill)
-				+ ",condenskill = " + Integer.toString(playerdata.activeskilldata.condenskill)
+				//+ ",condenskill = " + Integer.toString(playerdata.activeskilldata.condenskill)
+				+ ",watercondenskill = " + Integer.toString(playerdata.activeskilldata.watercondenskill)
+				+ ",lavacondenskill = " + Integer.toString(playerdata.activeskilldata.lavacondenskill)
 				+ ",effectnum = " + Integer.toString(playerdata.activeskilldata.effectnum)
 				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
 				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
@@ -217,7 +219,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 				//投票
 				+ ",canVotingFairyUse = " + Boolean.toString(playerdata.canVotingFairyUse)
-				+ ",VotingFairyTime = " + Long.toString(playerdata.VotingFairyTime)
+				+ ",newVotingFairyTime = '" + playerdata.VotingFairyTimeToString() + "'"
 				+ ",VotingFairyRecoveryValue = " + Integer.toString(playerdata.VotingFairyRecoveryValue)
 				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana);
 

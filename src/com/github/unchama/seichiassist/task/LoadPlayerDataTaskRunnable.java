@@ -28,7 +28,6 @@ import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
-import com.github.unchama.seichiassist.util.Util;
 
 public class LoadPlayerDataTaskRunnable extends Thread{
 
@@ -142,7 +141,9 @@ public class LoadPlayerDataTaskRunnable extends Thread{
  				playerdata.activeskilldata.arrowskill = rs.getInt("arrowskill");
  				playerdata.activeskilldata.multiskill = rs.getInt("multiskill");
  				playerdata.activeskilldata.breakskill = rs.getInt("breakskill");
- 				playerdata.activeskilldata.condenskill = rs.getInt("condenskill");
+ 				//playerdata.activeskilldata.condenskill = rs.getInt("condenskill");
+ 				playerdata.activeskilldata.watercondenskill = rs.getInt("watercondenskill");
+ 				playerdata.activeskilldata.lavacondenskill = rs.getInt("lavacondenskill");
  				playerdata.activeskilldata.effectnum = rs.getInt("effectnum");
  				playerdata.gachapoint = rs.getInt("gachapoint");
  				playerdata.gachaflag = rs.getBoolean("gachaflag");
@@ -244,7 +245,8 @@ public class LoadPlayerDataTaskRunnable extends Thread{
 
 				//投票
 				playerdata.canVotingFairyUse = rs.getBoolean("canVotingFairyUse");
-				playerdata.VotingFairyTime = rs.getLong("VotingFairyTime");
+				//playerdata.VotingFairyTime = rs.getLong("VotingFairyTime");
+				playerdata.SetVotingFairyTime(rs.getString("newVotingFairyTime"),p);
 				playerdata.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue");
 				playerdata.hasVotingFairyMana = rs.getInt("hasVotingFairyMana");
 
@@ -313,18 +315,6 @@ public class LoadPlayerDataTaskRunnable extends Thread{
 		playermap.put(uuid, playerdata);
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ読込完了");
 
-		//投票妖精の処理
-		if(playerdata.VotingFairyTime + 400 < Util.getTime() && playerdata.canVotingFairyUse == true){
-			playerdata.canVotingFairyUse = false ;
-			p.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
-		}
-		else if(playerdata.canVotingFairyUse == true){
-			p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "おかえり。" + p.getName() );
-			if(playerdata.hasVotingFairyMana > 0)
-				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "僕はまだ君のマナを回復させられるよ" );
-			else
-				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "ガチャりんごがもう無いからまた渡してくれると嬉しいな" );
-		}
 		return;
 	}
 }

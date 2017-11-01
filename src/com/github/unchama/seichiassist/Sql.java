@@ -262,7 +262,9 @@ public class Sql{
 				",add column if not exists arrowskill int default 0" +
 				",add column if not exists multiskill int default 0" +
 				",add column if not exists breakskill int default 0" +
-				",add column if not exists condenskill int default 0" +
+				//",add column if not exists condenskill int default 0" +
+				",add column if not exists watercondenskill int default 0" +
+				",add column if not exists lavacondenskill int default 0" +
 				",add column if not exists effectnum int default 0" +
 				",add column if not exists gachapoint int default 0" +
 				",add column if not exists gachaflag boolean default true" +
@@ -419,7 +421,8 @@ public class Sql{
 
 				//投票妖精関連
 				",add column if not exists canVotingFairyUse boolean default false" +//
-				",add column if not exists VotingFairyTime bigint default 0" +///
+				//",add column if not exists VotingFairyTime bigint default 0" +//
+				",add column if not exists newVotingFairyTime varchar(" + SeichiAssist.VOTE_FAIRYTIME_DATASIZE + ") default ''" +//
 				",add column if not exists VotingFairyRecoveryValue int default 0" +//
 				",add column if not exists hasVotingFairyMana int default 0";
 

@@ -3,6 +3,8 @@ package com.github.unchama.seichiassist.data;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -12,8 +14,6 @@ import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.AssaultTaskRunnable;
-
-import net.md_5.bungee.api.ChatColor;
 
 public class ActiveSkillData {
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -29,8 +29,14 @@ public class ActiveSkillData {
 	public int multiskill;
 	//破壊スキル獲得量
 	public int breakskill;
+	/*
 	//凝固スキル獲得量
 	public int condenskill;
+	*/
+	//水凝固スキル獲得量
+	public int watercondenskill;
+	//熔岩凝固スキル獲得量
+	public int lavacondenskill;
 	//アクティブスキルの種類番号を格納
 	public int skilltype;
 	//アサルトスキルの種類番号を格納
@@ -79,7 +85,8 @@ public class ActiveSkillData {
 		arrowskill = 0;
 		multiskill = 0;
 		breakskill = 0;
-		condenskill = 0;
+		watercondenskill = 0;
+		lavacondenskill = 0;
 		effectnum = 0;
 		effectflagmap = new HashMap<Integer,Boolean>();
 		premiumeffectflagmap = new HashMap<Integer,Boolean>();
@@ -120,8 +127,18 @@ public class ActiveSkillData {
 		for(int i = breakskill; i >= 1 ; i--){
 			point -= i * 10;
 		}
+		/*
 		//凝固スキル
 		for(int i = condenskill; i >= 4 ; i--){
+			point -= i * 10;
+		}
+		*/
+		//水凝固スキル
+		for(int i = watercondenskill; i >= 7 ; i--){
+			point -= i * 10;
+		}
+		//熔岩凝固スキル
+		for(int i = lavacondenskill; i >= 7 ; i--){
 			point -= i * 10;
 		}
 
@@ -146,7 +163,8 @@ public class ActiveSkillData {
 		arrowskill = 0;
 		multiskill = 0;
 		breakskill = 0;
-		condenskill = 0;
+		watercondenskill = 0;
+		lavacondenskill = 0;
 		skilltype = 0;
 		skillnum = 0;
 		assaulttype = 0;

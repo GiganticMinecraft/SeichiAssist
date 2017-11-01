@@ -1,8 +1,12 @@
 package com.github.unchama.seichiassist.data;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,7 +174,8 @@ public class PlayerData {
 
 	//投票妖精関連
 	public boolean canVotingFairyUse;
-	public long VotingFairyTime;
+	public Calendar VotingFairyStartTime;
+	public Calendar VotingFairyEndTime;
 	public int hasVotingFairyMana;
 	public int VotingFairyRecoveryValue;
 	public int giveApple;
@@ -250,10 +255,11 @@ public class PlayerData {
 		}
 
 		this.canVotingFairyUse = false;
-		this.VotingFairyTime = 0;
 		this.hasVotingFairyMana = 0;
 		this.VotingFairyRecoveryValue = 0;
 		this.giveApple = 0;
+		this.VotingFairyStartTime = null;
+		this.VotingFairyEndTime = null;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -817,4 +823,40 @@ public class PlayerData {
 		return this.templateMap;
 	}
 
+	public String VotingFairyTimeToString(){
+		Calendar cal = this.VotingFairyStartTime;
+		String s = "";
+		if (this.VotingFairyStartTime == null){
+			//設定されてない場合
+			s += ",,,,,";
+		}else{
+			//設定されてる場合
+			Date date = cal.getTime();
+			SimpleDateFormat format = new SimpleDateFormat("yyyy,MM,dd,HH,mm,");
+			s += format.format(date);
+		}
+		return s;
+	}
+
+	public void SetVotingFairyTime(String str,Player p){
+		String[] s = str.split(",", -1);
+		if(s[0].length() > 0 && s[1].length() > 0 && s[2].length() > 0 && s[3].length() > 0 && s[4].length() > 0 ){
+			Calendar startTime = new GregorianCalendar(Integer.parseInt(s[0]),Integer.parseInt(s[1])-1,Integer.parseInt(s[2]),Integer.parseInt(s[3]),Integer.parseInt(s[4]));
+			Calendar EndTime = new GregorianCalendar(Integer.parseInt(s[0]),Integer.parseInt(s[1])-1,Integer.parseInt(s[2]),Integer.parseInt(s[3])+4,Integer.parseInt(s[4])+1);
+			this.VotingFairyStartTime = startTime;
+			this.VotingFairyEndTime = EndTime;
+		}
+		//効果は継続しているか
+		if( this.canVotingFairyUse == true && Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime) == false ){
+			this.canVotingFairyUse = false ;
+			p.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
+		}
+		else if(this.canVotingFairyUse == true){
+			p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "おかえり。" + p.getName() );
+			if(this.hasVotingFairyMana > 0)
+				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "僕はまだ君のマナを回復させられるよ" );
+			else
+				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "ガチャりんごがもう無いからまた渡してくれると嬉しいな" );
+		}
+	}
 }

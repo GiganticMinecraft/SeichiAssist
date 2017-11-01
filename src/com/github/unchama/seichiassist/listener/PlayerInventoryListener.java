@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -740,12 +742,14 @@ public class PlayerInventoryListener implements Listener {
 				player.closeInventory();
 			}
 
+			/*投票ptメニューへ移動
 			else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
 				// 投票リンク表示
 				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
+			*/
 
 			else if(itemstackcurrent.getType().equals(Material.PAPER)){
 				// 運営方針とルールリンク表示
@@ -977,8 +981,8 @@ public class PlayerInventoryListener implements Listener {
 		if(topinventory == null){
 			return;
 		}
-		//インベントリサイズが36でない時終了
-		if(topinventory.getSize() != 36){
+		//インベントリサイズが45でない時終了
+		if(topinventory.getSize() != 45){
 			return;
 		}
 		Player player = (Player)he;
@@ -1014,7 +1018,9 @@ public class PlayerInventoryListener implements Listener {
 						if(playerdata.activeskilldata.skilltype == type
 								&& playerdata.activeskilldata.skillnum == skilllevel){
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-							player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+							player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
+							playerdata.activeskilldata.skilltype = 0 ;
+							playerdata.activeskilldata.skillnum = 0 ;
 						}else{
 							playerdata.activeskilldata.updataSkill(player,type,skilllevel,1);
 							player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  が選択されました");
@@ -1031,7 +1037,9 @@ public class PlayerInventoryListener implements Listener {
 					if(playerdata.activeskilldata.skilltype == type
 							&& playerdata.activeskilldata.skillnum == skilllevel){
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-						player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+						player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
+						playerdata.activeskilldata.skilltype = 0 ;
+						playerdata.activeskilldata.skillnum = 0 ;
 					}else{
 						playerdata.activeskilldata.updataSkill(player,type,skilllevel,1);
 						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  が選択されました");
@@ -1047,7 +1055,9 @@ public class PlayerInventoryListener implements Listener {
 					if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()
 							&& playerdata.activeskilldata.skillnum == skilllevel){
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-						player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+						player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
+						playerdata.activeskilldata.skilltype = 0 ;
+						playerdata.activeskilldata.skillnum = 0 ;
 					}else{
 						playerdata.activeskilldata.updataSkill(player,type,skilllevel,1);
 						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  が選択されました");
@@ -1056,14 +1066,36 @@ public class PlayerInventoryListener implements Listener {
 				}
 			}
 			//CONDENSKILL
-			type = ActiveSkill.CONDENSE.gettypenum();
-			for(skilllevel = 4;skilllevel <= 9 ; skilllevel++){
-				name = ActiveSkill.CONDENSE.getName(skilllevel);
-				if(itemstackcurrent.getType().equals(ActiveSkill.CONDENSE.getMaterial(skilllevel))){
+			//WATER
+			type = ActiveSkill.WATERCONDENSE.gettypenum();
+			for(skilllevel = 7;skilllevel <= 9 ; skilllevel++){
+				name = ActiveSkill.WATERCONDENSE.getName(skilllevel);
+				if(itemstackcurrent.getType().equals(ActiveSkill.WATERCONDENSE.getMaterial(skilllevel))){
 					if(playerdata.activeskilldata.assaulttype == type
 							&& playerdata.activeskilldata.assaultnum == skilllevel){
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-						player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+						player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
+						playerdata.activeskilldata.assaulttype = 0 ;
+						playerdata.activeskilldata.assaultnum = 0 ;
+					}else{
+						playerdata.activeskilldata.updataAssaultSkill(player,type,skilllevel,1);
+						player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + name + "  が選択されました");
+						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+					}
+				}
+			}
+
+			//LAVA
+			type = ActiveSkill.LAVACONDENSE.gettypenum();
+			for(skilllevel = 7;skilllevel <= 9 ; skilllevel++){
+				name = ActiveSkill.LAVACONDENSE.getName(skilllevel);
+				if(itemstackcurrent.getType().equals(ActiveSkill.LAVACONDENSE.getMaterial(skilllevel))){
+					if(playerdata.activeskilldata.assaulttype == type
+							&& playerdata.activeskilldata.assaultnum == skilllevel){
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+						player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
+						playerdata.activeskilldata.assaulttype = 0 ;
+						playerdata.activeskilldata.assaultnum = 0 ;
 					}else{
 						playerdata.activeskilldata.updataAssaultSkill(player,type,skilllevel,1);
 						player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + name + "  が選択されました");
@@ -1078,7 +1110,9 @@ public class PlayerInventoryListener implements Listener {
 			if(itemstackcurrent.getType().equals(ActiveSkill.ARMOR.getMaterial(skilllevel))){
 				if(playerdata.activeskilldata.assaultnum == skilllevel || playerdata.activeskilldata.assaulttype == type){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
+					player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
+					playerdata.activeskilldata.assaulttype = 0 ;
+					playerdata.activeskilldata.assaultnum = 0 ;
 				}else{
 					playerdata.activeskilldata.updataAssaultSkill(player,type,skilllevel,1);
 					player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + "アサルト・アーマー" + "  が選択されました");
@@ -1293,7 +1327,7 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 		//インベントリサイズが36でない時終了
-		if(topinventory.getSize() != 36){
+		if(topinventory.getSize() != 45){
 			return;
 		}
 		Player player = (Player)he;
@@ -1408,7 +1442,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						if(playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.condenskill == 9){
+						if(playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
@@ -1509,7 +1543,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.condenskill == 9){
+						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
@@ -1655,7 +1689,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.condenskill == 9){
+						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
@@ -1663,7 +1697,7 @@ public class PlayerInventoryListener implements Listener {
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ホワイト・ブレス")){
-					skilllevel = 4;
+					skilllevel = 7;
 					skilltype = 4;
 					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
@@ -1672,39 +1706,39 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(3,3) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.condenskill = skilllevel;
+						playerdata.activeskilldata.watercondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アブソリュート・ゼロ")){
-					skilllevel = 5;
+					skilllevel = 8;
 					skilltype = 4;
 					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
+					}else if(playerdata.activeskilldata.watercondenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.condenskill = skilllevel;
+						playerdata.activeskilldata.watercondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ダイアモンド・ダスト")){
-					skilllevel = 6;
+					skilllevel = 9;
 					skilltype = 4;
 					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
+					}else if(playerdata.activeskilldata.watercondenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.condenskill = skilllevel;
+						playerdata.activeskilldata.watercondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
@@ -1712,15 +1746,20 @@ public class PlayerInventoryListener implements Listener {
 					}
 				}else if(itemmeta.getDisplayName().contains("ラヴァ・コンデンセーション")){
 					skilllevel = 7;
-					skilltype = 4;
+					skilltype = 5;
 					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
+					}
+					/*else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}*/
+					else if(playerdata.activeskilldata.breakskill < 3){
+						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(3,3) + "]を習得する必要があります");
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.condenskill = skilllevel;
+						playerdata.activeskilldata.lavacondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
@@ -1728,15 +1767,15 @@ public class PlayerInventoryListener implements Listener {
 					}
 				}else if(itemmeta.getDisplayName().contains("モエラキ・ボールダーズ")){
 					skilllevel = 8;
-					skilltype = 4;
+					skilltype = 5;
 					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
+					}else if(playerdata.activeskilldata.lavacondenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.condenskill = skilllevel;
+						playerdata.activeskilldata.lavacondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
@@ -1744,15 +1783,15 @@ public class PlayerInventoryListener implements Listener {
 					}
 				}else if(itemmeta.getDisplayName().contains("エルト・フェットル")){
 					skilllevel = 9;
-					skilltype = 4;
+					skilltype = 5;
 					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
+					}else if(playerdata.activeskilldata.lavacondenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.condenskill = skilllevel;
+						playerdata.activeskilldata.lavacondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
@@ -4707,6 +4746,13 @@ public class PlayerInventoryListener implements Listener {
     			player.openInventory(MenuInventoryData.getVotingMenuData(player));
 			}
 
+    		else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
+				// 投票リンク表示
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote");
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.closeInventory();
+			}
+
     		//妖精召喚
     		else if(itemstackcurrent.getType().equals(Material.GHAST_TEAR)){
 
@@ -4732,7 +4778,21 @@ public class PlayerInventoryListener implements Listener {
     			}
 
     			//召喚した時間を取り出す
-    			playerdata.VotingFairyTime = Util.getTime();
+    			playerdata.VotingFairyStartTime = new GregorianCalendar(
+    					Calendar.getInstance().get(Calendar.YEAR),
+    					Calendar.getInstance().get(Calendar.MONTH),
+    					Calendar.getInstance().get(Calendar.DATE),
+    					Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+    					Calendar.getInstance().get(Calendar.MINUTE)
+    					);
+
+    			playerdata.VotingFairyEndTime = new GregorianCalendar(
+    					Calendar.getInstance().get(Calendar.YEAR),
+    					Calendar.getInstance().get(Calendar.MONTH),
+    					Calendar.getInstance().get(Calendar.DATE),
+    					(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+4),
+    					(Calendar.getInstance().get(Calendar.MINUTE)+1)
+    					);
 
     			player.sendMessage(ChatColor.GOLD + "妖精を召喚しました") ;
     			player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2) ;
@@ -4770,6 +4830,19 @@ public class PlayerInventoryListener implements Listener {
     			}
     		}
 
+    		//りんご残量確認
+    		else if(itemstackcurrent.getType().equals(Material.BOWL)){
+    			if(playerdata.canVotingFairyUse == true){
+    				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    				VFTR.askApple(player);
+    			}
+    			else {
+	    			player.sendMessage(ChatColor.GOLD + "妖精を召喚してください") ;
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
+					player.closeInventory();
+    			}
+    		}
+
     		//棒メニューに戻る
     		else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
@@ -4796,7 +4869,8 @@ public class PlayerInventoryListener implements Listener {
 	    		}
 	    		else if(itemstackcurrent.getType().equals(Material.EMERALD)){
 	    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	    			playerdata.VotingFairyTime -= 500;
+	    			player.sendMessage(ChatColor.GOLD + "開始時刻: " + Util.showTime(playerdata.VotingFairyStartTime)) ;
+    				player.sendMessage(ChatColor.GOLD + "終了時刻: " + Util.showTime(playerdata.VotingFairyEndTime)) ;
 	    			player.openInventory(MenuInventoryData.getVotingMenuData(player));
 	    		}
     		}
@@ -4856,7 +4930,7 @@ public class PlayerInventoryListener implements Listener {
     			else if(itemmeta.getDisplayName().contains("渡す量を 10 減らす")){
 	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 	        		if(playerdata.giveApple >= 10)
-	        			playerdata.giveApple += 10 ;
+	        			playerdata.giveApple -= 10 ;
 	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
 	    		}
     			else if(itemmeta.getDisplayName().contains("渡す量を 100 減らす")){

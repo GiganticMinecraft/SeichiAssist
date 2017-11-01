@@ -281,7 +281,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
     			VFTR.RecoveryMana(player);
     		}
     		//効果時間中か
-    		if(playerdata.VotingFairyTime + 400 < Util.getTime() && playerdata.canVotingFairyUse == true){
+    		if( playerdata.canVotingFairyUse == true && Util.isVotingFairyPeriod(playerdata.VotingFairyStartTime, playerdata.VotingFairyEndTime) == false ){
     			playerdata.canVotingFairyUse = false ;
     			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "時間だから、僕はこれで失礼するよ");
     			player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
