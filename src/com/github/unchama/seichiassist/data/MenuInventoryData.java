@@ -5244,11 +5244,13 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
 
 		itemstack = new ItemStack(Material.DIAMOND_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.YELLOW + "第1サバイバルサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.YELLOW + "アルカディアサーバ");
+		List<String> lore1 = new ArrayList<>();
+		lore1.add(ChatColor.GRAY + "旧第一サバイバルサーバ");
+		itemmeta.setLore(lore1);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5256,7 +5258,10 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND_SPADE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.YELLOW + "第2サバイバルサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.YELLOW + "エデンサーバ");
+		List<String> lore2 = new ArrayList<>();
+		lore2.add(ChatColor.GRAY + "旧第二サバイバルサーバ");
+		itemmeta.setLore(lore2);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5264,7 +5269,10 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND_AXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.YELLOW + "第3サバイバルサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.YELLOW + "ヴァルハラサーバ");
+		List<String> lore3 = new ArrayList<>();
+		lore3.add(ChatColor.GRAY + "旧第三サバイバルサーバ");
+		itemmeta.setLore(lore3);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5272,7 +5280,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.IRON_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.AQUA + "第1整地専用特設サーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.AQUA + "第1整地専用特設サーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5280,7 +5288,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.GOLD_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.AQUA + "第2整地専用特設サーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.AQUA + "第2整地専用特設サーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5288,7 +5296,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.GRASS);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.WHITE + "クリエイティブサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.WHITE + "クリエイティブサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5296,7 +5304,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.CACTUS);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.DARK_GREEN + "イベントサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.DARK_GREEN + "イベントサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5304,7 +5312,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND_ORE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "第1βテストサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "第1βテストサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5312,7 +5320,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND_ORE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "第2βテストサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "第2βテストサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5320,7 +5328,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "公共施設サーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.GREEN + "公共施設サーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
