@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -20,6 +21,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	//private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private Sql sql = SeichiAssist.plugin.sql;
+	private static Config config = SeichiAssist.config;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
 
@@ -81,7 +83,9 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",arrowskill = " + Integer.toString(playerdata.activeskilldata.arrowskill)
 				+ ",multiskill = " + Integer.toString(playerdata.activeskilldata.multiskill)
 				+ ",breakskill = " + Integer.toString(playerdata.activeskilldata.breakskill)
-				+ ",condenskill = " + Integer.toString(playerdata.activeskilldata.condenskill)
+				//+ ",condenskill = " + Integer.toString(playerdata.activeskilldata.condenskill)
+				+ ",watercondenskill = " + Integer.toString(playerdata.activeskilldata.watercondenskill)
+				+ ",lavacondenskill = " + Integer.toString(playerdata.activeskilldata.lavacondenskill)
 				+ ",effectnum = " + Integer.toString(playerdata.activeskilldata.effectnum)
 				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
 				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
@@ -210,14 +214,28 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				command +=  ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'"
 				//建築
 				+ ",build_lv = " + Integer.toString(playerdata.build_lv_get())
-				+ ",build_count = " + Integer.toString(playerdata.build_count_get())
-				+ ",build_count_flg = " + Byte.toString(playerdata.build_count_flg_get());
+				+ ",build_count = " + playerdata.build_count_get().toString()
+				+ ",build_count_flg = " + Byte.toString(playerdata.build_count_flg_get())
+
+				//投票
+				+ ",canVotingFairyUse = " + Boolean.toString(playerdata.canVotingFairyUse)
+				+ ",newVotingFairyTime = '" + playerdata.VotingFairyTimeToString() + "'"
+				+ ",VotingFairyRecoveryValue = " + Integer.toString(playerdata.VotingFairyRecoveryValue)
+				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana);
 
 				//実績のフラグ(BitSet)保存用変換処理
 				long[] TitleArray = playerdata.TitleFlags.toLongArray();
 		        String[] TitleNums = Arrays.stream(TitleArray).mapToObj(Long::toHexString).toArray(String[]::new);
 		        String FlagString = String.join(",", TitleNums);
 		        command += ",TitleFlags = '" + FlagString + "'" ;
+
+		//グリッド式保護設定保存
+		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
+			command += ",ahead_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getAheadAmount());
+			command += ",behind_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getBehindAmount());
+			command += ",right_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getRightAmount());
+			command += ",left_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getLeftAmount());
+		}
 
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();

@@ -45,7 +45,7 @@ public class lastquitCommand implements TabExecutor{
 			if (lastquit.equals("")) {
 				sender.sendMessage(ChatColor.RED + "失敗");
 				sender.sendMessage(ChatColor.RED + "プレイヤー名やプレイヤー名が変更されていないか確認してください");
-				sender.sendMessage(ChatColor.RED + "プライヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります");
+				sender.sendMessage(ChatColor.RED + "プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります");
 			} else {
 				sender.sendMessage(ChatColor.GREEN + "成功：" + lastquit);
 			}

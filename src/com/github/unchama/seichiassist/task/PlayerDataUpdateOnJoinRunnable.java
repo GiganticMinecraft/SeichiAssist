@@ -3,13 +3,13 @@ package com.github.unchama.seichiassist.task;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerDataUpdateOnJoinRunnable extends BukkitRunnable{
 
@@ -24,13 +24,17 @@ public class PlayerDataUpdateOnJoinRunnable extends BukkitRunnable{
 	final UUID uuid;
 	final String struuid;
 	int i;
+	boolean execLoad;
+	PlayerData loginPlayerData;
 
-	public PlayerDataUpdateOnJoinRunnable(Player _p) {
-		p = _p;
-		name = Util.getName(p);
-		uuid = p.getUniqueId();
+	public PlayerDataUpdateOnJoinRunnable(PlayerData playerData,boolean execLoad) {
+		name = playerData.name;
+		uuid = playerData.uuid;
+		p = Bukkit.getPlayer(uuid);
 		struuid = uuid.toString().toLowerCase();
 		i = 0;
+		this.execLoad = execLoad;
+		this.loginPlayerData = playerData;
 	}
 
 	@Override
@@ -48,6 +52,9 @@ public class PlayerDataUpdateOnJoinRunnable extends BukkitRunnable{
 	 		}else{
 	 			//再試行
 	 			p.sendMessage(ChatColor.YELLOW + "しばらくお待ちください…");
+	 			if(execLoad){
+	 				new LoadPlayerDataTaskRunnable(loginPlayerData).start();
+	 			}
 	 			i++;
 	 			return;
 	 		}

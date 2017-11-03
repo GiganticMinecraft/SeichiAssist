@@ -1,8 +1,15 @@
 package com.github.unchama.seichiassist.data;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -14,15 +21,16 @@ import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
-
-
+import com.github.unchama.seichiassist.util.Util.ChunkType;
 
 
 public class PlayerData {
+	static Config config = SeichiAssist.config;
 	//読み込み済みフラグ
 	public boolean loaded = false;
 	//プレイヤー名
@@ -145,7 +153,7 @@ public class PlayerData {
 	//建築LV
 	private int build_lv;
 	//設置ブロック数
-	private int build_count;
+	private BigDecimal build_count;
 	//設置ブロックサーバー統合フラグ
 	private byte build_count_flg;
 
@@ -154,6 +162,23 @@ public class PlayerData {
 
 	//ハーフブロック破壊抑制用
 	private boolean halfBreakFlag;
+
+	//グリッド式保護関連
+	private int aheadChunk;
+	private int behindChunk;
+	private int rightChunk;
+	private int leftChunk;
+	private boolean canCreateRegion;
+	private int chunkPerGrid;
+	private Map<Integer, GridTemplate> templateMap;
+
+	//投票妖精関連
+	public boolean canVotingFairyUse;
+	public Calendar VotingFairyStartTime;
+	public Calendar VotingFairyEndTime;
+	public int hasVotingFairyMana;
+	public int VotingFairyRecoveryValue;
+	public int giveApple;
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -207,17 +232,34 @@ public class PlayerData {
 		this.p_vote_forT = 0 ;
 		this.giveachvNo = 0 ;
 
-
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
 			this.sub_home[x] = null;
 		}
 		this.build_lv = 1;
-		this.build_count = 0;
+		this.build_count = BigDecimal.ZERO;
 		this.build_count_flg = 0;
 		this.anniversary = false;
 
 		this.halfBreakFlag = false;
+
+		this.aheadChunk = 0;
+		this.behindChunk = 0;
+		this.rightChunk = 0;
+		this.leftChunk = 0;
+		this.canCreateRegion = true;
+		this.chunkPerGrid = 1;
+		this.templateMap = new HashMap<>();
+		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
+			this.templateMap.put(i, new GridTemplate(0, 0, 0, 0));
+		}
+
+		this.canVotingFairyUse = false;
+		this.hasVotingFairyMana = 0;
+		this.VotingFairyRecoveryValue = 0;
+		this.giveApple = 0;
+		this.VotingFairyStartTime = null;
+		this.VotingFairyEndTime = null;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -588,10 +630,10 @@ public class PlayerData {
 	public int build_lv_get(){
 		return build_lv;
 	}
-	public void build_count_set(int count){
+	public void build_count_set(BigDecimal count){
 		build_count = count;
 	}
-	public int build_count_get(){
+	public BigDecimal build_count_get(){
 		return build_count;
 	}
 
@@ -625,6 +667,196 @@ public class PlayerData {
 			halfBreakFlag = false;
 		} else {
 			halfBreakFlag = true;
+		}
+	}
+
+	public Map<ChunkType,Integer> getGridChuckMap() {
+		Map<ChunkType, Integer> chunkMap = new HashMap<>();
+
+		chunkMap.put(ChunkType.AHEAD, this.aheadChunk);
+		chunkMap.put(ChunkType.BEHIND, this.behindChunk);
+		chunkMap.put(ChunkType.RIGHT, this.rightChunk);
+		chunkMap.put(ChunkType.LEFT, this.leftChunk);
+
+		return chunkMap;
+	}
+
+	public int getGridChunkAmount() {
+		return (this.aheadChunk + 1 + this.behindChunk) * (this.rightChunk + 1 + this.leftChunk);
+	}
+
+	/*
+	public void setAheadChunk(int amount) {
+		this.aheadChunk = amount;
+	}
+
+	public void setBehindChunk(int amount) {
+		this.behindChunk = amount;
+	}
+
+	public void setRightChunk(int amount) {
+		this.rightChunk = amount;
+	}
+
+	public void setLeftChunk(int amount) {
+		this.leftChunk = amount;
+	}
+	*/
+
+	public boolean canGridExtend(ChunkType chunkType) {
+		final int LIMIT = config.getGridLimit();
+		Map<ChunkType, Integer> chunkMap = getGridChuckMap();
+
+		//チャンクを拡大すると仮定する
+		final int assumedAmoont = chunkMap.get(chunkType) + this.chunkPerGrid;
+		//合計チャンク再計算値
+		int assumedChunkAmount = 0;
+		//一応すべての拡張値を出しておく
+		final int ahead = chunkMap.get(ChunkType.AHEAD);
+		final int behind = chunkMap.get(ChunkType.BEHIND);
+		final int right = chunkMap.get(ChunkType.RIGHT);
+		final int left = chunkMap.get(ChunkType.LEFT);
+
+		switch (chunkType) {
+			case AHEAD:
+				assumedChunkAmount = (assumedAmoont + 1 + behind) * (right + 1 + left);
+				break;
+			case BEHIND:
+				assumedChunkAmount = (ahead + 1 + assumedAmoont) * (right + 1 + left);
+				break;
+			case RIGHT:
+				assumedChunkAmount = (ahead + 1 + behind) * (assumedAmoont + 1 + left);
+				break;
+			case LEFT:
+				assumedChunkAmount = (ahead + 1 + behind) * (right + 1 + assumedAmoont);
+				break;
+			default:
+				//ここに来ることはありえない
+				Bukkit.getLogger().warning("グリッド式保護で予期せぬ動作[チャンク値仮定]。開発者に報告してください。");
+		}
+
+		if (assumedChunkAmount <= LIMIT) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	public boolean canGridReduce(ChunkType chunkType) {
+		Map<ChunkType, Integer> chunkMap = getGridChuckMap();
+
+		//減らしたと仮定する
+		final int assumedAmount = chunkMap.get(chunkType) - chunkPerGrid;
+		if (assumedAmount < 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public void setChunkAmount(ChunkType chunkType, int amount) {
+		switch (chunkType) {
+			case AHEAD:
+				this.aheadChunk = amount;
+				break;
+			case BEHIND:
+				this.behindChunk = amount;
+				break;
+			case RIGHT:
+				this.rightChunk = amount;
+				break;
+			case LEFT:
+				this.leftChunk = amount;
+				break;
+			default:
+				//わざと何もしない
+		}
+	}
+
+	public void addChunkAmount(ChunkType chunkType, int addAmount) {
+		switch (chunkType) {
+			case AHEAD:
+				this.aheadChunk += addAmount;
+				break;
+			case BEHIND:
+				this.behindChunk += addAmount;
+				break;
+			case RIGHT:
+				this.rightChunk += addAmount;
+				break;
+			case LEFT:
+				this.leftChunk += addAmount;
+				break;
+			default:
+				//わざと何もしない
+		}
+	}
+
+	public void setCanCreateRegion(boolean flag) {
+		this.canCreateRegion = flag;
+	}
+
+	public boolean canCreateRegion() {
+		return this.canCreateRegion;
+	}
+
+	public void toggleChunkPerGrid () {
+		if (this.chunkPerGrid == 1) {
+			this.chunkPerGrid = 10;
+		} else if (this.chunkPerGrid == 10) {
+			this.chunkPerGrid = 100;
+		} else if (this.chunkPerGrid == 100) {
+			this.chunkPerGrid = 1;
+		}
+	}
+
+	public int getChunkPerGrid() {
+		return this.chunkPerGrid;
+	}
+
+	public void setTemplateMap(Map<Integer, GridTemplate> setMap) {
+		this.templateMap = setMap;
+	}
+
+	public Map<Integer, GridTemplate> getTemplateMap() {
+		return this.templateMap;
+	}
+
+	public String VotingFairyTimeToString(){
+		Calendar cal = this.VotingFairyStartTime;
+		String s = "";
+		if (this.VotingFairyStartTime == null){
+			//設定されてない場合
+			s += ",,,,,";
+		}else{
+			//設定されてる場合
+			Date date = cal.getTime();
+			SimpleDateFormat format = new SimpleDateFormat("yyyy,MM,dd,HH,mm,");
+			s += format.format(date);
+		}
+		return s;
+	}
+
+	public void SetVotingFairyTime(String str,Player p){
+		String[] s = str.split(",", -1);
+		if(s[0].length() > 0 && s[1].length() > 0 && s[2].length() > 0 && s[3].length() > 0 && s[4].length() > 0 ){
+			Calendar startTime = new GregorianCalendar(Integer.parseInt(s[0]),Integer.parseInt(s[1])-1,Integer.parseInt(s[2]),Integer.parseInt(s[3]),Integer.parseInt(s[4]));
+			Calendar EndTime = new GregorianCalendar(Integer.parseInt(s[0]),Integer.parseInt(s[1])-1,Integer.parseInt(s[2]),Integer.parseInt(s[3])+4,Integer.parseInt(s[4])+1);
+			this.VotingFairyStartTime = startTime;
+			this.VotingFairyEndTime = EndTime;
+		}
+		//効果は継続しているか
+		if( this.canVotingFairyUse == true && Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime) == false ){
+			this.canVotingFairyUse = false ;
+			p.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
+		}
+		else if(this.canVotingFairyUse == true){
+			p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "おかえり。" + p.getName() );
+			if(this.hasVotingFairyMana > 0)
+				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "僕はまだ君のマナを回復させられるよ" );
+			else
+				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "ガチャりんごがもう無いからまた渡してくれると嬉しいな" );
 		}
 	}
 }

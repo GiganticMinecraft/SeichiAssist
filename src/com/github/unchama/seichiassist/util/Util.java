@@ -1,8 +1,11 @@
 package com.github.unchama.seichiassist.util;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -19,6 +22,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -512,7 +516,123 @@ public class Util {
 		return temp;
 	}
 
+	/**
+	 * GUIメニューアイコン作成用
+	 * @author karayuu
+	 *
+	 * @param material メニューアイコンMaterial, not {@code null}
+	 * @param amount メニューアイコンのアイテム個数
+	 * @param displayName メニューアイコンのDisplayName, not {@code null}
+	 * @param lore メニューアイコンのLore, not {@code null}
+	 * @param isHideFlags 攻撃値・ダメージ値を隠すかどうか(true: 隠す / false: 隠さない)
+	 * @throws IllegalArgumentException Material,DisplayName, Loreのいずれかが {@code null} の時
+	 * @return ItemStack型のメニューアイコン
+	 */
+	public static ItemStack getMenuIcon(Material material, int amount,
+										String displayName, List<String> lore, boolean isHideFlags) {
+		if (material == null || displayName == null || lore == null) {
+			throw new IllegalArgumentException("Material,DisplayName,LoreにNullは指定できません。");
+		}
+		ItemStack menuicon = new ItemStack(material, amount);
+		ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(material);
+		itemMeta.setDisplayName(displayName);
+		itemMeta.setLore(lore);
+		if (isHideFlags) {
+			itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		}
+		menuicon.setItemMeta(itemMeta);
 
+		return menuicon;
+	}
 
+	/**
+	 * GUIメニューアイコン作成用
+	 * @author karayuu
+	 *
+	 * @param material メニューアイコンMaterial, not {@code null}
+	 * @param amount メニューアイコンのアイテム個数
+	 * @param durabity メニューアイコンのダメージ値
+	 * @param displayName メニューアイコンのDisplayName, not {@code null}
+	 * @param lore メニューアイコンのLore, not {@code null}
+	 * @param isHideFlags 攻撃値・ダメージ値を隠すかどうか(true: 隠す / false: 隠さない)
+	 * @throws IllegalArgumentException Material,DisplayName, Loreのいずれかが {@code null} の時
+	 * @return ItemStack型のメニューアイコン
+	 */
+	public static ItemStack getMenuIcon(Material material, int amount, int durabity,
+										String displayName, List<String> lore, boolean isHideFlags) {
+		if (material == null || displayName == null || lore == null) {
+			throw new IllegalArgumentException("Material,DisplayName,LoreにNullは指定できません。");
+		}
+		ItemStack menuicon = new ItemStack(material, amount, (short) durabity);
+		ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(material);
+		itemMeta.setDisplayName(displayName);
+		itemMeta.setLore(lore);
+		if (isHideFlags) {
+			itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		}
+		menuicon.setItemMeta(itemMeta);
 
+		return menuicon;
+	}
+
+	/**
+	 * PlayerDataでチャンク数をゲット・セットするためのenum
+	 */
+	public enum ChunkType {
+		AHEAD,
+		BEHIND,
+		RIGHT,
+		LEFT,
+		;
+	}
+
+	/**
+	 * PlayerDataなどで使用する方角関係のenum
+	 */
+	public enum Direction {
+		NORTH,
+		SOUTH,
+		EAST,
+		WEST,
+		;
+	}
+
+	public static Direction getPlayerDirection(Player player) {
+		double rotation = (player.getLocation().getYaw() + 180) % 360;
+
+		if (rotation < 0) {
+			rotation += 360;
+		}
+
+		//0,360:south 90:west 180:north 270:east
+		if (0.0 <= rotation && rotation < 45.0) {
+			//前が北(North)
+			return Direction.NORTH;
+		} else if (45.0 <= rotation && rotation < 135.0) {
+			//前が東(East)
+			return Direction.EAST;
+		} else if (135.0 <= rotation && rotation < 225.0) {
+			//前が南(South)
+			return Direction.SOUTH;
+		} else if (225.0 <= rotation && rotation < 315.0) {
+			//前が西(West)
+			return Direction.WEST;
+		} else if (315.0 <= rotation && rotation < 360.0) {
+			//前が北(North)
+			return Direction.NORTH;
+		}
+		//ここに到達はありえない。
+		return null;
+	}
+
+	public static String showTime(Calendar cal) {
+		  Date date = cal.getTime();
+		  SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		  return format.format(date);
+		}
+
+	public static boolean isVotingFairyPeriod(Calendar start, Calendar end) {
+		Calendar cur = Calendar.getInstance();
+		return cur.after(start) && cur.before(end);
+	}
 }

@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -123,14 +124,10 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		}
 		this.breaklength = assaultarea.getBreakLength();
 		//壊すフラグを指定
-		if(playerdata.activeskilldata.assaulttype == ActiveSkill.CONDENSE.gettypenum()){
-			if(playerdata.activeskilldata.assaultnum < 7){
-				waterflag = true;
-			}else{
-				lavaflag = true;
-			}
-			condensflag = true;
-
+		if(playerdata.activeskilldata.assaulttype == ActiveSkill.WATERCONDENSE.gettypenum()){
+			waterflag = true;
+		}else if(playerdata.activeskilldata.assaulttype == ActiveSkill.LAVACONDENSE.gettypenum()){
+			lavaflag = true;
 		}else if(playerdata.activeskilldata.assaulttype == ActiveSkill.ARMOR.gettypenum()){
 			breakflag = true;
 		}
@@ -323,11 +320,13 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		if(waterflag){
 			for(int waternum = 0 ; waternum <waterlist.size();waternum++){
 				waterlist.get(waternum).setType(Material.PACKED_ICE);
+				player.incrementStatistic(Statistic.MINE_BLOCK, Material.PACKED_ICE);
 				BreakUtil.logPlace(player,waterlist.get(waternum));
 			}
 		}else if(lavaflag){
 			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
 				lavalist.get(lavanum).setType(Material.MAGMA);
+				player.incrementStatistic(Statistic.MINE_BLOCK, Material.MAGMA);
 				BreakUtil.logPlace(player,lavalist.get(lavanum));
 			}
 		}else if(breakflag){

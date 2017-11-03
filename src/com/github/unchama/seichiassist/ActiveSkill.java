@@ -11,8 +11,9 @@ public enum ActiveSkill{
 	ARROW(1,"","","","エビフライ・ドライブ","ホーリー・ショット","ツァーリ・ボンバ","アーク・ブラスト","ファンタズム・レイ","スーパー・ノヴァ",""),
 	MULTI(2,"","","","トム・ボウイ","サンダー・ストーム","スターライト・ブレイカー","アース・ディバイド","ヘブン・ゲイボルグ","ディシジョン",""),
 	BREAK(3,"デュアル・ブレイク","トリアル・ブレイク","エクスプロージョン","ミラージュ・フレア","ドッ・カーン","ギガンティック・ボム","ブリリアント・デトネーション","レムリア・インパクト","エターナル・ヴァイス",""),
-	CONDENSE(4,"","","","ホワイト・ブレス","アブソリュート・ゼロ","ダイアモンド・ダスト","ラヴァ・コンデンセーション","モエラキ・ボールダーズ","エルト・フェットル",""),
-	ARMOR(5,"","","","","","","","","","アサルト・アーマー"),
+	WATERCONDENSE(4,"","","","","","","ホワイト・ブレス","アブソリュート・ゼロ","ダイアモンド・ダスト",""),
+	LAVACONDENSE(5,"","","","","","","ラヴァ・コンデンセーション","モエラキ・ボールダーズ","エルト・フェットル",""),
+	ARMOR(6,"","","","","","","","","","アサルト・アーマー"),
 ;
 	private int typenum;
 	private String lv1name;
@@ -181,17 +182,21 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "CONDENSE":
+		case "WATERCONDENSE":
 			switch(skilllevel){
-			case 4:
+			case 7:
 				breaklength.setXYZ(7, 7, 7);
 				break;
-			case 5:
+			case 8:
 				breaklength.setXYZ(9, 9, 9);
 				break;
-			case 6:
+			case 9:
 				breaklength.setXYZ(11, 11, 11);
 				break;
+			}
+			break;
+		case "LAVACONDENSE":
+			switch(skilllevel){
 			case 7:
 				breaklength.setXYZ(7, 7, 7);
 				break;
@@ -338,7 +343,8 @@ public enum ActiveSkill{
 			default:
 				break;
 			}
-		}else if(typenum == ActiveSkill.CONDENSE.gettypenum()){
+		}
+		/*else if(typenum == ActiveSkill.CONDENSE.gettypenum()){
 			switch(skilllevel){
 			case 4:
 				exp = 40;
@@ -357,6 +363,35 @@ public enum ActiveSkill{
 				break;
 			case 9:
 				exp = 300;
+				break;
+			default:
+				break;
+			}
+		}*/
+		else if(typenum == ActiveSkill.WATERCONDENSE.gettypenum()){
+			switch(skilllevel){
+			case 7:
+				exp = 150;
+				break;
+			case 8:
+				exp = 400;
+				break;
+			case 9:
+				exp = 750;
+				break;
+			default:
+				break;
+			}
+		}else if(typenum == ActiveSkill.LAVACONDENSE.gettypenum()){
+			switch(skilllevel){
+			case 7:
+				exp = 100;
+				break;
+			case 8:
+				exp = 200;
+				break;
+			case 9:
+				exp = 400;
 				break;
 			default:
 				break;
@@ -508,17 +543,21 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "CONDENSE":
+		case "WATERCONDENSE":
 			switch(skilllevel){
-			case 4:
+			case 7:
 				material = Material.SNOW_BLOCK;
 				break;
-			case 5:
+			case 8:
 				material = Material.ICE;
 				break;
-			case 6:
+			case 9:
 				material = Material.PACKED_ICE;
 				break;
+			}
+			break;
+		case "LAVACONDENSE":
+			switch(skilllevel){
 			case 7:
 				material = Material.NETHERRACK;
 				break;
