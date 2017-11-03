@@ -562,7 +562,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "不必要な各種鉱石を"
 				, ChatColor.RESET + "" + ChatColor.DARK_RED + "交換券" + ChatColor.RESET + ChatColor.GREEN + "と交換できます"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "出てきたインベントリ―に"
-				, ChatColor.RESET + "" +  ChatColor.GREEN + "交換したい景品を入れて"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "交換したい鉱石を入れて"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "escキーを押してください"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "たまにアイテムが消失するから"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "大事なものはいれないでネ"
