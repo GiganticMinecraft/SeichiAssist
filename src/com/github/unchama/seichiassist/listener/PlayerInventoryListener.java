@@ -753,14 +753,14 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType().equals(Material.PAPER)){
 				// 運営方針とルールリンク表示
-				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "http://seichi.click/d/%b1%bf%b1%c4%ca%fd%bf%cb%a4%c8%a5%eb%a1%bc%a5%eb");
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://seichi.click/wiki/%E9%81%8B%E5%96%B6%E6%96%B9%E9%87%9D%E3%81%A8%E3%83%AB%E3%83%BC%E3%83%AB");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.MAP)){
 				// 鯖マップリンク表示
-				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "http://seichi.click/d/DynmapLinks");
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://seichi.click/wiki/DynmapLinks");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 
