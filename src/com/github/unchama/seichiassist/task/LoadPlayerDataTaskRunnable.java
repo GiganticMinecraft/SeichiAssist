@@ -19,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
@@ -29,7 +30,7 @@ import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 
-public class LoadPlayerDataTaskRunnable extends Thread{
+public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -68,6 +69,7 @@ public class LoadPlayerDataTaskRunnable extends Thread{
 		//対象プレイヤーがオフラインなら処理終了
 		if(SeichiAssist.plugin.getServer().getPlayer(uuid) == null){
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "はオフラインの為取得処理を中断");
+			cancel();
 			return;
 		}
 		//sqlコネクションチェック
@@ -92,14 +94,17 @@ public class LoadPlayerDataTaskRunnable extends Thread{
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
 			e.printStackTrace();
+			cancel();
 			return;
 		}
 
  		if(i >= 4&&flag){
  			//強制取得実行
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "のplayerdata強制取得実行");
+ 			cancel();
  		}else if(!flag){
  			//flagが折れてたので普通に取得実行
+ 			cancel();
  		}else{
  			//再試行
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "のloginflag=false待機…(" + (i+1) + "回目)");
@@ -118,6 +123,7 @@ public class LoadPlayerDataTaskRunnable extends Thread{
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
 			e.printStackTrace();
+			cancel();
 			return;
 		}
 
