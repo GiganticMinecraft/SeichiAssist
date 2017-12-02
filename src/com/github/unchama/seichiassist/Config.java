@@ -207,4 +207,28 @@ public class Config{
 	public int getRoadBlockDamage() {
 		return config.getInt("road_blockdamage");
 	}
+
+	public String getGivingNewYearSobaDay() {
+		return config.getString("NewYearEvent.GivingNewYearSobaDay");
+	}
+
+	public String getNewYearSobaYear() {
+		return config.getString("NewYearEvent.NewYearSobaYear");
+	}
+
+	public String getDropNewYearBagStartDay() {
+		return config.getString("NewYearEvent.DropNewYearBagStartDay");
+	}
+
+	public String getDropNewYearBagEndDay() {
+		return config.getString("NewYearEvent.DropNewYearBagEndDay");
+	}
+
+	public int getNewYearDropProbability() {
+		return config.getInt("NewYearEvent.NewYearBagDropProbability");
+	}
+
+	public String getNewYear() {
+		return config.getString("NewYearEvent.NewYear");
+	}
 }
