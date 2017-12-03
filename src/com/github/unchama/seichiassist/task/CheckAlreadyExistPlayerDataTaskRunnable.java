@@ -105,12 +105,13 @@ public class CheckAlreadyExistPlayerDataTaskRunnable extends BukkitRunnable{
 			playermap.put(uuid, playerData);
 
 			//ログイン時init処理
-			new PlayerDataUpdateOnJoinRunnable(playerData,false).runTaskTimer(plugin, 0, 20);
+			new PlayerDataUpdateOnJoinRunnable(playerData).runTaskTimer(plugin, 0, 20);
 
 		}else if(count == 1){
 			//uuidが存在するときの処理
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + name + "のプレイヤーデータ読み込み開始");
-			new PlayerDataUpdateOnJoinRunnable(playerData,true).runTaskTimer(plugin, 0, 20);
+			new LoadPlayerDataTaskRunnable(playerData).runTaskTimerAsynchronously(plugin, 0, 20);
+			new PlayerDataUpdateOnJoinRunnable(playerData).runTaskTimer(plugin, 0, 20);
 
 		}else{
 			//mysqlに該当するplayerdataが2個以上ある時エラーを吐く
