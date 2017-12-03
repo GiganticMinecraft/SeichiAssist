@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist;
 
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.List;
+
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class Config{
 	private static FileConfiguration config;
@@ -206,5 +207,8 @@ public class Config{
 
 	public int getRoadBlockDamage() {
 		return config.getInt("road_blockdamage");
+	}
+	public int getContributeAddedMana() {
+		return config.getInt("contribute_added_mana");
 	}
 }

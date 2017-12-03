@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -424,7 +425,11 @@ public class Sql{
 				//",add column if not exists VotingFairyTime bigint default 0" +//
 				",add column if not exists newVotingFairyTime varchar(" + SeichiAssist.VOTE_FAIRYTIME_DATASIZE + ") default ''" +//
 				",add column if not exists VotingFairyRecoveryValue int default 0" +//
-				",add column if not exists hasVotingFairyMana int default 0";
+				",add column if not exists hasVotingFairyMana int default 0"+//
+
+				//貢献pt関連
+				",add column if not exists contribute_point int default 0"+//
+				",add column if not exists added_mana int default 0";
 
 				for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
 					command += ",add column if not exists ahead_" + i + " int default 0";
@@ -1301,6 +1306,42 @@ public class Sql{
 		}
 		if (!putCommand(command)) {
 			Bukkit.getLogger().warning("sql failed. -> setAnniversary");
+			return false;
+		}
+		return true;
+	}
+
+	public boolean setContribute(CommandSender sender, String targetName, int p){
+
+		int point = 0;
+
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String select = "SELECT contribute_point FROM " + db + "." + table + " " +
+				"WHERE name LIKE '" + targetName + "'";
+
+		// selectで確認
+ 		try {
+			rs = stmt.executeQuery(select);
+			// 初回のnextがnull→データが1件も無い場合
+			if (!rs.next()) {
+				sender.sendMessage(ChatColor.RED + "" + targetName + " はデータベースに登録されていません");
+				return false;
+			}
+			//今までのポイントを加算して計算
+			point = p + rs.getInt("contribute_point");
+
+			rs.close();
+
+			String update = "UPDATE " + db + "." + table + " " +
+	 				" SET contribute_point = " + Integer.toString(point) +
+	 				" WHERE name LIKE '" + targetName + "'";
+
+			stmt.executeUpdate(update);
+
+		} catch (SQLException e) {
+			sender.sendMessage(ChatColor.RED + "貢献度ptの変更に失敗しました");
+			Bukkit.getLogger().warning(Util.getName(targetName) + " sql failed. -> contribute_point");
+			e.printStackTrace();
 			return false;
 		}
 		return true;

@@ -221,7 +221,10 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",canVotingFairyUse = " + Boolean.toString(playerdata.canVotingFairyUse)
 				+ ",newVotingFairyTime = '" + playerdata.VotingFairyTimeToString() + "'"
 				+ ",VotingFairyRecoveryValue = " + Integer.toString(playerdata.VotingFairyRecoveryValue)
-				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana);
+				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana)
+
+				//貢献度pt
+				+",added_mana = " + Integer.toString(playerdata.added_mana);
 
 				//実績のフラグ(BitSet)保存用変換処理
 				long[] TitleArray = playerdata.TitleFlags.toLongArray();
@@ -236,7 +239,6 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 			command += ",right_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getRightAmount());
 			command += ",left_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getLeftAmount());
 		}
-
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 		for(int i = 0; i < activeskilleffect.length ; i++){
@@ -301,5 +303,4 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
  			return;
  		}*/
 	}
-
 }

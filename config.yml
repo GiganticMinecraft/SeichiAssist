@@ -484,3 +484,5 @@ space_height: 5
 road_blockid: 98
 #道のブロックダメージ値
 road_blockdamage: 0
+#貢献度1当たりのマナ増加量
+contribute_added_mana: 10
