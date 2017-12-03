@@ -180,15 +180,13 @@ public class PlayerData {
 	public int VotingFairyRecoveryValue;
 	public int giveApple;
 
-<<<<<<< HEAD
 	//貢献度pt
 	public int added_mana;
 	public int contribute_point;
-=======
+
 	//正月イベント用
 	public boolean hasNewYearSobaGive;
 	public int newYearBagAmount;
->>>>>>> refs/remotes/unchama/master
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -271,13 +269,11 @@ public class PlayerData {
 		this.VotingFairyStartTime = null;
 		this.VotingFairyEndTime = null;
 
-<<<<<<< HEAD
 		this.added_mana = 0;
 		this.contribute_point = 0;
-=======
+
 		this.hasNewYearSobaGive = false;
 		this.newYearBagAmount = 0;
->>>>>>> refs/remotes/unchama/master
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新

@@ -208,10 +208,10 @@ public class Config{
 	public int getRoadBlockDamage() {
 		return config.getInt("road_blockdamage");
 	}
-<<<<<<< HEAD
+
 	public int getContributeAddedMana() {
 		return config.getInt("contribute_added_mana");
-=======
+	}
 
 	public String getGivingNewYearSobaDay() {
 		return config.getString("NewYearEvent.GivingNewYearSobaDay");
@@ -235,6 +235,5 @@ public class Config{
 
 	public String getNewYear() {
 		return config.getString("NewYearEvent.NewYear");
->>>>>>> refs/remotes/unchama/master
 	}
 }
