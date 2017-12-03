@@ -27,6 +27,7 @@ import org.bukkit.scheduler.BukkitTask;
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.AchieveCommand;
 import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
+import com.github.unchama.seichiassist.commands.contributeCommand;
 import com.github.unchama.seichiassist.commands.effectCommand;
 import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.lastquitCommand;
@@ -625,6 +626,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("mebius",new mebiusCommand(plugin));
 		commandlist.put("unlockachv", new AchieveCommand(plugin));
 		commandlist.put("halfguard", new HalfBlockProtectCommand(plugin));
+		commandlist.put("contribute", new contributeCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);

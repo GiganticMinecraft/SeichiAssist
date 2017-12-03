@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist.data;
 
 
 
+import java.util.UUID;
+
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.boss.BarColor;
@@ -35,7 +37,7 @@ public class Mana {
 		//現在のレベルでのマナ上限値を計算しバーに表示
 		//mの値は既に得られているはず。
 		this.loadflag = true;
-		this.calcMaxMana(level);
+		this.calcMaxMana(player, level);
 		displayMana(player,level);
 
 	}
@@ -49,7 +51,7 @@ public class Mana {
 		manabar = player.getServer().createBossBar(ChatColor.AQUA + "" + ChatColor.BOLD + "マナ(" + Util.Decimal(m) + "/" + max + ")", BarColor.BLUE, BarStyle.SOLID);
 
 		if(m/max < 0.0 || m/max > 1.0){
-			reset(level);
+			reset(player, level);
 			player.sendMessage(ChatColor.RED + "不正な値がマナとして保存されていたためリセットしました。");
 		}
 		if (!(max == 0||max < 0)){
@@ -57,8 +59,8 @@ public class Mana {
 		manabar.addPlayer(player);
 		}
 	}
-	private void reset(int level) {
-		this.calcMaxMana(level);
+	private void reset(Player player, int level) {
+		this.calcMaxMana(player, level);
 		if(this.m < 0.0)this.m = 0;
 		if(this.m > max)this.m = max;
 	}
@@ -69,7 +71,7 @@ public class Mana {
 	public void increaseMana(double i,Player player,int level){
 		this.m += i;
 		if(m > max) m = max;
-		displayMana(player,level);
+		displayMana(player, level);
 	}
 	public void decreaseMana(double d,Player player,int level){
 		this.m -= d;
@@ -89,11 +91,17 @@ public class Mana {
 	}
 	//レベルアップするときに実行したい関数
 	public void LevelUp(Player player,int level){
-		calcMaxMana(level);
+		calcMaxMana(player, level);
 		fullMana(player,level);
 	}
 	//マナ最大値を計算する処理
-	public void calcMaxMana(int level){
+	public void calcMaxMana(Player player, int level){
+
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//playerdataを取得
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+
 		if(SeichiAssist.DEBUG){
 			max = 100000;
 			return;
@@ -117,6 +125,9 @@ public class Mana {
 			}
 			t_max += increase;
 		}
+		//貢献度ptの上昇値
+		t_max += playerdata.added_mana * SeichiAssist.config.getContributeAddedMana();
+
 		this.max = t_max;
 		return;
 	}
@@ -129,7 +140,13 @@ public class Mana {
 	 * 最大マナ
 	 */
 	//マナ最大値を計算する処理
-	public double calcMaxManaOnly(int level){
+	public double calcMaxManaOnly(Player player, int level){
+
+		//UUIDを取得
+		UUID uuid = player.getUniqueId();
+		//playerdataを取得
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+
 		/*
 		if(SeichiAssist.DEBUG){
 			max = 100000;
@@ -155,6 +172,9 @@ public class Mana {
 			}
 			t_max += increase;
 		}
+		//貢献度ptの上昇値
+		t_max += playerdata.added_mana * SeichiAssist.config.getContributeAddedMana();
+
 		max=t_max;
 		return t_max;
 	}
@@ -175,5 +195,4 @@ public class Mana {
 	public boolean isloaded() {
 		return this.loadflag;
 	}
-
 }

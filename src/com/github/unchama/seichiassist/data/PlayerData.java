@@ -180,6 +180,10 @@ public class PlayerData {
 	public int VotingFairyRecoveryValue;
 	public int giveApple;
 
+	//貢献度pt
+	public int added_mana;
+	public int contribute_point;
+
 	//正月イベント用
 	public boolean hasNewYearSobaGive;
 	public int newYearBagAmount;
@@ -264,6 +268,9 @@ public class PlayerData {
 		this.giveApple = 0;
 		this.VotingFairyStartTime = null;
 		this.VotingFairyEndTime = null;
+
+		this.added_mana = 0;
+		this.contribute_point = 0;
 
 		this.hasNewYearSobaGive = false;
 		this.newYearBagAmount = 0;
@@ -853,17 +860,36 @@ public class PlayerData {
 			this.VotingFairyStartTime = startTime;
 			this.VotingFairyEndTime = EndTime;
 		}
+	}
+
+	public void isVotingFairy(Player p){
 		//効果は継続しているか
-		if( this.canVotingFairyUse == true && Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime) == false ){
-			this.canVotingFairyUse = false ;
-			p.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
+			if( this.canVotingFairyUse == true && Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime) == false ){
+				this.canVotingFairyUse = false ;
+				p.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
+			}
+			else if(this.canVotingFairyUse == true){
+				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "おかえり。" + p.getName() );
+				if(this.hasVotingFairyMana > 0)
+					p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "僕はまだ君のマナを回復させられるよ" );
+				else
+					p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "ガチャりんごがもう無いからまた渡してくれると嬉しいな" );
+			}
+	}
+
+	public void isContribute(Player p,int addMana){
+		Mana mana = new Mana();
+
+		//負数(入力ミスによるやり直し中プレイヤーがオンラインだった場合)の時
+		if(addMana < 0){
+			p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "入力者のミスによって得た不正なマナを" + (-10*addMana) +"分減少させました.");
+			p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "申し訳ございません.");
+		}else{
+			p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "運営からあなたの整地鯖への貢献報酬として");
+			p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "マナの上限値が" + 10*addMana + "上昇しました．(永久)");
 		}
-		else if(this.canVotingFairyUse == true){
-			p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "おかえり。" + p.getName() );
-			if(this.hasVotingFairyMana > 0)
-				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "僕はまだ君のマナを回復させられるよ" );
-			else
-				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "ガチャりんごがもう無いからまた渡してくれると嬉しいな" );
-		}
+		this.added_mana += addMana;
+
+		mana.calcMaxMana(p, this.level);
 	}
 }

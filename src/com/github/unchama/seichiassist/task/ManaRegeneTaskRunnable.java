@@ -21,7 +21,7 @@ public class ManaRegeneTaskRunnable extends BukkitRunnable {
 		Mana mana = pd.activeskilldata.mana;
 		int lv = pd.level;
 		// 最大マナを取得する
-		double max = mana.calcMaxManaOnly(pd.level);
+		double max = mana.calcMaxManaOnly(p, pd.level);
 		// マナを1%回復する
 		mana.increaseMana(max * 0.01, p, lv);
 	}

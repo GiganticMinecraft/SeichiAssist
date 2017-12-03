@@ -485,6 +485,9 @@ road_blockid: 98
 #道のブロックダメージ値
 road_blockdamage: 0
 
+#貢献度1当たりのマナ増加量
+contribute_added_mana: 10
+
 #お正月イベント関連(ここの設定を変更することで毎年使いまわしが可能です。)
 #日付は必ず"西暦4桁-月2桁-日2桁"で入力すること!!
 NewYearEvent:
