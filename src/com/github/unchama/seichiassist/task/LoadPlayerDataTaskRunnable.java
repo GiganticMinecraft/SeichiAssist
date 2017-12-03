@@ -297,6 +297,9 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 				}
 				playerdata.setTemplateMap(saveMap);
 
+				//正月イベント用
+				playerdata.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive");
+				playerdata.newYearBagAmount = rs.getInt("newYearBagAmount");
 			  }
 			rs.close();
 		} catch (SQLException | IOException e) {
