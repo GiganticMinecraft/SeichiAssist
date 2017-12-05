@@ -59,7 +59,7 @@ public class NewYearBagListener implements Listener {
         return check == 0;
     }
 
-    private ItemStack getNewYearBag() {
+    public static ItemStack getNewYearBag() {
         ItemStack newYearBag = new ItemStack(Material.PAPER);
         ItemMeta newYearBagMeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
         newYearBagMeta.setDisplayName(ChatColor.AQUA + "お年玉袋");
@@ -68,7 +68,7 @@ public class NewYearBagListener implements Listener {
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.RESET + "新年あけましておめでとうございます");
         lore.add(ChatColor.RESET + "新年をお祝いして" + ChatColor.RED + "" + ChatColor.UNDERLINE + "お年玉袋" + ChatColor.RESET + "をプレゼント！");
-        lore.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "「公共施設サーバ」の村人で");
+        lore.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "「各サーバスポーンワールド」の村人で");
         lore.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "様々なアイテムに交換可能です。");
         newYearBagMeta.setLore(lore);
         newYearBag.setItemMeta(newYearBagMeta);

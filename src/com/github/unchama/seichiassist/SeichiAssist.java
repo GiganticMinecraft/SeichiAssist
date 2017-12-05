@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.commands.*;
 import com.github.unchama.seichiassist.listener.*;
 import com.github.unchama.seichiassist.listener.newyearevent.*;
 import org.bukkit.Bukkit;
@@ -626,6 +627,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("mebius",new mebiusCommand(plugin));
 		commandlist.put("unlockachv", new AchieveCommand(plugin));
 		commandlist.put("halfguard", new HalfBlockProtectCommand(plugin));
+		commandlist.put("event", new EventCommand(plugin));
 		commandlist.put("contribute", new contributeCommand(plugin));
 
 		//リスナーの登録
