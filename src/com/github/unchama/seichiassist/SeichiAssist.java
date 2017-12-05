@@ -26,8 +26,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
-<<<<<<< HEAD
-=======
 import com.github.unchama.seichiassist.commands.AchieveCommand;
 import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
 import com.github.unchama.seichiassist.commands.contributeCommand;
@@ -40,7 +38,6 @@ import com.github.unchama.seichiassist.commands.rmpCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.commands.shareinvCommand;
 import com.github.unchama.seichiassist.commands.stickCommand;
->>>>>>> 4ae959bc652cb70417319873ae6bbcf31a1aad1b
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
