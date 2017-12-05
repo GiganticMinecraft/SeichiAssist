@@ -26,6 +26,21 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
+<<<<<<< HEAD
+=======
+import com.github.unchama.seichiassist.commands.AchieveCommand;
+import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
+import com.github.unchama.seichiassist.commands.contributeCommand;
+import com.github.unchama.seichiassist.commands.effectCommand;
+import com.github.unchama.seichiassist.commands.gachaCommand;
+import com.github.unchama.seichiassist.commands.lastquitCommand;
+import com.github.unchama.seichiassist.commands.levelCommand;
+import com.github.unchama.seichiassist.commands.mebiusCommand;
+import com.github.unchama.seichiassist.commands.rmpCommand;
+import com.github.unchama.seichiassist.commands.seichiCommand;
+import com.github.unchama.seichiassist.commands.shareinvCommand;
+import com.github.unchama.seichiassist.commands.stickCommand;
+>>>>>>> 4ae959bc652cb70417319873ae6bbcf31a1aad1b
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -616,6 +631,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("unlockachv", new AchieveCommand(plugin));
 		commandlist.put("halfguard", new HalfBlockProtectCommand(plugin));
 		commandlist.put("event", new EventCommand(plugin));
+		commandlist.put("contribute", new contributeCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);

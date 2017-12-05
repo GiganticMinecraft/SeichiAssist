@@ -753,14 +753,14 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType().equals(Material.PAPER)){
 				// 運営方針とルールリンク表示
-				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "http://seichi.click/d/%b1%bf%b1%c4%ca%fd%bf%cb%a4%c8%a5%eb%a1%bc%a5%eb");
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://seichi.click/wiki/%E9%81%8B%E5%96%B6%E6%96%B9%E9%87%9D%E3%81%A8%E3%83%AB%E3%83%BC%E3%83%AB");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.MAP)){
 				// 鯖マップリンク表示
-				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "http://seichi.click/d/DynmapLinks");
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://seichi.click/wiki/DynmapLinks");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 
@@ -1742,6 +1742,11 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
+						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9){
+							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
+							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
+							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
+						}
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ラヴァ・コンデンセーション")){
@@ -1795,7 +1800,7 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
 						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
-						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.multiskill == 9){
+						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
 							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");

@@ -60,14 +60,14 @@ public class VotingFairyTaskRunnable {
 
 			//プレイヤーが90レベル未満のとき
 			if(playerdata.level < 90){
-				playerdata.hasVotingFairyMana = playerdata.giveApple * 300;
+				playerdata.hasVotingFairyMana += playerdata.giveApple * 300;
 			}
 			//175未満のとき
 			else if(playerdata.level < 175){
-				playerdata.hasVotingFairyMana = playerdata.giveApple * 200;
+				playerdata.hasVotingFairyMana += playerdata.giveApple * 200;
 			}
 			else{
-				playerdata.hasVotingFairyMana = playerdata.giveApple * 100;
+				playerdata.hasVotingFairyMana += playerdata.giveApple * 100;
 			}
 			playerdata.minestack.setNum(227, playerdata.minestack.getNum(227) - playerdata.giveApple);
 			player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2) ;
