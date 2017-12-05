@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.commands.*;
 import com.github.unchama.seichiassist.listener.*;
 import com.github.unchama.seichiassist.listener.newyearevent.*;
 import org.bukkit.Bukkit;
@@ -25,17 +26,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
-import com.github.unchama.seichiassist.commands.AchieveCommand;
-import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
-import com.github.unchama.seichiassist.commands.effectCommand;
-import com.github.unchama.seichiassist.commands.gachaCommand;
-import com.github.unchama.seichiassist.commands.lastquitCommand;
-import com.github.unchama.seichiassist.commands.levelCommand;
-import com.github.unchama.seichiassist.commands.mebiusCommand;
-import com.github.unchama.seichiassist.commands.rmpCommand;
-import com.github.unchama.seichiassist.commands.seichiCommand;
-import com.github.unchama.seichiassist.commands.shareinvCommand;
-import com.github.unchama.seichiassist.commands.stickCommand;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -625,6 +615,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("mebius",new mebiusCommand(plugin));
 		commandlist.put("unlockachv", new AchieveCommand(plugin));
 		commandlist.put("halfguard", new HalfBlockProtectCommand(plugin));
+		commandlist.put("event", new EventCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);

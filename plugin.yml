@@ -58,3 +58,9 @@ commands:
       usage: /<command>
       permission: multiseichiplugin.halfguard
       permission-message: You don't have <permission>
+  event:
+      description: This is New Year Event command.
+      usage: /<command> get
+      permission: multiseichiplugin.event
+      default-permission: OP
+      permission-message: You don't have <permission>

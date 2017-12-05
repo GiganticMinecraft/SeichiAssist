@@ -39,7 +39,7 @@ public class NewYearsEvent implements Listener {
             Date givingSobaDay = dateFormat.parse(config.getGivingNewYearSobaDay());
             Calendar givingSobaCal = Calendar.getInstance();
             givingSobaCal.setTime(givingSobaDay);
-            if (now.get(Calendar.MONTH) == givingSobaCal.get(Calendar.MONTH)) {
+            if (now.get(Calendar.MONTH) == givingSobaCal.get(Calendar.MONTH) && now.get(Calendar.DATE) == givingSobaCal.get(Calendar.DATE)) {
                 //「年越し蕎麦」配布処理はこのクラス内に
                 plugin.getServer().getPluginManager().registerEvents(this, plugin);
             }
