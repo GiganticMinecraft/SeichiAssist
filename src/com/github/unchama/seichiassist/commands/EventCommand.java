@@ -29,12 +29,14 @@ public class EventCommand implements TabExecutor {
 
         if (args.length == 0) {
             return false;
-        } else if (args[0].equalsIgnoreCase("give")) {
+        } else if (args[0].equalsIgnoreCase("get")) {
             Player player = (Player) commandSender;
             if (Util.isPlayerInventryFill(player)) {
                 Util.dropItem(player, NewYearBagListener.getNewYearBag());
+                Util.dropItem(player, NewYearItemListener.getNewYearApple());
             } else {
                 Util.addItem(player, NewYearBagListener.getNewYearBag());
+                Util.addItem(player, NewYearItemListener.getNewYearApple());
             }
             return true;
         }

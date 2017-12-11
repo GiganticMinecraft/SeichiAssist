@@ -236,4 +236,12 @@ public class Config{
 	public String getNewYear() {
 		return config.getString("NewYearEvent.NewYear");
 	}
+
+	public String getNewYearAppleStartDay() {
+		return config.getString("NewYearEvent.NewYearAppleStartDay");
+	}
+
+	public String getNewYearAppleEndDay() {
+		return config.getString("NewYearEvent.NewYearAppleEndDay");
+	}
 }

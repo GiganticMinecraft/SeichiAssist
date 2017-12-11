@@ -40,6 +40,11 @@ public class NewYearBagListener implements Listener {
         Player player = event.getPlayer();
         PlayerData playerData = playerMap.get(player.getUniqueId());
 
+        //整地ワールドのみドロップ許可
+        if (!Util.isSeichiWorld(player)) {
+            return;
+        }
+
         if (isDrop()) {
             if (Util.isPlayerInventryFill(player)) {
                 Util.dropItem(player, getNewYearBag());
