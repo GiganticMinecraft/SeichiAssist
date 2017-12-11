@@ -45,9 +45,15 @@ public class NewYearsEvent implements Listener {
             }
             Date dropBagDay_Start = dateFormat.parse(config.getDropNewYearBagStartDay());
             Date dropBagDay_End = dateFormat.parse(config.getDropNewYearBagEndDay());
-            if (nowDay.after(dropBagDay_Start) && nowDay.before(dropBagDay_End)) {
+            if (isHeld(nowDay, dropBagDay_Start, dropBagDay_End)) {
                 //「お年玉袋」配布処理は他クラス
                 plugin.getServer().getPluginManager().registerEvents(new NewYearBagListener(), plugin);
+            }
+            Date useAppleDay_Start = dateFormat.parse(config.getNewYearAppleStartDay());
+            Date useAppleDay_End = dateFormat.parse(config.getNewYearAppleEndDay());
+            if (isHeld(nowDay, useAppleDay_Start, useAppleDay_End)) {
+                //「正月リンゴ」配布処理は他クラス
+                plugin.getServer().getPluginManager().registerEvents(new NewYearItemListener(), plugin);
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -62,9 +68,8 @@ public class NewYearsEvent implements Listener {
     @EventHandler
     public void giveNewYearSobaToPlayer(PlayerJoinEvent event) {
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncDelayedTask(plugin, () -> {
-            giveNewYearSobaToPlayer(event.getPlayer(), config.getNewYearSobaYear());
-        }, 200L);
+        scheduler.scheduleSyncDelayedTask(plugin, () ->
+                giveNewYearSobaToPlayer(event.getPlayer(), config.getNewYearSobaYear()), 200L);
     }
 
     private void giveNewYearSobaToPlayer(Player player, String year) {
@@ -84,5 +89,26 @@ public class NewYearsEvent implements Listener {
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
             playerData.hasNewYearSobaGive = true;
         }
+    }
+
+    /**
+     * 現在の日付が開催日であるかどうか返します。(開始日0:00～終了日23:59まで)
+     * @param nowDay 現在日
+     * @param startDay 開始日
+     * @param endDay 終了日
+     * @return startDayからendDayの範囲内にあるか(startDay, endDayを含む)
+     */
+    public static boolean isHeld(Date nowDay, Date startDay, Date endDay) {
+        /*
+        //a.compareTo(b) -> aとb同じ(0) aが後(>0) aが前(<0)
+        //nowDayが後の時>0
+        int start_diff = startDay.compareTo(nowDay);
+        //nowDayが前の時<0
+        int end_diff = nowDay.compareTo(endDay);
+
+        //nowDayがstartDay,endDayの範囲内にある(startDay,endDayを含む)ときtrueを返す
+        return start_diff >= 0 && end_diff <= 0;
+        */
+        return !(nowDay.before(startDay) || nowDay.after(endDay));
     }
 }

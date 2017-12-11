@@ -502,3 +502,6 @@ NewYearEvent:
   NewYearBagDropProbability: 500
   #(お年玉袋ItemNBT識別用);基本的に来年度の年を入力してください。
   NewYear: "2018"
+  #正月リンゴの使用可能期限
+  NewYearAppleStartDay: "2018-01-01"
+  NewYearAppleEndDay: "2018-02-07"
