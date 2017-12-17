@@ -244,4 +244,8 @@ public class Config{
 	public String getNewYearAppleEndDay() {
 		return config.getString("NewYearEvent.NewYearAppleEndDay");
 	}
+
+	public int getWorldSize() {
+		return config.getInt("world_size");
+	}
 }
