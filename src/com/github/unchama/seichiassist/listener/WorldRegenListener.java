@@ -34,17 +34,20 @@ public class WorldRegenListener implements Listener {
     private int roadY;
     private int roadLength;
     private int spaceHeight;
+	private int worldSize;
     private BaseBlock roadBlock;
     private BaseBlock spaceBlock;
 
     private WorldEdit worldEdit;
     private WorldGuardPlugin worldGuard;
 
+
     public WorldRegenListener() {
         Config config = SeichiAssist.config;
         this.roadY = config.getRoadY();
         this.roadLength = config.getRoadLength();
         this.spaceHeight = config.getSpaceHeight();
+        this.worldSize = config.getWorldSize();
         this.roadBlock = new BaseBlock(config.getRoadBlockID(), config.getRoadBlockDamage());
         this.spaceBlock = new BaseBlock(0);
 
@@ -65,7 +68,7 @@ public class WorldRegenListener implements Listener {
         Location spawn = world.getSpawnLocation();
         RegenWorld.getInstance().getController().setSpawnLocation(world.getName(), spawn);
 
-        com.wimbli.WorldBorder.Config.setBorder(world.getName(), 3000, 3000, spawn.getX(), spawn.getZ());
+        com.wimbli.WorldBorder.Config.setBorder(world.getName(), worldSize, worldSize, spawn.getX(), spawn.getZ());
         com.wimbli.WorldBorder.Config.fillTask = new WorldFillTask(Bukkit.getServer(), null, world.getName(), CoordXZ.chunkToBlock(13), 1, 1, false);
         if (com.wimbli.WorldBorder.Config.fillTask.valid()) {
             int task = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(WorldBorder.plugin, com.wimbli.WorldBorder.Config.fillTask, 1, 1);
