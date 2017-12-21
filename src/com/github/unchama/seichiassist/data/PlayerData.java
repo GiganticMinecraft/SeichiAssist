@@ -26,7 +26,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
-import com.github.unchama.seichiassist.util.Util.ChunkType;
+import com.github.unchama.seichiassist.util.Util.DirectionType;
 
 
 public class PlayerData {
@@ -164,12 +164,12 @@ public class PlayerData {
 	private boolean halfBreakFlag;
 
 	//グリッド式保護関連
-	private int aheadChunk;
-	private int behindChunk;
-	private int rightChunk;
-	private int leftChunk;
+	private int aheadUnit;
+	private int behindUnit;
+	private int rightUnit;
+	private int leftUnit;
 	private boolean canCreateRegion;
-	private int chunkPerGrid;
+	private int unitPerClick;
 	private Map<Integer, GridTemplate> templateMap;
 
 	//投票妖精関連
@@ -251,12 +251,12 @@ public class PlayerData {
 
 		this.halfBreakFlag = false;
 
-		this.aheadChunk = 0;
-		this.behindChunk = 0;
-		this.rightChunk = 0;
-		this.leftChunk = 0;
+		this.aheadUnit = 0;
+		this.behindUnit = 0;
+		this.rightUnit = 0;
+		this.leftUnit = 0;
 		this.canCreateRegion = true;
-		this.chunkPerGrid = 1;
+		this.unitPerClick = 1;
 		this.templateMap = new HashMap<>();
 		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
 			this.templateMap.put(i, new GridTemplate(0, 0, 0, 0));
@@ -684,19 +684,19 @@ public class PlayerData {
 		}
 	}
 
-	public Map<ChunkType,Integer> getGridChuckMap() {
-		Map<ChunkType, Integer> chunkMap = new HashMap<>();
+	public Map<DirectionType,Integer> getUnitMap() {
+		Map<DirectionType, Integer> unitMap = new HashMap<>();
 
-		chunkMap.put(ChunkType.AHEAD, this.aheadChunk);
-		chunkMap.put(ChunkType.BEHIND, this.behindChunk);
-		chunkMap.put(ChunkType.RIGHT, this.rightChunk);
-		chunkMap.put(ChunkType.LEFT, this.leftChunk);
+		unitMap.put(DirectionType.AHEAD, this.aheadUnit);
+		unitMap.put(DirectionType.BEHIND, this.behindUnit);
+		unitMap.put(DirectionType.RIGHT, this.rightUnit);
+		unitMap.put(DirectionType.LEFT, this.leftUnit);
 
-		return chunkMap;
+		return unitMap;
 	}
 
 	public int getGridChunkAmount() {
-		return (this.aheadChunk + 1 + this.behindChunk) * (this.rightChunk + 1 + this.leftChunk);
+		return (this.aheadUnit + 1 + this.behindUnit) * (this.rightUnit + 1 + this.leftUnit);
 	}
 
 	/*
@@ -717,39 +717,39 @@ public class PlayerData {
 	}
 	*/
 
-	public boolean canGridExtend(ChunkType chunkType) {
+	public boolean canGridExtend(DirectionType directionType) {
 		final int LIMIT = config.getGridLimit();
-		Map<ChunkType, Integer> chunkMap = getGridChuckMap();
+		Map<DirectionType, Integer> chunkMap = getUnitMap();
 
 		//チャンクを拡大すると仮定する
-		final int assumedAmoont = chunkMap.get(chunkType) + this.chunkPerGrid;
+		final int assumedAmoont = chunkMap.get(directionType) + this.unitPerClick;
 		//合計チャンク再計算値
-		int assumedChunkAmount = 0;
+		int assumedUnitAmount = 0;
 		//一応すべての拡張値を出しておく
-		final int ahead = chunkMap.get(ChunkType.AHEAD);
-		final int behind = chunkMap.get(ChunkType.BEHIND);
-		final int right = chunkMap.get(ChunkType.RIGHT);
-		final int left = chunkMap.get(ChunkType.LEFT);
+		final int ahead = chunkMap.get(DirectionType.AHEAD);
+		final int behind = chunkMap.get(DirectionType.BEHIND);
+		final int right = chunkMap.get(DirectionType.RIGHT);
+		final int left = chunkMap.get(DirectionType.LEFT);
 
-		switch (chunkType) {
+		switch (directionType) {
 			case AHEAD:
-				assumedChunkAmount = (assumedAmoont + 1 + behind) * (right + 1 + left);
+				assumedUnitAmount = (assumedAmoont + 1 + behind) * (right + 1 + left);
 				break;
 			case BEHIND:
-				assumedChunkAmount = (ahead + 1 + assumedAmoont) * (right + 1 + left);
+				assumedUnitAmount = (ahead + 1 + assumedAmoont) * (right + 1 + left);
 				break;
 			case RIGHT:
-				assumedChunkAmount = (ahead + 1 + behind) * (assumedAmoont + 1 + left);
+				assumedUnitAmount = (ahead + 1 + behind) * (assumedAmoont + 1 + left);
 				break;
 			case LEFT:
-				assumedChunkAmount = (ahead + 1 + behind) * (right + 1 + assumedAmoont);
+				assumedUnitAmount = (ahead + 1 + behind) * (right + 1 + assumedAmoont);
 				break;
 			default:
 				//ここに来ることはありえない
 				Bukkit.getLogger().warning("グリッド式保護で予期せぬ動作[チャンク値仮定]。開発者に報告してください。");
 		}
 
-		if (assumedChunkAmount <= LIMIT) {
+		if (assumedUnitAmount <= LIMIT) {
 			return true;
 		} else {
 			return false;
@@ -757,11 +757,11 @@ public class PlayerData {
 
 	}
 
-	public boolean canGridReduce(ChunkType chunkType) {
-		Map<ChunkType, Integer> chunkMap = getGridChuckMap();
+	public boolean canGridReduce(DirectionType directionType) {
+		Map<DirectionType, Integer> chunkMap = getUnitMap();
 
 		//減らしたと仮定する
-		final int assumedAmount = chunkMap.get(chunkType) - chunkPerGrid;
+		final int assumedAmount = chunkMap.get(directionType) - unitPerClick;
 		if (assumedAmount < 0) {
 			return false;
 		} else {
@@ -769,38 +769,38 @@ public class PlayerData {
 		}
 	}
 
-	public void setChunkAmount(ChunkType chunkType, int amount) {
-		switch (chunkType) {
+	public void setUnitAmount(DirectionType directionType, int amount) {
+		switch (directionType) {
 			case AHEAD:
-				this.aheadChunk = amount;
+				this.aheadUnit = amount;
 				break;
 			case BEHIND:
-				this.behindChunk = amount;
+				this.behindUnit = amount;
 				break;
 			case RIGHT:
-				this.rightChunk = amount;
+				this.rightUnit = amount;
 				break;
 			case LEFT:
-				this.leftChunk = amount;
+				this.leftUnit = amount;
 				break;
 			default:
 				//わざと何もしない
 		}
 	}
 
-	public void addChunkAmount(ChunkType chunkType, int addAmount) {
-		switch (chunkType) {
+	public void addUnitAmount(DirectionType directionType, int addAmount) {
+		switch (directionType) {
 			case AHEAD:
-				this.aheadChunk += addAmount;
+				this.aheadUnit += addAmount;
 				break;
 			case BEHIND:
-				this.behindChunk += addAmount;
+				this.behindUnit += addAmount;
 				break;
 			case RIGHT:
-				this.rightChunk += addAmount;
+				this.rightUnit += addAmount;
 				break;
 			case LEFT:
-				this.leftChunk += addAmount;
+				this.leftUnit += addAmount;
 				break;
 			default:
 				//わざと何もしない
@@ -815,18 +815,18 @@ public class PlayerData {
 		return this.canCreateRegion;
 	}
 
-	public void toggleChunkPerGrid () {
-		if (this.chunkPerGrid == 1) {
-			this.chunkPerGrid = 10;
-		} else if (this.chunkPerGrid == 10) {
-			this.chunkPerGrid = 100;
-		} else if (this.chunkPerGrid == 100) {
-			this.chunkPerGrid = 1;
+	public void toggleUnitPerGrid () {
+		if (this.unitPerClick == 1) {
+			this.unitPerClick = 10;
+		} else if (this.unitPerClick == 10) {
+			this.unitPerClick = 100;
+		} else if (this.unitPerClick == 100) {
+			this.unitPerClick = 1;
 		}
 	}
 
-	public int getChunkPerGrid() {
-		return this.chunkPerGrid;
+	public int getUnitPerClick() {
+		return this.unitPerClick;
 	}
 
 	public void setTemplateMap(Map<Integer, GridTemplate> setMap) {

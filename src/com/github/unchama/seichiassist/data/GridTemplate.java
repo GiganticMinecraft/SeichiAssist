@@ -42,11 +42,11 @@ public class GridTemplate {
     }
 
     //セッター
-    public void setChunkAmount(Map<ChunkType, Integer> setMap) {
-        this.aheadAmount = setMap.get(ChunkType.AHEAD);
-        this.behindAmount = setMap.get(ChunkType.BEHIND);
-        this.rightAmount = setMap.get(ChunkType.RIGHT);
-        this.leftAmount = setMap.get(ChunkType.LEFT);
+    public void setChunkAmount(Map<DirectionType, Integer> setMap) {
+        this.aheadAmount = setMap.get(DirectionType.AHEAD);
+        this.behindAmount = setMap.get(DirectionType.BEHIND);
+        this.rightAmount = setMap.get(DirectionType.RIGHT);
+        this.leftAmount = setMap.get(DirectionType.LEFT);
     }
 
     /**

@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.data;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
-import com.github.unchama.seichiassist.util.Util.ChunkType;
+import com.github.unchama.seichiassist.util.Util.DirectionType;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.text.*;
 import java.util.*;
 
 /**
@@ -29,6 +30,7 @@ public class RegionMenuData {
     static WorldGuardPlugin Wg = Util.getWorldGuard();
     static WorldEditPlugin We = Util.getWorldEdit();
     static Config config = SeichiAssist.config;
+    static NumberFormat nfNum = NumberFormat.getNumberInstance();
 
     /**
      * 保護メニューを取得します。
@@ -135,9 +137,11 @@ public class RegionMenuData {
         List<String> lore4 = Arrays.asList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
                 , ChatColor.RESET + "" + ChatColor.RED + "グリッド式保護の作成ができます"
                 , ChatColor.RESET + "" + ChatColor.YELLOW + "グリッド式保護とは…"
-                , ChatColor.RESET + "" + ChatColor.GRAY + "保護をチャンク単位で管理するシステムのこと"
+                , ChatColor.RESET + "" + ChatColor.GRAY + "保護をユニット単位で管理するシステムのこと"
                 , ChatColor.RESET + "" + ChatColor.RED + "運営チームが個別に指定したワールドに関しては"
                 , ChatColor.RESET + "" + ChatColor.RED + "このシステムのみでしか保護が作成できません"
+                , ChatColor.RESET + "" + ChatColor.AQUA + "15ブロック＝1ユニットとして"
+                , ChatColor.RESET + "" + ChatColor.AQUA + "保護が作成されます。"
         );
         ItemStack menuicon4 = Util.getMenuIcon(Material.IRON_AXE, 1,
                 ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "グリッド式保護作成画面",
@@ -155,30 +159,31 @@ public class RegionMenuData {
      */
     public static Inventory getGridWorldGuardMenu(Player player) {
         PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
-        Map<ChunkType, Integer> chunkMap = playerData.getGridChuckMap();
-        Map<ChunkType, String> directionMap = getPlayerDirectionString(player);
+        Map<DirectionType, Integer> unitMap = playerData.getUnitMap();
+        Map<DirectionType, String> directionMap = getPlayerDirectionString(player);
 
         Inventory gridInv = Bukkit.createInventory(null, InventoryType.DISPENSER,
                 ChatColor.LIGHT_PURPLE + "グリッド式保護設定メニュー");
 
         //0マス目
         List<String> lore0 = new ArrayList<>();
-        lore0.add(ChatColor.GREEN + "現在のチャンク指定量");
-        lore0.add(ChatColor.AQUA + "" +  playerData.getChunkPerGrid() + ChatColor.GREEN + "チャンク/1クリック");
+        lore0.add(ChatColor.GREEN + "現在のユニット指定量");
+        lore0.add(ChatColor.AQUA + "" + playerData.getUnitPerClick() + ChatColor.GREEN + "ユニット(" +
+                ChatColor.AQUA + playerData.getUnitPerClick() * 15 + ChatColor.GREEN + "ブロック)/1クリック");
         lore0.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "クリックで変更");
         ItemStack menuicon0 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 0,
                 ChatColor.GREEN + "拡張単位の変更", lore0, true);
         gridInv.setItem(0, menuicon0);
 
         //1マス目
-        List<String> lore1 = getGridLore(directionMap.get(ChunkType.AHEAD), chunkMap.get(ChunkType.AHEAD));
-        if (!playerData.canGridExtend(ChunkType.AHEAD)) {
+        List<String> lore1 = getGridLore(directionMap.get(DirectionType.AHEAD), unitMap.get(DirectionType.AHEAD));
+        if (!playerData.canGridExtend(DirectionType.AHEAD)) {
             lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(ChunkType.AHEAD)) {
+        } else if (!playerData.canGridReduce(DirectionType.AHEAD)) {
             lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon1 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 14,
-                ChatColor.DARK_GREEN + "前に" + playerData.getChunkPerGrid() + "チャンク増やす/減らす", lore1, true);
+                ChatColor.DARK_GREEN + "前に" + playerData.getUnitPerClick() + "ユニット増やす/減らす", lore1, true);
         gridInv.setItem(1, menuicon1);
 
         //2マス目
@@ -189,38 +194,42 @@ public class RegionMenuData {
         gridInv.setItem(2, menuicon2);
 
         //3マス目
-        List<String> lore3 = getGridLore(directionMap.get(ChunkType.LEFT), chunkMap.get(ChunkType.LEFT));
-        if (!playerData.canGridExtend(ChunkType.LEFT)) {
+        List<String> lore3 = getGridLore(directionMap.get(DirectionType.LEFT), unitMap.get(DirectionType.LEFT));
+        if (!playerData.canGridExtend(DirectionType.LEFT)) {
             lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(ChunkType.LEFT)) {
+        } else if (!playerData.canGridReduce(DirectionType.LEFT)) {
             lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon3 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 10,
-                ChatColor.DARK_GREEN + "左に" + playerData.getChunkPerGrid() + "チャンク増やす/減らす", lore3, true);
+                ChatColor.DARK_GREEN + "左に" + playerData.getUnitPerClick() + "ユニット増やす/減らす", lore3, true);
         gridInv.setItem(3, menuicon3);
 
         //4マス目
         List<String> lore4 = new ArrayList<>();
         lore4.add(ChatColor.GRAY + "現在の設定");
-        lore4.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + chunkMap.get(ChunkType.AHEAD));
-        lore4.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + chunkMap.get(ChunkType.BEHIND));
-        lore4.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + chunkMap.get(ChunkType.RIGHT));
-        lore4.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + chunkMap.get(ChunkType.LEFT));
-        lore4.add(ChatColor.GRAY + "保護チャンク数：" + ChatColor.AQUA + playerData.getGridChunkAmount());
-        lore4.add(ChatColor.GRAY + "保護チャンク上限値：" + ChatColor.RED + config.getGridLimit());
+        lore4.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + unitMap.get(DirectionType.AHEAD) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(unitMap.get(DirectionType.AHEAD) * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + unitMap.get(DirectionType.BEHIND) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(unitMap.get(DirectionType.BEHIND) * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + unitMap.get(DirectionType.RIGHT) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(unitMap.get(DirectionType.RIGHT) * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + unitMap.get(DirectionType.LEFT) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(unitMap.get(DirectionType.LEFT) * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "保護ユニット数：" + ChatColor.AQUA + playerData.getGridChunkAmount());
+        lore4.add(ChatColor.GRAY + "保護ユニット上限値：" + ChatColor.RED + config.getGridLimit());
         ItemStack menuicon4 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, ChatColor.DARK_GREEN + "設定",
                 lore4, true);
         gridInv.setItem(4, menuicon4);
 
         //5マス目
-        List<String> lore5 = getGridLore(directionMap.get(ChunkType.RIGHT), chunkMap.get(ChunkType.RIGHT));
-        if (!playerData.canGridExtend(ChunkType.RIGHT)) {
+        List<String> lore5 = getGridLore(directionMap.get(DirectionType.RIGHT), unitMap.get(DirectionType.RIGHT));
+        if (!playerData.canGridExtend(DirectionType.RIGHT)) {
             lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(ChunkType.RIGHT)) {
+        } else if (!playerData.canGridReduce(DirectionType.RIGHT)) {
             lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon5 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5,
-                ChatColor.DARK_GREEN + "右に" + playerData.getChunkPerGrid() + "チャンク増やす/減らす", lore5, true);
+                ChatColor.DARK_GREEN + "右に" + playerData.getUnitPerClick() + "ユニット増やす/減らす", lore5, true);
         gridInv.setItem(5, menuicon5);
 
         //6マス目
@@ -231,14 +240,14 @@ public class RegionMenuData {
         gridInv.setItem(6, menuicon6);
 
         //7マス目
-        List<String> lore7 = getGridLore(directionMap.get(ChunkType.BEHIND), chunkMap.get(ChunkType.BEHIND));
-        if (!playerData.canGridExtend(ChunkType.BEHIND)) {
+        List<String> lore7 = getGridLore(directionMap.get(DirectionType.BEHIND), unitMap.get(DirectionType.BEHIND));
+        if (!playerData.canGridExtend(DirectionType.BEHIND)) {
             lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(ChunkType.BEHIND)) {
+        } else if (!playerData.canGridReduce(DirectionType.BEHIND)) {
             lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon7 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 13,
-                ChatColor.DARK_GREEN + "後ろに" + playerData.getChunkPerGrid() + "チャンク増やす/減らす", lore7, true);
+                ChatColor.DARK_GREEN + "後ろに" + playerData.getUnitPerClick() + "ユニット増やす/減らす", lore7, true);
         gridInv.setItem(7, menuicon7);
 
         //8マス目
@@ -267,20 +276,21 @@ public class RegionMenuData {
         return gridInv;
     }
 
-    private static List<String> getGridLore(String direction, int chunk) {
+    private static List<String> getGridLore(String direction, int unit) {
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "左クリックで増加");
         lore.add(ChatColor.RESET + "" +  ChatColor.RED + "右クリックで減少");
         lore.add(ChatColor.RESET + "" + ChatColor.GRAY + ChatColor.GRAY + "---------------");
         lore.add(ChatColor.GRAY + "方向：" + ChatColor.AQUA + direction);
-        lore.add(ChatColor.GRAY + "現在の指定方向チャンク数：" + ChatColor.AQUA + chunk);
+        lore.add(ChatColor.GRAY + "現在の指定方向ユニット数：" + ChatColor.AQUA + unit
+                + ChatColor.GRAY + "(" + ChatColor.AQUA + nfNum.format(unit * 15) + ChatColor.GRAY + "ブロック)");
 
         return lore;
     }
 
-    private static Map<ChunkType, String> getPlayerDirectionString(Player player) {
+    private static Map<DirectionType, String> getPlayerDirectionString(Player player) {
         double rotation = (player.getLocation().getYaw() + 180) % 360;
-        Map<ChunkType, String> directionMap = new HashMap<>();
+        Map<DirectionType, String> directionMap = new HashMap<>();
 
         if (rotation < 0) {
             rotation += 360;
@@ -289,34 +299,34 @@ public class RegionMenuData {
         //0,360:south 90:west 180:north 270:east
         if (0.0 <= rotation && rotation < 45.0) {
             //前が北(North)
-            directionMap.put(ChunkType.BEHIND, "南(South)");
-            directionMap.put(ChunkType.AHEAD, "北(North)");
-            directionMap.put(ChunkType.LEFT, "西(West)");
-            directionMap.put(ChunkType.RIGHT, "東(East)");
+            directionMap.put(DirectionType.BEHIND, "南(South)");
+            directionMap.put(DirectionType.AHEAD, "北(North)");
+            directionMap.put(DirectionType.LEFT, "西(West)");
+            directionMap.put(DirectionType.RIGHT, "東(East)");
         } else if (45.0 <= rotation && rotation < 135.0) {
             //前が東(East)
-            directionMap.put(ChunkType.RIGHT, "南(South)");
-            directionMap.put(ChunkType.LEFT, "北(North)");
-            directionMap.put(ChunkType.BEHIND, "西(West)");
-            directionMap.put(ChunkType.AHEAD, "東(East)");
+            directionMap.put(DirectionType.RIGHT, "南(South)");
+            directionMap.put(DirectionType.LEFT, "北(North)");
+            directionMap.put(DirectionType.BEHIND, "西(West)");
+            directionMap.put(DirectionType.AHEAD, "東(East)");
         } else if (135.0 <= rotation && rotation < 225.0) {
             //前が南(South)
-            directionMap.put(ChunkType.AHEAD, "南(South)");
-            directionMap.put(ChunkType.BEHIND, "北(North)");
-            directionMap.put(ChunkType.RIGHT, "西(West)");
-            directionMap.put(ChunkType.LEFT, "東(East)");
+            directionMap.put(DirectionType.AHEAD, "南(South)");
+            directionMap.put(DirectionType.BEHIND, "北(North)");
+            directionMap.put(DirectionType.RIGHT, "西(West)");
+            directionMap.put(DirectionType.LEFT, "東(East)");
         } else if (225.0 <= rotation && rotation < 315.0) {
             //前が西(West)
-            directionMap.put(ChunkType.LEFT, "南(South)");
-            directionMap.put(ChunkType.RIGHT, "北(North)");
-            directionMap.put(ChunkType.AHEAD, "西(West)");
-            directionMap.put(ChunkType.BEHIND, "東(East)");
+            directionMap.put(DirectionType.LEFT, "南(South)");
+            directionMap.put(DirectionType.RIGHT, "北(North)");
+            directionMap.put(DirectionType.AHEAD, "西(West)");
+            directionMap.put(DirectionType.BEHIND, "東(East)");
         } else if (315.0 <= rotation && rotation < 360.0) {
             //前が北(North)
-            directionMap.put(ChunkType.BEHIND, "南(South)");
-            directionMap.put(ChunkType.AHEAD, "北(North)");
-            directionMap.put(ChunkType.LEFT, "西(West)");
-            directionMap.put(ChunkType.RIGHT, "東(East)");
+            directionMap.put(DirectionType.BEHIND, "南(South)");
+            directionMap.put(DirectionType.AHEAD, "北(North)");
+            directionMap.put(DirectionType.LEFT, "西(West)");
+            directionMap.put(DirectionType.RIGHT, "東(East)");
         }
         return directionMap;
     }
@@ -374,10 +384,10 @@ public class RegionMenuData {
         } else {
             List<String> lore = new ArrayList<>();
             lore.add(ChatColor.GREEN + "設定内容");
-            lore.add(ChatColor.GRAY + "前方向" + ChatColor.AQUA + templateMap.get(i).getAheadAmount());
-            lore.add(ChatColor.GRAY + "後ろ方向" + ChatColor.AQUA + templateMap.get(i).getBehindAmount());
-            lore.add(ChatColor.GRAY + "右方向" + ChatColor.AQUA + templateMap.get(i).getRightAmount());
-            lore.add(ChatColor.GRAY + "左方向" + ChatColor.AQUA + templateMap.get(i).getLeftAmount());
+            lore.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + templateMap.get(i).getAheadAmount() + ChatColor.GRAY + "ユニット");
+            lore.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + templateMap.get(i).getBehindAmount() + ChatColor.GRAY + "ユニット");
+            lore.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + templateMap.get(i).getRightAmount() + ChatColor.GRAY + "ユニット");
+            lore.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + templateMap.get(i).getLeftAmount() + ChatColor.GRAY + "ユニット");
             lore.add(ChatColor.GREEN + "左クリックで設定を読み込み");
             lore.add(ChatColor.RED + "右クリックで現在の設定で上書き");
             ItemStack menuicon = Util.getMenuIcon(Material.CHEST, 1,
