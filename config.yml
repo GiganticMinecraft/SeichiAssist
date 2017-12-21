@@ -467,7 +467,7 @@ rategigantictoringo: '4'
 GridProtectForceWorld:
  - world_test
 
-#グリッドで指定可能な最大チャンク合計数
+#グリッドで指定可能な最大ユニット合計数(15ブロック=1ユニット)
 GridLimit: '32'
 
 #グリッド式保護のテンプレート保存最大数

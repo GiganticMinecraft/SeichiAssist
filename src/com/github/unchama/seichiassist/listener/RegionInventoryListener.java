@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RegionMenuData;
 import com.github.unchama.seichiassist.util.Util;
-import com.github.unchama.seichiassist.util.Util.ChunkType;
+import com.github.unchama.seichiassist.util.Util.DirectionType;
 import com.github.unchama.seichiassist.util.Util.Direction;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -33,9 +33,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 保護関連メニューのListenerクラス
@@ -204,18 +202,9 @@ public class RegionInventoryListener implements Listener {
             }
 
             else if(itemstackcurrent.getType().equals(Material.IRON_AXE)) {
+                gridResetFunction(player);
                 //グリッド式保護設定画面表示
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-                //setWGSelection(player);
-                //canCreateRegion(player);
-                playerdata.setChunkAmount(ChunkType.AHEAD, 0);
-                playerdata.setChunkAmount(ChunkType.BEHIND, 0);
-                playerdata.setChunkAmount(ChunkType.RIGHT, 0);
-                playerdata.setChunkAmount(ChunkType.LEFT, 0);
-                Chunk playerChunk = player.getLocation().getChunk();
-                wgSelect(playerChunk.getBlock(0, 0, 0).getLocation(),
-                        playerChunk.getBlock(15,256, 15).getLocation(), player);
-                canCreateRegion(player);
                 player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
             }
         }
@@ -271,13 +260,13 @@ public class RegionInventoryListener implements Listener {
 
             //チャンク延長
             if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 14) {
-                gridChangeFunction(player, ChunkType.AHEAD, event);
+                gridChangeFunction(player, DirectionType.AHEAD, event);
             } else if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 10) {
-                gridChangeFunction(player, ChunkType.LEFT, event);
+                gridChangeFunction(player, DirectionType.LEFT, event);
             } else if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 5) {
-                gridChangeFunction(player, ChunkType.RIGHT, event);
+                gridChangeFunction(player, DirectionType.RIGHT, event);
             } else if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 13) {
-                gridChangeFunction(player, ChunkType.BEHIND, event);
+                gridChangeFunction(player, DirectionType.BEHIND, event);
             } else if (itemstackcurrent.getType().equals(Material.WOOL) && itemstackcurrent.getDurability() == 11) {
                 player.chat("//expand vert");
                 createRegion(player);
@@ -285,18 +274,11 @@ public class RegionInventoryListener implements Listener {
                 player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
                 player.closeInventory();
             } else if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 4) {
-                playerData.setChunkAmount(ChunkType.AHEAD, 0);
-                playerData.setChunkAmount(ChunkType.BEHIND, 0);
-                playerData.setChunkAmount(ChunkType.RIGHT, 0);
-                playerData.setChunkAmount(ChunkType.LEFT, 0);
-                Chunk playerChunk = player.getLocation().getChunk();
-                wgSelect(playerChunk.getBlock(0, 0, 0).getLocation(),
-                        playerChunk.getBlock(15,256, 15).getLocation(), player);
-                canCreateRegion(player);
+                gridResetFunction(player);
                 player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_DESTROY, (float) 0.5, 1);
                 player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
             } else if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 0) {
-                playerData.toggleChunkPerGrid();
+                playerData.toggleUnitPerGrid();
                 player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
                 player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
             } else if (itemstackcurrent.getType().equals(Material.CHEST)) {
@@ -306,20 +288,36 @@ public class RegionInventoryListener implements Listener {
         }
     }
 
-    private static void gridChangeFunction(Player player, ChunkType chunkType, InventoryClickEvent event) {
+    private static void gridResetFunction(Player player) {
+        PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
+        playerData.setUnitAmount(DirectionType.AHEAD, 0);
+        playerData.setUnitAmount(DirectionType.BEHIND, 0);
+        playerData.setUnitAmount(DirectionType.RIGHT, 0);
+        playerData.setUnitAmount(DirectionType.LEFT, 0);
+        //始点座標Map(最短)
+        Map<String, Double> start = getNearlyUnitStart(player);
+        //終点座標Map(最短)
+        Map<String, Double> end = getNearlyUnitEnd(player);
+        //範囲選択
+        wgSelect(new Location(player.getWorld(), start.get("x"), 0, start.get("z")),
+                new Location(player.getWorld(), end.get("x"), 256, end.get("z")), player);
+        canCreateRegion(player);
+    }
+
+    private static void gridChangeFunction(Player player, DirectionType directionType, InventoryClickEvent event) {
         PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
         if (event.isLeftClick()) {
-            if (playerData.canGridExtend(chunkType)) {
+            if (playerData.canGridExtend(directionType)) {
                 player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-                playerData.addChunkAmount(chunkType, playerData.getChunkPerGrid());
+                playerData.addUnitAmount(directionType, playerData.getUnitPerClick());
                 setWGSelection(player);
                 canCreateRegion(player);
                 player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
             }
         } else if (event.isRightClick()) {
-            if (playerData.canGridReduce(chunkType)) {
+            if (playerData.canGridReduce(directionType)) {
                 player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-                playerData.addChunkAmount(chunkType, playerData.getChunkPerGrid() * (-1));
+                playerData.addUnitAmount(directionType, playerData.getUnitPerClick() * (-1));
                 setWGSelection(player);
                 canCreateRegion(player);
                 player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
@@ -329,66 +327,49 @@ public class RegionInventoryListener implements Listener {
 
     private static void setWGSelection(Player player) {
         PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
-        Map<ChunkType, Integer> chunkMap = playerData.getGridChuckMap();
+        Map<DirectionType, Integer> unitMap = playerData.getUnitMap();
         Direction direction = Util.getPlayerDirection(player);
-        Chunk playerChunk = player.getLocation().getChunk();
         World world = player.getWorld();
 
-        int aheadChunkAmount = chunkMap.get(ChunkType.AHEAD);
-        int leftsideChunkAmount = chunkMap.get(ChunkType.LEFT);
+        int aheadUnitAmount = unitMap.get(DirectionType.AHEAD);
+        int leftsideUnitAmount = unitMap.get(DirectionType.LEFT);
+        int rightsideUnitAmount = unitMap.get(DirectionType.RIGHT);
+        int behindUnitAmount = unitMap.get(DirectionType.BEHIND);
 
-        int rightsideChunkAmount = chunkMap.get(ChunkType.RIGHT);
-        int behindChunkAmount = chunkMap.get(ChunkType.BEHIND);
+        //0ユニット指定の始点/終点のx,z座標
+        double start_x = getNearlyUnitStart(player).get("x");
+        double start_z = getNearlyUnitStart(player).get("z");
+        double end_x = getNearlyUnitEnd(player).get("x");
+        double end_z = getNearlyUnitEnd(player).get("z");
 
-        Chunk aheadEndChunk = null;
-        Chunk behindEndChunk = null;
-        Location aEndLoc = null;
-        Location bEndLoc = null;
+        Location start_loc = null;
+        Location end_loc = null;
 
         switch (direction) {
             case NORTH:
-                aheadEndChunk = world.getChunkAt(playerChunk.getX() - leftsideChunkAmount, playerChunk.getZ() - aheadChunkAmount);
-                behindEndChunk = world.getChunkAt(playerChunk.getX() + rightsideChunkAmount, playerChunk.getZ() + behindChunkAmount);
-
-                aEndLoc = aheadEndChunk.getBlock(0,0,0).getLocation();
-                bEndLoc = behindEndChunk.getBlock(15,256, 15).getLocation();
-
-                wgSelect(aEndLoc, bEndLoc, player);
+                start_loc = new Location(world, start_x - 15 * leftsideUnitAmount, 0, start_z - 15 * aheadUnitAmount);
+                end_loc = new Location(world, end_x + 15 * rightsideUnitAmount, 256, end_z + 15 * behindUnitAmount);
                 break;
 
             case EAST:
-                aheadEndChunk = world.getChunkAt(playerChunk.getX() + aheadChunkAmount, playerChunk.getZ() - leftsideChunkAmount);
-                behindEndChunk = world.getChunkAt(playerChunk.getX() - behindChunkAmount, playerChunk.getZ() + rightsideChunkAmount);
-
-                aEndLoc = aheadEndChunk.getBlock(15, 0, 0).getLocation();
-                bEndLoc = behindEndChunk.getBlock(0,256, 15).getLocation();
-
-                wgSelect(aEndLoc, bEndLoc, player);
+                start_loc = new Location(world, start_x - 15 * behindUnitAmount, 0, start_z + 15 * leftsideUnitAmount);
+                end_loc = new Location(world, end_x + 15 * aheadUnitAmount , 256, end_z + 15 * rightsideUnitAmount);
                 break;
 
             case SOUTH:
-                aheadEndChunk = world.getChunkAt(playerChunk.getX() + leftsideChunkAmount, playerChunk.getZ() + aheadChunkAmount);
-                behindEndChunk = world.getChunkAt(playerChunk.getX() - rightsideChunkAmount, playerChunk.getZ() - behindChunkAmount);
-
-                aEndLoc = aheadEndChunk.getBlock(15, 0, 15).getLocation();
-                bEndLoc = behindEndChunk.getBlock(0, 256, 0).getLocation();
-
-                wgSelect(aEndLoc, bEndLoc, player);
+                start_loc = new Location(world, start_x - 15 * rightsideUnitAmount, 0, start_z - 15 * behindUnitAmount);
+                end_loc = new Location(world, end_x + 15 * leftsideUnitAmount, 256, end_z + 15 * aheadUnitAmount);
                 break;
 
             case WEST:
-                aheadEndChunk = world.getChunkAt(playerChunk.getX() - aheadChunkAmount, playerChunk.getZ() + leftsideChunkAmount);
-                behindEndChunk = world.getChunkAt(playerChunk.getX() + behindChunkAmount, playerChunk.getZ() - rightsideChunkAmount);
-
-                aEndLoc = aheadEndChunk.getBlock(0, 0, 15).getLocation();
-                bEndLoc = behindEndChunk.getBlock(15, 256, 0).getLocation();
-
-                wgSelect(aEndLoc, bEndLoc, player);
+                start_loc = new Location(world, start_x - 15 * aheadUnitAmount, 0, start_z - 15 * rightsideUnitAmount);
+                end_loc = new Location(world, end_x + 15 * behindUnitAmount, 256, end_z + 15 * leftsideUnitAmount);
                 break;
 
             default:
                 //わざと何もしない。
         }
+        wgSelect(start_loc, end_loc, player);
     }
 
     private static void wgSelect(Location loc1, Location loc2, Player player) {
@@ -508,11 +489,10 @@ public class RegionInventoryListener implements Listener {
                         player.sendMessage(ChatColor.GREEN + "グリッド式保護設定データ読み込み完了");
                         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
                         GridTemplate template = templateMap.get(slot);
-                        Map<ChunkType, Integer> chunkMap = new HashMap<>();
-                        playerData.setChunkAmount(ChunkType.AHEAD, template.getAheadAmount());
-                        playerData.setChunkAmount(ChunkType.BEHIND, template.getBehindAmount());
-                        playerData.setChunkAmount(ChunkType.RIGHT, template.getRightAmount());
-                        playerData.setChunkAmount(ChunkType.LEFT, template.getLeftAmount());
+                        playerData.setUnitAmount(DirectionType.AHEAD, template.getAheadAmount());
+                        playerData.setUnitAmount(DirectionType.BEHIND, template.getBehindAmount());
+                        playerData.setUnitAmount(DirectionType.RIGHT, template.getRightAmount());
+                        playerData.setUnitAmount(DirectionType.LEFT, template.getLeftAmount());
                         setWGSelection(player);
                         canCreateRegion(player);
                         player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
@@ -530,14 +510,55 @@ public class RegionInventoryListener implements Listener {
 
     private static void playerGridTemplateSave(Player player, int i) {
         PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
-        Map<ChunkType,Integer> chunkMap = playerData.getGridChuckMap();
+        Map<DirectionType,Integer> unitMap = playerData.getUnitMap();
         Map<Integer, GridTemplate> templateMap = playerData.getTemplateMap();
 
         player.sendMessage(ChatColor.GREEN + "グリッド式保護の現在の設定を保存しました。");
         player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
-        GridTemplate template = new GridTemplate(chunkMap.get(ChunkType.AHEAD), chunkMap.get(ChunkType.BEHIND),
-                chunkMap.get(ChunkType.RIGHT), chunkMap.get(ChunkType.LEFT));
+        GridTemplate template = new GridTemplate(unitMap.get(DirectionType.AHEAD), unitMap.get(DirectionType.BEHIND),
+                unitMap.get(DirectionType.RIGHT), unitMap.get(DirectionType.LEFT));
         templateMap.put(i, template);
         playerData.setTemplateMap(templateMap);
+    }
+
+    /**
+     * ユニット単位における最短の始点のx,z座標を取得します。
+     * @param player 該当プレイヤー
+     * @return x,z座標のMap
+     */
+    public static Map<String, Double> getNearlyUnitStart(Player player) {
+        Map<String, Double> result = new HashMap<>();
+
+        double player_x = player.getLocation().getBlockX();
+        double player_z = player.getLocation().getBlockZ();
+
+        if (player_x % 15 == 0) {
+            result.put("x", player_x);
+        } else {
+            result.put("x", Math.floor(player_x / 15) * 15);
+        }
+
+        if (player_z % 15 == 0) {
+            result.put("z", player_z);
+        } else {
+            result.put("z", Math.floor(player_z / 15) * 15);
+        }
+        return result;
+    }
+
+    /**
+     * ユニット単位における最短の終点(始点から対角になる)のx,z座標を取得します。
+     * @param player 該当プレイヤー
+     * @return x,z座標のMap
+     */
+    public static Map<String, Double> getNearlyUnitEnd(Player player) {
+        Map<String, Double> startCoordinate = getNearlyUnitStart(player);
+
+        Map<String, Double> resultMap = new HashMap<>();
+
+        resultMap.put("x", startCoordinate.get("x") + 14.0);
+        resultMap.put("z", startCoordinate.get("z") + 14.0);
+
+        return resultMap;
     }
 }
