@@ -46,7 +46,7 @@ public class EffectData {
 		}else if(id == 1){
 			return "+" + _amplifier +  " 接続人数から";
 		}else if(id == 2){
-			return "+" + _amplifier +  " 採掘量から";
+			return "+" + _amplifier +  " 整地量から";
 		}else if(id == 3){
 			return "+" + _amplifier +  " ﾄﾞﾗｹﾞﾅｲﾀｲﾑから_" +Util.toTimeString(_duration/20);
 		}else if(id == 4){
