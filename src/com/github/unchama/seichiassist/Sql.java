@@ -446,6 +446,11 @@ public class Sql{
 			command = command +
 					",add column if not exists " + premiumeffect[i].getsqlName() + " boolean default false";
 		}
+
+		//正月Event用
+		command += ",add column if not exists hasNewYearSobaGive boolean default false";
+		command += ",add column if not exists newYearBagAmount int default 0";
+
 		return putCommand(command);
 	}
 

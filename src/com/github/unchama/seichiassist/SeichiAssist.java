@@ -10,6 +10,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.listener.*;
+import com.github.unchama.seichiassist.listener.newyearevent.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -38,18 +40,6 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
-import com.github.unchama.seichiassist.listener.EntityListener;
-import com.github.unchama.seichiassist.listener.GachaItemListener;
-import com.github.unchama.seichiassist.listener.MebiusListener;
-import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
-import com.github.unchama.seichiassist.listener.PlayerClickListener;
-import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
-import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
-import com.github.unchama.seichiassist.listener.PlayerJoinListener;
-import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
-import com.github.unchama.seichiassist.listener.PlayerQuitListener;
-import com.github.unchama.seichiassist.listener.RegionInventoryListener;
-import com.github.unchama.seichiassist.listener.WorldRegenListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
@@ -649,6 +639,8 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new MebiusListener(), this);
 		getServer().getPluginManager().registerEvents(new RegionInventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new WorldRegenListener(), this);
+		//正月イベント用
+		new NewYearsEvent(this);
 		// マナ自動回復用リスナー…無効化中
 		// getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
 		// BungeeCordとのI/F

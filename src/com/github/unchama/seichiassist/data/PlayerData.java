@@ -180,6 +180,10 @@ public class PlayerData {
 	public int VotingFairyRecoveryValue;
 	public int giveApple;
 
+	//正月イベント用
+	public boolean hasNewYearSobaGive;
+	public int newYearBagAmount;
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.loaded = false;
@@ -260,6 +264,9 @@ public class PlayerData {
 		this.giveApple = 0;
 		this.VotingFairyStartTime = null;
 		this.VotingFairyEndTime = null;
+
+		this.hasNewYearSobaGive = false;
+		this.newYearBagAmount = 0;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
