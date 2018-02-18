@@ -456,6 +456,9 @@ public class Sql{
 		command += ",add column if not exists hasNewYearSobaGive boolean default false";
 		command += ",add column if not exists newYearBagAmount int default 0";
 
+		//バレンタインイベント用
+		command += ",add column if not exists hasChocoGave boolean default false";
+
 		return putCommand(command);
 	}
 

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seasonalevents.events.valentine.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -594,6 +595,27 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(30,itemstack);
+
+		//5個目に一時的にチョコをゲットできるボタンを作る。TODO:ましなやり方に変えたい
+		if (!playerdata.hasChocoGave) {
+			if (!Valentine.isInEvent) {
+				/* 何もしない */
+			} else {
+				itemstack = new ItemStack(Material.TRAPPED_CHEST);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHEST);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName("運営からのプレゼント");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "<バレンタインイベント記念>",
+						ChatColor.RESET + "" + ChatColor.AQUA + "記念品として",
+						ChatColor.RESET + "" + ChatColor.GREEN + "チョコチップクッキー×64個",
+						ChatColor.RESET + "" + ChatColor.AQUA + "を配布します。",
+						ChatColor.RESET + "" + ChatColor.DARK_RED + ChatColor.UNDERLINE + ChatColor.BOLD + "クリックで受け取る");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(5, itemstack);
+			}
+		}
 
 		return inventory;
 	}

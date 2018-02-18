@@ -300,6 +300,9 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 				//正月イベント用
 				playerdata.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive");
 				playerdata.newYearBagAmount = rs.getInt("newYearBagAmount");
+
+				//バレンタインイベント用
+				playerdata.hasChocoGave = rs.getBoolean("hasChocoGave");
 			  }
 			rs.close();
 		} catch (SQLException | IOException e) {
