@@ -244,6 +244,9 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		command += ",hasNewYearSobaGive = " + Boolean.toString(playerdata.hasNewYearSobaGive);
 		command += ",newYearBagAmount = " + Integer.toString(playerdata.newYearBagAmount);
 
+		//バレンタインイベント
+		command += ",hasChocoGave = " + Boolean.toString(playerdata.hasChocoGave);
+
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 		for(int i = 0; i < activeskilleffect.length ; i++){
 			String sqlname = activeskilleffect[i].getsqlName();

@@ -10,6 +10,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.unchama.seasonalevents.*;
+import com.github.unchama.seasonalevents.events.valentine.*;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -445,6 +447,8 @@ public class PlayerInventoryListener implements Listener {
 				SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 				skull.setDurability((short) 3);
 				skullmeta.setOwner(player.getName());
+				//バレンタイン中(イベント中かどうかの判断はSeasonalEvent側で行う)
+				skullmeta = Valentine.playerHeadLore(skullmeta);
 				skull.setItemMeta(skullmeta);
 
 				//渡すか、落とすか
@@ -873,6 +877,15 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				//インベントリを開く
 				player.openInventory(MenuInventoryData.getVotingMenuData(player));
+			} else if (itemstackcurrent.getType().equals(Material.TRAPPED_CHEST)) {
+				if (!Valentine.isInEvent) {
+					return;
+				}
+				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, (float) 0.5);
+				Valentine.giveChoco(player);
+				playerdata.hasChocoGave = true;
+				player.sendMessage(ChatColor.AQUA + "チョコチップクッキーを付与しました。");
+				player.openInventory(MenuInventoryData.getMenuData(player));
 			}
 		}
 	}

@@ -188,6 +188,9 @@ public class PlayerData {
 	public boolean hasNewYearSobaGive;
 	public int newYearBagAmount;
 
+	//バレンタインイベント用
+	public boolean hasChocoGave;
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.loaded = false;
@@ -274,6 +277,8 @@ public class PlayerData {
 
 		this.hasNewYearSobaGive = false;
 		this.newYearBagAmount = 0;
+
+		this.hasChocoGave = false;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
