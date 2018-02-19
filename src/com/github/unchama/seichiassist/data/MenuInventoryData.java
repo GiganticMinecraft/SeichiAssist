@@ -598,13 +598,11 @@ public class MenuInventoryData {
 
 		//5個目に一時的にチョコをゲットできるボタンを作る。TODO:ましなやり方に変えたい
 		if (!playerdata.hasChocoGave) {
-			if (!Valentine.isInEvent) {
-				/* 何もしない */
-			} else {
+			if (Valentine.isInEvent) {
 				itemstack = new ItemStack(Material.TRAPPED_CHEST);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHEST);
 				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-				itemmeta.setDisplayName("運営からのプレゼント");
+				itemmeta.setDisplayName("プレゼントボックス");
 				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "<バレンタインイベント記念>",
 						ChatColor.RESET + "" + ChatColor.AQUA + "記念品として",
 						ChatColor.RESET + "" + ChatColor.GREEN + "チョコチップクッキー×64個",
