@@ -179,6 +179,20 @@ public class Util {
 		player.getInventory().addItem(itemstack);
 	}
 
+	/**
+	 * プレイヤーに安全にアイテムを付与します。
+	 *
+	 * @param player 付与する対象プレイヤー
+	 * @param itemStack 付与するアイテム
+	 */
+	public static void addItemToPlayerSafely(Player player, ItemStack itemStack) {
+		if (isPlayerInventryFill(player)) {
+			dropItem(player, itemStack);
+		} else {
+			addItem(player, itemStack);
+		}
+	}
+
 	public static void sendAdminMessage(String str){
 		SeichiAssist plugin = SeichiAssist.plugin;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
