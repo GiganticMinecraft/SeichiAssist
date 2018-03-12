@@ -776,7 +776,7 @@ public class ActiveSkillInventoryData {
 					, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：なし"
 					, ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：100"
 					, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要アクティブスキルポイント：70"
-					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：ダイアモンド・ダスト"
+					, ChatColor.RESET + "" +  ChatColor.DARK_RED + "前提スキル：エクスプロージョン"
 					, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
