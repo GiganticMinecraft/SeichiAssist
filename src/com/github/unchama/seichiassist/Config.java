@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist;
 
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.List;
+
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class Config{
 	private static FileConfiguration config;
@@ -206,5 +207,45 @@ public class Config{
 
 	public int getRoadBlockDamage() {
 		return config.getInt("road_blockdamage");
+	}
+
+	public int getContributeAddedMana() {
+		return config.getInt("contribute_added_mana");
+	}
+
+	public String getGivingNewYearSobaDay() {
+		return config.getString("NewYearEvent.GivingNewYearSobaDay");
+	}
+
+	public String getNewYearSobaYear() {
+		return config.getString("NewYearEvent.NewYearSobaYear");
+	}
+
+	public String getDropNewYearBagStartDay() {
+		return config.getString("NewYearEvent.DropNewYearBagStartDay");
+	}
+
+	public String getDropNewYearBagEndDay() {
+		return config.getString("NewYearEvent.DropNewYearBagEndDay");
+	}
+
+	public int getNewYearDropProbability() {
+		return config.getInt("NewYearEvent.NewYearBagDropProbability");
+	}
+
+	public String getNewYear() {
+		return config.getString("NewYearEvent.NewYear");
+	}
+
+	public String getNewYearAppleStartDay() {
+		return config.getString("NewYearEvent.NewYearAppleStartDay");
+	}
+
+	public String getNewYearAppleEndDay() {
+		return config.getString("NewYearEvent.NewYearAppleEndDay");
+	}
+
+	public int getWorldSize() {
+		return config.getInt("world_size");
 	}
 }

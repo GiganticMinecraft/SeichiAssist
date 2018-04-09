@@ -19,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
@@ -28,9 +29,8 @@ import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
-import com.github.unchama.seichiassist.util.Util;
 
-public class LoadPlayerDataTaskRunnable extends Thread{
+public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -69,6 +69,7 @@ public class LoadPlayerDataTaskRunnable extends Thread{
 		//対象プレイヤーがオフラインなら処理終了
 		if(SeichiAssist.plugin.getServer().getPlayer(uuid) == null){
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "はオフラインの為取得処理を中断");
+			cancel();
 			return;
 		}
 		//sqlコネクションチェック
@@ -93,14 +94,17 @@ public class LoadPlayerDataTaskRunnable extends Thread{
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
 			e.printStackTrace();
+			cancel();
 			return;
 		}
 
  		if(i >= 4&&flag){
  			//強制取得実行
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "のplayerdata強制取得実行");
+ 			cancel();
  		}else if(!flag){
  			//flagが折れてたので普通に取得実行
+ 			cancel();
  		}else{
  			//再試行
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "のloginflag=false待機…(" + (i+1) + "回目)");
@@ -119,6 +123,7 @@ public class LoadPlayerDataTaskRunnable extends Thread{
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
 			e.printStackTrace();
+			cancel();
 			return;
 		}
 
@@ -142,7 +147,9 @@ public class LoadPlayerDataTaskRunnable extends Thread{
  				playerdata.activeskilldata.arrowskill = rs.getInt("arrowskill");
  				playerdata.activeskilldata.multiskill = rs.getInt("multiskill");
  				playerdata.activeskilldata.breakskill = rs.getInt("breakskill");
- 				playerdata.activeskilldata.condenskill = rs.getInt("condenskill");
+ 				//playerdata.activeskilldata.condenskill = rs.getInt("condenskill");
+ 				playerdata.activeskilldata.watercondenskill = rs.getInt("watercondenskill");
+ 				playerdata.activeskilldata.lavacondenskill = rs.getInt("lavacondenskill");
  				playerdata.activeskilldata.effectnum = rs.getInt("effectnum");
  				playerdata.gachapoint = rs.getInt("gachapoint");
  				playerdata.gachaflag = rs.getBoolean("gachaflag");
@@ -244,9 +251,14 @@ public class LoadPlayerDataTaskRunnable extends Thread{
 
 				//投票
 				playerdata.canVotingFairyUse = rs.getBoolean("canVotingFairyUse");
-				playerdata.VotingFairyTime = rs.getLong("VotingFairyTime");
+				//playerdata.VotingFairyTime = rs.getLong("VotingFairyTime");
 				playerdata.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue");
 				playerdata.hasVotingFairyMana = rs.getInt("hasVotingFairyMana");
+				playerdata.SetVotingFairyTime(rs.getString("newVotingFairyTime"),p);
+
+
+				playerdata.contribute_point = rs.getInt("contribute_point");
+				playerdata.added_mana = rs.getInt("added_mana");
 
  				// 1周年記念
  				if (playerdata.anniversary = rs.getBoolean("anniversary")) {
@@ -285,6 +297,12 @@ public class LoadPlayerDataTaskRunnable extends Thread{
 				}
 				playerdata.setTemplateMap(saveMap);
 
+				//正月イベント用
+				playerdata.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive");
+				playerdata.newYearBagAmount = rs.getInt("newYearBagAmount");
+
+				//バレンタインイベント用
+				playerdata.hasChocoGave = rs.getBoolean("hasChocoGave");
 			  }
 			rs.close();
 		} catch (SQLException | IOException e) {
@@ -313,18 +331,16 @@ public class LoadPlayerDataTaskRunnable extends Thread{
 		playermap.put(uuid, playerdata);
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ読込完了");
 
-		//投票妖精の処理
-		if(playerdata.VotingFairyTime + 400 < Util.getTime() && playerdata.canVotingFairyUse == true){
-			playerdata.canVotingFairyUse = false ;
-			p.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
+		//playerdataが読み込み終えた時に投票妖精のマナが継続しているかを確認しプレイヤーに告知
+		playerdata.isVotingFairy(p);
+
+		//貢献度pt増加によるマナ増加があるかどうか
+		if(playerdata.added_mana < playerdata.contribute_point){
+			int addMana;
+			addMana = playerdata.contribute_point - playerdata.added_mana;
+			playerdata.isContribute(p, addMana);
 		}
-		else if(playerdata.canVotingFairyUse == true){
-			p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "おかえり。" + p.getName() );
-			if(playerdata.hasVotingFairyMana > 0)
-				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "僕はまだ君のマナを回復させられるよ" );
-			else
-				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "ガチャりんごがもう無いからまた渡してくれると嬉しいな" );
-		}
+
 		return;
 	}
 }

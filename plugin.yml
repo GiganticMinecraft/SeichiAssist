@@ -1,6 +1,6 @@
 name: SeichiAssist
 main: com.github.unchama.seichiassist.SeichiAssist
-version: 0.9.27
+version: 0.9.30
 
 commands:
   gacha:
@@ -57,4 +57,14 @@ commands:
       description: This is a Halfblockprotect command.
       usage: /<command>
       permission: multiseichiplugin.halfguard
+      permission-message: You don't have <permission>
+  event:
+      description: This is New Year Event command.
+      usage: /<command> get
+      permission: multiseichiplugin.event
+      default-permission: OP
+  contribute:
+      description: This is a Contribute command.
+      usage: /<command> <help/add/remove> <playername> <point>
+      permission: multiseichiplugin.contribute
       permission-message: You don't have <permission>

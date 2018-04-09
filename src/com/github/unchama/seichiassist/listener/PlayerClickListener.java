@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.listener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
@@ -9,6 +11,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -33,6 +36,10 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
+
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayerClickListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -290,8 +297,23 @@ public class PlayerClickListener implements Listener {
 					if (!playerdata.everysoundflag) {
 						player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, (float) 0.5, 2);
 					}
+					List<String> enchantname = new ArrayList<String>();
+					List<String> lore = present.itemstack.getItemMeta().getLore();
+					Map<Enchantment, Integer> enchantment = present.itemstack.getItemMeta().getEnchants();
+
+					for(Enchantment enchant : enchantment.keySet())
+					{
+						enchantname.add(ChatColor.GRAY + Util.getEnchantName(enchant.getName()) + " " + Util.getEnchantLevelRome(enchantment.get(enchant)));
+					}
+					lore.remove(lore.indexOf("§r§2所有者：" + player.getName()));
+
+					TextComponent message = new TextComponent();
+					message.setText(ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
+					message.setHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(" " + present.itemstack.getItemMeta().getDisplayName() +  "\n" + Util.getDescFormat(enchantname) + Util.getDescFormat(lore)).create() ) );
+
 					player.sendMessage(ChatColor.RED + "おめでとう！！！！！Gigantic☆大当たり！" + str);
-					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！\n" + ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
+					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！");
+					Util.sendEveryMessage(message);
 				}else if(present.probability < 0.01){
 					//大当たり時にSEを鳴らす(自分だけ)
 					player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seasonalevents.events.valentine.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -128,7 +129,7 @@ public class MenuInventoryData {
 		// ver0.3.2 四次元ポケットOPEN
 		itemstack = new ItemStack(Material.ENDER_PORTAL_FRAME,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ENDER_PORTAL_FRAME);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "四次元ポケットを開く");
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "4次元ポケットを開く");
 		lore.clear();
 		if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です");
@@ -136,7 +137,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "ポケットサイズ:" + playerdata.inventory.getSize() + "スタック");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで開く");
 		}
-		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※四次元ポケットの中身は");
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※4次元ポケットの中身は");
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "各サバイバルサーバー間で");
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "共有されます");
 		itemmeta.setLore(lore);
@@ -474,7 +475,6 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEACON);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スポーンワールドへワープ");
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "・メインワールド"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "・資源ワールド"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・整地ワールド"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "間を移動する時に使います"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックするとワープします"
@@ -562,7 +562,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "不必要な各種鉱石を"
 				, ChatColor.RESET + "" + ChatColor.DARK_RED + "交換券" + ChatColor.RESET + ChatColor.GREEN + "と交換できます"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "出てきたインベントリ―に"
-				, ChatColor.RESET + "" +  ChatColor.GREEN + "交換したい景品を入れて"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "交換したい鉱石を入れて"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "escキーを押してください"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "たまにアイテムが消失するから"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "大事なものはいれないでネ"
@@ -590,11 +590,30 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND);
 		itemmeta.addEnchant(Enchantment.DURABILITY, 100, false);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票ptメニュー");
-		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "実装中");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "投票ptに関することはこちらから！");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(30,itemstack);
+
+		//5個目に一時的にチョコをゲットできるボタンを作る。TODO:ましなやり方に変えたい
+		if (!playerdata.hasChocoGave) {
+			if (Valentine.isInEvent) {
+				itemstack = new ItemStack(Material.TRAPPED_CHEST);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHEST);
+				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+				itemmeta.setDisplayName("プレゼントボックス");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "<バレンタインイベント記念>",
+						ChatColor.RESET + "" + ChatColor.AQUA + "記念品として",
+						ChatColor.RESET + "" + ChatColor.GREEN + "チョコチップクッキー×64個",
+						ChatColor.RESET + "" + ChatColor.AQUA + "を配布します。",
+						ChatColor.RESET + "" + ChatColor.DARK_RED + ChatColor.UNDERLINE + ChatColor.BOLD + "クリックで受け取る");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(5, itemstack);
+			}
+		}
 
 		return inventory;
 	}
@@ -758,6 +777,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(3,itemstack);
 
+		/*投票ptメニューへ移動
 		// ver0.3.2 投票ページ表示
 		itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
@@ -772,6 +792,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
+		*/
 
 
 		//椎名林檎変換システムを開く
@@ -5265,11 +5286,13 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
 
 		itemstack = new ItemStack(Material.DIAMOND_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.YELLOW + "第1サバイバルサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.YELLOW + "アルカディアサーバ");
+		List<String> lore1 = new ArrayList<>();
+		lore1.add(ChatColor.GRAY + "旧第一サバイバルサーバ");
+		itemmeta.setLore(lore1);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5277,7 +5300,10 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND_SPADE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.YELLOW + "第2サバイバルサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.YELLOW + "エデンサーバ");
+		List<String> lore2 = new ArrayList<>();
+		lore2.add(ChatColor.GRAY + "旧第二サバイバルサーバ");
+		itemmeta.setLore(lore2);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5285,7 +5311,10 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND_AXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.YELLOW + "第3サバイバルサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.YELLOW + "ヴァルハラサーバ");
+		List<String> lore3 = new ArrayList<>();
+		lore3.add(ChatColor.GRAY + "旧第三サバイバルサーバ");
+		itemmeta.setLore(lore3);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5293,7 +5322,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.IRON_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.AQUA + "第1整地専用特設サーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.AQUA + "第1整地専用特設サーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5301,7 +5330,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.GOLD_PICKAXE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.AQUA + "第2整地専用特設サーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.AQUA + "第2整地専用特設サーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5309,7 +5338,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.GRASS);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.WHITE + "クリエイティブサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.WHITE + "クリエイティブサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5317,7 +5346,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.CACTUS);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.DARK_GREEN + "イベントサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.DARK_GREEN + "イベントサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5325,7 +5354,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND_ORE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "第1βテストサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "第1βテストサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5333,7 +5362,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND_ORE);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "第2βテストサーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "第2βテストサーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5341,7 +5370,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.DIAMOND);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "公共施設サーバ");
+		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.GREEN + "公共施設サーバ");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 
@@ -5379,6 +5408,21 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(0,itemstack);
 
+		// ver0.3.2 投票ページ表示
+		itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票ページにアクセス");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "投票すると様々な特典が！"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "1日1回投票出来ます"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄に"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "URLが表示されますので"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してから"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(9,itemstack);
+
 		//妖精召喚
 		itemstack = new ItemStack(Material.GHAST_TEAR);
 		itemmeta = itemstack.getItemMeta();
@@ -5413,6 +5457,17 @@ public class MenuInventoryData {
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(28,itemstack);
+
+		//りんご残量
+		itemstack = new ItemStack(Material.BOWL);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "りんごの残り数を尋ねる" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "マナの妖精に渡したりんごが"
+				,ChatColor.RESET + "" +  ChatColor.GRAY + "どれくらい残っているか尋ねます" );
+		itemmeta.setLore(lore);
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(22,itemstack);
 
 		//棒メニューに戻る
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);

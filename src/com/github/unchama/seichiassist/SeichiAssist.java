@@ -10,6 +10,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.commands.*;
+import com.github.unchama.seichiassist.listener.*;
+import com.github.unchama.seichiassist.listener.newyearevent.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -25,6 +28,7 @@ import org.bukkit.scheduler.BukkitTask;
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.AchieveCommand;
 import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
+import com.github.unchama.seichiassist.commands.contributeCommand;
 import com.github.unchama.seichiassist.commands.effectCommand;
 import com.github.unchama.seichiassist.commands.gachaCommand;
 import com.github.unchama.seichiassist.commands.lastquitCommand;
@@ -38,18 +42,6 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
-import com.github.unchama.seichiassist.listener.EntityListener;
-import com.github.unchama.seichiassist.listener.GachaItemListener;
-import com.github.unchama.seichiassist.listener.MebiusListener;
-import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
-import com.github.unchama.seichiassist.listener.PlayerClickListener;
-import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
-import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
-import com.github.unchama.seichiassist.listener.PlayerJoinListener;
-import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
-import com.github.unchama.seichiassist.listener.PlayerQuitListener;
-import com.github.unchama.seichiassist.listener.RegionInventoryListener;
-import com.github.unchama.seichiassist.listener.WorldRegenListener;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
@@ -82,6 +74,8 @@ public class SeichiAssist extends JavaPlugin{
 	public static Config config;
 
 	public static final int SUB_HOME_DATASIZE = 98;	//DB上でのサブホーム1つ辺りのデータサイズ　xyz各10*3+ワールド名64+区切り文字1*4
+
+	public static final int VOTE_FAIRYTIME_DATASIZE = 17; //DB上での妖精を召喚した時間のデータサイズ　年4+月2+日2+時間2+分2+区切り文字1*5
 
 	Random rand = new java.util.Random();
 	//起動するタスクリスト
@@ -172,7 +166,7 @@ public class SeichiAssist extends JavaPlugin{
 			18155000,18645000,19135000,19625000,20115000,//115
 			20605000,21095000,21585000,22075000,22565000,//120
 			23105000,23645000,24185000,24725000,25265000,//125
-			25805000,26345000,26885000,27245000,27965000,//130
+			25805000,26345000,26885000,27425000,27965000,//130
 			28555000,29145000,29735000,30325000,30915000,//135
 			31505000,32095000,32685000,33275000,33865000,//140
 			34525000,35185000,35845000,36505000,37165000,//145
@@ -633,6 +627,8 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("mebius",new mebiusCommand(plugin));
 		commandlist.put("unlockachv", new AchieveCommand(plugin));
 		commandlist.put("halfguard", new HalfBlockProtectCommand(plugin));
+		commandlist.put("event", new EventCommand(plugin));
+		commandlist.put("contribute", new contributeCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -647,6 +643,8 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new MebiusListener(), this);
 		getServer().getPluginManager().registerEvents(new RegionInventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new WorldRegenListener(), this);
+		//正月イベント用
+		new NewYearsEvent(this);
 		// マナ自動回復用リスナー…無効化中
 		// getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
 		// BungeeCordとのI/F

@@ -124,14 +124,10 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		}
 		this.breaklength = assaultarea.getBreakLength();
 		//壊すフラグを指定
-		if(playerdata.activeskilldata.assaulttype == ActiveSkill.CONDENSE.gettypenum()){
-			if(playerdata.activeskilldata.assaultnum < 7){
-				waterflag = true;
-			}else{
-				lavaflag = true;
-			}
-			condensflag = true;
-
+		if(playerdata.activeskilldata.assaulttype == ActiveSkill.WATERCONDENSE.gettypenum()){
+			waterflag = true;
+		}else if(playerdata.activeskilldata.assaulttype == ActiveSkill.LAVACONDENSE.gettypenum()){
+			lavaflag = true;
 		}else if(playerdata.activeskilldata.assaulttype == ActiveSkill.ARMOR.gettypenum()){
 			breakflag = true;
 		}

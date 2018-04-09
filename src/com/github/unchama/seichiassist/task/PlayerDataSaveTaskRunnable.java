@@ -83,7 +83,9 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",arrowskill = " + Integer.toString(playerdata.activeskilldata.arrowskill)
 				+ ",multiskill = " + Integer.toString(playerdata.activeskilldata.multiskill)
 				+ ",breakskill = " + Integer.toString(playerdata.activeskilldata.breakskill)
-				+ ",condenskill = " + Integer.toString(playerdata.activeskilldata.condenskill)
+				//+ ",condenskill = " + Integer.toString(playerdata.activeskilldata.condenskill)
+				+ ",watercondenskill = " + Integer.toString(playerdata.activeskilldata.watercondenskill)
+				+ ",lavacondenskill = " + Integer.toString(playerdata.activeskilldata.lavacondenskill)
 				+ ",effectnum = " + Integer.toString(playerdata.activeskilldata.effectnum)
 				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
 				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
@@ -217,9 +219,12 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 				//投票
 				+ ",canVotingFairyUse = " + Boolean.toString(playerdata.canVotingFairyUse)
-				+ ",VotingFairyTime = " + Long.toString(playerdata.VotingFairyTime)
+				+ ",newVotingFairyTime = '" + playerdata.VotingFairyTimeToString() + "'"
 				+ ",VotingFairyRecoveryValue = " + Integer.toString(playerdata.VotingFairyRecoveryValue)
-				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana);
+				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana)
+
+				//貢献度pt
+				+",added_mana = " + Integer.toString(playerdata.added_mana);
 
 				//実績のフラグ(BitSet)保存用変換処理
 				long[] TitleArray = playerdata.TitleFlags.toLongArray();
@@ -235,6 +240,12 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 			command += ",left_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getLeftAmount());
 		}
 
+		//正月イベント
+		command += ",hasNewYearSobaGive = " + Boolean.toString(playerdata.hasNewYearSobaGive);
+		command += ",newYearBagAmount = " + Integer.toString(playerdata.newYearBagAmount);
+
+		//バレンタインイベント
+		command += ",hasChocoGave = " + Boolean.toString(playerdata.hasChocoGave);
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 		for(int i = 0; i < activeskilleffect.length ; i++){
@@ -299,5 +310,4 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
  			return;
  		}*/
 	}
-
 }
