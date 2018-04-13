@@ -1,11 +1,9 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.util.List;
+import java.util.*;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
+import org.bukkit.*;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -252,6 +250,27 @@ public class gachaCommand implements TabExecutor{
 				int id = Util.toInt(args[1]);
 				Gachaget(player,id,args[2]);
 			}
+			return true;
+
+		} else if (args[0].equalsIgnoreCase("giveitem")) {
+			if (sender instanceof Player) {
+				sender.sendMessage("このコマンドはプレイヤーからは送信できません。");
+				return true;
+			}
+			if (args.length != 3) {
+				sender.sendMessage("/gacha giveitem <ガチャアイテムID> <与えるプレイヤーUUID> のように入力してください。");
+				return true;
+			}
+
+			Player player = Bukkit.getPlayer(UUID.fromString(args[2]));
+
+			if (player == null) {
+				sender.sendMessage("プレイヤーがオフラインの際コマンド使用はできません。");
+				return true;
+			}
+
+			int id = Util.toInt(args[1]);
+			Gachaget(player, id, player.getName());
 			return true;
 		}
 
