@@ -437,8 +437,8 @@ public class SeichiAssist extends JavaPlugin{
 
 			//以下レッドストーン系ブロック
 			new MineStackObj("redstone","レッドストーン",15,Material.REDSTONE,0,false,-1,4)
-			,new MineStackObj("stone_button","ボタン",16,Material.STONE_BUTTON,0,false,-1,4)
-			,new MineStackObj("wood_button","ボタン",16,Material.WOOD_BUTTON,0,false,-1,4)
+			,new MineStackObj("stone_button","石のボタン",16,Material.STONE_BUTTON,0,false,-1,4)
+			,new MineStackObj("wood_button","木のボタン",16,Material.WOOD_BUTTON,0,false,-1,4)
 			,new MineStackObj("stone_plate","石の感圧版",17,Material.STONE_PLATE,0,false,-1,4)
 			,new MineStackObj("wood_plate","木の感圧版",17,Material.WOOD_PLATE,0,false,-1,4)
 			,new MineStackObj("fence_gate","オークのフェンスゲート",18,Material.FENCE_GATE,0,false,-1,4)
