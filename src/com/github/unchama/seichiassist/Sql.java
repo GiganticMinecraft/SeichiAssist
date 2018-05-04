@@ -131,7 +131,7 @@ public class Sql{
 				stmt.close();
 				con.close();
 			}
-			con = (Connection) DriverManager.getConnection(url, id, pw);
+			con = DriverManager.getConnection(url, id, pw);
 			stmt = con.createStatement();
 	    } catch (SQLException e) {
 	    	e.printStackTrace();
@@ -145,7 +145,7 @@ public class Sql{
 		try {
 			if(con.isClosed()){
 				plugin.getLogger().warning("sqlConnectionクローズを検出。再接続試行");
-				con = (Connection) DriverManager.getConnection(url, id, pw);
+				con = DriverManager.getConnection(url, id, pw);
 			}
 			if(stmt.isClosed()){
 				plugin.getLogger().warning("sqlStatementクローズを検出。再接続試行");
@@ -724,7 +724,7 @@ public class Sql{
 			rs = stmt.executeQuery(command);
 			while (rs.next()) {
 				GachaData gachadata = new GachaData();
-				Inventory inventory = BukkitSerialization.fromBase64(rs.getString("itemstack").toString());
+				Inventory inventory = BukkitSerialization.fromBase64(rs.getString("itemstack"));
 				gachadata.itemstack = (inventory.getItem(0));
 				gachadata.amount = rs.getInt("amount");
 				gachadata.probability = rs.getDouble("probability");
@@ -753,7 +753,7 @@ public class Sql{
 			rs = stmt.executeQuery(command);
 			while (rs.next()) {
 				MineStackGachaData gachadata = new MineStackGachaData();
-				Inventory inventory = BukkitSerialization.fromBase64(rs.getString("itemstack").toString());
+				Inventory inventory = BukkitSerialization.fromBase64(rs.getString("itemstack"));
 				gachadata.itemstack = (inventory.getItem(0));
 				gachadata.amount = rs.getInt("amount");
 				gachadata.level = rs.getInt("level");
@@ -824,7 +824,7 @@ public class Sql{
 					+ "(" + Double.toString(gachadata.probability)
 					+ "," + Integer.toString(gachadata.amount)
 					+ "," + Integer.toString(gachadata.level)
-					+ ",'" + gachadata.obj_name.toString() + "'"
+					+ ",'" + gachadata.obj_name + "'"
 					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
 					+ ")";
 			if(!putCommand(command)){
@@ -1040,7 +1040,7 @@ public class Sql{
 			try{
 				rs = stmt.executeQuery(command);
 				while (rs.next()) {
-	 				inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
+	 				inventory = BukkitSerialization.fromBase64(rs.getString("inventory"));
 				  }
 				rs.close();
 			} catch (SQLException | IOException e) {

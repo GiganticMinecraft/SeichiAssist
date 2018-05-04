@@ -46,7 +46,7 @@ public class AchieveCommand implements TabExecutor{
 	public boolean onCommand(CommandSender sender, Command cmd,
 	String label, String[] args) {
 
-		Sql sql = SeichiAssist.plugin.sql;
+		Sql sql = SeichiAssist.sql;
 
 		//final String table = SeichiAssist.PLAYERDATA_TABLENAME;
 

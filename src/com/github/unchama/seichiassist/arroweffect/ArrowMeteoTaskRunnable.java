@@ -47,7 +47,7 @@ public class ArrowMeteoTaskRunnable extends BukkitRunnable{
         vec.setY(vec.getY() * k);
         vec.setZ(vec.getZ() * k);
         proj = player.getWorld().spawn(loc, Arrow.class);
-        SeichiAssist.entitylist.add((Entity) proj);
+        SeichiAssist.entitylist.add(proj);
         proj.setShooter(player);
         proj.setGravity(false);
         proj.setGlowing(true);

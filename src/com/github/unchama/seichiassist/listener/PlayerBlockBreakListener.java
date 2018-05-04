@@ -299,7 +299,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 			//減る耐久値の計算
-			alldurability += (short) BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size());
+			alldurability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size());
 			//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
 			alldurability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
 
@@ -361,7 +361,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		//壊したブロック数に応じてクールダウンを発生させる
-		long cooldown = (long) ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
+		long cooldown = ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
 		if(cooldown >= 5){
 			new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
 		}
@@ -555,7 +555,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		//壊したブロック数に応じてクールダウンを発生させる
-		long cooldown = (long) ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
+		long cooldown = ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
 		if(cooldown >= 5){
 			new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
 		}

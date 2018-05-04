@@ -229,7 +229,7 @@ public class MebiusListener implements Listener {
 					|| !(event.getEntity().getKiller() instanceof Player)) {
 				return;
 			}
-			Player player = (Player) event.getEntity().getKiller();
+			Player player = event.getEntity().getKiller();
 			String monsterName = event.getEntity().getName();
 
 			// プレイヤーがMebiusを装備していない場合は除外
@@ -441,11 +441,8 @@ public class MebiusListener implements Listener {
 		if (debugFlg) {
 			chk /= 100;
 		}
-		if (chk == 0) {
-			return true;
-		}
-		return false;
-	}
+        return chk == 0;
+    }
 
 	// Mebiusドロップ率
 	private static final int dropPer = 50000;
@@ -456,11 +453,8 @@ public class MebiusListener implements Listener {
 		if (debugFlg) {
 			chk /= 100;
 		}
-		if (chk == 0) {
-			return true;
-		}
-		return false;
-	}
+        return chk == 0;
+    }
 
 	// Mebius更新処理
 	private static void levelUp(Player player) {

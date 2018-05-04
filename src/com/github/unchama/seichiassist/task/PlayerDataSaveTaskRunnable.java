@@ -20,7 +20,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	//private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	private Sql sql = SeichiAssist.plugin.sql;
+	private Sql sql = SeichiAssist.sql;
 	private static Config config = SeichiAssist.config;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;

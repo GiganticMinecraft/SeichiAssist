@@ -19,7 +19,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class seichiCommand implements TabExecutor {
 	SeichiAssist plugin;
-	Sql sql = SeichiAssist.plugin.sql;
+	Sql sql = SeichiAssist.sql;
 
 	public seichiCommand(SeichiAssist _plugin){
 		plugin = _plugin;

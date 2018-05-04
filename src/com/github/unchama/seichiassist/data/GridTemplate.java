@@ -54,10 +54,7 @@ public class GridTemplate {
      * @return true: 空 / false: 空でない
      */
     public boolean isEmpty() {
-        if (this.aheadAmount == 0 && this.behindAmount == 0 && this.rightAmount == 0 && this.leftAmount == 0) {
-            return true;
-        }
-        return false;
+        return this.aheadAmount == 0 && this.behindAmount == 0 && this.rightAmount == 0 && this.leftAmount == 0;
     }
 
     @Override

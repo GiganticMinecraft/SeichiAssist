@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import com.github.unchama.seasonalevents.*;
 import com.github.unchama.seasonalevents.events.valentine.*;
+import com.github.unchama.seichiassist.data.*;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -46,13 +47,6 @@ import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.data.ActiveSkillInventoryData;
-import com.github.unchama.seichiassist.data.EffectData;
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.Mana;
-import com.github.unchama.seichiassist.data.MenuInventoryData;
-import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
@@ -66,7 +60,7 @@ public class PlayerInventoryListener implements Listener {
 	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
 	SeichiAssist plugin = SeichiAssist.plugin;
 	private Config config = SeichiAssist.config;
-	private Sql sql = SeichiAssist.plugin.sql;
+	private Sql sql = SeichiAssist.sql;
 	//棒メニュー
 	@EventHandler
 	public void onPlayerClickServerSwitchMenuEvent(InventoryClickEvent event){
@@ -215,7 +209,7 @@ public class PlayerInventoryListener implements Listener {
 				if (itemstackcurrent.getItemMeta().getDisplayName().equals(
 						org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.UNDERLINE + "" + org.bukkit.ChatColor.BOLD + "サーバー間移動メニュー")) {
 					//開く音を再生
-					player.playSound(player.getLocation(), Sound.BLOCK_PORTAL_AMBIENT, 0.6F, (float) 1.5F);
+					player.playSound(player.getLocation(), Sound.BLOCK_PORTAL_AMBIENT, 0.6F, 1.5F);
 					player.openInventory(MenuInventoryData.getServerSwitchMenu(player));
 				}
 
@@ -302,7 +296,7 @@ public class PlayerInventoryListener implements Listener {
 
 			//溜まったガチャ券をインベントリへ
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)
-					&& ((SkullMeta)itemstackcurrent.getItemMeta()).getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地報酬ガチャ券を受け取る")){
+					&& itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地報酬ガチャ券を受け取る")){
 				//連打防止クールダウン処理
 				if(!playerdata.gachacooldownflag){
 					return;
@@ -337,7 +331,7 @@ public class PlayerInventoryListener implements Listener {
 
 			//運営からのガチャ券受け取り
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)
-					&& ((SkullMeta)itemstackcurrent.getItemMeta()).getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る")){
+					&& itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る")){
 
 				//nは最新のnumofsorryforbugの値になる(上限値576個)
 				int n = sql.givePlayerBug(player,playerdata);
@@ -598,7 +592,7 @@ public class PlayerInventoryListener implements Listener {
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispPvPToggleMeta(playerdata,itemmeta));
 			}
 
-			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ")){
+			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ")){
 				// 整地量表示トグル
 				playerdata.expbar.setVisible(!playerdata.expbar.isVisible());
 				if(playerdata.expbar.isVisible()){
@@ -4417,7 +4411,7 @@ public class PlayerInventoryListener implements Listener {
             	}
             }
             //チケット計算
-            giveticket = giveticket + (int)(coalore/128) + (int)(ironore/64) + (int)(goldore/8) + (int)(lapisore/8) + (int)(diamondore/4) + (int)(redstoneore/32) + (int)(emeraldore/4);
+            giveticket = giveticket + coalore/128 + ironore/64 + goldore/8 + lapisore/8 + diamondore/4 + redstoneore/32 + emeraldore/4;
 
             //プレイヤー通知
             if(giveticket == 0){
@@ -4452,59 +4446,59 @@ public class PlayerInventoryListener implements Listener {
             /*
              * step3 非対象商品・余剰鉱石の返却
              */
-            if((coalore - (int)(coalore/128)*128) != 0){
+            if((coalore - coalore/128 *128) != 0){
             	ItemStack c = new ItemStack(Material.COAL_ORE);
             	ItemMeta citemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
             	c.setItemMeta(citemmeta);
-            	c.setAmount(coalore - (int)(coalore/128)*128);
+            	c.setAmount(coalore - coalore/128 *128);
             	retore.add(c);
             }
 
-            if((ironore - (int)(ironore/64)*64) != 0){
+            if((ironore - ironore/64 *64) != 0){
             	ItemStack i = new ItemStack(Material.IRON_ORE);
             	ItemMeta iitemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_ORE);
             	i.setItemMeta(iitemmeta);
-            	i.setAmount(ironore - (int)(ironore/64)*64);
+            	i.setAmount(ironore - ironore/64 *64);
             	retore.add(i);
             }
 
-            if((goldore - (int)(goldore/8)*8) != 0){
+            if((goldore - goldore/8 *8) != 0){
             	ItemStack g = new ItemStack(Material.GOLD_ORE);
             	ItemMeta gitemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_ORE);
             	g.setItemMeta(gitemmeta);
-            	g.setAmount(goldore - (int)(goldore/8)*8);
+            	g.setAmount(goldore - goldore/8 *8);
             	retore.add(g);
             }
 
-            if((lapisore - (int)(lapisore/8)*8) != 0){
+            if((lapisore - lapisore/8 *8) != 0){
             	ItemStack l = new ItemStack(Material.LAPIS_ORE);
             	ItemMeta litemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
             	l.setItemMeta(litemmeta);
-            	l.setAmount(lapisore - (int)(lapisore/8)*8);
+            	l.setAmount(lapisore - lapisore/8 *8);
             	retore.add(l);
             }
 
-            if((diamondore - (int)(diamondore/4)*4) != 0){
+            if((diamondore - diamondore/4 *4) != 0){
             	ItemStack d = new ItemStack(Material.DIAMOND_ORE);
             	ItemMeta ditemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
             	d.setItemMeta(ditemmeta);
-            	d.setAmount(diamondore - (int)(diamondore/4)*4);
+            	d.setAmount(diamondore - diamondore/4 *4);
             	retore.add(d);
             }
 
-            if((redstoneore - (int)(redstoneore/32)*32) != 0){
+            if((redstoneore - redstoneore/32 *32) != 0){
             	ItemStack r = new ItemStack(Material.REDSTONE_ORE);
             	ItemMeta ritemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
             	r.setItemMeta(ritemmeta);
-            	r.setAmount(redstoneore - (int)(redstoneore/32)*32);
+            	r.setAmount(redstoneore - redstoneore/32 *32);
             	retore.add(r);
             }
 
-            if((emeraldore - (int)(emeraldore/4)*4) != 0){
+            if((emeraldore - emeraldore/4 *4) != 0){
             	ItemStack e = new ItemStack(Material.EMERALD_ORE);
             	ItemMeta eitemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
             	e.setItemMeta(eitemmeta);
-            	e.setAmount(emeraldore - (int)(emeraldore/4)*4);
+            	e.setAmount(emeraldore - emeraldore/4 *4);
             	retore.add(e);
             }
 
@@ -4734,18 +4728,11 @@ public class PlayerInventoryListener implements Listener {
 
 					//ピッケルプレゼント処理(レベル50になるまで)
 					if(playerdata.level < 50){
-						ItemStack itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
-						ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
-						itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "Thanks for Voting!");
-						List<String> lore = Arrays.asList("投票ありがとナス♡");
-						itemmeta.addEnchant(Enchantment.DIG_SPEED, 3, true);
-						itemmeta.addEnchant(Enchantment.DURABILITY, 3, true);
-						itemmeta.setLore(lore);
-						itemstack.setItemMeta(itemmeta);
+						ItemStack pickaxe = ItemData.getSuperPickaxe(1);
 						if(!Util.isPlayerInventryFill(player)){
-							Util.addItem(player,itemstack);
+							Util.addItem(player, pickaxe);
 						}else{
-							Util.dropItem(player,itemstack);
+							Util.dropItem(player, pickaxe);
 						}
 					}
 

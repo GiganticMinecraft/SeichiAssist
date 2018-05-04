@@ -80,9 +80,8 @@ public class Mana {
 		displayMana(player,level);
 	}
 	public boolean hasMana(double h){
-		if(compare(m,h) < 0)return false;
-		return true;
-	}
+        return compare(m, h) >= 0;
+    }
 
 	private int compare(double x, double y) {
 		if(x > y)return 1;
