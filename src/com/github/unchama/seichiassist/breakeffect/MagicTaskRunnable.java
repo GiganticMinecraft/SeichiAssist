@@ -95,10 +95,10 @@ public class MagicTaskRunnable extends BukkitRunnable {
 			//2回目のrun
 			if (SeichiAssist.entitylist.isEmpty()) {
 				Chicken e = (Chicken) player.getWorld().spawnEntity(centerbreakloc, EntityType.CHICKEN);
-				SeichiAssist.entitylist.add((Entity) e);
+				SeichiAssist.entitylist.add(e);
 				e.playEffect(EntityEffect.WITCH_MAGIC);
 				e.setInvulnerable(true);
-				new EntityRemoveTaskRunnable((Entity) e).runTaskLater(plugin, 100);
+				new EntityRemoveTaskRunnable(e).runTaskLater(plugin, 100);
 				player.getWorld().playSound(effectloc, Sound.ENTITY_WITCH_AMBIENT, 1, 1.5F);
 			}
 

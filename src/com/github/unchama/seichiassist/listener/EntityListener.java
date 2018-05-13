@@ -51,7 +51,7 @@ public class EntityListener implements Listener {
 		if(!e.hasMetadata("ArrowSkill")) {
 			return;
 		}
-		Projectile proj = (Projectile)e;
+		Projectile proj = e;
     	projsource = proj.getShooter();
 		if(!(projsource instanceof Player)){
 			return;

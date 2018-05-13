@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.task;
 
-import java.util.Random;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,7 +23,7 @@ public class MebiusTaskRunnable extends BukkitRunnable {
 	public MebiusTaskRunnable(PlayerData parent) {
 		p = Bukkit.getPlayer(parent.uuid);
 		if (MebiusListener.isEquip(p)) {
-			speak("おかえり" + p.getName() + "！待ってたよ！");
+			speak("おかえり" +Objects.requireNonNull(MebiusListener.getNickname(p))  + "！待ってたよ！");
 		}
 		runTaskTimerAsynchronously(SeichiAssist.plugin, 2400, 2400);
 	}

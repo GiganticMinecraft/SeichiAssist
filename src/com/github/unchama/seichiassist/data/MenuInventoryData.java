@@ -1,11 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import com.github.unchama.seasonalevents.events.valentine.*;
 import org.bukkit.Bukkit;
@@ -32,21 +27,20 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 
 public class MenuInventoryData {
-	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	static Sql sql = SeichiAssist.sql;
-	SeichiAssist plugin = SeichiAssist.plugin;
-	static WorldGuardPlugin Wg = Util.getWorldGuard();
+	private static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
+	private static Sql sql = SeichiAssist.sql;
+	private static WorldGuardPlugin Wg = Util.getWorldGuard();
 
 	//二つ名組合せシステム用
-	static boolean nextpageflag1 = false ;
-	static boolean nextpageflag2 = false ;
-	static boolean nextpageflag3 = false ;
-	static boolean nextpageflagS = false ;
-	static int checkTitle1 = 0 ;
-	static int checkTitle2 = 0 ;
-	static int checkTitle3 = 0 ;
-	static int checkTitleS = 0 ;
-	static int NoKeep = 0;
+	private static boolean nextpageflag1 = false ;
+	private static boolean nextpageflag2 = false ;
+	private static boolean nextpageflag3 = false ;
+	private static boolean nextpageflagS = false ;
+	private static int checkTitle1 = 0 ;
+	private static int checkTitle2 = 0 ;
+	private static int checkTitle3 = 0 ;
+	private static int checkTitleS = 0 ;
+	private static int NoKeep = 0;
 
 	//1ページ目メニュー
 	public static Inventory getMenuData(Player p){
@@ -57,12 +51,7 @@ public class MenuInventoryData {
 		//プレイヤーデータ
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//念のためエラー分岐
-		if(playerdata == null){
-			Util.sendPlayerDataNullMessage(p);
-			Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
-			Bukkit.getLogger().warning("MenuInventoryData.getMenuData");
-			return null;
-		}
+		if (sendWarningToLogger(p, playerdata)) return null;
 
 		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "木の棒メニュー");
 		ItemStack itemstack;
@@ -81,7 +70,7 @@ public class MenuInventoryData {
 		lore.clear();
 		lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level);
 		if(playerdata.level < SeichiAssist.levellist.size()){
-			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level).intValue() - playerdata.totalbreaknum));
+			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.level) - playerdata.totalbreaknum));
 		}
 		//整地ワールド外では整地数が反映されない
 		if(!Util.isSeichiWorld(p)){
@@ -237,8 +226,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "2ページ目へ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowRight");
 		itemstack.setItemMeta(skullmeta);
@@ -888,8 +876,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
@@ -947,13 +934,13 @@ public class MenuInventoryData {
 	// ガチャ券受け取りボタン
 	public static List<String> GachaGetButtonLore(PlayerData playerdata){
 		List<String> lore = new ArrayList<String>();
-		int gachaget = (int) playerdata.gachapoint/1000;
+		int gachaget = playerdata.gachapoint /1000;
 		if(gachaget != 0){
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + gachaget + "枚"
-			, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
+			, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (1000 - playerdata.gachapoint%1000) + "ブロック");
 		}else{
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得できるガチャ券はありません"
-			, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (int)(1000 - playerdata.gachapoint%1000) + "ブロック");
+			, ChatColor.RESET + "" +  ChatColor.AQUA + "次のガチャ券まで:" + (1000 - playerdata.gachapoint%1000) + "ブロック");
 		}
 		return lore;
 	}
@@ -5276,12 +5263,7 @@ public class MenuInventoryData {
 		//プレイヤーデータ
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//念のためエラー分岐
-		if(playerdata == null){
-			Util.sendPlayerDataNullMessage(p);
-			Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
-			Bukkit.getLogger().warning("MenuInventoryData.getMenuData");
-			return null;
-		}
+		if (sendWarningToLogger(p, playerdata)) return null;
 		Inventory inventory = Bukkit.getServer().createInventory(null,2*9,ChatColor.DARK_RED + "" + ChatColor.BOLD + "サーバーを選択してください");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
@@ -5379,6 +5361,16 @@ public class MenuInventoryData {
 		return inventory;
 	}
 
+	private static boolean sendWarningToLogger(Player p, PlayerData playerdata) {
+		if(playerdata == null){
+			Util.sendPlayerDataNullMessage(p);
+			Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
+			Bukkit.getLogger().warning("MenuInventoryData.getMenuData");
+			return true;
+		}
+		return false;
+	}
+
 	//投票メニュー
 	public static Inventory getVotingMenuData(Player p){
 
@@ -5387,12 +5379,7 @@ public class MenuInventoryData {
 		//プレイヤーデータ
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//念のためエラー分岐
-		if(playerdata == null){
-			Util.sendPlayerDataNullMessage(p);
-			Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
-			Bukkit.getLogger().warning("MenuInventoryData.getMenuData");
-			return null;
-		}
+		if (sendWarningToLogger(p, playerdata)) return null;
 		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票ptメニュー");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
@@ -5527,12 +5514,7 @@ public class MenuInventoryData {
 		//プレイヤーデータ
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//念のためエラー分岐
-		if(playerdata == null){
-			Util.sendPlayerDataNullMessage(p);
-			Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
-			Bukkit.getLogger().warning("MenuInventoryData.getMenuData");
-			return null;
-		}
+		if (sendWarningToLogger(p, playerdata)) return null;
 		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "渡すガチャりんごの量を決めて下さい");
 		ItemStack itemstack;
 		ItemMeta itemmeta;

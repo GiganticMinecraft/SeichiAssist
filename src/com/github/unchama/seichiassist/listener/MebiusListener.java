@@ -5,13 +5,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
+import de.tr7zw.itemnbtapi.*;
+import net.minecraft.server.v1_10_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -182,7 +179,7 @@ public class MebiusListener implements Listener {
 				short max = mebius.getType().getMaxDurability();
 				short dur = mebius.getDurability();
 				if (dur >= max - 10) {
-					getPlayerData((Player) event.getEntity()).mebius.speak(getMessage(breakmsgs, player.getName(), ""));
+					getPlayerData((Player) event.getEntity()).mebius.speak(getMessage(breakmsgs, Objects.requireNonNull(getNickname(player)), ""));
 				}
 			}
 
@@ -190,7 +187,7 @@ public class MebiusListener implements Listener {
 			if (event.getDamager() instanceof Monster) {
 				Monster monster = (Monster) event.getDamager();
 				// 対モンスターメッセージ
-				getPlayerData((Player) event.getEntity()).mebius.speak(getMessage(warnmsgs, player.getName(), monster.getName()));
+				getPlayerData((Player) event.getEntity()).mebius.speak(getMessage(warnmsgs, Objects.requireNonNull(getNickname(player)), monster.getName()));
 			}
 		}
 	}
@@ -209,7 +206,7 @@ public class MebiusListener implements Listener {
 		// 壊れたアイテムがMEBIUSなら
 		if (isMebius(item)) {
 			Player player = event.getPlayer();
-			getPlayerData(event.getPlayer()).mebius.speak(getMessage(msgs, player.getName(), ""));
+			getPlayerData(event.getPlayer()).mebius.speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
 			player.sendMessage(getName(item) + ChatColor.RESET + "が旅立ちました。");
 			// エンドラが叫ぶ
 			player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 0.1f);
@@ -229,7 +226,7 @@ public class MebiusListener implements Listener {
 					|| !(event.getEntity().getKiller() instanceof Player)) {
 				return;
 			}
-			Player player = (Player) event.getEntity().getKiller();
+			Player player = event.getEntity().getKiller();
 			String monsterName = event.getEntity().getName();
 
 			// プレイヤーがMebiusを装備していない場合は除外
@@ -242,7 +239,7 @@ public class MebiusListener implements Listener {
 				return;
 			}
 			getPlayerData(player).mebius.speak(getMessage(msgs,
-					player.getName(), monsterName));
+                    Objects.requireNonNull(getNickname(player)), monsterName));
 		} catch (NullPointerException e) {
 		}
 	}
@@ -258,7 +255,8 @@ public class MebiusListener implements Listener {
 				"[str1]と一緒に整地するの、楽しいねえ！");
 		Player player = event.getPlayer();
 		if (isEquip(player)) {
-			getPlayerData(player).mebius.speak(getMessage(msgs, player.getName(), ""));
+			PlayerData pd = getPlayerData(player);
+			pd.mebius.speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
 			// Lvup
 			if (isLevelUp(player)) {
 				levelUp(player);
@@ -358,6 +356,34 @@ public class MebiusListener implements Listener {
 		return NAMEHEAD + DEFNAME;
 	}
 
+	public static boolean setNickname(Player player, String name) {
+	    if (!isEquip(player)) {
+	        return false;
+        } else {
+	        ItemStack mebius = player.getInventory().getHelmet();
+            NBTItem nbtItem = new NBTItem(mebius);
+            nbtItem.setString("nickname", name);
+            player.getInventory().setHelmet(nbtItem.getItem());
+            getPlayerData(player).mebius.speakForce("わーい、ありがとう！今日から君のこと" + ChatColor.GREEN + name + ChatColor.RESET + "って呼ぶね！");
+            return true;
+        }
+    }
+
+    public static String getNickname(Player player) {
+	    if (!isEquip(player)) {
+	        return null;
+        } else {
+	        ItemStack mebius = player.getInventory().getHelmet();
+	        NBTItem nbtItem = new NBTItem(mebius);
+	        if (nbtItem.getString("nickname").isEmpty()) {
+	            nbtItem.setString("nickname", player.getName());
+	            return player.getName();
+            } else {
+	            return nbtItem.getString("nickname");
+            }
+        }
+    }
+
 	// Mebius用private
 	// Mebius最大Lv
 	private static final int LVMAX = 30;
@@ -441,11 +467,8 @@ public class MebiusListener implements Listener {
 		if (debugFlg) {
 			chk /= 100;
 		}
-		if (chk == 0) {
-			return true;
-		}
-		return false;
-	}
+        return chk == 0;
+    }
 
 	// Mebiusドロップ率
 	private static final int dropPer = 50000;
@@ -456,11 +479,8 @@ public class MebiusListener implements Listener {
 		if (debugFlg) {
 			chk /= 100;
 		}
-		if (chk == 0) {
-			return true;
-		}
-		return false;
-	}
+        return chk == 0;
+    }
 
 	// Mebius更新処理
 	private static void levelUp(Player player) {
@@ -516,6 +536,7 @@ public class MebiusListener implements Listener {
 	// 新しいMebiusのひな形を作る
 	private static ItemStack create(ItemStack mebius, Player player) {
 		String name = NAMEHEAD + DEFNAME;
+		String nickname = "";
 		int level = 1;
 		Map<Enchantment, Integer> ench = new LinkedHashMap<Enchantment, Integer>() {
 			{
@@ -528,6 +549,8 @@ public class MebiusListener implements Listener {
 			level = getIl(mebius) + 1;
 			name = mebius.getItemMeta().getDisplayName();
 			ench = mebius.getItemMeta().getEnchants();
+			nickname = new NBTItem(mebius).getString("nickname");
+
 			// Mebiusの進化を通知する
 			player.sendMessage(name + ChatColor.RESET + "の見た目が進化しました。");
 		}
@@ -548,6 +571,10 @@ public class MebiusListener implements Listener {
 		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 		mebius.setItemMeta(meta);
+
+		NBTItem nbtItem = new NBTItem(mebius);
+        nbtItem.setString("nickname", nickname);
+        mebius = nbtItem.getItem();
 
 		return mebius;
 	}
@@ -668,7 +695,7 @@ public class MebiusListener implements Listener {
 	private static void loadTips() {
 		try {
 			// HTTP通信でJSONデータを取得
-			URL url = new URL("http://seichi.click/d/Tips");
+			URL url = new URL("https://seichi.click/wiki/Tips");
 			URLConnection urlCon = url.openConnection();
 			// 403回避のためユーザーエージェントを登録
 			urlCon.setRequestProperty("User-Agent", "Mebius");

@@ -55,12 +55,8 @@ public class GachaData {
 			int index = Util.LoreContains(mlore, "所有者");
 			if(index >= 0){
 				//保有者であれば交換
-				if(mlore.get(index).toLowerCase().contains(name)){
-					return true;
-				}//保有者でなければ交換できない
-				else{
-					return false;
-				}
+                //保有者でなければ交換できない
+                return mlore.get(index).toLowerCase().contains(name);
 			}//所有者の記載がなければ交換できる。
 			else{
 				return true;
@@ -73,11 +69,8 @@ public class GachaData {
 		List<String> mlore,lore;
 		lore = this.itemstack.getItemMeta().getLore();
 		mlore = m.getItemMeta().getLore();
-		if(mlore.containsAll(lore)&&this.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
-			return true;
-		}
-		return false;
-	}
+        return mlore.containsAll(lore) && this.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName());
+    }
 
 	public void addname(String name) {
 		ItemMeta meta = this.itemstack.getItemMeta();

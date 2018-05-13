@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.util.Util;
 
 public class HalfHourTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
-	Sql sql = SeichiAssist.plugin.sql;
+	Sql sql = SeichiAssist.sql;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 
 	public HalfHourTaskRunnable() {

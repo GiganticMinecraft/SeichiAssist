@@ -20,7 +20,7 @@ import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class rmpCommand implements TabExecutor {
-	static Sql sql = SeichiAssist.plugin.sql;
+	static Sql sql = SeichiAssist.sql;
 	private Map<UUID, String> leavers;
 
 	public rmpCommand(SeichiAssist plugin){

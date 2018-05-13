@@ -47,7 +47,7 @@ public class ArrowBladeTaskRunnable extends BukkitRunnable{
         vec.setY(vec.getY() * k);
         vec.setZ(vec.getZ() * k);
         proj = player.getWorld().spawn(loc, SmallFireball.class);
-        SeichiAssist.entitylist.add((Entity) proj);
+        SeichiAssist.entitylist.add(proj);
         proj.setShooter(player);
         proj.setGravity(false);
         //読み込み方法

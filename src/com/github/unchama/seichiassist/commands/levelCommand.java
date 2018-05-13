@@ -22,7 +22,7 @@ import com.github.unchama.seichiassist.util.Util;
 
 public class levelCommand implements TabExecutor{
 	public SeichiAssist plugin;
-	Sql sql = SeichiAssist.plugin.sql;
+	Sql sql = SeichiAssist.sql;
 
 
 	public levelCommand(SeichiAssist plugin){

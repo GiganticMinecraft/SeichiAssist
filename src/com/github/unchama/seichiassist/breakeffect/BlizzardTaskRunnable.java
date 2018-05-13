@@ -67,11 +67,7 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 				cancel();
 			}
 			soundradius = 5;
-			if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
-				soundflag = true;
-			}else{
-				soundflag = false;
-			}
+            soundflag = playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum();
 			break;
 
 		case 2:

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.event.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -428,6 +429,8 @@ public class PlayerData {
 
 			//レベルアップ時のメッセージ
 			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i)+")→Lv("+(i+1)+")】");
+			//レベルアップイベント着火
+			Bukkit.getPluginManager().callEvent(new SeichiLevelUpEvent(p, this, i + 1));
 			//レベルアップ時の花火の打ち上げ
 			Location loc = p.getLocation();
 			Util.launchFireWorks(loc);
@@ -682,11 +685,7 @@ public class PlayerData {
 	}
 
 	public void toggleHalfBreakFlag() {
-		if (halfBreakFlag) {
-			halfBreakFlag = false;
-		} else {
-			halfBreakFlag = true;
-		}
+		halfBreakFlag = !halfBreakFlag;
 	}
 
 	public Map<DirectionType,Integer> getUnitMap() {
@@ -754,11 +753,7 @@ public class PlayerData {
 				Bukkit.getLogger().warning("グリッド式保護で予期せぬ動作[チャンク値仮定]。開発者に報告してください。");
 		}
 
-		if (assumedUnitAmount <= LIMIT) {
-			return true;
-		} else {
-			return false;
-		}
+		return assumedUnitAmount <= LIMIT;
 
 	}
 
@@ -767,11 +762,7 @@ public class PlayerData {
 
 		//減らしたと仮定する
 		final int assumedAmount = chunkMap.get(directionType) - unitPerClick;
-		if (assumedAmount < 0) {
-			return false;
-		} else {
-			return true;
-		}
+		return assumedAmount >= 0;
 	}
 
 	public void setUnitAmount(DirectionType directionType, int amount) {

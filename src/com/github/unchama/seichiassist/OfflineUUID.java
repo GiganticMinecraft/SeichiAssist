@@ -26,7 +26,7 @@ import java.util.UUID;
        }
 
        static Map<String, UUID> UUIDs;
-       public static UUID getUUID(String player, boolean forceReload) throws IOException, SocketTimeoutException, IllegalArgumentException {
+       public static UUID getUUID(String player, boolean forceReload) throws IOException, IllegalArgumentException {
           if(!forceReload && OfflineUUID.UUIDs != null && OfflineUUID.UUIDs.containsKey(player)){
         	  //System.out.println("debug!");
         	  return OfflineUUID.UUIDs.get(player);
@@ -78,7 +78,7 @@ import java.util.UUID;
           return null;
        }
 
-       private static String getUUIDJSON(String name) throws IOException, SocketTimeoutException{
+       private static String getUUIDJSON(String name) throws IOException {
           String re = "";
 
           URL url = new URL("https://api.mojang.com/profiles/page/1");
@@ -100,7 +100,7 @@ import java.util.UUID;
           while ((line = br.readLine()) != null) {
              re += line + "\n";
           }
-          re = re.substring(0, re.length());
+          re = re;
           br.close();
           huc.disconnect();
           return re;

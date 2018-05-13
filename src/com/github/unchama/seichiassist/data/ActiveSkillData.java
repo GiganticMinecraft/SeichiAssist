@@ -98,8 +98,8 @@ public class ActiveSkillData {
 		ActiveSkillPremiumEffect[] activeskillpremiumeffect = ActiveSkillPremiumEffect.values();
 		for(int i=0 ; i < activeskillpremiumeffect.length ; i++){
 			premiumeffectflagmap.put(activeskillpremiumeffect[i].getNum(), false);
-		};
-		area = null;
+		}
+        area = null;
 		assaultarea = null;
 
 		mana = new Mana();
@@ -109,7 +109,7 @@ public class ActiveSkillData {
 		int point = 0;
 		//レベルに応じたスキルポイント量を取得
 		for(int i = 1;i <= level;i++){
-			point += (int)(i / 10) + 1;
+			point += i / 10 + 1;
 		}
 		if(SeichiAssist.DEBUG){
 			player.sendMessage("あなたのレベルでの獲得アクティブスキルポイント：" + point);

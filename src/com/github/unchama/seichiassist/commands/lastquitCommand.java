@@ -13,7 +13,7 @@ import java.util.List;
 
 public class lastquitCommand implements TabExecutor{
 	public SeichiAssist plugin;
-	Sql sql = SeichiAssist.plugin.sql;
+	Sql sql = SeichiAssist.sql;
 
 
 	public lastquitCommand(SeichiAssist plugin){
