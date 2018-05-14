@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.event.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -60,6 +59,8 @@ public class PlayerData {
 	public List<EffectData> effectdatalist;
 	//現在のプレイヤーレベル
 	public int level;
+	//現在のスターレベル
+	public long starlevel;
 	//詫び券をあげる数
 	public int numofsorryforbug;
 	//拡張インベントリ
@@ -394,10 +395,16 @@ public class PlayerData {
 	//表示される名前に整地レベルor二つ名を追加
 	public void setDisplayName(Player p) {
 		String displayname = Util.getName(p);
+		//スターレベル用の計算
+		starlevel = totalbreaknum / 87115000 ;
 
 		//表示を追加する処理
 		if(displayTitle1No == 0 && displayTitle2No == 0 && displayTitle3No == 0){
-			displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
+			if(starlevel == 0){
+				displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
+			}else{
+				displayname =  "[Lv" + level + "☆" + starlevel + "]" + displayname + ChatColor.WHITE;
+			}
 		} else {
 			String displayTitle1 = SeichiAssist.config.getTitle1(displayTitle1No);
 			String displayTitle2 = SeichiAssist.config.getTitle2(displayTitle2No);
