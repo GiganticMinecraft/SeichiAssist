@@ -9,9 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import net.coreprotect.CoreProtect;
-import net.coreprotect.CoreProtectAPI;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -30,11 +27,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 
-import zedly.zenchantments.Zenchantments;
-
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+
+import net.coreprotect.CoreProtect;
+import net.coreprotect.CoreProtectAPI;
+import net.md_5.bungee.api.chat.BaseComponent;
+import zedly.zenchantments.Zenchantments;
 
 public class Util {
 	static private FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
@@ -202,6 +202,148 @@ public class Util {
 			player.sendMessage(str);
 		}
 	}
+
+	/**
+	 * json形式のチャットを送信する際に使用
+	 */
+	public static void sendEveryMessage(BaseComponent base){
+		SeichiAssist plugin = SeichiAssist.plugin;
+		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+			player.spigot().sendMessage(base);
+		}
+	}
+
+	public static String getEnchantName(String vaname){
+		switch(vaname){
+			case "PROTECTION_ENVIRONMENTAL":
+				return "ダメージ軽減";
+
+			case "PROTECTION_FIRE":
+				return "火炎耐性";
+
+			case "PROTECTION_FALL":
+				return "落下耐性";
+
+			case "PROTECTION_EXPLOSIONS":
+				return "爆発耐性";
+
+			case "PROTECTION_PROJECTILE":
+				return "飛び道具耐性";
+
+			case "OXYGEN":
+				return "水中呼吸";
+
+			case "WATER_WORKER":
+				return "水中採掘";
+
+			case "THORNS":
+				return "棘の鎧";
+
+			case "DEPTH_STRIDER":
+				return "水中歩行";
+
+			case "FROST_WALKER":
+				return "氷渡り";
+
+			case "DAMAGE_ALL":
+				return "ダメージ増加";
+
+			case "DAMAGE_UNDEAD":
+				return "アンデッド特効";
+
+			case "DAMAGE_ARTHROPODS":
+				return "虫特効";
+
+			case "KNOCKBACK":
+				return "ノックバック";
+
+			case "FIRE_ASPECT":
+				return "火属性";
+
+			case "LOOT_BONUS_MOBS":
+				return "ドロップ増加";
+
+			case "DIG_SPEED":
+				return "効率強化";
+
+			case "SILK_TOUCH":
+				return "シルクタッチ";
+
+			case "DURABILITY":
+				return "耐久力";
+
+			case "LOOT_BONUS_BLOCKS":
+				return "幸運";
+
+			case "ARROW_DAMAGE":
+				return "射撃ダメージ増加";
+
+			case "ARROW_KNOCKBACK":
+				return "パンチ";
+
+			case "ARROW_FIRE":
+				return "フレイム";
+
+			case "ARROW_INFINITE":
+				return "無限";
+
+			case "LUCK":
+				return "宝釣り";
+
+			case "LURE":
+				return "入れ食い";
+
+			case "MENDING":
+				return "修繕";
+
+			default:
+				return vaname;
+		}
+	}
+
+	public static String getEnchantLevelRome(int enchantlevel){
+		switch(enchantlevel){
+			case 1:
+				return "Ⅰ";
+
+			case 2:
+				return "Ⅱ";
+
+			case 3:
+				return "Ⅲ";
+
+			case 4:
+				return "Ⅳ";
+
+			case 5:
+				return "Ⅴ";
+
+			case 6:
+				return "Ⅵ";
+
+			case 7:
+				return "Ⅶ";
+
+			case 8:
+				return "Ⅷ";
+
+			case 9:
+				return "Ⅸ";
+
+			case 10:
+				return "Ⅹ" ;
+
+			default:
+				return String.valueOf(enchantlevel);
+		}
+
+	}
+
+	public static String getDescFormat(List<String> list)
+	{
+		return list.toString().replaceAll(",", "\n").replaceAll("\\[", " ").replaceAll("\\]", "\n");
+	}
+
 	public static void sendEverySound(Sound str, float a, float b){
 		SeichiAssist plugin = SeichiAssist.plugin;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
