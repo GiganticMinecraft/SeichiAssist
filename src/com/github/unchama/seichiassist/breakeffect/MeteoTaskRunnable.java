@@ -73,11 +73,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 		soundradius = 5;
 
 		//音を設定するか設定
-		if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
-			soundflag = true;
-		}else{
-			soundflag = false;
-		}
+        soundflag = playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum();
 		if(playerdata.activeskilldata.skillnum > 2){
 			launchFireball();
 		}
@@ -105,7 +101,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
         proj.setShooter(player);
         proj.setMetadata("Effect", new FixedMetadataValue(plugin, true));
         proj.setVelocity(vec);
-        new ArrowControlTaskRunnable((Projectile)proj,centerbreakloc).runTaskTimer(plugin, 0, 1);
+        new ArrowControlTaskRunnable(proj,centerbreakloc).runTaskTimer(plugin, 0, 1);
 	}
 
 	@Override

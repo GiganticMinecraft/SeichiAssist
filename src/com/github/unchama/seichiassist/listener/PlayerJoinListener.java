@@ -24,7 +24,7 @@ import com.github.unchama.seichiassist.util.Util;
 public class PlayerJoinListener implements Listener {
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	private Sql sql = SeichiAssist.plugin.sql;
+	private Sql sql = SeichiAssist.sql;
 
 	// プレイヤーがjoinした時に実行
 	@EventHandler

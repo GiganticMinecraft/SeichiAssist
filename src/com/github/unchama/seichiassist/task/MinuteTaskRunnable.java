@@ -23,7 +23,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	private Config config = SeichiAssist.config;
-	Sql sql = SeichiAssist.plugin.sql;
+	Sql sql = SeichiAssist.sql;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public MinuteTaskRunnable() {

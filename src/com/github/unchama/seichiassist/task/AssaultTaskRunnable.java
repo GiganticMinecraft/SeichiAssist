@@ -345,10 +345,6 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	}
 
 	private boolean isCanceled() {
-		if(playerdata.activeskilldata.mineflagnum == 0 || errorflag || playerdata.activeskilldata.assaulttype == 0){
-			return true;
-		}else{
-			return false;
-		}
+        return playerdata.activeskilldata.mineflagnum == 0 || errorflag || playerdata.activeskilldata.assaulttype == 0;
 	}
 }

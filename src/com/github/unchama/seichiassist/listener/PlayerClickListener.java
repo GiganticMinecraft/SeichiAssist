@@ -196,7 +196,7 @@ public class PlayerClickListener implements Listener {
         proj.setVelocity(vec);
 
         //矢を消去する処理
-        new EntityRemoveTaskRunnable((Entity)proj).runTaskLater(plugin,100);
+        new EntityRemoveTaskRunnable(proj).runTaskLater(plugin,100);
 	}
 
 

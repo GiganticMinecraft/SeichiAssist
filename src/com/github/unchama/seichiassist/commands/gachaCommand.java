@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.commands;
 
 import java.util.*;
 
+import com.github.unchama.seichiassist.data.*;
 import org.bukkit.*;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -9,13 +10,11 @@ import org.bukkit.inventory.PlayerInventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class gachaCommand implements TabExecutor{
 	public SeichiAssist plugin;
-	Sql sql = SeichiAssist.plugin.sql;
+	Sql sql = SeichiAssist.sql;
 
 
 	public gachaCommand(SeichiAssist plugin){
@@ -245,10 +244,10 @@ public class gachaCommand implements TabExecutor{
 
 			if(args.length==2){
 				int id = Util.toInt(args[1]);
-				Gachaget(player,id,null);
+				Gachagive(player,id,null);
 			} else if(args.length==3){
 				int id = Util.toInt(args[1]);
-				Gachaget(player,id,args[2]);
+				Gachagive(player,id,args[2]);
 			}
 			return true;
 
@@ -270,7 +269,7 @@ public class gachaCommand implements TabExecutor{
 			}
 
 			int id = Util.toInt(args[1]);
-			Gachaget(player, id, player.getName());
+			Gachagive(player, id, player.getName());
 			return true;
 		}
 
@@ -437,7 +436,7 @@ public class gachaCommand implements TabExecutor{
 		return false;
 	}
 
-	private void Gachaget(Player player,int _id, String name) {
+	public static void Gachagive(Player player, int _id, String name) {
 
 		int id = _id-1;
 		if(id>=-1 && id<SeichiAssist.gachadatalist.size()){

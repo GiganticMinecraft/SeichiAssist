@@ -34,7 +34,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	private Sql sql = SeichiAssist.plugin.sql;
+	private Sql sql = SeichiAssist.sql;
 	private static Config config = SeichiAssist.config;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
@@ -156,7 +156,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.level = rs.getInt("level");
  				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
  				playerdata.rgnum = rs.getInt("rgnum");
- 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory").toString());
+ 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory"));
  				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
  				playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag");
 
@@ -234,7 +234,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				//実績解除フラグのBitSet型への復元処理
  				//初回nullエラー回避のための分岐
  				try {
- 				String[] Titlenums = rs.getString("TitleFlags").toString().split(",");
+ 				String[] Titlenums = rs.getString("TitleFlags").split(",");
  		        long[] Titlearray = Arrays.stream(Titlenums).mapToLong(x -> Long.parseUnsignedLong(x, 16)).toArray();
  		        BitSet TitleFlags = BitSet.valueOf(Titlearray);
  		        playerdata.TitleFlags = TitleFlags ;

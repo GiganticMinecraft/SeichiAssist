@@ -17,7 +17,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 public class PlayerQuitListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	Sql sql = SeichiAssist.plugin.sql;
+	Sql sql = SeichiAssist.sql;
 
 	//プレイヤーがquitした時に実行
 	@EventHandler(priority = EventPriority.HIGH)

@@ -60,19 +60,15 @@ public class Util {
 		}
 
 		//プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)にいる場合
-		if(player.getWorld().getName().toLowerCase().startsWith(worldname)
+		return player.getWorld().getName().toLowerCase().startsWith(worldname)
 				|| player.getWorld().getName().equalsIgnoreCase("world")
 				|| player.getWorld().getName().equalsIgnoreCase("world_2")
 				|| player.getWorld().getName().equalsIgnoreCase("world_nether")
 				|| player.getWorld().getName().equalsIgnoreCase("world_the_end")
 				|| player.getWorld().getName().equalsIgnoreCase("world_TT")
 				|| player.getWorld().getName().equalsIgnoreCase("world_nether_TT")
-				|| player.getWorld().getName().equalsIgnoreCase("world_the_end_TT")
-				){
-			return true;
-		}
+				|| player.getWorld().getName().equalsIgnoreCase("world_the_end_TT");
 		//それ以外のワールドの場合
-		return false;
 	}
 
 	//プレイヤーが整地ワールドにいるかどうかの判定処理(整地ワールド=true、それ以外=false)
@@ -83,12 +79,9 @@ public class Util {
 			worldname = SeichiAssist.DEBUGWORLDNAME;
 		}
 		//整地ワールドではtrue
-		if(player.getWorld().getName().toLowerCase().startsWith(worldname)){
-			return true;
-		}
+		return player.getWorld().getName().toLowerCase().startsWith(worldname);
 
 		//それ以外のワールドの場合
-		return false;
 	}
 
 	//ガチャ券アイテムスタック型の取得
@@ -546,11 +539,7 @@ public class Util {
 			return false;
 		}
 		//ownerがうんちゃまじゃない時の処理
-		if(!skullmeta.getOwner().equals("unchama")){
-			return false;
-		}
-
-		return true;
+		return skullmeta.getOwner().equals("unchama");
 	}
 	public static boolean removeItemfromPlayerInventory(PlayerInventory inventory,
 			ItemStack itemstack, int count) {
@@ -563,9 +552,7 @@ public class Util {
 			// プレイヤーが持っているアイテムをcount個減らす
 			itemstack.setAmount(itemstack.getAmount()-count);
 		}
-		else if(itemstack.getAmount() < count){
-			return false;
-		}
+		else return itemstack.getAmount() >= count;
 		return true;
 	}
 	public static ItemStack getForBugskull(String name) {

@@ -43,7 +43,7 @@ public class shareinvCommand implements TabExecutor {
 
 	public void shareInv(Player player) {
 		PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
-		Sql sql = SeichiAssist.plugin.sql;
+		Sql sql = SeichiAssist.sql;
 
 		ItemStack air = new ItemStack(Material.AIR);
 		// 収納中なら取り出す
