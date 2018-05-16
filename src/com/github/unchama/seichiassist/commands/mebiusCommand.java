@@ -33,19 +33,26 @@ public class mebiusCommand implements TabExecutor {
 
 		switch (args.length) {
 			case 1: {
-				if (!(sender.isOp())) {
-					sender.sendMessage(ChatColor.RED + "このコマンドは権限者のみが実行可能です.");
-					return true;
-				}
-
 				switch (args[0]) {
 					case "get":
+						if (!sender.isOp()) {
+							sendPermissionWarning(sender);
+							break;
+						}
 						MebiusListener.debugGive((Player) sender);
 						break;
 					case "reload":
+						if (!sender.isOp()) {
+							sendPermissionWarning(sender);
+							break;
+						}
 						MebiusListener.reload();
 						break;
 					case "debug":
+						if (!sender.isOp()) {
+							sendPermissionWarning(sender);
+							break;
+						}
 						MebiusListener.debug((Player) sender);
 						break;
 					case "nickname":
@@ -74,8 +81,6 @@ public class mebiusCommand implements TabExecutor {
 					}
 
 					case "nickname": {
-						PlayerData pd = SeichiAssist.playermap.get(((Player) sender).getUniqueId());
-
 						if (args[1].equals("reset")) {
 							if (!MebiusListener.setNickname((Player) sender, sender.getName())) {
 								sender.sendMessage(ChatColor.RED + "呼び名のリセットはMEBIUSを装着して行ってください.");
@@ -122,5 +127,9 @@ public class mebiusCommand implements TabExecutor {
 		sender.sendMessage(ChatColor.RED + "/mebius nickname reset");
 		sender.sendMessage(ChatColor.RED + "  MEBIUS空の呼び名をプレイヤー名(初期設定)に戻します");
 		sender.sendMessage("");
+	}
+
+	private void sendPermissionWarning(CommandSender sender) {
+		sender.sendMessage(ChatColor.RED + "このコマンドは権限者のみが実行可能です.");
 	}
 }
