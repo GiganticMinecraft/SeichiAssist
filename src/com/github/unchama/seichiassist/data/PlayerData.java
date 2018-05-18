@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.event.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -397,11 +396,11 @@ public class PlayerData {
 	public void setDisplayName(Player p) {
 		String displayname = Util.getName(p);
 		//スターレベル用の計算
-		starlevel = totalbreaknum / 87115000 ;
+		starlevel = ( totalbreaknum / 87115000 ) - 1 ;
 
 		//表示を追加する処理
 		if(displayTitle1No == 0 && displayTitle2No == 0 && displayTitle3No == 0){
-			if(starlevel == 0){
+			if(starlevel <= 0){
 				displayname =  "[ Lv" + level + " ]" + displayname + ChatColor.WHITE;
 			}else{
 				displayname =  "[Lv" + level + "☆" + starlevel + "]" + displayname + ChatColor.WHITE;

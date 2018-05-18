@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import com.github.unchama.seasonalevents.events.valentine.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -74,7 +73,7 @@ public class MenuInventoryData {
 		skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ");
 		lore.clear();
-		if(playerdata.starlevel == 0){
+		if(playerdata.starlevel <= 0){
 			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level);
 		}else{
 			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.level + "☆" + playerdata.starlevel);
