@@ -56,23 +56,18 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 	public LoadPlayerDataTaskRunnable(PlayerData playerData) {
 		timer = new Timer(Timer.MILLISECOND);
-		plugin.getServer().getConsoleSender().sendMessage("timer start");
+		plugin.getServer().getConsoleSender().sendMessage("timer start(コンストラクタ処理開始)");
 		timer.start();
 		db = SeichiAssist.config.getDB();
-		timer.sendLapTimeMessage("1");
 		p = Bukkit.getPlayer(playerData.uuid);
-		timer.sendLapTimeMessage("2");
 		playerdata = playerData;
-		timer.sendLapTimeMessage("3");
 		name = playerData.name;
-		timer.sendLapTimeMessage("4");
 		uuid = playerData.uuid;
-		timer.sendLapTimeMessage("5");
 		struuid = uuid.toString().toLowerCase();
 		command = "";
 		flag = true;
 		i = 0;
-		timer.sendLapTimeMessage("6");
+		timer.sendLapTimeMessage("コンストラクタ部の処理完了");
 	}
 
 	@Override
@@ -83,8 +78,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		 * timer.stop();
 		 * plugin.getServer().getConsoleSender().sendMessage("time: "+ timer.getTime() +" ms%n");
 		 */
-		plugin.getServer().getConsoleSender().sendMessage("timer start");
-		timer.start();
+		timer.sendLapTimeMessage("runメソッド開始");
 		
 		//対象プレイヤーがオフラインなら処理終了
 		if(SeichiAssist.plugin.getServer().getPlayer(uuid) == null){
