@@ -22,7 +22,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import zedly.zenchantments.Zenchantments;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -142,18 +141,6 @@ public class PlayerBlockBreakListener implements Listener {
 			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
 			return;
 		}
-
-
-
-		//Lumberをエンチャントしていたら終了
-		Zenchantments Ze = Util.getZenchantments();
-		if(Ze == null){
-			player.sendMessage("取得エラー");
-		}
-		if(Ze.isCompatible("木こり", tool)){
-			return;
-		}
-
 
 		//これ以前の終了処理はマナは回復しません
 		//追加マナ獲得

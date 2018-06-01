@@ -29,6 +29,7 @@ import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
+import com.github.unchama.seichiassist.util.Timer;
 
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
@@ -51,8 +52,12 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	Statement stmt = null;
 	ResultSet rs = null;
 	String db;
+	Timer timer;
 
 	public LoadPlayerDataTaskRunnable(PlayerData playerData) {
+		timer = new Timer(Timer.MILLISECOND);
+		plugin.getServer().getConsoleSender().sendMessage("timer start(コンストラクタ処理開始)");
+		timer.start();
 		db = SeichiAssist.config.getDB();
 		p = Bukkit.getPlayer(playerData.uuid);
 		playerdata = playerData;
@@ -62,10 +67,19 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		command = "";
 		flag = true;
 		i = 0;
+		timer.sendLapTimeMessage("コンストラクタ部の処理完了");
 	}
 
 	@Override
 	public void run() {
+		/*
+		 * plugin.getServer().getConsoleSender().sendMessage("timer start");
+		 * timer.start();
+		 * timer.stop();
+		 * plugin.getServer().getConsoleSender().sendMessage("time: "+ timer.getTime() +" ms%n");
+		 */
+		timer.sendLapTimeMessage("runメソッド開始");
+		
 		//対象プレイヤーがオフラインなら処理終了
 		if(SeichiAssist.plugin.getServer().getPlayer(uuid) == null){
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "はオフラインの為取得処理を中断");
@@ -80,6 +94,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
+		
+		timer.sendLapTimeMessage("sqlコネクションチェック完了");
 
  		//ログインフラグの確認を行う
 		command = "select loginflag from " + db + "." + table
@@ -111,6 +127,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  			i++;
  			return;
  		}
+ 		
+ 		timer.sendLapTimeMessage("ログインフラグ確認完了");
 
 		//loginflag書き換え&lastquit更新処理
 		command = "update " + db + "." + table
@@ -126,12 +144,15 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			cancel();
 			return;
 		}
+		
+		timer.sendLapTimeMessage("loginflag書き換え&lastquit更新処理完了");
 
 		//playerdataをsqlデータから得られた値で更新
 		command = "select * from " + db + "." + table
 				+ " where uuid like '" + struuid + "'";
 		try{
 			rs = stmt.executeQuery(command);
+			timer.sendLapTimeMessage("playerdataをsqlから取得 - クエリ完了");
 			while (rs.next()) {
 				//各種数値
 				playerdata.loaded = true;
@@ -156,7 +177,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.level = rs.getInt("level");
  				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
  				playerdata.rgnum = rs.getInt("rgnum");
- 				playerdata.inventory = BukkitSerialization.fromBase64(rs.getString("inventory"));
+ 				playerdata.inventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"));
  				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
  				playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag");
 
@@ -305,6 +326,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 				playerdata.hasChocoGave = rs.getBoolean("hasChocoGave");
 			  }
 			rs.close();
+			timer.sendLapTimeMessage("playerdataをsqlから取得 - resultSetClose完了");
 		} catch (SQLException | IOException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
@@ -317,12 +339,17 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			//cancel();
 			return;
 		}
+		
+		timer.sendLapTimeMessage("playerdataをsqlから取得完了");
+		
 		//念のためstatement閉じておく
 		try {
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		timer.sendLapTimeMessage("念のためstatement閉じ完了");
 
 		if(SeichiAssist.DEBUG){
 			p.sendMessage("sqlデータで更新しました");
@@ -340,7 +367,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			addMana = playerdata.contribute_point - playerdata.added_mana;
 			playerdata.isContribute(p, addMana);
 		}
-
+		timer.sendLapTimeMessage("LoadPlayerDataTaskRunnable処理完了");
 		return;
 	}
 }
