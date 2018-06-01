@@ -40,9 +40,10 @@ public class PlayerDataUpdateOnJoinRunnable extends BukkitRunnable{
 		PlayerData playerdata = playermap.get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
-			if(i >= 4){
+			if(i >= 9){
 	 			//諦める
-				p.sendMessage(ChatColor.RED + "初回ロードに失敗しています。再接続してみても改善されない場合はお手数ですが管理人までご報告下さい");
+				p.sendMessage(ChatColor.RED + "初回ロードに失敗しています。再接続をお願いします。改善されない場合はお手数ですがお問い合わせください");
+				p.kickPlayer(ChatColor.RED + "初回ロードに失敗しています。再接続をお願いします。改善されない場合はお手数ですがお問い合わせください");
 	 			cancel();
 	 			return;
 	 		}else{

@@ -34,7 +34,6 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 import net.md_5.bungee.api.chat.BaseComponent;
-import zedly.zenchantments.Zenchantments;
 
 public class Util {
 	static private FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
@@ -484,14 +483,6 @@ public class Util {
         Plugin pl = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
         if(pl instanceof WorldEditPlugin)
             return (WorldEditPlugin)pl;
-        else return null;
-    }
-
-	//ZenchantmentAPIを返す
-	public static Zenchantments getZenchantments() {
-        Plugin pl = Bukkit.getServer().getPluginManager().getPlugin("Zenchantments");
-        if(pl instanceof Zenchantments)
-            return (Zenchantments)pl;
         else return null;
     }
 
