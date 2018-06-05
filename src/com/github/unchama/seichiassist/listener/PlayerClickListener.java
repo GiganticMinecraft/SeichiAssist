@@ -13,7 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownExpBottle;
 import org.bukkit.event.EventHandler;
@@ -303,7 +302,7 @@ public class PlayerClickListener implements Listener {
 
 					for(Enchantment enchant : enchantment.keySet())
 					{
-						enchantname.add(ChatColor.GRAY + Util.getEnchantName(enchant.getName()) + " " + Util.getEnchantLevelRome(enchantment.get(enchant)));
+						enchantname.add(ChatColor.GRAY + Util.getEnchantName(enchant.getName(), enchantment.get(enchant)));
 					}
 					lore.remove(lore.indexOf("§r§2所有者：" + player.getName()));
 
