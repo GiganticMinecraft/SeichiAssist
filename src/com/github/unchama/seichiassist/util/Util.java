@@ -212,73 +212,73 @@ public class Util {
 		}
 	}
 
-	public static String getEnchantName(String vaname){
+	public static String getEnchantName(String vaname, int enchlevel){
 		switch(vaname){
 			case "PROTECTION_ENVIRONMENTAL":
-				return "ダメージ軽減";
+				return "ダメージ軽減" + " " + getEnchantLevelRome(enchlevel);
 
 			case "PROTECTION_FIRE":
-				return "火炎耐性";
+				return "火炎耐性" + " " + getEnchantLevelRome(enchlevel);
 
 			case "PROTECTION_FALL":
-				return "落下耐性";
+				return "落下耐性" + " " + getEnchantLevelRome(enchlevel);
 
 			case "PROTECTION_EXPLOSIONS":
-				return "爆発耐性";
+				return "爆発耐性" + " " + getEnchantLevelRome(enchlevel);
 
 			case "PROTECTION_PROJECTILE":
-				return "飛び道具耐性";
+				return "飛び道具耐性" + " " + getEnchantLevelRome(enchlevel);
 
 			case "OXYGEN":
-				return "水中呼吸";
+				return "水中呼吸" + " " + getEnchantLevelRome(enchlevel);
 
 			case "WATER_WORKER":
 				return "水中採掘";
 
 			case "THORNS":
-				return "棘の鎧";
+				return "棘の鎧" + " " + getEnchantLevelRome(enchlevel);
 
 			case "DEPTH_STRIDER":
-				return "水中歩行";
+				return "水中歩行" + " " + getEnchantLevelRome(enchlevel);
 
 			case "FROST_WALKER":
-				return "氷渡り";
+				return "氷渡り" + " " + getEnchantLevelRome(enchlevel);
 
 			case "DAMAGE_ALL":
-				return "ダメージ増加";
+				return "ダメージ増加" + " " + getEnchantLevelRome(enchlevel);
 
 			case "DAMAGE_UNDEAD":
-				return "アンデッド特効";
+				return "アンデッド特効" + " " + getEnchantLevelRome(enchlevel);
 
 			case "DAMAGE_ARTHROPODS":
-				return "虫特効";
+				return "虫特効" + " " + getEnchantLevelRome(enchlevel);
 
 			case "KNOCKBACK":
-				return "ノックバック";
+				return "ノックバック" + " " + getEnchantLevelRome(enchlevel);
 
 			case "FIRE_ASPECT":
-				return "火属性";
+				return "火属性" + " " + getEnchantLevelRome(enchlevel);
 
 			case "LOOT_BONUS_MOBS":
-				return "ドロップ増加";
+				return "ドロップ増加" + " " + getEnchantLevelRome(enchlevel);
 
 			case "DIG_SPEED":
-				return "効率強化";
+				return "効率強化" + " " + getEnchantLevelRome(enchlevel);
 
 			case "SILK_TOUCH":
 				return "シルクタッチ";
 
 			case "DURABILITY":
-				return "耐久力";
+				return "耐久力" + " " + getEnchantLevelRome(enchlevel);
 
 			case "LOOT_BONUS_BLOCKS":
-				return "幸運";
+				return "幸運" + " " + getEnchantLevelRome(enchlevel);
 
 			case "ARROW_DAMAGE":
-				return "射撃ダメージ増加";
+				return "射撃ダメージ増加" + " " + getEnchantLevelRome(enchlevel);
 
 			case "ARROW_KNOCKBACK":
-				return "パンチ";
+				return "パンチ" + " " + getEnchantLevelRome(enchlevel);
 
 			case "ARROW_FIRE":
 				return "フレイム";
@@ -287,10 +287,10 @@ public class Util {
 				return "無限";
 
 			case "LUCK":
-				return "宝釣り";
+				return "宝釣り" + " " + getEnchantLevelRome(enchlevel);
 
 			case "LURE":
-				return "入れ食い";
+				return "入れ食い" + " " + getEnchantLevelRome(enchlevel);
 
 			case "MENDING":
 				return "修繕";
@@ -300,7 +300,7 @@ public class Util {
 		}
 	}
 
-	public static String getEnchantLevelRome(int enchantlevel){
+	private static String getEnchantLevelRome(int enchantlevel){
 		switch(enchantlevel){
 			case 1:
 				return "Ⅰ";
