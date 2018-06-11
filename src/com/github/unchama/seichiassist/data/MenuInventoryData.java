@@ -1027,7 +1027,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.REDSTONE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE);
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "レッドストーン系アイテム");
+		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "レッドストーン・移動系アイテム");
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
 
@@ -1089,7 +1089,7 @@ public class MenuInventoryData {
 		} else if(stack_type==3){
 			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "建築系MineStack");
 		} else if(stack_type==4){
-			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "レッドストーン系MineStack");
+			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "レッドストーン・移動系MineStack");
 		} else if(stack_type==5){
 			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ガチャ系MineStack");
 		}
