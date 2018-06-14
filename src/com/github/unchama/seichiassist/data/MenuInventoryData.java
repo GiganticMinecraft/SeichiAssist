@@ -1,12 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import com.github.unchama.seasonalevents.events.valentine.*;
 import org.bukkit.Bukkit;
@@ -985,7 +979,8 @@ public class MenuInventoryData {
 
 
 	//Minestackメインページ
-	public static Inventory getMineStackMainMenu(Player p){
+	public static Inventory getMineStackMainMenu(Player p) {
+		PlayerData pd = SeichiAssist.playermap.get(p.getUniqueId());
 
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackメインメニュー");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1052,6 +1047,17 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(45,itemstack);
 
+		Map<Integer, MineStackObj> history = pd.hisotryData.getHistoryMap();
+		int slot = 18;
+		for (int index : history.keySet()) {
+			MineStackObj obj = history.get(index);
+			if (obj.getItemStack() == null) {
+				setMineStackButton(inventory, pd.minestack.getNum(index), new ItemStack(obj.getMaterial(), 1, (short)obj.getDurability()), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
+			} else {
+				setMineStackButton(inventory, pd.minestack.getNum(index), obj.getItemStack(), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
+			}
+			slot++;
+		}
 		return inventory;
 	}
 

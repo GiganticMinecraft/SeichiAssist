@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.github.unchama.seichiassist.event.*;
+import com.github.unchama.seichiassist.minestack.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -194,6 +195,9 @@ public class PlayerData {
 	//バレンタインイベント用
 	public boolean hasChocoGave;
 
+	//MineStackの履歴
+	public MineStackHistoryData hisotryData;
+
 	public PlayerData(Player player){
 		//初期値を設定
 		this.loaded = false;
@@ -282,6 +286,7 @@ public class PlayerData {
 		this.newYearBagAmount = 0;
 
 		this.hasChocoGave = false;
+		this.hisotryData = new MineStackHistoryData();
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新

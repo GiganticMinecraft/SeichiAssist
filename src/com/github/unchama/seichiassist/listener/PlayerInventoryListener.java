@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import com.github.unchama.seasonalevents.events.valentine.*;
 import com.github.unchama.seichiassist.data.*;
+import com.github.unchama.seichiassist.minestack.*;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -2140,7 +2141,13 @@ public class PlayerInventoryListener implements Listener {
 								}
 							}
 						}
+						playerdata.hisotryData.add(i, SeichiAssist.minestacklist.get(i));
+						Bukkit.getLogger().info("");
+						for (MineStackObj obj : playerdata.hisotryData.getHistoryMap().values()) {
+							Bukkit.getLogger().info(obj.getJapaneseName());
+						}
 					}
+
 				}
 			}
 
