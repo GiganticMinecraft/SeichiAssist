@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.minestack;
 
+import org.bukkit.*;
+
 import java.util.*;
 
 /**
@@ -30,5 +32,13 @@ public final class MineStackHistoryData {
      */
     public List<HistoryData> getHistoryList() {
         return historyList;
+    }
+
+    public List<MineStackObj> getObjs() {
+        List<MineStackObj> result = new ArrayList<>();
+        for (HistoryData data : historyList) {
+            result.add(data.obj);
+        }
+        return result;
     }
 }
