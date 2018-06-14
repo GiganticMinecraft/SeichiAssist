@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.data;
 import java.util.*;
 
 import com.github.unchama.seasonalevents.events.valentine.*;
+import com.github.unchama.seichiassist.minestack.HistoryData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -1047,10 +1048,11 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(45,itemstack);
 
-		Map<Integer, MineStackObj> history = pd.hisotryData.getHistoryMap();
+		List<HistoryData> history = pd.hisotryData.getHistoryList();
 		int slot = 18;
-		for (int index : history.keySet()) {
-			MineStackObj obj = history.get(index);
+		for (HistoryData data : history) {
+		    int index = data.index;
+		    MineStackObj obj = data.obj;
 			if (obj.getItemStack() == null) {
 				setMineStackButton(inventory, pd.minestack.getNum(index), new ItemStack(obj.getMaterial(), 1, (short)obj.getDurability()), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
 			} else {

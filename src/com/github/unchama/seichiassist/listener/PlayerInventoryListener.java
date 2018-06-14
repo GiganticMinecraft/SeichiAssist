@@ -2143,7 +2143,7 @@ public class PlayerInventoryListener implements Listener {
 						}
 						playerdata.hisotryData.add(i, SeichiAssist.minestacklist.get(i));
 						Bukkit.getLogger().info("");
-						for (MineStackObj obj : playerdata.hisotryData.getHistoryMap().values()) {
+						for (MineStackObj obj : playerdata.hisotryData.getHistoryList().values()) {
 							Bukkit.getLogger().info(obj.getJapaneseName());
 						}
 					}
