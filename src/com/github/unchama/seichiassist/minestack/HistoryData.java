@@ -11,4 +11,14 @@ public class HistoryData {
         this.index = index;
         this.obj = obj;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof HistoryData)) {
+            return false;
+        }
+
+        HistoryData data = (HistoryData) object;
+        return this.index == data.index;
+    }
 }
