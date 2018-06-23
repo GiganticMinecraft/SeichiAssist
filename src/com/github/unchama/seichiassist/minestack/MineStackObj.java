@@ -1,8 +1,9 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.minestack;
 
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.enchantments.*;
 import org.bukkit.inventory.ItemStack;
 
 public class MineStackObj implements Comparable<MineStackObj>{
@@ -17,6 +18,7 @@ public class MineStackObj implements Comparable<MineStackObj>{
 	private List<String> lore;
 	private ItemStack itemstack;
 	private int stacktype;
+	private Enchantment needed_enchantment;
 
 	public MineStackObj(String objname, String japanesename,
 			int level, Material material, int durability,
@@ -61,6 +63,19 @@ public class MineStackObj implements Comparable<MineStackObj>{
 		this.stacktype = stacktype;
 	}
 
+	protected MineStackObj(String objname, String japanesename, int level, Material material, int durability,
+						   boolean nameloreflag, int gachatype, int stacktype, Enchantment needed_enchantment) {
+		this.objname = objname;
+		this.japanesename = japanesename;
+		this.level = level;
+		this.material = material;
+		this.durability = durability;
+		this.nameloreflag = nameloreflag;
+		this.gachatype = gachatype;
+		this.stacktype = stacktype;
+		this.needed_enchantment = needed_enchantment;
+	}
+
 	public String getMineStackObjName(){
 		return objname;
 	}
@@ -93,6 +108,10 @@ public class MineStackObj implements Comparable<MineStackObj>{
 
 	public int getStacktype(){
 		return stacktype;
+	}
+
+	public Enchantment getNeeded_enchantment() {
+		return needed_enchantment;
 	}
 
 	@Override

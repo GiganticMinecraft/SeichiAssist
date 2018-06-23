@@ -3,10 +3,8 @@ package com.github.unchama.seichiassist.listener;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.enchantments.*;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -126,8 +124,8 @@ public class PlayerPickupItemListener implements Listener {
 			if(material.equals(SeichiAssist.minestacklist.get(i).getMaterial()) &&
 				itemstack.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){
 				//この時点でIDとサブIDが一致している
-				if(SeichiAssist.minestacklist.get(i).getNameloreflag()==false && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
-					if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+				if(!SeichiAssist.minestacklist.get(i).getNameloreflag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
+					if (playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())) {
 						//レベルを満たしていない
 						return;
 					} else {

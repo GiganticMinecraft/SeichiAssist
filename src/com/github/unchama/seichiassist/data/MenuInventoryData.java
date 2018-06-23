@@ -1,14 +1,9 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import com.github.unchama.seasonalevents.events.valentine.*;
+import com.github.unchama.seichiassist.minestack.HistoryData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -23,7 +18,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.MineStackObj;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -985,7 +980,8 @@ public class MenuInventoryData {
 
 
 	//Minestackメインページ
-	public static Inventory getMineStackMainMenu(Player p){
+	public static Inventory getMineStackMainMenu(Player p) {
+		PlayerData pd = SeichiAssist.playermap.get(p.getUniqueId());
 
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackメインメニュー");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1027,7 +1023,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.REDSTONE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE);
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "レッドストーン系アイテム");
+		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "レッドストーン・移動系アイテム");
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
 
@@ -1038,6 +1034,19 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガチャ品");
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(5,itemstack);
+
+
+		itemstack = new ItemStack(Material.COMPASS);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
+		itemmeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アイテム検索");
+		List<String> lore2 = Arrays.asList(ChatColor.GRAY + "MineStack内のアイテムを検索できます."
+				,ChatColor.GRAY + "クリックした後チャット欄に"
+				,ChatColor.GRAY + "アイテム名を" + ChatColor.RED + "" + ChatColor.UNDERLINE + "日本語で"
+				,ChatColor.GRAY + "入力してください."
+                ,ChatColor.RED + "" + ChatColor.UNDERLINE + "未実装ナリよ");
+		itemmeta.setLore(lore2);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(8, itemstack);
 
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		itemstack.setDurability((short) 3);
@@ -1052,6 +1061,18 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(45,itemstack);
 
+		List<HistoryData> history = pd.hisotryData.getHistoryList();
+		int slot = 18;
+		for (HistoryData data : history) {
+		    int index = data.index;
+		    MineStackObj obj = data.obj;
+			if (obj.getItemStack() == null) {
+				setMineStackButton(inventory, pd.minestack.getNum(index), new ItemStack(obj.getMaterial(), 1, (short)obj.getDurability()), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
+			} else {
+				setMineStackButton(inventory, pd.minestack.getNum(index), obj.getItemStack(), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
+			}
+			slot++;
+		}
 		return inventory;
 	}
 
@@ -1089,7 +1110,7 @@ public class MenuInventoryData {
 		} else if(stack_type==3){
 			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "建築系MineStack");
 		} else if(stack_type==4){
-			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "レッドストーン系MineStack");
+			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "レッドストーン・移動系MineStack");
 		} else if(stack_type==5){
 			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ガチャ系MineStack");
 		}
