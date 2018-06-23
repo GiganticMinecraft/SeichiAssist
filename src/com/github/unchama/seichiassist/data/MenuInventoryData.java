@@ -1035,6 +1035,19 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(5,itemstack);
 
+
+		itemstack = new ItemStack(Material.COMPASS);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
+		itemmeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "アイテム検索");
+		List<String> lore2 = Arrays.asList(ChatColor.GRAY + "MineStack内のアイテムを検索できます."
+				,ChatColor.GRAY + "クリックした後チャット欄に"
+				,ChatColor.GRAY + "アイテム名を" + ChatColor.RED + "" + ChatColor.UNDERLINE + "日本語で"
+				,ChatColor.GRAY + "入力してください."
+                ,ChatColor.RED + "" + ChatColor.UNDERLINE + "未実装ナリよ");
+		itemmeta.setLore(lore2);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(8, itemstack);
+
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		itemstack.setDurability((short) 3);
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
