@@ -55,8 +55,8 @@ public class VotingFairyTaskRunnable {
 		UUID uuid = p.getUniqueId();
 		playerdata = playermap.get(uuid);
 
-		//MineStack番号227(がちゃりんご)の所有数で分ける
-		if(playerdata.giveApple <= playerdata.minestack.getNum(227)){
+		//MineStack番号379(がちゃりんご)の所有数で分ける
+		if(playerdata.giveApple <= playerdata.minestack.getNum(379)){
 
 			//プレイヤーが90レベル未満のとき
 			if(playerdata.level < 90){
@@ -69,7 +69,7 @@ public class VotingFairyTaskRunnable {
 			else{
 				playerdata.hasVotingFairyMana += playerdata.giveApple * 100;
 			}
-			playerdata.minestack.setNum(227, playerdata.minestack.getNum(227) - playerdata.giveApple);
+			playerdata.minestack.setNum(379, playerdata.minestack.getNum(379) - playerdata.giveApple);
 			player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2) ;
 
 			//プレイヤーにメッセージ
