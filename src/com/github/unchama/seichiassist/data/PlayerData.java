@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.event.*;
-import com.github.unchama.seichiassist.minestack.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -25,6 +23,9 @@ import org.bukkit.inventory.Inventory;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.event.SeichiLevelUpEvent;
+import com.github.unchama.seichiassist.minestack.MineStackHistoryData;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
@@ -117,6 +118,8 @@ public class PlayerData {
 	public int ChainJoin ;
 	public int TotalJoin ;
 
+	public int ChainVote;
+
 	//アクティブスキル関連データ
 	public ActiveSkillData activeskilldata;
 
@@ -201,6 +204,7 @@ public class PlayerData {
 	public boolean isSearching;
 	//MineStack検索保存用Map
 	public Map<Integer, MineStackObj> indexMap;
+
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -294,6 +298,8 @@ public class PlayerData {
 		this.hisotryData = new MineStackHistoryData();
 		this.isSearching = false;
 		this.indexMap = new HashMap<>();
+
+		this.ChainVote = 0;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新

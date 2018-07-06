@@ -6,8 +6,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -429,7 +433,10 @@ public class Sql{
 
 				//貢献pt関連
 				",add column if not exists contribute_point int default 0"+//
-				",add column if not exists added_mana int default 0";
+				",add column if not exists added_mana int default 0" +
+
+				",add column if not exists lastvote varchar(12) default null" +
+				",add column if not exists chainvote int default 0";
 
 				for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
 					command += ",add column if not exists ahead_" + i + " int default 0";
@@ -1349,6 +1356,73 @@ public class Sql{
 		} catch (SQLException e) {
 			sender.sendMessage(ChatColor.RED + "貢献度ptの変更に失敗しました");
 			Bukkit.getLogger().warning(Util.getName(targetName) + " sql failed. -> contribute_point");
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public boolean addChainVote (String name){
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		String lastvote;
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		String select = "SELECT lastvote FROM " + db + "." + table + " " +
+				"WHERE name LIKE '" + name + "'";
+		try {
+			rs = stmt.executeQuery(select);
+			// 初回のnextがnull→データが1件も無い場合
+			if (!rs.next()) {
+				return false;
+			}
+			if(rs.getString("lastvote") == "" || rs.getString("lastvote") == null){
+				lastvote = sdf.format(cal.getTime());
+			}else {
+				lastvote = rs.getString("lastvote");
+			}
+			String update = "UPDATE " + db + "." + table + " " +
+	 				" SET lastvote = " + sdf.format(cal.getTime()) +
+	 				" WHERE name LIKE '" + name + "'";
+
+			stmt.executeUpdate(update);
+		}catch (SQLException e) {
+			Bukkit.getLogger().warning(Util.getName(name) + " sql failed. -> lastvote");
+			e.printStackTrace();
+			return false;
+		}
+		select = "SELECT chainvote FROM " + db + "." + table + " " +
+				"WHERE name LIKE '" + name + "'";
+		try {
+			rs = stmt.executeQuery(select);
+			// 初回のnextがnull→データが1件も無い場合
+			if (!rs.next()) {
+				return false;
+			}
+			int count = rs.getInt("chainvote");
+			try {
+				Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
+				Date LastDate = sdf.parse(lastvote);
+				long TodayLong = TodayDate.getTime();
+				long LastLong = LastDate.getTime();
+
+				long datediff = (TodayLong - LastLong)/(1000 * 60 * 60 * 24 );
+				if(datediff > 0){
+					if(datediff == 1 ){
+						count ++ ;
+					}else {
+						count = 1;
+					}
+				}
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			String update = "UPDATE " + db + "." + table + " " +
+	 				" SET chainvote = " + Integer.toString(count) +
+	 				" WHERE name LIKE '" + name + "'";
+
+			stmt.executeUpdate(update);
+		}catch (SQLException e) {
+			Bukkit.getLogger().warning(Util.getName(name) + " sql failed. -> chainvote");
 			e.printStackTrace();
 			return false;
 		}

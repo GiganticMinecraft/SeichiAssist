@@ -79,7 +79,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		 * plugin.getServer().getConsoleSender().sendMessage("time: "+ timer.getTime() +" ms%n");
 		 */
 		timer.sendLapTimeMessage("runメソッド開始");
-		
+
 		//対象プレイヤーがオフラインなら処理終了
 		if(SeichiAssist.plugin.getServer().getPlayer(uuid) == null){
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "はオフラインの為取得処理を中断");
@@ -94,7 +94,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		timer.sendLapTimeMessage("sqlコネクションチェック完了");
 
  		//ログインフラグの確認を行う
@@ -127,7 +127,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  			i++;
  			return;
  		}
- 		
+
  		timer.sendLapTimeMessage("ログインフラグ確認完了");
 
 		//loginflag書き換え&lastquit更新処理
@@ -144,7 +144,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			cancel();
 			return;
 		}
-		
+
 		timer.sendLapTimeMessage("loginflag書き換え&lastquit更新処理完了");
 
 		//playerdataをsqlデータから得られた値で更新
@@ -251,6 +251,29 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 				}
  		        playerdata.lastcheckdate = sdf.format(cal.getTime());
 
+ 		        //連続投票の更新
+ 		        String lastvote = rs.getString("lastvote");
+ 		        if(lastvote == "" || lastvote == null){
+ 		        	playerdata.ChainVote = 0;
+ 		        }else {
+ 		        	try {
+ 						Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
+ 						Date LastDate = sdf.parse(lastvote);
+ 						long TodayLong = TodayDate.getTime();
+ 						long LastLong = LastDate.getTime();
+
+ 						long datediff = (TodayLong - LastLong)/(1000 * 60 * 60 * 24 );
+ 						if(datediff > 0){
+ 							if(datediff == 1){
+ 								playerdata.ChainVote = rs.getInt("chainvote");
+ 							}else{
+ 								playerdata.ChainVote = 0;
+ 							}
+ 						}
+ 					} catch (ParseException e) {
+ 						e.printStackTrace();
+ 					}
+ 		        }
 
  				//実績解除フラグのBitSet型への復元処理
  				//初回nullエラー回避のための分岐
@@ -339,16 +362,16 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			//cancel();
 			return;
 		}
-		
+
 		timer.sendLapTimeMessage("playerdataをsqlから取得完了");
-		
+
 		//念のためstatement閉じておく
 		try {
 			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		timer.sendLapTimeMessage("念のためstatement閉じ完了");
 
 		if(SeichiAssist.DEBUG){

@@ -1,15 +1,20 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
-import com.github.unchama.seichiassist.data.*;
-import org.bukkit.*;
-import org.bukkit.command.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class gachaCommand implements TabExecutor{
@@ -150,6 +155,11 @@ public class gachaCommand implements TabExecutor{
 					sender.sendMessage(ChatColor.RED + "失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "成功");
+				}
+				if(!sql.addChainVote(name)){
+					sender.sendMessage(ChatColor.RED + "連続投票数の記録に失敗");
+				}else{
+					sender.sendMessage(ChatColor.GREEN + "連続投票数の記録に成功");
 				}
 				return true;
 			}

@@ -31,6 +31,7 @@ public class VotingFairyTaskRunnable {
 		playerdata.canVotingFairyUse = true ;
 
 		//マナ回復量を決定
+		/*調整前数値
 		//プレイヤーが90レベル未満のとき
 		if(playerdata.level < 90){
 			playerdata.VotingFairyRecoveryValue = rnd.nextInt(501) + 100;
@@ -42,12 +43,65 @@ public class VotingFairyTaskRunnable {
 		else{
 			playerdata.VotingFairyRecoveryValue = rnd.nextInt(6001) + 2000;
 		}
+		*/
+		//調整後
+		if(playerdata.ChainVote >= 5){
+			if(playerdata.level < 80){
+				playerdata.VotingFairyRecoveryValue = rnd.nextInt(401) + 200;
+			}
+			else if(playerdata.level < 110){
+				playerdata.VotingFairyRecoveryValue = rnd.nextInt(751) + 500;
+			}
+			else if(playerdata.level < 140){
+				playerdata.VotingFairyRecoveryValue = rnd.nextInt(1501) + 1000;
+			}
+			else if(playerdata.level < 180){
+				playerdata.VotingFairyRecoveryValue = rnd.nextInt(3001) + 2000;
+			}
+			else {
+				playerdata.VotingFairyRecoveryValue = rnd.nextInt(3001) + 5000;
+			}
+		}else {
+			if(playerdata.level < 80){
+				playerdata.VotingFairyRecoveryValue = rnd.nextInt(501) + 100;
+			}
+			else if(playerdata.level < 110){
+				playerdata.VotingFairyRecoveryValue = rnd.nextInt(1001) + 250;
+			}
+			else if(playerdata.level < 140){
+				playerdata.VotingFairyRecoveryValue = rnd.nextInt(2001) + 500;
+			}
+			else if(playerdata.level < 180){
+				playerdata.VotingFairyRecoveryValue = rnd.nextInt(4001) + 1000;
+			}
+			else {
+				playerdata.VotingFairyRecoveryValue = rnd.nextInt(5501) + 2500;
+			}
+		}
 
 		//プレイヤーにメッセージ
 		player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "やあ、" + player.getName() + "。僕を呼んだのは君だね?" );
 		player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "投票ptメニューからガチャりんごを渡してくれれば" );
 		player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "マナを少しずつ回復してあげるよ" );
-		player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "そうだねぇ…1分間に" + playerdata.VotingFairyRecoveryValue + "マナくらいかな" );
+
+		if(playerdata.ChainJoin >= 30){
+			playerdata.VotingFairyRecoveryValue += 500;
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "そうだねぇ…君は" + playerdata.ChainJoin + "日も連続でログインしてくれてるから…");
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "多めにおまけして1分間に" + playerdata.VotingFairyRecoveryValue + "マナにしてあげよう");
+		}
+		else if(playerdata.ChainJoin >= 10){
+			playerdata.VotingFairyRecoveryValue += 250;
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "そうだねぇ…君は" + playerdata.ChainJoin + "日連続でログインしてくれてるから…");
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "おまけして1分間に" + playerdata.VotingFairyRecoveryValue + "マナにしてあげよう");
+		}
+		else if(playerdata.ChainJoin >= 5){
+			playerdata.VotingFairyRecoveryValue += 100;
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "そうだねぇ…君は" + playerdata.ChainJoin + "日連続でログインしてくれてるから…");
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "ちょっとおまけして1分間に" + playerdata.VotingFairyRecoveryValue + "マナにしてあげよう");
+		}
+		else {
+			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "そうだねぇ…1分間に" + playerdata.VotingFairyRecoveryValue + "マナくらいかな" );
+		}
 	}
 
 	public void GiveApple(Player p){
@@ -58,22 +112,29 @@ public class VotingFairyTaskRunnable {
 		//MineStack番号379(がちゃりんご)の所有数で分ける
 		if(playerdata.giveApple <= playerdata.minestack.getNum(379)){
 
-			//プレイヤーが90レベル未満のとき
-			if(playerdata.level < 90){
-				playerdata.hasVotingFairyMana += playerdata.giveApple * 300;
+			double n = 1.0;
+
+			if(playerdata.ChainVote >= 10){
+				n = 1.5;
 			}
-			//175未満のとき
-			else if(playerdata.level < 175){
-				playerdata.hasVotingFairyMana += playerdata.giveApple * 200;
+			else if(playerdata.ChainVote >= 2){
+				n = 1.2;
 			}
-			else{
-				playerdata.hasVotingFairyMana += playerdata.giveApple * 100;
-			}
+
+			playerdata.hasVotingFairyMana += playerdata.giveApple * 300 * n;
+
 			playerdata.minestack.setNum(379, playerdata.minestack.getNum(379) - playerdata.giveApple);
 			player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2) ;
 
 			//プレイヤーにメッセージ
 			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "ガチャりんご" + playerdata.giveApple + "個、君のMineStackから確かに受け取ったよ" );
+
+			if(playerdata.ChainVote >= 10){
+				player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "君は" + playerdata.ChainVote + "日も連続で投票してくれてるから、奮発してあげよう" );
+			}
+			else if(playerdata.ChainVote >= 2){
+				player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "君は" + playerdata.ChainVote + "日連続で投票してくれてるから、ちょっと奮発してあげよう" );
+			}
 
 		}
 		else{
@@ -124,17 +185,13 @@ public class VotingFairyTaskRunnable {
 		player = p;
 		UUID uuid = p.getUniqueId();
 		playerdata = playermap.get(uuid);
-		Mana mana = playerdata.activeskilldata.mana;
-		int n;
+		int n = 300;
 
-		if(playerdata.level < 90){
-			n = 300 ;
+		if(playerdata.ChainVote >= 10){
+			n *= 1.5;
 		}
-		else if(playerdata.level < 175){
-			n = 200 ;
-		}
-		else{
-			n = 100 ;
+		else if(playerdata.ChainVote >= 2){
+			n *= 1.2;
 		}
 
 		if(playerdata.hasVotingFairyMana >= 1000){
