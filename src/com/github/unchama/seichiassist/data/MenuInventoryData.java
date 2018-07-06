@@ -96,6 +96,9 @@ public class MenuInventoryData {
 		lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "総ログイン時間：" + Util.toTimeString(Util.toSecond(playerdata.playtick)));
 		lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "通算ログイン日数：" + playerdata.TotalJoin + "日");
 		lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "連続ログイン日数：" + playerdata.ChainJoin + "日");
+		if(playerdata.ChainVote > 0){
+			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "連続投票日数：" + playerdata.ChainVote + "日");
+		}
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※1分毎に更新");
 		lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "統計データは");
 		lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "各サバイバルサーバー間で");
