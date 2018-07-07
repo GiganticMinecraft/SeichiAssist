@@ -435,7 +435,7 @@ public class Sql{
 				",add column if not exists contribute_point int default 0"+//
 				",add column if not exists added_mana int default 0" +
 
-				",add column if not exists lastvote varchar(12) default null" +
+				",add column if not exists lastvote varchar(40) default null" +
 				",add column if not exists chainvote int default 0";
 
 				for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
