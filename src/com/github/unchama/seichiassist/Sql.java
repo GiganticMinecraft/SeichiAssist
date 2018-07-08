@@ -1380,8 +1380,11 @@ public class Sql{
 			}else {
 				lastvote = rs.getString("lastvote");
 			}
+
+			rs.close();
+
 			String update = "UPDATE " + db + "." + table + " " +
-	 				" SET lastvote = " + sdf.format(cal.getTime()) +
+	 				" SET lastvote = '" + sdf.format(cal.getTime()) + "'" +
 	 				" WHERE name LIKE '" + name + "'";
 
 			stmt.executeUpdate(update);
@@ -1416,6 +1419,9 @@ public class Sql{
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+
+			rs.close();
+
 			String update = "UPDATE " + db + "." + table + " " +
 	 				" SET chainvote = " + Integer.toString(count) +
 	 				" WHERE name LIKE '" + name + "'";

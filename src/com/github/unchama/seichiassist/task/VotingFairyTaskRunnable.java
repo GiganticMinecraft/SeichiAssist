@@ -1,5 +1,9 @@
 package com.github.unchama.seichiassist.task;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
@@ -212,5 +216,37 @@ public class VotingFairyTaskRunnable {
 			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "もっともらえると嬉しいなぁ…(´▽｀*)");
 			player.closeInventory();
 		}
+	}
+
+	public void askTime(Player p) {
+		player = p;
+		UUID uuid = p.getUniqueId();
+		playerdata = playermap.get(uuid);
+		Calendar cal = Calendar.getInstance();
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+
+		try {
+			Date endDate = sdf.parse(sdf.format(playerdata.VotingFairyEndTime.getTime()));
+			Date nowDate = sdf.parse(sdf.format(cal.getTime()));
+			Long endLong = endDate.getTime();
+			Long nowLong = nowDate.getTime();
+
+			Long leftTime = (endLong - nowLong)/(1000 * 60);
+			Long lefttime = leftTime;
+			lefttime %= 60;
+			if(leftTime/60 <= 0){
+				player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "あと" + lefttime + "分くらいで僕は帰るよ");
+			}
+			else {
+				player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "あと" + leftTime/60 + "時間と" + lefttime + "分くらいで僕は帰るよ");
+			}
+			player.closeInventory();
+
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
 	}
 }

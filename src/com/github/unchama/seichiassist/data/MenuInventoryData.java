@@ -5622,6 +5622,16 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(22,itemstack);
 
+		//残り時間確認
+		itemstack = new ItemStack(Material.COMPASS);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精がどのくらい居てくれるかを尋ねる" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "妖精さんはキッチリしてるので時間は遵守します" );
+		itemmeta.setLore(lore);
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(31,itemstack);
+
 		//棒メニューに戻る
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);

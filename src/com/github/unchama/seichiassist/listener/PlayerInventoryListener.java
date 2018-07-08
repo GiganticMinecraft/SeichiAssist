@@ -4976,6 +4976,19 @@ public class PlayerInventoryListener implements Listener {
     			}
     		}
 
+    		//時間確認
+    		else if(itemstackcurrent.getType().equals(Material.COMPASS)){
+    			if(playerdata.canVotingFairyUse == true){
+    				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    				VFTR.askTime(player);
+    			}
+    			else {
+	    			player.sendMessage(ChatColor.GOLD + "妖精を召喚してください") ;
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
+					player.closeInventory();
+    			}
+    		}
+
     		//棒メニューに戻る
     		else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
