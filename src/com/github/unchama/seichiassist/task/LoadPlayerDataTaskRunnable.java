@@ -264,7 +264,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
  						long datediff = (TodayLong - LastLong)/(1000 * 60 * 60 * 24 );
  						if(datediff > 0){
- 							if(datediff == 1){
+ 							if(datediff <= 1){
  								playerdata.ChainVote = rs.getInt("chainvote");
  							}else{
  								playerdata.ChainVote = 0;

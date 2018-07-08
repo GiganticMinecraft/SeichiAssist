@@ -1410,7 +1410,7 @@ public class Sql{
 
 				long datediff = (TodayLong - LastLong)/(1000 * 60 * 60 * 24 );
 				if(datediff > 0){
-					if(datediff == 1 ){
+					if(datediff <= 1 ){
 						count ++ ;
 					}else {
 						count = 1;
