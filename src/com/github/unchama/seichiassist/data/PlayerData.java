@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.data;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -136,6 +139,10 @@ public class PlayerData {
 
 	//サブのホームポイント
 	private Location[] sub_home = new Location[SeichiAssist.config.getSubHomeMax()];
+	public int selectHomeNum;
+	public int setHomeNameNum;
+	public String[] subhome_name = new String[SeichiAssist.config.getSubHomeMax()];
+	public boolean isSubHomeNameChange;
 
 	//LV・二つ名表示切替用
 	public boolean displayTypeLv;
@@ -261,6 +268,7 @@ public class PlayerData {
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
 			this.sub_home[x] = null;
+			this.subhome_name[x] = "サブホームポイント" + (x+1);
 		}
 		this.build_lv = 1;
 		this.build_count = BigDecimal.ZERO;
@@ -300,6 +308,10 @@ public class PlayerData {
 		this.indexMap = new HashMap<>();
 
 		this.ChainVote = 0;
+
+		this.selectHomeNum = 0;
+		this.setHomeNameNum = 0;
+		this.isSubHomeNameChange = false;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -642,7 +654,7 @@ public class PlayerData {
 //			if(s[x*4] != "" && s[x*4+1] != "" && s[x*4+2] != "" && s[x*4+3] != ""){	//未設定項目を飛ばす　何故かうまく動かない
 			if(s[x*4].length() > 0 && s[x*4+1].length() > 0 && s[x*4+2].length() > 0 && s[x*4+3].length() > 0 ){
 
-				Location l = new Location( Bukkit.getWorld(s[x*4+3]) , Integer.parseInt(s[x*4]) , Integer.parseInt(s[x*4+1]) , Integer.parseInt(s[x*4+2]) );
+				Location l = new Location( Bukkit.getWorld(s[x*4+3]) , Integer.parseInt(s[x*4])+0.5 , Integer.parseInt(s[x*4+1]) , Integer.parseInt(s[x*4+2])+0.5 );
 				this.sub_home[x] = l;
 			}
 		}
@@ -664,6 +676,26 @@ public class PlayerData {
 			}
 		}
 		return s;
+	}
+
+	public void setSubHomeName(String s){
+		byte[] bytes = null;
+		try {
+			bytes = Hex.decodeHex(s.toCharArray());
+		} catch (DecoderException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		String str = new String(bytes,StandardCharsets.UTF_8);
+		this.subhome_name = str.split(",");
+	}
+
+	public String SubHomeNameToString(){
+		byte[] sbyte = null;
+		String str = String.join(",", this.subhome_name);
+		sbyte = str.getBytes(StandardCharsets.UTF_8);
+		String result = new String(Hex.encodeHex(sbyte));
+		return result;
 	}
 
 	public void build_count_flg_set(byte x){

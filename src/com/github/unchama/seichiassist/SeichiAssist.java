@@ -10,12 +10,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.commands.*;
-import com.github.unchama.seichiassist.data.*;
-import com.github.unchama.seichiassist.listener.*;
-import com.github.unchama.seichiassist.listener.newyearevent.*;
-import com.github.unchama.seichiassist.minestack.*;
-import com.github.unchama.seichiassist.minestack.objects.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,7 +17,6 @@ import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.enchantments.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,6 +24,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.AchieveCommand;
+import com.github.unchama.seichiassist.commands.EventCommand;
 import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
 import com.github.unchama.seichiassist.commands.contributeCommand;
 import com.github.unchama.seichiassist.commands.effectCommand;
@@ -42,6 +36,32 @@ import com.github.unchama.seichiassist.commands.rmpCommand;
 import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.commands.shareinvCommand;
 import com.github.unchama.seichiassist.commands.stickCommand;
+import com.github.unchama.seichiassist.commands.subHomeCommand;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.RankData;
+import com.github.unchama.seichiassist.listener.EntityListener;
+import com.github.unchama.seichiassist.listener.GachaItemListener;
+import com.github.unchama.seichiassist.listener.MebiusListener;
+import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.listener.PlayerChatEventListener;
+import com.github.unchama.seichiassist.listener.PlayerClickListener;
+import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
+import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
+import com.github.unchama.seichiassist.listener.PlayerJoinListener;
+import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
+import com.github.unchama.seichiassist.listener.PlayerQuitListener;
+import com.github.unchama.seichiassist.listener.RegionInventoryListener;
+import com.github.unchama.seichiassist.listener.WorldRegenListener;
+import com.github.unchama.seichiassist.listener.newyearevent.NewYearsEvent;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackBuildObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackDropObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackFarmObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackGachaObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackMineObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackRsObj;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
@@ -819,11 +839,13 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("halfguard", new HalfBlockProtectCommand(plugin));
 		commandlist.put("event", new EventCommand(plugin));
 		commandlist.put("contribute", new contributeCommand(plugin));
+		commandlist.put("subhome", new subHomeCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerQuitListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerClickListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerChatEventListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerBlockBreakListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
@@ -833,7 +855,6 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new MebiusListener(), this);
 		getServer().getPluginManager().registerEvents(new RegionInventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new WorldRegenListener(), this);
-		//getServer().getPluginManager().registerEvents(new PlayerChatEventListener(), this);
 		//正月イベント用
 		new NewYearsEvent(this);
 		// マナ自動回復用リスナー…無効化中

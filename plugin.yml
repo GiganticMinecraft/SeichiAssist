@@ -68,3 +68,8 @@ commands:
       usage: /<command> <help/add/remove> <playername> <point>
       permission: multiseichiplugin.contribute
       permission-message: You don't have <permission>
+  subhome:
+      description: This is a Contribute command.
+      usage: /<command> <help/set/name/num> <num>
+      permission: multiseichiplugin.subhome
+      permission-message: You don't have <permission>

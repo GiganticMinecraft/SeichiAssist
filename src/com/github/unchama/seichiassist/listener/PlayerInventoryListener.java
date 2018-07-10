@@ -10,17 +10,11 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.github.unchama.seasonalevents.events.valentine.*;
-import com.github.unchama.seichiassist.data.*;
-import com.github.unchama.seichiassist.minestack.*;
-import com.github.unchama.seichiassist.minestack.objects.*;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.block.Banner;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -42,12 +36,22 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.github.unchama.seasonalevents.events.valentine.Valentine;
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.data.ActiveSkillInventoryData;
+import com.github.unchama.seichiassist.data.EffectData;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.ItemData;
+import com.github.unchama.seichiassist.data.Mana;
+import com.github.unchama.seichiassist.data.MenuInventoryData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
@@ -62,7 +66,7 @@ public class PlayerInventoryListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
 	private Config config = SeichiAssist.config;
 	private Sql sql = SeichiAssist.sql;
-	//棒メニュー
+	//サーバ選択メニュー
 	@EventHandler
 	public void onPlayerClickServerSwitchMenuEvent(InventoryClickEvent event){
 		//外枠のクリック処理なら終了
@@ -613,7 +617,12 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.chat("/spawn");
 			}
-
+			//HomeMenu
+			else if(itemstackcurrent.getType().equals(Material.BED)){
+				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 1.5);
+				player.openInventory(MenuInventoryData.getHomeMenuData(player));
+			}
+			/*
 			else if(itemstackcurrent.getType().equals(Material.BED)){
 				// sethomeコマンド実行
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
@@ -621,18 +630,8 @@ public class PlayerInventoryListener implements Listener {
 
 				if(itemmeta.getDisplayName().contains("サブホームポイント")){//ホームボタンかサブホームボタンか判定
 					//ホームをセット
-					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) ) - 1;	//サブホームボタンの番号
-					playerdata.SetSubHome(player.getLocation(), z);
-
-					//mysqlにも書き込んどく
-					/*別スレッド処理PlayerDataSaveTaskRunnableに移動
-					if(!sql.UpDataSubHome(playerdata.SubHomeToString())){
-						player.sendMessage(ChatColor.RED + "失敗");
-					}else{
-						player.sendMessage("現在位置をサブホームポイント"+(z+1)+"に設定しました");
-					}
-					*/
-					player.sendMessage("現在位置をサブホームポイント"+(z+1)+"に設定しました");
+					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) );	//サブホームボタンの番号
+					player.chat("/subhome set " + z );
 					player.closeInventory();
 				}else {
 					player.chat("/sethome");
@@ -647,26 +646,12 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				if(itemmeta.getDisplayName().contains("サブホームポイント")){//ホームボタンかサブホームボタンか判定
 					//サブホームに移動
-					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) ) - 1;	//サブホームボタンの番号
-					Location l = playerdata.GetSubHome(z);
-					if(l != null){
-						World world = Bukkit.getWorld(l.getWorld().getName());
-						if(world != null){
-							player.teleport(l);
-							player.sendMessage("サブホームポイント"+ (z+1) +"にワープしました");
-						}else{
-							player.sendMessage("サブホームポイント"+ (z+1) +"が設定されてません");
-						}
-					}else{
-						player.sendMessage("サブホームポイント"+ (z+1) +"が設定されてません");
-					}
+					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) );	//サブホームボタンの番号
+					player.chat("/subhome " + z);
 				}else {
 					player.chat("/home");
 				}
-
-
-
-			}
+*/
 
 			else if(itemstackcurrent.getType().equals(Material.WORKBENCH)){
 				// /fc craftコマンド実行
@@ -816,6 +801,7 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 1.0);
 				player.openInventory(player.getEnderChest());
 			}
+
 
 
 			else if(itemstackcurrent.getType().equals(Material.BUCKET)){
@@ -5100,4 +5086,91 @@ public class PlayerInventoryListener implements Listener {
     		}
     	}
     }
+
+    @EventHandler
+	public void onHomeMenuEvent(InventoryClickEvent event){
+		//外枠のクリック処理なら終了
+		if(event.getClickedInventory() == null){
+			return;
+		}
+
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
+
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが27でない時終了
+		if(topinventory.getSize() != 27){
+			return;
+		}
+		Player player = (Player)he;
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+		ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+
+		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ホームメニュー")){
+    		event.setCancelled(true);
+
+    		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+    			return;
+    		}
+
+    		/*
+    		 * クリックしたボタンに応じた各処理内容の記述ここから
+    		 */
+
+    		if(itemmeta.getDisplayName().contains("ホームポイントにワープ")){
+    			player.chat("/home");
+    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    		}
+    		else if(itemmeta.getDisplayName().contains("ホームポイントを設定")){
+    			player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+    			playerdata.selectHomeNum = 0;
+    			player.openInventory(MenuInventoryData.getCheckSetHomeMenuData(player));
+    		}
+    		for(int x = 1 ; x <= SeichiAssist.config.getSubHomeMax() ; x++){
+    			if(itemmeta.getDisplayName().contains("サブホームポイント"+ (x) + "にワープ")){
+    				player.chat("/subhome " + (x));
+    				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    			}
+    			else if(itemmeta.getDisplayName().contains("サブホームポイント"+ (x) + "の情報")){
+    				player.chat("/subhome name " + (x));
+    				player.closeInventory();
+    				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    			}
+    			else if(itemmeta.getDisplayName().contains("サブホームポイント"+ (x) + "を設定")){
+        			player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+        			playerdata.selectHomeNum = x;
+        			player.openInventory(MenuInventoryData.getCheckSetHomeMenuData(player));
+    			}
+    		}
+
+		}
+		else if(topinventory.getTitle().contains("ホームポイントを変更しますか?")){
+			event.setCancelled(true);
+
+			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+				return;
+			}
+
+			if(itemmeta.getDisplayName().contains("変更する")){
+    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    			if(playerdata.selectHomeNum == 0) player.chat("/sethome");
+    			else player.chat("/subhome set " + playerdata.selectHomeNum);
+    			player.closeInventory();
+    		}
+    		else if(itemmeta.getDisplayName().contains("変更しない")){
+    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    			player.closeInventory();
+    		}
+		}
+	}
 }

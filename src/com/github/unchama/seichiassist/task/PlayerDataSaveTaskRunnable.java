@@ -212,6 +212,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 				//サブホームのデータ
 				command +=  ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'"
+						+ ",subhome_name = '" + playerdata.SubHomeNameToString() + "'"
 				//建築
 				+ ",build_lv = " + Integer.toString(playerdata.build_lv_get())
 				+ ",build_count = " + playerdata.build_count_get().toString()

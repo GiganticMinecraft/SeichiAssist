@@ -1,9 +1,13 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
-import com.github.unchama.seasonalevents.events.valentine.*;
-import com.github.unchama.seichiassist.minestack.HistoryData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,11 +20,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import com.github.unchama.seasonalevents.events.valentine.Valentine;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.minestack.HistoryData;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldguard.bukkit.WorldConfiguration;
@@ -316,6 +322,7 @@ public class MenuInventoryData {
 		inventory.setItem(30,itemstack);
 		*/
 
+		/*2ページ目に移動
 		// ゴミ箱を開く
 		itemstack = new ItemStack(Material.BUCKET,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BUCKET);
@@ -327,6 +334,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(26,itemstack);
+		*/
 
 		// 不要ガチャ景品交換システムを開く
 		itemstack = new ItemStack(Material.NOTE_BLOCK,1);
@@ -345,6 +353,16 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(16,itemstack);
 
+		itemstack = new ItemStack(Material.BED,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BED);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームメニューを開く");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "ホームポイントに関するメニュー"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(18,itemstack);
+		/*ホームメニューへ移動 2018/07
 		// ver0.3.2 homeコマンド
 		itemstack = new ItemStack(Material.COMPASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
@@ -372,6 +390,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(19,itemstack);
+		 */
 
 		/*
 		// ver0.3.2 //wandコマンド
@@ -812,7 +831,7 @@ public class MenuInventoryData {
 		inventory.setItem(35,itemstack);
 
 
-		//サブホーム関係
+		/*サブホーム関係 サブホームメニューへ移動 2018/07
 		for(int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 			//サブホームに移動ボタン
 			itemstack = new ItemStack(Material.COMPASS,1);
@@ -854,11 +873,24 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(20+x,itemstack);
 		}
+		*/
 
 		// インベントリ共有ボタン
 		itemstack = new ItemStack(Material.TRAPPED_CHEST,1);
 		itemstack.setItemMeta(dispShareInvMeta(playerdata));
 		inventory.setItem(6,itemstack);
+
+		//ゴミ箱
+		itemstack = new ItemStack(Material.BUCKET,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BUCKET);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ゴミ箱を開く");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "不用品の大量処分にドウゾ！"
+				, ChatColor.RESET + "" + ChatColor.RED + "復活しないので取扱注意"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(30,itemstack);
 
 		return inventory;
 	}
@@ -5762,6 +5794,147 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.GREEN + "渡す量を 10000 減らす");
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(16,itemstack);
+
+		return inventory;
+	}
+
+	public static Inventory getHomeMenuData(Player p){
+		//UUID取得
+		UUID uuid = p.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//念のためエラー分岐
+		if (sendWarningToLogger(p, playerdata)) return null;
+		Inventory inventory = Bukkit.getServer().createInventory(null,3*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ホームメニュー");
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		List<String> lore = new ArrayList<String>();
+
+		// ver0.3.2 homeコマンド
+		itemstack = new ItemStack(Material.COMPASS,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームポイントにワープ");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "あらかじめ設定した"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "ホームポイントにワープします"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "うまく機能しない時は"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "再接続してみてください"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでワープ"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/home]"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(0,itemstack);
+
+		itemstack = new ItemStack(Material.BED,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BED);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームポイントを設定");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "現在位置をホームポイント"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "として設定します"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※確認メニューが開きます"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで設定"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/sethome]"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(18,itemstack);
+
+		for(int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
+			//サブホームに移動ボタン
+			itemstack = new ItemStack(Material.COMPASS,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント"+  (x+1) + "にワープ");
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "あらかじめ設定した"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x+1) + "にワープします"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "うまく機能しない時は"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "再接続してみてください"
+						, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでワープ"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome " + (x+1) + "]"
+						);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(2+x,itemstack);
+
+			itemstack = new ItemStack(Material.PAPER);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント" + (x+1) + "の情報");
+			Location l = playerdata.GetSubHome(x);
+			if (l == null || l.getWorld() == null){
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x+1) + "は"
+						, ChatColor.RESET + "" + ChatColor.GRAY + playerdata.subhome_name[x]
+						, ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています"
+						, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x+1) + "]"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "ポイント未設定"
+						);
+			}
+			else {
+				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x+1) + "は"
+						, ChatColor.RESET + "" + ChatColor.GRAY + playerdata.subhome_name[x]
+						, ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています"
+						, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更"
+						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x+1) + "]"
+						, ChatColor.RESET + "" + ChatColor.GRAY + "" + Util.getWorldName(l.getWorld().getName()) + " x:" + (int)l.getX() + " y:" + (int)l.getY() + " z:" + (int)l.getZ()
+						);
+			}
+
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(11+x,itemstack);
+
+			//サブホーム設定ボタン
+			itemstack = new ItemStack(Material.BED,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BED);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント" + (x+1) + "を設定");
+			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "現在位置をサブホームポイント" + (x+1)
+					, ChatColor.RESET + "" + ChatColor.GRAY + "として設定します"
+					, ChatColor.RESET + "" + ChatColor.	DARK_GRAY + "※確認メニューが開きます"
+					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで設定"
+					, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome set " + (x+1) + "]"
+					);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(20+x,itemstack);
+		}
+
+		return inventory;
+	}
+
+	public static Inventory getCheckSetHomeMenuData(Player p){
+		//UUID取得
+		UUID uuid = p.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		int n = playerdata.selectHomeNum;
+		//念のためエラー分岐
+		if (sendWarningToLogger(p, playerdata)) return null;
+		Inventory inventory = Bukkit.getServer().createInventory(null,3*9,ChatColor.RED + "" + ChatColor.BOLD + "ホームポイントを変更しますか?");
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		List<String> lore = new ArrayList<String>();
+
+		if (n >= 1){
+			itemstack = new ItemStack(Material.PAPER);
+			itemmeta = itemstack.getItemMeta();
+			itemmeta.setDisplayName(ChatColor.GREEN + "設定するサブホームポイントの情報");
+			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "No." + n
+					, ChatColor.RESET + "" + ChatColor.GRAY + "名称：" + playerdata.subhome_name[n-1]
+					);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(4,itemstack);
+		}
+
+		itemstack = new ItemStack(Material.WOOL, 1, (byte)5);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.GREEN + "変更する");
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(11,itemstack);
+
+		itemstack = new ItemStack(Material.WOOL, 1, (byte)14);
+		itemmeta = itemstack.getItemMeta();
+		itemmeta.setDisplayName(ChatColor.RED + "変更しない");
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(15,itemstack);
 
 		return inventory;
 	}

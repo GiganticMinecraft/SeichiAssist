@@ -416,6 +416,8 @@ public class Sql{
 				",add column if not exists everysound boolean default true" +
 
 				",add column if not exists homepoint_" + SeichiAssist.config.getServerNum() + " varchar(" + SeichiAssist.config.getSubHomeMax() * SeichiAssist.SUB_HOME_DATASIZE + ") default ''"+
+				",add column if not exists subhome_name blob default null" +
+
 
 				//BuildAssistのデータ
 				",add column if not exists build_lv int default 1" +//
@@ -1409,12 +1411,20 @@ public class Sql{
 				long LastLong = LastDate.getTime();
 
 				long datediff = (TodayLong - LastLong)/(1000 * 60 * 60 * 24 );
-				if(datediff > 0){
-					if(datediff <= 1 ){
-						count ++ ;
-					}else {
-						count = 1;
-					}
+				if(datediff <= 1 || datediff >= 0){
+					count ++ ;
+				}else {
+					count = 1;
+				}
+				//プレイヤーがオンラインの時即時反映させる
+				Player player = Bukkit.getServer().getPlayer(name);
+				if (player != null) {
+					//UUIDを取得
+					UUID givenuuid = player.getUniqueId();
+					//playerdataを取得
+					PlayerData playerdata = SeichiAssist.playermap.get(givenuuid);
+
+					playerdata.ChainVote ++;
 				}
 			} catch (ParseException e) {
 				e.printStackTrace();

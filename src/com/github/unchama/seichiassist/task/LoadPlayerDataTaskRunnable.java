@@ -201,6 +201,10 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
  				//subhomeの情報
  				playerdata.SetSubHome(rs.getString("homepoint_" + SeichiAssist.config.getServerNum()));
+ 				playerdata.setSubHomeName(rs.getString("subhome_name"));
+ 				playerdata.selectHomeNum = 0;
+ 				playerdata.setHomeNameNum = 0;
+ 				playerdata.isSubHomeNameChange = false;
 
  				//実績、二つ名の情報
  				playerdata.displayTypeLv = rs.getBoolean("displayTypeLv");
@@ -263,12 +267,10 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  						long LastLong = LastDate.getTime();
 
  						long datediff = (TodayLong - LastLong)/(1000 * 60 * 60 * 24 );
- 						if(datediff > 0){
- 							if(datediff <= 1){
- 								playerdata.ChainVote = rs.getInt("chainvote");
- 							}else{
- 								playerdata.ChainVote = 0;
- 							}
+ 						if(datediff <= 1 || datediff >= 0){
+ 							playerdata.ChainVote = rs.getInt("chainvote");
+ 						}else{
+ 							playerdata.ChainVote = 0;
  						}
  					} catch (ParseException e) {
  						e.printStackTrace();

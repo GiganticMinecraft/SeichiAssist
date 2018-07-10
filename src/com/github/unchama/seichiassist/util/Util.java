@@ -9,6 +9,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import net.coreprotect.CoreProtect;
+import net.coreprotect.CoreProtectAPI;
+import net.md_5.bungee.api.chat.BaseComponent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -30,10 +34,6 @@ import org.bukkit.plugin.Plugin;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-
-import net.coreprotect.CoreProtect;
-import net.coreprotect.CoreProtectAPI;
-import net.md_5.bungee.api.chat.BaseComponent;
 
 public class Util {
 	static private FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
@@ -768,5 +768,35 @@ public class Util {
 	public static boolean isVotingFairyPeriod(Calendar start, Calendar end) {
 		Calendar cur = Calendar.getInstance();
 		return cur.after(start) && cur.before(end);
+	}
+
+	public static String getWorldName(String s){
+		String worldname = "";
+		switch(s){
+		case "world_spawn":
+			worldname = "スポーンワールド";
+			break;
+		case "world":
+			worldname = "メインワールド";
+			break;
+		case "world_SW":
+			worldname = "第一整地ワールド";
+			break;
+		case "world_SW_2":
+			worldname = "第二整地ワールド";
+			break;
+		case "world_SW_3":
+			worldname = "第三整地ワールド";
+			break;
+		case "world_SW_nether":
+			worldname = "整地ネザー";
+			break;
+		case "world_SW_the_end":
+			worldname = "整地エンド";
+			break;
+		default:
+			worldname = s;
+		}
+		return worldname;
 	}
 }
