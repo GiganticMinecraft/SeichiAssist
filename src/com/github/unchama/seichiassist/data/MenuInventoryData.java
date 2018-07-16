@@ -671,10 +671,10 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(12,itemstack);
 
-		//全体通知音消音のトグルボタン
+		//全体通知のトグルボタン
 		itemstack = new ItemStack(Material.JUKEBOX,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.JUKEBOX);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "全体通知音消音切替");
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "全体通知切替");
 		itemstack.setItemMeta(dispWinSoundToggleMeta(playerdata,itemmeta));
 		inventory.setItem(13,itemstack);
 
@@ -1351,14 +1351,21 @@ public class MenuInventoryData {
 	// 全体通知音消音トグルボタン
 	public static ItemMeta dispWinSoundToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<String>();
-		if(playerdata.everysoundflag){
+		if(playerdata.everysoundflag && playerdata.everymessageflag){
 			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
-			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "消音しない");
-			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで設定");
-		}else{
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "全体通知音:消音しない");
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "全体メッセージ:表示する");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変更");
+		}else if(!playerdata.everysoundflag && playerdata.everymessageflag){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "消音する");
-			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで解除");
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "全体通知音:消音する");
+			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "全体メッセージ:表示する");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変更");
+		}else {
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "全体通知音:消音する");
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "全体メッセージ:表示しない");
+			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変更");
 		}
 		itemmeta.setLore(lore);
 		return itemmeta;

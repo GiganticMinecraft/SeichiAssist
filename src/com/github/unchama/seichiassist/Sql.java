@@ -414,6 +414,7 @@ public class Sql{
 				",add column if not exists expmarge tinyint unsigned default 0" +
 				",add column if not exists shareinv blob" +
 				",add column if not exists everysound boolean default true" +
+				",add column if not exists everymessage boolean default true" +
 
 				",add column if not exists homepoint_" + SeichiAssist.config.getServerNum() + " varchar(" + SeichiAssist.config.getSubHomeMax() * SeichiAssist.SUB_HOME_DATASIZE + ") default ''"+
 				",add column if not exists subhome_name blob default null" +

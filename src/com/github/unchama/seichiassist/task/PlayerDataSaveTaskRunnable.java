@@ -107,6 +107,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",totalexp = " + Integer.toString(playerdata.totalexp)
 				+ ",expmarge = " + Byte.toString(playerdata.expmarge)
 				+ ",everysound = " + Boolean.toString(playerdata.everysoundflag)
+				+ ",everymessage = " + Boolean.toString(playerdata.everymessageflag)
 
 				+",displayTypeLv = " + Boolean.toString(playerdata.displayTypeLv)
 				+",displayTitle1No = " + Integer.toString(playerdata.displayTitle1No)

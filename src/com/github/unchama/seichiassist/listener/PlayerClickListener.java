@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -35,10 +39,6 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
-
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayerClickListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
@@ -311,8 +311,8 @@ public class PlayerClickListener implements Listener {
 					message.setHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(" " + present.itemstack.getItemMeta().getDisplayName() +  "\n" + Util.getDescFormat(enchantname) + Util.getDescFormat(lore)).create() ) );
 
 					player.sendMessage(ChatColor.RED + "おめでとう！！！！！Gigantic☆大当たり！" + str);
-					Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！");
-					Util.sendEveryMessage(message);
+					Util.sendEveryMessageWithoutIgnore(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！");
+					Util.sendEveryMessageWithoutIgnore(message);
 				}else if(present.probability < 0.01){
 					//大当たり時にSEを鳴らす(自分だけ)
 					player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);

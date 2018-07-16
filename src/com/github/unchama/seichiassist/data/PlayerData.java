@@ -88,6 +88,8 @@ public class PlayerData {
 	public boolean dispkilllogflag;
 	//全体通知音消音トグル
 	public boolean everysoundflag;
+	//全体メッセージ非表示トグル
+	public boolean everymessageflag;
 	//ワールドガード保護ログ表示トグル
 	public boolean dispworldguardlogflag;
 	//複数種類破壊トグル

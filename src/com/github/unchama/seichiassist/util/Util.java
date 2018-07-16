@@ -202,6 +202,15 @@ public class Util {
 		}
 	}
 
+	public static void sendEveryMessageWithoutIgnore(String str){
+		SeichiAssist plugin = SeichiAssist.plugin;
+		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+			if (SeichiAssist.playermap.get(player.getUniqueId()).everymessageflag) {
+				player.sendMessage(str);
+			}
+		}
+	}
+
 	/**
 	 * json形式のチャットを送信する際に使用
 	 */
@@ -209,6 +218,15 @@ public class Util {
 		SeichiAssist plugin = SeichiAssist.plugin;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.spigot().sendMessage(base);
+		}
+	}
+
+	public static void sendEveryMessageWithoutIgnore(BaseComponent base){
+		SeichiAssist plugin = SeichiAssist.plugin;
+		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+			if (SeichiAssist.playermap.get(player.getUniqueId()).everymessageflag) {
+				player.spigot().sendMessage(base);
+			}
 		}
 	}
 
