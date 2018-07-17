@@ -475,6 +475,9 @@ mebiusdebug: '0'
 # デフォルト値はギガンティック1個につき椎名林檎4個
 rategigantictoringo: '4'
 
+# ギガンティック・フィーバーの効果継続時間を指定します。
+
+
 #グリッド式保護を強制するワールド名
 #状況に応じて変更してください
 GridProtectForceWorld:

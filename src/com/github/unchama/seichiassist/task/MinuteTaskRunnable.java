@@ -4,8 +4,9 @@ package com.github.unchama.seichiassist.task;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import com.github.unchama.seichiassist.commands.*;
+import com.github.unchama.seichiassist.event.*;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -290,5 +291,6 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 		}
 
+        Bukkit.getPluginManager().callEvent(new MinuteNotifyEvent());
 	}
 }
