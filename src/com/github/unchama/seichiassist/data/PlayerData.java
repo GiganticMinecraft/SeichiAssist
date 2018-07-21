@@ -3,15 +3,7 @@ package com.github.unchama.seichiassist.data;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -682,6 +674,10 @@ public class PlayerData {
 
 	public void setSubHomeName(String s){
 		byte[] bytes = null;
+		if (s == null) {
+		    //SQL初期化時(つまりサーバに導入時)必ず入力がカラムの内容がnullになるためその対策
+		    return;
+        }
 		try {
 			bytes = Hex.decodeHex(s.toCharArray());
 		} catch (DecoderException e) {
