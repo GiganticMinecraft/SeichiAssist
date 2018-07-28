@@ -25,6 +25,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	private Config config = SeichiAssist.config;
 	Sql sql = SeichiAssist.sql;
+	public static int time = 0;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public MinuteTaskRunnable() {
@@ -291,6 +292,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 		}
 
-        Bukkit.getPluginManager().callEvent(new MinuteNotifyEvent());
+        time++;
+		GiganticFeverCommand.checkTime(); //GiganticFeverの時間チェック
 	}
 }

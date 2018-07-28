@@ -259,6 +259,6 @@ public class Config{
 	    int hours = minute / 60;
 	    int minutes = minute - 60 * hours;
 
-	    return hours + "時間" + minute + "分";
+	    return hours + "時間" + minutes + "分";
     }
 }
