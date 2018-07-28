@@ -13,14 +13,8 @@ import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
+import org.bukkit.*;
 import org.bukkit.FireworkEffect.Builder;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -817,4 +811,15 @@ public class Util {
 		}
 		return worldname;
 	}
+
+    public static void setDifficulty(List<String> worldNameList, Difficulty difficulty) {
+        for (String name : worldNameList) {
+            World world = Bukkit.getWorld(name);
+            if (world == null) {
+                Bukkit.getLogger().warning(name + "という名前のワールドは存在しません。");
+                continue;
+            }
+            world.setDifficulty(difficulty);
+        }
+    }
 }

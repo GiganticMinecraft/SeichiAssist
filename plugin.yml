@@ -73,3 +73,8 @@ commands:
       usage: /<command> <help/set/name/num> <num>
       permission: multiseichiplugin.subhome
       permission-message: You don't have <permission>
+  gtfever:
+      description: This is a GiganticFever command.
+      usage: /<command>
+      permission: multiseichiplugin.gtfever
+      permission-message: You don't have <permission>

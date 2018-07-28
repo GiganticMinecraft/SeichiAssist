@@ -4,8 +4,9 @@ package com.github.unchama.seichiassist.task;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import com.github.unchama.seichiassist.commands.*;
+import com.github.unchama.seichiassist.event.*;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -24,6 +25,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	private Config config = SeichiAssist.config;
 	Sql sql = SeichiAssist.sql;
+	public static int time = 0;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public MinuteTaskRunnable() {
@@ -290,5 +292,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 		}
 
+        time++;
+		GiganticFeverCommand.checkTime(); //GiganticFeverの時間チェック
 	}
 }

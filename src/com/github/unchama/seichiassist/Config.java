@@ -248,4 +248,17 @@ public class Config{
 	public int getWorldSize() {
 		return config.getInt("world_size");
 	}
+
+	public int getGiganticFeverMinutes() {
+	    return config.getInt("gigantic_fever_minutes");
+    }
+
+    public String getGiganticFeverDisplayTime() {
+	    int minute = getGiganticFeverMinutes();
+
+	    int hours = minute / 60;
+	    int minutes = minute - 60 * hours;
+
+	    return hours + "時間" + minutes + "分";
+    }
 }
