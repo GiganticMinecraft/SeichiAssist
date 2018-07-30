@@ -630,36 +630,6 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 1.5);
 				player.openInventory(MenuInventoryData.getHomeMenuData(player));
 			}
-			/*
-			else if(itemstackcurrent.getType().equals(Material.BED)){
-				// sethomeコマンド実行
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-
-				if(itemmeta.getDisplayName().contains("サブホームポイント")){//ホームボタンかサブホームボタンか判定
-					//ホームをセット
-					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) );	//サブホームボタンの番号
-					player.chat("/subhome set " + z );
-					player.closeInventory();
-				}else {
-					player.chat("/sethome");
-				}
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.COMPASS)){
-				// homeコマンド実行
-				player.closeInventory();
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-
-				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-				if(itemmeta.getDisplayName().contains("サブホームポイント")){//ホームボタンかサブホームボタンか判定
-					//サブホームに移動
-					int z = Integer.parseInt( itemmeta.getDisplayName().substring(15, 16) );	//サブホームボタンの番号
-					player.chat("/subhome " + z);
-				}else {
-					player.chat("/home");
-				}
-*/
 
 			else if(itemstackcurrent.getType().equals(Material.WORKBENCH)){
 				// /fc craftコマンド実行
@@ -668,80 +638,12 @@ public class PlayerInventoryListener implements Listener {
 				player.chat("/fc craft");
 			}
 
-			/*
-			else if(itemstackcurrent.getType().equals(Material.WOOD_AXE)){
-				// wand召喚
-				player.closeInventory();
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.chat("//wand");
-				player.sendMessage(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "保護のかけ方\n"
-						+ ChatColor.RESET + "" +  ChatColor.GREEN + "①召喚された斧を手に持ちます\n"
-						+ ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック\n"
-						+ ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック\n"
-						+ ChatColor.RESET + "" +  ChatColor.GREEN + "④メニューの" + ChatColor.RESET + "" +  ChatColor.YELLOW + "金の斧" + ChatColor.RESET + "" +  ChatColor.GREEN + "をクリック\n"
-						+ ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard"
-						);
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.GOLD_AXE)){
-				// 保護の設定
-				player.closeInventory();
-				Selection selection = Util.getWorldEdit().getSelection(player);
-				if(!player.hasPermission("worldguard.region.claim")){
-					player.sendMessage(ChatColor.RED + "このワールドでは保護を申請できません");
-					return;
-				}else if (selection == null) {
-					player.sendMessage(ChatColor.RED + "先に木の斧で範囲を指定してからこのボタンを押してください");
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					return;
-				}else if(selection.getLength() < 10||selection.getWidth() < 10){
-					player.sendMessage(ChatColor.RED + "指定された範囲が狭すぎます。1辺当たり最低10ブロック以上にしてください");
-					player.sendMessage(ChatColor.DARK_GRAY + "[TIPS]どうしても小さい保護が必要な人は直接コマンド入力で作ろう！");
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					return;
-				}
-
-				player.chat("//expand vert");
-				player.chat("/rg claim " + player.getName() + "_" + playerdata.rgnum);
-				playerdata.rgnum += 1;
-				player.chat("//sel");
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.STONE_AXE)){
-				// 保護リストの表示
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.closeInventory();
-				player.sendMessage(ChatColor.GRAY + "--------------------\n"
-						+ ChatColor.GRAY + "複数ページの場合… " + ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg list ページNo\n"
-						+ ChatColor.RESET + "" +  ChatColor.GRAY + "先頭に[+]のついた保護はOwner権限\n[-]のついた保護はMember権限を保有しています\n"
-						+ ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard");
-				player.chat("/rg list");
-			}
-
-			else if(itemstackcurrent.getType().equals(Material.DIAMOND_AXE)){
-				// ReguionGUI表示
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.closeInventory();
-				player.chat("/land");
-			}
-			*/
-
 			else if(itemstackcurrent.getType().equals(Material.BOOK)){
 				// wikiリンク表示
 				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "http://seichi.click");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
-
-			/*投票ptメニューへ移動
-			else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
-				// 投票リンク表示
-				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote");
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.closeInventory();
-			}
-			*/
 
 			else if(itemstackcurrent.getType().equals(Material.PAPER)){
 				// 運営方針とルールリンク表示
