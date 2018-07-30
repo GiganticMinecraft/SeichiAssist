@@ -681,11 +681,13 @@ public class PlayerData {
 		try {
 			bytes = Hex.decodeHex(s.toCharArray());
 		} catch (DecoderException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 		String str = new String(bytes,StandardCharsets.UTF_8);
-		this.subhome_name = str.split(",");
+		String[] strs = str.split(",");
+		for (int i =0; i < strs.length; i++) {
+			this.subhome_name[i] = strs[i];
+		}
 	}
 
 	public String SubHomeNameToString(){
