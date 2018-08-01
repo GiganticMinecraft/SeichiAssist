@@ -822,4 +822,20 @@ public class Util {
             world.setDifficulty(difficulty);
         }
     }
+
+    /**
+     * 指定した名前のマインスタックの番号を返す
+     * @param s SeichiAssist.javaのminestacklistに定義されてる英語名
+     * @return マインスタック番号(見つからなかった場合は-1)
+     */
+    public static int MineStackobjname_indexOf(String s){
+        int id = -1;
+        for(int x = 0 ; x < SeichiAssist.minestacklist.size() ; x++){
+            if( s.equals( SeichiAssist.minestacklist.get(x).getMineStackObjName() ) ){
+                id = x;
+                break;
+            }
+        }
+        return id;
+    }
 }

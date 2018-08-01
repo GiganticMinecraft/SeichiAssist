@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.*;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Sound;
@@ -112,9 +113,10 @@ public class VotingFairyTaskRunnable {
 		player = p;
 		UUID uuid = p.getUniqueId();
 		playerdata = playermap.get(uuid);
+		int gachaimo_minestack_num = Util.MineStackobjname_indexOf("gachaimo");
 
-		//MineStack番号379(がちゃりんご)の所有数で分ける
-		if(playerdata.giveApple <= playerdata.minestack.getNum(379)){
+		//がちゃりんごの所有数で分ける
+		if(playerdata.giveApple <= playerdata.minestack.getNum(gachaimo_minestack_num)){
 
 			double n = 1.0;
 
@@ -127,7 +129,7 @@ public class VotingFairyTaskRunnable {
 
 			playerdata.hasVotingFairyMana += playerdata.giveApple * 300 * n;
 
-			playerdata.minestack.setNum(379, playerdata.minestack.getNum(379) - playerdata.giveApple);
+			playerdata.minestack.setNum(Util.MineStackobjname_indexOf("gachaimo"), playerdata.minestack.getNum(Util.MineStackobjname_indexOf("gachaimo")) - playerdata.giveApple);
 			player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2) ;
 
 			//プレイヤーにメッセージ
