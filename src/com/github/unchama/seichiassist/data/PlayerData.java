@@ -3,18 +3,15 @@ package com.github.unchama.seichiassist.data;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.Statistic;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
@@ -25,6 +22,7 @@ import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
+import com.sun.org.glassfish.external.statistics.Statistic;
 
 
 public class PlayerData {
@@ -155,6 +153,7 @@ public class PlayerData {
 	public int achvPointUSE ;//消費量
 	public int achvPoint ;//現在の残量
 	public int achvChangenum ;//投票ptからの変換回数
+	public int titlepage ; //実績メニュー用汎用ページ指定
 	public boolean samepageflag ;//実績ショップ用
 
 
@@ -258,6 +257,7 @@ public class PlayerData {
 		this.TitleFlags.set(1);
 		this.p_vote_forT = 0 ;
 		this.giveachvNo = 0 ;
+		this.titlepage = 1 ;
 
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
@@ -681,11 +681,13 @@ public class PlayerData {
 		try {
 			bytes = Hex.decodeHex(s.toCharArray());
 		} catch (DecoderException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 		String str = new String(bytes,StandardCharsets.UTF_8);
-		this.subhome_name = str.split(",");
+		String[] strs = str.split(",");
+		for (int i =0; i < strs.length; i++) {
+			this.subhome_name[i] = strs[i];
+		}
 	}
 
 	public String SubHomeNameToString(){

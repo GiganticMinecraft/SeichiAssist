@@ -4,11 +4,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 //import org.bukkit.metadata.FixedMetadataValue;
@@ -938,6 +933,100 @@ public class TitleUnlockTaskRunnable {
 				player.sendMessage("実績No9028解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9028は条件を満たしていません。");
+				}
+			}
+		}else if(TryTitleNo == 9029){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 8 ){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No9029解除！おめでとうございます！");
+				}else{
+					player.sendMessage("実績No9029は条件を満たしていません。");
+				}
+			}
+		}else if(TryTitleNo == 9030){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 8 &&
+					Calendar.getInstance().get(Calendar.DATE) == 7){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No9030解除！おめでとうございます！");
+				}else{
+					player.sendMessage("実績No9030は条件を満たしていません。");
+				}
+			}
+		}else if(TryTitleNo == 9031){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 8 &&
+					Calendar.getInstance().get(Calendar.DATE) == 16){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No9031解除！おめでとうございます！");
+				}else{
+					player.sendMessage("実績No9031は条件を満たしていません。");
+				}
+			}
+		}else if(TryTitleNo == 9032){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 8 &&
+					Calendar.getInstance().get(Calendar.DATE) == 29){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No9032解除！おめでとうございます！");
+				}else{
+					player.sendMessage("実績No9032は条件を満たしていません。");
+				}
+			}
+		}else if(TryTitleNo == 9033){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 9 ){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No9033解除！おめでとうございます！");
+				}else{
+					player.sendMessage("実績No9033は条件を満たしていません。");
+				}
+			}
+		}else if(TryTitleNo == 9034){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 9 &&
+					Calendar.getInstance().get(Calendar.DATE) == 2){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No9034解除！おめでとうございます！");
+				}else{
+					player.sendMessage("実績No9034は条件を満たしていません。");
+				}
+			}
+		}else if(TryTitleNo == 9035){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 9 &&
+					Calendar.getInstance().get(Calendar.DATE) == 12){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No9035解除！おめでとうございます！");
+				}else{
+					player.sendMessage("実績No9035は条件を満たしていません。");
+				}
+			}
+		}else if(TryTitleNo == 9036){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 9 &&
+					Calendar.getInstance().get(Calendar.DATE) == 29){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No9036解除！おめでとうございます！");
+				}else{
+					player.sendMessage("実績No9036は条件を満たしていません。");
 				}
 			}
 

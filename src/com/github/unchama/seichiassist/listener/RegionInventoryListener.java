@@ -190,7 +190,7 @@ public class RegionInventoryListener implements Listener {
                 player.sendMessage(ChatColor.GRAY + "--------------------\n"
                         + ChatColor.GRAY + "複数ページの場合… " + ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg list -p " + player.getName() + " ページNo\n"
                         + ChatColor.RESET + "" +  ChatColor.GRAY + "先頭に[+]のついた保護はOwner権限\n[-]のついた保護はMember権限を保有しています\n"
-                        + ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard");
+                        + ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "https://seichi.click/wiki/WorldGuard");
                 player.chat("/rg list -p " + player.getName());
             }
 
