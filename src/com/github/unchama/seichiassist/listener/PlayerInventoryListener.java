@@ -3995,12 +3995,12 @@ public class PlayerInventoryListener implements Listener {
     						+ SeichiAssist.config.getTitle3(9904) + SeichiAssist.config.getTitle3(7018) +"」が設定されました。");
     			}
     			else if(itemmeta.getDisplayName().contains("No7019「"+ SeichiAssist.config.getTitle1(7019)
-    					+ SeichiAssist.config.getTitle2(7019) +"」")){
+    					+ SeichiAssist.config.getTitle3(7019) + "」")){
     				playerdata.displayTitle1No = 7019 ;
-    				playerdata.displayTitle2No = 7019 ;
-    				playerdata.displayTitle3No = 0 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 7019 ;
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7019)
-    						+ SeichiAssist.config.getTitle2(7019) +"」が設定されました。");
+    						+ SeichiAssist.config.getTitle3(7019) +"」が設定されました。");
     			}
     			else if(itemmeta.getDisplayName().contains("No7020「"+ SeichiAssist.config.getTitle1(7020)
     					+ SeichiAssist.config.getTitle3(7020) +"」")){
