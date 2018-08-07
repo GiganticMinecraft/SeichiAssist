@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -58,7 +59,6 @@ import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.sun.xml.internal.ws.api.pipe.Fiber.Listener;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -854,6 +854,11 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage("整地レベルが足りません");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 				}
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.WOOD_SWORD)){
+				player.sendMessage("未実装です");
+				player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 			}
 		}
 	}

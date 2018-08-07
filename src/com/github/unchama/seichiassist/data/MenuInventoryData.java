@@ -931,6 +931,15 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(MultipleIDBlockBreakToggleMeta(playerdata,itemmeta));
 		inventory.setItem(0,itemstack);
 
+		//GiganticBerserk
+		itemstack = new ItemStack(Material.WOOD_SWORD,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD_SWORD);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk");
+		//itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(GiganticBerserkMeta(playerdata,itemmeta));
+		inventory.setItem(1,itemstack);
+
 		return inventory;
 	}
 
@@ -1450,6 +1459,16 @@ public class MenuInventoryData {
 				}
 			}
 		}
+		itemmeta.setLore(lore);
+		return itemmeta;
+	}
+
+	// GiganticBerserk Meta
+	public static ItemMeta GiganticBerserkMeta(PlayerData playerdata, ItemMeta itemmeta){
+		List<String> lore = new ArrayList<String>();
+
+		lore.add("未実装です");
+
 		itemmeta.setLore(lore);
 		return itemmeta;
 	}

@@ -34,7 +34,6 @@ import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
-import com.sun.org.glassfish.external.statistics.Statistic;
 
 
 public class PlayerData {

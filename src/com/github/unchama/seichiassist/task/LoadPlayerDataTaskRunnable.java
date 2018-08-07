@@ -202,7 +202,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
  				//subhomeの情報
  				playerdata.SetSubHome(rs.getString("homepoint_" + SeichiAssist.config.getServerNum()));
- 				playerdata.setSubHomeName(rs.getString("subhome_name"));
+ 				playerdata.setSubHomeName(rs.getString("subhome_name_" + SeichiAssist.config.getServerNum()));
  				playerdata.selectHomeNum = 0;
  				playerdata.setHomeNameNum = 0;
  				playerdata.isSubHomeNameChange = false;
