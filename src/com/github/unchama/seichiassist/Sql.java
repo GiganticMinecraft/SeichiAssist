@@ -439,7 +439,12 @@ public class Sql{
 				",add column if not exists added_mana int default 0" +
 
 				",add column if not exists lastvote varchar(40) default null" +
-				",add column if not exists chainvote int default 0";
+				",add column if not exists chainvote int default 0" +
+
+				",add column if not exists GBstage int default 0" +
+				",add column if not exists GBexp int default 0" +
+				",add column if not exists GBlevel int default 0" +
+				",add column if not exists isGBStageUp boolean default false";
 
 				for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
 					command += ",add column if not exists ahead_" + i + " int default 0";

@@ -3,7 +3,15 @@ package com.github.unchama.seichiassist.data;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -15,15 +23,6 @@ import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
@@ -216,6 +215,11 @@ public class PlayerData {
 	//MineStack検索保存用Map
 	public Map<Integer, MineStackObj> indexMap;
 
+	public int GBstage;
+	public int GBexp;
+	public int GBlevel;
+	public boolean isGBStageUp;
+
 
 	public PlayerData(Player player){
 		//初期値を設定
@@ -317,6 +321,11 @@ public class PlayerData {
 		this.selectHomeNum = 0;
 		this.setHomeNameNum = 0;
 		this.isSubHomeNameChange = false;
+
+		this.GBstage = 0;
+		this.GBlevel = 0;
+		this.GBexp = 0;
+		this.isGBStageUp = false;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新

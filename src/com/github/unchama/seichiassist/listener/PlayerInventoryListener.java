@@ -53,6 +53,7 @@ import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
+import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
 import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -365,69 +366,6 @@ public class PlayerInventoryListener implements Listener {
 				itemmeta.setLore(MenuInventoryData.SorryGachaGetButtonLore(playerdata));
 				itemstackcurrent.setItemMeta(itemmeta);
 			}
-
-			/*//投票特典受け取り
-			else if(itemstackcurrent.getType().equals(Material.DIAMOND)){
-
-				//nは特典をまだ受け取ってない投票分
-				int n = sql.compareVotePoint(player,playerdata);
-				//投票数に変化が無ければ処理終了
-				if(n == 0){
-					return;
-				}
-				//先にp_voteの値を更新しておく
-				playerdata.p_givenvote += n;
-
-				int count = 0;
-				while(n > 0){
-					//ここに投票1回につきプレゼントする特典の処理を書く
-
-					//ガチャ券プレゼント処理
-					ItemStack skull = Util.getVoteskull(Util.getName(player));
-					for (int i = 0; i < 10; i++){
-						if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
-							Util.addItem(player,skull);
-						}else{
-							Util.dropItem(player,skull);
-						}
-					}
-
-					//ピッケルプレゼント処理(レベル30になるまで)
-
-					if(playerdata.level < 30){
-
-					}
-
-					ItemStack itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
-					ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
-					itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "Thanks for Voting!");
-					List<String> lore = Arrays.asList("投票ありがとナス♡"
-							);
-					itemmeta.addEnchant(Enchantment.DIG_SPEED, 3, true);
-					itemmeta.addEnchant(Enchantment.DURABILITY, 3, true);
-					itemmeta.setLore(lore);
-					itemstack.setItemMeta(itemmeta);
-					if(!Util.isPlayerInventryFill(player)){
-						Util.addItem(player,itemstack);
-					}else{
-						Util.dropItem(player,itemstack);
-					}
-
-					//エフェクトポイント加算処理
-					playerdata.activeskilldata.effectpoint += 10;
-
-					n--;
-					count++;
-				}
-
-				player.sendMessage(ChatColor.GOLD + "投票特典" + ChatColor.WHITE + "(" + count + "票分)を受け取りました");
-				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-
-				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-				itemmeta.setLore(MenuInventoryData.VoteGetButtonLore(playerdata));
-				itemstackcurrent.setItemMeta(itemmeta);
-			}
-			 */
 
 			//経験値を消費してプレイヤーの頭を召喚
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_Villager")){
@@ -856,9 +794,26 @@ public class PlayerInventoryListener implements Listener {
 				}
 			}
 
-			else if(itemstackcurrent.getType().equals(Material.WOOD_SWORD)){
-				player.sendMessage("未実装です");
+			else if(itemstackcurrent.getType().equals(Material.STICK)){
+				player.sendMessage(ChatColor.WHITE + "パッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk" + ChatColor.WHITE + "はレベル10以上から使用可能です");
 				player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+			}
+
+			else if(itemstackcurrent.getType().equals(Material.WOOD_SWORD) || itemstackcurrent.getType().equals(Material.STONE_SWORD) || itemstackcurrent.getType().equals(Material.GOLD_SWORD) || itemstackcurrent.getType().equals(Material.IRON_SWORD) || itemstackcurrent.getType().equals(Material.DIAMOND_SWORD)){
+				if(!playerdata.isGBStageUp){
+					player.sendMessage(ChatColor.RED + "進化条件を満たしていません");
+				}else {
+					player.openInventory(MenuInventoryData.getGiganticBerserkEvolutionMenu(player));
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				}
+			}
+			if(SeichiAssist.DEBUG){
+				if(itemstackcurrent.getType().equals(Material.STONE)){
+					player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player));
+					playerdata.GBexp += 10000;
+					GiganticBerserkTaskRunnable GBTR = new GiganticBerserkTaskRunnable();
+					GBTR.PlayerKillEnemy(player);
+				}
 			}
 		}
 	}
@@ -5301,4 +5256,49 @@ public class PlayerInventoryListener implements Listener {
     		}
 		}
 	}
+
+    @EventHandler
+	public void onGiganticBerserkMenuEvent(InventoryClickEvent event){
+		//外枠のクリック処理なら終了
+		if(event.getClickedInventory() == null){
+			return;
+		}
+
+		ItemStack itemstackcurrent = event.getCurrentItem();
+		InventoryView view = event.getView();
+		HumanEntity he = view.getPlayer();
+		//インベントリを開けたのがプレイヤーではない時終了
+		if(!he.getType().equals(EntityType.PLAYER)){
+			return;
+		}
+
+		Inventory topinventory = view.getTopInventory();
+		//インベントリが存在しない時終了
+		if(topinventory == null){
+			return;
+		}
+		//インベントリサイズが54でない時終了
+		if(topinventory.getSize() != 54){
+			return;
+		}
+		Player player = (Player)he;
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+
+		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "スキルを進化させますか?")){
+    		event.setCancelled(true);
+    		if (itemstackcurrent.getType().equals(Material.NETHER_STAR)){
+    			playerdata.GBstage ++ ;
+    			playerdata.GBlevel = 0;
+    			playerdata.GBexp = 0;
+    			playerdata.isGBStageUp = false;
+    			player.playSound(player.getLocation(), Sound.BLOCK_END_GATEWAY_SPAWN, 1, (float) 0.5);
+    			player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_AMBIENT, 1, (float) 0.8);
+    			player.openInventory(MenuInventoryData.getGiganticBerserkEvolution2Menu(player));
+    		}
+		}
+		else if(topinventory.getTitle().equals(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "スキルを進化させました")){
+			event.setCancelled(true);
+		}
+    }
 }

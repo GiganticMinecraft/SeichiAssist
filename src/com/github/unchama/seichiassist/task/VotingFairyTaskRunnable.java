@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.util.*;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Sound;
@@ -17,6 +16,7 @@ import org.bukkit.entity.Player;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 
 public class VotingFairyTaskRunnable {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -36,20 +36,6 @@ public class VotingFairyTaskRunnable {
 		playerdata.canVotingFairyUse = true ;
 
 		//マナ回復量を決定
-		/*調整前数値
-		//プレイヤーが90レベル未満のとき
-		if(playerdata.level < 90){
-			playerdata.VotingFairyRecoveryValue = rnd.nextInt(501) + 100;
-		}
-		//175未満のとき
-		else if(playerdata.level < 175){
-			playerdata.VotingFairyRecoveryValue = rnd.nextInt(1201) + 400;
-		}
-		else{
-			playerdata.VotingFairyRecoveryValue = rnd.nextInt(6001) + 2000;
-		}
-		*/
-		//調整後
 		if(playerdata.ChainVote >= 5){
 			if(playerdata.level < 80){
 				playerdata.VotingFairyRecoveryValue = rnd.nextInt(401) + 200;

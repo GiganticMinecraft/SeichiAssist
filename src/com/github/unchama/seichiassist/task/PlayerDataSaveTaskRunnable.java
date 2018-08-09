@@ -226,7 +226,12 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana)
 
 				//貢献度pt
-				+",added_mana = " + Integer.toString(playerdata.added_mana);
+				+",added_mana = " + Integer.toString(playerdata.added_mana)
+
+				+",GBstage = " + Integer.toString(playerdata.GBstage)
+				+",GBexp = " + Integer.toString(playerdata.GBexp)
+				+",GBlevel = " + Integer.toString(playerdata.GBlevel)
+				+",isGBStageUp = " + Boolean.toString(playerdata.isGBStageUp);
 
 				//実績のフラグ(BitSet)保存用変換処理
 				long[] TitleArray = playerdata.TitleFlags.toLongArray();

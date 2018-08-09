@@ -13,8 +13,17 @@ import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Difficulty;
+import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Builder;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -838,4 +847,47 @@ public class Util {
         }
         return id;
     }
+
+	public static boolean isEnemy(EntityType type) {
+		switch(type){
+		//通常世界MOB
+		case CAVE_SPIDER:
+			return true;
+		case CREEPER:
+			return true;
+		case GUARDIAN:
+			return true;
+		case SILVERFISH:
+			return true;
+		case SKELETON:
+			return true;
+		case SLIME:
+			return true;
+		case SPIDER:
+			return true;
+		case WITCH:
+			return true;
+		case ZOMBIE:
+			return true;
+		//ネザーMOB
+		case BLAZE:
+			return true;
+		case GHAST:
+			return true;
+		case MAGMA_CUBE:
+			return true;
+		case PIG_ZOMBIE:
+			return true;
+		//エンドMOB
+		case ENDERMAN:
+			return true;
+		case ENDERMITE:
+			return true;
+		case SHULKER:
+			return true;
+		//敵MOB以外(エンドラ,ウィザーは除外)
+		default:
+			return false;
+		}
+	}
 }

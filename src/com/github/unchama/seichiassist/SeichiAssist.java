@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.commands.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,6 +23,21 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
+import com.github.unchama.seichiassist.commands.AchieveCommand;
+import com.github.unchama.seichiassist.commands.EventCommand;
+import com.github.unchama.seichiassist.commands.GiganticFeverCommand;
+import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
+import com.github.unchama.seichiassist.commands.contributeCommand;
+import com.github.unchama.seichiassist.commands.effectCommand;
+import com.github.unchama.seichiassist.commands.gachaCommand;
+import com.github.unchama.seichiassist.commands.lastquitCommand;
+import com.github.unchama.seichiassist.commands.levelCommand;
+import com.github.unchama.seichiassist.commands.mebiusCommand;
+import com.github.unchama.seichiassist.commands.rmpCommand;
+import com.github.unchama.seichiassist.commands.seichiCommand;
+import com.github.unchama.seichiassist.commands.shareinvCommand;
+import com.github.unchama.seichiassist.commands.stickCommand;
+import com.github.unchama.seichiassist.commands.subHomeCommand;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -188,6 +202,14 @@ public class SeichiAssist extends JavaPlugin{
 			71265000,72265000,73265000,74265000,75265000,//190
 			76415000,77565000,78715000,79865000,81015000,//195
 			82165000,83315000,84465000,85615000,87115000//200
+			));
+
+	public static final List<Integer> GBlevellist = new ArrayList<Integer>(Arrays.asList(
+			20,30,40,40,50,50,60,70,80,100,
+			100,110,120,130,140,150,160,170,180,200,
+			250,270,300,320,350,370,400,420,450,500,
+			500,600,700,800,900,1000,1100,1200,1300,1500,
+			2000,3000,4000,5000,6000,7000,8000,9000,10000
 			));
 
 	private static final List<MineStackObj> minestacklistmine = new ArrayList<MineStackObj>(Arrays.asList(

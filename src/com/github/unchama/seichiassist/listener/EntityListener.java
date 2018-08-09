@@ -18,6 +18,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -33,6 +34,7 @@ import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -400,4 +402,29 @@ public class EntityListener implements Listener {
 		}
 	}
 	*/
+
+	@EventHandler
+	public void onDeath(EntityDeathEvent event) {
+		/*GiganticBerserk用*/
+
+		//死んだMOBがGiganticBerserkの対象MOBでなければ終了
+		if(!Util.isEnemy(event.getEntity().getType())){
+			return;
+		}
+
+		Player player = event.getEntity().getKiller();
+		//MOBを倒したプレイヤーがいなければ終了
+		if (player == null) {
+			return;
+		}
+		//プレイヤーが整地ワールドに居ない場合終了
+		if (!Util.isSeichiWorld(player)){
+			return;
+		}
+
+		GiganticBerserkTaskRunnable GBTR = new GiganticBerserkTaskRunnable();
+
+		GBTR.PlayerKillEnemy(player);
+
+	}
 }
