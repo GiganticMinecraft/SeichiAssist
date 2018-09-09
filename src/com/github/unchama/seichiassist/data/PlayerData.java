@@ -668,7 +668,7 @@ public class PlayerData {
 //			if(s[x*4] != "" && s[x*4+1] != "" && s[x*4+2] != "" && s[x*4+3] != ""){	//未設定項目を飛ばす　何故かうまく動かない
 			if(s[x*4].length() > 0 && s[x*4+1].length() > 0 && s[x*4+2].length() > 0 && s[x*4+3].length() > 0 ){
 
-				Location l = new Location( Bukkit.getWorld(s[x*4+3]) , Integer.parseInt(s[x*4])+0.5 , Integer.parseInt(s[x*4+1]) , Integer.parseInt(s[x*4+2])+0.5 );
+				Location l = new Location( Bukkit.getWorld(s[x*4+3]) , Integer.parseInt(s[x*4]) , Integer.parseInt(s[x*4+1]) , Integer.parseInt(s[x*4+2]) );
 				this.sub_home[x] = l;
 			}
 		}
