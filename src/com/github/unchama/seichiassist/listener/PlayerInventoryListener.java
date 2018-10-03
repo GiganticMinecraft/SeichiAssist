@@ -4567,6 +4567,7 @@ public class PlayerInventoryListener implements Listener {
             int diamondore = 0; //ダイアモンド
             int redstoneore = 0; //レッドストーン
             int emeraldore = 0; //エメラルド
+            int quartzore = 0; //ネザー水晶
             //for文でインベントリ内のアイテムを1つずつ見る
             //鉱石・交換券変換インベントリスロットを1つずつ見る
             for(ItemStack m : item){
@@ -4603,12 +4604,16 @@ public class PlayerInventoryListener implements Listener {
             		emeraldore += m.getAmount();
             		continue;
             	}
+            	else if(m.getType().equals(Material.QUARTZ_ORE)){
+            		quartzore += m.getAmount();
+            		continue;
+            	}
             	else{
             		dropitem.add(m);
             	}
             }
             //チケット計算
-            giveticket = giveticket + coalore/128 + ironore/64 + goldore/8 + lapisore/8 + diamondore/4 + redstoneore/32 + emeraldore/4;
+            giveticket = giveticket + coalore/128 + ironore/64 + goldore/8 + lapisore/8 + diamondore/4 + redstoneore/32 + emeraldore/4 + quartzore/16 ;
 
             //プレイヤー通知
             if(giveticket == 0){
@@ -4697,6 +4702,14 @@ public class PlayerInventoryListener implements Listener {
             	e.setItemMeta(eitemmeta);
             	e.setAmount(emeraldore - emeraldore/4 *4);
             	retore.add(e);
+            }
+
+            if((quartzore - quartzore/16 *16) != 0){
+            	ItemStack q = new ItemStack(Material.QUARTZ_ORE);
+            	ItemMeta qitemmeta = Bukkit.getItemFactory().getItemMeta(Material.QUARTZ_ORE);
+            	q.setItemMeta(qitemmeta);
+            	q.setAmount(quartzore - quartzore/16 *16);
+            	retore.add(q);
             }
 
             //返却処理
