@@ -34,6 +34,8 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		int all = 0;
 
 
+		Util.sendEveryMessage("--------------30分間整地ランキング--------------");
+
 		//playermapに入っているすべてのプレイヤーデータについて処理
 		for(PlayerData playerdata:SeichiAssist.playermap.values()){
 			//プレイヤー型を取得
@@ -48,6 +50,12 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 				playerdata.halfhourblock.setIncrease();
 				//現在の統計量を設定（before)
 				playerdata.halfhourblock.before = mines;
+
+				//increaseが0超過の場合プレイヤー個人に個人整地量を通知
+				if(playerdata.halfhourblock.increase > 0){
+					player.sendMessage("あなたの整地量は " + ChatColor.AQUA + playerdata.halfhourblock.increase + ChatColor.WHITE + " でした");
+				}
+
 			}else if(!playerdata.loaded){
 				//debug用…このメッセージ視認後に大量集計されないかを確認する
 				plugin.getServer().getConsoleSender().sendMessage("Apple Pen !");
@@ -64,10 +72,6 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 				count++;
 			}
 		}
-		//カウントの値が３よりちいさい時処理を終了
-		if(count < 3 && !SeichiAssist.DEBUG){
-			return;
-		}
 
 
 		//Map.Entry のリストを作る
@@ -83,21 +87,25 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		    	return i2.compareTo(i1);//降順
 		    }
 		});
-		//カウントを1に再設定
-		count = 1;
-		Util.sendEveryMessage("----------------------------------------");
-		Util.sendEveryMessage("この30分間の総破壊量は " + ChatColor.AQUA + all + ChatColor.WHITE + "個でした");
+
+		Util.sendEveryMessage("全体の整地量は " + ChatColor.AQUA + all + ChatColor.WHITE + " でした");
+		int countn = 1;
 		for(Entry<UUID,PlayerData> e : entries){
-			if(count == 1){
-				Util.sendEveryMessage("破壊量第1位は" + ChatColor.DARK_PURPLE + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
-			}else if(count == 2){
-				Util.sendEveryMessage("破壊量第2位は" + ChatColor.BLUE + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
-			}else if(count == 3){
-				Util.sendEveryMessage("破壊量第3位は" + ChatColor.DARK_AQUA + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "個でした");
+			if (count <= 0 || countn >= 3) break;
+			count --;
+
+			if(countn == 1){
+				Util.sendEveryMessage("整地量第1位は" + ChatColor.DARK_PURPLE + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
+			}else if(countn == 2){
+				Util.sendEveryMessage("整地量第2位は" + ChatColor.BLUE + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
+			}else if(countn == 3){
+				Util.sendEveryMessage("整地量第3位は" + ChatColor.DARK_AQUA + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
 			}
-			count++;
+			countn++;
 		}
-		Util.sendEveryMessage("----------------------------------------");
+
+
+		Util.sendEveryMessage("--------------------------------------------------");
 
 	}
 	public int getSendMessageAmount(){

@@ -53,7 +53,6 @@ import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
 import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
@@ -805,14 +804,6 @@ public class PlayerInventoryListener implements Listener {
 				}else {
 					player.openInventory(MenuInventoryData.getGiganticBerserkEvolutionMenu(player));
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-				}
-			}
-			if(SeichiAssist.DEBUG){
-				if(itemstackcurrent.getType().equals(Material.STONE)){
-					player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player));
-					playerdata.GBexp += 10000;
-					GiganticBerserkTaskRunnable GBTR = new GiganticBerserkTaskRunnable();
-					GBTR.PlayerKillEnemy(player);
 				}
 			}
 		}
