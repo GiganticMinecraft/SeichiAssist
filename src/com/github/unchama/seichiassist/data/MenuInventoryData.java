@@ -27,6 +27,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
+import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldguard.bukkit.WorldConfiguration;
@@ -1268,6 +1269,7 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 
 		int n = (playerdata.GBstage * 10) + playerdata.GBlevel;
+		GiganticBerserkTaskRunnable GBTR = new GiganticBerserkTaskRunnable();
 
 		if(playerdata.level < 10){
 			lore.add(ChatColor.WHITE + "このパッシブスキルは、整地レベルが10以上になると解放されます");
@@ -1282,7 +1284,7 @@ public class MenuInventoryData {
 				lore.add(ChatColor.GRAY + "MOBの魂を" + SeichiAssist.GBlevellist.get(n) + "回吸収すると、更なる力が得られる");
 				lore.add(ChatColor.GRAY + "" + playerdata.GBexp + "/" + SeichiAssist.GBlevellist.get(n));
 			}
-			lore.add(ChatColor.GRAY + "現在" + (playerdata.GBlevel + 1) + "レベル,回復率 " + 1* (playerdata.GBlevel + 1) + "%");
+			lore.add(ChatColor.GRAY + "現在" + (playerdata.GBlevel + 1) + "レベル,回復率 " + (int)(100 * GBTR.getProb(playerdata)) + ".0%");
 
 			if (playerdata.isGBStageUp){
 				lore.add("");
@@ -6361,7 +6363,7 @@ public class MenuInventoryData {
 		}
 
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName("");
+		itemmeta.setDisplayName(" ");
 		itemstack.setItemMeta(itemmeta);
 
 		inventory.setItem(6,itemstack);
@@ -6378,7 +6380,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.STICK, 1);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName("");
+		itemmeta.setDisplayName(" ");
 		itemstack.setItemMeta(itemmeta);
 
 		inventory.setItem(30,itemstack);
@@ -6433,7 +6435,7 @@ public class MenuInventoryData {
 		}
 
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName("");
+		itemmeta.setDisplayName(" ");
 		itemstack.setItemMeta(itemmeta);
 
 		inventory.setItem(6,itemstack);
@@ -6450,7 +6452,7 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.STICK, 1);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName("");
+		itemmeta.setDisplayName(" ");
 		itemstack.setItemMeta(itemmeta);
 
 		inventory.setItem(30,itemstack);

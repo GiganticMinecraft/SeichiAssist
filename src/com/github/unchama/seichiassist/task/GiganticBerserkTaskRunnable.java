@@ -25,35 +25,11 @@ public class GiganticBerserkTaskRunnable {
 		playerdata = playermap.get(uuid);
 		Mana mana = playerdata.activeskilldata.mana;
 
-		Random rnd = new Random();
-
 		//確率でマナを回復させる
 		double d = Math.random();
-		if(d < 0.01*(playerdata.GBlevel + 1)){
-			double i = 0,l = 0;
-			switch(playerdata.GBstage){
-			case 0:
-				i = 100;
-				break;
-			case 1:
-				i = 250;
-				break;
-			case 2:
-				i = 500;
-				break;
-			case 3:
-				i = 1500;
-				break;
-			case 4:
-				i = 3000;
-				break;
-			default:
-				break;
-			}
-			//元の値の20%を取り出してから元の値を10%マイナスし、取り出した値の振り幅でランダムに増加させる
-			l = i/5;
-			i -= l/2;
-			i += rnd.nextInt((int)l + 1);
+		if(d < getProb(playerdata)){
+
+			double i = getRecoveryValue(playerdata);
 
 			mana.increaseMana(i,p,playerdata.level);
 			player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.WHITE + "の効果でマナが" + i +"回復しました");
@@ -95,5 +71,220 @@ public class GiganticBerserkTaskRunnable {
 				playerdata.isGBStageUp = true;
 			}
 		}
+	}
+
+
+	/**
+	 * マナ回復確率を返す
+	 * @param playerdata
+	 */
+	public double getProb(PlayerData pd){
+		if (pd.GBlevel < 2) return 0.05;
+		else if (pd.GBlevel < 4) return 0.06;
+		else if (pd.GBlevel < 6) return 0.07;
+		else if (pd.GBlevel < 8) return 0.08;
+		else if (pd.GBlevel < 9) return 0.09;
+		else return 0.10;
+	}
+
+	public double getRecoveryValue(PlayerData playerdata){
+		double i,l;
+		Random rnd = new Random();
+
+		switch (playerdata.GBstage){
+		case 0:
+			i = 300;
+			switch (playerdata.GBlevel){
+			case 0:
+				l = 30;
+				break;
+			case 1:
+				l = 35;
+				break;
+			case 2:
+				l = 40;
+				break;
+			case 3:
+				l = 45;
+				break;
+			case 4:
+				l = 50;
+				break;
+			case 5:
+				l = 60;
+				break;
+			case 6:
+				l = 70;
+				break;
+			case 7:
+				l = 80;
+				break;
+			case 8:
+				l = 90;
+				break;
+			case 9:
+				l = 100;
+				break;
+			default:
+				l = 0;
+			}
+			break;
+		case 1:
+			i = 2000;
+			switch (playerdata.GBlevel){
+			case 0:
+				l = 200;
+				break;
+			case 1:
+				l = 220;
+				break;
+			case 2:
+				l = 250;
+				break;
+			case 3:
+				l = 270;
+				break;
+			case 4:
+				l = 300;
+				break;
+			case 5:
+				l = 350;
+				break;
+			case 6:
+				l = 400;
+				break;
+			case 7:
+				l = 450;
+				break;
+			case 8:
+				l = 500;
+				break;
+			case 9:
+				l = 600;
+				break;
+			default:
+				l = 0;
+			}
+			break;
+		case 2:
+			i = 15000;
+			switch (playerdata.GBlevel){
+			case 0:
+				l = 1500;
+				break;
+			case 1:
+				l = 1650;
+				break;
+			case 2:
+				l = 1800;
+				break;
+			case 3:
+				l = 2000;
+				break;
+			case 4:
+				l = 2200;
+				break;
+			case 5:
+				l = 2400;
+				break;
+			case 6:
+				l = 2600;
+				break;
+			case 7:
+				l = 2800;
+				break;
+			case 8:
+				l = 3000;
+				break;
+			case 9:
+				l = 3200;
+				break;
+			default:
+				l = 0;
+			}
+			break;
+		case 3:
+			i = 40000;
+			switch (playerdata.GBlevel){
+			case 0:
+				l = 4000;
+				break;
+			case 1:
+				l = 4400;
+				break;
+			case 2:
+				l = 4800;
+				break;
+			case 3:
+				l = 5200;
+				break;
+			case 4:
+				l = 5600;
+				break;
+			case 5:
+				l = 6000;
+				break;
+			case 6:
+				l = 6500;
+				break;
+			case 7:
+				l = 7000;
+				break;
+			case 8:
+				l = 7500;
+				break;
+			case 9:
+				l = 8000;
+				break;
+			default:
+				l = 0;
+			}
+			break;
+		case 4:
+			i = 100000;
+			switch (playerdata.GBlevel){
+			case 0:
+				l = 10000;
+				break;
+			case 1:
+				l = 11000;
+				break;
+			case 2:
+				l = 12000;
+				break;
+			case 3:
+				l = 13000;
+				break;
+			case 4:
+				l = 14000;
+				break;
+			case 5:
+				l = 15000;
+				break;
+			case 6:
+				l = 16000;
+				break;
+			case 7:
+				l = 17000;
+				break;
+			case 8:
+				l = 18500;
+				break;
+			case 9:
+				l = 20000;
+				break;
+			default:
+				l = 0;
+			}
+			break;
+		default:
+			i = 0;
+			l = 0;
+		}
+
+		i -= i/10;
+		i += rnd.nextInt((int)l + 1);
+
+		return i;
 	}
 }
