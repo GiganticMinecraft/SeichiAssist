@@ -9,7 +9,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -51,7 +50,13 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 	boolean errorflag = false;
 
-	boolean waterflag = false,lavaflag = false,breakflag = false,condensflag = false;
+	boolean waterflag = false,lavaflag = false,fluidflag = false,breakflag = false,condensflag = false;
+
+	/*
+	List<Material> material2list = new ArrayList<Material>(Arrays.asList(
+	Material.STAINED_GLASS_PANE,Material.GRASS_PATH,Material.SOIL
+	,Material.WOOD_STAIRS,Material.COBBLESTONE_STAIRS));
+	*/
 
 	public AssaultTaskRunnable(Player player) {
 		this.player = player;
@@ -128,6 +133,8 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			waterflag = true;
 		}else if(playerdata.activeskilldata.assaulttype == ActiveSkill.LAVACONDENSE.gettypenum()){
 			lavaflag = true;
+		}else if(playerdata.activeskilldata.assaulttype == ActiveSkill.FLUIDCONDENSE.gettypenum()){
+			fluidflag = true;
 		}else if(playerdata.activeskilldata.assaulttype == ActiveSkill.ARMOR.gettypenum()){
 			breakflag = true;
 		}
@@ -257,6 +264,8 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			breaksum = waterlist.size();
 		}else if(lavaflag){
 			breaksum = lavalist.size();
+		}else if(fluidflag){
+			breaksum = waterlist.size() + lavalist.size();
 		}else if(breakflag){
 			breaksum = waterlist.size() + lavalist.size() + breaklist.size();
 		}
@@ -320,13 +329,20 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		if(waterflag){
 			for(int waternum = 0 ; waternum <waterlist.size();waternum++){
 				waterlist.get(waternum).setType(Material.PACKED_ICE);
-				player.incrementStatistic(Statistic.MINE_BLOCK, Material.PACKED_ICE);
 				BreakUtil.logPlace(player,waterlist.get(waternum));
 			}
 		}else if(lavaflag){
 			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
 				lavalist.get(lavanum).setType(Material.MAGMA);
-				player.incrementStatistic(Statistic.MINE_BLOCK, Material.MAGMA);
+				BreakUtil.logPlace(player,lavalist.get(lavanum));
+			}
+		}else if(fluidflag) {
+			for(int waternum = 0 ; waternum <waterlist.size();waternum++){
+				waterlist.get(waternum).setType(Material.PACKED_ICE);
+				BreakUtil.logPlace(player,waterlist.get(waternum));
+			}
+			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
+				lavalist.get(lavanum).setType(Material.MAGMA);
 				BreakUtil.logPlace(player,lavalist.get(lavanum));
 			}
 		}else if(breakflag){

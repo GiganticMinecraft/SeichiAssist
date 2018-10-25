@@ -267,7 +267,7 @@ public class Sql{
 				",add column if not exists arrowskill int default 0" +
 				",add column if not exists multiskill int default 0" +
 				",add column if not exists breakskill int default 0" +
-				//",add column if not exists condenskill int default 0" +
+				",add column if not exists fluidcondenskill int default 0" +
 				",add column if not exists watercondenskill int default 0" +
 				",add column if not exists lavacondenskill int default 0" +
 				",add column if not exists effectnum int default 0" +
@@ -292,101 +292,6 @@ public class Sql{
 				",add column if not exists achvPointMAX int default 0" +
 				",add column if not exists achvPointUSE int default 0" +
 				",add column if not exists achvChangenum int default 0" ;
-
-
-				/*
-				",add column if not exists stack_dirt int default 0" +
-				",add column if not exists stack_gravel int default 0" +
-				",add column if not exists stack_cobblestone int default 0" +
-				",add column if not exists stack_stone int default 0" +
-				",add column if not exists stack_sand int default 0" +
-
-				",add column if not exists stack_sandstone int default 0" +
-				",add column if not exists stack_netherrack int default 0" +
-				",add column if not exists stack_ender_stone int default 0" +
-				",add column if not exists stack_obsidian int default 0" + //追加
-				",add column if not exists stack_grass int default 0" +
-
-				",add column if not exists stack_quartz int default 0" +
-				",add column if not exists stack_quartz_ore int default 0" +
-				",add column if not exists stack_soul_sand int default 0" +
-				",add column if not exists stack_magma int default 0" +
-				",add column if not exists stack_coal int default 0" +
-
-				",add column if not exists stack_coal_ore int default 0" +
-				",add column if not exists stack_iron_ore int default 0" +
-				",add column if not exists stack_packed_ice int default 0" +
-				",add column if not exists stack_gold_ore int default 0" +
-				",add column if not exists stack_lapis_ore int default 0" +
-
-				",add column if not exists stack_emerald_ore int default 0" +
-				",add column if not exists stack_redstone_ore int default 0" +
-				",add column if not exists stack_diamond_ore int default 0" +
-				",add column if not exists stack_log int default 0" +
-				",add column if not exists stack_log_2 int default 0" +
-
-				",add column if not exists stack_wood int default 0" +
-				",add column if not exists stack_hard_clay int default 0" +
-				",add column if not exists stack_stained_clay int default 0" +
-				",add column if not exists stack_fence int default 0" +
-				",add column if not exists stack_lapis_lazuli int default 0" + //テスト
-
-				",add column if not exists stack_granite int default 0" + //追加
-				",add column if not exists stack_diorite int default 0" + //追加
-				",add column if not exists stack_andesite int default 0" + //追加
-				",add column if not exists stack_red_sand int default 0" + //追加
-				",add column if not exists stack_red_sandstone int default 0" + //追加
-
-				",add column if not exists stack_log1 int default 0" + //追加
-				",add column if not exists stack_log2 int default 0" + //追加
-				",add column if not exists stack_log3 int default 0" + //追加
-				",add column if not exists stack_log_21 int default 0" + //追加
-				",add column if not exists stack_stained_clay1 int default 0" + //追加
-
-				",add column if not exists stack_stained_clay4 int default 0" + //追加
-				",add column if not exists stack_stained_clay8 int default 0" + //追加
-				",add column if not exists stack_stained_clay12 int default 0" + //追加
-				",add column if not exists stack_stained_clay14 int default 0" + //追加
-				",add column if not exists stack_emerald int default 0" + //追加
-
-				",add column if not exists stack_redstone int default 0" + //追加
-				",add column if not exists stack_diamond int default 0" + //追加
-				",add column if not exists stack_clay int default 0" + //追加
-				",add column if not exists stack_glowstone int default 0" + //追加
-				",add column if not exists stack_dirt1 int default 0" + //
-
-				",add column if not exists stack_dirt2 int default 0" + //
-				",add column if not exists stack_mycel int default 0" + //
-				",add column if not exists stack_snow_block int default 0" + //
-				",add column if not exists stack_ice int default 0" + //
-				",add column if not exists stack_dark_oak_fence int default 0" + //
-
-				",add column if not exists stack_mossy_cobblestone int default 0" + //
-				",add column if not exists stack_rails int default 0" + //
-				",add column if not exists stack_exp_bottle int default 0" + //
-				",add column if not exists stack_huge_mushroom_1 int default 0" + //
-				",add column if not exists stack_huge_mushroom_2 int default 0" + //
-
-				",add column if not exists stack_web int default 0" + //
-				",add column if not exists stack_string int default 0" + //
-				",add column if not exists stack_wood5 int default 0" + //
-				",add column if not exists stack_sapling int default 0" + //
-				",add column if not exists stack_sapling1 int default 0" + //
-
-				",add column if not exists stack_sapling2 int default 0" + //
-				",add column if not exists stack_sapling3 int default 0" + //
-				",add column if not exists stack_sapling4 int default 0" + //
-				",add column if not exists stack_sapling5 int default 0" + //
-				",add column if not exists stack_leaves int default 0" + //
-
-				",add column if not exists stack_leaves1 int default 0" + //
-				",add column if not exists stack_leaves2 int default 0" + //
-				",add column if not exists stack_leaves3 int default 0" + //
-				",add column if not exists stack_leaves_2 int default 0" + //
-				",add column if not exists stack_leaves_21 int default 0" + //
-
-				",add column if not exists stack_gachaimo int default 0"; //
-				*/
 
 				//MineStack関連をすべてfor文に変更
 				if(SeichiAssist.minestack_sql_enable){
@@ -429,7 +334,6 @@ public class Sql{
 
 				//投票妖精関連
 				",add column if not exists canVotingFairyUse boolean default false" +//
-				//",add column if not exists VotingFairyTime bigint default 0" +//
 				",add column if not exists newVotingFairyTime varchar(" + SeichiAssist.VOTE_FAIRYTIME_DATASIZE + ") default ''" +//
 				",add column if not exists VotingFairyRecoveryValue int default 0" +//
 				",add column if not exists hasVotingFairyMana int default 0"+//

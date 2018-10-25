@@ -67,8 +67,8 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			}
 			//allに30分間の採掘量を加算
 			all += playerdata.halfhourblock.increase;
-			//プレイヤーの30分の採掘量が一定値以上の時countを加算
-			if(playerdata.halfhourblock.increase >= getSendMessageAmount()){
+			//プレイヤーの30分の採掘量が1以上の時countを加算
+			if(playerdata.halfhourblock.increase >= 1){
 				count++;
 			}
 		}

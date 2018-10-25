@@ -959,6 +959,21 @@ public class PlayerInventoryListener implements Listener {
 				}
 			}
 
+			type = ActiveSkill.FLUIDCONDENSE.gettypenum();
+			skilllevel = 10;
+			if(itemstackcurrent.getType().equals(ActiveSkill.FLUIDCONDENSE.getMaterial(skilllevel))){
+				if(playerdata.activeskilldata.assaultnum == skilllevel || playerdata.activeskilldata.assaulttype == type){
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
+					playerdata.activeskilldata.assaulttype = 0 ;
+					playerdata.activeskilldata.assaultnum = 0 ;
+				}else{
+					playerdata.activeskilldata.updataAssaultSkill(player,type,skilllevel,1);
+					player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + "ヴェンダー・ブリザード" + " が選択されました");
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+				}
+			}
+
 			//アサルトアーマー
 			type = ActiveSkill.ARMOR.gettypenum();
 			skilllevel = 10;
@@ -970,7 +985,7 @@ public class PlayerInventoryListener implements Listener {
 					playerdata.activeskilldata.assaultnum = 0 ;
 				}else{
 					playerdata.activeskilldata.updataAssaultSkill(player,type,skilllevel,1);
-					player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + "アサルト・アーマー" + "  が選択されました");
+					player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + "アサルト・アーマー" + " が選択されました");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}
 			}
@@ -1664,6 +1679,17 @@ public class PlayerInventoryListener implements Listener {
 					}
 				}else if(itemmeta.getDisplayName().contains("アサルト・アーマー")){
 
+				}else if(itemmeta.getDisplayName().contains("ヴェンダー・ブリザード")){
+					if(playerdata.activeskilldata.skillpoint < 110){
+						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
+						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
+					}else{
+						playerdata.activeskilldata.fluidcondenskill = 10;
+						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + "ヴェンダー・ブリザードを解除しました");
+						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
+						playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
+						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
+					}
 				}
 
 

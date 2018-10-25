@@ -29,10 +29,8 @@ public class ActiveSkillData {
 	public int multiskill;
 	//破壊スキル獲得量
 	public int breakskill;
-	/*
 	//凝固スキル獲得量
-	public int condenskill;
-	*/
+	public int fluidcondenskill;
 	//水凝固スキル獲得量
 	public int watercondenskill;
 	//熔岩凝固スキル獲得量
@@ -87,6 +85,7 @@ public class ActiveSkillData {
 		breakskill = 0;
 		watercondenskill = 0;
 		lavacondenskill = 0;
+		fluidcondenskill = 0;
 		effectnum = 0;
 		effectflagmap = new HashMap<Integer,Boolean>();
 		premiumeffectflagmap = new HashMap<Integer,Boolean>();
@@ -127,12 +126,6 @@ public class ActiveSkillData {
 		for(int i = breakskill; i >= 1 ; i--){
 			point -= i * 10;
 		}
-		/*
-		//凝固スキル
-		for(int i = condenskill; i >= 4 ; i--){
-			point -= i * 10;
-		}
-		*/
 		//水凝固スキル
 		for(int i = watercondenskill; i >= 7 ; i--){
 			point -= i * 10;
@@ -140,6 +133,9 @@ public class ActiveSkillData {
 		//熔岩凝固スキル
 		for(int i = lavacondenskill; i >= 7 ; i--){
 			point -= i * 10;
+		}
+		if (fluidcondenskill == 10){
+			point -= 110;
 		}
 
 		if(SeichiAssist.DEBUG){
@@ -165,6 +161,7 @@ public class ActiveSkillData {
 		breakskill = 0;
 		watercondenskill = 0;
 		lavacondenskill = 0;
+		fluidcondenskill = 0;
 		skilltype = 0;
 		skillnum = 0;
 		assaulttype = 0;

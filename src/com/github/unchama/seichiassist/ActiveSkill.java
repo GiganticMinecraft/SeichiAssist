@@ -14,6 +14,7 @@ public enum ActiveSkill{
 	WATERCONDENSE(4,"","","","","","","ホワイト・ブレス","アブソリュート・ゼロ","ダイアモンド・ダスト",""),
 	LAVACONDENSE(5,"","","","","","","ラヴァ・コンデンセーション","モエラキ・ボールダーズ","エルト・フェットル",""),
 	ARMOR(6,"","","","","","","","","","アサルト・アーマー"),
+	FLUIDCONDENSE(7,"","","","","","","","","","ヴェンダー・ブリザード"),
 ;
 	private int typenum;
 	private String lv1name;
@@ -210,6 +211,9 @@ public enum ActiveSkill{
 			break;
 		case "ARMOR":
 			breaklength.setXYZ(11, 11, 11);
+			break;
+		case "FLUIDCONDENSE":
+			breaklength.setXYZ(11, 11, 11);
 		}
 		return breaklength;
 	}
@@ -344,40 +348,16 @@ public enum ActiveSkill{
 				break;
 			}
 		}
-		/*else if(typenum == ActiveSkill.CONDENSE.gettypenum()){
-			switch(skilllevel){
-			case 4:
-				exp = 40;
-				break;
-			case 5:
-				exp = 70;
-				break;
-			case 6:
-				exp = 140;
-				break;
-			case 7:
-				exp = 80;
-				break;
-			case 8:
-				exp = 150;
-				break;
-			case 9:
-				exp = 300;
-				break;
-			default:
-				break;
-			}
-		}*/
 		else if(typenum == ActiveSkill.WATERCONDENSE.gettypenum()){
 			switch(skilllevel){
 			case 7:
-				exp = 150;
+				exp = 30;
 				break;
 			case 8:
-				exp = 400;
+				exp = 80;
 				break;
 			case 9:
-				exp = 750;
+				exp = 160;
 				break;
 			default:
 				break;
@@ -385,19 +365,21 @@ public enum ActiveSkill{
 		}else if(typenum == ActiveSkill.LAVACONDENSE.gettypenum()){
 			switch(skilllevel){
 			case 7:
-				exp = 100;
+				exp = 20;
 				break;
 			case 8:
-				exp = 200;
+				exp = 60;
 				break;
 			case 9:
-				exp = 400;
+				exp = 150;
 				break;
 			default:
 				break;
 			}
 		}else if(typenum == ActiveSkill.ARMOR.gettypenum()){
 			exp = 600;
+		}else if(typenum == ActiveSkill.FLUIDCONDENSE.gettypenum()){
+			exp = 170;
 		}
 		return exp;
 	}
@@ -571,6 +553,9 @@ public enum ActiveSkill{
 			break;
 		case "ARMOR":
 			material = Material.DIAMOND_CHESTPLATE;
+			break;
+		case "FLUIDCONDENSE":
+			material = Material.NETHER_STAR;
 		}
 		return material;
 	}

@@ -723,6 +723,7 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.MYCEL,Material.SNOW_BLOCK,Material.HUGE_MUSHROOM_1,Material.HUGE_MUSHROOM_2,Material.BONE_BLOCK //追加
 			,Material.PURPUR_BLOCK,Material.PURPUR_PILLAR,Material.SEA_LANTERN,Material.PRISMARINE //追加
 			,Material.SMOOTH_BRICK,Material.GLOWSTONE //追加
+			,Material.WOOD_STAIRS,Material.SPRUCE_WOOD_STAIRS,Material.COBBLESTONE_STAIRS,Material.SANDSTONE_STAIRS,Material.THIN_GLASS,Material.GRASS_PATH,Material.SOIL
 			));
 	public static final List<Material> luckmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.COAL_ORE,Material.DIAMOND_ORE,Material.LAPIS_ORE,Material.EMERALD_ORE,

@@ -254,7 +254,10 @@ public class PlayerData {
 		this.staticdata = new ArrayList<Integer>();
 		this.totalbreaknum = 0;
 		for(Material m : SeichiAssist.materiallist){
-			staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
+			//農地と草の道は統計にないため除外
+			if(m != Material.GRASS_PATH && m != Material.SOIL){
+				staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
+			}
 		}
 		this.activeskilldata = new ActiveSkillData();
 		this.expbar = new ExpBar(this, player);
@@ -519,14 +522,16 @@ public class PlayerData {
 		int i = 0;
 		double sum = 0.0;
 		for(Material m : SeichiAssist.materiallist){
-			int getstat = p.getStatistic(Statistic.MINE_BLOCK, m);
-			int getincrease = getstat - staticdata.get(i);
-			sum += calcBlockExp(m,getincrease,p);
-			if(SeichiAssist.DEBUG){
-				p.sendMessage("calcの値:" + calcBlockExp(m,getincrease,p) + "(" + m + ")");
+			if(m != Material.GRASS_PATH && m != Material.SOIL){
+				int getstat = p.getStatistic(Statistic.MINE_BLOCK, m);
+				int getincrease = getstat - staticdata.get(i);
+				sum += calcBlockExp(m,getincrease,p);
+				if(SeichiAssist.DEBUG){
+					p.sendMessage("calcの値:" + calcBlockExp(m,getincrease,p) + "(" + m + ")");
+				}
+				staticdata.set(i, getstat);
+				i++;
 			}
-			staticdata.set(i, getstat);
-			i++;
 		}
 		//double値を四捨五入
 		int x = (int)( sum < 0.0 ? sum-0.5 : sum+0.5 );
@@ -559,6 +564,15 @@ public class PlayerData {
 		case ENDER_STONE:
 			//エンドストーンの重み分け
 			result *= 1.0;
+			break;
+
+		//氷塊とマグマブロックの整地量を2倍
+		case PACKED_ICE:
+			result *= 2.0;
+			break;
+
+		case MAGMA:
+			result *= 2.0;
 			break;
 
 

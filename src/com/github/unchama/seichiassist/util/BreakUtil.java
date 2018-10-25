@@ -90,6 +90,10 @@ public class BreakUtil {
 
 		ItemStack itemstack = dropItemOnTool(breakblock,tool);
 
+		//農地か草の道の場合土をドロップ
+		if(material == Material.GRASS_PATH || material == Material.SOIL){
+			itemstack = new ItemStack(Material.DIRT,1);
+		}
 
 		if(material.equals(Material.GLOWING_REDSTONE_ORE)){
 			material = Material.REDSTONE_ORE;
@@ -113,7 +117,9 @@ public class BreakUtil {
 			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,material);
 		}
 		//プレイヤーの統計を１増やす
-		player.incrementStatistic(Statistic.MINE_BLOCK, material);
+		if(material != Material.GRASS_PATH && material != Material.SOIL){
+			player.incrementStatistic(Statistic.MINE_BLOCK, material);
+		}
 
 	}
 
@@ -150,47 +156,6 @@ public class BreakUtil {
 		int amount = itemstack.getAmount();
 		Material material = itemstack.getType();
 
-		/*
-		int v1 = config.getMineStacklevel(1);
-		int v2 = config.getMineStacklevel(2);
-		int v3 = config.getMineStacklevel(3);
-		int v4 = config.getMineStacklevel(4);
-		int v5 = config.getMineStacklevel(5);
-		int v6 = config.getMineStacklevel(6);
-		int v7 = config.getMineStacklevel(7);
-		int v8 = config.getMineStacklevel(8);
-		int v9 = config.getMineStacklevel(9);
-		int v10 = config.getMineStacklevel(10);
-		int v11 = config.getMineStacklevel(11);//追加
-		int v12 = config.getMineStacklevel(12);//追加
-		int v13 = config.getMineStacklevel(13);//追加
-		int v14 = config.getMineStacklevel(14);//追加
-		int v15 = config.getMineStacklevel(15);//追加
-		int v16 = config.getMineStacklevel(16);
-		int v17 = config.getMineStacklevel(17);
-		int v18 = config.getMineStacklevel(18);
-		int v19 = config.getMineStacklevel(19);
-		int v20 = config.getMineStacklevel(20);
-		int v21 = config.getMineStacklevel(21);
-		int v22 = config.getMineStacklevel(22);
-		int v23 = config.getMineStacklevel(23);
-		int v24 = config.getMineStacklevel(24);
-		int v25 = config.getMineStacklevel(25);
-		int v26 = config.getMineStacklevel(26);
-		int v27 = config.getMineStacklevel(27);
-		int v28 = config.getMineStacklevel(28);
-		int v29 = config.getMineStacklevel(29);
-		int v30 = config.getMineStacklevel(30);
-		int v31 = config.getMineStacklevel(31);
-		int v32 = config.getMineStacklevel(32);
-		int v33 = config.getMineStacklevel(33);
-		int v34 = config.getMineStacklevel(34);
-		int v35 = config.getMineStacklevel(35);
-		int v36 = config.getMineStacklevel(36);
-		int v37 = config.getMineStacklevel(37);
-		int v38 = config.getMineStacklevel(38);
-		*/
-		//boolean delete_flag=false;
 
 		//線路・キノコなどの、拾った時と壊した時とでサブIDが違う場合の処理
 		//拾った時のサブIDに合わせる
@@ -285,7 +250,6 @@ public class BreakUtil {
         byte b_tree = b;
         b_tree &= 0x03;
         b &= 0x0F;
-
 
 		int silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH);
 		if(silktouch > 0){
