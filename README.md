@@ -11,7 +11,7 @@ worldguard-6.1.2<br>
 ParticleAPI_v2.1.1<br>
 Zenchantments1.9-1.10<br>
 WorldBorder1.8.7<br>
-[RegenWorld](https://w1.minecraftserver.jp/redmine/attachments/download/578/RegenWorld-1.0.jar)
+[RegenWorld](https://red.minecraftserver.jp/attachments/download/578/RegenWorld-1.0.jar)
 ##利用条件<br>
 当リポジトリのコードの著作権はunchamaが所有しています。<br>
 以下の場合に限り、ギガンティック☆整地鯖(以下、当サーバ)のDeveloperコミュニティに参加して、当コードに関する詳細なサポートを受けることが出来ます。<br>
