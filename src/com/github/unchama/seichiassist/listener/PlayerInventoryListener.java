@@ -962,7 +962,7 @@ public class PlayerInventoryListener implements Listener {
 			type = ActiveSkill.FLUIDCONDENSE.gettypenum();
 			skilllevel = 10;
 			if(itemstackcurrent.getType().equals(ActiveSkill.FLUIDCONDENSE.getMaterial(skilllevel))){
-				if(playerdata.activeskilldata.assaultnum == skilllevel || playerdata.activeskilldata.assaulttype == type){
+				if(playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
 					playerdata.activeskilldata.assaulttype = 0 ;
@@ -978,7 +978,7 @@ public class PlayerInventoryListener implements Listener {
 			type = ActiveSkill.ARMOR.gettypenum();
 			skilllevel = 10;
 			if(itemstackcurrent.getType().equals(ActiveSkill.ARMOR.getMaterial(skilllevel))){
-				if(playerdata.activeskilldata.assaultnum == skilllevel || playerdata.activeskilldata.assaulttype == type){
+				if(playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
 					playerdata.activeskilldata.assaulttype = 0 ;
