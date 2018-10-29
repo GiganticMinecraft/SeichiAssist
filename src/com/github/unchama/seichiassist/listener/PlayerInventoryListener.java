@@ -423,7 +423,10 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND_PICKAXE)){
 				// ver0.3.2 採掘速度上昇効果トグル
-				playerdata.effectflag = (playerdata.effectflag + 1) % 5;
+                /* effectflagは0->無制限,1->200,2->400,3->600,4->off
+                 * これを0->無制限,1->127,2->200,3->400,4->600,5->offに変更する。
+                 */
+				playerdata.effectflag = (playerdata.effectflag + 1) % 6;
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 
 				// 採掘速度上昇量計算
@@ -446,19 +449,22 @@ public class PlayerInventoryListener implements Listener {
 				minespeedlv = (int)(sum - 1);
 
 				int maxSpeed = 0;
-				if(playerdata.effectflag == 0){
-					maxSpeed = 25565;
-					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
-				}else if(playerdata.effectflag == 1){
+				if (playerdata.effectflag == 0) {
+                    maxSpeed = 25565;
+                    player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
+                } else if (playerdata.effectflag == 1) {
+				    maxSpeed = 127;
+				    player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(127制限)");
+				} else if (playerdata.effectflag == 2) {
 					maxSpeed = 200;
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(200制限)");
-				}else if(playerdata.effectflag == 2){
+				} else if (playerdata.effectflag == 3) {
 					maxSpeed = 400;
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(400制限)");
-				}else if(playerdata.effectflag == 3){
+				} else if (playerdata.effectflag == 4) {
 					maxSpeed = 600;
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(600制限)");
-				}else{
+				} else {
 					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
 				}
 
