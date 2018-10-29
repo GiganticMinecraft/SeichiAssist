@@ -69,6 +69,14 @@ public class BreakUtil {
 			}
 		}
 
+		if(!playerdata.chestflag){
+			player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は無効化されています");
+			return false;
+		}else if(!Util.isSeichiWorld(player)){
+			player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は整地ワールドでのみ有効です");
+			return false;
+		}
+
 		return true;
 	}
 	private static boolean equalignoreWorld(String name) {
@@ -94,7 +102,9 @@ public class BreakUtil {
 		if(material == Material.GRASS_PATH || material == Material.SOIL){
 			itemstack = new ItemStack(Material.DIRT,1);
 		}
-
+		if(material.equals(Material.MOB_SPAWNER)){
+			itemstack = null;
+		}
 		if(material.equals(Material.GLOWING_REDSTONE_ORE)){
 			material = Material.REDSTONE_ORE;
 		}
@@ -117,7 +127,7 @@ public class BreakUtil {
 			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,material);
 		}
 		//プレイヤーの統計を１増やす
-		if(material != Material.GRASS_PATH && material != Material.SOIL){
+		if(material != Material.GRASS_PATH && material != Material.SOIL && material != Material.MOB_SPAWNER){
 			player.incrementStatistic(Statistic.MINE_BLOCK, material);
 		}
 

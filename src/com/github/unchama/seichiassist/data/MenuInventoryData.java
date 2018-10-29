@@ -692,11 +692,26 @@ public class MenuInventoryData {
 		//複数種類同時破壊スキルのトグルボタン
 		itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "複数種類同時破壊スキル切替");
 		//itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(MultipleIDBlockBreakToggleMeta(playerdata,itemmeta));
 		inventory.setItem(0,itemstack);
+
+		//Chest破壊
+		if(playerdata.chestflag){
+			itemstack = new ItemStack(Material.DIAMOND_AXE,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_AXE);
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		}else {
+			itemstack = new ItemStack(Material.CHEST,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHEST);
+		}
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "チェスト破壊スキル切替");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(ChestBreakToggleMeta(playerdata,itemmeta));
+		inventory.setItem(1,itemstack);
 
 		//GiganticBerserk
 		//10レベ未満のプレイヤーはスキル未解放
@@ -738,15 +753,7 @@ public class MenuInventoryData {
 		}
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(GiganticBerserkMeta(playerdata,itemmeta));
-		inventory.setItem(1,itemstack);
-
-		if(SeichiAssist.DEBUG){
-			itemstack = new ItemStack(Material.STONE,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "debug用,GBexpに10000加える");
-			itemmeta.setLore(lore);
-			inventory.setItem(2,itemstack);
-		}
+		inventory.setItem(9,itemstack);
 
 		return inventory;
 	}
@@ -1294,6 +1301,24 @@ public class MenuInventoryData {
 
 		}
 
+		itemmeta.setLore(lore);
+		return itemmeta;
+	}
+
+	public static ItemMeta ChestBreakToggleMeta(PlayerData playerdata, ItemMeta itemmeta){
+		List<String> lore = new ArrayList<String>();
+
+		lore.add(ChatColor.GREEN + "スキルでチェストを破壊するスキル");
+
+		if(playerdata.chestflag){
+			lore.add(ChatColor.RED + "整地ワールドでのみ発動中");
+			lore.add("");
+			lore.add(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで切り替え");
+		}else{
+			lore.add(ChatColor.RED + "発動しません");
+			lore.add("");
+			lore.add(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで切り替え");
+		}
 		itemmeta.setLore(lore);
 		return itemmeta;
 	}

@@ -723,7 +723,16 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.MYCEL,Material.SNOW_BLOCK,Material.HUGE_MUSHROOM_1,Material.HUGE_MUSHROOM_2,Material.BONE_BLOCK //追加
 			,Material.PURPUR_BLOCK,Material.PURPUR_PILLAR,Material.SEA_LANTERN,Material.PRISMARINE //追加
 			,Material.SMOOTH_BRICK,Material.GLOWSTONE //追加
-			,Material.WOOD_STAIRS,Material.SPRUCE_WOOD_STAIRS,Material.COBBLESTONE_STAIRS,Material.SANDSTONE_STAIRS,Material.THIN_GLASS,Material.GRASS_PATH,Material.SOIL
+			,Material.STAINED_GLASS,Material.STAINED_GLASS_PANE,Material.THIN_GLASS,Material.GLASS
+			,Material.WOOD_STAIRS,Material.BIRCH_WOOD_STAIRS,Material.SPRUCE_WOOD_STAIRS,Material.ACACIA_STAIRS,Material.DARK_OAK_STAIRS
+			,Material.BIRCH_FENCE,Material.SPRUCE_FENCE,Material.ACACIA_FENCE
+			,Material.FENCE_GATE,Material.BIRCH_FENCE_GATE,Material.SPRUCE_FENCE_GATE,Material.ACACIA_FENCE_GATE,Material.DARK_OAK_FENCE_GATE
+			,Material.COBBLESTONE_STAIRS,Material.SANDSTONE_STAIRS,Material.BRICK_STAIRS,Material.QUARTZ_STAIRS
+			,Material.BOOKSHELF,Material.IRON_FENCE,Material.ICE,Material.WOOL,Material.GOLD_BLOCK
+			,Material.END_ROD,Material.PUMPKIN,Material.MELON_BLOCK,Material.STONE_SLAB2,Material.SPONGE
+			,Material.SOIL,Material.GRASS_PATH,Material.MOB_SPAWNER,Material.WORKBENCH,Material.FURNACE
+			,Material.QUARTZ_BLOCK
+			,Material.CHEST
 			));
 	public static final List<Material> luckmateriallist = new ArrayList<Material>(Arrays.asList(
 			Material.COAL_ORE,Material.DIAMOND_ORE,Material.LAPIS_ORE,Material.EMERALD_ORE,

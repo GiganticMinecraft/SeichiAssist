@@ -793,6 +793,20 @@ public class PlayerInventoryListener implements Listener {
 				}
 			}
 
+			else if(itemstackcurrent.getType().equals(Material.DIAMOND_AXE)){
+				playerdata.chestflag = false;
+				player.sendMessage(ChatColor.GREEN + "スキルでのチェスト破壊を無効化しました。");
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+				player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player));
+			}
+			else if(itemstackcurrent.getType().equals(Material.CHEST)){
+				playerdata.chestflag = true;
+				player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊を有効化しました。");
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player));
+			}
+
+
 			else if(itemstackcurrent.getType().equals(Material.STICK)){
 				player.sendMessage(ChatColor.WHITE + "パッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk" + ChatColor.WHITE + "はレベル10以上から使用可能です");
 				player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);

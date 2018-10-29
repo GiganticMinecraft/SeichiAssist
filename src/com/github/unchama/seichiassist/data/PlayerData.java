@@ -95,6 +95,9 @@ public class PlayerData {
 	//複数種類破壊トグル
 	public boolean multipleidbreakflag;
 
+	//チェスト破壊トグル
+	public boolean chestflag;
+
 	//PvPトグル
 	public boolean pvpflag;
 	//現在座標
@@ -254,8 +257,8 @@ public class PlayerData {
 		this.staticdata = new ArrayList<Integer>();
 		this.totalbreaknum = 0;
 		for(Material m : SeichiAssist.materiallist){
-			//農地と草の道は統計にないため除外
-			if(m != Material.GRASS_PATH && m != Material.SOIL){
+			//統計にないため除外
+			if(m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER){
 				staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m));
 			}
 		}
@@ -266,6 +269,7 @@ public class PlayerData {
 		this.votecooldownflag = true;
 		this.gachacooldownflag = true;
 		this.shareinvcooldownflag = true;
+		this.chestflag = true;
 
 		this.displayTypeLv = true;
 		this.displayTitle1No = 0 ;
@@ -522,7 +526,7 @@ public class PlayerData {
 		int i = 0;
 		double sum = 0.0;
 		for(Material m : SeichiAssist.materiallist){
-			if(m != Material.GRASS_PATH && m != Material.SOIL){
+			if(m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER){
 				int getstat = p.getStatistic(Statistic.MINE_BLOCK, m);
 				int getincrease = getstat - staticdata.get(i);
 				sum += calcBlockExp(m,getincrease,p);
