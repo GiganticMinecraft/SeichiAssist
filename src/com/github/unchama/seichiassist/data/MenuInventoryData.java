@@ -1283,23 +1283,27 @@ public class MenuInventoryData {
 		GiganticBerserkTaskRunnable GBTR = new GiganticBerserkTaskRunnable();
 
 		if(playerdata.level < 10){
-			lore.add(ChatColor.WHITE + "このパッシブスキルは、整地レベルが10以上になると解放されます");
+			lore.add(ChatColor.WHITE + "このパッシブスキルは");
+			lore.add(ChatColor.WHITE + "整地レベルが10以上になると解放されます");
 		}
 		else {
-			lore.add(ChatColor.RED + "敵MOBを倒した時、その魂を吸収しマナへと変換するスキル");
-			lore.add(ChatColor.DARK_GRAY + "※成功率は高くなく、整地中でなければその効果を発揮しない");
+			lore.add(ChatColor.RED + "敵MOBを倒した時");
+			lore.add(ChatColor.RED + "その魂を吸収しマナへと変換するスキル");
+			lore.add(ChatColor.DARK_GRAY + "※成功率は高くなく");
+			lore.add(ChatColor.DARK_GRAY + "整地中でなければその効果を発揮しない");
 			lore.add("");
 			if(playerdata.GBstage == 4 && playerdata.GBlevel == 9){
 				lore.add(ChatColor.GRAY + "MOBの魂を極限まで吸収し最大限の力を発揮する");
 			}else {
-				lore.add(ChatColor.GRAY + "MOBの魂を" + SeichiAssist.GBlevellist.get(n) + "回吸収すると、更なる力が得られる");
+				lore.add(ChatColor.GRAY + "MOBの魂を" + SeichiAssist.GBlevellist.get(n) + "回吸収すると更なる力が得られる");
 				lore.add(ChatColor.GRAY + "" + playerdata.GBexp + "/" + SeichiAssist.GBlevellist.get(n));
 			}
 			lore.add(ChatColor.GRAY + "現在" + (playerdata.GBlevel + 1) + "レベル,回復率 " + (int)(100 * GBTR.getProb(playerdata)) + ".0%");
 
 			if (playerdata.isGBStageUp){
 				lore.add("");
-				lore.add(ChatColor.DARK_RED + "沢山の魂を吸収したことで、スキルの秘めたる力を解放できそうだ…！");
+				lore.add(ChatColor.DARK_RED + "沢山の魂を吸収したことで");
+				lore.add(ChatColor.DARK_RED + "スキルの秘めたる力を解放できそうだ…！");
 				lore.add(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで解放する");
 			}
 
