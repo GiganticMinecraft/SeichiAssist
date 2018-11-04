@@ -46,6 +46,8 @@ public class BreakUtil {
 		BlockState blockstate = breakblock.getState();
 		//壊されるブロックのデータを取得
 		byte data = blockstate.getData().getData();
+		//壊されるブロックのMaterialを取得
+		Material material = breakblock.getType();
 
 
 		//壊されるブロックがワールドガード範囲だった場合処理を終了
@@ -68,13 +70,14 @@ public class BreakUtil {
 				return false;
 			}
 		}
-
-		if(!playerdata.chestflag){
-			player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は無効化されています");
-			return false;
-		}else if(!Util.isSeichiWorld(player)){
-			player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は整地ワールドでのみ有効です");
-			return false;
+		if(material == Material.CHEST || material == Material.TRAPPED_CHEST){
+			if(!playerdata.chestflag){
+				player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は無効化されています");
+				return false;
+			}else if(!Util.isSeichiWorld(player)){
+				player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は整地ワールドでのみ有効です");
+				return false;
+			}
 		}
 
 		return true;
