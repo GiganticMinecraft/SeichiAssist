@@ -91,7 +91,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		Util.sendEveryMessage("全体の整地量は " + ChatColor.AQUA + all + ChatColor.WHITE + " でした");
 		int countn = 1;
 		for(Entry<UUID,PlayerData> e : entries){
-			if (count <= 0 || countn >= 3) break;
+			if (count <= 0 || countn >= 4) break;
 			count --;
 
 			if(countn == 1){
