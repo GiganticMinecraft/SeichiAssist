@@ -569,3 +569,7 @@ NewYearEvent:
   #正月リンゴの使用可能期限
   NewYearAppleStartDay: "2018-01-01"
   NewYearAppleEndDay: "2018-02-07"
+
+#GiganticBerserk
+#1分間上限
+GBLimit: 20

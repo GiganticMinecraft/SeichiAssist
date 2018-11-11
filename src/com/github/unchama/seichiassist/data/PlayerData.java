@@ -222,6 +222,7 @@ public class PlayerData {
 	public int GBexp;
 	public int GBlevel;
 	public boolean isGBStageUp;
+	public int GBcd;
 
 
 	public PlayerData(Player player){
@@ -333,6 +334,7 @@ public class PlayerData {
 		this.GBlevel = 0;
 		this.GBexp = 0;
 		this.isGBStageUp = false;
+		this.GBcd = 0;
 	}
 
 	//join時とonenable時、プレイヤーデータを最新の状態に更新

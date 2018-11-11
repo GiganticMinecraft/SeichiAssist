@@ -261,4 +261,7 @@ public class Config{
 
 	    return hours + "時間" + minutes + "分";
     }
+    public int getGiganticBerserkLimit() {
+    	return config.getInt("GBLimit");
+    }
 }

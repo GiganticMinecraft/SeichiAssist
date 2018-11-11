@@ -25,6 +25,14 @@ public class GiganticBerserkTaskRunnable {
 		playerdata = playermap.get(uuid);
 		Mana mana = playerdata.activeskilldata.mana;
 
+		playerdata.GBcd ++;
+		if (playerdata.GBcd >= SeichiAssist.config.getGiganticBerserkLimit()){
+			if(SeichiAssist.DEBUG){
+				player.sendMessage("上限到達");
+			}
+			return;
+		}
+
 		//確率でマナを回復させる
 		double d = Math.random();
 		if(d < getProb(playerdata)){

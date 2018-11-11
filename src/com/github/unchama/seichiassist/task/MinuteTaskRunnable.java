@@ -4,9 +4,8 @@ package com.github.unchama.seichiassist.task;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.commands.*;
-import com.github.unchama.seichiassist.event.*;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -16,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.commands.GiganticFeverCommand;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
@@ -291,6 +291,9 @@ public class MinuteTaskRunnable extends BukkitRunnable{
     			player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
     			playerdata.hasVotingFairyMana = 0 ;
     		}
+
+    		//GiganticBerserk
+    		playerdata.GBcd = 0;
 
 		}
 
