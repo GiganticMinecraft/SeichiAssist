@@ -32,6 +32,9 @@ public class GiganticBerserkTaskRunnable {
 			}
 			return;
 		}
+		if(playerdata.idletime >= 3){
+			return;
+		}
 
 		//確率でマナを回復させる
 		double d = Math.random();
