@@ -450,7 +450,14 @@ public class PlayerData {
 	public void setDisplayName(Player p) {
 		String displayname = Util.getName(p);
 		//スターレベル用の計算
+		long starlevelb = starlevel;
 		starlevel = ( totalbreaknum / 87115000 ) - 1 ;
+		//スターレベルアップ
+		if(starlevel != starlevelb){
+			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(starlevelb)+")→Lv("+(starlevel)+")】");
+			Location loc = p.getLocation();
+			Util.launchFireWorks(loc);
+		}
 
 		//表示を追加する処理
 		if(displayTitle1No == 0 && displayTitle2No == 0 && displayTitle3No == 0){
