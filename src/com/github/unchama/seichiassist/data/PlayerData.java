@@ -432,7 +432,7 @@ public class PlayerData {
 		starlevel = ( totalbreaknum / 87115000 ) - 1 ;
 		//スターレベルアップ
 		if(starlevel != starlevelb){
-			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(starlevelb)+")→Lv("+(starlevel)+")】");
+			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv(☆"+(starlevelb)+")→Lv(☆"+(starlevel)+")】");
 			Location loc = p.getLocation();
 			Util.launchFireWorks(loc);
 		}
