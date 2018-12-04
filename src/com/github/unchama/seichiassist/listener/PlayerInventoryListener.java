@@ -2,8 +2,6 @@ package com.github.unchama.seichiassist.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -47,14 +45,12 @@ import com.github.unchama.seichiassist.data.ActiveSkillInventoryData;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.ItemData;
-import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
-import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.google.common.io.ByteArrayDataOutput;
@@ -4929,11 +4925,6 @@ public class PlayerInventoryListener implements Listener {
     	Player player = (Player)he;
     	UUID uuid = player.getUniqueId();
     	PlayerData playerdata = playermap.get(uuid);
-    	Mana mana = playerdata.activeskilldata.mana;
-
-    	//投票妖精に関する部分の読み込み
-    	VotingFairyTaskRunnable VFTR = new VotingFairyTaskRunnable() ;
-
 
     	//インベントリ名が以下の時処理
     	if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票ptメニュー")){
@@ -5005,109 +4996,6 @@ public class PlayerInventoryListener implements Listener {
 				player.closeInventory();
 			}
 
-    		//妖精召喚
-    		else if(itemstackcurrent.getType().equals(Material.GHAST_TEAR)){
-
-    			//プレイヤーレベルが50に達していないとき
-    			if(playerdata.level < 50){
-    				player.sendMessage(ChatColor.GOLD + "プレイヤーレベルが足りません") ;
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
-    				return;
-    			}
-
-    			//既に妖精召喚している場合終了
-    			if( playerdata.canVotingFairyUse == true ){
-    				player.sendMessage(ChatColor.GOLD + "既に妖精を召喚しています") ;
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
-    				return;
-    			}
-
-    			//投票ptが足りない場合終了
-    			if( playerdata.activeskilldata.effectpoint < 10){
-    				player.sendMessage(ChatColor.GOLD + "投票ptが足りません") ;
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
-    				return;
-    			}
-
-    			//召喚した時間を取り出す
-    			playerdata.VotingFairyStartTime = new GregorianCalendar(
-    					Calendar.getInstance().get(Calendar.YEAR),
-    					Calendar.getInstance().get(Calendar.MONTH),
-    					Calendar.getInstance().get(Calendar.DATE),
-    					Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
-    					Calendar.getInstance().get(Calendar.MINUTE)
-    					);
-
-    			playerdata.VotingFairyEndTime = new GregorianCalendar(
-    					Calendar.getInstance().get(Calendar.YEAR),
-    					Calendar.getInstance().get(Calendar.MONTH),
-    					Calendar.getInstance().get(Calendar.DATE),
-    					(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+4),
-    					(Calendar.getInstance().get(Calendar.MINUTE)+1)
-    					);
-
-    			player.sendMessage(ChatColor.GOLD + "妖精を召喚しました") ;
-    			player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2) ;
-    			VFTR.SummonFairy(player);
-    			player.closeInventory() ;
-    		}
-
-    		//ガチャりんご渡し
-    		else if(itemstackcurrent.getType().equals(Material.GOLDEN_APPLE)){
-
-        		//妖精を召喚していないとき
-	    		if( playerdata.canVotingFairyUse == false ){
-	    			player.sendMessage(ChatColor.GOLD + "妖精を召喚してください") ;
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
-					return;
-	    		}
-
-	    		//渡すメニューを開かせる
-	    		player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getPassAppleData(player));
-    		}
-
-    		else if(itemstackcurrent.getType().equals(Material.ROTTEN_FLESH)){
-    			if(playerdata.canVotingFairyUse == true){
-    				player.playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 1, (float) 0.1) ;
-	    			playerdata.canVotingFairyUse = false ;
-	    			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "そっか、、、それじゃ僕はこれで失礼するよ");
-	    			player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
-	    			playerdata.hasVotingFairyMana = 0 ;
-	    			player.closeInventory();
-    			}
-    			else {
-	    			player.sendMessage(ChatColor.GOLD + "妖精を召喚してください") ;
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
-    			}
-    		}
-
-    		//りんご残量確認
-    		else if(itemstackcurrent.getType().equals(Material.BOWL)){
-    			if(playerdata.canVotingFairyUse == true){
-    				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-    				VFTR.askApple(player);
-    			}
-    			else {
-	    			player.sendMessage(ChatColor.GOLD + "妖精を召喚してください") ;
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
-					player.closeInventory();
-    			}
-    		}
-
-    		//時間確認
-    		else if(itemstackcurrent.getType().equals(Material.COMPASS)){
-    			if(playerdata.canVotingFairyUse == true){
-    				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-    				VFTR.askTime(player);
-    			}
-    			else {
-	    			player.sendMessage(ChatColor.GOLD + "妖精を召喚してください") ;
-					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
-					player.closeInventory();
-    			}
-    		}
-
     		//棒メニューに戻る
     		else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
@@ -5115,108 +5003,53 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 
-    		//Debug用
-    		if(SeichiAssist.DEBUG){
-	    		if(itemstackcurrent.getType().equals(Material.GOLD_INGOT)){
-	    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	    			playerdata.activeskilldata.effectpoint += 10 ;
-	    			player.openInventory(MenuInventoryData.getVotingMenuData(player));
-	    		}
-	    		else if(itemstackcurrent.getType().equals(Material.IRON_INGOT)){
-	    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	    			playerdata.activeskilldata.effectpoint = 0 ;
-	    			player.openInventory(MenuInventoryData.getVotingMenuData(player));
-	    		}
-	    		else if(itemstackcurrent.getType().equals(Material.COAL)){
-	    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	    			mana.setMana(0);
-	    			player.openInventory(MenuInventoryData.getVotingMenuData(player));
-	    		}
-	    		else if(itemstackcurrent.getType().equals(Material.EMERALD)){
-	    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	    			player.sendMessage(ChatColor.GOLD + "開始時刻: " + Util.showTime(playerdata.VotingFairyStartTime)) ;
-    				player.sendMessage(ChatColor.GOLD + "終了時刻: " + Util.showTime(playerdata.VotingFairyEndTime)) ;
-	    			player.openInventory(MenuInventoryData.getVotingMenuData(player));
-	    		}
+    		//妖精時間トグル
+    		else if (itemstackcurrent.getType().equals(Material.WATCH)){
+    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    			playerdata.toggleVotingFairy = playerdata.toggleVotingFairy <= 3 ? playerdata.toggleVotingFairy += 1:1;
+    			player.openInventory(MenuInventoryData.getVotingMenuData(player));
     		}
-    	}
-
-    	//インベントリ名が以下の時処理
-    	if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "渡すガチャりんごの量を決めて下さい")){
-    		event.setCancelled(true);
-
-    		if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
-    			return;
+    		//妖精リンゴトグル
+    		else if (itemstackcurrent.getType().equals(Material.PAPER)){
+    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    			playerdata.toggleGiveApple = playerdata.toggleGiveApple <= 3 ? playerdata.toggleGiveApple += 1:1;
+    			player.openInventory(MenuInventoryData.getVotingMenuData(player));
     		}
 
+    		//妖精召喚
+    		else if (itemstackcurrent.getType().equals(Material.GHAST_TEAR)){
+    			player.closeInventory();
 
-    		if (itemstackcurrent.getType().equals(Material.PAPER)){
-    			ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-    			if(itemmeta.getDisplayName().contains("ガチャりんごを" + playerdata.giveApple + "個渡す")){
-    				VFTR.GiveApple(player);
-    				player.closeInventory();
+    			//プレイヤーレベルが10に達していないとき
+    			if(playerdata.level < 10){
+    				player.sendMessage(ChatColor.GOLD + "プレイヤーレベルが足りません") ;
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
+    				return;
     			}
-    			else if(itemmeta.getDisplayName().contains("渡す量を 1 増やす")){
-	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	        		if(playerdata.giveApple < 999999)
-	        			playerdata.giveApple += 1 ;
-	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
-	    		}
-    			else if(itemmeta.getDisplayName().contains("渡す量を 10 増やす")){
-	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	        		if(playerdata.giveApple < 999990)
-	        			playerdata.giveApple += 10 ;
-	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
-	    		}
-    			else if(itemmeta.getDisplayName().contains("渡す量を 100 増やす")){
-	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	        		if(playerdata.giveApple < 999900)
-	        			playerdata.giveApple += 100 ;
-	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
-	    		}
-    			else if(itemmeta.getDisplayName().contains("渡す量を 1000 増やす")){
-	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	        		if(playerdata.giveApple < 999000)
-	        			playerdata.giveApple += 1000 ;
-	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
-	    		}
-    			else if(itemmeta.getDisplayName().contains("渡す量を 10000 増やす")){
-	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	        		if(playerdata.giveApple < 990000)
-	        			playerdata.giveApple += 10000 ;
-	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
-	    		}
-    			else if(itemmeta.getDisplayName().contains("渡す量を 1 減らす")){
-	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	        		if(playerdata.giveApple >= 1)
-	        			playerdata.giveApple -= 1 ;
-	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
-	    		}
-    			else if(itemmeta.getDisplayName().contains("渡す量を 10 減らす")){
-	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	        		if(playerdata.giveApple >= 10)
-	        			playerdata.giveApple -= 10 ;
-	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
-	    		}
-    			else if(itemmeta.getDisplayName().contains("渡す量を 100 減らす")){
-	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	        		if(playerdata.giveApple >= 100)
-	        			playerdata.giveApple -= 100 ;
-	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
-	    		}
-    			else if(itemmeta.getDisplayName().contains("渡す量を 1000 減らす")){
-	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	        		if(playerdata.giveApple >= 1000)
-	        			playerdata.giveApple -= 1000 ;
-	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
-	    		}
-    			else if(itemmeta.getDisplayName().contains("渡す量を 10000 減らす")){
-	        		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-	        		if(playerdata.giveApple >= 10000)
-	        			playerdata.giveApple -= 10000 ;
-	        		player.openInventory(MenuInventoryData.getPassAppleData(player));
-	    		}
+
+    			//既に妖精召喚している場合終了
+    			if( playerdata.usingVotingFairy ){
+    				player.sendMessage(ChatColor.GOLD + "既に妖精を召喚しています") ;
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
+    				return;
+    			}
+
+    			//投票ptが足りない場合終了
+    			if( playerdata.activeskilldata.effectpoint < playerdata.toggleVotingFairy*2 ){
+    				player.sendMessage(ChatColor.GOLD + "投票ptが足りません") ;
+					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
+    				return;
+    			}
+
+    			VotingFairyListener.summon(player);
+    			player.closeInventory() ;
     		}
+
+    		else if (itemstackcurrent.getType().equals(Material.COMPASS)) {
+    			player.sendMessage(ChatColor.GOLD + "開始時刻: " + Util.showTime(playerdata.VotingFairyStartTime)) ;
+				player.sendMessage(ChatColor.GOLD + "終了時刻: " + Util.showTime(playerdata.VotingFairyEndTime)) ;
+    		}
+
     	}
     }
 

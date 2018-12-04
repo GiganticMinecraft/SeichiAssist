@@ -786,6 +786,15 @@ public class Util {
 		  return format.format(date);
 		}
 
+	public static String getTimeZone(Calendar cal) {
+		Date date = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("HH");
+		int n = toInt(format.format(date));
+		return    4<=n && n<10 ? "morning"
+				:10<=n && n<18 ? "day"
+						:"night";
+	}
+
 	public static boolean isVotingFairyPeriod(Calendar start, Calendar end) {
 		Calendar cur = Calendar.getInstance();
 		return cur.after(start) && cur.before(end);

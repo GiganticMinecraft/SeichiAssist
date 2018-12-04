@@ -141,10 +141,13 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",build_count_flg = " + Byte.toString(playerdata.build_count_flg_get())
 
 				//投票
-				+ ",canVotingFairyUse = " + Boolean.toString(playerdata.canVotingFairyUse)
+				+ ",canVotingFairyUse = " + Boolean.toString(playerdata.usingVotingFairy)
 				+ ",newVotingFairyTime = '" + playerdata.VotingFairyTimeToString() + "'"
 				+ ",VotingFairyRecoveryValue = " + Integer.toString(playerdata.VotingFairyRecoveryValue)
 				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana)
+				+ ",toggleGiveApple = " + Integer.toString(playerdata.toggleGiveApple)
+				+ ",toggleVotingFairy = " + Integer.toString(playerdata.toggleVotingFairy)
+
 
 				//貢献度pt
 				+",added_mana = " + Integer.toString(playerdata.added_mana)

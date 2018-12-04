@@ -297,10 +297,11 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.build_count_flg_set(rs.getByte("build_count_flg"));
 
 				//投票
-				playerdata.canVotingFairyUse = rs.getBoolean("canVotingFairyUse");
-				//playerdata.VotingFairyTime = rs.getLong("VotingFairyTime");
+				playerdata.usingVotingFairy = rs.getBoolean("canVotingFairyUse");
 				playerdata.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue");
 				playerdata.hasVotingFairyMana = rs.getInt("hasVotingFairyMana");
+				playerdata.toggleGiveApple = rs.getInt("toggleGiveApple");
+				playerdata.toggleVotingFairy = rs.getInt("toggleVotingFairy");
 				playerdata.SetVotingFairyTime(rs.getString("newVotingFairyTime"),p);
 
 

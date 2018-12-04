@@ -28,6 +28,7 @@ import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
+import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldguard.bukkit.WorldConfiguration;
@@ -1292,6 +1293,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.DARK_GRAY + "※成功率は高くなく");
 			lore.add(ChatColor.DARK_GRAY + "整地中でなければその効果を発揮しない");
 			lore.add("");
+			lore.add(ChatColor.DARK_GRAY + "実装は試験的であり、変更される場合があります");
 			if(playerdata.GBstage == 4 && playerdata.GBlevel == 9){
 				lore.add(ChatColor.GRAY + "MOBの魂を極限まで吸収し最大限の力を発揮する");
 			}else {
@@ -6034,62 +6036,6 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(9,itemstack);
 
-		//妖精召喚
-		itemstack = new ItemStack(Material.GHAST_TEAR);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナの妖精召喚" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "投票ptを10を消費して"
-				,ChatColor.RESET + "" +  ChatColor.GRAY + "4時間マナを回復してくれる妖精を召喚できます"
-				,ChatColor.RESET + "" +  ChatColor.DARK_RED + "Lv.50以上で解放");
-		itemmeta.setLore(lore);
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(4,itemstack);
-
-		//ガチャりんご渡し
-		itemstack = new ItemStack(Material.GOLDEN_APPLE);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナの妖精にガチャりんごを渡す" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "渡した量に応じてマナを回復してくれます"
-				,ChatColor.RESET + "" +  ChatColor.GRAY + "妖精が帰る時間になると渡した分で"
-				,ChatColor.RESET + "" +  ChatColor.GRAY + "残っているリンゴは持って行ってしまいます"
-				,ChatColor.RESET + "" +  ChatColor.DARK_RED + "渡し過ぎに注意！" );
-		itemmeta.setLore(lore);
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(13,itemstack);
-
-		itemstack = new ItemStack(Material.ROTTEN_FLESH);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナの妖精に帰ってもらう" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "マナの妖精を強制的に帰らせます"
-				,ChatColor.RESET + "" +  ChatColor.DARK_RED + "投票ptや渡したガチャりんごは返ってきません！" );
-		itemmeta.setLore(lore);
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(28,itemstack);
-
-		//りんご残量
-		itemstack = new ItemStack(Material.BOWL);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "りんごの残り数を尋ねる" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "マナの妖精に渡したりんごが"
-				,ChatColor.RESET + "" +  ChatColor.GRAY + "どれくらい残っているか尋ねます" );
-		itemmeta.setLore(lore);
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(22,itemstack);
-
-		//残り時間確認
-		itemstack = new ItemStack(Material.COMPASS);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精がどのくらい居てくれるかを尋ねる" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "妖精さんはキッチリしてるので時間は遵守します" );
-		itemmeta.setLore(lore);
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(31,itemstack);
-
 		//棒メニューに戻る
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
@@ -6102,129 +6048,93 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
 
-		//Debug用
-		if(SeichiAssist.DEBUG){
-			itemstack = new ItemStack(Material.GOLD_INGOT);
-			itemmeta = itemstack.getItemMeta();
-			itemmeta.setDisplayName(ChatColor.GREEN + "Debug用");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "投票ptを10増やす");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(8,itemstack);
-
-			itemstack = new ItemStack(Material.IRON_INGOT);
-			itemmeta = itemstack.getItemMeta();
-			itemmeta.setDisplayName(ChatColor.GREEN + "Debug用");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "投票ptを0にする");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(17,itemstack);
-
-			itemstack = new ItemStack(Material.COAL);
-			itemmeta = itemstack.getItemMeta();
-			itemmeta.setDisplayName(ChatColor.GREEN + "Debug用");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "マナを0にする");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(26,itemstack);
-
-			itemstack = new ItemStack(Material.EMERALD);
-			itemmeta = itemstack.getItemMeta();
-			itemmeta.setDisplayName(ChatColor.GREEN + "Debug用");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "妖精の召喚時間をなくす");
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(35,itemstack);
-		}
-
-		return inventory;
-
-	}
-
-	//ガチャりんご渡しメニュー
-	public static Inventory getPassAppleData(Player p){
-		//UUID取得
-		UUID uuid = p.getUniqueId();
-		//プレイヤーデータ
-		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
-		//念のためエラー分岐
-		if (sendWarningToLogger(p, playerdata)) return null;
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "渡すガチャりんごの量を決めて下さい");
-		ItemStack itemstack;
-		ItemMeta itemmeta;
-		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
-
-		itemstack = new ItemStack(Material.PAPER);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "ガチャりんごを" + playerdata.giveApple + "個渡す");
+		//妖精召喚時間設定トグルボタン
+		itemstack = new ItemStack(Material.WATCH);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATCH);
+		itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 時間設定");
+		lore = Arrays.asList(
+				ChatColor.RESET + "" +  ChatColor.GREEN + "" +  ChatColor.BOLD + "" + VotingFairyTaskRunnable.dispToggleVFTime(playerdata.toggleVotingFairy),
+				"",
+				ChatColor.RESET + "" +  ChatColor.GRAY + "コスト",
+				ChatColor.RESET + "" +  ChatColor.RED + "" +  ChatColor.BOLD + "" + (playerdata.toggleVotingFairy * 2) + "投票pt",
+				"",
+				ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで切替"
+				);
+		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(0,itemstack);
+		inventory.setItem(2,itemstack);
 
+		//妖精契約設定トグル
 		itemstack = new ItemStack(Material.PAPER);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "渡す量を 1 増やす");
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(3,itemstack);
+		itemstack.setItemMeta(VFPromiseMeta(playerdata));
+		inventory.setItem(11,itemstack);
 
-		itemstack = new ItemStack(Material.PAPER);
+
+		//妖精召喚
+		itemstack = new ItemStack(Material.GHAST_TEAR);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "渡す量を 10 増やす");
+		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 召喚" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "" + (playerdata.toggleVotingFairy * 2) + "投票ptを消費して"
+				,ChatColor.RESET + "" +  ChatColor.GRAY + "マナ妖精を呼びます"
+				,ChatColor.RESET + "" +  ChatColor.GRAY + "時間 : " + VotingFairyTaskRunnable.dispToggleVFTime(playerdata.toggleVotingFairy)
+				,ChatColor.RESET + "" +  ChatColor.DARK_RED + "Lv.10以上で解放");
+		itemmeta.setLore(lore);
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
 
-		itemstack = new ItemStack(Material.PAPER);
+		//妖精 時間確認
+		itemstack = new ItemStack(Material.COMPASS);
 		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "渡す量を 100 増やす");
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(5,itemstack);
-
-		itemstack = new ItemStack(Material.PAPER);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "渡す量を 1000 増やす");
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(6,itemstack);
-
-		itemstack = new ItemStack(Material.PAPER);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "渡す量を 10000 増やす");
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(7,itemstack);
-
-		itemstack = new ItemStack(Material.PAPER);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "渡す量を 1 減らす");
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(12,itemstack);
-
-		itemstack = new ItemStack(Material.PAPER);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "渡す量を 10 減らす");
+		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精がどのくらい居てくれるかを尋ねる" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "妖精さんはキッチリしてるので時間は遵守します" );
+		itemmeta.setLore(lore);
+		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(13,itemstack);
 
-		itemstack = new ItemStack(Material.PAPER);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "渡す量を 100 減らす");
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(14,itemstack);
-
-		itemstack = new ItemStack(Material.PAPER);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "渡す量を 1000 減らす");
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(15,itemstack);
-
-		itemstack = new ItemStack(Material.PAPER);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.GREEN + "渡す量を 10000 減らす");
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(16,itemstack);
 
 		return inventory;
+
+	}
+	public static ItemMeta VFPromiseMeta(PlayerData playerdata){
+
+		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
+		itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精とのお約束");
+
+		if(playerdata.toggleGiveApple == 1) {
+			itemmeta.setLore(Arrays.asList(
+					ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガンガンたべるぞ"
+					,ChatColor.RESET + "" + ChatColor.GRAY + "とにかく妖精さんにりんごを開放します。"
+					,ChatColor.RESET + "" + ChatColor.GRAY + "めっちゃ喜ばれます。"
+					));
+		}else if(playerdata.toggleGiveApple == 2) {
+			itemmeta.setLore(Arrays.asList(
+					ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "バッチリたべよう"
+					,ChatColor.RESET + "" + ChatColor.GRAY + "食べ過ぎないように注意しつつ"
+					,ChatColor.RESET + "" + ChatColor.GRAY + "妖精さんにりんごを開放します。"
+					,ChatColor.RESET + "" + ChatColor.GRAY + "喜ばれます。"
+					));
+		}else if(playerdata.toggleGiveApple == 3) {
+			itemmeta.setLore(Arrays.asList(
+					ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リンゴだいじに"
+					,ChatColor.RESET + "" + ChatColor.GRAY + "少しだけ妖精さんにりんごを開放します。"
+					,ChatColor.RESET + "" + ChatColor.GRAY + "伝えると大抵落ち込みます。"
+					));
+		}else if(playerdata.toggleGiveApple == 4) {
+			itemmeta.setLore(Arrays.asList(
+					ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リンゴつかうな"
+					,ChatColor.RESET + "" + ChatColor.GRAY + "絶対にりんごを開放しません。"
+					,ChatColor.RESET + "" + ChatColor.GRAY + ""
+					));
+		}
+
+
+
+		return itemmeta;
 	}
 
-	public static Inventory getHomeMenuData(Player p){
+ 	public static Inventory getHomeMenuData(Player p){
 		//UUID取得
 		UUID uuid = p.getUniqueId();
 		//プレイヤーデータ

@@ -279,17 +279,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
     		//投票妖精関連
     		VotingFairyTaskRunnable VFTR = new VotingFairyTaskRunnable() ;
-
-    		//マナ回復処理
-    		if(playerdata.canVotingFairyUse == true){
-    			VFTR.RecoveryMana(player);
-    		}
-    		//効果時間中か
-    		if( playerdata.canVotingFairyUse == true && Util.isVotingFairyPeriod(playerdata.VotingFairyStartTime, playerdata.VotingFairyEndTime) == false ){
-    			playerdata.canVotingFairyUse = false ;
-    			player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "時間だから、僕はこれで失礼するよ");
-    			player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
-    			playerdata.hasVotingFairyMana = 0 ;
+    		if (playerdata.usingVotingFairy) {
+    			VFTR.run(player);
     		}
 
     		//GiganticBerserk

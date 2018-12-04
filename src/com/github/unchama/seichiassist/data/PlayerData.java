@@ -193,12 +193,13 @@ public class PlayerData {
 	private Map<Integer, GridTemplate> templateMap;
 
 	//投票妖精関連
-	public boolean canVotingFairyUse;
+	public boolean usingVotingFairy;
 	public Calendar VotingFairyStartTime;
 	public Calendar VotingFairyEndTime;
 	public int hasVotingFairyMana;
 	public int VotingFairyRecoveryValue;
-	public int giveApple;
+	public int toggleGiveApple;
+	public int toggleVotingFairy;
 
 	//貢献度pt
 	public int added_mana;
@@ -305,12 +306,13 @@ public class PlayerData {
 			this.templateMap.put(i, new GridTemplate(0, 0, 0, 0));
 		}
 
-		this.canVotingFairyUse = false;
+		this.usingVotingFairy = false;
 		this.hasVotingFairyMana = 0;
 		this.VotingFairyRecoveryValue = 0;
-		this.giveApple = 0;
+		this.toggleGiveApple = 1;
 		this.VotingFairyStartTime = null;
 		this.VotingFairyEndTime = null;
+		this.toggleVotingFairy = 1;
 
 		this.added_mana = 0;
 		this.contribute_point = 0;
@@ -362,30 +364,6 @@ public class PlayerData {
 		//クライアント経験値をサーバー保管
 		saveTotalExp();
 	}
-
-	/*
-	//詫び券の配布
-	public void giveSorryForBug(Player player){
-		ItemStack skull = Util.getskull(Util.getName(player));
-		int count = 0;
-		while(numofsorryforbug >= 1){
-			numofsorryforbug -= 1;
-			if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
-				Util.addItem(player,skull);
-			}else{
-				Util.dropItem(player,skull);
-			}
-			count++;
-		}
-		//詫びガチャ関数初期化
-		numofsorryforbug = 0;
-
-		if(count > 0){
-			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-			player.sendMessage(ChatColor.GREEN + "運営チームから"+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
-		}
-	}
-	*/
 
 	//詫びガチャの通知
 	public void NotifySorryForBug(Player player){
@@ -957,7 +935,17 @@ public class PlayerData {
 		String[] s = str.split(",", -1);
 		if(s[0].length() > 0 && s[1].length() > 0 && s[2].length() > 0 && s[3].length() > 0 && s[4].length() > 0 ){
 			Calendar startTime = new GregorianCalendar(Integer.parseInt(s[0]),Integer.parseInt(s[1])-1,Integer.parseInt(s[2]),Integer.parseInt(s[3]),Integer.parseInt(s[4]));
-			Calendar EndTime = new GregorianCalendar(Integer.parseInt(s[0]),Integer.parseInt(s[1])-1,Integer.parseInt(s[2]),Integer.parseInt(s[3])+4,Integer.parseInt(s[4])+1);
+
+			int min = Integer.parseInt(s[4]) + 1,
+				hour = Integer.parseInt(s[3]);
+
+			min = (this.toggleVotingFairy % 2) != 0 ? min + 30 : min;
+			hour = this.toggleVotingFairy == (2 | 3) ? hour + 1
+				 :  this.toggleVotingFairy == 4 ? hour + 2
+					 : hour;
+
+			Calendar EndTime = new GregorianCalendar(Integer.parseInt(s[0]),Integer.parseInt(s[1])-1,Integer.parseInt(s[2]),hour,min);
+
 			this.VotingFairyStartTime = startTime;
 			this.VotingFairyEndTime = EndTime;
 		}
@@ -965,16 +953,12 @@ public class PlayerData {
 
 	public void isVotingFairy(Player p){
 		//効果は継続しているか
-			if( this.canVotingFairyUse == true && Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime) == false ){
-				this.canVotingFairyUse = false ;
+			if( this.usingVotingFairy && Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime) == false ){
+				this.usingVotingFairy = false ;
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
 			}
-			else if(this.canVotingFairyUse == true){
-				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "おかえり。" + p.getName() );
-				if(this.hasVotingFairyMana > 0)
-					p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "僕はまだ君のマナを回復させられるよ" );
-				else
-					p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "ガチャりんごがもう無いからまた渡してくれると嬉しいな" );
+			else if(this.usingVotingFairy){
+				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "おかえり！" + p.getName() );
 			}
 	}
 

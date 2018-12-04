@@ -20,7 +20,7 @@ public class Mana {
 	//マナの値
 	double m;
 	//マックスの値
-	double max;
+	private double max;
 	//バークラス
 	BossBar manabar;
 	//読み込まれているかどうかのフラグ
@@ -29,7 +29,7 @@ public class Mana {
 	//引数なしのコンストラクタ
 	public Mana() {
 		this.m = 0;
-		this.max = 0;
+		this.setMax(0);
 		this.loadflag = false;
 	}
 	//必ず最初のみ実行してほしいメソッド
@@ -48,21 +48,21 @@ public class Mana {
 		setManaBar(player,level);
 	}
 	private void setManaBar(Player player,int level) {
-		manabar = player.getServer().createBossBar(ChatColor.AQUA + "" + ChatColor.BOLD + "マナ(" + Util.Decimal(m) + "/" + max + ")", BarColor.BLUE, BarStyle.SOLID);
+		manabar = player.getServer().createBossBar(ChatColor.AQUA + "" + ChatColor.BOLD + "マナ(" + Util.Decimal(m) + "/" + getMax() + ")", BarColor.BLUE, BarStyle.SOLID);
 
-		if(m/max < 0.0 || m/max > 1.0){
+		if(m/getMax() < 0.0 || m/getMax() > 1.0){
 			reset(player, level);
 			player.sendMessage(ChatColor.RED + "不正な値がマナとして保存されていたためリセットしました。");
 		}
-		if (!(max == 0||max < 0)){
-		manabar.setProgress(m/max);
+		if (!(getMax() == 0||getMax() < 0)){
+		manabar.setProgress(m/getMax());
 		manabar.addPlayer(player);
 		}
 	}
 	private void reset(Player player, int level) {
 		this.calcMaxMana(player, level);
 		if(this.m < 0.0)this.m = 0;
-		if(this.m > max)this.m = max;
+		if(this.m > getMax())this.m = getMax();
 	}
 	//現在のバーを削除する（更新するときは不要）
 	public void removeBar(){
@@ -70,13 +70,13 @@ public class Mana {
 	}
 	public void increaseMana(double i,Player player,int level){
 		this.m += i;
-		if(m > max) m = max;
+		if(m > getMax()) m = getMax();
 		displayMana(player, level);
 	}
 	public void decreaseMana(double d,Player player,int level){
 		this.m -= d;
 		if(m < 0) m = 0;
-		if(SeichiAssist.DEBUG)m = max;
+		if(SeichiAssist.DEBUG)m = getMax();
 		displayMana(player,level);
 	}
 	public boolean hasMana(double h){
@@ -102,14 +102,14 @@ public class Mana {
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 
 		if(SeichiAssist.DEBUG){
-			max = 100000;
+			setMax(100000);
 			return;
 		}
 		double t_max = 1;
 		//レベルが10行っていない時レベルの値で処理を終了(修正:マナは0)
 		if(level < 10){
 			//this.max = level;
-			this.max = 0.0;
+			this.setMax(0.0);
 			return;
 		}
 		//１０行ってる時の処理
@@ -127,7 +127,7 @@ public class Mana {
 		//貢献度ptの上昇値
 		t_max += playerdata.added_mana * SeichiAssist.config.getContributeAddedMana();
 
-		this.max = t_max;
+		this.setMax(t_max);
 		return;
 	}
 
@@ -156,7 +156,7 @@ public class Mana {
 		//レベルが10行っていない時レベルの値で処理を終了
 		if(level < 10){
 			//temp_max = level;
-			max=0.0;
+			setMax(0.0);
 			return 0.0;
 		}
 		//１０行ってる時の処理
@@ -174,7 +174,7 @@ public class Mana {
 		//貢献度ptの上昇値
 		t_max += playerdata.added_mana * SeichiAssist.config.getContributeAddedMana();
 
-		max=t_max;
+		setMax(t_max);
 		return t_max;
 	}
 
@@ -182,7 +182,7 @@ public class Mana {
 
 	//マナを最大値まで回復する処理
 	public void fullMana(Player player,int level){
-		this.m = this.max;
+		this.m = this.getMax();
 		displayMana(player,level);
 	}
 	public void setMana(double m) {
@@ -193,5 +193,11 @@ public class Mana {
 	}
 	public boolean isloaded() {
 		return this.loadflag;
+	}
+	public double getMax() {
+		return max;
+	}
+	public void setMax(double max) {
+		this.max = max;
 	}
 }
