@@ -200,6 +200,7 @@ public class PlayerData {
 	public int VotingFairyRecoveryValue;
 	public int toggleGiveApple;
 	public int toggleVotingFairy;
+	public long p_apple;
 
 	//貢献度pt
 	public int added_mana;
@@ -313,6 +314,7 @@ public class PlayerData {
 		this.VotingFairyStartTime = null;
 		this.VotingFairyEndTime = null;
 		this.toggleVotingFairy = 1;
+		this.p_apple = 0;
 
 		this.added_mana = 0;
 		this.contribute_point = 0;
@@ -431,7 +433,7 @@ public class PlayerData {
 		long starlevelb = starlevel;
 		starlevel = ( totalbreaknum / 87115000 ) - 1 ;
 		//スターレベルアップ
-		if(starlevel != starlevelb){
+		if(starlevel != starlevelb && starlevel >= 1){
 			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv(☆"+(starlevelb)+")→Lv(☆"+(starlevel)+")】");
 			Location loc = p.getLocation();
 			Util.launchFireWorks(loc);
@@ -594,6 +596,21 @@ public class PlayerData {
 		while(rankdata.totalbreaknum > t){
 			i++;
 			rankdata = SeichiAssist.ranklist.get(i);
+		}
+		return i+1;
+	}
+	public int calcPlayerApple(Player p){
+		//ランク用関数
+		int i = 0;
+		long t = p_apple;
+		if(SeichiAssist.ranklist_p_apple.size() == 0){
+			return 1;
+		}
+		RankData rankdata = SeichiAssist.ranklist_p_apple.get(i);
+		//ランクが上がらなくなるまで処理
+		while(rankdata.p_apple > t){
+			i++;
+			rankdata = SeichiAssist.ranklist_p_apple.get(i);
 		}
 		return i+1;
 	}

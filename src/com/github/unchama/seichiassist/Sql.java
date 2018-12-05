@@ -339,6 +339,7 @@ public class Sql{
 				",add column if not exists hasVotingFairyMana int default 0"+//
 				",add column if not exists toggleGiveApple int default 1"+//
 				",add column if not exists toggleVotingFairy int default 1"+//
+				",add column if not exists p_apple bigint default 0"+
 
 				//貢献pt関連
 				",add column if not exists contribute_point int default 0"+//
@@ -757,14 +758,10 @@ public class Sql{
 
 	//ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
 	public boolean setRanking() {
-		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
-		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		List<RankData> ranklist = SeichiAssist.ranklist;
 		ranklist.clear();
 		SeichiAssist.allplayerbreakblockint = 0;
-
-		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
 		String command = "select name,level,totalbreaknum from " + db + "." + table
 				+ " order by totalbreaknum desc";
  		try{
@@ -784,21 +781,14 @@ public class Sql{
 			e.printStackTrace();
 			return false;
 		}
-		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
-		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
  		return true;
 	}
 
 	//ランキング表示用にプレイ時間のカラムだけ全員分引っ張る
 	public boolean setRanking_playtick() {
-		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
-		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		List<RankData> ranklist = SeichiAssist.ranklist_playtick;
 		ranklist.clear();
-		//SeichiAssist.allplayerbreakblockint = 0;
-
-		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
 		String command = "select name,playtick from " + db + "." + table
 				+ " order by playtick desc";
  		try{
@@ -806,11 +796,8 @@ public class Sql{
 			while (rs.next()) {
 				RankData rankdata = new RankData();
 				rankdata.name = rs.getString("name");
-				//rankdata.level = rs.getInt("level");
-				//rankdata.totalbreaknum = rs.getInt("totalbreaknum");
 				rankdata.playtick = rs.getInt("playtick");
 				ranklist.add(rankdata);
-				//SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
 				  }
 			rs.close();
 		} catch (SQLException e) {
@@ -819,21 +806,14 @@ public class Sql{
 			e.printStackTrace();
 			return false;
 		}
-		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
-		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
  		return true;
 	}
 
 	//ランキング表示用に投票数のカラムだけ全員分引っ張る
 	public boolean setRanking_p_vote() {
-		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
-		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		List<RankData> ranklist = SeichiAssist.ranklist_p_vote;
 		ranklist.clear();
-		//SeichiAssist.allplayerbreakblockint = 0;
-
-		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
 		String command = "select name,p_vote from " + db + "." + table
 				+ " order by p_vote desc";
  		try{
@@ -841,11 +821,8 @@ public class Sql{
 			while (rs.next()) {
 				RankData rankdata = new RankData();
 				rankdata.name = rs.getString("name");
-				//rankdata.level = rs.getInt("level");
-				//rankdata.totalbreaknum = rs.getInt("totalbreaknum");
 				rankdata.p_vote = rs.getInt("p_vote");
 				ranklist.add(rankdata);
-				//SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
 				  }
 			rs.close();
 		} catch (SQLException e) {
@@ -854,21 +831,14 @@ public class Sql{
 			e.printStackTrace();
 			return false;
 		}
-		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
-		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
  		return true;
 	}
 
 	//ランキング表示用にプレミアムエフェクトポイントのカラムだけ全員分引っ張る
 	public boolean setRanking_premiumeffectpoint() {
-		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
-		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新中…");
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		List<RankData> ranklist = SeichiAssist.ranklist_premiumeffectpoint;
 		ranklist.clear();
-		//SeichiAssist.allplayerbreakblockint = 0;
-
-		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
 		String command = "select name,premiumeffectpoint from " + db + "." + table
 				+ " order by premiumeffectpoint desc";
  		try{
@@ -876,11 +846,8 @@ public class Sql{
 			while (rs.next()) {
 				RankData rankdata = new RankData();
 				rankdata.name = rs.getString("name");
-				//rankdata.level = rs.getInt("level");
-				//rankdata.totalbreaknum = rs.getInt("totalbreaknum");
 				rankdata.premiumeffectpoint = rs.getInt("premiumeffectpoint");
 				ranklist.add(rankdata);
-				//SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum;
 				  }
 			rs.close();
 		} catch (SQLException e) {
@@ -889,8 +856,33 @@ public class Sql{
 			e.printStackTrace();
 			return false;
 		}
-		//plugin.getServer().getConsoleSender().sendMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
-		//Util.sendEveryMessage(ChatColor.DARK_AQUA + "ランキング更新完了");
+ 		return true;
+	}
+	//ランキング表示用に上げたりんご数のカラムだけ全員分引っ張る
+	public boolean setRanking_p_apple() {
+		String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		List<RankData> ranklist = SeichiAssist.ranklist_p_apple;
+		SeichiAssist.allplayergiveapplelong = 0;
+		ranklist.clear();
+
+		String command = "select name,p_apple from " + db + "." + table
+				+ " order by p_apple desc";
+ 		try{
+			rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				RankData rankdata = new RankData();
+				rankdata.name = rs.getString("name");
+				rankdata.p_apple = rs.getInt("p_apple");
+				ranklist.add(rankdata);
+				SeichiAssist.allplayergiveapplelong += rankdata.p_apple;
+				  }
+			rs.close();
+		} catch (SQLException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return false;
+		}
  		return true;
 	}
 

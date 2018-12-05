@@ -120,11 +120,16 @@ public class SeichiAssist extends JavaPlugin{
 	//投票ポイント表示用データリスト
 	public static final List<RankData> ranklist_p_vote = new ArrayList<RankData>();
 
+	//マナ妖精表示用のデータリスト
+	public static final List<RankData> ranklist_p_apple = new ArrayList<RankData>();
+
 	//プレミアムエフェクトポイント表示用データリスト
 	public static final List<RankData> ranklist_premiumeffectpoint = new ArrayList<RankData>();
 
-	//総採掘量表示用int
+	//総採掘量表示用
 	public static long allplayerbreakblockint;
+
+	public static long allplayergiveapplelong;
 
 	//プラグインで出すエンティティの保存
 	public static final List<Entity> entitylist = new ArrayList<Entity>();
@@ -906,6 +911,10 @@ public class SeichiAssist extends JavaPlugin{
 		}
 
 		if(!sql.setRanking_premiumeffectpoint()){
+			getLogger().info("ランキングデータの作成に失敗しました");
+		}
+
+		if(!sql.setRanking_p_apple()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 

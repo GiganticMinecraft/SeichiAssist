@@ -25,7 +25,6 @@ public class VotingFairyListener implements Listener {
 		UUID uuid = p.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
 		Mana mana = playerdata.activeskilldata.mana;
-		VotingFairyTaskRunnable VFTR = new VotingFairyTaskRunnable();
 
 		//召喚した時間を取り出す
 		playerdata.VotingFairyStartTime = new GregorianCalendar(
@@ -58,12 +57,11 @@ public class VotingFairyListener implements Listener {
 		playerdata.usingVotingFairy = true;
 
 		//マナ回復量最大値の決定
-		Random rnd = new Random();
 		double n = mana.getMax();
-		playerdata.VotingFairyRecoveryValue = (int) ((n/10-n/100+(rnd.nextInt((int) (n/50))))/1.75);
+		playerdata.VotingFairyRecoveryValue = (int) ((n/10-n/30+(new Random().nextInt((int) (n/20))))/2.9) + 200;
 
 		p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "妖精を呼び出しました！");
-		p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "この子は1分間に" + playerdata.VotingFairyRecoveryValue + "マナ");
+		p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "この子は1分間に約" + playerdata.VotingFairyRecoveryValue + "マナ");
 		p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "回復させる力を持っているようです。");
 
 		//メッセージ
@@ -87,11 +85,11 @@ public class VotingFairyListener implements Listener {
 				);
 
 		if (Util.getTimeZone(playerdata.VotingFairyStartTime) == "morning")
-			VFTR.speak(p, getMessage(morning, p.getName()), true);
+			VotingFairyTaskRunnable.speak(p, getMessage(morning, p.getName()), true);
 		else if (Util.getTimeZone(playerdata.VotingFairyStartTime) == "day")
-			VFTR.speak(p, getMessage(day, p.getName()), true);
+			VotingFairyTaskRunnable.speak(p, getMessage(day, p.getName()), true);
 		else
-			VFTR.speak(p, getMessage(night, p.getName()), true);
+			VotingFairyTaskRunnable.speak(p, getMessage(night, p.getName()), true);
 	}
 
 	public static void regeneMana(Player p) {
@@ -99,7 +97,6 @@ public class VotingFairyListener implements Listener {
 		UUID uuid = p.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
 		Mana mana = playerdata.activeskilldata.mana;
-		VotingFairyTaskRunnable VFTR = new VotingFairyTaskRunnable();
 
 		if (mana.getMana() == mana.getMax()) {		//マナが最大だった場合はメッセージを送信して終わり
 			final List<String> msg = Arrays.asList(
@@ -110,11 +107,17 @@ public class VotingFairyListener implements Listener {
 					,"[str1]はどのりんごが好き？僕はがちゃりんご！"
 					,"動いてお腹を空かしていっぱい食べるぞー！"
 					);
-			VFTR.speak(p, getMessage(msg, p.getName()), false);
+			VotingFairyTaskRunnable.speak(p, getMessage(msg, p.getName()), false);
 
 		}else {
-			int n = playerdata.VotingFairyRecoveryValue,	//実際のマナ回復量
-				m = getGiveAppleValue(playerdata);			//りんご消費量
+
+			double n = playerdata.VotingFairyRecoveryValue;	//実際のマナ回復量
+			int	m = getGiveAppleValue(playerdata);			//りんご消費量
+
+			//連続投票によってりんご消費量を抑える
+			if (playerdata.ChainVote >= 30 )		m /= 2;
+			else if (playerdata.ChainVote >= 10 )	m /= 1.5;
+			else if (playerdata.ChainVote >= 3 )	m /= 1.25;
 
 			//トグルで数値変更
 			if (playerdata.toggleGiveApple == 2) {
@@ -126,9 +129,9 @@ public class VotingFairyListener implements Listener {
 				n /= 2;
 				m /= 2;
 			}
-			if(m == 0) {
-				m = 1;
-			}
+
+			if(m == 0) m = 1;
+
 			if (playerdata.toggleGiveApple == 4) {
 				n /= 4;
 				m = 0;
@@ -145,17 +148,24 @@ public class VotingFairyListener implements Listener {
 					n /= 2;
 					if (playerdata.toggleGiveApple == 1) n /= 2;
 					if (playerdata.toggleGiveApple == 2 && (mana.getMana()/mana.getMax() < 0.75)) n /= 2;
+					p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "MineStackにがちゃりんごがないようです。。。");
 				}else {
 					double M = m,L = l;
-					n = (int) ((L/M) <= 0.5 ? n * 0.5 : (n * L/M));
+					n = ((L/M) <= 0.5 ? n * 0.5 : (n * L/M));
 				}
 				m = l;
 			}
+
+			//回復量に若干乱数をつける
+			n = (n - n/100) + new Random().nextInt((int) (n/50));
+
 
 			//マナ回復
 			mana.increaseMana(n, p, playerdata.level);
 			//りんごを減らす
 			playerdata.minestack.setNum(Util.MineStackobjname_indexOf("gachaimo"), playerdata.minestack.getNum(Util.MineStackobjname_indexOf("gachaimo")) - m);
+			//減ったりんごの数をplayerdataに加算
+			playerdata.p_apple += m;
 
 			//メッセージ
 			final List<String> yes = Arrays.asList(
@@ -172,14 +182,15 @@ public class VotingFairyListener implements Listener {
 					,"＠うんちゃま [str1]が意地悪するんだっ！"
 					,"うわーん！お腹空いたよー！"
 					);
-			p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "マナ妖精が" + n + "マナを回復してくれました");
+
+			p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "マナ妖精が" + (int) n + "マナを回復してくれました");
 			if (m != 0) {
 				p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あっ！" + m + "個のがちゃりんごが食べられてる！");
-				VFTR.speak(p, getMessage(yes, p.getName()), false);
+				VotingFairyTaskRunnable.speak(p, getMessage(yes, p.getName()), false);
 			}else {
 
 				p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなたは妖精にりんごを渡しませんでした。");
-				VFTR.speak(p, getMessage(no, p.getName()), false);
+				VotingFairyTaskRunnable.speak(p, getMessage(no, p.getName()), false);
 			}
 		}
 
@@ -187,7 +198,8 @@ public class VotingFairyListener implements Listener {
 
 	private static int getGiveAppleValue(PlayerData playerdata) {
 		int i = playerdata.level/10;
-		return i*i;
+		//0になるなら1を返す
+		return i*i/2 <= 0 ? 1 : i*i/2 ;
 	}
 
 	private static String getMessage(List<String> messages, String str1) {

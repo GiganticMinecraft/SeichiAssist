@@ -278,9 +278,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
     		}
 
     		//投票妖精関連
-    		VotingFairyTaskRunnable VFTR = new VotingFairyTaskRunnable() ;
     		if (playerdata.usingVotingFairy) {
-    			VFTR.run(player);
+    			VotingFairyTaskRunnable.run(player);
     		}
 
     		//GiganticBerserk

@@ -6083,15 +6083,53 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
 
-		//妖精 時間確認
-		itemstack = new ItemStack(Material.COMPASS);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精がどのくらい居てくれるかを尋ねる" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "妖精さんはキッチリしてるので時間は遵守します" );
-		itemmeta.setLore(lore);
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(13,itemstack);
+		if(playerdata.usingVotingFairy) {
+			//妖精 時間確認
+			itemstack = new ItemStack(Material.COMPASS);
+			itemmeta = itemstack.getItemMeta();
+			itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精に時間を聞く" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "妖精さんはいそがしい。",ChatColor.GRAY + "帰っちゃう時間を教えてくれる" );
+			itemmeta.setLore(lore);
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(13,itemstack);
+
+			int prank = playerdata.calcPlayerApple(p);
+
+			itemstack = new ItemStack(Material.GOLDEN_APPLE);
+			itemmeta = itemstack.getItemMeta();
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "㊙ がちゃりんご情報 ㊙" );
+			List<String> lores = new ArrayList<String>();
+			lores.addAll(Arrays.asList(
+					ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "※ﾆﾝｹﾞﾝに見られないように気を付けること！"
+					,""
+					,ChatColor.RESET + "" +  ChatColor.GOLD + "" + ChatColor.BOLD + "がちゃりんごをたくさんくれた人たち"
+					,ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "召喚されたらラッキーだよ！"
+					));
+			RankData rankdata = null;
+			for(int count = 0 ; count < 4 ; count++){
+				if(count >= SeichiAssist.ranklist_p_apple.size()){
+					break;
+				}
+				rankdata = SeichiAssist.ranklist_p_apple.get(count);
+				if(rankdata.p_apple<1){ //数0
+					break;
+				}
+				lores.add(ChatColor.GRAY + "たくさんくれた人第" + Integer.toString(count+1) + "位！" );
+				lores.add(ChatColor.GRAY + "なまえ：" + rankdata.name + " りんご：" + rankdata.p_apple + "個");
+			}
+
+			lores.add(ChatColor.AQUA + "ぜーんぶで" + SeichiAssist.allplayergiveapplelong + "個もらえた！");
+			lores.add("");
+			lores.add(ChatColor.GREEN + "↓呼び出したﾆﾝｹﾞﾝの情報↓");
+			lores.add(ChatColor.GREEN + "今までに" + playerdata.p_apple + "個もらった");
+			lores.add(ChatColor.GREEN + "ﾆﾝｹﾞﾝ中では" + prank + "番目にたくさんくれる！");
+
+			itemmeta.setLore(lores);
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(6,itemstack);
+		}
 
 
 		return inventory;
@@ -6128,13 +6166,10 @@ public class MenuInventoryData {
 					,ChatColor.RESET + "" + ChatColor.GRAY + ""
 					));
 		}
-
-
-
 		return itemmeta;
 	}
 
- 	public static Inventory getHomeMenuData(Player p){
+	public static Inventory getHomeMenuData(Player p){
 		//UUID取得
 		UUID uuid = p.getUniqueId();
 		//プレイヤーデータ

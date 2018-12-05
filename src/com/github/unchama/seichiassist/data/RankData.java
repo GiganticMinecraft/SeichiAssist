@@ -8,6 +8,7 @@ public class RankData {
 	public int playtick;
 	public int p_vote;
 	public int premiumeffectpoint;
+	public int p_apple;
 
 	public RankData(){
 		name = null;

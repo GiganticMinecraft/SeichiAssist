@@ -147,7 +147,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana)
 				+ ",toggleGiveApple = " + Integer.toString(playerdata.toggleGiveApple)
 				+ ",toggleVotingFairy = " + Integer.toString(playerdata.toggleVotingFairy)
-
+				+ ",p_apple = " + Long.toString(playerdata.p_apple)
 
 				//貢献度pt
 				+",added_mana = " + Integer.toString(playerdata.added_mana)

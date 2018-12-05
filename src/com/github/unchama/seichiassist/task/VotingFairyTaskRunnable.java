@@ -18,7 +18,7 @@ import com.github.unchama.seichiassist.util.Util;
 public class VotingFairyTaskRunnable {
 
 	//MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
-	public void run(Player p) {
+	public static void run(Player p) {
 		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 		UUID uuid = p.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
@@ -35,13 +35,13 @@ public class VotingFairyTaskRunnable {
 		}
 	}
 
-	public void speak(Player p, String msg, Boolean b) {
+	public static void speak(Player p, String msg, Boolean b) {
 		if (b) playSe(p);
 		p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "<マナ妖精>" + ChatColor.RESET + "" + msg);
 	}
 
 	//妖精効果音
-	public void playSe(Player p) {
+	public static void playSe(Player p) {
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 2f, 1f);
 		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.plugin, new Runnable() {
 			public void run() {

@@ -51,6 +51,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
+import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.google.common.io.ByteArrayDataOutput;
@@ -5046,8 +5047,8 @@ public class PlayerInventoryListener implements Listener {
     		}
 
     		else if (itemstackcurrent.getType().equals(Material.COMPASS)) {
-    			player.sendMessage(ChatColor.GOLD + "開始時刻: " + Util.showTime(playerdata.VotingFairyStartTime)) ;
-				player.sendMessage(ChatColor.GOLD + "終了時刻: " + Util.showTime(playerdata.VotingFairyEndTime)) ;
+    			VotingFairyTaskRunnable.speak(player, "僕は" + Util.showHour(playerdata.VotingFairyEndTime) + "には帰るよー。", true);
+    			player.closeInventory();
     		}
 
     	}

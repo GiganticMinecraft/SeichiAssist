@@ -784,7 +784,13 @@ public class Util {
 		  Date date = cal.getTime();
 		  SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		  return format.format(date);
-		}
+	}
+
+	public static String showHour(Calendar cal) {
+		Date date = cal.getTime();
+		  SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+		  return format.format(date);
+	}
 
 	public static String getTimeZone(Calendar cal) {
 		Date date = cal.getTime();
