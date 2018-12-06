@@ -30,6 +30,7 @@ import com.github.unchama.seichiassist.event.SeichiLevelUpEvent;
 import com.github.unchama.seichiassist.minestack.MineStackHistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
+import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
@@ -201,6 +202,7 @@ public class PlayerData {
 	public int toggleGiveApple;
 	public int toggleVotingFairy;
 	public long p_apple;
+	public boolean toggleVFSound;
 
 	//貢献度pt
 	public int added_mana;
@@ -315,6 +317,7 @@ public class PlayerData {
 		this.VotingFairyEndTime = null;
 		this.toggleVotingFairy = 1;
 		this.p_apple = 0;
+		this.toggleVFSound = true;
 
 		this.added_mana = 0;
 		this.contribute_point = 0;
@@ -351,6 +354,7 @@ public class PlayerData {
 		activeskilldata.updateonJoin(player, level);
 		//サーバー保管経験値をクライアントに読み込み
 		loadTotalExp();
+		isVotingFairy(player);
 	}
 
 
@@ -975,7 +979,7 @@ public class PlayerData {
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
 			}
 			else if(this.usingVotingFairy){
-				p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "≪マナの妖精≫ " + ChatColor.RESET + "おかえり！" + p.getName() );
+				VotingFairyTaskRunnable.speak(p, "おかえり！" + p.getName(), true);
 			}
 	}
 

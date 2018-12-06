@@ -391,9 +391,6 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		playermap.put(uuid, playerdata);
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ読込完了");
 
-		//playerdataが読み込み終えた時に投票妖精のマナが継続しているかを確認しプレイヤーに告知
-		playerdata.isVotingFairy(p);
-
 		//貢献度pt増加によるマナ増加があるかどうか
 		if(playerdata.added_mana < playerdata.contribute_point){
 			int addMana;

@@ -5016,6 +5016,12 @@ public class PlayerInventoryListener implements Listener {
     			playerdata.toggleGiveApple = playerdata.toggleGiveApple <= 3 ? playerdata.toggleGiveApple += 1:1;
     			player.openInventory(MenuInventoryData.getVotingMenuData(player));
     		}
+    		//妖精音トグル
+    		else if (itemstackcurrent.getType().equals(Material.JUKEBOX)){
+    			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+    			playerdata.toggleVFSound = playerdata.toggleVFSound ? false : true;
+    			player.openInventory(MenuInventoryData.getVotingMenuData(player));
+    		}
 
     		//妖精召喚
     		else if (itemstackcurrent.getType().equals(Material.GHAST_TEAR)){
@@ -5047,7 +5053,7 @@ public class PlayerInventoryListener implements Listener {
     		}
 
     		else if (itemstackcurrent.getType().equals(Material.COMPASS)) {
-    			VotingFairyTaskRunnable.speak(player, "僕は" + Util.showHour(playerdata.VotingFairyEndTime) + "には帰るよー。", true);
+    			VotingFairyTaskRunnable.speak(player, "僕は" + Util.showHour(playerdata.VotingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound);
     			player.closeInventory();
     		}
 

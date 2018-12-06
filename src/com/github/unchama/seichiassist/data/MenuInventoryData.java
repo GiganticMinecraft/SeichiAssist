@@ -6069,6 +6069,11 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(VFPromiseMeta(playerdata));
 		inventory.setItem(11,itemstack);
 
+		//妖精音トグル
+		itemstack = new ItemStack(Material.JUKEBOX);
+		itemstack.setItemMeta(VFSoundToggleMeta(playerdata.toggleVFSound));
+		inventory.setItem(20,itemstack);
+
 
 		//妖精召喚
 		itemstack = new ItemStack(Material.GHAST_TEAR);
@@ -6123,7 +6128,7 @@ public class MenuInventoryData {
 			lores.add("");
 			lores.add(ChatColor.GREEN + "↓呼び出したﾆﾝｹﾞﾝの情報↓");
 			lores.add(ChatColor.GREEN + "今までに" + playerdata.p_apple + "個もらった");
-			lores.add(ChatColor.GREEN + "ﾆﾝｹﾞﾝ中では" + prank + "番目にたくさんくれる！");
+			lores.add(ChatColor.GREEN + "ﾆﾝｹﾞﾝの中では" + prank + "番目にたくさんくれる！");
 
 			itemmeta.setLore(lores);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -6134,6 +6139,27 @@ public class MenuInventoryData {
 
 		return inventory;
 
+	}
+	public static ItemMeta VFSoundToggleMeta(boolean bln) {
+		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.JUKEBOX);
+		itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精の音トグル");
+		if(bln) {
+			itemmeta.setLore(Arrays.asList(
+					ChatColor.RESET + "" +  ChatColor.GREEN + "現在音が鳴る設定になっています。"
+					,ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※この機能はデフォルトでONです。"
+					,ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで切替"
+					));
+		}else {
+			itemmeta.setLore(Arrays.asList(
+					ChatColor.RESET + "" +  ChatColor.RED + "現在音が鳴らない設定になっています。"
+					,ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※この機能はデフォルトでONです。"
+					,ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで切替"
+					));
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+		}
+
+
+		return itemmeta;
 	}
 	public static ItemMeta VFPromiseMeta(PlayerData playerdata){
 

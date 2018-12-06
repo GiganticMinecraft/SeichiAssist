@@ -85,11 +85,11 @@ public class VotingFairyListener implements Listener {
 				);
 
 		if (Util.getTimeZone(playerdata.VotingFairyStartTime) == "morning")
-			VotingFairyTaskRunnable.speak(p, getMessage(morning, p.getName()), true);
+			VotingFairyTaskRunnable.speak(p, getMessage(morning, p.getName()), playerdata.toggleVFSound);
 		else if (Util.getTimeZone(playerdata.VotingFairyStartTime) == "day")
-			VotingFairyTaskRunnable.speak(p, getMessage(day, p.getName()), true);
+			VotingFairyTaskRunnable.speak(p, getMessage(day, p.getName()), playerdata.toggleVFSound);
 		else
-			VotingFairyTaskRunnable.speak(p, getMessage(night, p.getName()), true);
+			VotingFairyTaskRunnable.speak(p, getMessage(night, p.getName()), playerdata.toggleVFSound);
 	}
 
 	public static void regeneMana(Player p) {
@@ -107,7 +107,7 @@ public class VotingFairyListener implements Listener {
 					,"[str1]はどのりんごが好き？僕はがちゃりんご！"
 					,"動いてお腹を空かしていっぱい食べるぞー！"
 					);
-			VotingFairyTaskRunnable.speak(p, getMessage(msg, p.getName()), false);
+			VotingFairyTaskRunnable.speak(p, getMessage(msg, p.getName()), playerdata.toggleVFSound);
 
 		}else {
 
@@ -186,11 +186,11 @@ public class VotingFairyListener implements Listener {
 			p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "マナ妖精が" + (int) n + "マナを回復してくれました");
 			if (m != 0) {
 				p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あっ！" + m + "個のがちゃりんごが食べられてる！");
-				VotingFairyTaskRunnable.speak(p, getMessage(yes, p.getName()), false);
+				VotingFairyTaskRunnable.speak(p, getMessage(yes, p.getName()), playerdata.toggleVFSound);
 			}else {
 
 				p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなたは妖精にりんごを渡しませんでした。");
-				VotingFairyTaskRunnable.speak(p, getMessage(no, p.getName()), false);
+				VotingFairyTaskRunnable.speak(p, getMessage(no, p.getName()), playerdata.toggleVFSound);
 			}
 		}
 
@@ -199,7 +199,7 @@ public class VotingFairyListener implements Listener {
 	private static int getGiveAppleValue(PlayerData playerdata) {
 		int i = playerdata.level/10;
 		//0になるなら1を返す
-		return i*i/2 <= 0 ? 1 : i*i/2 ;
+		return i*i <= 0 ? 1 : i*i ;
 	}
 
 	private static String getMessage(List<String> messages, String str1) {
