@@ -39,8 +39,9 @@ public class VotingFairyListener implements Listener {
 			hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
 		min = (playerdata.toggleVotingFairy % 2) != 0 ? min + 30 : min;
-		hour = playerdata.toggleVotingFairy == (2 | 3) ? hour + 1
-			 :  playerdata.toggleVotingFairy == 4 ? hour + 2
+		hour = playerdata.toggleVotingFairy == 2 ? hour + 1
+			 : playerdata.toggleVotingFairy == 3 ? hour + 1
+			 : playerdata.toggleVotingFairy == 4 ? hour + 2
 					 : hour;
 
 		playerdata.VotingFairyEndTime = new GregorianCalendar(
