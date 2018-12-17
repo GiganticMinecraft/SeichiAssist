@@ -1321,7 +1321,7 @@ public class MenuInventoryData {
 		lore.add(ChatColor.GREEN + "スキルでチェストを破壊するスキル");
 
 		if(playerdata.chestflag){
-			lore.add(ChatColor.RED + "整地ワールドでのみ発動中");
+			lore.add(ChatColor.RED + "整地ワールドでのみ発動中(デフォルト)");
 			lore.add("");
 			lore.add(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで切り替え");
 		}else{
@@ -6107,8 +6107,11 @@ public class MenuInventoryData {
 			List<String> lores = new ArrayList<String>();
 			lores.addAll(Arrays.asList(
 					ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "※ﾆﾝｹﾞﾝに見られないように気を付けること！"
+					,ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "  毎日大妖精からデータを更新すること！"
 					,""
-					,ChatColor.RESET + "" +  ChatColor.GOLD + "" + ChatColor.BOLD + "がちゃりんごをたくさんくれた人たち"
+
+					,ChatColor.RESET + "" +  ChatColor.GOLD + "" + ChatColor.BOLD + "昨日までにがちゃりんごを"
+					,ChatColor.RESET + "" +  ChatColor.GOLD + "" + ChatColor.BOLD + "たくさんくれたﾆﾝｹﾞﾝたち"
 					,ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "召喚されたらラッキーだよ！"
 					));
 			RankData rankdata = null;
@@ -6120,7 +6123,7 @@ public class MenuInventoryData {
 				if(rankdata.p_apple<1){ //数0
 					break;
 				}
-				lores.add(ChatColor.GRAY + "たくさんくれた人第" + Integer.toString(count+1) + "位！" );
+				lores.add(ChatColor.GRAY + "たくさんくれたﾆﾝｹﾞﾝ第" + Integer.toString(count+1) + "位！" );
 				lores.add(ChatColor.GRAY + "なまえ：" + rankdata.name + " りんご：" + rankdata.p_apple + "個");
 			}
 
