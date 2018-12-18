@@ -3112,11 +3112,11 @@ public class PlayerInventoryListener implements Listener {
     			String forcheck = SeichiAssist.config.getTitle1(playerdata.displayTitle1No)
     								+ SeichiAssist.config.getTitle2(playerdata.displayTitle2No)
     								+ SeichiAssist.config.getTitle3(Integer.parseInt(itemmeta.getDisplayName()));
-    			if(forcheck.length() < 8){
+    			if(forcheck.length() < 9){
     				playerdata.displayTitle3No = Integer.parseInt(itemmeta.getDisplayName());
     				player.sendMessage("後パーツ「"+ SeichiAssist.config.getTitle3(playerdata.displayTitle3No) +"」をセットしました。");
     			}else {
-    				player.sendMessage("全パーツ合計で７文字以内になるよう設定してください。");
+    				player.sendMessage("全パーツ合計で８文字以内になるよう設定してください。");
     			}
     		}
 
@@ -3273,6 +3273,28 @@ public class PlayerInventoryListener implements Listener {
     				playerdata.displayTitle3No = 0 ;
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1004) +"」が設定されました。");
     			}
+    			else if(itemmeta.getDisplayName().contains("No1010「"+ SeichiAssist.config.getTitle1(1010) +"」")){
+    				playerdata.displayTitle1No = 1010 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 0 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1010) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No1011「"+ SeichiAssist.config.getTitle1(1011)
+    					+ SeichiAssist.config.getTitle2(9904) + SeichiAssist.config.getTitle3(1011) +"」")){
+    				playerdata.displayTitle1No = 1011 ;
+    				playerdata.displayTitle2No = 9904 ;
+    				playerdata.displayTitle3No = 1011 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1011)
+        					+ SeichiAssist.config.getTitle2(9904) + SeichiAssist.config.getTitle3(1011) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No1012「"+ SeichiAssist.config.getTitle1(1012)
+    					+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(1012) +"」")){
+    				playerdata.displayTitle1No = 1012 ;
+    				playerdata.displayTitle2No = 9901 ;
+    				playerdata.displayTitle3No = 1012 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1012)
+        					+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(1012) +"」が設定されました。");
+    			}
     			else if(itemmeta.getDisplayName().contains("No1005「"+ SeichiAssist.config.getTitle1(1005)
     					+ SeichiAssist.config.getTitle3(1005) + "」")){
     				playerdata.displayTitle1No = 1005 ;
@@ -3423,6 +3445,60 @@ public class PlayerInventoryListener implements Listener {
     				playerdata.displayTitle3No = 0 ;
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3011) +"」が設定されました。");
     			}
+    			else if(itemmeta.getDisplayName().contains("No3012「"+ SeichiAssist.config.getTitle1(3012)
+    					+ SeichiAssist.config.getTitle3(3012) + "」")){
+    				playerdata.displayTitle1No = 3012 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 3012 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3012)
+    						+ SeichiAssist.config.getTitle3(3012) + "」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No3013「"+ SeichiAssist.config.getTitle1(3013)
+    					+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(3013) + "」")){
+    				playerdata.displayTitle1No = 3013 ;
+    				playerdata.displayTitle2No = 9905 ;
+    				playerdata.displayTitle3No = 3013 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3013)
+    						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(3013) + "」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No3014「"+ SeichiAssist.config.getTitle1(3014)
+    					+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(3014) + "」")){
+    				playerdata.displayTitle1No = 3014 ;
+    				playerdata.displayTitle2No = 9909 ;
+    				playerdata.displayTitle3No = 3014 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3014)
+    						+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(3014) + "」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No3015「"+ SeichiAssist.config.getTitle1(3015) +"」")){
+    				playerdata.displayTitle1No = 3015 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 0 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3015) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No3016「"+ SeichiAssist.config.getTitle1(3016) +"」")){
+    				playerdata.displayTitle1No = 3016 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 0 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3016) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No3017「"+ SeichiAssist.config.getTitle1(3017) +"」")){
+    				playerdata.displayTitle1No = 3017 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 0 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3017) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No3018「"+ SeichiAssist.config.getTitle1(3018) +"」")){
+    				playerdata.displayTitle1No = 3018 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 0 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3018) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No3019「"+ SeichiAssist.config.getTitle1(3019) +"」")){
+    				playerdata.displayTitle1No = 3019 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 0 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3019) +"」が設定されました。");
+    			}
     			player.openInventory(MenuInventoryData.getTitleAmountData(player));
 
     		}
@@ -3537,6 +3613,106 @@ public class PlayerInventoryListener implements Listener {
     				playerdata.displayTitle3No = 4010 ;
     				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4010)
         					+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4010) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4011「"+ SeichiAssist.config.getTitle1(4011)
+    					+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(4011) +"」")){
+    				playerdata.displayTitle1No = 4011 ;
+    				playerdata.displayTitle2No = 9901 ;
+    				playerdata.displayTitle3No = 4011 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4011)
+        					+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(4011) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4012「"+ SeichiAssist.config.getTitle1(4012)
+    					+ SeichiAssist.config.getTitle3(4012) +"」")){
+    				playerdata.displayTitle1No = 4012 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 4012 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4012)
+        					+ SeichiAssist.config.getTitle3(4012) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4013「"+ SeichiAssist.config.getTitle1(4013)
+    					+ SeichiAssist.config.getTitle3(4013) +"」")){
+    				playerdata.displayTitle1No = 4013 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 4013 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4013)
+        					+ SeichiAssist.config.getTitle3(4013) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4014「"+ SeichiAssist.config.getTitle1(4014)
+    					+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4014) +"」")){
+    				playerdata.displayTitle1No = 4014 ;
+    				playerdata.displayTitle2No = 9905 ;
+    				playerdata.displayTitle3No = 4014 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4014)
+        					+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4014) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4015「"+ SeichiAssist.config.getTitle1(4015) +"」")){
+    				playerdata.displayTitle1No = 4015 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 0 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4015) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4016「"+ SeichiAssist.config.getTitle1(4016)
+    					+ SeichiAssist.config.getTitle3(4016) +"」")){
+    				playerdata.displayTitle1No = 4016 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 4016 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4016)
+        					+ SeichiAssist.config.getTitle3(4016) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4017「"+ SeichiAssist.config.getTitle1(4017) +"」")){
+    				playerdata.displayTitle1No = 4017 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 0 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4017) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4018「"+ SeichiAssist.config.getTitle1(4018)
+    					+ SeichiAssist.config.getTitle3(4018) +"」")){
+    				playerdata.displayTitle1No = 4018 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 4018 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4018)
+        					+ SeichiAssist.config.getTitle3(4018) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4019「"+ SeichiAssist.config.getTitle1(4019)
+    					+ SeichiAssist.config.getTitle3(4019) +"」")){
+    				playerdata.displayTitle1No = 4019 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 4019 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4019)
+        					+ SeichiAssist.config.getTitle3(4019) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4020「"+ SeichiAssist.config.getTitle1(4020)
+    					+ SeichiAssist.config.getTitle3(4020) +"」")){
+    				playerdata.displayTitle1No = 4020 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 4020 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4020)
+        					+ SeichiAssist.config.getTitle3(4020) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4021「"+ SeichiAssist.config.getTitle1(4021)
+    					+ SeichiAssist.config.getTitle3(4021) +"」")){
+    				playerdata.displayTitle1No = 4021 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 4021 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4021)
+        					+ SeichiAssist.config.getTitle3(4021) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4022「"+ SeichiAssist.config.getTitle1(4022)
+    					+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(4022) +"」")){
+    				playerdata.displayTitle1No = 4022 ;
+    				playerdata.displayTitle2No = 9903 ;
+    				playerdata.displayTitle3No = 4022 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4022)
+        					+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(4022) +"」が設定されました。");
+    			}
+    			else if(itemmeta.getDisplayName().contains("No4023「"+ SeichiAssist.config.getTitle1(4023)
+    					+ SeichiAssist.config.getTitle3(4023) +"」")){
+    				playerdata.displayTitle1No = 4023 ;
+    				playerdata.displayTitle2No = 0 ;
+    				playerdata.displayTitle3No = 4023 ;
+    				player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4023)
+        					+ SeichiAssist.config.getTitle3(4023) +"」が設定されました。");
     			}
     			player.openInventory(MenuInventoryData.getTitleTimeData(player));
     		}
@@ -4121,7 +4297,7 @@ public class PlayerInventoryListener implements Listener {
 
 
     	//インベントリ名が以下の時処理
-    	if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「特殊」")){
+    	if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「記念日」")){
     		event.setCancelled(true);
 
     		//実績解除処理部分の読みこみ
