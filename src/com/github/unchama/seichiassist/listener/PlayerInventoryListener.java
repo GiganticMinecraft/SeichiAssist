@@ -2871,30 +2871,6 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getTitleSpecial(player));
 			}
 
-			/*
-			 * 旧データ。バックアップ
-			//実績「外部支援」を開く
-			else if(itemstackcurrent.getType().equals(Material.YELLOW_FLOWER)){
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
-				player.openInventory(MenuInventoryData.getTitleSupportData(player));
-			}
-
-			//実績「公式イベント」を開く
-			else if(itemstackcurrent.getType().equals(Material.BLAZE_POWDER )){
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
-				player.openInventory(MenuInventoryData.getTitleEventData(player));
-			}
-
-			//実績「極秘任務」を開く
-			else if(itemstackcurrent.getType().equals(Material.DIAMOND_BARDING )){
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
-				player.openInventory(MenuInventoryData.getTitleSecretData(player));
-			}
-			*/
-
     		//ホームメニューに戻る
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);

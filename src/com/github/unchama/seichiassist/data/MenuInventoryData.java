@@ -123,22 +123,6 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(dispExpBarToggleMeta(playerdata,skullmeta));
 		inventory.setItem(0,itemstack);
 
-		//スターレベル情報
-		long SLbreakNext = ((playerdata.starlevel_Break + 1) * 87115000) - playerdata.totalbreaknum ;
-		int SLtimeNext = ((playerdata.starlevel_Time + 1) * 18000000) - playerdata.playtick ;
-		itemstack = new ItemStack(Material.GOLD_INGOT,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_INGOT);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スターレベル情報" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + ChatColor.BOLD + "整地量：☆" + playerdata.starlevel_Break
-							,ChatColor.RESET + "" +  ChatColor.AQUA +  "次の☆まで：あと" + SLbreakNext
-							,ChatColor.RESET + "" +  ChatColor.RED + ChatColor.BOLD + "参加時間：☆" + playerdata.starlevel_Time
-							,ChatColor.RESET + "" +  ChatColor.RED +  "次の☆まで：あと" + SLtimeNext
-							,ChatColor.RESET + "" +  ChatColor.GREEN + ChatColor.UNDERLINE + ChatColor.BOLD + "合計：☆" + playerdata.starlevel );
-		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(5,itemstack);
-
 		//採掘速度上昇効果のトグルボタン
 		itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
@@ -205,6 +189,20 @@ public class MenuInventoryData {
 		 * ここまでadd.loreに変更済み
 		 * 以下ボタンにadd.lore使う場合は追加行より上をすべてadd.loreに変更しないとエラー吐きます
 		 */
+
+		//スターレベル情報
+		itemstack = new ItemStack(Material.GOLD_INGOT,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_INGOT);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スターレベル情報" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + ChatColor.BOLD + "整地量：☆" + playerdata.starlevel_Break
+							,ChatColor.RESET + "" +  ChatColor.AQUA +  "次の☆まで：あと" + (((playerdata.starlevel_Break + 1) * 87115000) - playerdata.totalbreaknum)
+							,ChatColor.RESET + "" +  ChatColor.RED + ChatColor.BOLD + "参加時間：☆" + playerdata.starlevel_Time
+							,ChatColor.RESET + "" +  ChatColor.RED +  "次の☆まで：あと" + (((playerdata.starlevel_Time + 1) * 18000000) - playerdata.playtick)
+							,ChatColor.RESET + "" +  ChatColor.GREEN + ChatColor.UNDERLINE + ChatColor.BOLD + "合計：☆" + playerdata.starlevel );
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(4,itemstack);
 
 		// 2ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);

@@ -292,6 +292,11 @@ public class PlayerData {
 		this.giveachvNo = 0 ;
 		this.titlepage = 1 ;
 
+		this.starlevel = 0 ;
+		this.starlevel_Break = 0 ;
+		this.starlevel_Time = 0 ;
+		this.starlevel_Event = 0 ;
+
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
 			this.sub_home[x] = null;
@@ -529,9 +534,9 @@ public class PlayerData {
 		}
 
 		//イベント入手分の確認
-		/*
-		 * 今後実装予定。
-		 */
+
+		 //今後実装予定。
+
 
 		//合計値の確認
 		i2 = iB2 + iT2 + iE2 ;
