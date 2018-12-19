@@ -89,6 +89,8 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 			//総プレイ時間更新
 			playerdata.calcPlayTick(player);
+			//スターレベル更新
+			playerdata.calcStarLevel(player);
 
 			if(SeichiAssist.DEBUG){
 				Util.sendEveryMessage(playerdata.name + "のランク処理完了");

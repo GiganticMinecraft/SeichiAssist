@@ -117,6 +117,10 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+",achvPointMAX = " + Integer.toString(playerdata.achvPointMAX)
 				+",achvPointUSE = " + Integer.toString(playerdata.achvPointUSE)
 				+",achvChangenum = " + Integer.toString(playerdata.achvChangenum)
+				+",starlevel = " + Integer.toString(playerdata.starlevel)
+				+",starlevel_Break = " + Integer.toString(playerdata.starlevel_Break)
+				+",starlevel_Time = " + Integer.toString(playerdata.starlevel_Time)
+				+",starlevel_Event = " + Integer.toString(playerdata.starlevel_Event)
 
 				+",lastcheckdate = '" + playerdata.lastcheckdate + "'"
 				+",ChainJoin = " + Integer.toString(playerdata.ChainJoin)

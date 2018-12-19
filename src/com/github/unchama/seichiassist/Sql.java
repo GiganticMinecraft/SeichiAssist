@@ -291,7 +291,11 @@ public class Sql{
 				",add column if not exists giveachvNo int default 0" +
 				",add column if not exists achvPointMAX int default 0" +
 				",add column if not exists achvPointUSE int default 0" +
-				",add column if not exists achvChangenum int default 0" ;
+				",add column if not exists achvChangenum int default 0" +
+				",add column if not exists starlevel int default 0" +
+				",add column if not exists starlevel_Break int default 0" +
+				",add column if not exists starlevel_Time int default 0" +
+				",add column if not exists starlevel_Event int default 0" ;
 
 				//MineStack関連をすべてfor文に変更
 				if(SeichiAssist.minestack_sql_enable){
