@@ -2967,7 +2967,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//実績「連続ログイン」を開く
-			else if(itemstackcurrent.getType().equals(Material.WRITTEN_BOOK)){
+			else if(itemstackcurrent.getType().equals(Material.BOOK_AND_QUILL)){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				playerdata.titlepage = 1 ;
 				player.openInventory(MenuInventoryData.getTitleJoinChainData(player));

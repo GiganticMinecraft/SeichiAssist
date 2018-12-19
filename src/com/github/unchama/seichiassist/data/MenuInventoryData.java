@@ -191,18 +191,26 @@ public class MenuInventoryData {
 		 */
 
 		//スターレベル情報
+		//次の☆までの残量計算(整地量)
+		Long L = ((playerdata.starlevel_Break + 1) * 87115000) - playerdata.totalbreaknum ;
+		int NextStar_Break = new Integer(L.toString());
+		//次の☆までの残量計算(参加時間)
+		int NextStar_tick = ((playerdata.starlevel_Time + 1) * 18000000) - playerdata.playtick ;
+		int NextStar_Hour = NextStar_tick / 72000 ;
+		int NextStar_Minute = (NextStar_tick % 72000) / 1200 ;
+
 		itemstack = new ItemStack(Material.GOLD_INGOT,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_INGOT);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スターレベル情報" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + ChatColor.BOLD + "整地量：☆" + playerdata.starlevel_Break
-							,ChatColor.RESET + "" +  ChatColor.AQUA +  "次の☆まで：あと" + (((playerdata.starlevel_Break + 1) * 87115000) - playerdata.totalbreaknum)
+							,ChatColor.RESET + "" +  ChatColor.AQUA +  "次の☆まで：あと" + NextStar_Break
 							,ChatColor.RESET + "" +  ChatColor.RED + ChatColor.BOLD + "参加時間：☆" + playerdata.starlevel_Time
-							,ChatColor.RESET + "" +  ChatColor.RED +  "次の☆まで：あと" + (((playerdata.starlevel_Time + 1) * 18000000) - playerdata.playtick)
+							,ChatColor.RESET + "" +  ChatColor.RED +  "次の☆まで：あと" + NextStar_Hour + "時間" + NextStar_Minute + "分"
 							,ChatColor.RESET + "" +  ChatColor.GREEN + ChatColor.UNDERLINE + ChatColor.BOLD + "合計：☆" + playerdata.starlevel );
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(4,itemstack);
+		inventory.setItem(10,itemstack);
 
 		// 2ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1937,17 +1945,17 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_PICKAXE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「整地」" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "以下の実績が含まれます。"
-							,ChatColor.RESET + "" +  ChatColor.AQUA + "「整地」"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「整地量」"
 							,ChatColor.RESET + "" +  ChatColor.AQUA + "「整地神ランキング」");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(10,itemstack);
 
-		itemstack = new ItemStack(Material.WOODEN_DOOR,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOODEN_DOOR);
+		itemstack = new ItemStack(Material.GLASS,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「建築」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.YELLOW + "現在未実装のカテゴリです。");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.YELLOW + "今後実装予定のカテゴリです。");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2713,8 +2721,8 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(12,itemstack);
 
-		itemstack = new ItemStack(Material.WRITTEN_BOOK,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
+		itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「連続ログイン」" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
 		itemmeta.setLore(lore);
@@ -2768,16 +2776,16 @@ public class MenuInventoryData {
 
 
 		//ボタン情報
-		itemstack = new ItemStack(Material.BOOK,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
+		itemstack = new ItemStack(Material.DIAMOND_HELMET,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_HELMET);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「MEBIUSブリーダー」" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。※未実装");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(12,itemstack);
 
-		itemstack = new ItemStack(Material.WRITTEN_BOOK,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
+		itemstack = new ItemStack(Material.GOLD_INGOT,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_INGOT);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「スターレベル」" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。※未実装");
 		itemmeta.setLore(lore);

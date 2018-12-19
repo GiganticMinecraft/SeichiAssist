@@ -418,6 +418,7 @@ public class PlayerData {
 	//レベルを更新
 	public void updataLevel(Player p) {
 		calcPlayerLevel(p);
+		calcStarLevel(p);
 		setDisplayName(p);
 		expbar.calculate();
 	}
