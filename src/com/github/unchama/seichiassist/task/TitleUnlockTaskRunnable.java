@@ -604,6 +604,87 @@ public class TitleUnlockTaskRunnable {
 			}
 
 		//通算ログイン(No5100系統)
+		}else if(TryTitleNo == 5120){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 1095){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5120解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5119){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 1000){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5119解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5118){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 900){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5118解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5117){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 800){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5117解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5116){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 730){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5116解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5115){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 700){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5115解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5114){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 600){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5114解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5113){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 500){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5113解除！おめでとうございます！");
+				}
+			}
+		}else if(TryTitleNo == 5112){
+			if(!playerdata.TitleFlags.get(TryTitleNo)){
+				//解除処理
+				if(playerdata.TotalJoin >= 400){
+				//解禁時のフラグ変更処理
+				playerdata.TitleFlags.set(TryTitleNo);
+				player.sendMessage("実績No5112解除！おめでとうございます！");
+				}
+			}
 		}else if(TryTitleNo == 5101){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
