@@ -608,7 +608,7 @@ public class PlayerClickListener implements Listener {
 		if(Util.isPlayerInventryFill(p)) {return;}
 
 		Action action = e.getAction();
-		if(!action.equals(Action.RIGHT_CLICK_BLOCK)) {return;}				//ブロックの右クリックじゃない場合無視
+		if(!action.equals(Action.LEFT_CLICK_BLOCK)) {return;}				//ブロックの左クリックじゃない場合無視
 
 		Block targetBlock = e.getClickedBlock();
 		if(!targetBlock.getType().equals(Material.SKULL)) {return;}			//頭じゃない場合無視

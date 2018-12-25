@@ -907,16 +907,17 @@ public class Util {
 	}
 
 	public static boolean isMineHeadItem(ItemStack itemstack) {
-		if(itemstack.getType().equals(Material.FEATHER) &&
+		if(itemstack.getType().equals(Material.CARROT_STICK) &&
 				LoreContains(itemstack.getItemMeta().getLore(), "頭を狩り取る形をしている...") >= 0 ) {return true;}
 		return false;
 	}
 
 	public static ItemStack getMineHeadItem() {
-		ItemStack itemstack = new ItemStack(Material.FEATHER,1);
+		ItemStack itemstack = new ItemStack(Material.CARROT_STICK,1,(short) 1);
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.FEATHER);
 		itemmeta.setDisplayName(getMineHeadItemName());
 		itemmeta.setLore(getMineHeadItemLore());
+		itemmeta.spigot().setUnbreakable(true);
 		itemstack.setItemMeta(itemmeta);
 		return itemstack;
 	}
@@ -929,7 +930,7 @@ public class Util {
 				ChatColor.RED + "頭を狩り取る形をしている..."
 				,""
 				,ChatColor.GRAY + "設置してあるプレイヤーの頭を"
-				,ChatColor.GRAY + "右クリックで即時に回収できます"
+				,ChatColor.GRAY + "左クリックで即時に回収できます"
 				,ChatColor.DARK_GRAY + "インベントリを空にして使いましょう"
 				);
 	}
