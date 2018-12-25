@@ -219,6 +219,12 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.achvChangenum =rs.getInt("achvChangenum");
  				playerdata.achvPoint = (playerdata.achvPointMAX + (playerdata.achvChangenum * 3)) - playerdata.achvPointUSE ;
 
+ 				//スターレベルの情報
+ 				playerdata.starlevel =rs.getInt("starlevel");
+ 				playerdata.starlevel_Break =rs.getInt("starlevel_Break");
+ 				playerdata.starlevel_Time =rs.getInt("starlevel_Time");
+ 				playerdata.starlevel_Event =rs.getInt("starlevel_Event");
+
  				//連続・通算ログインの情報、およびその更新
  		        Calendar cal = Calendar.getInstance();
  		        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");

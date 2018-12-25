@@ -66,14 +66,20 @@ public class PlayerData {
 	public List<EffectData> effectdatalist;
 	//現在のプレイヤーレベル
 	public int level;
-	//現在のスターレベル
-	public long starlevel;
 	//詫び券をあげる数
 	public int numofsorryforbug;
 	//拡張インベントリ
 	public Inventory inventory;
 	//ワールドガード保護自動設定用
 	public int rgnum;
+
+	//スターレベル用数値
+	//スターレベル(合計値)
+	public int starlevel;
+	//各項目別の取得スターレベル
+	public int starlevel_Break; //整地量
+	public int starlevel_Time; //参加時間
+	public int starlevel_Event;  //イベント実績
 
 	//MineStack
 	//public MineStack minestack;
@@ -286,6 +292,11 @@ public class PlayerData {
 		this.giveachvNo = 0 ;
 		this.titlepage = 1 ;
 
+		this.starlevel = 0 ;
+		this.starlevel_Break = 0 ;
+		this.starlevel_Time = 0 ;
+		this.starlevel_Event = 0 ;
+
 		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
 //			this.sub_home[x] = new Location(null, 0, 0, 0);
 			this.sub_home[x] = null;
@@ -407,6 +418,7 @@ public class PlayerData {
 	//レベルを更新
 	public void updataLevel(Player p) {
 		calcPlayerLevel(p);
+		calcStarLevel(p);
 		setDisplayName(p);
 		expbar.calculate();
 	}
@@ -433,7 +445,6 @@ public class PlayerData {
 	//表示される名前に整地レベルor二つ名を追加
 	public void setDisplayName(Player p) {
 		String displayname = Util.getName(p);
-		starlevel = ( totalbreaknum / 87115000 ) - 1 ;
 
 		//表示を追加する処理
 		if(displayTitle1No == 0 && displayTitle2No == 0 && displayTitle3No == 0){
@@ -493,6 +504,47 @@ public class PlayerData {
 			}
 		}
 		level = i;
+	}
+
+	//スターレベルの計算、更新
+	public void calcStarLevel(Player p){
+		//処理前の各レベルを取得
+		int i = starlevel;
+		int iB = starlevel_Break;
+		int iT = starlevel_Time;
+		int iE = starlevel_Event;
+		//処理後のレベルを保存する入れ物
+		int i2 = 0;
+		int iB2 = 0;
+		int iT2 = 0;
+		int iE2 = 0;
+
+		//整地量の確認
+		Long L = ( totalbreaknum / 87115000 ) ;
+		iB2 = new Integer(L.toString());
+		if(iB < iB2){
+			p.sendMessage(ChatColor.GOLD+"ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆("+(iB)+")→☆("+(iB2)+")】");
+			starlevel_Break = iB2;
+		}
+
+		//参加時間の確認
+		iT2 = ( playtick / 18000000);
+		if(iT < iT2){
+			p.sendMessage(ChatColor.GOLD+"ｽﾀｰﾚﾍﾞﾙ(参加時間)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆("+(iT)+")→☆("+(iT2)+")】");
+			starlevel_Time = iT2;
+		}
+
+		//イベント入手分の確認
+
+		 //今後実装予定。
+
+
+		//合計値の確認
+		i2 = iB2 + iT2 + iE2 ;
+		if(i < i2){
+			p.sendMessage(ChatColor.GOLD+"★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆("+(i)+")→☆("+(i2)+")】");
+			starlevel = i2;
+		}
 	}
 
 	//総プレイ時間を更新する

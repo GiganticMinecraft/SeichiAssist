@@ -102,6 +102,9 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//現在の統計量を設定(before)
 			//playerdata.minuteblock.before = playerdata.totalbreaknum;
 
+			//スターレベル更新
+			playerdata.calcStarLevel(player);
+
 
 			//effectの大きさ
 			double amplifier = 0;

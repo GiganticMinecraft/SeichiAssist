@@ -190,6 +190,28 @@ public class MenuInventoryData {
 		 * 以下ボタンにadd.lore使う場合は追加行より上をすべてadd.loreに変更しないとエラー吐きます
 		 */
 
+		//スターレベル情報
+		//次の☆までの残量計算(整地量)
+		Long L = ((playerdata.starlevel_Break + 1) * 87115000) - playerdata.totalbreaknum ;
+		long NextStar_Break = new Long(L.toString());
+		//次の☆までの残量計算(参加時間)
+		int NextStar_tick = ((playerdata.starlevel_Time + 1) * 18000000) - playerdata.playtick ;
+		int NextStar_Hour = NextStar_tick / 72000 ;
+		int NextStar_Minute = (NextStar_tick % 72000) / 1200 ;
+
+		itemstack = new ItemStack(Material.GOLD_INGOT,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_INGOT);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スターレベル情報" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + ChatColor.BOLD + "整地量：☆" + playerdata.starlevel_Break
+							,ChatColor.RESET + "" +  ChatColor.AQUA +  "次の☆まで：あと" + NextStar_Break
+							,ChatColor.RESET + "" +  ChatColor.RED + ChatColor.BOLD + "参加時間：☆" + playerdata.starlevel_Time
+							,ChatColor.RESET + "" +  ChatColor.RED +  "次の☆まで：あと" + NextStar_Hour + "時間" + NextStar_Minute + "分"
+							,ChatColor.RESET + "" +  ChatColor.GREEN + ChatColor.UNDERLINE + ChatColor.BOLD + "合計：☆" + playerdata.starlevel );
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(10,itemstack);
+
 		// 2ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
@@ -1918,29 +1940,22 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(8,itemstack);
 
-		//実績確認画面へ移動
-		itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「整地神ランキング」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		//カテゴリ画面へ移動
+		itemstack = new ItemStack(Material.GOLD_PICKAXE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_PICKAXE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「整地」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "以下の実績が含まれます。"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「整地量」"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「整地神ランキング」");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(10,itemstack);
 
-		itemstack = new ItemStack(Material.GOLD_PICKAXE,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_PICKAXE);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「30分ランキング」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "【近日実装予定！】");
-		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(11,itemstack);
-
-		itemstack = new ItemStack(Material.IRON_PICKAXE,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_PICKAXE);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「整地量」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		itemstack = new ItemStack(Material.GLASS,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「建築」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.YELLOW + "今後実装予定のカテゴリです。");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -1948,52 +1963,39 @@ public class MenuInventoryData {
 
 		itemstack = new ItemStack(Material.COMPASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「参加時間」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(13,itemstack);
-
-		itemstack = new ItemStack(Material.BREAD,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BREAD);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「ログイン記録」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「ログイン」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "以下の実績が含まれます。"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「参加時間」"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「通算ログイン」"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「連続ログイン」"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「記念日」");
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(14,itemstack);
 
-		itemstack = new ItemStack(Material.YELLOW_FLOWER,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.YELLOW_FLOWER);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「外部支援」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(15,itemstack);
-
-		itemstack = new ItemStack(Material.NETHER_STAR,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「特殊」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		itemstack = new ItemStack(Material.BLAZE_POWDER,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BLAZE_POWDER);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「やりこみ」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "以下の実績が含まれます。"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「MEBIUSブリーダー」"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「スターレベル」");
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(16,itemstack);
 
-		itemstack = new ItemStack(Material.DIAMOND_BARDING,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BARDING);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「極秘任務」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。"
-							,ChatColor.RESET + "" +  ChatColor.AQUA + "※獲得前の実績は表示されません。" );
+		itemstack = new ItemStack(Material.EYE_OF_ENDER,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EYE_OF_ENDER);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「特殊」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "以下の実績が含まれます。"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「公式イベント」"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「JMS投票数」"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "「極秘実績」");
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(22,itemstack);
-
-		itemstack = new ItemStack(Material.BLAZE_POWDER,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BLAZE_POWDER);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「公式イベント」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(4,itemstack);
 
 
 		// 1ページ目を開く
@@ -2581,6 +2583,294 @@ public class MenuInventoryData {
 		return inventory ;
 	}
 
+	//実績カテ「整地」
+	public static Inventory getTitleSeichi(Player p){
+		//プレイヤーを取得
+		Player player = p.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
+			Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return null;
+		}
+
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "カテゴリ「整地」");
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		SkullMeta skullmeta;
+		List<String> lore = new ArrayList<String>();
+
+
+		//ボタン情報
+		itemstack = new ItemStack(Material.IRON_PICKAXE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_PICKAXE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「整地量」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(12,itemstack);
+
+		itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「整地神ランキング」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(14,itemstack);
+
+		// 1ページ目を開く
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowLeft");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(27,itemstack);
+
+		return inventory;
+	}
+
+	//実績カテ「建築」
+	public static Inventory getTitleBuild(Player p){
+		//プレイヤーを取得
+		Player player = p.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
+			Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return null;
+		}
+
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "カテゴリ「建築」");
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		SkullMeta skullmeta;
+		List<String> lore = new ArrayList<String>();
+
+
+		//ボタン情報
+		// [ここにカテゴリを設定]
+
+		// 1ページ目を開く
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowLeft");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(27,itemstack);
+
+		return inventory;
+	}
+
+	//実績カテ「ログイン」
+	public static Inventory getTitleLogin(Player p){
+		//プレイヤーを取得
+		Player player = p.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
+			Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return null;
+		}
+
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "カテゴリ「ログイン」");
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		SkullMeta skullmeta;
+		List<String> lore = new ArrayList<String>();
+
+
+		//ボタン情報
+		itemstack = new ItemStack(Material.COMPASS,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「参加時間」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(10,itemstack);
+
+		itemstack = new ItemStack(Material.BOOK,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「通算ログイン」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(12,itemstack);
+
+		itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「連続ログイン」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(14,itemstack);
+
+		itemstack = new ItemStack(Material.NETHER_STAR,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「記念日」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(16,itemstack);
+
+		// 1ページ目を開く
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowLeft");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(27,itemstack);
+
+		return inventory;
+	}
+
+	//実績カテ「やりこみ」
+	public static Inventory getTitleSuperTry(Player p){
+		//プレイヤーを取得
+		Player player = p.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
+			Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return null;
+		}
+
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "カテゴリ「やりこみ」");
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		SkullMeta skullmeta;
+		List<String> lore = new ArrayList<String>();
+
+
+		//ボタン情報
+		itemstack = new ItemStack(Material.DIAMOND_HELMET,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_HELMET);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「MEBIUSブリーダー」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。※未実装");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(12,itemstack);
+
+		itemstack = new ItemStack(Material.GOLD_INGOT,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_INGOT);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「スターレベル」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。※未実装");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(14,itemstack);
+
+		// 1ページ目を開く
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowLeft");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(27,itemstack);
+
+		return inventory;
+	}
+
+	//実績カテ「特殊」
+	public static Inventory getTitleSpecial(Player p){
+		//プレイヤーを取得
+		Player player = p.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
+			Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return null;
+		}
+
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "カテゴリ「特殊」");
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		SkullMeta skullmeta;
+		List<String> lore = new ArrayList<String>();
+
+
+		//ボタン情報
+		itemstack = new ItemStack(Material.BLAZE_POWDER,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BLAZE_POWDER);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「公式イベント」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(11,itemstack);
+
+		itemstack = new ItemStack(Material.YELLOW_FLOWER,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.YELLOW_FLOWER);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「JMS投票数」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(13,itemstack);
+
+		itemstack = new ItemStack(Material.DIAMOND_BARDING,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BARDING);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「極秘任務」" );
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。"
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "※獲得前の実績は表示されません。" );
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(15,itemstack);
+
+		// 1ページ目を開く
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowLeft");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(27,itemstack);
+
+		return inventory;
+	}
+
 	//実績「整地神ランキング」
 	public static Inventory getTitleRankData(Player p){
 		//プレイヤーを取得
@@ -2694,11 +2984,10 @@ public class MenuInventoryData {
 			inventory.setItem(3,itemstack);
 		}
 		//100位
-		if(playerdata.TitleFlags.get(1005)){
+		if(playerdata.TitleFlags.get(1010)){
 			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1005「"+ SeichiAssist.config.getTitle1(1005)
-					+ SeichiAssist.config.getTitle3(1005) +"」" );
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1010「"+ SeichiAssist.config.getTitle1(1010) +"」" );
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」100位達成"
 								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -2708,7 +2997,7 @@ public class MenuInventoryData {
 		}else{
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1005「???」" );
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1010「???」" );
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」100位達成"
 								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -2717,10 +3006,11 @@ public class MenuInventoryData {
 			inventory.setItem(4,itemstack);
 		}
 		//250位
-		if(playerdata.TitleFlags.get(1006)){
+		if(playerdata.TitleFlags.get(1011)){
 			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1006「"+ SeichiAssist.config.getTitle1(1006) +"」" );
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1011「"+ SeichiAssist.config.getTitle1(1011)
+					+ SeichiAssist.config.getTitle2(9904) + SeichiAssist.config.getTitle3(1011) +"」" );
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」250位達成"
 								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -2730,7 +3020,7 @@ public class MenuInventoryData {
 		}else{
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1006「???」" );
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1011「???」" );
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」250位達成"
 								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -2739,73 +3029,141 @@ public class MenuInventoryData {
 			inventory.setItem(5,itemstack);
 		}
 		//500位
+		if(playerdata.TitleFlags.get(1012)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1012「"+ SeichiAssist.config.getTitle1(1012)
+					+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(1012) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」500位達成"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(6,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1012「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」500位達成"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(6,itemstack);
+		}
+		//750位
+		if(playerdata.TitleFlags.get(1005)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1005「"+ SeichiAssist.config.getTitle1(1005)
+					+ SeichiAssist.config.getTitle3(1005) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」750位達成"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(7,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1005「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」750位達成"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(7,itemstack);
+		}
+		//1000位
+		if(playerdata.TitleFlags.get(1006)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1006「"+ SeichiAssist.config.getTitle1(1006) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」1000位達成"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(8,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1006「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」1000位達成"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(8,itemstack);
+		}
+		//2500位
 		if(playerdata.TitleFlags.get(1007)){
 			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1007「"+ SeichiAssist.config.getTitle1(1007)
 					+ SeichiAssist.config.getTitle2(9904) + SeichiAssist.config.getTitle3(1007) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」500位達成"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」2500位達成"
 								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(6,itemstack);
+			inventory.setItem(9,itemstack);
 		}else{
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1007「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」500位達成"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」2500位達成"
 								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(6,itemstack);
+			inventory.setItem(9,itemstack);
 		}
-		//1000位
+		//5000位
 		if(playerdata.TitleFlags.get(1008)){
 			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1008「"+ SeichiAssist.config.getTitle1(1008)
 					+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(1008) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」1000位達成"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」5000位達成"
 								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(7,itemstack);
+			inventory.setItem(10,itemstack);
 		}else{
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1008「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」1000位達成"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」5000位達成"
 								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(7,itemstack);
+			inventory.setItem(10,itemstack);
 		}
-		//3000位
+		//10000位
 		if(playerdata.TitleFlags.get(1009)){
 			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1009「"+ SeichiAssist.config.getTitle1(1009)
 					+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(1009) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」3000位達成"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」10000位達成"
 								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(8,itemstack);
+			inventory.setItem(11,itemstack);
 		}else{
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1009「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」3000位達成"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：「整地神ランキング」10000位達成"
 								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(8,itemstack);
+			inventory.setItem(11,itemstack);
 		}
 
 
@@ -2814,7 +3172,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「整地」カテゴリメニューへ");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
 		skullmeta.setLore(lore);
@@ -2824,69 +3182,6 @@ public class MenuInventoryData {
 
 		return inventory;
 	}
-
-
-	//実績「30分ランキング」
-	public static Inventory getTitleHalfRankData(Player p){
-		//プレイヤーを取得
-		Player player = p.getPlayer();
-		//UUID取得
-		UUID uuid = player.getUniqueId();
-		//プレイヤーデータ
-		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
-		//念のためエラー分岐
-		if(playerdata == null){
-			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
-			Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-			return null;
-		}
-
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「30分ランキング」");
-		ItemStack itemstack;
-		ItemMeta itemmeta;
-		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
-
-
-		//実績設定・解禁ボタン
-		if(playerdata.TitleFlags.get(2001)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2001「"+ SeichiAssist.config.getTitle1(2001) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：雛型"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は未実装です");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(0,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2001「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：雛型"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は未実装です");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(0,itemstack);
-		}
-
-		// 1ページ目を開く
-		itemstack = new ItemStack(Material.SKULL_ITEM,1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
-		skullmeta.setLore(lore);
-		skullmeta.setOwner("MHF_ArrowLeft");
-		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(27,itemstack);
-
-		return inventory;
-	}
-
 
 
 	//実績「整地量」
@@ -2913,9 +3208,227 @@ public class MenuInventoryData {
 
 
 		//実績設定・解禁ボタン
-		//int限界突破
+		//90億突破前は表示されない処理
+		if(playerdata.TitleFlags.get(3018)){
+			//100億
+			if(playerdata.TitleFlags.get(3019)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3019「"+ SeichiAssist.config.getTitle1(3019) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が 100億 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(25,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3019「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が???を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(25,itemstack);
+			}
+		}else{
+		}
+		//80億突破前は表示されない処理
+		if(playerdata.TitleFlags.get(3017)){
+			//90億
+			if(playerdata.TitleFlags.get(3018)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3018「"+ SeichiAssist.config.getTitle1(3018) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が 90億 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(24,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3018「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が???を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(24,itemstack);
+			}
+		}else{
+		}
+		//70億突破前は表示されない処理
+		if(playerdata.TitleFlags.get(3016)){
+			//80億
+			if(playerdata.TitleFlags.get(3017)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3017「"+ SeichiAssist.config.getTitle1(3017) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が 80億 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(23,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3017「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が???を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(23,itemstack);
+			}
+		}else{
+		}
+		//60億突破前は表示されない処理
+		if(playerdata.TitleFlags.get(3015)){
+			//70億
+			if(playerdata.TitleFlags.get(3016)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3016「"+ SeichiAssist.config.getTitle1(3016) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が 70億 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(22,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3016「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が???を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(22,itemstack);
+			}
+		}else{
+		}
+		//50億突破前は表示されない処理
+		if(playerdata.TitleFlags.get(3014)){
+			//60億
+			if(playerdata.TitleFlags.get(3015)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3015「"+ SeichiAssist.config.getTitle1(3015) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が 60億 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(21,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3015「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が???を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(21,itemstack);
+			}
+		}else{
+		}
+		//int実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(3001)){
+			//50億
+			if(playerdata.TitleFlags.get(3014)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3014「"+ SeichiAssist.config.getTitle1(3014)
+						+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(3014) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が 50億 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(20,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3014「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が???を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(20,itemstack);
+			}
+			//40億
+			if(playerdata.TitleFlags.get(3013)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3013「"+ SeichiAssist.config.getTitle1(3013)
+						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(3013) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が 40億 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(19,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3013「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が???を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(19,itemstack);
+			}
+			//30億
+			if(playerdata.TitleFlags.get(3012)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3012「"+ SeichiAssist.config.getTitle1(3012) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が 30億 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(18,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3012「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が???を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(18,itemstack);
+			}
+		}else{
+		}
 		//「10億」実績突破前は表示されない処理
 		if(playerdata.TitleFlags.get(3002)){
+			//int限界突破
 			if(playerdata.TitleFlags.get(3001)){
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
@@ -3173,7 +3686,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「整地」カテゴリメニューへ");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
 		skullmeta.setLore(lore);
@@ -3210,15 +3723,363 @@ public class MenuInventoryData {
 
 
 		//実績設定・解禁ボタン
-		//2400h突破
+		//「18000h」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(4022)){
+			//20000h突破
+			if(playerdata.TitleFlags.get(4023)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4023「"+ SeichiAssist.config.getTitle1(4023)
+						+ SeichiAssist.config.getTitle3(4023) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 20000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(22,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4023「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(22,itemstack);
+			}
+		}else{
+		}
+		//「16000h」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(4021)){
+			//18000h突破
+			if(playerdata.TitleFlags.get(4022)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4022「"+ SeichiAssist.config.getTitle1(4022)
+						+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(4022) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 18000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(21,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4022「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(21,itemstack);
+			}
+		}else{
+		}
+		//「14000h」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(4020)){
+			//16000h突破
+			if(playerdata.TitleFlags.get(4021)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4021「"+ SeichiAssist.config.getTitle1(4021)
+    					+ SeichiAssist.config.getTitle3(4021) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 16000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(20,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4021「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(20,itemstack);
+			}
+		}else{
+		}
+		//「12000h」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(4019)){
+			//14000h突破
+			if(playerdata.TitleFlags.get(4020)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4020「"+ SeichiAssist.config.getTitle1(4020)
+    					+ SeichiAssist.config.getTitle3(4020) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 14000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(19,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4020「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(19,itemstack);
+			}
+		}else{
+		}
+		//「10000h」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(4018)){
+			//12000h突破
+			if(playerdata.TitleFlags.get(4019)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4019「"+ SeichiAssist.config.getTitle1(4019)
+    					+ SeichiAssist.config.getTitle3(4019) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 12000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(18,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4019「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(18,itemstack);
+			}
+		}else{
+		}
+		//「5000h」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(4013)){
+			//10000h突破
+			if(playerdata.TitleFlags.get(4018)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4018「"+ SeichiAssist.config.getTitle1(4018)
+    					+ SeichiAssist.config.getTitle3(4018) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 10000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(17,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4018「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(17,itemstack);
+			}
+			//9000h突破
+			if(playerdata.TitleFlags.get(4017)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4017「"+ SeichiAssist.config.getTitle1(4017) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 9000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(16,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4017「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(16,itemstack);
+			}
+			//8000h突破
+			if(playerdata.TitleFlags.get(4016)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4016「"+ SeichiAssist.config.getTitle1(4016)
+    					+ SeichiAssist.config.getTitle3(4016) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 8000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(15,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4016「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(15,itemstack);
+			}
+			//7000h突破
+			if(playerdata.TitleFlags.get(4015)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4015「"+ SeichiAssist.config.getTitle1(4015) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 7000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(14,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4015「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(14,itemstack);
+			}
+			//6000h突破
+			if(playerdata.TitleFlags.get(4014)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4014「"+ SeichiAssist.config.getTitle1(4014)
+    					+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4014) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 6000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(13,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4014「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(13,itemstack);
+			}
+
+		}else{
+		}
 		//「1000h」実績突破前は表示されない処理
 		if(playerdata.TitleFlags.get(4002)){
+			//5000h突破
+			if(playerdata.TitleFlags.get(4013)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4013「"+ SeichiAssist.config.getTitle1(4013)
+    					+ SeichiAssist.config.getTitle3(4013) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 5000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(12,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4013「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(12,itemstack);
+			}
+			//4000h突破
+			if(playerdata.TitleFlags.get(4012)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4012「"+ SeichiAssist.config.getTitle1(4012)
+    					+ SeichiAssist.config.getTitle3(4012) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 4000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(11,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4012「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(11,itemstack);
+			}
+			//3000h突破
+			if(playerdata.TitleFlags.get(4011)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4011「"+ SeichiAssist.config.getTitle1(4011)
+    					+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(4011) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 3000時間 を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(10,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4011「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が ??? を超える"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(10,itemstack);
+			}
+			//2000h突破
 			if(playerdata.TitleFlags.get(4001)){
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4001「"+ SeichiAssist.config.getTitle1(4001)
     					+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4001) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 2400時間 を超える"
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：参加時間が 2000時間 を超える"
 									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
 									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -3237,6 +4098,7 @@ public class MenuInventoryData {
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(9,itemstack);
 			}
+
 		}else{
 		}
 		//1000h突破
@@ -3462,7 +4324,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「ログイン」カテゴリメニューへ");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
 		skullmeta.setLore(lore);
@@ -3473,8 +4335,8 @@ public class MenuInventoryData {
 		return inventory;
 	}
 
-	//実績「ログイン記録」
-	public static Inventory getTitleJoinData(Player p){
+	//実績「通算ログイン」
+	public static Inventory getTitleJoinAmountData(Player p){
 		//プレイヤーを取得
 		Player player = p.getPlayer();
 		//UUID取得
@@ -3489,7 +4351,537 @@ public class MenuInventoryData {
 			return null;
 		}
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「ログイン記録」");
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「通算ログイン」");
+		ItemStack itemstack;
+		ItemMeta itemmeta;
+		SkullMeta skullmeta;
+		List<String> lore = new ArrayList<String>();
+
+
+		//実績設定・解禁ボタン
+		//「1000日」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(5119)){
+			if(playerdata.TitleFlags.get(5120)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5120「"+ SeichiAssist.config.getTitle1(5120)
+						+ SeichiAssist.config.getTitle2(5120) + SeichiAssist.config.getTitle3(5120) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 1095日 に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(19,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5120「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が ??? に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(19,itemstack);
+			}
+		}else{
+		}
+		//「900日」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(5118)){
+			if(playerdata.TitleFlags.get(5119)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5119「"+ SeichiAssist.config.getTitle1(5119)
+						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5119) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 1000日 に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(18,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5119「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が ??? に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(18,itemstack);
+			}
+		}else{
+		}
+		//「800日」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(5117)){
+			if(playerdata.TitleFlags.get(5118)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5118「"+ SeichiAssist.config.getTitle1(5118)
+						+ SeichiAssist.config.getTitle3(5118) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 900日 に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(17,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5118「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が ??? に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(17,itemstack);
+			}
+		}else{
+		}
+		//「730日」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(5116)){
+			if(playerdata.TitleFlags.get(5117)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5117「"+ SeichiAssist.config.getTitle1(5117)
+						+ SeichiAssist.config.getTitle3(5117) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 800日 に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(16,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5117「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が ??? に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(16,itemstack);
+			}
+		}else{
+		}
+		//「700日」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(5115)){
+			if(playerdata.TitleFlags.get(5116)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5116「"+ SeichiAssist.config.getTitle1(5116)
+						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5116) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 730日 に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(15,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5116「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が ??? に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(15,itemstack);
+			}
+		}else{
+		}
+		//「600日」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(5114)){
+			if(playerdata.TitleFlags.get(5115)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5115「"+ SeichiAssist.config.getTitle1(5115) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 700日 に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(14,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5115「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が ??? に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(14,itemstack);
+			}
+		}else{
+		}
+		//「500日」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(5113)){
+			if(playerdata.TitleFlags.get(5114)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5114「"+ SeichiAssist.config.getTitle1(5114)
+						+ SeichiAssist.config.getTitle3(5114) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 600日 に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(13,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5114「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が ??? に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(13,itemstack);
+			}
+		}else{
+		}
+		//「400日」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(5112)){
+			if(playerdata.TitleFlags.get(5113)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5113「"+ SeichiAssist.config.getTitle1(5113)
+						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5113) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 500日 に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(12,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5113「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が ??? に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(12,itemstack);
+			}
+		}else{
+		}
+		//「365日」実績突破前は表示されない処理
+		if(playerdata.TitleFlags.get(5101)){
+			if(playerdata.TitleFlags.get(5112)){
+				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5112「"+ SeichiAssist.config.getTitle1(5112)
+						 + SeichiAssist.config.getTitle3(5112) +"」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 400日 に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(11,itemstack);
+			}else{
+				itemstack = new ItemStack(Material.BEDROCK,1);
+				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5112「???」" );
+				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が ??? に到達"
+									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
+									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
+				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				itemmeta.setLore(lore);
+				itemstack.setItemMeta(itemmeta);
+				inventory.setItem(11,itemstack);
+			}
+		}else{
+		}
+		if(playerdata.TitleFlags.get(5101)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5101「"+ SeichiAssist.config.getTitle1(5101)
+					 + SeichiAssist.config.getTitle3(5101) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 365日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(10,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5101「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 365日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(10,itemstack);
+		}
+		if(playerdata.TitleFlags.get(5102)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5102「"+ SeichiAssist.config.getTitle1(5102)
+					 + SeichiAssist.config.getTitle2(9907) + SeichiAssist.config.getTitle3(5102) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 300日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(9,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5102「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 300日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(9,itemstack);
+		}
+		if(playerdata.TitleFlags.get(5103)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5103「"+ SeichiAssist.config.getTitle1(5103)
+					 + SeichiAssist.config.getTitle2(9905) + "」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 200日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(8,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5103「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 200日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(8,itemstack);
+		}
+		if(playerdata.TitleFlags.get(5104)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5104「"+ SeichiAssist.config.getTitle1(5104)
+					 + SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5104) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 100日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(7,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5104「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 100日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(7,itemstack);
+		}
+		if(playerdata.TitleFlags.get(5105)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5105「"+ SeichiAssist.config.getTitle1(5105)
+					 + SeichiAssist.config.getTitle2(9907) + SeichiAssist.config.getTitle3(5105) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 75日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(6,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5105「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 75日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(6,itemstack);
+		}
+		if(playerdata.TitleFlags.get(5106)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5106「"+ SeichiAssist.config.getTitle1(5106)+"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 50日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(5,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5106「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 50日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(5,itemstack);
+		}
+		if(playerdata.TitleFlags.get(5107)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5107「"+ SeichiAssist.config.getTitle1(5107)
+					 + SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(5107) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 30日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(4,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5107「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 30日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(4,itemstack);
+		}
+		if(playerdata.TitleFlags.get(5108)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5108「"+ SeichiAssist.config.getTitle1(5108)
+					 + SeichiAssist.config.getTitle3(5108) +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 20日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(3,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5108「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 20日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(3,itemstack);
+		}
+		if(playerdata.TitleFlags.get(5109)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5109「"+ SeichiAssist.config.getTitle1(5109)
+					 +"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 10日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(2,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5109「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 10日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(2,itemstack);
+		}
+		if(playerdata.TitleFlags.get(5110)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5110「"+ SeichiAssist.config.getTitle1(5110)+"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 5日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(1,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5110「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 5日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(1,itemstack);
+		}
+		if(playerdata.TitleFlags.get(5111)){
+			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5111「"+ SeichiAssist.config.getTitle1(5111)+"」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 2日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(0,itemstack);
+		}else{
+			itemstack = new ItemStack(Material.BEDROCK,1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
+			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5111「???」" );
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 2日 に到達"
+								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			itemmeta.setLore(lore);
+			itemstack.setItemMeta(itemmeta);
+			inventory.setItem(0,itemstack);
+		}
+
+		// 1ページ目を開く
+		itemstack = new ItemStack(Material.SKULL_ITEM,1);
+		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		itemstack.setDurability((short) 3);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「ログイン」カテゴリメニューへ");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+				);
+		skullmeta.setLore(lore);
+		skullmeta.setOwner("MHF_ArrowLeft");
+		itemstack.setItemMeta(skullmeta);
+		inventory.setItem(27,itemstack);
+
+		return inventory;
+	}
+
+	//実績「連続ログイン」
+	public static Inventory getTitleJoinChainData(Player p){
+		//プレイヤーを取得
+		Player player = p.getPlayer();
+		//UUID取得
+		UUID uuid = player.getUniqueId();
+		//プレイヤーデータ
+		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		//念のためエラー分岐
+		if(playerdata == null){
+			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
+			Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+			return null;
+		}
+
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「連続ログイン」");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
@@ -3671,251 +5063,12 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(7,itemstack);
 		}
-		if(playerdata.TitleFlags.get(5101)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5101「"+ SeichiAssist.config.getTitle1(5101)
-					 + SeichiAssist.config.getTitle3(5101) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 365日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(18,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5101「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 365日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(18,itemstack);
-		}
-		if(playerdata.TitleFlags.get(5102)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5102「"+ SeichiAssist.config.getTitle1(5102)
-					 + SeichiAssist.config.getTitle2(9907) + SeichiAssist.config.getTitle3(5102) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 300日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(19,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5102「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 300日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(19,itemstack);
-		}
-		if(playerdata.TitleFlags.get(5103)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5103「"+ SeichiAssist.config.getTitle1(5103)
-					 + SeichiAssist.config.getTitle2(9905) + "」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 200日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(20,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5103「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 200日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(20,itemstack);
-		}
-		if(playerdata.TitleFlags.get(5104)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5104「"+ SeichiAssist.config.getTitle1(5104)
-					 + SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5104) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 100日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(21,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5104「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 100日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(21,itemstack);
-		}
-		if(playerdata.TitleFlags.get(5105)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5105「"+ SeichiAssist.config.getTitle1(5105)
-					 + SeichiAssist.config.getTitle2(9907) + SeichiAssist.config.getTitle3(5105) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 75日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(22,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5105「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 75日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(22,itemstack);
-		}
-		if(playerdata.TitleFlags.get(5106)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5106「"+ SeichiAssist.config.getTitle1(5106)+"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 50日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(23,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5106「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 50日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(23,itemstack);
-		}
-		if(playerdata.TitleFlags.get(5107)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5107「"+ SeichiAssist.config.getTitle1(5107)
-					 + SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(5107) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 30日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(24,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5107「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 30日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(24,itemstack);
-		}
-		if(playerdata.TitleFlags.get(5108)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5108「"+ SeichiAssist.config.getTitle1(5108)
-					 + SeichiAssist.config.getTitle3(5108) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 20日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(25,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5108「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 20日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(25,itemstack);
-		}
-		if(playerdata.TitleFlags.get(5109)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5109「"+ SeichiAssist.config.getTitle1(5109)
-					 +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 10日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(26,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5109「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 10日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(26,itemstack);
-		}
-		if(playerdata.TitleFlags.get(5110)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5110「"+ SeichiAssist.config.getTitle1(5110)+"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 5日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(35,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5110「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 5日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(35,itemstack);
-		}
-		if(playerdata.TitleFlags.get(5111)){
-			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5111「"+ SeichiAssist.config.getTitle1(5111)+"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 2日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(34,itemstack);
-		}else{
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5111「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：通算ログイン日数が 2日 に到達"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(34,itemstack);
-		}
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「ログイン」カテゴリメニューへ");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
 		skullmeta.setLore(lore);
@@ -3927,7 +5080,7 @@ public class MenuInventoryData {
 	}
 
 
-	//実績「外部支援」
+	//実績「JMS投票数」
 	public static Inventory getTitleSupportData(Player p){
 		//プレイヤーを取得
 		Player player = p.getPlayer();
@@ -3943,7 +5096,7 @@ public class MenuInventoryData {
 			return null;
 		}
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「外部支援」");
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「JMS投票数」");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
@@ -4138,7 +5291,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「特殊」カテゴリメニューへ");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
 		skullmeta.setLore(lore);
@@ -4947,7 +6100,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「特殊」カテゴリメニューへ");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
 		skullmeta.setLore(lore);
@@ -4975,7 +6128,7 @@ public class MenuInventoryData {
 			return null;
 		}
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「特殊」");
+		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「記念日」");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
@@ -5740,7 +6893,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「ログイン」カテゴリメニューへ");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
 		skullmeta.setLore(lore);
@@ -5793,7 +6946,7 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8001「"+ SeichiAssist.config.getTitle1(8001)
 					+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(8001) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：未来の使者、器を満たさん"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：器を満たす奇跡の少女"
 					,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
 					,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -5806,7 +6959,7 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8001「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：未来の使者、器を満たさん"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：器を満たす奇跡の少女"
 					,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
 					,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -5820,7 +6973,7 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8002「"+ SeichiAssist.config.getTitle1(8002)
 					+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(8002) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：幸せの7は3人兄弟、1000組に及ぶ彼らに新たな1組"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：[[[[[[LuckyNumber]]]]]]"
 					,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
 					,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -5832,7 +6985,7 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8002「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：幸せの7は3人兄弟、1000組に及ぶ彼らに新たな1組"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：[[[[[[LuckyNumber]]]]]]"
 					,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
 					,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -5846,7 +6999,7 @@ public class MenuInventoryData {
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8003「"+ SeichiAssist.config.getTitle1(8003)
 					+ SeichiAssist.config.getTitle3(8003) +"」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：きっちり定時でタイムカードを切りましょ！"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：定時分働いたら記録を確認！"
 					,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は手動解禁式です。"
 					,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -5858,7 +7011,7 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8003「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：きっちり定時でタイムカードを切りましょ！"
+			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：定時分働いたら記録を確認！"
 					,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は手動解禁式です。"
 					,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -5873,7 +7026,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「特殊」カテゴリメニューへ");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
 		skullmeta.setLore(lore);
