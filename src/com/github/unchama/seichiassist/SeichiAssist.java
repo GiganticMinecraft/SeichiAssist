@@ -27,6 +27,7 @@ import com.github.unchama.seichiassist.commands.AchieveCommand;
 import com.github.unchama.seichiassist.commands.EventCommand;
 import com.github.unchama.seichiassist.commands.GiganticFeverCommand;
 import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
+import com.github.unchama.seichiassist.commands.MineHeadCommand;
 import com.github.unchama.seichiassist.commands.contributeCommand;
 import com.github.unchama.seichiassist.commands.effectCommand;
 import com.github.unchama.seichiassist.commands.gachaCommand;
@@ -867,6 +868,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("contribute", new contributeCommand(plugin));
 		commandlist.put("subhome", new subHomeCommand(plugin));
 		commandlist.put("gtfever", new GiganticFeverCommand());
+		commandlist.put("minehead", new MineHeadCommand(plugin));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);

@@ -10,11 +10,14 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -26,6 +29,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
@@ -38,6 +42,7 @@ import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
+import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerClickListener implements Listener {
@@ -588,41 +593,47 @@ public class PlayerClickListener implements Listener {
 		}
 	}
 
-/*
-	//芋を食べる
+	//頭の即時回収
+	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void onPlayerUseGachaimoEvent(PlayerInteractEvent event){
-		//プレイヤーを取得
-		Player player = event.getPlayer();
-		//プレイヤーが起こしたアクションを取得
-		Action action = event.getAction();
-		//アクションを起こした手を取得
-		EquipmentSlot equipmentslot = event.getHand();
-		//UUIDを取得
-		UUID uuid = player.getUniqueId();
-		//playerdataを取得
-		PlayerData playerdata = playermap.get(uuid);
-		//マナを取得
-		Mana mana = playerdata.activeskilldata.mana;
-		//レベルを取得
-		int level = playerdata.level;
+	public void onPlayerRightClickMineHeadEvent(PlayerInteractEvent e) {
+		EquipmentSlot es = e.getHand();
 
-		//オフハンドのアクション実行時処理を終了
-		if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+		if(es.equals(EquipmentSlot.OFF_HAND)) {return;}						//オフハンドの場合無視
+
+		Player p = e.getPlayer();
+		ItemStack useItem = p.getInventory().getItemInMainHand();
+		if(Util.getMineHeadItem() != useItem) {return;}						//専用アイテムを持っていない場合無視
+
+		if(Util.isPlayerInventryFill(p)) {return;}
+
+		Block targetBlock = e.getClickedBlock();
+		if(!targetBlock.getType().equals(Material.SKULL)) {return;}			//頭じゃない場合無視
+		if(!BreakUtil.canBreak(p, targetBlock)) {return;}					//壊せない場合無視
+
+		Action action = e.getAction();
+		if(!action.equals(Action.RIGHT_CLICK_BLOCK)) {return;}				//ブロックの右クリックじゃない場合無視
+
+		if(Util.isPlayerInventryFill(p)) {									//インベントリに空がない場合無視
+			p.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
 			return;
 		}
-		ItemStack gachaimo = player.getInventory().getItemInMainHand();
-		ItemMeta meta = gachaimo.getItemMeta();
-		if(gachaimo.equals(Material.BAKED_POTATO)&& Util.LoreContains(meta.getLore(), "マナ回復（小）")){
-			player.sendMessage("呼び出されました");
-			//メインハンドに芋マナ回復（小）を持っているときの処理
-			if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
-				player.sendMessage("呼び出されました");
-				//左クリックの処理
-				final PlayerItemConsumeEvent re = new PlayerItemConsumeEvent(player,gachaimo);
-				Bukkit.getPluginManager().callEvent(re);
-			}
+
+		Skull targetSkullBlock = (Skull) targetBlock;
+		if(!targetSkullBlock.hasOwner()) {									//ターゲットの頭にオーナがない場合無視
+			p.sendMessage(ChatColor.RED + "この頭は即時回収不可です");
+			return;
 		}
+
+		//頭の情報をセットしてプレイヤーに渡す
+		ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
+		SkullMeta skullMeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skullMeta.setOwner(targetSkullBlock.getOwner());
+		itemStack.setItemMeta(skullMeta);
+		p.getInventory().addItem(itemStack);
+
+		//音を鳴らしておく
+		p.playSound(p.getLocation(), Sound.BLOCK_STONE_BREAK, 2.0f, 1.0f);
+
 	}
-*/
 }

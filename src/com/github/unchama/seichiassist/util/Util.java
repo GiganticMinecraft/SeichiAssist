@@ -905,4 +905,32 @@ public class Util {
 			return false;
 		}
 	}
+
+	public static boolean isMineHeadItem(ItemStack itemstack) {
+		if(itemstack == getMineHeadItem()) {return true;}
+		return false;
+	}
+
+	public static ItemStack getMineHeadItem() {
+		ItemStack itemstack = new ItemStack(Material.FEATHER);
+		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.FEATHER);
+		itemmeta.setDisplayName(getMineHeadItemName());
+		itemmeta.setLore(getMineHeadItemLore());
+		itemstack.setItemMeta(itemmeta);
+		return itemstack;
+	}
+
+	private static String getMineHeadItemName() {
+		return (ChatColor.DARK_RED + "鎌");
+	}
+	private static List<String> getMineHeadItemLore() {
+		return Arrays.asList(
+				ChatColor.RED + "頭を狩り取る形をしている..."
+				,""
+				,ChatColor.GRAY + "設置してあるプレイヤーの頭を"
+				,ChatColor.GRAY + "右クリックで即時に回収できます"
+				,ChatColor.DARK_GRAY + "インベントリを空にして使いましょう"
+				);
+	}
+
 }

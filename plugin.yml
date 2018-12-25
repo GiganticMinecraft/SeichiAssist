@@ -78,3 +78,8 @@ commands:
       usage: /<command>
       permission: multiseichiplugin.gtfever
       permission-message: You don't have <permission>
+  minehead:
+      description: This is a MineHead command.
+      usage: /<command>
+      permission: multiseichiplugin.minehead
+      permission-message: You don't have <permission>
