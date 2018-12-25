@@ -907,12 +907,13 @@ public class Util {
 	}
 
 	public static boolean isMineHeadItem(ItemStack itemstack) {
-		if(itemstack == getMineHeadItem()) {return true;}
+		if(itemstack.getType().equals(Material.FEATHER) &&
+				LoreContains(itemstack.getItemMeta().getLore(), "頭を狩り取る形をしている...") >= 0 ) {return true;}
 		return false;
 	}
 
 	public static ItemStack getMineHeadItem() {
-		ItemStack itemstack = new ItemStack(Material.FEATHER);
+		ItemStack itemstack = new ItemStack(Material.FEATHER,1);
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.FEATHER);
 		itemmeta.setDisplayName(getMineHeadItemName());
 		itemmeta.setLore(getMineHeadItemLore());

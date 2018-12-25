@@ -600,26 +600,27 @@ public class PlayerClickListener implements Listener {
 		EquipmentSlot es = e.getHand();
 
 		if(es.equals(EquipmentSlot.OFF_HAND)) {return;}						//オフハンドの場合無視
-
 		Player p = e.getPlayer();
+
 		ItemStack useItem = p.getInventory().getItemInMainHand();
-		if(Util.getMineHeadItem() != useItem) {return;}						//専用アイテムを持っていない場合無視
+		if(!Util.isMineHeadItem(useItem)) {return;}						//専用アイテムを持っていない場合無視
 
 		if(Util.isPlayerInventryFill(p)) {return;}
 
-		Block targetBlock = e.getClickedBlock();
-		if(!targetBlock.getType().equals(Material.SKULL)) {return;}			//頭じゃない場合無視
-		if(!BreakUtil.canBreak(p, targetBlock)) {return;}					//壊せない場合無視
-
 		Action action = e.getAction();
 		if(!action.equals(Action.RIGHT_CLICK_BLOCK)) {return;}				//ブロックの右クリックじゃない場合無視
+
+		Block targetBlock = e.getClickedBlock();
+		if(!targetBlock.getType().equals(Material.SKULL)) {return;}			//頭じゃない場合無視
+
+		if(!BreakUtil.canBreak(p, targetBlock)) {return;}					//壊せない場合無視
 
 		if(Util.isPlayerInventryFill(p)) {									//インベントリに空がない場合無視
 			p.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
 			return;
 		}
 
-		Skull targetSkullBlock = (Skull) targetBlock;
+		Skull targetSkullBlock = (Skull) targetBlock.getState();
 		if(!targetSkullBlock.hasOwner()) {									//ターゲットの頭にオーナがない場合無視
 			p.sendMessage(ChatColor.RED + "この頭は即時回収不可です");
 			return;
@@ -631,9 +632,10 @@ public class PlayerClickListener implements Listener {
 		skullMeta.setOwner(targetSkullBlock.getOwner());
 		itemStack.setItemMeta(skullMeta);
 		p.getInventory().addItem(itemStack);
-
+		//ブロック置換
+		targetBlock.setType(Material.AIR);
 		//音を鳴らしておく
-		p.playSound(p.getLocation(), Sound.BLOCK_STONE_BREAK, 2.0f, 1.0f);
+		p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 2.0f, 1.0f);
 
 	}
 }
