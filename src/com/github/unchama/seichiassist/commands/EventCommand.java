@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.commands;
 
 import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.listener.newyearevent.*;
+import com.github.unchama.seichiassist.listener.new_year_event.*;
 import com.github.unchama.seichiassist.util.*;
 import org.bukkit.command.*;
 import org.bukkit.entity.*;

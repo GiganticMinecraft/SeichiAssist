@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.listener.newyearevent;
+package com.github.unchama.seichiassist.listener.new_year_event;
 
 import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.*;

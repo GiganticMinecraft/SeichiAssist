@@ -55,7 +55,7 @@ import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
 import com.github.unchama.seichiassist.listener.PlayerQuitListener;
 import com.github.unchama.seichiassist.listener.RegionInventoryListener;
 import com.github.unchama.seichiassist.listener.WorldRegenListener;
-import com.github.unchama.seichiassist.listener.newyearevent.NewYearsEvent;
+import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.minestack.objects.MineStackBuildObj;
 import com.github.unchama.seichiassist.minestack.objects.MineStackDropObj;
