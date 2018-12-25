@@ -493,8 +493,8 @@ public class Util {
 		Plugin plugin = SeichiAssist.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
 
 	    // WorldGuard may not be loaded
-	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-	        return null; // Maybe you want throw an exception instead
+	    if (!(plugin instanceof WorldGuardPlugin)) {
+	        throw new NullPointerException("WorldGuardPluginが見つかりませんでした。");
 	    }
 
 	    return (WorldGuardPlugin) plugin;

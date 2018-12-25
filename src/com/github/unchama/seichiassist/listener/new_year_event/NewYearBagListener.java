@@ -1,10 +1,11 @@
-package com.github.unchama.seichiassist.listener.newyearevent;
+package com.github.unchama.seichiassist.listener.new_year_event;
 
 import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.*;
 import com.github.unchama.seichiassist.util.*;
 import de.tr7zw.itemnbtapi.*;
 import org.bukkit.*;
+import org.bukkit.block.*;
 import org.bukkit.enchantments.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.*;
@@ -38,10 +39,16 @@ public class NewYearBagListener implements Listener {
         }
 
         Player player = event.getPlayer();
+        Block block = event.getBlock();
         PlayerData playerData = playerMap.get(player.getUniqueId());
 
         //整地ワールドのみドロップ許可
         if (!Util.isSeichiWorld(player)) {
+            return;
+        }
+
+        //自分の保護範囲外ではドロップさせない
+        if (!Util.getWorldGuard().canBuild(player, block)) {
             return;
         }
 
