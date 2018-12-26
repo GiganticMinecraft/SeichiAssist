@@ -918,6 +918,7 @@ public class Util {
 		itemmeta.setDisplayName(getMineHeadItemName());
 		itemmeta.setLore(getMineHeadItemLore());
 		itemmeta.spigot().setUnbreakable(true);
+		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemstack.setItemMeta(itemmeta);
 		return itemstack;
 	}
@@ -932,6 +933,9 @@ public class Util {
 				,ChatColor.GRAY + "設置してあるプレイヤーの頭を"
 				,ChatColor.GRAY + "左クリックで即時に回収できます"
 				,ChatColor.DARK_GRAY + "インベントリを空にして使いましょう"
+				,""
+				,ChatColor.DARK_RED + "イベント等で手に入れたカスタムヘッドは"
+				,ChatColor.DARK_RED + "正常に回収できない場合があります"
 				);
 	}
 

@@ -597,13 +597,10 @@ public class PlayerClickListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerRightClickMineHeadEvent(PlayerInteractEvent e) {
-		EquipmentSlot es = e.getHand();
 
-		if(es.equals(EquipmentSlot.OFF_HAND)) {return;}						//オフハンドの場合無視
 		Player p = e.getPlayer();
-
 		ItemStack useItem = p.getInventory().getItemInMainHand();
-		if(!Util.isMineHeadItem(useItem)) {return;}						//専用アイテムを持っていない場合無視
+		if(!Util.isMineHeadItem(useItem)) {return;}							//専用アイテムを持っていない場合無視
 
 		if(Util.isPlayerInventryFill(p)) {return;}
 
