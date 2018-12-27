@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -21,8 +23,11 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Builder;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.SkullType;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -924,19 +929,57 @@ public class Util {
 	}
 
 	private static String getMineHeadItemName() {
-		return (ChatColor.DARK_RED + "鎌");
+		return (ChatColor.DARK_RED + "HeadKiller");
 	}
 	private static List<String> getMineHeadItemLore() {
 		return Arrays.asList(
 				ChatColor.RED + "頭を狩り取る形をしている..."
 				,""
-				,ChatColor.GRAY + "設置してあるプレイヤーの頭を"
+				,ChatColor.GRAY + "設置してある頭が"
 				,ChatColor.GRAY + "左クリックで即時に回収できます"
-				,ChatColor.DARK_GRAY + "インベントリを空にして使いましょう"
-				,""
-				,ChatColor.DARK_RED + "イベント等で手に入れたカスタムヘッドは"
-				,ChatColor.DARK_RED + "正常に回収できない場合があります"
+				,ChatColor.DARK_GRAY + "インベントリに空きを作って使いましょう"
 				);
+	}
+
+	public static ItemStack getSkullDataFromBlock(Block block) {
+		//ブロックがskullじゃない場合石でも返しとく
+		if(!block.getType().equals(Material.SKULL)) {return new ItemStack(Material.STONE);}
+
+		Skull skull = (Skull) block.getState();
+		ItemStack itemStack = new ItemStack(Material.SKULL_ITEM);
+
+		//SkullTypeがプレイヤー以外の場合，SkullTypeだけ設定して終わり
+		if(skull.getSkullType() != SkullType.PLAYER) {
+			switch (skull.getSkullType()) {
+			case CREEPER:
+				itemStack.setDurability((short) SkullType.CREEPER.ordinal());
+				break;
+			case DRAGON:
+				itemStack.setDurability((short) SkullType.DRAGON.ordinal());
+				break;
+			case SKELETON:
+				itemStack.setDurability((short) SkullType.SKELETON.ordinal());
+				break;
+			case WITHER:
+				itemStack.setDurability((short) SkullType.WITHER.ordinal());
+				break;
+			case ZOMBIE:
+				itemStack.setDurability((short) SkullType.ZOMBIE.ordinal());
+				break;
+			default:
+				break;
+			}
+			return itemStack;
+		}
+
+		//プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
+		Collection<ItemStack> drops = block.getDrops();
+		for (Iterator<ItemStack> i = drops.iterator(); i.hasNext();) {
+			itemStack = i.next();
+		}
+
+		itemStack.setDurability((short) SkullType.PLAYER.ordinal());
+		return itemStack;
 	}
 
 }

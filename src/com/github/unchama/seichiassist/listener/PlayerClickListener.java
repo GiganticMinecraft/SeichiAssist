@@ -10,14 +10,12 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -29,7 +27,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
@@ -594,7 +591,6 @@ public class PlayerClickListener implements Listener {
 	}
 
 	//頭の即時回収
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerRightClickMineHeadEvent(PlayerInteractEvent e) {
 
@@ -617,22 +613,11 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 
-		Skull targetSkullBlock = (Skull) targetBlock.getState();
-		if(!targetSkullBlock.hasOwner()) {									//ターゲットの頭にオーナがない場合無視
-			p.sendMessage(ChatColor.RED + "この頭は即時回収不可です");
-			return;
-		}
-
-		//頭の情報をセットしてプレイヤーに渡す
-		ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
-		SkullMeta skullMeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-		skullMeta.setOwner(targetSkullBlock.getOwner());
-		itemStack.setItemMeta(skullMeta);
-		p.getInventory().addItem(itemStack);
-		//ブロック置換
+		//頭を付与
+		p.getInventory().addItem(Util.getSkullDataFromBlock(targetBlock));
+		//ブロックを空気で置き換える
 		targetBlock.setType(Material.AIR);
 		//音を鳴らしておく
 		p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 2.0f, 1.0f);
-
 	}
 }
