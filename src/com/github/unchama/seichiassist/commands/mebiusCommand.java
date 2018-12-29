@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.commands;
 
 import java.util.List;
 
-import com.github.unchama.seichiassist.data.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -11,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.listener.MebiusListener;
-import sun.management.*;
 
 public class mebiusCommand implements TabExecutor {
 
@@ -125,7 +123,7 @@ public class mebiusCommand implements TabExecutor {
 		sender.sendMessage(ChatColor.RED + "  MEBIUSから呼ばれる名前を<name>に変更します");
 		sender.sendMessage("");
 		sender.sendMessage(ChatColor.RED + "/mebius nickname reset");
-		sender.sendMessage(ChatColor.RED + "  MEBIUS空の呼び名をプレイヤー名(初期設定)に戻します");
+		sender.sendMessage(ChatColor.RED + "  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します");
 		sender.sendMessage("");
 	}
 
