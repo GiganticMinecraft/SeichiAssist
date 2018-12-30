@@ -192,8 +192,8 @@ public class MenuInventoryData {
 
 		//スターレベル情報
 		//次の☆までの残量計算(整地量)
-		Long L = ((playerdata.starlevel_Break + 1) * 87115000) - playerdata.totalbreaknum ;
-		long NextStar_Break = new Long(L.toString());
+		long LongSLB = playerdata.starlevel_Break ;
+		long NextStar_Break = ((LongSLB + 1) * 87115000) - playerdata.totalbreaknum ;
 		//次の☆までの残量計算(参加時間)
 		int NextStar_tick = ((playerdata.starlevel_Time + 1) * 18000000) - playerdata.playtick ;
 		int NextStar_Hour = NextStar_tick / 72000 ;
