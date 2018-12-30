@@ -225,7 +225,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
     		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//No1000系統の解禁チェック
     		int checkNo = 1001 ;
-    		for(;checkNo < 1010 ;){
+    		for(;checkNo < 1013 ;){
     			if(!playerdata.TitleFlags.get(checkNo)){
     				TUTR.TryTitle(player,checkNo);
     			}
@@ -233,7 +233,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
     		}
     		//No3000系統の解禁チェック
     		checkNo = 3001 ;
-    		for(;checkNo < 3012 ;){
+    		for(;checkNo < 3020 ;){
     			if(!playerdata.TitleFlags.get(checkNo)){
     				TUTR.TryTitle(player,checkNo);
     			}
@@ -241,7 +241,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
     		}
     		//No4000系統の解禁チェック
     		checkNo = 4001 ;
-    		for(;checkNo < 4011 ;){
+    		for(;checkNo < 4024 ;){
     			if(!playerdata.TitleFlags.get(checkNo)){
     				TUTR.TryTitle(player,checkNo);
     			}
@@ -257,7 +257,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
     		}
     		//No5100系統の解禁チェック
     		checkNo = 5101 ;
-    		for(;checkNo < 5112 ;){
+    		for(;checkNo < 5121 ;){
     			if(!playerdata.TitleFlags.get(checkNo)){
     				TUTR.TryTitle(player,checkNo);
     			}
