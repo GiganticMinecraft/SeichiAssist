@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.data.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -39,10 +40,6 @@ import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.commands.shareinvCommand;
 import com.github.unchama.seichiassist.commands.stickCommand;
 import com.github.unchama.seichiassist.commands.subHomeCommand;
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.listener.EntityListener;
 import com.github.unchama.seichiassist.listener.GachaItemListener;
 import com.github.unchama.seichiassist.listener.MebiusListener;
@@ -419,7 +416,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackFarmObj("chorus_fruit", "コーラスフルーツ", 1, Material.CHORUS_FRUIT, 0)
 	));
 
-	private static final List<MineStackObj> minestacklistbuild = new ArrayList<>(Arrays.asList(
+	private static final List<MineStackObj> minestacklistbuild = new ArrayList<MineStackObj>(Arrays.asList(
 
 			//以下建築系ブロック
 			new MineStackBuildObj("step0","石ハーフブロック",1,Material.STEP,0)
@@ -620,7 +617,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	));
 
-	private static final List<MineStackObj> minestacklistrs = new ArrayList<>(Arrays.asList(
+	private static final List<MineStackObj> minestacklistrs = new ArrayList<MineStackObj>(Arrays.asList(
 
 			//以下レッドストーン系ブロック
 			new MineStackRsObj("redstone","レッドストーン",1,Material.REDSTONE,0)
@@ -696,7 +693,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	));
 
-	private static List<MineStackObj> minestacklistgacha =  new ArrayList<>(Arrays.asList(
+	private static List<MineStackObj> minestacklistgacha =  new ArrayList<MineStackObj>(Arrays.asList(
 
 			//以下ガチャ系アイテム
 			new MineStackGachaObj("gachaimo",Util.getGachaimoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaimoLore())
