@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.data.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -39,10 +40,6 @@ import com.github.unchama.seichiassist.commands.seichiCommand;
 import com.github.unchama.seichiassist.commands.shareinvCommand;
 import com.github.unchama.seichiassist.commands.stickCommand;
 import com.github.unchama.seichiassist.commands.subHomeCommand;
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.listener.EntityListener;
 import com.github.unchama.seichiassist.listener.GachaItemListener;
 import com.github.unchama.seichiassist.listener.MebiusListener;
@@ -80,52 +77,49 @@ public class SeichiAssist extends JavaPlugin{
 	public static Boolean gachamente = false;
 
 	public static final String PLAYERDATA_TABLENAME = "playerdata";
-	public static final String GACHADATA_TABLENAME = "gachadata";
-	public static final String DONATEDATA_TABLENAME = "donatedata";
+	static final String GACHADATA_TABLENAME = "gachadata";
+	static final String DONATEDATA_TABLENAME = "donatedata";
 
 	//MineStack用ガチャデータを作成する
-	public static final String MINESTACK_GACHADATA_TABLENAME = "msgachadata";
+	static final String MINESTACK_GACHADATA_TABLENAME = "msgachadata";
 
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
 
-	private String pluginChannel = "BungeeCord";
-
-	private HashMap<String, TabExecutor> commandlist;
+    private HashMap<String, TabExecutor> commandlist;
 	public static Sql sql;
 	public static Config config;
 
-	public static final int SUB_HOME_DATASIZE = 98;	//DB上でのサブホーム1つ辺りのデータサイズ　xyz各10*3+ワールド名64+区切り文字1*4
+	static final int SUB_HOME_DATASIZE = 98;	//DB上でのサブホーム1つ辺りのデータサイズ　xyz各10*3+ワールド名64+区切り文字1*4
 
-	public static final int VOTE_FAIRYTIME_DATASIZE = 17; //DB上での妖精を召喚した時間のデータサイズ　年4+月2+日2+時間2+分2+区切り文字1*5
+	static final int VOTE_FAIRYTIME_DATASIZE = 17; //DB上での妖精を召喚した時間のデータサイズ　年4+月2+日2+時間2+分2+区切り文字1*5
 
-	Random rand = new java.util.Random();
 	//起動するタスクリスト
-	private List<BukkitTask> tasklist = new ArrayList<BukkitTask>();
+	private List<BukkitTask> tasklist = new ArrayList<>();
 
 	//Gachadataに依存するデータリスト
-	public static final List<GachaData> gachadatalist = new ArrayList<GachaData>();
+	public static final List<GachaData> gachadatalist = new ArrayList<>();
 
 	//(minestackに格納する)Gachadataに依存するデータリスト
-	public static List<MineStackGachaData> msgachadatalist = new ArrayList<MineStackGachaData>();
+	public static List<MineStackGachaData> msgachadatalist = new ArrayList<>();
 
 	//Playerdataに依存するデータリスト
-	public static final HashMap<UUID,PlayerData> playermap = new HashMap<UUID,PlayerData>();
+	public static final HashMap<UUID,PlayerData> playermap = new HashMap<>();
 
 	//総採掘量ランキング表示用データリスト
-	public static final List<RankData> ranklist = new ArrayList<RankData>();
+	public static final List<RankData> ranklist = new ArrayList<>();
 
 	//プレイ時間ランキング表示用データリスト
-	public static final List<RankData> ranklist_playtick = new ArrayList<RankData>();
+	public static final List<RankData> ranklist_playtick = new ArrayList<>();
 
 	//投票ポイント表示用データリスト
-	public static final List<RankData> ranklist_p_vote = new ArrayList<RankData>();
+	public static final List<RankData> ranklist_p_vote = new ArrayList<>();
 
 	//マナ妖精表示用のデータリスト
-	public static final List<RankData> ranklist_p_apple = new ArrayList<RankData>();
+	public static final List<RankData> ranklist_p_apple = new ArrayList<>();
 
 	//プレミアムエフェクトポイント表示用データリスト
-	public static final List<RankData> ranklist_premiumeffectpoint = new ArrayList<RankData>();
+	public static final List<RankData> ranklist_premiumeffectpoint = new ArrayList<>();
 
 	//総採掘量表示用
 	public static long allplayerbreakblockint;
@@ -133,14 +127,14 @@ public class SeichiAssist extends JavaPlugin{
 	public static long allplayergiveapplelong;
 
 	//プラグインで出すエンティティの保存
-	public static final List<Entity> entitylist = new ArrayList<Entity>();
+	public static final List<Entity> entitylist = new ArrayList<>();
 
 	//プレイヤーがスキルで破壊するブロックリスト
-	public static final List<Block> allblocklist = new ArrayList<Block>();
+	public static final List<Block> allblocklist = new ArrayList<>();
 
 
 	//lvの閾値
-	public static final List<Integer> levellist = new ArrayList<Integer>(Arrays.asList(
+	public static final List<Integer> levellist = Arrays.asList(
 			0,15,49,106,198,//5
 			333,705,1265,2105,3347,//10
 			4589,5831,7073,8315,9557,//15
@@ -208,15 +202,15 @@ public class SeichiAssist extends JavaPlugin{
 			71265000,72265000,73265000,74265000,75265000,//190
 			76415000,77565000,78715000,79865000,81015000,//195
 			82165000,83315000,84465000,85615000,87115000//200
-			));
+			);
 
-	public static final List<Integer> GBlevellist = new ArrayList<Integer>(Arrays.asList(
+	public static final List<Integer> GBlevellist = Arrays.asList(
 			20,30,40,40,50,50,60,70,80,100,
 			100,110,120,130,140,150,160,170,180,200,
 			250,270,300,320,350,370,400,420,450,500,
 			500,600,700,800,900,1000,1100,1200,1300,1500,
 			2000,3000,4000,5000,6000,7000,8000,9000,10000
-			));
+			);
 
 	private static final List<MineStackObj> minestacklistmine = new ArrayList<MineStackObj>(Arrays.asList(
 
@@ -419,7 +413,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackFarmObj("chorus_fruit", "コーラスフルーツ", 1, Material.CHORUS_FRUIT, 0)
 	));
 
-	private static final List<MineStackObj> minestacklistbuild = new ArrayList<>(Arrays.asList(
+	private static final List<MineStackObj> minestacklistbuild = new ArrayList<MineStackObj>(Arrays.asList(
 
 			//以下建築系ブロック
 			new MineStackBuildObj("step0","石ハーフブロック",1,Material.STEP,0)
@@ -620,7 +614,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	));
 
-	private static final List<MineStackObj> minestacklistrs = new ArrayList<>(Arrays.asList(
+	private static final List<MineStackObj> minestacklistrs = new ArrayList<MineStackObj>(Arrays.asList(
 
 			//以下レッドストーン系ブロック
 			new MineStackRsObj("redstone","レッドストーン",1,Material.REDSTONE,0)
@@ -696,7 +690,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	));
 
-	private static List<MineStackObj> minestacklistgacha =  new ArrayList<>(Arrays.asList(
+	private static List<MineStackObj> minestacklistgacha =  new ArrayList<MineStackObj>(Arrays.asList(
 
 			//以下ガチャ系アイテム
 			new MineStackGachaObj("gachaimo",Util.getGachaimoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaimoLore())
@@ -708,16 +702,13 @@ public class SeichiAssist extends JavaPlugin{
 
 	));
 
-	public static List<MineStackObj> minestacklistgacha1 = null;
-
-
-	public static List<MineStackObj> minestacklist = null;
+    public static List<MineStackObj> minestacklist = null;
 
 	//public static final int minestacksize=minestacklist.size();
 	public static final boolean minestack_sql_enable=true; //ここは必ずtrue(falseのときはSQL初期設定+SQL入出力しない[デバッグ用])
 
 
-	public static final List<Material> materiallist = new ArrayList<Material>(Arrays.asList(
+	public static final List<Material> materiallist = Arrays.asList(
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
 			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
 			,Material.COAL_ORE,Material.IRON_ORE,Material.GOLD_ORE,Material.DIAMOND_ORE
@@ -739,51 +730,52 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.SOIL,Material.GRASS_PATH,Material.MOB_SPAWNER,Material.WORKBENCH,Material.FURNACE
 			,Material.QUARTZ_BLOCK
 			,Material.CHEST,Material.TRAPPED_CHEST
-			));
-	public static final List<Material> luckmateriallist = new ArrayList<Material>(Arrays.asList(
+			);
+	public static final List<Material> luckmateriallist = Arrays.asList(
 			Material.COAL_ORE,Material.DIAMOND_ORE,Material.LAPIS_ORE,Material.EMERALD_ORE,
 			Material.REDSTONE_ORE,Material.GLOWING_REDSTONE_ORE,Material.QUARTZ_ORE
-			));
-	public static final List<Material> breakmateriallist = new ArrayList<Material>(Arrays.asList(
+			);
+	public static final List<Material> breakmateriallist = Arrays.asList(
 			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE,
 			Material.WOOD_PICKAXE,						  Material.WOOD_SPADE,
 			Material.IRON_PICKAXE,Material.IRON_AXE,Material.IRON_SPADE,
 			Material.GOLD_PICKAXE,Material.GOLD_AXE,Material.GOLD_SPADE
-			));
-	public static final List<Material> cancelledmateriallist = new ArrayList<Material>(Arrays.asList(
+			);
+	public static final List<Material> cancelledmateriallist = Arrays.asList(
 			Material.CHEST,Material.ENDER_CHEST,Material.TRAPPED_CHEST,Material.ANVIL,Material.ARMOR_STAND
 			,Material.BEACON,Material.BIRCH_DOOR,Material.BIRCH_FENCE_GATE,Material.BIRCH_WOOD_STAIRS
 			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
-			));
+			);
 
-	public static final Set<Material> transparentmateriallist = new HashSet<Material>(Arrays.asList(
+	public static final Set<Material> transparentmateriallist = new HashSet<>(Arrays.asList(
 			Material.BEDROCK,Material.AIR
 			));
-	public static final List<Material> gravitymateriallist = new ArrayList<Material>(Arrays.asList(
+	public static final List<Material> gravitymateriallist = Arrays.asList(
 			Material.LOG, Material.LOG_2,Material.LEAVES,Material.LEAVES_2
-			));
+			);
 	//スキル破壊ブロック分のcoreprotectログ保存処理を除外するワールドリスト(coreprotectログデータ肥大化の軽減が目的)
 	//スキル自体はメインワールドと各整地ワールドのみ(world_SWで始まるワールドのみ)で発動する(ここの設定は無視する)
-	public static final List<String> ignoreWorldlist = new ArrayList<String>(Arrays.asList(
+	public static final List<String> ignoreWorldlist = Arrays.asList(
 			"world_SW","world_SW_2","world_SW_3","world_SW_nether","world_SW_the_end"
-			));
+			);
 
 	//保護を掛けて整地するワールドのリスト
-	public static final List<String> rgSeichiWorldlist = new ArrayList<String>(Arrays.asList(
+	public static final List<String> rgSeichiWorldlist = Arrays.asList(
 			"world_SW_2","world_SW_nether","world_SW_the_end"
-			));
+			);
 
-	public static final List<String> seichiWorldList = new ArrayList<>(Arrays.asList(
+	public static final List<String> seichiWorldList = Arrays.asList(
 	        "world_SW", "world_SW_2", "world_SW_3", "world_SW_nether", "world_SW_the_end"
-    ));
+    );
 
 	@Override
 	public void onEnable(){
 		plugin = this;
 
 		//チャンネルを追加
-		Bukkit.getMessenger().registerOutgoingPluginChannel(this,
-				this.pluginChannel);
+        String pluginChannel = "BungeeCord";
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this,
+                pluginChannel);
 
 		//コンフィグ系の設定は全てConfig.javaに移動
 		config = new Config(this);
@@ -811,12 +803,10 @@ public class SeichiAssist extends JavaPlugin{
 		//mysqlからガチャデータ読み込み
 		if(!sql.loadGachaData()){
 			getLogger().info("ガチャデータのロードに失敗しました");
-		} else { //ガチャデータを読み込んだ
-
 		}
 
 		//リスト結合(ガチャ品(ガチャリンゴなど)+ガチャ品(本体))
-		minestacklistgacha1 = new ArrayList<MineStackObj>();
+        List<MineStackObj> minestacklistgacha1;
 
 		//mysqlからMineStack用ガチャデータ読み込み
 		if(!sql.loadMineStackGachaData()){
@@ -830,7 +820,7 @@ public class SeichiAssist extends JavaPlugin{
 			//minestacklist.addAll(minestacklistbase);
 			minestacklistgacha.addAll(minestacklistgacha1);
 
-			minestacklist = new ArrayList<MineStackObj>();
+			minestacklist = new ArrayList<>();
 			minestacklist.addAll(minestacklistmine);
 			minestacklist.addAll(minestacklistdrop);
 			minestacklist.addAll(minestacklistfarm);
@@ -852,7 +842,7 @@ public class SeichiAssist extends JavaPlugin{
 		//
 
 		//コマンドの登録
-		commandlist = new HashMap<String, TabExecutor>();
+		commandlist = new HashMap<>();
 		commandlist.put("gacha",new gachaCommand(plugin));
 		commandlist.put("seichi",new seichiCommand(plugin));
 		commandlist.put("ef",new effectCommand(plugin));
@@ -1026,7 +1016,7 @@ public class SeichiAssist extends JavaPlugin{
 	}
 
 	private static List<MineStackObj> creategachaminestacklist(){
-		List<MineStackObj> minestacklist = new ArrayList<MineStackObj>();
+		List<MineStackObj> minestacklist = new ArrayList<>();
 		for(int i=0; i<SeichiAssist.msgachadatalist.size(); i++){
 			MineStackGachaData g = SeichiAssist.msgachadatalist.get(i);
 			//int levelsidx = 0;

@@ -7,6 +7,5 @@
 #IntelliJ IDEA
 .idea/
 *.iml
-/bin/
-/bin/
+/bins/
 /test/
