@@ -929,7 +929,7 @@ public class Util {
 	}
 
 	private static String getMineHeadItemName() {
-		return (ChatColor.DARK_RED + "HeadKiller");
+		return (ChatColor.DARK_RED + "死神の鎌");
 	}
 	private static List<String> getMineHeadItemLore() {
 		return Arrays.asList(
