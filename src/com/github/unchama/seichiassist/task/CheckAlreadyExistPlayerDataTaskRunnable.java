@@ -109,7 +109,7 @@ public class CheckAlreadyExistPlayerDataTaskRunnable extends BukkitRunnable{
 
 		}else if(count == 1){
 			//uuidが存在するときの処理
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + name + "のプレイヤーデータ読み込み開始");
+			//非同期でPlayerDataの読み込みを行う
 			new LoadPlayerDataTaskRunnable(playerData).runTaskTimerAsynchronously(plugin, 0, 20);
 			new PlayerDataUpdateOnJoinRunnable(playerData).runTaskTimer(plugin, 0, 20);
 
