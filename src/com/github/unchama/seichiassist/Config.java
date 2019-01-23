@@ -170,8 +170,13 @@ public class Config{
 		return Util.toInt(config.getString("rategigantictoringo"));
 	}
 
-	public boolean isGridProtectForce(Player player) {
-		List<String> worldlist = config.getStringList("GridProtectForceWorld");
+	/**
+	 * 木の棒メニュー内のグリッド式保護メニューによる保護が許可されたワールドか
+	 * @param player
+	 * @return
+	 */
+	public boolean isGridProtectEnable(Player player) {
+		List<String> worldlist = config.getStringList("GridProtectEnableWorld");
 
 		for (String name : worldlist) {
 			if (player.getWorld().getName().equalsIgnoreCase(name)) {

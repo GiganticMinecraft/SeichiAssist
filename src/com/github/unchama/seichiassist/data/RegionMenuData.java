@@ -138,8 +138,6 @@ public class RegionMenuData {
                 , ChatColor.RESET + "" + ChatColor.RED + "グリッド式保護の作成ができます"
                 , ChatColor.RESET + "" + ChatColor.YELLOW + "グリッド式保護とは…"
                 , ChatColor.RESET + "" + ChatColor.GRAY + "保護をユニット単位で管理するシステムのこと"
-                , ChatColor.RESET + "" + ChatColor.RED + "運営チームが個別に指定したワールドに関しては"
-                , ChatColor.RESET + "" + ChatColor.RED + "このシステムのみでしか保護が作成できません"
                 , ChatColor.RESET + "" + ChatColor.AQUA + "15ブロック＝1ユニットとして"
                 , ChatColor.RESET + "" + ChatColor.AQUA + "保護が作成されます。"
         );
@@ -251,7 +249,7 @@ public class RegionMenuData {
         gridInv.setItem(7, menuicon7);
 
         //8マス目
-        if (!config.isGridProtectForce(player)) {
+        if (!config.isGridProtectEnable(player)) {
             List<String> lore8 = new ArrayList<>();
             lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "このワールドでは保護を作成できません");
             ItemStack menuicon8 = Util.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",

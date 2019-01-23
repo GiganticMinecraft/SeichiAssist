@@ -149,18 +149,12 @@ public class RegionInventoryListener implements Listener {
                         + ChatColor.RESET + "" +  ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック\n"
                         + ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック\n"
                         + ChatColor.RESET + "" +  ChatColor.GREEN + "④メニューの" + ChatColor.RESET + "" +  ChatColor.YELLOW + "金の斧" + ChatColor.RESET + "" +  ChatColor.GREEN + "をクリック\n"
-                        + ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "http://seichi.click/d/WorldGuard"
                 );
             }
 
             else if(itemstackcurrent.getType().equals(Material.GOLD_AXE)){
                 // 保護の設定
                 player.closeInventory();
-                if (config.isGridProtectForce(player)) {
-                    player.sendMessage(ChatColor.RED + "このワールドでは保護の申請はグリッド式のみ許可されています。");
-                    player.sendMessage(ChatColor.RED + "グリッド式保護作成メニューより申請してください。");
-                    return;
-                }
                 Selection selection = Util.getWorldEdit().getSelection(player);
                 if(!player.hasPermission("worldguard.region.claim")){
                     player.sendMessage(ChatColor.RED + "このワールドでは保護を申請できません");
@@ -171,7 +165,6 @@ public class RegionInventoryListener implements Listener {
                     return;
                 }else if(selection.getLength() < 10||selection.getWidth() < 10){
                     player.sendMessage(ChatColor.RED + "指定された範囲が狭すぎます。1辺当たり最低10ブロック以上にしてください");
-                    player.sendMessage(ChatColor.DARK_GRAY + "[TIPS]どうしても小さい保護が必要な人は直接コマンド入力で作ろう！");
                     player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
                     return;
                 }
