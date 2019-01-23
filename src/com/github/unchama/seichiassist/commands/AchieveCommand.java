@@ -8,6 +8,7 @@ import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
@@ -69,15 +70,34 @@ public class AchieveCommand implements TabExecutor{
 		//sqli = 0;
 
 
-		//プレイヤーを取得
-		Player sendplayer = (Player)sender;
+		//コマンドを実行者の取得
+		Player sendplayer = null ;
+		boolean ByConsole = false ;
+		//コンソール実行の際にエラーが発生するため回避処理
+		try{
+			sendplayer = (Player)sender;
+		}catch(CommandException e ){
+			ByConsole = true;
+		}catch(ClassCastException e){
+			ByConsole = true;
+		}
 
+		if (ByConsole){
+			sender.sendMessage("コンソールからのunlockachv処理実行を検知しました。");
+			sender.sendMessage("コンソール実行の場合はオフラインユーザーへの配布、「world」処理は実行できません。");
+		}else{
+			sendplayer = (Player)sender;
+		}
+
+		/*
 		//プレイヤーからの送信でない時処理終了
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.GREEN + "このコマンドはゲーム内から実行してください。");
 			return true;
+		}
+		*/
 		//不正な数の引数を指定した場合(2より小さい場合 or 3より大きい場合 →lengthが2～3以外の場合)
-		}else if(2 > args.length ||args.length > 3){
+		if(2 > args.length ||args.length > 3){
 			sender.sendMessage(ChatColor.RED + "/unlockachv <実績No> <プレイヤー名> <give/deprive>");
 			sender.sendMessage("【HINT】<プレイヤー名>を「ALL」にし、<give/deprive>の代わりに<server/world>を入力すると");
 			sender.sendMessage("実行者が参加しているサーバー/ワールド内の全員に対して実績解除処理を実行します。");
@@ -115,22 +135,27 @@ public class AchieveCommand implements TabExecutor{
 								}
 								//「world」全員配布処理
 								else if(args[2].equals("world")){
-									for(Player p :Bukkit.getServer().getOnlinePlayers()){
-										player = p;
-										UUID uuid = p.getUniqueId();
-										playerdata = playermap.get(uuid);
+									if(ByConsole){
+										sender.sendMessage("コンソール実行の場合は「world」処理は実行できません。");
+										return true ;
+									}else{
+										for(Player p :Bukkit.getServer().getOnlinePlayers()){
+											player = p;
+											UUID uuid = p.getUniqueId();
+											playerdata = playermap.get(uuid);
 
-										//送信者と同じワールドにいれば配布
-										if(p.getWorld().getName() == sendplayer.getWorld().getName() ){
-											//該当実績を既に取得している場合処理をスキップ
-											if(!playerdata.TitleFlags.get(Integer.parseInt(args[0]))){
-												playerdata.TitleFlags.set(Integer.parseInt(args[0]));
-												player.sendMessage("運営チームよりNo" + args[0] + "の実績が配布されました。");
+											//送信者と同じワールドにいれば配布
+											if(p.getWorld().getName() == sendplayer.getWorld().getName() ){
+												//該当実績を既に取得している場合処理をスキップ
+												if(!playerdata.TitleFlags.get(Integer.parseInt(args[0]))){
+													playerdata.TitleFlags.set(Integer.parseInt(args[0]));
+													player.sendMessage("運営チームよりNo" + args[0] + "の実績が配布されました。");
+												}
 											}
 										}
+										sender.sendMessage("【配布完了】No" + args[0] +"の実績をサーバー内全員に配布しました。");
+										return true;
 									}
-									sender.sendMessage("【配布完了】No" + args[0] +"の実績をサーバー内全員に配布しました。");
-									return true;
 
 								}else if(args[2].equals("user")){
 									//ユーザー「ALL」がいた場合専用の処理
@@ -170,13 +195,19 @@ public class AchieveCommand implements TabExecutor{
 							//<プレイヤー名>が"ALL"以外の場合
 							//相手がオンラインかどうか
 							Player givenplayer = Bukkit.getServer().getPlayer(args[1]);
-								if (givenplayer == null) {
+							if (givenplayer == null) {
+								if(ByConsole){
+									sender.sendMessage(args[1] + "は現在オフラインです。");
+									sender.sendMessage("コンソール実行ではオフラインプレイヤーへの予約付与システムは利用できません。");
+									return true;
+								}else{
 									sender.sendMessage(args[1] + " は現在サーバにいないため、予約付与システムを利用します。");
-								//sqlをusernameで操作
-								if (sql.writegiveachvNo((Player) sender, args[1], args[0])) {
-									sender.sendMessage(args[1] + "へ、実績No"+ args[0] + "の付与の予約が完了しました。");
+									//sqlをusernameで操作
+									if (sql.writegiveachvNo((Player) sender, args[1], args[0])) {
+										sender.sendMessage(args[1] + "へ、実績No"+ args[0] + "の付与の予約が完了しました。");
+									}
+									return true;
 								}
-								return true;
 					        }
 							UUID givenuuid = givenplayer.getUniqueId();
 							PlayerData givenplayerdata = playermap.get(givenuuid);
