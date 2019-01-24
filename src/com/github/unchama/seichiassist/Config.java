@@ -192,7 +192,7 @@ public class Config{
 	 * @return
 	 */
 	public int getGridLimitPerWorld(String world) {
-		return Util.toInt(config.getString("GridLimitPerWorld." + world,"GridLimitDefault"));
+		return Util.toInt(config.getString("GridLimitPerWorld." + world,config.getString("GridLimitDefault")));
 	}
 
 	public int getTemplateKeepAmount() {
