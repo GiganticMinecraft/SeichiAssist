@@ -300,7 +300,7 @@ public class RegionInventoryListener implements Listener {
     private static void gridChangeFunction(Player player, DirectionType directionType, InventoryClickEvent event) {
         PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
         if (event.isLeftClick()) {
-            if (playerData.canGridExtend(directionType)) {
+            if (playerData.canGridExtend(directionType,player.getWorld().getName())) {
                 player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
                 playerData.addUnitAmount(directionType, playerData.getUnitPerClick());
                 setWGSelection(player);

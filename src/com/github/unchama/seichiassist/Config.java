@@ -186,8 +186,13 @@ public class Config{
 		return false;
 	}
 
-	public int getGridLimit() {
-		return Util.toInt(config.getString("GridLimit"));
+	/**
+	 * ワールドごとのグリッド保護上限値を返却。該当の設定値がなければデフォ値を返却
+	 * @param world
+	 * @return
+	 */
+	public int getGridLimitPerWorld(String world) {
+		return Util.toInt(config.getString("GridLimitPerWorld." + world,"GridLimitDefault"));
 	}
 
 	public int getTemplateKeepAmount() {

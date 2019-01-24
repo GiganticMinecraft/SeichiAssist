@@ -611,8 +611,14 @@ gigantic_fever_minutes: 120
 GridProtectEnableWorld:
  - world_test
 
-#グリッドで指定可能な最大ユニット合計数(15ブロック=1ユニット)
-GridLimit: '32'
+# グリッドで指定可能な最大ユニット合計数の設定
+# (15ブロック=1ユニット)
+## デフォルト値
+GridLimitDefault: '32'
+## ワールド毎の値(ここにないワールドはDefault値を見る)
+GridLimitPerWorld:
+  world: '16'
+  world_2: '32'
 
 #グリッド式保護のテンプレート保存最大数
 GridTemplateKeepAmount: '5'

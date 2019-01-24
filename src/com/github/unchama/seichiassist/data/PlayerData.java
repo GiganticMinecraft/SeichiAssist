@@ -869,8 +869,8 @@ public class PlayerData {
 	}
 	*/
 
-	public boolean canGridExtend(DirectionType directionType) {
-		final int LIMIT = config.getGridLimit();
+	public boolean canGridExtend(DirectionType directionType,String world) {
+		final int LIMIT = config.getGridLimitPerWorld(world);
 		Map<DirectionType, Integer> chunkMap = getUnitMap();
 
 		//チャンクを拡大すると仮定する

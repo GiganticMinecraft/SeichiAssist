@@ -175,7 +175,7 @@ public class RegionMenuData {
 
         //1マス目
         List<String> lore1 = getGridLore(directionMap.get(DirectionType.AHEAD), unitMap.get(DirectionType.AHEAD));
-        if (!playerData.canGridExtend(DirectionType.AHEAD)) {
+        if (!playerData.canGridExtend(DirectionType.AHEAD,player.getWorld().getName())) {
             lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
         } else if (!playerData.canGridReduce(DirectionType.AHEAD)) {
             lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
@@ -193,7 +193,7 @@ public class RegionMenuData {
 
         //3マス目
         List<String> lore3 = getGridLore(directionMap.get(DirectionType.LEFT), unitMap.get(DirectionType.LEFT));
-        if (!playerData.canGridExtend(DirectionType.LEFT)) {
+        if (!playerData.canGridExtend(DirectionType.LEFT,player.getWorld().getName())) {
             lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
         } else if (!playerData.canGridReduce(DirectionType.LEFT)) {
             lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
@@ -214,14 +214,14 @@ public class RegionMenuData {
         lore4.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + unitMap.get(DirectionType.LEFT) + ChatColor.GRAY + "ユニット"
                 + "(" + ChatColor.AQUA + nfNum.format(unitMap.get(DirectionType.LEFT) * 15) + ChatColor.GRAY + "ブロック)");
         lore4.add(ChatColor.GRAY + "保護ユニット数：" + ChatColor.AQUA + playerData.getGridChunkAmount());
-        lore4.add(ChatColor.GRAY + "保護ユニット上限値：" + ChatColor.RED + config.getGridLimit());
+        lore4.add(ChatColor.GRAY + "保護ユニット上限値：" + ChatColor.RED + config.getGridLimitPerWorld(player.getWorld().getName()));
         ItemStack menuicon4 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, ChatColor.DARK_GREEN + "設定",
                 lore4, true);
         gridInv.setItem(4, menuicon4);
 
         //5マス目
         List<String> lore5 = getGridLore(directionMap.get(DirectionType.RIGHT), unitMap.get(DirectionType.RIGHT));
-        if (!playerData.canGridExtend(DirectionType.RIGHT)) {
+        if (!playerData.canGridExtend(DirectionType.RIGHT,player.getWorld().getName())) {
             lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
         } else if (!playerData.canGridReduce(DirectionType.RIGHT)) {
             lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
@@ -239,7 +239,7 @@ public class RegionMenuData {
 
         //7マス目
         List<String> lore7 = getGridLore(directionMap.get(DirectionType.BEHIND), unitMap.get(DirectionType.BEHIND));
-        if (!playerData.canGridExtend(DirectionType.BEHIND)) {
+        if (!playerData.canGridExtend(DirectionType.BEHIND,player.getWorld().getName())) {
             lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
         } else if (!playerData.canGridReduce(DirectionType.BEHIND)) {
             lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
