@@ -568,9 +568,8 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackBuildObj("bed", "ベッド", 1, Material.BED, 0)
 
 			//2019.2追加分
-			,new MineStackBuildObj("bookshelf","本棚", 1, Material.BOOKSHELF, 0)
 			,new MineStackBuildObj("book","本", 1, Material.BOOK, 0)
-			,new MineStackBuildObj("iron_bars","鉄柵", 1, Material.IRON_FENCE, 0)
+			,new MineStackBuildObj("iron_bars","鉄格子", 1, Material.IRON_FENCE, 0)
 			,new MineStackBuildObj("anvil","金床", 1, Material.ANVIL, 0)
 			,new MineStackBuildObj("cauldron","大釜", 1, Material.CAULDRON_ITEM, 0)
 			,new MineStackBuildObj("brewing_stand","醸造台", 1, Material.BREWING_STAND_ITEM, 0)
