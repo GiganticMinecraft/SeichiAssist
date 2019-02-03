@@ -602,7 +602,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackBuildObj("stained_clay8","薄灰色の堅焼き粘土",1,Material.STAINED_CLAY,8)
 			,new MineStackBuildObj("stained_clay9","水色の堅焼き粘土",1,Material.STAINED_CLAY,9)
 			,new MineStackBuildObj("stained_clay10","紫色の堅焼き粘土",1,Material.STAINED_CLAY,10)
-			,new MineStackBuildObj("stained_clay11","青色の堅焼き粘土",1,Material.STAINED_CLAY,12)
+			,new MineStackBuildObj("stained_clay11","青色の堅焼き粘土",1,Material.STAINED_CLAY,11)
 			,new MineStackBuildObj("stained_clay12","茶色の堅焼き粘土",1,Material.STAINED_CLAY,12)
 			,new MineStackBuildObj("stained_clay13","緑色の堅焼き粘土",1,Material.STAINED_CLAY,13)
 			,new MineStackBuildObj("stained_clay14","赤色の堅焼き粘土",1,Material.STAINED_CLAY,14)
