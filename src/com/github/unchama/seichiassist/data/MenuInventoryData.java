@@ -7097,38 +7097,6 @@ public class MenuInventoryData {
 
 		inventory.setItem(4,itemstack);
 
-		itemstack = new ItemStack(Material.GRASS);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.WHITE + "クリエイティブサーバ");
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-
-		inventory.setItem(9,itemstack);
-
-		itemstack = new ItemStack(Material.CACTUS);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.DARK_GREEN + "イベントサーバ");
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-
-		inventory.setItem(10,itemstack);
-
-		itemstack = new ItemStack(Material.DIAMOND_ORE);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "第1βテストサーバ");
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-
-		inventory.setItem(16,itemstack);
-
-		itemstack = new ItemStack(Material.DIAMOND_ORE);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "第2βテストサーバ");
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-
-		inventory.setItem(17,itemstack);
-
 		itemstack = new ItemStack(Material.DIAMOND);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.GREEN + "公共施設サーバ");
