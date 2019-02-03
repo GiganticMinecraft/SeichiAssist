@@ -34,11 +34,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 	@Override
 	public void run() {
-		//playermap = SeichiAssist.playermap;
-		//plugin = SeichiAssist.plugin;
-		if(SeichiAssist.DEBUG){
-			Util.sendEveryMessage("プレイヤーの１分間の処理を実行");
-		}
+		// プレイヤーの１分間の処理を実行
 
 		//playermapが空の時return
 		if(playermap.isEmpty()){
@@ -56,9 +52,6 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//プレイヤーがオフラインの時処理を終了、次のプレイヤーへ
 			if(playerdata.isOffline()){
-				if(SeichiAssist.DEBUG){
-					Util.sendEveryMessage(playerdata.name + "は不在により処理中止");
-				}
 				continue;
 			}
 			//プレイﾔｰが必ずオンラインと分かっている処理
@@ -67,16 +60,13 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//放置判定
 			if(player.getLocation().equals(playerdata.loc)){
+				// idletime加算
 				playerdata.idletime ++;
-				if(SeichiAssist.DEBUG){
-					Util.sendEveryMessage(playerdata.name + "のidletime加算" + playerdata.idletime);
-				}
 			}else{
+				// 現在地点再取得
 				playerdata.loc = player.getLocation();
+				// idletimeリセット
 				playerdata.idletime = 0;
-				if(SeichiAssist.DEBUG){
-					Util.sendEveryMessage(playerdata.name + "のidletimeリセット");
-				}
 			}
 
 			//プレイヤー名を取得
@@ -89,10 +79,6 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
 			//総プレイ時間更新
 			playerdata.calcPlayTick(player);
-
-			if(SeichiAssist.DEBUG){
-				Util.sendEveryMessage(playerdata.name + "のランク処理完了");
-			}
 
 			//以下の3つ、必ずこの順番で実施！(after更新→setIncrease→before更新)
 			//現在（after）の統計量を設定
@@ -185,11 +171,9 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//プレイヤーデータを更新
 			playerdata.lastminespeedlv = minespeedlv;
 
-			if(SeichiAssist.DEBUG){
-				Util.sendEveryMessage(playerdata.name + "のエフェクト処理が成功");
-			}
-
-			//ガチャ券付与の処理
+			/*
+			 * ガチャ券付与の処理
+			 */
 
 			//ガチャポイントに合算
 			playerdata.gachapoint += increase;
@@ -213,14 +197,12 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//プレイヤーデータを更新
 			playerdata.lastgachapoint = playerdata.gachapoint;
 
-			if(SeichiAssist.DEBUG){
-				Util.sendEveryMessage(playerdata.name + "のガチャ処理が成功");
-			}
 
 
 
-
-			//実績解除判定
+			/*
+			 * 実績解除判定
+			 */
 			//実績解除処理部分の読みこみ
     		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
     		//No1000系統の解禁チェック
