@@ -40,7 +40,7 @@ public class PlayerJoinListener implements Listener {
 
 		if(!player.hasPlayedBefore()){
 			//初見さんであることを全体告知
-			Util.sendEveryMessage(ChatColor.LIGHT_PURPLE+""+ChatColor.BOLD+player.getName()+"さんはこのサーバに初めてログインしました！");
+			Util.sendEveryMessage(ChatColor.LIGHT_PURPLE+""+ChatColor.BOLD+player.getName()+"さんはこのサーバーに初めてログインしました！");
 			Util.sendEveryMessage(ChatColor.WHITE + "Wikiはもう読みましたか？→" + ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "http://seichi.click");
 			Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
 			//初見プレイヤーに木の棒、エリトラ、ピッケルを配布

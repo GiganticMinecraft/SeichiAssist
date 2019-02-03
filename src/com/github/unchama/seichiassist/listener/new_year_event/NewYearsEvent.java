@@ -80,7 +80,7 @@ public class NewYearsEvent implements Listener {
 
         if (Util.isPlayerInventryFill(player)) {
             player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリが一杯のため,アイテムが入手できませんでした。");
-            player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリに空きを作ってから再度サーバに参加してください。");
+            player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリに空きを作ってから再度サーバーに参加してください。");
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
         } else {
             String command = "give " + player.getName() + " skull 1 3 {display:{Name:\"年越し蕎麦(" + year + "年)\",Lore:[\"\", \"" + ChatColor.YELLOW + "大晦日記念アイテムだよ！\"]},SkullOwner:{Id:\"f15ab073-412e-4fe2-8668-1be12066e2ac\"," +

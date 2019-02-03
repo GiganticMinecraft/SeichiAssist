@@ -52,9 +52,9 @@ public class PlayerDeathEventListener implements Listener {
 				p.sendMessage("インベントリが一杯の為、アイテムを入手出来ませんでした。");
 				p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
 			} else {
-				String command = "give " + p.getName() + " skull 1 3 {display:{Name:\"マインちゃん\",Lore:[\"\", \"" + ChatColor.YELLOW + "整地サーバ1周年記念だよ！\"]},SkullOwner:{Id:\"fac7c46e-3e89-4249-bef6-948d5eb528c9\",Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDhmNTQ0OGI0ZDg4ZTQwYjE0YzgyOGM2ZjFiNTliMzg1NDVkZGE5MzNlNzNkZmYzZjY5NWU2ZmI0Mjc4MSJ9fX0=\"}]}}}";
+				String command = "give " + p.getName() + " skull 1 3 {display:{Name:\"マインちゃん\",Lore:[\"\", \"" + ChatColor.YELLOW + "整地サーバー1周年記念だよ！\"]},SkullOwner:{Id:\"fac7c46e-3e89-4249-bef6-948d5eb528c9\",Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDhmNTQ0OGI0ZDg4ZTQwYjE0YzgyOGM2ZjFiNTliMzg1NDVkZGE5MzNlNzNkZmYzZjY5NWU2ZmI0Mjc4MSJ9fX0=\"}]}}}";
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-				p.sendMessage("整地サーバ1周年の記念品を入手しました。");
+				p.sendMessage("整地サーバー1周年の記念品を入手しました。");
 				p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
 				playerdata.anniversary = false;
 				SeichiAssist.sql.setAnniversary(false, p.getUniqueId());

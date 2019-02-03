@@ -48,7 +48,7 @@ public final class MineStackHistoryData {
      * @return true: 重複 / false: 重複していない
      */
     private boolean isDuplicated(int index) {
-        //要素の番号はサーバ起動時から変化しないので,要素の番号だけで重複を判断してもかまわない。
+        //要素の番号はサーバー起動時から変化しないので,要素の番号だけで重複を判断してもかまわない。
         for (HistoryData data : historyList) {
             if (data.index == index) {
                 return true;

@@ -63,7 +63,7 @@ public class PlayerInventoryListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.plugin;
 	private Config config = SeichiAssist.config;
 	private Sql sql = SeichiAssist.sql;
-	//サーバ選択メニュー
+	//サーバー選択メニュー
 	@EventHandler
 	public void onPlayerClickServerSwitchMenuEvent(InventoryClickEvent event){
 		//外枠のクリック処理なら終了
@@ -108,52 +108,52 @@ public class PlayerInventoryListener implements Listener {
 			ByteArrayDataOutput byteArrayDataOutput = ByteStreams
 					.newDataOutput();
 			//ページ変更処理
-			if(meta.getDisplayName().contains("アルカディアサーバ")){
+			if(meta.getDisplayName().contains("アルカディアサーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s1");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("エデンサーバ")){
+			}else if(meta.getDisplayName().contains("エデンサーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s2");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("ヴァルハラサーバ")){
+			}else if(meta.getDisplayName().contains("ヴァルハラサーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s3");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("第1整地専用特設サーバ")){
+			}else if(meta.getDisplayName().contains("第1整地専用特設サーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s5");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("第2整地専用特設サーバ")){
+			}else if(meta.getDisplayName().contains("第2整地専用特設サーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s6");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("クリエイティブサーバ")){
+			}else if(meta.getDisplayName().contains("クリエイティブサーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("cre");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("イベントサーバ")){
+			}else if(meta.getDisplayName().contains("イベントサーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("eve");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("第1βテストサーバ")){
+			}else if(meta.getDisplayName().contains("第1βテストサーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("g1");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("第2βテストサーバ")){
+			}else if(meta.getDisplayName().contains("第2βテストサーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("g2");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("公共施設サーバ")){
+			}else if(meta.getDisplayName().contains("公共施設サーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s7");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
