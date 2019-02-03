@@ -338,9 +338,6 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "・各サバイバルサーバー"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・各整地専用サーバー"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "・公共施設サーバー"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "・クリエイティブサーバー"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "・イベントサーバー"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "・各ベータサーバー"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "間を移動する時に使います"
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックして開く"
 				);
