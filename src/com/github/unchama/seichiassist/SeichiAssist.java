@@ -839,9 +839,10 @@ public class SeichiAssist extends JavaPlugin{
 
 	//保護を掛けて整地するワールドのリスト
 	public static final List<String> rgSeichiWorldlist = Arrays.asList(
-			"world_SW_2","world_SW_nether","world_SW_the_end"
+			"world_SW_2"
 			);
 
+	//整地ワールドのリスト(保護の有無は問わない)
 	public static final List<String> seichiWorldList = Arrays.asList(
 	        "world_SW", "world_SW_2", "world_SW_3", "world_SW_nether", "world_SW_the_end"
     );

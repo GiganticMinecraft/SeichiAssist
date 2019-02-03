@@ -61,7 +61,7 @@ public class PlayerJoinListener implements Listener {
 	@EventHandler
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
 		// 整地ワールドから他のワールドに移動したとき
-		if (SeichiAssist.ignoreWorldlist.contains(event.getFrom().getName())) {
+		if (SeichiAssist.seichiWorldList.contains(event.getFrom().getName())) {
 			Player p = event.getPlayer();
 			PlayerData pd = playermap.get(p.getUniqueId());
 
