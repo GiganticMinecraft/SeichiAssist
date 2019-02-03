@@ -201,7 +201,7 @@ public class AchieveCommand implements TabExecutor{
 									sender.sendMessage("コンソール実行ではオフラインプレイヤーへの予約付与システムは利用できません。");
 									return true;
 								}else{
-									sender.sendMessage(args[1] + " は現在サーバにいないため、予約付与システムを利用します。");
+									sender.sendMessage(args[1] + " は現在サーバーにいないため、予約付与システムを利用します。");
 									//sqlをusernameで操作
 									if (sql.writegiveachvNo((Player) sender, args[1], args[0])) {
 										sender.sendMessage(args[1] + "へ、実績No"+ args[0] + "の付与の予約が完了しました。");
