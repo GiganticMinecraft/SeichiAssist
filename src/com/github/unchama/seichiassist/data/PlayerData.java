@@ -550,11 +550,10 @@ public class PlayerData {
 	//総プレイ時間を更新する
 	public void calcPlayTick(Player p){
 		int getservertick = p.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK);
+		//前回との差分を算出
 		int getincrease = getservertick - servertick;
 		servertick = getservertick;
-		if(SeichiAssist.DEBUG){
-			p.sendMessage("総プレイ時間に追加したtick:" + getincrease);
-		}
+		//総プレイ時間に追加
 		playtick += getincrease;
 	}
 
@@ -568,17 +567,18 @@ public class PlayerData {
 				int getincrease = getstat - staticdata.get(i);
 				sum += calcBlockExp(m,getincrease,p);
 				if(SeichiAssist.DEBUG){
-					p.sendMessage("calcの値:" + calcBlockExp(m,getincrease,p) + "(" + m + ")");
+					if(calcBlockExp(m,getincrease,p) > 0.0){
+						p.sendMessage("calcの値:" + calcBlockExp(m,getincrease,p) + "(" + m + ")");
+					}
 				}
 				staticdata.set(i, getstat);
 				i++;
 			}
 		}
-		//double値を四捨五入
+		//double値を四捨五入し、整地量に追加する整数xを出す
 		int x = (int)( sum < 0.0 ? sum-0.5 : sum+0.5 );
-		if(SeichiAssist.DEBUG){
-			p.sendMessage("整地量に追加した値:" + x);
-		}
+
+		//xを整地量に追加
 		totalbreaknum += x;
 		return x;
 	}
