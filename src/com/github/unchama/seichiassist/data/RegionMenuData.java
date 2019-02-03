@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.util.Util;
-import com.github.unchama.seichiassist.util.Util.DirectionType;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.bukkit.selections.Selection;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -18,8 +18,13 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.text.*;
-import java.util.*;
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.Util.DirectionType;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 /**
  * 保護関連メニュー
@@ -121,12 +126,9 @@ public class RegionMenuData {
 
         //3マス目
         List<String> lore3 = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
-                , ChatColor.RESET + "" + ChatColor.RED + "保護の作成と管理が超簡単に！"
-                , ChatColor.RESET + "" + ChatColor.RED + "クリックした場所によって挙動が変わります"
-                , ChatColor.RESET + "" + ChatColor.YELLOW + "自分の所有する保護内なら…"
-                , ChatColor.RESET + "" + ChatColor.GRAY + "保護の各種設定や削除が行えます"
-                , ChatColor.RESET + "" + ChatColor.YELLOW + "それ以外なら…"
-                , ChatColor.RESET + "" + ChatColor.GRAY + "新規保護の作成画面が表示されます"
+                , ChatColor.RESET + "" + ChatColor.RED + "保護の管理が超簡単に！"
+                , ChatColor.RESET + "" + ChatColor.YELLOW + "自分の所有する保護内でクリックすると"
+                , ChatColor.RESET + "" + ChatColor.YELLOW + "保護の各種設定や削除が行えます"
                 , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/land]"
                 );
         ItemStack menuicon3 = Util.getMenuIcon(Material.DIAMOND_AXE, 1,
