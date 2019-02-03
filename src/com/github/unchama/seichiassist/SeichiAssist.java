@@ -230,7 +230,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackMineObj("sand","砂",1,Material.SAND,0)
 			,new MineStackMineObj("sandstone","砂岩",1,Material.SANDSTONE,0)
 			,new MineStackMineObj("sandstone1","模様入りの砂岩",1,Material.SANDSTONE,1)
-	        ,new MineStackMineObj("sandstone2","なめらかな砂岩",1,Material.SANDSTONE,2)
+			,new MineStackMineObj("sandstone2","なめらかな砂岩",1,Material.SANDSTONE,2)
 
 			,new MineStackMineObj("netherrack","ネザーラック",1,Material.NETHERRACK,0)
 			,new MineStackMineObj("soul_sand","ソウルサンド",1,Material.SOUL_SAND,0)
@@ -464,7 +464,6 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackBuildObj("wood_step4","アカシアの木材ハーフブロック",1,Material.WOOD_STEP,4)
 			,new MineStackBuildObj("wood_step5","ダークオークの木材ハーフブロック",1,Material.WOOD_STEP,5)
 
-			,new MineStackBuildObj("flint","火打石",1,Material.FLINT,0)
 			,new MineStackBuildObj("step1","砂岩ハーフブロック",1,Material.STEP,1)
 			,new MineStackBuildObj("glass"				,"ガラス"			,1,Material.GLASS,0)
 
