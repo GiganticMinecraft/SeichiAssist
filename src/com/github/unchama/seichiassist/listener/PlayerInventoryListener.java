@@ -5394,7 +5394,7 @@ public class PlayerInventoryListener implements Listener {
 					}
                   
                   //投票ギフト処理(レベル50から)
-                    if(playerdata.level > 50){
+                    if(playerdata.level >= 50){
                         ItemStack gift = ItemData.getVotingGift(1);
                         if(!Util.isPlayerInventryFill(player)){
                             Util.addItem(player, gift);
