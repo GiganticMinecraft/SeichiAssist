@@ -5392,7 +5392,16 @@ public class PlayerInventoryListener implements Listener {
 							Util.dropItem(player, pickaxe);
 						}
 					}
-
+                  
+                  //投票ギフト処理(レベル50から)
+                    if(playerdata.level > 50){
+                        ItemStack gift = ItemData.getVotingGift(1);
+                        if(!Util.isPlayerInventryFill(player)){
+                            Util.addItem(player, gift);
+                        }else{
+                            Util.dropItem(player, gift);
+                        }
+                    }
 					//エフェクトポイント加算処理
 					playerdata.activeskilldata.effectpoint += 10;
 
