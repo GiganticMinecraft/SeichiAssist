@@ -72,4 +72,19 @@ public class ItemData {
         elsa.setItemMeta(elsaMeta);
         return elsa;
     }
+  
+	public static ItemStack getVotingGift(int amount) {
+        ItemStack gift = new ItemStack(Material.PAPER, amount);
+        ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
+        itemMeta.setDisplayName(ChatColor.AQUA  + "投票ギフト券");
+        List<String> lore = Arrays.asList("",
+                ChatColor.WHITE + "公共施設鯖にある" ,
+                ChatColor.WHITE + "デパートで買い物ができます");
+        itemMeta.setLore(lore);
+        itemMeta.addEnchant(Enchantment.DURABILITY, 4, false);
+        //予想
+       itemMeta.addItemFrags(ItemFlag.HIDE_ENCHANTS);
+        gift.setItemMeta(itemMeta);
+        return gift;
+    }
 }
