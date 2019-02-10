@@ -81,8 +81,6 @@ public class ItemData {
                 ChatColor.WHITE + "公共施設鯖にある" ,
                 ChatColor.WHITE + "デパートで買い物ができます");
         itemMeta.setLore(lore);
-        itemMeta.addEnchant(Enchantment.DURABILITY, 4, false);
-        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         gift.setItemMeta(itemMeta);
         return gift;
     }
