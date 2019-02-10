@@ -83,7 +83,7 @@ public class ItemData {
         itemMeta.setLore(lore);
         itemMeta.addEnchant(Enchantment.DURABILITY, 4, false);
         //予想
-       itemMeta.addItemFrags(ItemFlag.HIDE_ENCHANTS);
+       itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         gift.setItemMeta(itemMeta);
         return gift;
     }
