@@ -82,8 +82,7 @@ public class ItemData {
                 ChatColor.WHITE + "デパートで買い物ができます");
         itemMeta.setLore(lore);
         itemMeta.addEnchant(Enchantment.DURABILITY, 4, false);
-        //予想
-       itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         gift.setItemMeta(itemMeta);
         return gift;
     }
