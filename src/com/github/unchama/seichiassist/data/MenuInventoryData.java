@@ -869,12 +869,19 @@ public class MenuInventoryData {
 		ItemMeta itemmeta;
 		List<String> lore = new ArrayList<String>();
 
+        itemstack = new ItemStack(Material.IRON_PICKAXE,1);
+        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_PICKAXE);
+        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "対象ブロック自動スタック機能");
+        itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        itemstack.setItemMeta(MineStackToggleMeta(pd,itemmeta));
+        inventory.setItem(0,itemstack);
+
 		itemstack = new ItemStack(Material.STONE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE);
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "採掘系アイテム");
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(0,itemstack);
+		inventory.setItem(1,itemstack);
 
 
 		itemstack = new ItemStack(Material.ENDER_PEARL,1);
@@ -882,7 +889,7 @@ public class MenuInventoryData {
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ドロップ系アイテム");
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(1,itemstack);
+		inventory.setItem(2,itemstack);
 
 
 		itemstack = new ItemStack(Material.SEEDS,1);
@@ -890,7 +897,7 @@ public class MenuInventoryData {
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "農業系アイテム");
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(2,itemstack);
+		inventory.setItem(3,itemstack);
 
 
 		itemstack = new ItemStack(Material.SMOOTH_BRICK,1);
@@ -898,7 +905,7 @@ public class MenuInventoryData {
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "建築系アイテム");
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(3,itemstack);
+		inventory.setItem(4,itemstack);
 
 
 		itemstack = new ItemStack(Material.REDSTONE,1);
@@ -906,7 +913,7 @@ public class MenuInventoryData {
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "レッドストーン・移動系アイテム");
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(4,itemstack);
+		inventory.setItem(5,itemstack);
 
 
 		itemstack = new ItemStack(Material.GOLDEN_APPLE,1);
@@ -914,7 +921,7 @@ public class MenuInventoryData {
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガチャ品");
 		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(5,itemstack);
+		inventory.setItem(6,itemstack);
 
 
 		itemstack = new ItemStack(Material.COMPASS);

@@ -1820,6 +1820,19 @@ public class PlayerInventoryListener implements Listener {
 				*/
 			}
 
+			if (itemstackcurrent.getType().equals(Material.IRON_PICKAXE)) {
+                playerdata.minestackflag = !playerdata.minestackflag;
+                if (playerdata.minestackflag) {
+                    player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+                    player.sendMessage(ChatColor.GREEN + "対象ブロック自動スタック機能:ON");
+                } else {
+                    player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+                    player.sendMessage(ChatColor.RED + "対象ブロック自動スタック機能:OFF");
+                }
+                ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+                itemstackcurrent.setItemMeta(MenuInventoryData.MineStackToggleMeta(playerdata,itemmeta));
+            }
+
 			for (HistoryData data : playerdata.hisotryData.getHistoryList()) {
 				if (itemstackcurrent.getType().equals(data.obj.getMaterial())
 						&& itemstackcurrent.getDurability() == data.obj.getDurability()) { //MaterialとサブIDが一致
