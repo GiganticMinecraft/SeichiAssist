@@ -3408,7 +3408,8 @@ public class MenuInventoryData {
 			if(playerdata.TitleFlags.get(3012)){
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
-				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3012「"+ SeichiAssist.config.getTitle1(3012) +"」" );
+				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3012「"+ SeichiAssist.config.getTitle1(3012) +
+                        SeichiAssist.config.getTitle3(3012) + "」" );
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：整地量が 30億 を超える"
 									,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。"
 									,ChatColor.RESET + "" +  ChatColor.AQUA + "こちらは【隠し実績】となります");
