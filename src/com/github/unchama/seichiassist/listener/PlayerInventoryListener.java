@@ -5089,7 +5089,7 @@ public class PlayerInventoryListener implements Listener {
             /*
              * step2 交換券をインベントリへ
              */
-            ItemStack exchangeticket = new ItemStack(Material.PAPER);//※交換券の具体的なデータわからなかったので適当にしてますが、直して頂けるとありがたいです。
+            ItemStack exchangeticket = new ItemStack(Material.PAPER);
             ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
             itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.BOLD + "交換券");
             itemmeta.addEnchant(Enchantment.PROTECTION_FIRE, 1, false);
