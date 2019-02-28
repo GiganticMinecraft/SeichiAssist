@@ -274,4 +274,13 @@ public class Config{
     public int getGiganticBerserkLimit() {
     	return config.getInt("GBLimit");
     }
+
+    /**
+     * 各種URLを返します.
+     * @param typeName Url以下の項目名
+     * @return 該当URL.ただし,typeNameが謝っていた場合は""を返します.
+     */
+    public String getUrl(String typeName) {
+	    return config.getString("Url." + typeName);
+    }
 }

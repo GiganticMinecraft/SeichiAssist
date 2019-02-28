@@ -661,3 +661,10 @@ NewYearEvent:
 #GiganticBerserk
 #1分間上限
 GBLimit: 20
+
+#各種URL
+Url:
+  official: "https://www.seichi.network/gigantic"
+  rule: "https://www.seichi.network/rule"
+  map: "https://www.seichi.network/map"
+  jms: "https://minecraft.jp/servers/54d3529e4ddda180780041a7"
