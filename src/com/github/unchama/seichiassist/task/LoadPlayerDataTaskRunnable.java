@@ -28,6 +28,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.LimitedLoginEvent;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Timer;
 
@@ -39,6 +40,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	private static Config config = SeichiAssist.config;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
+	LimitedLoginEvent LLE = new LimitedLoginEvent();
 
 	String name;
 	Player p;
@@ -209,6 +211,9 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.starlevel_Time =rs.getInt("starlevel_Time");
  				playerdata.starlevel_Event =rs.getInt("starlevel_Event");
 
+ 				//期間限定ログインイベント専用の累計ログイン日数
+ 				playerdata.LimitedLoginCount =rs.getInt("LimitedLoginCount");
+
  				//連続・通算ログインの情報、およびその更新
  		        Calendar cal = Calendar.getInstance();
  		        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -234,6 +239,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 					long datediff = (TodayLong - LastLong)/(1000 * 60 * 60 * 24 );
 					if(datediff > 0){
+						LLE.getLastcheck(playerdata.lastcheckdate);
 						playerdata.TotalJoin ++ ;
 						if(datediff == 1 ){
 							playerdata.ChainJoin ++ ;
@@ -374,6 +380,9 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		}
 		//更新したplayerdataをplayermapに追加
 		playermap.put(uuid, playerdata);
+
+		//期間限定ログインイベント判別処理
+		LLE.TryGetItem(p);
 
 		//貢献度pt増加によるマナ増加があるかどうか
 		if(playerdata.added_mana < playerdata.contribute_point){

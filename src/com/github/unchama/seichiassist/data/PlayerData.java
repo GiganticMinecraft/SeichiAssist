@@ -133,6 +133,9 @@ public class PlayerData {
 	public int ChainJoin ;
 	public int TotalJoin ;
 
+	//期間限定ログイン用
+	public int LimitedLoginCount ;
+
 	public int ChainVote;
 
 	//アクティブスキル関連データ
@@ -291,6 +294,7 @@ public class PlayerData {
 		this.p_vote_forT = 0 ;
 		this.giveachvNo = 0 ;
 		this.titlepage = 1 ;
+		this.LimitedLoginCount = 0 ;
 
 		this.starlevel = 0 ;
 		this.starlevel_Break = 0 ;
