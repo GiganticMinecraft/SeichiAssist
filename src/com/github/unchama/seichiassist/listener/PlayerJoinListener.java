@@ -48,6 +48,11 @@ public class PlayerJoinListener implements Listener {
 			player.getInventory().addItem(new ItemStack(Material.ELYTRA));
 			player.getInventory().addItem(new ItemStack(Material.DIAMOND_PICKAXE));
 			player.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
+
+			player.getInventory().addItem(new ItemStack(Material.LOG, 64, (short) 0),
+                    new ItemStack(Material.LOG, 64, (short) 0),
+                    new ItemStack(Material.LOG, 64, (short) 2),
+                    new ItemStack(Material.LOG_2, 64, (short) 1));
 			player.sendMessage("初期装備を配布しました。Eキーで確認してネ");
 			//メビウスおひとつどうぞ
 			MebiusListener.give(player);
