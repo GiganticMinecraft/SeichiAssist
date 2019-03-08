@@ -662,6 +662,26 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(35,itemstack);
 
+		//限定タイタン変換システムを開く
+		itemstack = new ItemStack(Material.DIAMOND_AXE,1);
+		itemstack.setDurability((short) 1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_AXE);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "限定タイタン修繕システム");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "不具合によりテクスチャが反映されなくなってしまった"
+				, ChatColor.RESET + "" + ChatColor.GOLD + "ホワイトデーイベント限定タイタン" + ChatColor.RESET + ChatColor.GREEN + "を修繕できます"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "出てきたインベントリ―に"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "修繕したいタイタンを入れて"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "escキーを押してください"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "たまにアイテムが消失しますが"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "補償はしていません(ごめんなさい)"
+				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "神に祈りながら交換しよう"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+				);
+		itemmeta.setLore(lore);
+		itemmeta.spigot().setUnbreakable(true);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(34,itemstack);
+
 		// インベントリ共有ボタン
 		itemstack = new ItemStack(Material.TRAPPED_CHEST,1);
 		itemstack.setItemMeta(dispShareInvMeta(playerdata));

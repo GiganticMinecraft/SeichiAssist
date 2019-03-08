@@ -89,8 +89,6 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 		Player player = (Player)he;
-		UUID uuid = player.getUniqueId();
-		PlayerData playerdata = playermap.get(uuid);
 
 		//インベントリ名が以下の時処理
 		if(topinventory.getTitle().equals(ChatColor.DARK_RED + "" + ChatColor.BOLD + "サーバーを選択してください")){
@@ -121,16 +119,6 @@ public class PlayerInventoryListener implements Listener {
 			}else if(meta.getDisplayName().contains("ヴァルハラサーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s3");
-				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
-						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("第1整地専用特設サーバー")){
-				byteArrayDataOutput.writeUTF("Connect");
-				byteArrayDataOutput.writeUTF("s5");
-				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
-						byteArrayDataOutput.toByteArray());
-			}else if(meta.getDisplayName().contains("第2整地専用特設サーバー")){
-				byteArrayDataOutput.writeUTF("Connect");
-				byteArrayDataOutput.writeUTF("s6");
 				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
 			}else if(meta.getDisplayName().contains("公共施設サーバー")){
@@ -265,16 +253,6 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getRankingList_p_vote(player,0));
 				return;
 			}
-			/*
-			else if(itemstackcurrent.getType().equals(Material.COOKIE) && itemstackcurrent.getItemMeta().getDisplayName().contains("寄付神")){
-				if(SeichiAssist.DEBUG){
-					//開く音を再生
-					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-					player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(player,0));
-					return;
-				}
-			}
-			*/
 
 			//溜まったガチャ券をインベントリへ
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)
@@ -675,6 +653,14 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ"));
 			}
 
+			else if(itemstackcurrent.getType().equals(Material.DIAMOND_AXE) && itemstackcurrent.getItemMeta().getDisplayName().contains("限定タイタン")){
+				//椎名林檎変換システムを開く
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
+				//インベントリを開く
+				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "修繕したい限定タイタンを入れてネ"));
+			}
+
 			// インベントリ共有ボタン
 			else if(itemstackcurrent.getType().equals(Material.TRAPPED_CHEST)&&
 					itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "インベントリ共有")){
@@ -805,11 +791,6 @@ public class PlayerInventoryListener implements Listener {
 			}
 		}
 	}
-
-
-
-
-
 
 	//スキルメニューの処理
 	@EventHandler
@@ -2498,31 +2479,6 @@ public class PlayerInventoryListener implements Listener {
 			}
 		}
 	}
-//	//minestackの1stack付与の処理
-//	private int giveMineStack(Player player,int minestack,Material type){
-//		if(minestack >= type.getMaxStackSize()){ //スタックサイズが64でないアイテムにも対応
-//			ItemStack itemstack = new ItemStack(type,type.getMaxStackSize());
-//			if(!Util.isPlayerInventryFill(player)){
-//				Util.addItem(player,itemstack);
-//			}else{
-//				Util.dropItem(player,itemstack);
-//			}
-//			minestack -= type.getMaxStackSize();
-//			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-//		}else if(minestack == 0){
-//			return minestack;
-//		}else{
-//			ItemStack itemstack = new ItemStack(type,minestack);
-//			if(!Util.isPlayerInventryFill(player)){
-//				Util.addItem(player,itemstack);
-//			}else{
-//				Util.dropItem(player,itemstack);
-//			}
-//			minestack -= minestack;
-//			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-//		}
-//		return minestack;
-//	}
 
 	//minestackの1stack付与 ItemStack版
 	private int giveMineStack(Player player,int minestack,ItemStack itemstack){
@@ -5316,6 +5272,52 @@ public class PlayerInventoryListener implements Listener {
 
     }
 
+    @EventHandler
+    public void onTitanRepairEvent(InventoryCloseEvent event){
+    	Player player = (Player)event.getPlayer();
+		UUID uuid = player.getUniqueId();
+		PlayerData playerdata = playermap.get(uuid);
+		//エラー分岐
+		if(playerdata == null){
+			return;
+		}
+		Inventory inventory = event.getInventory();
+
+		//インベントリサイズが36でない時終了
+		if(inventory.getSize() != 36){
+			return;
+		}
+		if(inventory.getTitle().equals(ChatColor.GOLD + "" + ChatColor.BOLD + "修繕したい限定タイタンを入れてネ")){
+			//インベントリの中身を取得
+			ItemStack[] item = inventory.getContents();
+
+			int count = 0;
+			//for文で１個ずつ対象アイテムか見る
+			//インベントリを一個ずつ見ていくfor文
+			for (ItemStack m : item) {
+				//無いなら次へ
+				if(m == null){
+					continue;
+				}
+				//タイタンだった場合耐久値を変更
+				if (Util.isLimitedTitanItem(m)){
+					m.setDurability((short) 1);
+					count ++ ;
+				}
+				 if(!Util.isPlayerInventryFill(player)) {
+					 Util.addItem(player,m);
+				 }else {
+					 Util.dropItem(player,m);
+				 }
+			}
+			if(count < 1) {
+				player.sendMessage(ChatColor.GREEN + "限定タイタンを認識しませんでした。すべてのアイテムを返却します");
+			}else {
+				player.sendMessage(ChatColor.GREEN + "限定タイタンを" + count + "個認識し、修繕しました。");
+			}
+		}
+    }
+
     //投票ptメニュー
     @EventHandler
     public void onVotingMenuEvent(InventoryClickEvent event){
@@ -5392,7 +5394,7 @@ public class PlayerInventoryListener implements Listener {
 							Util.dropItem(player, pickaxe);
 						}
 					}
-                  
+
                   //投票ギフト処理(レベル50から)
                     if(playerdata.level >= 50){
                         ItemStack gift = ItemData.getVotingGift(1);

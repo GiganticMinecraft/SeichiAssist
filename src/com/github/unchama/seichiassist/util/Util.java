@@ -982,4 +982,10 @@ public class Util {
 		return itemStack;
 	}
 
+	public static boolean isLimitedTitanItem(ItemStack itemstack) {
+		if(itemstack.getType().equals(Material.DIAMOND_AXE) &&
+				LoreContains(itemstack.getItemMeta().getLore(), "特別なタイタンをあなたに♡") >= 0 ) {return true;}
+		return false;
+	}
+
 }
