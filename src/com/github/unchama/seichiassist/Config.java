@@ -223,6 +223,35 @@ public class Config{
 		return config.getInt("contribute_added_mana");
 	}
 
+	public String getLimitedLoginEventStart() {
+		return config.getString("LimitedLoginEvent.EventStart");
+	}
+
+	public String getLimitedLoginEventEnd() {
+		return config.getString("LimitedLoginEvent.EventEnd");
+	}
+
+	public String getLimitedLoginEventItem(int i){
+		String forreturn ;
+		if(config.getString("LimitedLoginEvent.DAY" + i + "_Item","") == ""){
+			forreturn = "0";
+		}else{
+			forreturn = config.getString("LimitedLoginEvent.DAY" + i + "_Item","");
+		}
+		return forreturn ;
+	}
+
+	public String getLimitedLoginEventAmount(int i){
+		String forreturn ;
+		if(config.getString("LimitedLoginEvent.DAY" + i + "_Amount","") == ""){
+			forreturn = "0";
+		}else{
+			forreturn = config.getString("LimitedLoginEvent.DAY" + i + "_Amount","");
+		}
+		return forreturn ;
+	}
+
+
 	public String getGivingNewYearSobaDay() {
 		return config.getString("NewYearEvent.GivingNewYearSobaDay");
 	}
@@ -273,5 +302,14 @@ public class Config{
     }
     public int getGiganticBerserkLimit() {
     	return config.getInt("GBLimit");
+    }
+
+    /**
+     * 各種URLを返します.
+     * @param typeName Url以下の項目名
+     * @return 該当URL.ただし,typeNameが謝っていた場合は""を返します.
+     */
+    public String getUrl(String typeName) {
+	    return config.getString("Url." + typeName);
     }
 }

@@ -282,6 +282,7 @@ public class Sql{
 				",add column if not exists lastcheckdate varchar(12) default null" +
 				",add column if not exists ChainJoin int default 0" +
 				",add column if not exists TotalJoin int default 0" +
+				",add column if not exists LimitedLoginCount int default 0" +
 				",add column if not exists displayTypeLv boolean default true" +
 				",add column if not exists displayTitleNo int default 0" +
 				",add column if not exists displayTitle1No int default 0" +

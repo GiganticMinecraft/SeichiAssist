@@ -124,7 +124,8 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 				+",lastcheckdate = '" + playerdata.lastcheckdate + "'"
 				+",ChainJoin = " + Integer.toString(playerdata.ChainJoin)
-				+",TotalJoin = " + Integer.toString(playerdata.TotalJoin);
+				+",TotalJoin = " + Integer.toString(playerdata.TotalJoin)
+				+",LimitedLoginCount = " + Integer.toString(playerdata.LimitedLoginCount);
 
 				//MineStack機能の数値更新処理
 

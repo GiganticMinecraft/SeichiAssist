@@ -538,21 +538,21 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType().equals(Material.BOOK)){
 				// wikiリンク表示
-				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "http://seichi.click");
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + config.getUrl("official"));
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.PAPER)){
 				// 運営方針とルールリンク表示
-				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://seichi.click/wiki/%E9%81%8B%E5%96%B6%E6%96%B9%E9%87%9D%E3%81%A8%E3%83%AB%E3%83%BC%E3%83%AB");
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + config.getUrl("rule"));
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.MAP)){
 				// 鯖マップリンク表示
-				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://seichi.click/wiki/DynmapLinks");
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + config.getUrl("map"));
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 
@@ -560,7 +560,7 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType().equals(Material.SIGN)){
 				//JMSリンク表示
-				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7"
+				player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + config.getUrl("jms")
 						);
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
@@ -1800,6 +1800,19 @@ public class PlayerInventoryListener implements Listener {
 				player.sendMessage(ChatColor.GREEN + "検索を終了したいときはendと入力してください");
 				*/
 			}
+
+			if (itemstackcurrent.getType().equals(Material.IRON_PICKAXE)) {
+                playerdata.minestackflag = !playerdata.minestackflag;
+                if (playerdata.minestackflag) {
+                    player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+                    player.sendMessage(ChatColor.GREEN + "対象ブロック自動スタック機能:ON");
+                } else {
+                    player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+                    player.sendMessage(ChatColor.RED + "対象ブロック自動スタック機能:OFF");
+                }
+                ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+                itemstackcurrent.setItemMeta(MenuInventoryData.MineStackToggleMeta(playerdata,itemmeta));
+            }
 
 			for (HistoryData data : playerdata.hisotryData.getHistoryList()) {
 				if (itemstackcurrent.getType().equals(data.obj.getMaterial())
@@ -5032,7 +5045,7 @@ public class PlayerInventoryListener implements Listener {
             /*
              * step2 交換券をインベントリへ
              */
-            ItemStack exchangeticket = new ItemStack(Material.PAPER);//※交換券の具体的なデータわからなかったので適当にしてますが、直して頂けるとありがたいです。
+            ItemStack exchangeticket = new ItemStack(Material.PAPER);
             ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
             itemmeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.BOLD + "交換券");
             itemmeta.addEnchant(Enchantment.PROTECTION_FIRE, 1, false);
