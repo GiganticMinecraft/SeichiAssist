@@ -5312,12 +5312,14 @@ public class PlayerInventoryListener implements Listener {
 				if(m == null){
 					continue;
 				}
-				//タイタンだった場合耐久値を変更
-				if (Util.isLimitedTitanItem(m)){
-					m.setDurability((short) 1);
-					count ++ ;
+				if(m.getItemMeta().hasLore()){
+					if (Util.isLimitedTitanItem(m)){
+						m.setDurability((short) 1);
+						count ++ ;
+					}
 				}
-				 if(!Util.isPlayerInventryFill(player)) {
+
+				if(!Util.isPlayerInventryFill(player)) {
 					 Util.addItem(player,m);
 				 }else {
 					 Util.dropItem(player,m);
