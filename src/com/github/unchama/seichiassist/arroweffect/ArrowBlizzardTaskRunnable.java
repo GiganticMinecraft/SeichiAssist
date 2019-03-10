@@ -1,11 +1,7 @@
 package com.github.unchama.seichiassist.arroweffect;
 
-import java.util.HashMap;
-import java.util.UUID;
-
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -13,29 +9,17 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
 
 public class ArrowBlizzardTaskRunnable extends BukkitRunnable{
-	SeichiAssist plugin = SeichiAssist.plugin;
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	Player player;
-	Location ploc;
-	UUID uuid;
-	PlayerData playerdata;
-	long tick;
-	Snowball proj;
+    private long tick;
+	private Snowball proj;
 
 	public ArrowBlizzardTaskRunnable(Player player) {
 		this.tick = 0;
-		this.player = player;
-		//プレイヤーの位置を取得
-		this.ploc = player.getLocation();
-		//UUIDを取得
-		this.uuid = player.getUniqueId();
-		//ぷれいやーでーたを取得
-		this.playerdata = playermap.get(uuid);
+        //プレイヤーの位置を取得
+        Location ploc = player.getLocation();
 
-		//発射する音を再生する.
+        //発射する音を再生する.
     	player.playSound(ploc, Sound.ENTITY_SNOWBALL_THROW, 1, (float)1.3);
 
     	//スキルを実行する処理
@@ -50,15 +34,9 @@ public class ArrowBlizzardTaskRunnable extends BukkitRunnable{
         SeichiAssist.entitylist.add(proj);
         proj.setShooter(player);
         proj.setGravity(false);
-        //読み込み方法
-        /*
-         * Projectile proj = event.getEntity();
-		    if ( proj instanceof Arrow && proj.hasMetadata("ArrowSkill") ) {
-		    }
-         */
+        SeichiAssist plugin = SeichiAssist.plugin;
         proj.setMetadata("ArrowSkill", new FixedMetadataValue(plugin, true));
         proj.setVelocity(vec);
-
 	}
 
 	@Override
@@ -71,5 +49,4 @@ public class ArrowBlizzardTaskRunnable extends BukkitRunnable{
 			return;
 		}
 	}
-
 }
