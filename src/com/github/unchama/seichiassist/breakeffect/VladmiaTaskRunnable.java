@@ -18,6 +18,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.moveParticleTaskRunnable;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
+@Deprecated
 public class VladmiaTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
 	//プレイヤー情報

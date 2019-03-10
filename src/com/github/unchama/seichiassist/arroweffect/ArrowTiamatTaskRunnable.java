@@ -15,6 +15,7 @@ import org.bukkit.util.Vector;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 
+@Deprecated
 public class ArrowTiamatTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;

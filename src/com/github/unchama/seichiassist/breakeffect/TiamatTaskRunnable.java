@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 
+@Deprecated
 public class TiamatTaskRunnable extends BukkitRunnable{
 	Player player;
 	PlayerData playerdata;
