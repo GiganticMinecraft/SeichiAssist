@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.arroweffect;
 
+import com.github.unchama.seichiassist.breakeffect.BlizzardTaskRunnable;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -10,9 +11,13 @@ import org.bukkit.util.Vector;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 
+/**
+ * 遠距離スキルのブリザードエフェクトを表現するエンティティを管理するのクラスです.
+ * @see BlizzardTaskRunnable 
+ */
 public class ArrowBlizzardTaskRunnable extends BukkitRunnable {
     private long tick;
-    private Snowball proj;
+    private Snowball entity;
 
     public ArrowBlizzardTaskRunnable(Player player) {
         this.tick = 0;
@@ -32,21 +37,21 @@ public class ArrowBlizzardTaskRunnable extends BukkitRunnable {
         vec.setZ(vec.getZ() * k);
 
         //エンティティを生成し,記録する.
-        proj = player.getWorld().spawn(loc, Snowball.class);
-        SeichiAssist.entitylist.add(proj);
+        entity = player.getWorld().spawn(loc, Snowball.class);
+        SeichiAssist.entitylist.add(entity);
 
-        proj.setShooter(player);
-        proj.setGravity(false);
-        proj.setMetadata("ArrowSkill", new FixedMetadataValue(SeichiAssist.plugin, true));
-        proj.setVelocity(vec);
+        entity.setShooter(player);
+        entity.setGravity(false);
+        entity.setMetadata("ArrowSkill", new FixedMetadataValue(SeichiAssist.plugin, true));
+        entity.setVelocity(vec);
     }
 
     @Override
     public void run() {
         tick++;
         if (tick > 100) {
-            proj.remove();
-            SeichiAssist.entitylist.remove(proj);
+            entity.remove();
+            SeichiAssist.entitylist.remove(entity);
             this.cancel();
             return;
         }
