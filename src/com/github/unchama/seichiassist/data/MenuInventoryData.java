@@ -7106,22 +7106,6 @@ public class MenuInventoryData {
 
 		inventory.setItem(2,itemstack);
 
-		itemstack = new ItemStack(Material.IRON_PICKAXE);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.AQUA + "第1整地専用特設サーバー");
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-
-		inventory.setItem(3,itemstack);
-
-		itemstack = new ItemStack(Material.GOLD_PICKAXE);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.AQUA + "第2整地専用特設サーバー");
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-
-		inventory.setItem(4,itemstack);
-
 		itemstack = new ItemStack(Material.DIAMOND);
 		itemmeta = itemstack.getItemMeta();
 		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.GREEN + "公共施設サーバー");
