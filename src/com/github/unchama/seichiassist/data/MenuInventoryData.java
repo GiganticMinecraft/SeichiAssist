@@ -1433,7 +1433,8 @@ public class MenuInventoryData {
 
 	//ランキングリスト
 	public static Inventory getRankingList(Player p, int page){
-		int maxpage=2;
+//		int maxpage=2;
+		int maxpage=14;
 		final int MIN_LEVEL = 100;
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1441,11 +1442,12 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
-		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+//		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+		for(int count = 10*page,count2=0;count < 10+10*page;count++,count2++){
 			if(count >= SeichiAssist.ranklist.size()){
 				break;
 			}
-			if(count2==45){count2+=2;}
+//			if(count2==45){count2+=2;}
 			rankdata = SeichiAssist.ranklist.get(count);
 			if(rankdata.totalbreaknum<SeichiAssist.levellist.get(MIN_LEVEL-1)){ //レベル100相当の総整地量判定に変更
 				break;
@@ -1510,7 +1512,8 @@ public class MenuInventoryData {
 
 	//ランキングリスト(ログイン時間)
 	public static Inventory getRankingList_playtick(Player p, int page){
-		int maxpage=2;
+//		int maxpage=2;
+		int maxpage=14;
 		//final int MIN_LEVEL = 100;
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ログイン神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1518,11 +1521,12 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
-		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+//		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+		for(int count = 10*page,count2=0;count < 10+10*page;count++,count2++){
 			if(count >= SeichiAssist.ranklist_playtick.size()){
 				break;
 			}
-			if(count2==45){count2+=2;}
+//			if(count2==45){count2+=2;}
 			rankdata = SeichiAssist.ranklist_playtick.get(count);
 			//if(rankdata.totalbreaknum<SeichiAssist.levellist.get(MIN_LEVEL-1)){ //レベル100相当の総整地量判定に変更
 			//	break;
@@ -1590,7 +1594,8 @@ public class MenuInventoryData {
 
 	//ランキングリスト(投票回数)
 	public static Inventory getRankingList_p_vote(Player p, int page){
-		int maxpage=2;
+//		int maxpage=2;
+		int maxpage=14;
 		final int MIN_LEVEL = 1;
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1598,11 +1603,12 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
-		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+//		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+		for(int count = 10*page,count2=0;count < 10+10*page;count++,count2++){
 			if(count >= SeichiAssist.ranklist_p_vote.size()){
 				break;
 			}
-			if(count2==45){count2+=2;}
+//			if(count2==45){count2+=2;}
 			rankdata = SeichiAssist.ranklist_p_vote.get(count);
 			if(rankdata.p_vote<MIN_LEVEL){ //投票数0
 				break;
