@@ -316,6 +316,18 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(18,itemstack);
+		
+		itemstack = new ItemStack(Material.COMPASS,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ランダムテレポート(β)");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "整地ワールドで使うと、良さげな土地にワープします"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "βテスト中のため、謎挙動にご注意ください"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで発動"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/rtp]"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(19,itemstack);
 
 		// fastcraftリンク
 		itemstack = new ItemStack(Material.WORKBENCH,1);
