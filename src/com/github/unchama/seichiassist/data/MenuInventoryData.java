@@ -6879,7 +6879,7 @@ public class MenuInventoryData {
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9035「"+ SeichiAssist.config.getTitle1(9035)
-						+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(9035) +"」" );
+						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(9035) +"」" );
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とあるマラソンの日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
