@@ -8,9 +8,11 @@ import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.command.defaults.PluginsCommand;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
@@ -35,25 +37,26 @@ public class rmpCommand implements TabExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 	String label, String[] args) {
-		if (args.length > 2) {
-			sender.sendMessage(ChatColor.RED + "/rmp <日数> <削除フラグ: true/false>");
+		if (args.length < 3) {
+			sender.sendMessage(ChatColor.RED + "/rmp <日数> <削除フラグ: true/false> <world名>");
 			sender.sendMessage("全Ownerが<日数>間ログインしていないRegionを表示します");
 			sender.sendMessage("削除フラグがtrueの場合、該当Regionを削除します(整地ワールドのみ)");
 			return true;
-		} else if (!(sender instanceof Player)) {
-			//プレイヤーからの送信でない時処理終了
-			sender.sendMessage(ChatColor.GREEN + "このコマンドはゲーム内から実行してください");
+		} else if ((sender instanceof Player)) {
+			//コンソールからの送信でない時処理終了
+			sender.sendMessage(ChatColor.GREEN + "このコマンドはコンソールから実行してください");
 			return true;
 		} else {
 			try {
 				int days = 7;
 				boolean removeFlg = false;
+				String worldName = args[2];
 
 				//<日数>を数値変換
 				if (args.length > 0) days = Integer.parseInt(args[0]);
 				//<削除フラグ>を判定(保護を掛けて整地する整地ワールドに限る)
 				if ((args.length > 1) && (args[1].equals("true"))) {
-					if(SeichiAssist.rgSeichiWorldlist.contains(((Player)sender).getWorld().getName())) {
+					if(SeichiAssist.rgSeichiWorldlist.contains(worldName)) {
 						removeFlg = true;
 					} else {
 						sender.sendMessage(ChatColor.RED + "削除フラグは保護をかけて整地する整地ワールドでのみ使用出来ます");
@@ -67,8 +70,8 @@ public class rmpCommand implements TabExecutor {
 					return true;
 				}
 
-				//実行者のいるワールドに存在する全Regionを取得する
-				Map<String, ProtectedRegion> regions = Util.getWorldGuard().getRegionContainer().get(((Player)sender).getWorld()).getRegions();
+				//コマンドで指定されたワールドの全Regionを取得する
+				Map<String, ProtectedRegion> regions = Util.getWorldGuard().getRegionContainer().get(Bukkit.getWorld(worldName)).getRegions();
 				//結果格納用List
 				List<String> targets = new ArrayList<String>();
 
@@ -88,12 +91,14 @@ public class rmpCommand implements TabExecutor {
 				} else if (removeFlg) {
 					//該当領域削除
 					targets.forEach(target -> {
-						((Player)sender).chat("/rg remove " + target);
+						Util.getWorldGuard().getRegionContainer().get(Bukkit.getWorld(worldName)).removeRegion(target);
+						sender.sendMessage(ChatColor.YELLOW.toString() + "[rmp] Deleted Region -> " + worldName + "." + target);
 					});
+				
 				} else {
 					//一覧表示
 					targets.forEach(target -> {
-						sender.sendMessage(ChatColor.YELLOW.toString() + target);
+						sender.sendMessage(ChatColor.GREEN.toString() + "[rmp] List Region -> " + worldName + "." + target);
 					});
 				}
 			} catch (NumberFormatException e) {
