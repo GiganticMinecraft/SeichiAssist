@@ -537,13 +537,6 @@ public class PlayerData {
 			i = starlevel ;
 			iT = 0;
 		}
-		/*
-		iT2 = ( playtick / 18000000);
-		if(iT < iT2){
-			p.sendMessage(ChatColor.GOLD+"ｽﾀｰﾚﾍﾞﾙ(参加時間)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆("+(iT)+")→☆("+(iT2)+")】");
-			starlevel_Time = iT2;
-		}
-		*/
 
 		//イベント入手分の確認
 
