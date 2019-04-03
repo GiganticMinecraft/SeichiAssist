@@ -194,18 +194,22 @@ public class MenuInventoryData {
 		//次の☆までの残量計算(整地量)
 		long LongSLB = playerdata.starlevel_Break ;
 		long NextStar_Break = ((LongSLB + 1) * 87115000) - playerdata.totalbreaknum ;
+		/*
 		//次の☆までの残量計算(参加時間)
 		int NextStar_tick = ((playerdata.starlevel_Time + 1) * 18000000) - playerdata.playtick ;
 		int NextStar_Hour = NextStar_tick / 72000 ;
 		int NextStar_Minute = (NextStar_tick % 72000) / 1200 ;
+		*/
 
 		itemstack = new ItemStack(Material.GOLD_INGOT,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_INGOT);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スターレベル情報" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + ChatColor.BOLD + "整地量：☆" + playerdata.starlevel_Break
 							,ChatColor.RESET + "" +  ChatColor.AQUA +  "次の☆まで：あと" + NextStar_Break
+							/*
 							,ChatColor.RESET + "" +  ChatColor.RED + ChatColor.BOLD + "参加時間：☆" + playerdata.starlevel_Time
 							,ChatColor.RESET + "" +  ChatColor.RED +  "次の☆まで：あと" + NextStar_Hour + "時間" + NextStar_Minute + "分"
+							*/
 							,ChatColor.RESET + "" +  ChatColor.GREEN + ChatColor.UNDERLINE + ChatColor.BOLD + "合計：☆" + playerdata.starlevel );
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
@@ -316,7 +320,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(18,itemstack);
-		
+
 		itemstack = new ItemStack(Material.COMPASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ランダムテレポート(β)");
