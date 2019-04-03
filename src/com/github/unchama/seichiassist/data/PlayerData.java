@@ -535,6 +535,7 @@ public class PlayerData {
 		if(iT > 0) {
 			starlevel = starlevel - iT ;
 			i = starlevel ;
+			iT = 0;
 		}
 		/*
 		iT2 = ( playtick / 18000000);
