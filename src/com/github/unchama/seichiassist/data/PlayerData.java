@@ -535,7 +535,7 @@ public class PlayerData {
 		if(iT > 0) {
 			starlevel = starlevel - iT ;
 			i = starlevel ;
-			iT = 0;
+			starlevel_Time = 0;
 		}
 
 		//イベント入手分の確認
