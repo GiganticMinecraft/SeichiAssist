@@ -11,11 +11,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 
+/**
+ * プレイヤーデータ読み込み完了を確認したあと、一度だけ後の処理が実行される
+ * runTaskTimerで実行されることを想定
+ * ログイン後に同期処理が必要な場合はここに記述
+ * @author unchama
+ *
+ */
 public class PlayerDataUpdateOnJoinRunnable extends BukkitRunnable{
 
-	//private SeichiAssist plugin = SeichiAssist.plugin;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	//private Sql sql = SeichiAssist.plugin.sql;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
 

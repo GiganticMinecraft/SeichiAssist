@@ -12,9 +12,13 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.listener.MebiusListener;
 
-// 2分に1回呼び出される
-// 定型Tipsを喋ってsilence true or 喋らずsilence false
-// PlayerDataに実体
+/**
+ * 2分に1回呼び出される
+ * 定型Tipsを喋ってsilence true or 喋らずsilence false
+ * PlayerDataに実体
+ * @author CrossHearts
+ *
+ */
 public class MebiusTaskRunnable extends BukkitRunnable {
 	private Player p;
 	private boolean silence = false;

@@ -16,10 +16,15 @@ import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 
+/**
+ * プレイヤーデータをDBに保存する処理(非同期で実行すること)
+ * DBにセーブしたい値が増えた/減った場合は更新すること
+ * @author unchama
+ *
+ */
 public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;
-	//private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private Sql sql = SeichiAssist.sql;
 	private static Config config = SeichiAssist.config;
 

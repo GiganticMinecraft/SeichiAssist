@@ -620,27 +620,6 @@ public class Sql{
 		new PlayerDataSaveTaskRunnable(playerdata,false,true).runTaskAsynchronously(plugin);
 	}
 
-
-	//loginflagのフラグ折る処理(ondisable時とquit時に実行させる)
-	/*
-	public boolean logoutPlayerData(PlayerData playerdata) {
-		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String struuid = playerdata.uuid.toString();
-		String command = "";
-
-		command = "update " + db + "." + table
-				+ " set"
-
-				//ログインフラグ折る
-				+ " loginflag = false"
-
-				+ " where uuid like '" + struuid + "'";
-
-		return putCommand(command);
-
-	}
-	*/
-
 	//ガチャデータロード
 	public boolean loadGachaData(){
 		String table = SeichiAssist.GACHADATA_TABLENAME;

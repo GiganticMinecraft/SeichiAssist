@@ -17,6 +17,11 @@ import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
+/**
+ * 30分に1回まわしてる処理
+ * @author unchama
+ *
+ */
 public class HalfHourTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.plugin;
 	Sql sql = SeichiAssist.sql;

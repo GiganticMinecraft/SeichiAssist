@@ -16,8 +16,8 @@ import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 /**
- * 初見確認とプレイヤーデータのロードを行うタスク
- * 1回のみ処理されることを想定している
+ * 初見確認とプレイヤーデータのロードを行うタスク(非同期で実行すること)
+ * ログイン時に1回のみ処理されることを想定している
  * @author unchama coolpoco
  *
  */
