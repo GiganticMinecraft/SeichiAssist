@@ -189,10 +189,10 @@ public enum ActiveSkill{
 				breaklength.setXYZ(7, 7, 7);
 				break;
 			case 8:
-				breaklength.setXYZ(9, 9, 9);
+				breaklength.setXYZ(11, 11, 11);
 				break;
 			case 9:
-				breaklength.setXYZ(11, 11, 11);
+				breaklength.setXYZ(15, 15, 15);
 				break;
 			}
 			break;

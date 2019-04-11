@@ -531,11 +531,11 @@ public class PlayerData {
 			starlevel_Break = iB2;
 		}
 
-		//参加時間の確認
-		iT2 = ( playtick / 18000000);
-		if(iT < iT2){
-			p.sendMessage(ChatColor.GOLD+"ｽﾀｰﾚﾍﾞﾙ(参加時間)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆("+(iT)+")→☆("+(iT2)+")】");
-			starlevel_Time = iT2;
+		//参加時間の確認(19/4/3撤廃)
+		if(iT > 0) {
+			starlevel = starlevel - iT ;
+			i = starlevel ;
+			starlevel_Time = 0;
 		}
 
 		//イベント入手分の確認

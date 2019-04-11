@@ -32,6 +32,12 @@ import com.github.unchama.seichiassist.data.LimitedLoginEvent;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Timer;
 
+/**
+ * プレイヤーデータロードを実施する処理(非同期で実行すること)
+ * DBから読み込みたい値が増えた/減った場合は更新すること
+ * @author unchama
+ *
+ */
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.plugin;

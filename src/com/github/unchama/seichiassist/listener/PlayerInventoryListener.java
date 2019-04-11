@@ -528,6 +528,12 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 1.5);
 				player.openInventory(MenuInventoryData.getHomeMenuData(player));
 			}
+			
+			else if(itemstackcurrent.getType().equals(Material.COMPASS)){
+				// /rtp コマンド実行
+				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 1.5);
+				player.chat("/rtp");
+			}
 
 			else if(itemstackcurrent.getType().equals(Material.WORKBENCH)){
 				// /fc craftコマンド実行

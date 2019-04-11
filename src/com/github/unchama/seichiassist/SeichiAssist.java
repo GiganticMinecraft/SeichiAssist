@@ -773,10 +773,6 @@ public class SeichiAssist extends JavaPlugin{
 			new MineStackGachaObj("gachaimo",Util.getGachaimoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaimoLore())
 			,new MineStackGachaObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0)
 
-			//2018.6追加分
-
-			//,new MineStackGachaObj("change_paper", ChatColor.DARK_RED + "" + ChatColor.BOLD + "交換券", 1, Material.PAPER, 0, -2,  Enchantment.PROTECTION_FIRE)
-
 	));
 
     public static List<MineStackObj> minestacklist = null;
@@ -889,7 +885,6 @@ public class SeichiAssist extends JavaPlugin{
 		//mysqlからMineStack用ガチャデータ読み込み
 		if(!sql.loadMineStackGachaData()){
 			getLogger().info("MineStack用ガチャデータのロードに失敗しました");
-			//minestacklist.addAll(minestacklistbase);
 		} else { //MineStack用ガチャデータを読み込んだ
 			getLogger().info("MineStack用ガチャデータのロードに成功しました");
 			minestacklistgacha1 = creategachaminestacklist();
@@ -954,8 +949,6 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new WorldRegenListener(), this);
 		//正月イベント用
 		new NewYearsEvent(this);
-		// マナ自動回復用リスナー…無効化中
-		// getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
 		// BungeeCordとのI/F
 		Bukkit.getMessenger().registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this));
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "SeichiAssistBungee");
@@ -1034,30 +1027,6 @@ public class SeichiAssist extends JavaPlugin{
 			new PlayerDataSaveTaskRunnable(playerdata,true,true).run();
 		}
 
-
-
-		/*
-		for(PlayerData playerdata : playermap.values()){
-			if(!sql.savePlayerData(playerdata)){
-				getLogger().info(playerdata.name + "のデータ保存に失敗しました");
-			}
-		}
-		*/
-
-
-		/* マルチサーバー対応の為コメントアウト
-		if(!sql.saveGachaData()){
-			getLogger().info("ガチャデータ保存に失敗しました");
-		}
-		*/
-
-		//マルチサーバー対応の為コメントアウト
-		/*
-		if(!sql.saveMineStackGachaData()){
-			getLogger().info("MineStack用ガチャデータ保存に失敗しました");
-		}
-		*/
-
 		if(!sql.disconnect()){
 			getLogger().info("データベース切断に失敗しました");
 		}
@@ -1097,17 +1066,9 @@ public class SeichiAssist extends JavaPlugin{
 		List<MineStackObj> minestacklist = new ArrayList<>();
 		for(int i=0; i<SeichiAssist.msgachadatalist.size(); i++){
 			MineStackGachaData g = SeichiAssist.msgachadatalist.get(i);
-			//int levelsidx = 0;
-			//System.out.println("Debug A");
-				if(!g.itemstack.getType().equals(Material.EXP_BOTTLE)){ //経験値瓶だけはすでにリストにあるので除外
-					/*
-					minestacklist.add(new MineStackObj(g.obj_name,g.itemstack.getItemMeta().getDisplayName(),g.level,g.itemstack.getType(),g.itemstack.getDurability(),true,i,g.itemstack.getItemMeta().getLore()));
-					*/
-					minestacklist.add(new MineStackObj(g.obj_name,g.level,g.itemstack,true,i,5));
-					//System.out.println("Debug C");
-
-
-				}
+			if(!g.itemstack.getType().equals(Material.EXP_BOTTLE)){ //経験値瓶だけはすでにリストにあるので除外
+				minestacklist.add(new MineStackObj(g.obj_name,g.level,g.itemstack,true,i,5));
+			}
 		}
 		return minestacklist;
 	}

@@ -306,7 +306,7 @@ public class PlayerClickListener implements Listener {
 					{
 						enchantname.add(ChatColor.GRAY + Util.getEnchantName(enchant.getName(), enchantment.get(enchant)));
 					}
-					lore.remove(lore.indexOf("§r§2所有者：" + player.getName()));
+					lore.remove("§r§2所有者：" + player.getName());
 
 					TextComponent message = new TextComponent();
 					message.setText(ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
@@ -454,7 +454,7 @@ public class PlayerClickListener implements Listener {
 						activemineflagnum = (activemineflagnum + 1) % 2;
 					}
 					if(activemineflagnum == 0){
-						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + "：OFF");
+						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + ":OFF");
 					}else{
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + ":ON");
 					}

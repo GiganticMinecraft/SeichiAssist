@@ -194,18 +194,12 @@ public class MenuInventoryData {
 		//次の☆までの残量計算(整地量)
 		long LongSLB = playerdata.starlevel_Break ;
 		long NextStar_Break = ((LongSLB + 1) * 87115000) - playerdata.totalbreaknum ;
-		//次の☆までの残量計算(参加時間)
-		int NextStar_tick = ((playerdata.starlevel_Time + 1) * 18000000) - playerdata.playtick ;
-		int NextStar_Hour = NextStar_tick / 72000 ;
-		int NextStar_Minute = (NextStar_tick % 72000) / 1200 ;
 
 		itemstack = new ItemStack(Material.GOLD_INGOT,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_INGOT);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スターレベル情報" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + ChatColor.BOLD + "整地量：☆" + playerdata.starlevel_Break
 							,ChatColor.RESET + "" +  ChatColor.AQUA +  "次の☆まで：あと" + NextStar_Break
-							,ChatColor.RESET + "" +  ChatColor.RED + ChatColor.BOLD + "参加時間：☆" + playerdata.starlevel_Time
-							,ChatColor.RESET + "" +  ChatColor.RED +  "次の☆まで：あと" + NextStar_Hour + "時間" + NextStar_Minute + "分"
 							,ChatColor.RESET + "" +  ChatColor.GREEN + ChatColor.UNDERLINE + ChatColor.BOLD + "合計：☆" + playerdata.starlevel );
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
@@ -316,6 +310,18 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(18,itemstack);
+
+		itemstack = new ItemStack(Material.COMPASS,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ランダムテレポート(β)");
+		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "整地ワールドで使うと、良さげな土地にワープします"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "βテスト中のため、謎挙動にご注意ください"
+				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで発動"
+				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/rtp]"
+				);
+		itemmeta.setLore(lore);
+		itemstack.setItemMeta(itemmeta);
+		inventory.setItem(19,itemstack);
 
 		// fastcraftリンク
 		itemstack = new ItemStack(Material.WORKBENCH,1);
@@ -1433,7 +1439,8 @@ public class MenuInventoryData {
 
 	//ランキングリスト
 	public static Inventory getRankingList(Player p, int page){
-		int maxpage=2;
+//		int maxpage=2;
+		int maxpage=14;
 		final int MIN_LEVEL = 100;
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1441,11 +1448,12 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
-		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+//		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+		for(int count = 10*page,count2=0;count < 10+10*page;count++,count2++){
 			if(count >= SeichiAssist.ranklist.size()){
 				break;
 			}
-			if(count2==45){count2+=2;}
+//			if(count2==45){count2+=2;}
 			rankdata = SeichiAssist.ranklist.get(count);
 			if(rankdata.totalbreaknum<SeichiAssist.levellist.get(MIN_LEVEL-1)){ //レベル100相当の総整地量判定に変更
 				break;
@@ -1510,7 +1518,8 @@ public class MenuInventoryData {
 
 	//ランキングリスト(ログイン時間)
 	public static Inventory getRankingList_playtick(Player p, int page){
-		int maxpage=2;
+//		int maxpage=2;
+		int maxpage=14;
 		//final int MIN_LEVEL = 100;
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ログイン神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1518,11 +1527,12 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
-		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+//		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+		for(int count = 10*page,count2=0;count < 10+10*page;count++,count2++){
 			if(count >= SeichiAssist.ranklist_playtick.size()){
 				break;
 			}
-			if(count2==45){count2+=2;}
+//			if(count2==45){count2+=2;}
 			rankdata = SeichiAssist.ranklist_playtick.get(count);
 			//if(rankdata.totalbreaknum<SeichiAssist.levellist.get(MIN_LEVEL-1)){ //レベル100相当の総整地量判定に変更
 			//	break;
@@ -1590,7 +1600,8 @@ public class MenuInventoryData {
 
 	//ランキングリスト(投票回数)
 	public static Inventory getRankingList_p_vote(Player p, int page){
-		int maxpage=2;
+//		int maxpage=2;
+		int maxpage=14;
 		final int MIN_LEVEL = 1;
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1598,11 +1609,12 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<String>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
-		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+//		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
+		for(int count = 10*page,count2=0;count < 10+10*page;count++,count2++){
 			if(count >= SeichiAssist.ranklist_p_vote.size()){
 				break;
 			}
-			if(count2==45){count2+=2;}
+//			if(count2==45){count2+=2;}
 			rankdata = SeichiAssist.ranklist_p_vote.get(count);
 			if(rankdata.p_vote<MIN_LEVEL){ //投票数0
 				break;
@@ -6873,7 +6885,7 @@ public class MenuInventoryData {
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9035「"+ SeichiAssist.config.getTitle1(9035)
-						+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(9035) +"」" );
+						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(9035) +"」" );
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とあるマラソンの日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
@@ -7105,22 +7117,6 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 
 		inventory.setItem(2,itemstack);
-
-		itemstack = new ItemStack(Material.IRON_PICKAXE);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.AQUA + "第1整地専用特設サーバー");
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-
-		inventory.setItem(3,itemstack);
-
-		itemstack = new ItemStack(Material.GOLD_PICKAXE);
-		itemmeta = itemstack.getItemMeta();
-		itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.AQUA + "第2整地専用特設サーバー");
-		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemstack.setItemMeta(itemmeta);
-
-		inventory.setItem(4,itemstack);
 
 		itemstack = new ItemStack(Material.DIAMOND);
 		itemmeta = itemstack.getItemMeta();

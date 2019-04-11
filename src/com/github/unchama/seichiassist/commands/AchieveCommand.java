@@ -104,7 +104,7 @@ public class AchieveCommand implements TabExecutor{
 			return true;
 		//<実績No>が数字でない場合スキップ
 		}else if(isInt(args[0])){
-			if(6999 < Integer.parseInt(args[0]) && Integer.parseInt(args[0]) < 8000){
+			if(999 < Integer.parseInt(args[0]) && Integer.parseInt(args[0]) < 10000){
 				//指定した実績Noの二つ名データがconfigにない場合
 				if((SeichiAssist.config.getTitle1(Integer.parseInt(args[0])) == null||SeichiAssist.config.getTitle1(Integer.parseInt(args[0])) == "")&&
 					(SeichiAssist.config.getTitle2(Integer.parseInt(args[0])) == null||SeichiAssist.config.getTitle2(Integer.parseInt(args[0])) == "")&&
@@ -249,7 +249,7 @@ public class AchieveCommand implements TabExecutor{
 					}
 				}
 			}else{
-				sender.sendMessage("【実行エラー】解禁コマンドが使用できるのはNo7000～7999の実績です。");
+				sender.sendMessage("【実行エラー】解禁コマンドが使用できるのはNo1000～9999の実績です。");
 				sender.sendMessage(ChatColor.RED + "/unlockachv <実績No> <プレイヤー名> <give/deprive>");
 				return true;
 			}
