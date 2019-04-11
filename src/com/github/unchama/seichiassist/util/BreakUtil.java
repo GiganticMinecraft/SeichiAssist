@@ -621,8 +621,12 @@ public class BreakUtil {
 			} else {
 				// カウンタをクリア
 				openCount = 0;
-				// 重力値を加算
-				gravity++;
+				// 重力値を加算(水をは2倍にする)
+                if (target.getType().equals(Material.WATER)) {
+                    gravity += 2;
+                } else {
+                    gravity++;
+                }
 			}
 		}
 
