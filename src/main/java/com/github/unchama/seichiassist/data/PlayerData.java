@@ -484,7 +484,7 @@ public class PlayerData {
 			return;
 		}
 		//ランクが上がらなくなるまで処理
-		while(SeichiAssist.levellist.get(i).intValue() <= totalbreaknum && (i+1) <= SeichiAssist.levellist.size()){
+		while(SeichiAssist.levellist.get(i) <= totalbreaknum && (i+1) <= SeichiAssist.levellist.size()){
 
 			//レベルアップ時のメッセージ
 			p.sendMessage(ChatColor.GOLD+"ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv("+(i)+")→Lv("+(i+1)+")】");

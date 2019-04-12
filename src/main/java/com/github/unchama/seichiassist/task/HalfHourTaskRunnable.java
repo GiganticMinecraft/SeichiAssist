@@ -87,8 +87,8 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		    //比較関数
 		    @Override
 		    public int compare(Entry<UUID,PlayerData> o1, Entry<UUID,PlayerData> o2) {
-		    	Long i1 = new Long(o1.getValue().halfhourblock.increase);
-		    	Long i2 = new Long(o2.getValue().halfhourblock.increase);
+		    	Long i1 = o1.getValue().halfhourblock.increase;
+		    	Long i2 = o2.getValue().halfhourblock.increase;
 		    	return i2.compareTo(i1);//降順
 		    }
 		});

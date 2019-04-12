@@ -457,9 +457,9 @@ public class MebiusListener implements Listener {
 
 	// Mebiusレベルアップ確率テーブル
 	private static final List<Integer> lvPer = Arrays.asList(
-			Integer.valueOf(500), Integer.valueOf(500), Integer.valueOf(500), Integer.valueOf(500), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(800), Integer.valueOf(1700),
-			Integer.valueOf(1700), Integer.valueOf(1700), Integer.valueOf(1700), Integer.valueOf(1700), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(1800), Integer.valueOf(2200),
-			Integer.valueOf(2200), Integer.valueOf(2200), Integer.valueOf(2200), Integer.valueOf(2200), Integer.valueOf(2600), Integer.valueOf(2600), Integer.valueOf(2600), Integer.valueOf(2600), Integer.valueOf(3000), Integer.valueOf(3000));
+			500, 500, 500, 500, 800, 800, 800, 800, 800, 1700,
+			1700, 1700, 1700, 1700, 1800, 1800, 1800, 1800, 1800, 2200,
+			2200, 2200, 2200, 2200, 2600, 2600, 2600, 2600, 3000, 3000);
 
 	// MebiusLvアップ判定
 	private static boolean isLevelUp(Player player) {
@@ -525,11 +525,11 @@ public class MebiusListener implements Listener {
 	// 見た目更新Lv
 	private static final Map<Integer, Material> APPEARANCE = new LinkedHashMap<Integer, Material>() {
 		{
-			put(Integer.valueOf(1), Material.LEATHER_HELMET);
-			put(Integer.valueOf(5), Material.GOLD_HELMET);
-			put(Integer.valueOf(10), Material.CHAINMAIL_HELMET);
-			put(Integer.valueOf(20), Material.IRON_HELMET);
-			put(Integer.valueOf(25), Material.DIAMOND_HELMET);
+			put(1, Material.LEATHER_HELMET);
+			put(5, Material.GOLD_HELMET);
+			put(10, Material.CHAINMAIL_HELMET);
+			put(20, Material.IRON_HELMET);
+			put(25, Material.DIAMOND_HELMET);
 		}
 	};
 

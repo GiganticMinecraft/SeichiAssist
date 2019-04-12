@@ -80,7 +80,7 @@ public class PlayerJoinListener implements Listener {
 					&& net.coreprotect.model.Config.inspecting.get(p.getName())) {
 				// falseに変更する
 				p.sendMessage("§3CoreProtect §f- Inspector now disabled.");
-				Config.inspecting.put(p.getName(), Boolean.valueOf(false));
+				Config.inspecting.put(p.getName(), Boolean.FALSE);
 			}
 
 			// アサルトスキルを切る

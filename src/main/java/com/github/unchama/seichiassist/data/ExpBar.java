@@ -40,10 +40,10 @@ public class ExpBar {
 				expbar.setProgress(1.0);
 			} else {
 				// 現在のLvにおける割合をBarに配置
-				long exp = pd.totalbreaknum - SeichiAssist.levellist.get(pd.level - 1).intValue();
-				int expmax = SeichiAssist.levellist.get(pd.level).intValue() - SeichiAssist.levellist.get(pd.level - 1).intValue();
+				long exp = pd.totalbreaknum - SeichiAssist.levellist.get(pd.level - 1);
+				int expmax = SeichiAssist.levellist.get(pd.level) - SeichiAssist.levellist.get(pd.level - 1);
 				String bartext = ChatColor.GOLD + "" + ChatColor.BOLD + "Lv " + Integer.toString(pd.level) + "(" + String.format("%,d", pd.totalbreaknum) + "/"
-						+ String.format("%,d", SeichiAssist.levellist.get(pd.level).intValue()) + ")";
+						+ String.format("%,d", SeichiAssist.levellist.get(pd.level)) + ")";
 				expbar = p.getServer().createBossBar(bartext, BarColor.YELLOW, BarStyle.SOLID);
 				// 範囲チェック
 				if(exp >= expmax) {
