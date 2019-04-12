@@ -456,7 +456,7 @@ public class gachaCommand implements TabExecutor{
 			if(id>=0){
 				present = new GachaData(SeichiAssist.gachadatalist.get(id));
 			} else {
-				present = new GachaData(Util.getGachaimo(),1.0,1);
+				present = new GachaData(Util.getGachaRingo(),1.0,1);
 			}
 			if(present.probability < 0.1){
 				if(name!=null){

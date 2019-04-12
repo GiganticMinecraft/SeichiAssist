@@ -112,7 +112,7 @@ public class Util {
 		return skull;
 	}
 	//がちゃりんごの取得
-	public static ItemStack getGachaimo() {
+	public static ItemStack getGachaRingo() {
 		ItemStack gachaimo;
 		ItemMeta meta;
 		gachaimo = new ItemStack(Material.GOLDEN_APPLE,1);

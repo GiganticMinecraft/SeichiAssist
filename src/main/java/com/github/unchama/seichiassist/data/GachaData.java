@@ -45,7 +45,7 @@ public class GachaData {
                 return new GachaData(gachadata);
             }
 		}
-		return new GachaData(Util.getGachaimo(),1.0,1);
+		return new GachaData(Util.getGachaRingo(),1.0,1);
 	}
 	public boolean compare(ItemStack m,String name) {
 		List<String> mlore,lore;
