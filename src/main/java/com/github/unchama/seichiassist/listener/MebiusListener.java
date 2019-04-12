@@ -40,7 +40,7 @@ public class MebiusListener implements Listener {
 	// Instanceアクセス用
 	public static MebiusListener me;
 	// Tipsリスト
-	private static List<String> tips = new ArrayList<String>();
+	private static List<String> tips = new ArrayList<>();
 	// 経験値瓶をボーナスするLv(EXPBONUS未満)
 	private static final int EXPBONUS = 50;
 	// デバッグフラグ
@@ -558,7 +558,7 @@ public class MebiusListener implements Listener {
 		ItemMeta meta = Bukkit.getItemFactory().getItemMeta(APPEARANCE.get(level));
 		meta.setDisplayName(name);
 		// Lore生成
-		List<String> lore = new ArrayList<String>(LOREFIRST2);
+		List<String> lore = new ArrayList<>(LOREFIRST2);
 		lore.addAll(Arrays.asList(ILHEAD + Integer.toString(level), "", "", "", OWNERHEAD + player.getName().toLowerCase()));
 		updateTalkDest(lore, level);
 		meta.setLore(lore);
@@ -627,7 +627,7 @@ public class MebiusListener implements Listener {
 	}
 
 	// エンチャント別レベル制限リスト
-	private static final List<Enchant> ENCHANT = new ArrayList<Enchant>(Arrays.asList(
+	private static final List<Enchant> ENCHANT = new ArrayList<>(Arrays.asList(
 			new Enchant(Enchantment.PROTECTION_ENVIRONMENTAL, 2, 10, "ダメージ軽減"),
 			new Enchant(Enchantment.PROTECTION_FIRE, 6, 10, "火炎耐性"),
 			new Enchant(Enchantment.PROTECTION_PROJECTILE, 6, 10, "飛び道具耐性"),
@@ -651,7 +651,7 @@ public class MebiusListener implements Listener {
 			return;
 		}
 		// その他はレベル別Enchantから設定
-		Map<Enchantment, Integer> ench = new LinkedHashMap<Enchantment, Integer>();
+		Map<Enchantment, Integer> ench = new LinkedHashMap<>();
 		// エンチャントMapはimmutableなので移し替える
 		for (Map.Entry<Enchantment, Integer> e : meta.getEnchants().entrySet()) {
 			ench.put(e.getKey(), e.getValue());

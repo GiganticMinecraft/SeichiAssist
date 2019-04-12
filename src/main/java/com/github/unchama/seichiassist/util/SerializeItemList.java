@@ -41,7 +41,7 @@ public class SerializeItemList {
 	}
 
 	public static List<ItemStack> fromBase64(String serial) {
-		List<ItemStack> items = new ArrayList<ItemStack>();
+		List<ItemStack> items = new ArrayList<>();
 		try {
 			// String検査
 			if ((serial.length() != 0) && (!serial.equals(null))) {

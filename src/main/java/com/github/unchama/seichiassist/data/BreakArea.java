@@ -36,8 +36,8 @@ public class BreakArea {
 		this.mineflagnum = mineflagnum;
 		this.assaultflag = assaultflag;
 		this.dir = BreakUtil.getCardinalDirection(player);
-		this.startlist = new ArrayList<Coordinate>();
-		this.endlist = new ArrayList<Coordinate>();
+		this.startlist = new ArrayList<>();
+		this.endlist = new ArrayList<>();
 		//初期化
 		ActiveSkill[] as = ActiveSkill.values();
 		this.breaklength = as[type-1].getBreakLength(level);

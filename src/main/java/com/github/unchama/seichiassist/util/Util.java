@@ -624,7 +624,7 @@ public class Util {
 		if(meta.hasLore()){
 			lore = meta.getLore();
 		}else{
-			lore = new ArrayList<String>();
+			lore = new ArrayList<>();
 		}
 
 		for (String s : lore) {

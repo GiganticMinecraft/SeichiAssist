@@ -205,16 +205,16 @@ public class PlayerBlockBreakListener implements Listener {
 		final List<Coordinate> endlist = area.getEndList();
 
 		//エフェクト用に壊されるブロック全てのリストデータ
-		List<List<Block>> multibreaklist = new ArrayList<List<Block>>();
+		List<List<Block>> multibreaklist = new ArrayList<>();
 
 		//壊される溶岩の全てのリストデータ
-		List<List<Block>> multilavalist = new ArrayList<List<Block>>();
+		List<List<Block>> multilavalist = new ArrayList<>();
 
 		//エフェクト用に壊されるブロック全てのリストデータ
-		List<Block> breaklist = new ArrayList<Block>();
+		List<Block> breaklist = new ArrayList<>();
 
 		//壊される溶岩のリストデータ
-		List<Block> lavalist = new ArrayList<Block>();
+		List<Block> lavalist = new ArrayList<>();
 
 		//繰り返す回数
 		final int breaknum = area.getBreakNum();
@@ -327,8 +327,8 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 
 			//選択されたブロックを破壊せずに保存する処理
-			multibreaklist.add(new ArrayList<Block>(breaklist));
-			multilavalist.add(new ArrayList<Block>(lavalist));
+			multibreaklist.add(new ArrayList<>(breaklist));
+			multilavalist.add(new ArrayList<>(lavalist));
 			breakblocknum += (long)breaklist.size();
 		}
 
@@ -393,10 +393,10 @@ public class PlayerBlockBreakListener implements Listener {
 		Coordinate start = area.getStartList().get(0);
 		Coordinate end = area.getEndList().get(0);
 		//エフェクト用に壊されるブロック全てのリストデータ
-		List<Block> breaklist = new ArrayList<Block>();
+		List<Block> breaklist = new ArrayList<>();
 
 		//壊される溶岩のリストデータ
-		List<Block> lavalist = new ArrayList<Block>();
+		List<Block> lavalist = new ArrayList<>();
 
 		//範囲内の破壊されるブロックを取得
 		//for(int y = start.y; y <= end.y ; y++){
@@ -530,7 +530,7 @@ public class PlayerBlockBreakListener implements Listener {
 			breaklist.add(block);
 			SeichiAssist.allblocklist.add(block);
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
 		}
 
 		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
@@ -538,7 +538,7 @@ public class PlayerBlockBreakListener implements Listener {
 			breaklist.add(block);
 			SeichiAssist.allblocklist.add(block);
 			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-			premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
+			premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
 		}
 
 		//経験値を減らす

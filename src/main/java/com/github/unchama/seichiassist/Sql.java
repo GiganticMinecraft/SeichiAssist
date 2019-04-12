@@ -623,7 +623,7 @@ public class Sql{
 	//ガチャデータロード
 	public boolean loadGachaData(){
 		String table = SeichiAssist.GACHADATA_TABLENAME;
-		List<GachaData> gachadatalist = new ArrayList<GachaData>();
+		List<GachaData> gachadatalist = new ArrayList<>();
 		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
 		String command = "select * from " + db + "." + table;
  		try{
@@ -652,7 +652,7 @@ public class Sql{
 	//MineStack用ガチャデータロード
 	public boolean loadMineStackGachaData(){
 		String table = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
-		List<MineStackGachaData> gachadatalist = new ArrayList<MineStackGachaData>();
+		List<MineStackGachaData> gachadatalist = new ArrayList<>();
 		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
 		String command = "select * from " + db + "." + table;
  		try{
@@ -1036,7 +1036,7 @@ public class Sql{
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		Material material;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		int count = 0;
 		ActiveSkillPremiumEffect effect[] = ActiveSkillPremiumEffect.values();
 

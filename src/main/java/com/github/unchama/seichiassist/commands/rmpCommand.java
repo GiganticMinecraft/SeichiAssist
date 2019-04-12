@@ -73,7 +73,7 @@ public class rmpCommand implements TabExecutor {
 				//コマンドで指定されたワールドの全Regionを取得する
 				Map<String, ProtectedRegion> regions = Util.getWorldGuard().getRegionContainer().get(Bukkit.getWorld(worldName)).getRegions();
 				//結果格納用List
-				List<String> targets = new ArrayList<String>();
+				List<String> targets = new ArrayList<>();
 
 				//各Regionに対してチェック
 				for (String id : regions.keySet()) {

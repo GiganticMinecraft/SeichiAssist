@@ -87,8 +87,8 @@ public class ActiveSkillData {
 		lavacondenskill = 0;
 		fluidcondenskill = 0;
 		effectnum = 0;
-		effectflagmap = new HashMap<Integer,Boolean>();
-		premiumeffectflagmap = new HashMap<Integer,Boolean>();
+		effectflagmap = new HashMap<>();
+		premiumeffectflagmap = new HashMap<>();
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
         for (final ActiveSkillEffect activeSkillEffect : activeskilleffect) {

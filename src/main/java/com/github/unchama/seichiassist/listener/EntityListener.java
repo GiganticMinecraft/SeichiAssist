@@ -190,10 +190,10 @@ public class EntityListener implements Listener {
 		Coordinate end = area.getEndList().get(0);
 
 		//エフェクト用に壊されるブロック全てのリストデータ
-		List<Block> breaklist = new ArrayList<Block>();
+		List<Block> breaklist = new ArrayList<>();
 
 		//壊される溶岩のリストデータ
-		List<Block> lavalist = new ArrayList<Block>();
+		List<Block> lavalist = new ArrayList<>();
 
 		//一回の破壊の範囲
 		final Coordinate breaklength = area.getBreakLength();
@@ -323,13 +323,13 @@ public class EntityListener implements Listener {
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
 		else if(playerdata.activeskilldata.effectnum <= 100){
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
+			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
 		}
 
 		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
 		else if(playerdata.activeskilldata.effectnum > 100){
 			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-			premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runBreakEffect(player,playerdata,tool,new ArrayList<Block>(breaklist), start, end,centerofblock);
+			premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
 		}
 
 	}

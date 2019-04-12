@@ -66,7 +66,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 
@@ -515,7 +515,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		// 自分の頭召喚
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -714,7 +714,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		//プレイヤーを取得
 		Player player = p.getPlayer();
@@ -806,7 +806,7 @@ public class MenuInventoryData {
 
 	// 採掘速度トグルボタン
 	public static ItemMeta EFButtonMeta(PlayerData playerdata,ItemMeta itemmeta){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		if (playerdata.effectflag == 0) {
             itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
             lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "現在有効です(無制限)");
@@ -847,7 +847,7 @@ public class MenuInventoryData {
 	}
 	// ガチャ券受け取りボタン
 	public static List<String> GachaGetButtonLore(PlayerData playerdata){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		int gachaget = playerdata.gachapoint /1000;
 		if(gachaget != 0){
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + gachaget + "枚"
@@ -860,7 +860,7 @@ public class MenuInventoryData {
 	}
 	//運営ガチャ券受け取りボタン
 	public static List<String> SorryGachaGetButtonLore(PlayerData playerdata){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "運営からのガチャ券を受け取ります"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "以下の場合に配布されます"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "・各種不具合のお詫びとして"
@@ -877,7 +877,7 @@ public class MenuInventoryData {
 
 	//投票特典受け取りボタン
 	public static List<String> VoteGetButtonLore(PlayerData playerdata){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "投票特典を受け取るには"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "投票ページで投票した後"
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "このボタンをクリックします"));
@@ -893,7 +893,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackメインメニュー");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		ItemMeta itemmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
         itemstack = new ItemStack(Material.IRON_PICKAXE,1);
         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_PICKAXE);
@@ -1147,7 +1147,7 @@ public class MenuInventoryData {
 
 	// MineStackトグルボタン
 	public static ItemMeta MineStackToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		if(playerdata.minestackflag){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在ONです");
@@ -1224,7 +1224,7 @@ public class MenuInventoryData {
 	}
 	// 全体通知音消音トグルボタン
 	public static ItemMeta dispWinSoundToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		if(playerdata.everysoundflag && playerdata.everymessageflag){
 			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "全体通知音:消音しない");
@@ -1246,7 +1246,7 @@ public class MenuInventoryData {
 	}
 	// 死亡メッセージ表示トグルボタン
 	public static ItemMeta dispKillLogToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		if(playerdata.dispkilllogflag){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "表示する");
@@ -1262,7 +1262,7 @@ public class MenuInventoryData {
 
 	// ワールドガード保護メッセージ表示トグルボタン(追加)
 	public static ItemMeta dispWorldGuardLogToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		if(playerdata.dispworldguardlogflag){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 
@@ -1281,7 +1281,7 @@ public class MenuInventoryData {
 
 	// 複数種類ブロック同時破壊トグルボタン(追加)
 	public static ItemMeta MultipleIDBlockBreakToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		if(playerdata.multipleidbreakflag){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "複数種類ブロック同時破壊");
@@ -1330,7 +1330,7 @@ public class MenuInventoryData {
 
 	// GiganticBerserk Meta
 	public static ItemMeta GiganticBerserkMeta(PlayerData playerdata, ItemMeta itemmeta){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		int n = (playerdata.GBstage * 10) + playerdata.GBlevel;
 		GiganticBerserkTaskRunnable GBTR = new GiganticBerserkTaskRunnable();
@@ -1368,7 +1368,7 @@ public class MenuInventoryData {
 	}
 
 	public static ItemMeta ChestBreakToggleMeta(PlayerData playerdata, ItemMeta itemmeta){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		lore.add(ChatColor.GREEN + "スキルでチェストを破壊するスキル");
 
@@ -1387,7 +1387,7 @@ public class MenuInventoryData {
 
 	// PvPトグルボタン
 	public static ItemMeta dispPvPToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		if(playerdata.pvpflag){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "ON(ONの相手とPvPが可能)");
@@ -1419,7 +1419,7 @@ public class MenuInventoryData {
 	public static ItemMeta dispShareInvMeta(PlayerData playerdata){
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.TRAPPED_CHEST);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "インベントリ共有");
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在の装備・アイテムを移動します。"
 				, ChatColor.RESET + "" + "サーバー間のアイテム移動にご利用ください。"
 				, ""
@@ -1445,7 +1445,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
 //		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
@@ -1524,7 +1524,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ログイン神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
 //		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
@@ -1606,7 +1606,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
 //		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
@@ -1688,7 +1688,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "寄付神ランキング");
 		ItemStack itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata = null;
 		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
@@ -1782,7 +1782,7 @@ public class MenuInventoryData {
 				ItemStack itemstack;
 				ItemMeta itemmeta;
 				SkullMeta skullmeta;
-				List<String> lore = new ArrayList<String>();
+				List<String> lore = new ArrayList<>();
 
 				// 1ページ目を開く
 				itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1897,7 +1897,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.BLUE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴");
 		ItemStack itemstack;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1938,7 +1938,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		//表示切り替え(LV・二つ名)
 		itemstack = new ItemStack(Material.REDSTONE_TORCH_ON,1);
@@ -2069,7 +2069,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		//各ボタンの設定
 		nextpageflag1 = false ;
@@ -2203,7 +2203,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		if(nextpageflag1){
@@ -2299,7 +2299,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		if(nextpageflag2){
@@ -2409,7 +2409,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		if(nextpageflag3){
 		}else {
@@ -2504,7 +2504,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		//実績ポイントの最新情報反映ボタン
 		itemstack = new ItemStack(Material.EMERALD_ORE,1);
@@ -2639,7 +2639,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//ボタン情報
@@ -2696,7 +2696,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//ボタン情報
@@ -2737,7 +2737,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//ボタン情報
@@ -2808,7 +2808,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//ボタン情報
@@ -2863,7 +2863,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//ボタン情報
@@ -2927,7 +2927,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//実績設定・解禁ボタン
@@ -3240,7 +3240,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//実績設定・解禁ボタン
@@ -3756,7 +3756,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//実績設定・解禁ボタン
@@ -4392,7 +4392,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//実績設定・解禁ボタン
@@ -4922,7 +4922,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//実績設定・解禁ボタン
@@ -5137,7 +5137,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//実績設定・解禁ボタン
@@ -5359,7 +5359,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//実績設定・解禁ボタン
@@ -6169,7 +6169,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//実績設定・解禁ボタン
@@ -6974,7 +6974,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 
 		//実績設定・解禁ボタン
@@ -7152,7 +7152,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		//投票pt受け取り
 		itemstack = new ItemStack(Material.DIAMOND);
@@ -7246,7 +7246,7 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.GOLDEN_APPLE);
 			itemmeta = itemstack.getItemMeta();
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "㊙ がちゃりんご情報 ㊙" );
-			List<String> lores = new ArrayList<String>();
+			List<String> lores = new ArrayList<>();
 			lores.addAll(Arrays.asList(
 					ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "※ﾆﾝｹﾞﾝに見られないように気を付けること！"
 					,ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "  毎日大妖精からデータを更新すること！"
@@ -7350,7 +7350,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,3*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ホームメニュー");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		// ver0.3.2 homeコマンド
 		itemstack = new ItemStack(Material.COMPASS,1);
@@ -7452,7 +7452,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,3*9,ChatColor.RED + "" + ChatColor.BOLD + "ホームポイントを変更しますか?");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		if (n >= 1){
 			itemstack = new ItemStack(Material.PAPER);
@@ -7491,7 +7491,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "スキルを進化させますか?");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		switch(playerdata.GBstage){
 		case 0:
@@ -7563,7 +7563,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "スキルを進化させました");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		switch(playerdata.GBstage){
 		case 1:

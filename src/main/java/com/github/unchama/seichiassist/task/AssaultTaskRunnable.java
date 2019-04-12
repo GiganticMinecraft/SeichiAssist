@@ -195,9 +195,9 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			idletime = 0;
 		}
 
-		List<Block> breaklist = new ArrayList<Block>();
-		List<Block> lavalist = new ArrayList<Block>();
-		List<Block> waterlist = new ArrayList<Block>();
+		List<Block> breaklist = new ArrayList<>();
+		List<Block> lavalist = new ArrayList<>();
+		List<Block> waterlist = new ArrayList<>();
 
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;

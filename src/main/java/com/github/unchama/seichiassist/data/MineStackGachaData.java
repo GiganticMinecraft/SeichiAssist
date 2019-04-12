@@ -92,7 +92,7 @@ public class MineStackGachaData {
 		if(meta.hasLore()){
 			lore = meta.getLore();
 		}else{
-			lore = new ArrayList<String>();
+			lore = new ArrayList<>();
 		}
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name);
 		meta.setLore(lore);

@@ -252,7 +252,7 @@ public class PlayerData {
 		this.gachaflag = true;
 		this.minespeedlv = 0;
 		this.lastminespeedlv = 0;
-		this.effectdatalist = new ArrayList<EffectData>();
+		this.effectdatalist = new ArrayList<>();
 		this.level = 1;
 		this.mebius = new MebiusTaskRunnable(this);
 		this.numofsorryforbug = 0;
@@ -268,7 +268,7 @@ public class PlayerData {
 		this.pvpflag = false;
 		this.loc = null;
 		this.idletime = 0;
-		this.staticdata = new ArrayList<Integer>();
+		this.staticdata = new ArrayList<>();
 		this.totalbreaknum = 0;
 		for(Material m : SeichiAssist.materiallist){
 			//統計にないため除外
@@ -397,7 +397,7 @@ public class PlayerData {
 	//エフェクトデータのdurationを60秒引く
 	public void calcEffectData() {
 		//tmplistを作成
-		List<EffectData> tmplist = new ArrayList<EffectData>();
+		List<EffectData> tmplist = new ArrayList<>();
 		//effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
 		for(EffectData ed : effectdatalist){
 			ed.duration -= 1200;

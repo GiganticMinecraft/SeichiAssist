@@ -28,7 +28,7 @@ public class EffectUtil {
 
 	public static void playEffectCube(Player player,Location efloc,ParticleEffect pe, Coordinate start,
 			Coordinate end , Color c) {
-		List<Player> pl = new ArrayList<Player>();
+		List<Player> pl = new ArrayList<>();
 		pl.add(player);
 		 double d = 0.5;
 		for(double x = start.x ; x <= end.x + 1 ; x += d){

@@ -298,7 +298,7 @@ public class PlayerClickListener implements Listener {
 					if (!playerdata.everysoundflag) {
 						player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, (float) 0.5, 2);
 					}
-					List<String> enchantname = new ArrayList<String>();
+					List<String> enchantname = new ArrayList<>();
 					List<String> lore = present.itemstack.getItemMeta().getLore();
 					Map<Enchantment, Integer> enchantment = present.itemstack.getItemMeta().getEnchants();
 

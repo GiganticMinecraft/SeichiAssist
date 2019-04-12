@@ -99,7 +99,7 @@ public class shareinvCommand implements TabExecutor {
 		// 収納処理
 		else {
 			PlayerInventory pi = player.getInventory();
-			List<ItemStack> items = new ArrayList<ItemStack>();
+			List<ItemStack> items = new ArrayList<>();
 
 			// アイテム一覧をリストに取り出す
 			ItemStack offhand = pi.getItemInOffHand();

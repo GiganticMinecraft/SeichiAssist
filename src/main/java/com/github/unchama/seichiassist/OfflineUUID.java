@@ -16,7 +16,7 @@ import java.util.UUID;
        private OfflineUUID() {}
 
        static {
-          UUIDs = new HashMap<String, UUID>();
+          UUIDs = new HashMap<>();
        }
 
        private static final String postContent1 = "{\"name\": \"";
@@ -63,7 +63,7 @@ import java.util.UUID;
                                UUID id = UUID.fromString(uuid);
                                //取得成功
                                if(OfflineUUID.UUIDs == null)
-                                  OfflineUUID.UUIDs = new HashMap<String, UUID>();
+                                  OfflineUUID.UUIDs = new HashMap<>();
                                OfflineUUID.UUIDs.put(player, id);
                                return id;
                             }

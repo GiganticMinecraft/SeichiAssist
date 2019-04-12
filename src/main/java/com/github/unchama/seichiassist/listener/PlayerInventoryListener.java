@@ -2609,7 +2609,7 @@ public class PlayerInventoryListener implements Listener {
             //ガチャ景品交換インベントリの中身を取得
             ItemStack[] item = inventory.getContents();
             //ドロップ用アイテムリスト(返却box)作成
-            List<ItemStack> dropitem = new ArrayList<ItemStack>();
+            List<ItemStack> dropitem = new ArrayList<>();
             //カウント用
             int big = 0;
             int reg = 0;
@@ -4983,9 +4983,9 @@ public class PlayerInventoryListener implements Listener {
             //ガチャ景品交換インベントリの中身を取得
             ItemStack[] item = inventory.getContents();
             //ドロップ用アイテムリスト(返却box)作成
-            List<ItemStack> dropitem = new ArrayList<ItemStack>();
+            List<ItemStack> dropitem = new ArrayList<>();
             //余剰鉱石返却用アイテムリスト
-            List<ItemStack> retore = new ArrayList<ItemStack>();
+            List<ItemStack> retore = new ArrayList<>();
             //個数計算用変数(このやり方以外に効率的なやり方があるかもしれません)
             int coalore = 0; //石炭
             int ironore = 0; //鉄
@@ -5189,7 +5189,7 @@ public class PlayerInventoryListener implements Listener {
             //ガチャ景品交換インベントリの中身を取得
             ItemStack[] item = inventory.getContents();
             //ドロップ用アイテムリスト(返却box)作成
-            List<ItemStack> dropitem = new ArrayList<ItemStack>();
+            List<ItemStack> dropitem = new ArrayList<>();
             //カウント用
             int giga = 0;
             //for文で１個ずつ対象アイテムか見る

@@ -80,7 +80,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 
 
 		//Map.Entry のリストを作る
-		List<Entry<UUID,PlayerData>> entries = new ArrayList<Entry<UUID,PlayerData>>(SeichiAssist.playermap.entrySet());
+		List<Entry<UUID,PlayerData>> entries = new ArrayList<>(SeichiAssist.playermap.entrySet());
 
 		//Comparator で Map.Entry の値を比較
 		Collections.sort(entries, new Comparator<Entry<UUID,PlayerData>>() {

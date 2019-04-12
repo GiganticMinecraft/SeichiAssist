@@ -50,7 +50,7 @@ public class ActiveSkillInventoryData {
 		ItemMeta itemmeta;
 		PotionMeta potionmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
