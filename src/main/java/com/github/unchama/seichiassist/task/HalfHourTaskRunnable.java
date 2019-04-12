@@ -83,14 +83,11 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 		List<Entry<UUID,PlayerData>> entries = new ArrayList<>(SeichiAssist.playermap.entrySet());
 
 		//Comparator で Map.Entry の値を比較
-		Collections.sort(entries, new Comparator<Entry<UUID,PlayerData>>() {
-		    //比較関数
-		    @Override
-		    public int compare(Entry<UUID,PlayerData> o1, Entry<UUID,PlayerData> o2) {
-		    	Long i1 = o1.getValue().halfhourblock.increase;
-		    	Long i2 = o2.getValue().halfhourblock.increase;
-		    	return i2.compareTo(i1);//降順
-		    }
+		//比較関数
+		Collections.sort(entries, (o1, o2) -> {
+			Long i1 = o1.getValue().halfhourblock.increase;
+			Long i2 = o2.getValue().halfhourblock.increase;
+			return i2.compareTo(i1);//降順
 		});
 
 		Util.sendEveryMessage("全体の整地量は " + ChatColor.AQUA + all + ChatColor.WHITE + " でした");

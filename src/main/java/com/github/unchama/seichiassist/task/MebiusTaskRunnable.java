@@ -69,12 +69,10 @@ public class MebiusTaskRunnable extends BukkitRunnable {
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1f);
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1f);
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1f);
-		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.plugin, new Runnable() {
-			public void run() {
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-			}
+		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.plugin, () -> {
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
 		}, 2);
 	}
 
@@ -87,15 +85,13 @@ public class MebiusTaskRunnable extends BukkitRunnable {
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.plugin, new Runnable() {
-			public void run() {
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
-			}
+		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.plugin, () -> {
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
 		}, 2);
 	}
 }
