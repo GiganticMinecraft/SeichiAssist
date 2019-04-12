@@ -1038,7 +1038,7 @@ public class Sql{
 		Material material;
 		List<String> lore = new ArrayList<>();
 		int count = 0;
-		ActiveSkillPremiumEffect effect[] = ActiveSkillPremiumEffect.values();
+        ActiveSkillPremiumEffect[] effect = ActiveSkillPremiumEffect.values();
 
 		String table = SeichiAssist.DONATEDATA_TABLENAME;
 		String command = "select * from " + db + "." + table + " where playername = '" + playerdata.name + "'";
