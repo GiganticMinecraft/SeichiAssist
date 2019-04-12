@@ -306,9 +306,9 @@ public class EntityListener implements Listener {
 		//以降破壊する処理
 
 		//溶岩を破壊する処理
-		for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
-			lavalist.get(lavanum).setType(Material.AIR);
-		}
+        for (Block value : lavalist) {
+            value.setType(Material.AIR);
+        }
 
 
 		//選択されたブロックを破壊する処理

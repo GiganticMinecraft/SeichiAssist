@@ -369,15 +369,15 @@ public class Sql{
 
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
-		for(int i = 0; i < activeskilleffect.length ; i++){
-			command = command +
-					",add column if not exists " + activeskilleffect[i].getsqlName() + " boolean default false";
-		}
+        for (final ActiveSkillEffect activeSkillEffect : activeskilleffect) {
+            command = command +
+                    ",add column if not exists " + activeSkillEffect.getsqlName() + " boolean default false";
+        }
 		ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-		for(int i = 0; i < premiumeffect.length ; i++){
-			command = command +
-					",add column if not exists " + premiumeffect[i].getsqlName() + " boolean default false";
-		}
+        for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : premiumeffect) {
+            command = command +
+                    ",add column if not exists " + activeSkillPremiumEffect.getsqlName() + " boolean default false";
+        }
 
 		//正月Event用
 		command += ",add column if not exists hasNewYearSobaGive boolean default false";

@@ -323,17 +323,17 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				}
 
  				ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
- 				for(int i = 0 ; i < activeskilleffect.length ; i++){
- 					int num = activeskilleffect[i].getNum();
- 					String sqlname = activeskilleffect[i].getsqlName();
- 					playerdata.activeskilldata.effectflagmap.put(num, rs.getBoolean(sqlname));
- 				}
+                for (final ActiveSkillEffect activeSkillEffect : activeskilleffect) {
+                    int num = activeSkillEffect.getNum();
+                    String sqlname = activeSkillEffect.getsqlName();
+                    playerdata.activeskilldata.effectflagmap.put(num, rs.getBoolean(sqlname));
+                }
  				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
- 				for(int i = 0 ; i < premiumeffect.length ; i++){
- 					int num = premiumeffect[i].getNum();
- 					String sqlname = premiumeffect[i].getsqlName();
- 					playerdata.activeskilldata.premiumeffectflagmap.put(num, rs.getBoolean(sqlname));
- 				}
+                for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : premiumeffect) {
+                    int num = activeSkillPremiumEffect.getNum();
+                    String sqlname = activeSkillPremiumEffect.getsqlName();
+                    playerdata.activeskilldata.premiumeffectflagmap.put(num, rs.getBoolean(sqlname));
+                }
  				//MineStack機能の数値
 
 				//MineStack関連をすべてfor文に変更

@@ -499,8 +499,8 @@ public class BreakUtil {
 
 	public static boolean BlockEqualsMaterialList(Block b){
 		List<Material> m = SeichiAssist.materiallist;
-		for(int i=0; i<m.size(); i++){
-			if(b.getType().equals(m.get(i))){
+		for (Material material : m) {
+			if (b.getType().equals(material)) {
 				return true;
 			}
 		}

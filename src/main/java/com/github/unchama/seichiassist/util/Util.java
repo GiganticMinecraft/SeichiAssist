@@ -516,12 +516,12 @@ public class Util {
 		org.bukkit.inventory.ItemStack[] inventory = player.getInventory().getStorageContents();
 		Material material;
 		SkullMeta skullmeta;
-		for (int i = 0; i < inventory.length; i++) {
-			material = inventory[i].getType();
-			if(material.equals(Material.SKULL_ITEM)){
-				skullmeta = (SkullMeta)inventory[i].getItemMeta();
-				if(skullmeta.hasOwner()){
-					if(skullmeta.getOwner().equals("unchama")){
+		for (final ItemStack itemStack : inventory) {
+			material = itemStack.getType();
+			if (material.equals(Material.SKULL_ITEM)) {
+				skullmeta = (SkullMeta) itemStack.getItemMeta();
+				if (skullmeta.hasOwner()) {
+					if (skullmeta.getOwner().equals("unchama")) {
 						return true;
 					}
 				}
@@ -627,14 +627,14 @@ public class Util {
 			lore = new ArrayList<String>();
 		}
 
-		for(int i=0; i<lore.size(); i++){
-			if(lore.get(i).indexOf("所有者：")!=-1){ //"所有者:がある"
-				int idx = lore.get(i).lastIndexOf("所有者：");
-					idx += 4; //「所有者：」の右端(名前の左端)までidxを移動
-					String temp = lore.get(i).substring(idx);
-					if(temp.equals(name)){
-						return true;
-					}
+		for (String s : lore) {
+			if (s.indexOf("所有者：") != -1) { //"所有者:がある"
+				int idx = s.lastIndexOf("所有者：");
+				idx += 4; //「所有者：」の右端(名前の左端)までidxを移動
+				String temp = s.substring(idx);
+				if (temp.equals(name)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -973,8 +973,8 @@ public class Util {
 
 		//プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
 		Collection<ItemStack> drops = block.getDrops();
-		for (Iterator<ItemStack> i = drops.iterator(); i.hasNext();) {
-			itemStack = i.next();
+		for (final ItemStack drop : drops) {
+			itemStack = drop;
 		}
 
 		itemStack.setDurability((short) SkullType.PLAYER.ordinal());

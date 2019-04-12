@@ -327,30 +327,30 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 
 		//破壊する処理分岐
 		if(waterflag){
-			for(int waternum = 0 ; waternum <waterlist.size();waternum++){
-				waterlist.get(waternum).setType(Material.PACKED_ICE);
-				BreakUtil.logPlace(player,waterlist.get(waternum));
+			for (Block value : waterlist) {
+				value.setType(Material.PACKED_ICE);
+				BreakUtil.logPlace(player, value);
 			}
 		}else if(lavaflag){
-			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
-				lavalist.get(lavanum).setType(Material.MAGMA);
-				BreakUtil.logPlace(player,lavalist.get(lavanum));
+			for (Block value : lavalist) {
+				value.setType(Material.MAGMA);
+				BreakUtil.logPlace(player, value);
 			}
 		}else if(fluidflag) {
-			for(int waternum = 0 ; waternum <waterlist.size();waternum++){
-				waterlist.get(waternum).setType(Material.PACKED_ICE);
-				BreakUtil.logPlace(player,waterlist.get(waternum));
+			for (Block item : waterlist) {
+				item.setType(Material.PACKED_ICE);
+				BreakUtil.logPlace(player, item);
 			}
-			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
-				lavalist.get(lavanum).setType(Material.MAGMA);
-				BreakUtil.logPlace(player,lavalist.get(lavanum));
+			for (Block value : lavalist) {
+				value.setType(Material.MAGMA);
+				BreakUtil.logPlace(player, value);
 			}
 		}else if(breakflag){
-			for(int waternum = 0 ; waternum <waterlist.size();waternum++){
-				waterlist.get(waternum).setType(Material.AIR);
+			for (Block item : waterlist) {
+				item.setType(Material.AIR);
 			}
-			for(int lavanum = 0 ; lavanum <lavalist.size();lavanum++){
-				lavalist.get(lavanum).setType(Material.AIR);
+			for (Block value : lavalist) {
+				value.setType(Material.AIR);
 			}
 			for(Block b:breaklist){
 				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,false);

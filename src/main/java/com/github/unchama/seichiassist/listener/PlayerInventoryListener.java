@@ -1087,27 +1087,27 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}else{
 				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-				for(int i = 0; i < skilleffect.length ; i++){
-					if(itemstackcurrent.getType().equals(skilleffect[i].getMaterial())){
-						if(playerdata.activeskilldata.effectnum == skilleffect[i].getNum()){
+				for (final ActiveSkillEffect activeSkillEffect : skilleffect) {
+					if (itemstackcurrent.getType().equals(activeSkillEffect.getMaterial())) {
+						if (playerdata.activeskilldata.effectnum == activeSkillEffect.getNum()) {
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 							player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-						}else{
-							playerdata.activeskilldata.effectnum = skilleffect[i].getNum();
-							player.sendMessage(ChatColor.GREEN + "エフェクト:" + skilleffect[i].getName() + ChatColor.RESET + "" + ChatColor.GREEN + " が選択されました");
+						} else {
+							playerdata.activeskilldata.effectnum = activeSkillEffect.getNum();
+							player.sendMessage(ChatColor.GREEN + "エフェクト:" + activeSkillEffect.getName() + ChatColor.RESET + "" + ChatColor.GREEN + " が選択されました");
 							player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 						}
 					}
 				}
 				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-				for(int i = 0; i < premiumeffect.length ; i++){
-					if(itemstackcurrent.getType().equals(premiumeffect[i].getMaterial())){
-						if(playerdata.activeskilldata.effectnum == premiumeffect[i].getNum()){
+				for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : premiumeffect) {
+					if (itemstackcurrent.getType().equals(activeSkillPremiumEffect.getMaterial())) {
+						if (playerdata.activeskilldata.effectnum == activeSkillPremiumEffect.getNum()) {
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 							player.sendMessage(ChatColor.YELLOW + "既に選択されています");
-						}else{
-							playerdata.activeskilldata.effectnum = premiumeffect[i].getNum() + 100;
-							player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "プレミアムエフェクト:" + premiumeffect[i].getName() + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + " が選択されました");
+						} else {
+							playerdata.activeskilldata.effectnum = activeSkillPremiumEffect.getNum() + 100;
+							player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "プレミアムエフェクト:" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + " が選択されました");
 							player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 						}
 					}
@@ -1119,16 +1119,16 @@ public class PlayerInventoryListener implements Listener {
 			if(itemstackcurrent.getType().equals(Material.BEDROCK)){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-				for(int i = 0; i < skilleffect.length ; i++){
-					if(itemmeta.getDisplayName().contains(skilleffect[i].getName())){
-						if(playerdata.activeskilldata.effectpoint < skilleffect[i].getUsePoint()){
-							player.sendMessage(ChatColor.DARK_RED  + "エフェクトポイントが足りません");
-							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float)0.5);
-						}else{
-							skilleffect[i].setObtained(playerdata.activeskilldata.effectflagmap);
-							player.sendMessage(ChatColor.LIGHT_PURPLE + "エフェクト：" + skilleffect[i].getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "" + " を解除しました");
-							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-							playerdata.activeskilldata.effectpoint -= skilleffect[i].getUsePoint();
+				for (final ActiveSkillEffect activeSkillEffect : skilleffect) {
+					if (itemmeta.getDisplayName().contains(activeSkillEffect.getName())) {
+						if (playerdata.activeskilldata.effectpoint < activeSkillEffect.getUsePoint()) {
+							player.sendMessage(ChatColor.DARK_RED + "エフェクトポイントが足りません");
+							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.5);
+						} else {
+							activeSkillEffect.setObtained(playerdata.activeskilldata.effectflagmap);
+							player.sendMessage(ChatColor.LIGHT_PURPLE + "エフェクト：" + activeSkillEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました");
+							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 1.2);
+							playerdata.activeskilldata.effectpoint -= activeSkillEffect.getUsePoint();
 							player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
 						}
 					}
@@ -1138,19 +1138,19 @@ public class PlayerInventoryListener implements Listener {
 			if(itemstackcurrent.getType().equals(Material.BEDROCK)){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-				for(int i = 0; i < premiumeffect.length ; i++){
-					if(itemmeta.getDisplayName().contains(premiumeffect[i].getName())){
-						if(playerdata.activeskilldata.premiumeffectpoint < premiumeffect[i].getUsePoint()){
-							player.sendMessage(ChatColor.DARK_RED  + "プレミアムエフェクトポイントが足りません");
-							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float)0.5);
-						}else{
-							premiumeffect[i].setObtained(playerdata.activeskilldata.premiumeffectflagmap);
-							player.sendMessage(ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "プレミアムエフェクト：" + premiumeffect[i].getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE+ "" + ChatColor.BOLD + "" + " を解除しました");
-							if(!sql.addPremiumEffectBuy(playerdata,premiumeffect[i])){
+				for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : premiumeffect) {
+					if (itemmeta.getDisplayName().contains(activeSkillPremiumEffect.getName())) {
+						if (playerdata.activeskilldata.premiumeffectpoint < activeSkillPremiumEffect.getUsePoint()) {
+							player.sendMessage(ChatColor.DARK_RED + "プレミアムエフェクトポイントが足りません");
+							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.5);
+						} else {
+							activeSkillPremiumEffect.setObtained(playerdata.activeskilldata.premiumeffectflagmap);
+							player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました");
+							if (!sql.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect)) {
 								player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。");
 							}
-							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-							playerdata.activeskilldata.premiumeffectpoint -= premiumeffect[i].getUsePoint();
+							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 1.2);
+							playerdata.activeskilldata.premiumeffectpoint -= activeSkillPremiumEffect.getUsePoint();
 							player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
 						}
 					}
