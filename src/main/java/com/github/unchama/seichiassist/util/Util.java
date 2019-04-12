@@ -393,19 +393,13 @@ public class Util {
 		return _tick/20;
 	}
 
-	public static String toTimeString(int _second) {
-		int second = _second;
-		int minute = 0;
-		int hour = 0;
+	public static String toTimeString(int second) {
+		final int minute;
+		final int hour;
 		String time = "";
-		while(second >= 60){
-			second -=60;
-			minute++;
-		}
-		while(minute >= 60){
-			minute -= 60;
-			hour++;
-		}
+		hour = Math.round(second / 3600);
+		second -= hour * 3600;
+		minute = Math.round(second / 60);
 		if(hour != 0){
 			time = hour + "時間";
 		}
