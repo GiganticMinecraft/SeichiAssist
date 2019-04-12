@@ -214,7 +214,7 @@ public class SeichiAssist extends JavaPlugin{
 			2000,3000,4000,5000,6000,7000,8000,9000,10000
 			);
 
-	private static final List<MineStackObj> minestacklistmine = new ArrayList<MineStackObj>(Arrays.asList(
+	private static final List<MineStackObj> minestacklistmine = Arrays.asList(
 
 			new MineStackMineObj("dirt","土",1,Material.DIRT,0)
 			,new MineStackMineObj("grass","草ブロック",1,Material.GRASS,0)
@@ -291,9 +291,9 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackMineObj("sponge", "スポンジ", 1, Material.SPONGE, 0)
 			,new MineStackMineObj("wet_sponge", "濡れたスポンジ", 1, Material.SPONGE, 1)
 
-	));
+	);
 
-	private static final List<MineStackObj> minestacklistdrop = new ArrayList<MineStackObj>(Arrays.asList(
+	private static final List<MineStackObj> minestacklistdrop = Arrays.asList(
 			//以下モンスター+動物ドロップ
 			new MineStackDropObj("ender_pearl","エンダーパール",1,Material.ENDER_PEARL,0)
 			,new MineStackDropObj("ender_eye","エンダーアイ",1,Material.EYE_OF_ENDER,0)
@@ -369,9 +369,9 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackDropObj("beetroot_soup", "ビートルートスープ", 1, Material.BEETROOT_SOUP, 0)
 			,new MineStackDropObj("bowl", "ボウル", 1, Material.BOWL, 0)
 			,new MineStackDropObj("dragon_egg", "エンドラの卵", 1, Material.DRAGON_EGG, 0)
-	));
+	);
 
-	private static final List<MineStackObj> minestacklistfarm = new ArrayList<MineStackObj>(Arrays.asList(
+	private static final List<MineStackObj> minestacklistfarm = Arrays.asList(
 			//以下採掘で入手可能な農業系ブロック
 			new MineStackFarmObj("log","オークの原木",1,Material.LOG,0)
 			,new MineStackFarmObj("log1","マツの原木",1,Material.LOG,1)
@@ -445,9 +445,9 @@ public class SeichiAssist extends JavaPlugin{
 			//2019.2追加分
 			,new MineStackFarmObj("chorus_plant", "コーラスプラント", 1, Material.CHORUS_PLANT, 0)
 			,new MineStackFarmObj("chorus_flower", "コーラスフラワー", 1, Material.CHORUS_FLOWER, 0)
-	));
+	);
 
-	private static final List<MineStackObj> minestacklistbuild = new ArrayList<MineStackObj>(Arrays.asList(
+	private static final List<MineStackObj> minestacklistbuild = Arrays.asList(
 
 			//以下建築系ブロック
 			new MineStackBuildObj("step0","石ハーフブロック",1,Material.STEP,0)
@@ -689,9 +689,9 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackBuildObj("dye_15", "骨粉", 1, Material.INK_SACK, 15)
 
 
-	));
+	);
 
-	private static final List<MineStackObj> minestacklistrs = new ArrayList<MineStackObj>(Arrays.asList(
+	private static final List<MineStackObj> minestacklistrs = Arrays.asList(
 
 			//以下レッドストーン系ブロック
 			new MineStackRsObj("redstone","レッドストーン",1,Material.REDSTONE,0)
@@ -765,15 +765,15 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackRsObj("record_wait", "レコード", 1, Material.RECORD_12, 0)
 
 
-	));
+	);
 
-	private static List<MineStackObj> minestacklistgacha =  new ArrayList<MineStackObj>(Arrays.asList(
+	private static List<MineStackObj> minestacklistgacha = Arrays.asList(
 
 			//以下ガチャ系アイテム
 			new MineStackGachaObj("gachaimo",Util.getGachaimoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaimoLore())
 			,new MineStackGachaObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0)
 
-	));
+	);
 
     public static List<MineStackObj> minestacklist = null;
 
