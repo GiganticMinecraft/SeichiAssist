@@ -85,9 +85,9 @@ public class VotingFairyListener implements Listener {
 				,"こんな時間に呼ぶなんて…りんごははずんでもらうよ？"
 				);
 
-		if (Util.getTimeZone(playerdata.VotingFairyStartTime) == "morning")
+		if (Util.getTimeZone(playerdata.VotingFairyStartTime).equals("morning"))
 			VotingFairyTaskRunnable.speak(p, getMessage(morning, p.getName()), playerdata.toggleVFSound);
-		else if (Util.getTimeZone(playerdata.VotingFairyStartTime) == "day")
+		else if (Util.getTimeZone(playerdata.VotingFairyStartTime).equals("day"))
 			VotingFairyTaskRunnable.speak(p, getMessage(day, p.getName()), playerdata.toggleVFSound);
 		else
 			VotingFairyTaskRunnable.speak(p, getMessage(night, p.getName()), playerdata.toggleVFSound);

@@ -235,7 +235,7 @@ public class MebiusListener implements Listener {
 			}
 
 			//もしモンスター名が取れなければ除外
-			if(monsterName == ""){
+			if(monsterName.equals("")){
 				return;
 			}
 			getPlayerData(player).mebius.speak(getMessage(msgs,

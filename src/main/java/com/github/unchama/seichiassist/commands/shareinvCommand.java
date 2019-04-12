@@ -49,7 +49,7 @@ public class shareinvCommand implements TabExecutor {
 		// 収納中なら取り出す
 		if (playerdata.shareinv) {
 			String serial = sql.loadShareInv(player, playerdata);
-			if (serial == "") {
+			if (serial.equals("")) {
 				player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "収納アイテムが存在しません。");
 			} else if (serial != null) {
 				PlayerInventory pi = player.getInventory();
@@ -111,7 +111,7 @@ public class shareinvCommand implements TabExecutor {
 
 			// アイテム一覧をシリアル化する
 			String serial = SerializeItemList.toBase64(items);
-			if (serial == "") {
+			if (serial.equals("")) {
 				// 収納失敗
 				player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "収納アイテムの変換に失敗しました。");
 			} else {

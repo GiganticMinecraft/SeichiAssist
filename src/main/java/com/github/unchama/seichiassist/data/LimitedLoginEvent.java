@@ -45,7 +45,7 @@ public class LimitedLoginEvent {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
-		if (!(lastcheckdate == "" || lastcheckdate == null)){
+		if (!(lastcheckdate.equals("") || lastcheckdate == null)){
 			try{
 			    Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
 			    Date LastDate = sdf.parse(lastcheckdate);

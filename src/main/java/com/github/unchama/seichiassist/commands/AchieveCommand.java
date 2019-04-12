@@ -106,9 +106,9 @@ public class AchieveCommand implements TabExecutor{
 		}else if(isInt(args[0])){
 			if(999 < Integer.parseInt(args[0]) && Integer.parseInt(args[0]) < 10000){
 				//指定した実績Noの二つ名データがconfigにない場合
-				if((SeichiAssist.config.getTitle1(Integer.parseInt(args[0])) == null||SeichiAssist.config.getTitle1(Integer.parseInt(args[0])) == "")&&
-					(SeichiAssist.config.getTitle2(Integer.parseInt(args[0])) == null||SeichiAssist.config.getTitle2(Integer.parseInt(args[0])) == "")&&
-					(SeichiAssist.config.getTitle3(Integer.parseInt(args[0])) == null||SeichiAssist.config.getTitle3(Integer.parseInt(args[0])) == "")){
+				if((SeichiAssist.config.getTitle1(Integer.parseInt(args[0])) == null|| SeichiAssist.config.getTitle1(Integer.parseInt(args[0])).equals(""))&&
+					(SeichiAssist.config.getTitle2(Integer.parseInt(args[0])) == null|| SeichiAssist.config.getTitle2(Integer.parseInt(args[0])).equals(""))&&
+					(SeichiAssist.config.getTitle3(Integer.parseInt(args[0])) == null|| SeichiAssist.config.getTitle3(Integer.parseInt(args[0])).equals(""))){
 					sender.sendMessage("【実行エラー】存在しない実績Noが指定されました");
 					return true;
 				}else {
@@ -145,7 +145,7 @@ public class AchieveCommand implements TabExecutor{
 											playerdata = playermap.get(uuid);
 
 											//送信者と同じワールドにいれば配布
-											if(p.getWorld().getName() == sendplayer.getWorld().getName() ){
+											if(p.getWorld().getName().equals(sendplayer.getWorld().getName())){
 												//該当実績を既に取得している場合処理をスキップ
 												if(!playerdata.TitleFlags.get(Integer.parseInt(args[0]))){
 													playerdata.TitleFlags.set(Integer.parseInt(args[0]));

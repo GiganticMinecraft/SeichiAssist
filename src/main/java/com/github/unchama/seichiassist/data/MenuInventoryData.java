@@ -2218,7 +2218,7 @@ public class MenuInventoryData {
 		for(;checkTitle1 < 9900 ;){
 			if(checkInv < 27){
 				if(playerdata.TitleFlags.get(checkTitle1)){
-					if(SeichiAssist.config.getTitle1(checkTitle1) == null || SeichiAssist.config.getTitle1(checkTitle1) == ""){
+					if(SeichiAssist.config.getTitle1(checkTitle1) == null || SeichiAssist.config.getTitle1(checkTitle1).equals("")){
 					}else{
 						itemstack = new ItemStack(Material.WATER_BUCKET,1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATER_BUCKET);
@@ -2316,7 +2316,7 @@ public class MenuInventoryData {
 				//一部の「隠し中パーツ」は取得しているかの確認
 				if(9911 <= checkTitle2  /*&& checkTitle2 <= 9927*/){
 					if(playerdata.TitleFlags.get(checkTitle2)){
-						if(SeichiAssist.config.getTitle2(checkTitle2) == null || SeichiAssist.config.getTitle2(checkTitle2) == ""){
+						if(SeichiAssist.config.getTitle2(checkTitle2) == null || SeichiAssist.config.getTitle2(checkTitle2).equals("")){
 						}else{
 							itemstack = new ItemStack(Material.MILK_BUCKET,1);
 							itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MILK_BUCKET);
@@ -2330,7 +2330,7 @@ public class MenuInventoryData {
 							checkInv ++ ;
 						}
 					}
-				}else if(SeichiAssist.config.getTitle2(checkTitle2) == null || SeichiAssist.config.getTitle2(checkTitle2) == ""){
+				}else if(SeichiAssist.config.getTitle2(checkTitle2) == null || SeichiAssist.config.getTitle2(checkTitle2).equals("")){
 				}else{
 					itemstack = new ItemStack(Material.MILK_BUCKET,1);
 					itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MILK_BUCKET);
@@ -2422,7 +2422,7 @@ public class MenuInventoryData {
 		for(;checkTitle3 < 9900 ;){
 			if(checkInv < 27){
 				if(playerdata.TitleFlags.get(checkTitle3)){
-					if(SeichiAssist.config.getTitle3(checkTitle3) == null || SeichiAssist.config.getTitle3(checkTitle3) == ""){
+					if(SeichiAssist.config.getTitle3(checkTitle3) == null || SeichiAssist.config.getTitle3(checkTitle3).equals("")){
 					}else{
 						itemstack = new ItemStack(Material.LAVA_BUCKET,1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAVA_BUCKET);

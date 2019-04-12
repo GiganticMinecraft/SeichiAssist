@@ -1098,7 +1098,7 @@ public class Sql{
 			rs.next();
 			String shareinv = rs.getString("shareinv");
 			rs.close();
-			if (shareinv != "" && shareinv != null) {
+			if (!shareinv.equals("") && shareinv != null) {
 				player.sendMessage(ChatColor.RED + "既にアイテムが収納されています");
 				return false;
 			}
@@ -1265,7 +1265,7 @@ public class Sql{
 			if (!rs.next()) {
 				return false;
 			}
-			if(rs.getString("lastvote") == "" || rs.getString("lastvote") == null){
+			if(rs.getString("lastvote").equals("") || rs.getString("lastvote") == null){
 				lastvote = sdf.format(cal.getTime());
 			}else {
 				lastvote = rs.getString("lastvote");

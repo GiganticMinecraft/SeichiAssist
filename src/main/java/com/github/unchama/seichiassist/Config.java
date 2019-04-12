@@ -233,7 +233,7 @@ public class Config{
 
 	public String getLimitedLoginEventItem(int i){
 		String forreturn ;
-		if(config.getString("LimitedLoginEvent.DAY" + i + "_Item","") == ""){
+		if(config.getString("LimitedLoginEvent.DAY" + i + "_Item", "").equals("")){
 			forreturn = "0";
 		}else{
 			forreturn = config.getString("LimitedLoginEvent.DAY" + i + "_Item","");
@@ -243,7 +243,7 @@ public class Config{
 
 	public String getLimitedLoginEventAmount(int i){
 		String forreturn ;
-		if(config.getString("LimitedLoginEvent.DAY" + i + "_Amount","") == ""){
+		if(config.getString("LimitedLoginEvent.DAY" + i + "_Amount", "").equals("")){
 			forreturn = "0";
 		}else{
 			forreturn = config.getString("LimitedLoginEvent.DAY" + i + "_Amount","");

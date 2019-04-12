@@ -188,7 +188,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.totalexp = rs.getInt("totalexp");
 
  				playerdata.expmarge = rs.getByte("expmarge");
- 				playerdata.shareinv = (rs.getString("shareinv") != "" && rs.getString("shareinv") != null);
+ 				playerdata.shareinv = (!rs.getString("shareinv").equals("") && rs.getString("shareinv") != null);
  				playerdata.everysoundflag = rs.getBoolean("everysound");
  				playerdata.everymessageflag = rs.getBoolean("everymessage");
 
@@ -223,7 +223,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				//連続・通算ログインの情報、およびその更新
  		        Calendar cal = Calendar.getInstance();
  		        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
- 				if(rs.getString("lastcheckdate") == "" || rs.getString("lastcheckdate") == null){
+ 				if(rs.getString("lastcheckdate").equals("") || rs.getString("lastcheckdate") == null){
  					playerdata.lastcheckdate = sdf.format(cal.getTime());
  				}else {
  					playerdata.lastcheckdate = rs.getString("lastcheckdate");
@@ -260,7 +260,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
  		        //連続投票の更新
  		        String lastvote = rs.getString("lastvote");
- 		        if(lastvote == "" || lastvote == null){
+ 		        if(lastvote.equals("") || lastvote == null){
  		        	playerdata.ChainVote = 0;
  		        }else {
  		        	try {
