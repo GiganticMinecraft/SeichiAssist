@@ -41,7 +41,7 @@ public class PlayerJoinListener implements Listener {
 		if(!player.hasPlayedBefore()){
 			//初見さんであることを全体告知
 			Util.sendEveryMessage(ChatColor.LIGHT_PURPLE+""+ChatColor.BOLD+player.getName()+"さんはこのサーバーに初めてログインしました！");
-			Util.sendEveryMessage(ChatColor.WHITE + "Wikiはもう読みましたか？→" + ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "http://seichi.click");
+			Util.sendEveryMessage(ChatColor.WHITE + "webサイトはもう読みましたか？→" + ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "https://www.seichi.network/gigantic");
 			Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
 			//初見プレイヤーに木の棒、エリトラ、ピッケルを配布
 			player.getInventory().addItem(new ItemStack(Material.STICK));
