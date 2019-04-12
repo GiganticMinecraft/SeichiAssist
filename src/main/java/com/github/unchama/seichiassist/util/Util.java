@@ -628,7 +628,7 @@ public class Util {
 		}
 
 		for (String s : lore) {
-			if (s.indexOf("所有者：") != -1) { //"所有者:がある"
+			if (s.contains("所有者：")) { //"所有者:がある"
 				int idx = s.lastIndexOf("所有者：");
 				idx += 4; //「所有者：」の右端(名前の左端)までidxを移動
 				String temp = s.substring(idx);
@@ -651,7 +651,7 @@ public class Util {
 
 				int i=0;
 				for(i=0; i<lore.size(); i++){
-					if(lore.get(i).indexOf("所有者：")!=-1){ //"所有者:がある"
+					if(lore.get(i).contains("所有者：")){ //"所有者:がある"
 						break;
 					}
 				}
