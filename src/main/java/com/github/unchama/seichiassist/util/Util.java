@@ -117,20 +117,20 @@ public class Util {
 		ItemMeta meta;
 		gachaimo = new ItemStack(Material.GOLDEN_APPLE,1);
 		meta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
-		meta.setDisplayName(getGachaimoName());
-		List<String> lore = getGachaimoLore();
+		meta.setDisplayName(getGachaRingoName());
+		List<String> lore = getGachaRingoLore();
 		meta.setLore(lore);
 		gachaimo.setItemMeta(meta);
 		return gachaimo;
 	}
 
 	//がちゃりんごの名前を取得
-	public static String getGachaimoName(){
+	public static String getGachaRingoName(){
 		String name = ChatColor.GOLD + "" + ChatColor.BOLD + "がちゃりんご";
 		return name;
 	}
 	//がちゃりんごの説明を取得
-	public static List<String> getGachaimoLore(){
+	public static List<String> getGachaRingoLore(){
 		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "序盤に重宝します。"
 				, ChatColor.RESET + "" +  ChatColor.AQUA + "マナ回復（小）");
 		return lore;

@@ -2533,13 +2533,13 @@ public class PlayerInventoryListener implements Listener {
 			//ItemMeta meta;
 			itemstack = new ItemStack(Material.GOLDEN_APPLE,1);
 			meta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
-			meta.setDisplayName(Util.getGachaimoName());
-			List<String> lore = Util.getGachaimoLore();
+			meta.setDisplayName(Util.getGachaRingoName());
+			List<String> lore = Util.getGachaRingoLore();
 			meta.setLore(lore);
 			itemstack.setItemMeta(meta);
 
-			meta.setDisplayName(Util.getGachaimoName());
-			meta.setLore(Util.getGachaimoLore());
+			meta.setDisplayName(Util.getGachaRingoName());
+			meta.setLore(Util.getGachaRingoLore());
 		} else if(num>=0){ //他のガチャアイテムの場合 -2以下は他のアイテムに対応させる
 			MineStackGachaData g = new MineStackGachaData(SeichiAssist.msgachadatalist.get(num));
 			UUID uuid = player.getUniqueId();

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.*;
-import org.bukkit.enchantments.*;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -142,8 +141,8 @@ public class PlayerPickupItemListener implements Listener {
 					*/
 					//この時点で名前と説明文がある
 						if(SeichiAssist.minestacklist.get(i).getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
-							if( !(meta.getDisplayName().equals(Util.getGachaimoName()))
-								|| !(meta.getLore().equals(Util.getGachaimoLore())) ){
+							if( !(meta.getDisplayName().equals(Util.getGachaRingoName()))
+								|| !(meta.getLore().equals(Util.getGachaRingoLore())) ){
 								return;
 							}
 							if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){

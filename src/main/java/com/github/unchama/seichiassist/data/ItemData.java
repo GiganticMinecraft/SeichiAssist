@@ -47,8 +47,8 @@ public class ItemData {
         ItemMeta meta;
         gachaimo = new ItemStack(Material.GOLDEN_APPLE, amount);
         meta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
-        meta.setDisplayName(Util.getGachaimoName());
-        List<String> lore = Util.getGachaimoLore();
+        meta.setDisplayName(Util.getGachaRingoName());
+        List<String> lore = Util.getGachaRingoLore();
         meta.setLore(lore);
         gachaimo.setItemMeta(meta);
         return gachaimo;

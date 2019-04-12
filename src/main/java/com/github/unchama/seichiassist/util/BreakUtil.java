@@ -203,8 +203,8 @@ public class BreakUtil {
 					*/
 					//この時点で名前と説明文がある
 						if(SeichiAssist.minestacklist.get(i).getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
-							if( !(meta.getDisplayName().equals(Util.getGachaimoName()))
-								|| !(meta.getLore().equals(Util.getGachaimoLore())) ){
+							if( !(meta.getDisplayName().equals(Util.getGachaRingoName()))
+								|| !(meta.getLore().equals(Util.getGachaRingoLore())) ){
 								return false;
 							}
 							if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){

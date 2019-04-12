@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -772,7 +770,7 @@ public class SeichiAssist extends JavaPlugin{
 	private static List<MineStackObj> minestacklistgacha = Arrays.asList(
 
 			//以下ガチャ系アイテム
-			new MineStackGachaObj("gachaimo",Util.getGachaimoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaimoLore())
+			new MineStackGachaObj("gachaimo",Util.getGachaRingoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaRingoLore())
 			,new MineStackGachaObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0)
 
 	);
