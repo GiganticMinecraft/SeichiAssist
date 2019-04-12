@@ -100,11 +100,11 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			count --;
 
 			if(countn == 1){
-				Util.sendEveryMessage("整地量第1位は" + ChatColor.DARK_PURPLE + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
+				Util.sendEveryMessage("整地量第1位は" + ChatColor.DARK_PURPLE + "[ Lv" + e.getValue().level +" ]" + e.getValue().name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
 			}else if(countn == 2){
-				Util.sendEveryMessage("整地量第2位は" + ChatColor.BLUE + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
+				Util.sendEveryMessage("整地量第2位は" + ChatColor.BLUE + "[ Lv" + e.getValue().level +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
 			}else if(countn == 3){
-				Util.sendEveryMessage("整地量第3位は" + ChatColor.DARK_AQUA + "[ Lv" + Integer.toString(e.getValue().level) +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
+				Util.sendEveryMessage("整地量第3位は" + ChatColor.DARK_AQUA + "[ Lv" + e.getValue().level +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
 			}
 			countn++;
 		}

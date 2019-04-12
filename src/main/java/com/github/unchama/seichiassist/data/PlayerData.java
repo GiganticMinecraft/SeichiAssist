@@ -757,9 +757,9 @@ public class PlayerData {
 				s += ",,,,";
 			}else{
 				//設定されてる場合
-				s += String.valueOf( (int)sub_home[x].getX() ) +",";
-				s += String.valueOf( (int)sub_home[x].getY() ) +",";
-				s += String.valueOf( (int)sub_home[x].getZ() ) +",";
+				s += (int) sub_home[x].getX() +",";
+				s += (int) sub_home[x].getY() +",";
+				s += (int) sub_home[x].getZ() +",";
 				s += sub_home[x].getWorld().getName() +",";
 			}
 		}

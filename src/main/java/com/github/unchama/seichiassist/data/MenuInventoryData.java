@@ -7265,7 +7265,7 @@ public class MenuInventoryData {
 				if(rankdata.p_apple<1){ //数0
 					break;
 				}
-				lores.add(ChatColor.GRAY + "たくさんくれたﾆﾝｹﾞﾝ第" + Integer.toString(count+1) + "位！" );
+				lores.add(ChatColor.GRAY + "たくさんくれたﾆﾝｹﾞﾝ第" + (count + 1) + "位！" );
 				lores.add(ChatColor.GRAY + "なまえ：" + rankdata.name + " りんご：" + rankdata.p_apple + "個");
 			}
 

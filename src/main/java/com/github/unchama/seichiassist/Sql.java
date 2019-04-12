@@ -698,8 +698,8 @@ public class Sql{
 
 			command = "insert into " + db + "." + table + " (probability,amount,itemstack)"
 					+ " values"
-					+ "(" + Double.toString(gachadata.probability)
-					+ "," + Integer.toString(gachadata.amount)
+					+ "(" + gachadata.probability
+					+ "," + gachadata.amount
 					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
 					+ ")";
 			if(!putCommand(command)){
@@ -727,9 +727,9 @@ public class Sql{
 
 			command = "insert into " + db + "." + table + " (probability,amount,level,obj_name,itemstack)"
 					+ " values"
-					+ "(" + Double.toString(gachadata.probability)
-					+ "," + Integer.toString(gachadata.amount)
-					+ "," + Integer.toString(gachadata.level)
+					+ "(" + gachadata.probability
+					+ "," + gachadata.amount
+					+ "," + gachadata.level
 					+ ",'" + gachadata.obj_name + "'"
 					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
 					+ ")";
@@ -889,8 +889,8 @@ public class Sql{
 		String command = "update " + db + "." + table
 				+ " set"
 
-				+ " level = " + Integer.toString(level)
-				+ ",totalbreaknum = " + Long.toString(totalbreaknum);
+				+ " level = " + level
+				+ ",totalbreaknum = " + totalbreaknum;
 
 		//最後の処理
 		command = command + " where uuid like '" + struuid + "'";
@@ -908,8 +908,8 @@ public class Sql{
 		String command = "update " + db + "." + table
 				+ " set"
 
-				+ " level = " + Integer.toString(level)
-				+ ",totalbreaknum = " + Integer.toString(totalbreaknum);
+				+ " level = " + level
+				+ ",totalbreaknum = " + totalbreaknum;
 
 		//最後の処理
 		command = command + " where uuid like '" + struuid + "'";
@@ -975,7 +975,7 @@ public class Sql{
 		Map<UUID, String> leavers = new HashMap<>();
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "select name, uuid from " + db + "." + table
-				+ " where ((lastquit <= date_sub(curdate(), interval " + Integer.toString(days) + " day))"
+				+ " where ((lastquit <= date_sub(curdate(), interval " + days + " day))"
 				+ " or (lastquit is null)) and (name != '') and (uuid != '')";
 			try{
 				rs = stmt.executeQuery(command);
@@ -1013,9 +1013,9 @@ public class Sql{
 					+ "value("
 					+ "'" + playerdata.name + "',"
 					+ "'" + playerdata.uuid.toString() + "',"
-					+ Integer.toString(effect.getNum()) + ","
+					+ effect.getNum() + ","
 					+ "'" + effect.getsqlName() + "',"
-					+ Integer.toString(effect.getUsePoint()) + ","
+					+ effect.getUsePoint() + ","
 					+ "cast( now() as datetime )"
 					+ ")";
 		return putCommand(command);
@@ -1026,7 +1026,7 @@ public class Sql{
 					+ " (playername,getpoint,date) "
 					+ "value("
 					+ "'" + name + "',"
-					+ Integer.toString(point) + ","
+					+ point + ","
 					+ "cast( now() as datetime )"
 					+ ")";
 		return putCommand(command);
@@ -1205,7 +1205,7 @@ public class Sql{
 	public boolean setAnniversary(boolean anniversary, UUID uuid) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "UPDATE " + db + "." + table + " " +
-				"SET anniversary = " + Boolean.toString(anniversary);
+				"SET anniversary = " + anniversary;
 		if (uuid != null) {
 			command += " WHERE uuid = '" + uuid.toString() + "'";
 		}
@@ -1238,7 +1238,7 @@ public class Sql{
 			rs.close();
 
 			String update = "UPDATE " + db + "." + table + " " +
-	 				" SET contribute_point = " + Integer.toString(point) +
+	 				" SET contribute_point = " + point +
 	 				" WHERE name LIKE '" + targetName + "'";
 
 			stmt.executeUpdate(update);
@@ -1321,7 +1321,7 @@ public class Sql{
 			rs.close();
 
 			String update = "UPDATE " + db + "." + table + " " +
-	 				" SET chainvote = " + Integer.toString(count) +
+	 				" SET chainvote = " + count +
 	 				" WHERE name LIKE '" + name + "'";
 
 			stmt.executeUpdate(update);

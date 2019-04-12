@@ -76,61 +76,61 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ " name = '" + playerdata.name + "'"
 
 				//各種数値更新処理
-				+ ",effectflag = " + Integer.toString(playerdata.effectflag)
-				+ ",minestackflag = " + Boolean.toString(playerdata.minestackflag)
-				+ ",messageflag = " + Boolean.toString(playerdata.messageflag)
-				+ ",activemineflagnum = " + Integer.toString(playerdata.activeskilldata.mineflagnum)
-				+ ",assaultflag = " + Boolean.toString(playerdata.activeskilldata.assaultflag)
-				+ ",activeskilltype = " + Integer.toString(playerdata.activeskilldata.skilltype)
-				+ ",activeskillnum = " + Integer.toString(playerdata.activeskilldata.skillnum)
-				+ ",assaultskilltype = " + Integer.toString(playerdata.activeskilldata.assaulttype)
-				+ ",assaultskillnum = " + Integer.toString(playerdata.activeskilldata.assaultnum)
-				+ ",arrowskill = " + Integer.toString(playerdata.activeskilldata.arrowskill)
-				+ ",multiskill = " + Integer.toString(playerdata.activeskilldata.multiskill)
-				+ ",breakskill = " + Integer.toString(playerdata.activeskilldata.breakskill)
-				+ ",fluidcondenskill = " + Integer.toString(playerdata.activeskilldata.fluidcondenskill)
-				+ ",watercondenskill = " + Integer.toString(playerdata.activeskilldata.watercondenskill)
-				+ ",lavacondenskill = " + Integer.toString(playerdata.activeskilldata.lavacondenskill)
-				+ ",effectnum = " + Integer.toString(playerdata.activeskilldata.effectnum)
-				+ ",gachapoint = " + Integer.toString(playerdata.gachapoint)
-				+ ",gachaflag = " + Boolean.toString(playerdata.gachaflag)
-				+ ",level = " + Integer.toString(playerdata.level)
-				+ ",rgnum = " + Integer.toString(playerdata.rgnum)
-				+ ",totalbreaknum = " + Long.toString(playerdata.totalbreaknum)
+				+ ",effectflag = " + playerdata.effectflag
+				+ ",minestackflag = " + playerdata.minestackflag
+				+ ",messageflag = " + playerdata.messageflag
+				+ ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum
+				+ ",assaultflag = " + playerdata.activeskilldata.assaultflag
+				+ ",activeskilltype = " + playerdata.activeskilldata.skilltype
+				+ ",activeskillnum = " + playerdata.activeskilldata.skillnum
+				+ ",assaultskilltype = " + playerdata.activeskilldata.assaulttype
+				+ ",assaultskillnum = " + playerdata.activeskilldata.assaultnum
+				+ ",arrowskill = " + playerdata.activeskilldata.arrowskill
+				+ ",multiskill = " + playerdata.activeskilldata.multiskill
+				+ ",breakskill = " + playerdata.activeskilldata.breakskill
+				+ ",fluidcondenskill = " + playerdata.activeskilldata.fluidcondenskill
+				+ ",watercondenskill = " + playerdata.activeskilldata.watercondenskill
+				+ ",lavacondenskill = " + playerdata.activeskilldata.lavacondenskill
+				+ ",effectnum = " + playerdata.activeskilldata.effectnum
+				+ ",gachapoint = " + playerdata.gachapoint
+				+ ",gachaflag = " + playerdata.gachaflag
+				+ ",level = " + playerdata.level
+				+ ",rgnum = " + playerdata.rgnum
+				+ ",totalbreaknum = " + playerdata.totalbreaknum
 				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
-				+ ",playtick = " + Integer.toString(playerdata.playtick)
+				+ ",playtick = " + playerdata.playtick
 				+ ",lastquit = cast( now() as datetime )"
-				+ ",killlogflag = " + Boolean.toString(playerdata.dispkilllogflag)
-				+ ",worldguardlogflag = " + Boolean.toString(playerdata.dispworldguardlogflag)
+				+ ",killlogflag = " + playerdata.dispkilllogflag
+				+ ",worldguardlogflag = " + playerdata.dispworldguardlogflag
 
-				+ ",multipleidbreakflag = " + Boolean.toString(playerdata.multipleidbreakflag)
+				+ ",multipleidbreakflag = " + playerdata.multipleidbreakflag
 
-				+ ",pvpflag = " + Boolean.toString(playerdata.pvpflag)
-				+ ",effectpoint = " + Integer.toString(playerdata.activeskilldata.effectpoint)
-				+ ",mana = " + Double.toString(playerdata.activeskilldata.mana.getMana())
-				+ ",expvisible = " + Boolean.toString(playerdata.expbar.isVisible())
-				+ ",totalexp = " + Integer.toString(playerdata.totalexp)
-				+ ",expmarge = " + Byte.toString(playerdata.expmarge)
-				+ ",everysound = " + Boolean.toString(playerdata.everysoundflag)
-				+ ",everymessage = " + Boolean.toString(playerdata.everymessageflag)
+				+ ",pvpflag = " + playerdata.pvpflag
+				+ ",effectpoint = " + playerdata.activeskilldata.effectpoint
+				+ ",mana = " + playerdata.activeskilldata.mana.getMana()
+				+ ",expvisible = " + playerdata.expbar.isVisible()
+				+ ",totalexp = " + playerdata.totalexp
+				+ ",expmarge = " + playerdata.expmarge
+				+ ",everysound = " + playerdata.everysoundflag
+				+ ",everymessage = " + playerdata.everymessageflag
 
-				+",displayTypeLv = " + Boolean.toString(playerdata.displayTypeLv)
-				+",displayTitle1No = " + Integer.toString(playerdata.displayTitle1No)
-				+",displayTitle2No = " + Integer.toString(playerdata.displayTitle2No)
-				+",displayTitle3No = " + Integer.toString(playerdata.displayTitle3No)
-				+",giveachvNo = " + Integer.toString(playerdata.giveachvNo)
-				+",achvPointMAX = " + Integer.toString(playerdata.achvPointMAX)
-				+",achvPointUSE = " + Integer.toString(playerdata.achvPointUSE)
-				+",achvChangenum = " + Integer.toString(playerdata.achvChangenum)
-				+",starlevel = " + Integer.toString(playerdata.starlevel)
-				+",starlevel_Break = " + Integer.toString(playerdata.starlevel_Break)
-				+",starlevel_Time = " + Integer.toString(playerdata.starlevel_Time)
-				+",starlevel_Event = " + Integer.toString(playerdata.starlevel_Event)
+				+",displayTypeLv = " + playerdata.displayTypeLv
+				+",displayTitle1No = " + playerdata.displayTitle1No
+				+",displayTitle2No = " + playerdata.displayTitle2No
+				+",displayTitle3No = " + playerdata.displayTitle3No
+				+",giveachvNo = " + playerdata.giveachvNo
+				+",achvPointMAX = " + playerdata.achvPointMAX
+				+",achvPointUSE = " + playerdata.achvPointUSE
+				+",achvChangenum = " + playerdata.achvChangenum
+				+",starlevel = " + playerdata.starlevel
+				+",starlevel_Break = " + playerdata.starlevel_Break
+				+",starlevel_Time = " + playerdata.starlevel_Time
+				+",starlevel_Event = " + playerdata.starlevel_Event
 
 				+",lastcheckdate = '" + playerdata.lastcheckdate + "'"
-				+",ChainJoin = " + Integer.toString(playerdata.ChainJoin)
-				+",TotalJoin = " + Integer.toString(playerdata.TotalJoin)
-				+",LimitedLoginCount = " + Integer.toString(playerdata.LimitedLoginCount);
+				+",ChainJoin = " + playerdata.ChainJoin
+				+",TotalJoin = " + playerdata.TotalJoin
+				+",LimitedLoginCount = " + playerdata.LimitedLoginCount;
 
 				//MineStack機能の数値更新処理
 
@@ -138,7 +138,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				if(SeichiAssist.minestack_sql_enable){
 					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
 						command += ",stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName()+ " = "
-							+ Integer.toString(playerdata.minestack.getNum(i));
+							+ playerdata.minestack.getNum(i);
 					}
 				}
 
@@ -146,26 +146,26 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				command +=  ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'"
 						+ ",subhome_name_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeNameToString() + "'"
 				//建築
-				+ ",build_lv = " + Integer.toString(playerdata.build_lv_get())
+				+ ",build_lv = " + playerdata.build_lv_get()
 				+ ",build_count = " + playerdata.build_count_get().toString()
-				+ ",build_count_flg = " + Byte.toString(playerdata.build_count_flg_get())
+				+ ",build_count_flg = " + playerdata.build_count_flg_get()
 
 				//投票
-				+ ",canVotingFairyUse = " + Boolean.toString(playerdata.usingVotingFairy)
+				+ ",canVotingFairyUse = " + playerdata.usingVotingFairy
 				+ ",newVotingFairyTime = '" + playerdata.VotingFairyTimeToString() + "'"
-				+ ",VotingFairyRecoveryValue = " + Integer.toString(playerdata.VotingFairyRecoveryValue)
-				+ ",hasVotingFairyMana = " + Integer.toString(playerdata.hasVotingFairyMana)
-				+ ",toggleGiveApple = " + Integer.toString(playerdata.toggleGiveApple)
-				+ ",toggleVotingFairy = " + Integer.toString(playerdata.toggleVotingFairy)
-				+ ",p_apple = " + Long.toString(playerdata.p_apple)
+				+ ",VotingFairyRecoveryValue = " + playerdata.VotingFairyRecoveryValue
+				+ ",hasVotingFairyMana = " + playerdata.hasVotingFairyMana
+				+ ",toggleGiveApple = " + playerdata.toggleGiveApple
+				+ ",toggleVotingFairy = " + playerdata.toggleVotingFairy
+				+ ",p_apple = " + playerdata.p_apple
 
 				//貢献度pt
-				+",added_mana = " + Integer.toString(playerdata.added_mana)
+				+",added_mana = " + playerdata.added_mana
 
-				+",GBstage = " + Integer.toString(playerdata.GBstage)
-				+",GBexp = " + Integer.toString(playerdata.GBexp)
-				+",GBlevel = " + Integer.toString(playerdata.GBlevel)
-				+",isGBStageUp = " + Boolean.toString(playerdata.isGBStageUp);
+				+",GBstage = " + playerdata.GBstage
+				+",GBexp = " + playerdata.GBexp
+				+",GBlevel = " + playerdata.GBlevel
+				+",isGBStageUp = " + playerdata.isGBStageUp;
 
 				//実績のフラグ(BitSet)保存用変換処理
 				long[] TitleArray = playerdata.TitleFlags.toLongArray();
@@ -175,18 +175,18 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 		//グリッド式保護設定保存
 		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
-			command += ",ahead_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getAheadAmount());
-			command += ",behind_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getBehindAmount());
-			command += ",right_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getRightAmount());
-			command += ",left_" + i + " = " + Integer.toString(playerdata.getTemplateMap().get(i).getLeftAmount());
+			command += ",ahead_" + i + " = " + playerdata.getTemplateMap().get(i).getAheadAmount();
+			command += ",behind_" + i + " = " + playerdata.getTemplateMap().get(i).getBehindAmount();
+			command += ",right_" + i + " = " + playerdata.getTemplateMap().get(i).getRightAmount();
+			command += ",left_" + i + " = " + playerdata.getTemplateMap().get(i).getLeftAmount();
 		}
 
 		//正月イベント
-		command += ",hasNewYearSobaGive = " + Boolean.toString(playerdata.hasNewYearSobaGive);
-		command += ",newYearBagAmount = " + Integer.toString(playerdata.newYearBagAmount);
+		command += ",hasNewYearSobaGive = " + playerdata.hasNewYearSobaGive;
+		command += ",newYearBagAmount = " + playerdata.newYearBagAmount;
 
 		//バレンタインイベント
-		command += ",hasChocoGave = " + Boolean.toString(playerdata.hasChocoGave);
+		command += ",hasChocoGave = " + playerdata.hasChocoGave;
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
         for (final ActiveSkillEffect activeSkillEffect : activeskilleffect) {
@@ -194,7 +194,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
             int num = activeSkillEffect.getNum();
             Boolean flag = playerdata.activeskilldata.effectflagmap.get(num);
             command = command +
-                    "," + sqlname + " = " + Boolean.toString(flag);
+                    "," + sqlname + " = " + flag;
         }
 		ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
         for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : premiumeffect) {
@@ -202,7 +202,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
             int num = activeSkillPremiumEffect.getNum();
             Boolean flag = playerdata.activeskilldata.premiumeffectflagmap.get(num);
             command = command +
-                    "," + sqlname + " = " + Boolean.toString(flag);
+                    "," + sqlname + " = " + flag;
         }
 
 		//loginflag折る処理
