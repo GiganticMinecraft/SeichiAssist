@@ -74,9 +74,9 @@ public class SeichiAssist extends JavaPlugin{
 
 	public static SeichiAssist plugin;
 	//デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
-	public static Boolean DEBUG = false;
+	public static boolean DEBUG = false;
 	//ガチャシステムのメンテナンスフラグ
-	public static Boolean gachamente = false;
+	public static boolean gachamente = false;
 
 	public static final String PLAYERDATA_TABLENAME = "playerdata";
 	static final String GACHADATA_TABLENAME = "gachadata";
