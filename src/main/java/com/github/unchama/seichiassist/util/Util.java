@@ -44,7 +44,12 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class Util {
-	static private FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
+	// インスタンスを作成したところでメソッドが呼べるわけでもないので封印
+	private Util() {
+
+	}
+
+	private static FireworkEffect.Type[] types = { FireworkEffect.Type.BALL,
 		FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST,
 		FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR, };
 
@@ -476,13 +481,13 @@ public class Util {
 		Plugin plugin = SeichiAssist.plugin.getServer().getPluginManager().getPlugin("CoreProtect");
 
 		// Check that CoreProtect is loaded
-		if (plugin == null || !(plugin instanceof CoreProtect)) {
+		if (!(plugin instanceof CoreProtect)) {
 		    return null;
 		}
 
 		// Check that the API is enabled
 		CoreProtectAPI CoreProtect = ((CoreProtect)plugin).getAPI();
-		if (CoreProtect.isEnabled()==false){
+		if (!CoreProtect.isEnabled()){
 		    return null;
 		}
 

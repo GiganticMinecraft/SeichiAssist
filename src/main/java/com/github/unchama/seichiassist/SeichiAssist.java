@@ -883,9 +883,7 @@ public class SeichiAssist extends JavaPlugin{
         List<MineStackObj> minestacklistgacha1;
 
 		//mysqlからMineStack用ガチャデータ読み込み
-		if(!sql.loadMineStackGachaData()){
-			getLogger().info("MineStack用ガチャデータのロードに失敗しました");
-		} else { //MineStack用ガチャデータを読み込んだ
+		if (sql.loadMineStackGachaData()) { //MineStack用ガチャデータを読み込んだ
 			getLogger().info("MineStack用ガチャデータのロードに成功しました");
 			minestacklistgacha1 = creategachaminestacklist();
 
@@ -904,6 +902,8 @@ public class SeichiAssist extends JavaPlugin{
 
 			minestacklist.addAll(minestacklistgacha);
 
+		} else {
+			getLogger().info("MineStack用ガチャデータのロードに失敗しました");
 		}
 
 		if(!sql.connect1()){
