@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.data.slot.base;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.itemstack.builder.component.ItemStackBuilder;
 import com.github.unchama.seichiassist.data.slot.Slot;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -51,5 +52,10 @@ public class BaseSlot implements Slot {
     public void setToInventory(@Nonnull Inventory inventory, @Nonnull PlayerData playerData) {
         requireNonNull(playerData);
         inventory.setItem(position, getItemStack(playerData));
+    }
+
+    @Override
+    public void invoke(@Nonnull InventoryClickEvent event) {
+        //何もしない.
     }
 }

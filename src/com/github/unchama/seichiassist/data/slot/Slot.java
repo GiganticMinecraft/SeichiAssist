@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -43,6 +44,13 @@ public interface Slot {
      * @param playerData {@link Player} の {@link PlayerData} ({@code null} は許容されません.)
      */
     void setToInventory(@Nonnull Inventory inventory, @Nonnull PlayerData playerData);
+
+    /**
+     * {@link InventoryClickEvent} を与えて {@link Slot} の動作を行わせます.
+     *
+     * @param event {@link InventoryClickEvent}
+     */
+    void invoke(@Nonnull InventoryClickEvent event);
 
     /**
      * {@link Slot} を構成するための {@link Builder} です.

@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.data.slot.Slot;
 import com.github.unchama.seichiassist.data.slot.base.BaseSlot;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandlers;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -58,5 +59,11 @@ public class Button extends BaseSlot {
      */
     public void addHandler(@Nonnull List<SlotActionHandler> handlers) {
         this.handlers.addAll(requireNonNull(handlers));
+    }
+
+    @Override
+    public void invoke(@Nonnull InventoryClickEvent event) {
+        requireNonNull(event);
+        this.handlers.forEach(handler -> handler.invoke(event));
     }
 }
