@@ -20,6 +20,11 @@
 - RegenWorld_1.0 [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
 - SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
 
+## DBの準備
+初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
+- [gachadata.spl](https://red.minecraftserver.jp/attachments/download/892/gachadata.sql) -> import to "gachadata" table.
+- [msgachadata.spl](https://red.minecraftserver.jp/attachments/download/891/msgachadata.sql) -> import to "msgachadata" table.
+
 ## 利用条件
 - GPLv3ライセンスでの公開です。ソースコードの使用規約等はGPLv3ライセンスに従います。
 - 当リポジトリのコードの著作権はunchamaが所有しています。
