@@ -2,7 +2,7 @@
 
 ## 開発環境
 - eclipse 4.4 luna
-- JDK 1.8
+- [JDK 1.8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 - [mysql-connecter-java-5.1.35](https://downloads.mysql.com/archives/c-j/)
 
 ## 前提プラグイン
