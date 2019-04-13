@@ -35,7 +35,7 @@ public class VotingFairyTaskRunnable {
 		}
 	}
 
-	public static void speak(Player p, String msg, Boolean b) {
+	public static void speak(Player p, String msg, boolean b) {
 		if (b) playSe(p);
 		p.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "<マナ妖精>" + ChatColor.RESET + "" + msg);
 	}

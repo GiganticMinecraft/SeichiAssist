@@ -66,7 +66,7 @@ public enum ActiveSkillEffect {
 		return this.material;
 	}
 	//プレイヤーが所持しているかどうか
-	public Boolean isObtained(Map<Integer,Boolean> flagmap){
+	public boolean isObtained(Map<Integer,Boolean> flagmap){
 		return flagmap.get(getNum());
 	}
 	//獲得させる処理

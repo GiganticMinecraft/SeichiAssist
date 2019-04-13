@@ -55,7 +55,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	final String struuid;
 	String command;
 	public static String exc;
-	Boolean flag;
+	boolean flag;
 	int i;
 	Statement stmt = null;
 	ResultSet rs = null;

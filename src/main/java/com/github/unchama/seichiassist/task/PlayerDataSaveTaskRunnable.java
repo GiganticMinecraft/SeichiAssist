@@ -192,7 +192,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		for (final ActiveSkillEffect activeSkillEffect : activeskilleffect) {
 			String sqlname = activeSkillEffect.getsqlName();
 			int num = activeSkillEffect.getNum();
-			Boolean flag = playerdata.activeskilldata.effectflagmap.get(num);
+			boolean flag = playerdata.activeskilldata.effectflagmap.get(num);
 			command = command +
 					"," + sqlname + " = " + flag;
 		}
@@ -200,7 +200,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : premiumeffect) {
 			String sqlname = activeSkillPremiumEffect.getsqlName();
 			int num = activeSkillPremiumEffect.getNum();
-			Boolean flag = playerdata.activeskilldata.premiumeffectflagmap.get(num);
+			boolean flag = playerdata.activeskilldata.premiumeffectflagmap.get(num);
 			command = command +
 					"," + sqlname + " = " + flag;
 		}

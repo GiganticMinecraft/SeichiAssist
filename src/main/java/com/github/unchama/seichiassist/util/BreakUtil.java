@@ -63,7 +63,7 @@ public class BreakUtil {
 			//コアプロテクトのクラスを取得
 			CoreProtectAPI CoreProtect = Util.getCoreProtect();
 			//破壊ログを設定
-			Boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
+			boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
 			//もし失敗したらプレイヤーに報告し処理を終了
 			if(!success){
 				player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
@@ -643,7 +643,7 @@ public class BreakUtil {
 		//コアプロテクトのクラスを取得
 		CoreProtectAPI CoreProtect = Util.getCoreProtect();
 		//破壊ログを設定
-		Boolean success = CoreProtect.logRemoval(player.getName(), placeblock.getLocation(), blockstate.getType(),data);
+		boolean success = CoreProtect.logRemoval(player.getName(), placeblock.getLocation(), blockstate.getType(),data);
 		//もし失敗したらプレイヤーに報告し処理を終了
 		if(!success){
 			player.sendMessage(ChatColor.RED + "error:coreprotectに保存できませんでした。管理者に報告してください。");
