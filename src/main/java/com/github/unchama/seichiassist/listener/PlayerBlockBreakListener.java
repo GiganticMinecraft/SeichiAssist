@@ -506,9 +506,9 @@ public class PlayerBlockBreakListener implements Listener {
 		//破壊する処理
 
 		//溶岩の破壊する処理
-        for (Block value : lavalist) {
-            value.setType(Material.AIR);
-        }
+		for (Block value : lavalist) {
+			value.setType(Material.AIR);
+		}
 
 		//選択されたブロックを破壊する処理
 

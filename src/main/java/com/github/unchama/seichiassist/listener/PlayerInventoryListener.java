@@ -592,10 +592,10 @@ public class PlayerInventoryListener implements Listener {
 					Inventory newsizepocket = Bukkit.getServer().createInventory(null,playerdata.getPocketSize(),ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 					//for文で一個ずつ新しいサイズのポケットに入れてく
 					int i = 0;
-		            for (ItemStack m : item) {
-		                newsizepocket.setItem(i, m);
-		                i++;
-		            }
+					for (ItemStack m : item) {
+						newsizepocket.setItem(i, m);
+						i++;
+					}
 		            //出来たら置き換える
 		            playerdata.inventory = newsizepocket;
 				}

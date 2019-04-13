@@ -127,11 +127,11 @@ public enum ActiveSkillEffect {
 
 	public static String getNamebyNum(int effectnum) {
 		ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-        for (final ActiveSkillEffect activeSkillEffect : skilleffect) {
-            if (activeSkillEffect.getNum() == effectnum) {
-                return activeSkillEffect.getName();
-            }
-        }
+		for (final ActiveSkillEffect activeSkillEffect : skilleffect) {
+			if (activeSkillEffect.getNum() == effectnum) {
+				return activeSkillEffect.getName();
+			}
+		}
 		return "未設定";
 	}
 

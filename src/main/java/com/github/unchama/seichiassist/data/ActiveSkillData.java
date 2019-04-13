@@ -91,13 +91,13 @@ public class ActiveSkillData {
 		premiumeffectflagmap = new HashMap<>();
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
-        for (final ActiveSkillEffect activeSkillEffect : activeskilleffect) {
-            effectflagmap.put(activeSkillEffect.getNum(), false);
-        }
+		for (final ActiveSkillEffect activeSkillEffect : activeskilleffect) {
+			effectflagmap.put(activeSkillEffect.getNum(), false);
+		}
 		ActiveSkillPremiumEffect[] activeskillpremiumeffect = ActiveSkillPremiumEffect.values();
-        for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : activeskillpremiumeffect) {
-            premiumeffectflagmap.put(activeSkillPremiumEffect.getNum(), false);
-        }
+		for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : activeskillpremiumeffect) {
+			premiumeffectflagmap.put(activeSkillPremiumEffect.getNum(), false);
+		}
         area = null;
 		assaultarea = null;
 

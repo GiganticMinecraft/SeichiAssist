@@ -189,21 +189,21 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		command += ",hasChocoGave = " + playerdata.hasChocoGave;
 
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
-        for (final ActiveSkillEffect activeSkillEffect : activeskilleffect) {
-            String sqlname = activeSkillEffect.getsqlName();
-            int num = activeSkillEffect.getNum();
-            Boolean flag = playerdata.activeskilldata.effectflagmap.get(num);
-            command = command +
-                    "," + sqlname + " = " + flag;
-        }
+		for (final ActiveSkillEffect activeSkillEffect : activeskilleffect) {
+			String sqlname = activeSkillEffect.getsqlName();
+			int num = activeSkillEffect.getNum();
+			Boolean flag = playerdata.activeskilldata.effectflagmap.get(num);
+			command = command +
+					"," + sqlname + " = " + flag;
+		}
 		ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-        for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : premiumeffect) {
-            String sqlname = activeSkillPremiumEffect.getsqlName();
-            int num = activeSkillPremiumEffect.getNum();
-            Boolean flag = playerdata.activeskilldata.premiumeffectflagmap.get(num);
-            command = command +
-                    "," + sqlname + " = " + flag;
-        }
+		for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : premiumeffect) {
+			String sqlname = activeSkillPremiumEffect.getsqlName();
+			int num = activeSkillPremiumEffect.getNum();
+			Boolean flag = playerdata.activeskilldata.premiumeffectflagmap.get(num);
+			command = command +
+					"," + sqlname + " = " + flag;
+		}
 
 		//loginflag折る処理
 		if(logoutflag){
