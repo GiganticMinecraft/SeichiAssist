@@ -52,7 +52,7 @@ public class BreakUtil {
 
 		//壊されるブロックがワールドガード範囲だった場合処理を終了
 		//ここをオンオフ可能にする
-		if(!Util.getWorldGuard().canBuild(player, breakblock.getLocation())){
+		if(!ExternalPlugins.getWorldGuard().canBuild(player, breakblock.getLocation())){
 			if(playerdata.dispworldguardlogflag){
 				player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
 			}
@@ -61,7 +61,7 @@ public class BreakUtil {
 
 		if(!equalignoreWorld(player.getWorld().getName())){
 			//コアプロテクトのクラスを取得
-			CoreProtectAPI CoreProtect = Util.getCoreProtect();
+			CoreProtectAPI CoreProtect = ExternalPlugins.getCoreProtect();
 			//破壊ログを設定
 			boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
 			//もし失敗したらプレイヤーに報告し処理を終了
@@ -641,7 +641,7 @@ public class BreakUtil {
 		byte data = blockstate.getData().getData();
 
 		//コアプロテクトのクラスを取得
-		CoreProtectAPI CoreProtect = Util.getCoreProtect();
+		CoreProtectAPI CoreProtect = ExternalPlugins.getCoreProtect();
 		//破壊ログを設定
 		boolean success = CoreProtect.logRemoval(player.getName(), placeblock.getLocation(), blockstate.getType(),data);
 		//もし失敗したらプレイヤーに報告し処理を終了
