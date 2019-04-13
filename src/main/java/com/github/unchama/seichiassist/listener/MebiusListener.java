@@ -7,6 +7,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 
+import com.github.unchama.seichiassist.MebiusTalk;
+import com.github.unchama.seichiassist.util.SetFactory;
+import com.google.common.collect.Sets;
 import de.tr7zw.itemnbtapi.*;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
@@ -217,7 +220,7 @@ public class MebiusListener implements Listener {
 	@EventHandler
 	public void onKill(EntityDeathEvent event) {
 		try {
-			final List<String> msgs = Arrays.asList(
+			final Set<String> msgs = SetFactory.of(
 					"さすが[str1]！[str2]なんて敵じゃないね！", "僕にかかれば[str2]なんてこんなもんだよー！",
 					"モンスターってなんで人間を襲うんだろう…？", "ねえ[str1]、今の僕のおかげだよね！ね？",
 					"たまにはやられてみたいもんだねー、ふふん！", "[str2]なんて僕の力を出すまでもなかったね！");
@@ -576,17 +579,19 @@ public class MebiusListener implements Listener {
 	}
 
 	// レベル別Talk
-	private static final List<List<String>> TALKDEST = Arrays.asList(
-			Arrays.asList("こんにちは！これからよろしくねー！", "いつの間にか被っていた。"), Arrays.asList("僕のこと外さないでね？", "段々成長していくらしい。"), Arrays.asList("モンスターって怖いねえ…", "どこから喋っているのだろう。"),
-			Arrays.asList("どこでもルールって大切だね。", "ちゃんと守らなきゃね。"), Arrays.asList("整地神様って知ってる？偉いんだよ！", "どうやら神様を知ってるみたい。"), Arrays.asList("知らないこと、いっぱい学びたいなぁ。", "どこに記憶しているんだろう。"),
-			Arrays.asList("ゾンビっておいしいのかな？", "それだけはやめておけ。"), Arrays.asList("どこかに僕の兄弟が埋まってるんだー。", "採掘で手に入るのかな。"), Arrays.asList("…はっ！寝てないからね！？", "たまに静かだよね。"),
-			Arrays.asList("スキルって気持ち良いよね！", "マナが吸い取られるけどね。"), Arrays.asList("メインワールドの探検しようよー！", "息抜きは大切だね。"), Arrays.asList("宿題も大切だよ？", "何の話をしてるんだろう…"),
-			Arrays.asList("空を自由に飛びたいなー！", "はい、タケコプター！"), Arrays.asList("ジュースが飲みたいよー！", "どこから飲むつもりだろう。"), Arrays.asList("君の頭って落ち着くねぇ。", "君のお喋りにも慣れたなぁ。"),
-			Arrays.asList("APOLLO様みたいになれるかな？", "どんな関係があるんだろう…"), Arrays.asList("僕って役に立つでしょー！", "静かならもっといいんだけどね。"), Arrays.asList("赤いりんごがあるらしいよ！？", "りんごは普通赤いんだよ。"),
-			Arrays.asList("ヘルメット式電動耳掃除…", "何を怖いことを言っている…"), Arrays.asList("ここまで育つなんてね！", "立派になったもんだね。"), Arrays.asList("動きすぎると酔っちゃうよね。", "三半規管はあるのかな。"),
-			Arrays.asList("僕は整地神様に生み出されたんだよ！", "整地神ってお喋りなのかな…"), Arrays.asList("君とドラゴンを倒す夢を見たよ…", "エンダードラゴンのことかな。"), Arrays.asList("君は僕が育てたと胸を張って言えるね！", "逆でしょう。"),
-			Arrays.asList("ああー饅頭が怖いなあ！", "落語でも見た？あげないよ。"), Arrays.asList("僕にも手足があったらなー…！", "被れなくなるでしょ。"), Arrays.asList("このフィット感…着心地抜群だよね？", "もう少し静かだったらね。"),
-			Arrays.asList("餃子っておいしいんだねえ！", "ニンニク臭がこもってるよ…"), Arrays.asList("君も立派になったねえ", "同じこと思ってたとこ。"), Arrays.asList("育ててくれてありがとう！", "ある意味、最強のヘルメット。"));
+	// TODO: ここをList<MebiusSerif>にする
+	private static final List<MebiusTalk> TALKDEST = Arrays.asList(
+			new MebiusTalk("こんにちは！これからよろしくねー！", "いつの間にか被っていた。"), new MebiusTalk("僕のこと外さないでね？", "段々成長していくらしい。"), new MebiusTalk("モンスターって怖いねえ…", "どこから喋っているのだろう。"),
+			new MebiusTalk("どこでもルールって大切だね。", "ちゃんと守らなきゃね。"), new MebiusTalk("整地神様って知ってる？偉いんだよ！", "どうやら神様を知ってるみたい。"), new MebiusTalk("知らないこと、いっぱい学びたいなぁ。", "どこに記憶しているんだろう。"),
+			new MebiusTalk("ゾンビっておいしいのかな？", "それだけはやめておけ。"), new MebiusTalk("どこかに僕の兄弟が埋まってるんだー。", "採掘で手に入るのかな。"), new MebiusTalk("…はっ！寝てないからね！？", "たまに静かだよね。"),
+			new MebiusTalk("スキルって気持ち良いよね！", "マナが吸い取られるけどね。"), new MebiusTalk("メインワールドの探検しようよー！", "息抜きは大切だね。"), new MebiusTalk("宿題も大切だよ？", "何の話をしてるんだろう…"),
+			new MebiusTalk("空を自由に飛びたいなー！", "はい、タケコプター！"), new MebiusTalk("ジュースが飲みたいよー！", "どこから飲むつもりだろう。"), new MebiusTalk("君の頭って落ち着くねぇ。", "君のお喋りにも慣れたなぁ。"),
+			new MebiusTalk("APOLLO様みたいになれるかな？", "どんな関係があるんだろう…"), new MebiusTalk("僕って役に立つでしょー！", "静かならもっといいんだけどね。"), new MebiusTalk("赤いりんごがあるらしいよ！？", "りんごは普通赤いんだよ。"),
+			new MebiusTalk("ヘルメット式電動耳掃除…", "何を怖いことを言っている…"), new MebiusTalk("ここまで育つなんてね！", "立派になったもんだね。"), new MebiusTalk("動きすぎると酔っちゃうよね。", "三半規管はあるのかな。"),
+			new MebiusTalk("僕は整地神様に生み出されたんだよ！", "整地神ってお喋りなのかな…"), new MebiusTalk("君とドラゴンを倒す夢を見たよ…", "エンダードラゴンのことかな。"), new MebiusTalk("君は僕が育てたと胸を張って言えるね！", "逆でしょう。"),
+			new MebiusTalk("ああー饅頭が怖いなあ！", "落語でも見た？あげないよ。"), new MebiusTalk("僕にも手足があったらなー…！", "被れなくなるでしょ。"), new MebiusTalk("このフィット感…着心地抜群だよね？", "もう少し静かだったらね。"),
+			new MebiusTalk("餃子っておいしいんだねえ！", "ニンニク臭がこもってるよ…"), new MebiusTalk("君も立派になったねえ", "同じこと思ってたとこ。"), new MebiusTalk("育ててくれてありがとう！", "ある意味、最強のヘルメット。")
+	);
 
 	// Talk更新
 	private static void updateTalkDest(List<String> lore, int level) {
