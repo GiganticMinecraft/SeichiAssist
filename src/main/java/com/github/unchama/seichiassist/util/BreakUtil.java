@@ -179,7 +179,7 @@ public class BreakUtil {
 			itemstack.setDurability((short)0);
 		}
 
-		int i=0;
+		int i;
 		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
 			if(material.equals(SeichiAssist.minestacklist.get(i).getMaterial()) &&
 				itemstack.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){
@@ -375,7 +375,7 @@ public class BreakUtil {
 					dropitem = new ItemStack(dropmaterial);
 					break;
 				case GRAVEL:
-					double p = 0;
+					double p;
 					switch(fortunelevel){
 					case 1:
 						p = 0.14;

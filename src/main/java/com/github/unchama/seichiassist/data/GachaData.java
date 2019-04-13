@@ -35,7 +35,7 @@ public class GachaData {
 	}
 	public static GachaData runGacha() {
 		double sum = 1.0;
-		double rand = 0.0;
+		double rand;
 
 		rand = Math.random();
 

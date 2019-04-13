@@ -48,7 +48,7 @@ public class Sql{
 	private ResultSet rs = null;
 
 	public static String exc;
-	private SeichiAssist plugin = SeichiAssist.plugin;
+	private SeichiAssist plugin;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private static Config config = SeichiAssist.config;
 
@@ -564,7 +564,7 @@ public class Sql{
 	//投票時にmysqlに投票ポイントを加算しておく処理
 	public boolean addVotePoint(String name) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "";
+		String command;
 
 		command = "update " + db + "." + table
 				+ " set"
@@ -581,7 +581,7 @@ public class Sql{
 	//プレミアムエフェクトポイントを加算しておく処理
 	public boolean addPremiumEffectPoint(String name,int num) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "";
+		String command;
 
 		command = "update " + db + "." + table
 				+ " set"
@@ -1036,7 +1036,7 @@ public class Sql{
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		Material material;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 		int count = 0;
         ActiveSkillPremiumEffect[] effect = ActiveSkillPremiumEffect.values();
 
@@ -1218,7 +1218,7 @@ public class Sql{
 
 	public boolean setContribute(CommandSender sender, String targetName, int p){
 
-		int point = 0;
+		int point;
 
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String select = "SELECT contribute_point FROM " + db + "." + table + " " +

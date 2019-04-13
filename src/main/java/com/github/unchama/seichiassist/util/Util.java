@@ -649,7 +649,7 @@ public class Util {
 			if(meta.hasLore()){
 				lore = meta.getLore();
 
-				int i=0;
+				int i;
 				for(i=0; i<lore.size(); i++){
 					if(lore.get(i).contains("所有者：")){ //"所有者:がある"
 						break;
@@ -811,7 +811,7 @@ public class Util {
 	}
 
 	public static String getWorldName(String s){
-		String worldname = "";
+		String worldname;
 		switch(s){
 		case "world_spawn":
 			worldname = "スポーンワールド";

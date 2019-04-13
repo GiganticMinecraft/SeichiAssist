@@ -72,7 +72,7 @@ public class EntityListener implements Listener {
 
 
 		//壊されるブロックを取得
-		Block block = null;
+		Block block;
 		block = player.getWorld().getBlockAt(proj.getLocation().add(proj.getVelocity().normalize()));
 
 
@@ -123,7 +123,7 @@ public class EntityListener implements Listener {
 		ItemStack mainhanditem = inventory.getItemInMainHand();
 		ItemStack offhanditem = inventory.getItemInOffHand();
 		//実際に使用するツールを格納する
-		ItemStack tool = null;
+		ItemStack tool;
 		//メインハンドにツールがあるか
 		boolean mainhandtoolflag = SeichiAssist.breakmateriallist.contains(mainhanditem.getType());
 		//オフハンドにツールがあるか

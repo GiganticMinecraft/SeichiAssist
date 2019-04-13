@@ -90,7 +90,7 @@ public class PlayerBlockBreakListener implements Listener {
 		ItemStack mainhanditem = inventory.getItemInMainHand();
 		ItemStack offhanditem = inventory.getItemInOffHand();
 		//実際に使用するツールを格納する
-		ItemStack tool = null;
+		ItemStack tool;
 		//メインハンドにツールがあるか
 		boolean mainhandtoolflag = SeichiAssist.breakmateriallist.contains(mainhanditem.getType());
 		//オフハンドにツールがあるか

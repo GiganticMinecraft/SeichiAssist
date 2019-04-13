@@ -158,7 +158,7 @@ public class seichiCommand implements TabExecutor {
 			//seichi player duration(ticks) amplifier id で登録できるようにする。
 
 			//メッセージを設定
-			int id = 0;
+			int id;
 			if(args.length == 4){
 				//引数が４つの場合
 				//numを取得

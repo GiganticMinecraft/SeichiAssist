@@ -386,7 +386,7 @@ public class PlayerInventoryListener implements Listener {
 
 				// 採掘速度上昇量計算
 				//実際に適用されるeffect量
-				int minespeedlv = 0;
+				int minespeedlv;
 				//合計effect量
 				double sum = 0;
 				//最大持続時間
@@ -844,8 +844,8 @@ public class PlayerInventoryListener implements Listener {
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-			int type = 0;
-			String name = null;
+			int type;
+			String name;
 			int skilllevel;
 			//ARROWSKILL
 			type = ActiveSkill.ARROW.gettypenum();
@@ -1200,8 +1200,8 @@ public class PlayerInventoryListener implements Listener {
 			 */
 			if(itemstackcurrent.getType().equals(Material.BEDROCK)){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-				int skilllevel = 0;
-				int skilltype = 0;
+				int skilllevel;
+				int skilltype;
 				if(itemmeta.getDisplayName().contains("エビフライ・ドライブ")){
 					skilllevel = 4;
 					skilltype = 1;
@@ -2132,7 +2132,6 @@ public class PlayerInventoryListener implements Listener {
 
 			if (open_flag != -1) {
 				player.openInventory(MenuInventoryData.getMineStackMenu(player, open_flag, open_flag_type));
-				open_flag = -1;
 			}
 		}
 	}

@@ -105,7 +105,7 @@ public class Mana {
 			setMax(100000);
 			return;
 		}
-		double t_max = 1;
+		double t_max;
 		//レベルが10行っていない時レベルの値で処理を終了(修正:マナは0)
 		if(level < 10){
 			//this.max = level;
@@ -152,7 +152,7 @@ public class Mana {
 			return;
 		}
 		*/
-		double t_max = 1;
+		double t_max;
 		//レベルが10行っていない時レベルの値で処理を終了
 		if(level < 10){
 			//temp_max = level;

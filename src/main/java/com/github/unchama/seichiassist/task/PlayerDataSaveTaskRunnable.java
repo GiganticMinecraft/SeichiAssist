@@ -67,7 +67,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		//引数のplayerdataをsqlにデータを送信
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
-		String command = "";
+		String command;
 
 		command = "update " + db + "." + table
 				+ " set"

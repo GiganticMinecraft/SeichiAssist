@@ -39,7 +39,7 @@ import com.github.unchama.seichiassist.util.Util.DirectionType;
 public class PlayerData {
 	static Config config = SeichiAssist.config;
 	//読み込み済みフラグ
-	public boolean loaded = false;
+	public boolean loaded;
 	//プレイヤー名
 	public String name;
 	//UUID
@@ -518,8 +518,8 @@ public class PlayerData {
 		int iT = starlevel_Time;
 		int iE = starlevel_Event;
 		//処理後のレベルを保存する入れ物
-		int i2 = 0;
-		int iB2 = 0;
+		int i2;
+		int iB2;
 		int iT2 = 0;
 		int iE2 = 0;
 
@@ -767,7 +767,7 @@ public class PlayerData {
 	}
 
 	public void setSubHomeName(String s){
-		byte[] bytes = null;
+		byte[] bytes;
 		if (s == null) {
 		    //SQL初期化時(つまりサーバーに導入時)必ず入力がカラムの内容がnullになるためその対策
 		    return;
@@ -785,7 +785,7 @@ public class PlayerData {
 	}
 
 	public String SubHomeNameToString(){
-		byte[] sbyte = null;
+		byte[] sbyte;
 		String str = String.join(",", this.subhome_name);
 		sbyte = str.getBytes(StandardCharsets.UTF_8);
 		String result = new String(Hex.encodeHex(sbyte));

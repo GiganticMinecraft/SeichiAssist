@@ -39,7 +39,7 @@ import java.util.UUID;
               return null;
           }
           JSONParser jp = new JSONParser();
-          Object obj = null;
+          Object obj;
           try {
              obj = jp.parse(response);
           } catch (ParseException ex) {
@@ -97,7 +97,7 @@ import java.util.UUID;
           pw.close();
 
           BufferedReader br = new BufferedReader(new InputStreamReader(huc.getInputStream(), StandardCharsets.UTF_8));
-          String line = null;
+          String line;
           while ((line = br.readLine()) != null) {
              re += line + "\n";
           }

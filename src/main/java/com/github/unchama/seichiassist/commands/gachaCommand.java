@@ -415,7 +415,7 @@ public class gachaCommand implements TabExecutor{
 			}
 			//ガチャ券をn回試行してみる処理
 			int i = 0;
-			double p = 0.0;
+			double p;
 			int gigantic = 0;
 			int big = 0;
 			int regular = 0;
@@ -612,7 +612,7 @@ public class gachaCommand implements TabExecutor{
 	}
 	private double runGachaDemo() {
 		double sum = 1.0;
-		double rand = 0.0;
+		double rand;
 
 		rand = Math.random();
 

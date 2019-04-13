@@ -118,7 +118,7 @@ public class PlayerPickupItemListener implements Listener {
 		*/
 
 
-		int i=0;
+		int i;
 		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
 			if(material.equals(SeichiAssist.minestacklist.get(i).getMaterial()) &&
 				itemstack.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){

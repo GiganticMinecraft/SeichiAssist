@@ -98,7 +98,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 
 			//effectの大きさ
-			double amplifier = 0;
+			double amplifier;
 			//effectのメッセージ
 			//１分間のブロック破壊量による上昇
 			amplifier = (double) increase * config.getMinuteMineSpeed();

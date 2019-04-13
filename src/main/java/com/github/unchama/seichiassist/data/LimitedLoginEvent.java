@@ -58,9 +58,9 @@ public class LimitedLoginEvent {
 				long LLEEndLong = LLEEnd.getTime();
 
 				int eventlogin = playerdata.LimitedLoginCount ;
-				int checknum = 0;
-				int ItemNo = 0;
-				int Amount = 0;
+				int checknum;
+				int ItemNo;
+				int Amount;
 
 				//開催期間内かどうか
 				if((((TodayLong - LLEStartLong)/(1000 * 60 * 60 * 24 )) >= 0) &&
@@ -80,7 +80,7 @@ public class LimitedLoginEvent {
 						Amount = Integer.parseInt(config.getLimitedLoginEventAmount(checknum));
 						switch(ItemNo){
 							case 1://配布対象「ガチャ券」
-								String MessageT = "";
+								String MessageT;
 								if (checknum ==0){
 									MessageT = "限定ログボ！";
 								}else{

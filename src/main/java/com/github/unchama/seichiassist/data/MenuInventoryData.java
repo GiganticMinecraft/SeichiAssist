@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.ExternalPlugins;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -38,7 +39,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 public class MenuInventoryData {
 	private static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	private static Sql sql = SeichiAssist.sql;
-	private static WorldGuardPlugin Wg = Util.getWorldGuard();
+	private static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
 
 	//二つ名組合せシステム用
 	private static boolean nextpageflag1 = false ;
@@ -714,7 +715,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 		//プレイヤーを取得
 		Player player = p.getPlayer();
@@ -847,7 +848,7 @@ public class MenuInventoryData {
 	}
 	// ガチャ券受け取りボタン
 	public static List<String> GachaGetButtonLore(PlayerData playerdata){
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 		int gachaget = playerdata.gachapoint /1000;
 		if(gachaget != 0){
 			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "未獲得ガチャ券：" + gachaget + "枚"
@@ -1048,7 +1049,7 @@ public class MenuInventoryData {
 		if(page==0){
 			start=1;
 		}
-		int max = 0;
+		int max;
 		if(page==maxpage){
 			max = (minestack_stacktype_size+1)%45;
 			if(max == 0){
@@ -1072,7 +1073,6 @@ public class MenuInventoryData {
 		}
 
 		while(i<max){
-			ii = i + page*45 - 1;
 			while(SeichiAssist.minestacklist.get(iii).getStacktype()!=stack_type){
 				iii++;
 			}
@@ -1447,7 +1447,7 @@ public class MenuInventoryData {
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		List<String> lore = new ArrayList<>();
 		itemstack.setDurability((short) 3);
-		RankData rankdata = null;
+		RankData rankdata;
 //		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
 		for(int count = 10*page,count2=0;count < 10+10*page;count++,count2++){
 			if(count >= SeichiAssist.ranklist.size()){
@@ -1526,7 +1526,7 @@ public class MenuInventoryData {
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		List<String> lore = new ArrayList<>();
 		itemstack.setDurability((short) 3);
-		RankData rankdata = null;
+		RankData rankdata;
 //		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
 		for(int count = 10*page,count2=0;count < 10+10*page;count++,count2++){
 			if(count >= SeichiAssist.ranklist_playtick.size()){
@@ -1608,7 +1608,7 @@ public class MenuInventoryData {
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		List<String> lore = new ArrayList<>();
 		itemstack.setDurability((short) 3);
-		RankData rankdata = null;
+		RankData rankdata;
 //		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
 		for(int count = 10*page,count2=0;count < 10+10*page;count++,count2++){
 			if(count >= SeichiAssist.ranklist_p_vote.size()){
@@ -1690,7 +1690,7 @@ public class MenuInventoryData {
 		SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		List<String> lore = new ArrayList<>();
 		itemstack.setDurability((short) 3);
-		RankData rankdata = null;
+		RankData rankdata;
 		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
 			if(count >= SeichiAssist.ranklist_premiumeffectpoint.size()){
 				break;
@@ -1782,7 +1782,7 @@ public class MenuInventoryData {
 				ItemStack itemstack;
 				ItemMeta itemmeta;
 				SkullMeta skullmeta;
-				List<String> lore = new ArrayList<>();
+				List<String> lore;
 
 				// 1ページ目を開く
 				itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1897,7 +1897,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.BLUE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴");
 		ItemStack itemstack;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1938,7 +1938,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 		//表示切り替え(LV・二つ名)
 		itemstack = new ItemStack(Material.REDSTONE_TORCH_ON,1);
@@ -2069,7 +2069,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 		//各ボタンの設定
 		nextpageflag1 = false ;
@@ -2203,7 +2203,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		if(nextpageflag1){
@@ -2299,7 +2299,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		if(nextpageflag2){
@@ -2409,7 +2409,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 		if(nextpageflag3){
 		}else {
@@ -2504,7 +2504,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 		//実績ポイントの最新情報反映ボタン
 		itemstack = new ItemStack(Material.EMERALD_ORE,1);
@@ -2639,7 +2639,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//ボタン情報
@@ -2696,7 +2696,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//ボタン情報
@@ -2737,7 +2737,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//ボタン情報
@@ -2808,7 +2808,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//ボタン情報
@@ -2863,7 +2863,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//ボタン情報
@@ -2927,7 +2927,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//実績設定・解禁ボタン
@@ -3240,7 +3240,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//実績設定・解禁ボタン
@@ -3756,7 +3756,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//実績設定・解禁ボタン
@@ -4392,7 +4392,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//実績設定・解禁ボタン
@@ -4922,7 +4922,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//実績設定・解禁ボタン
@@ -5137,7 +5137,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//実績設定・解禁ボタン
@@ -5359,7 +5359,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//実績設定・解禁ボタン
@@ -6169,7 +6169,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//実績設定・解禁ボタン
@@ -6974,7 +6974,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 
 		//実績設定・解禁ボタン
@@ -7152,7 +7152,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 		//投票pt受け取り
 		itemstack = new ItemStack(Material.DIAMOND);
@@ -7256,7 +7256,7 @@ public class MenuInventoryData {
 					,ChatColor.RESET + "" +  ChatColor.GOLD + "" + ChatColor.BOLD + "たくさんくれたﾆﾝｹﾞﾝたち"
 					,ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "召喚されたらラッキーだよ！"
 					));
-			RankData rankdata = null;
+			RankData rankdata;
 			for(int count = 0 ; count < 4 ; count++){
 				if(count >= SeichiAssist.ranklist_p_apple.size()){
 					break;
@@ -7350,7 +7350,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,3*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ホームメニュー");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 		// ver0.3.2 homeコマンド
 		itemstack = new ItemStack(Material.COMPASS,1);
@@ -7452,7 +7452,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,3*9,ChatColor.RED + "" + ChatColor.BOLD + "ホームポイントを変更しますか?");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 		if (n >= 1){
 			itemstack = new ItemStack(Material.PAPER);
@@ -7491,7 +7491,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "スキルを進化させますか?");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 		switch(playerdata.GBstage){
 		case 0:
@@ -7563,7 +7563,7 @@ public class MenuInventoryData {
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "スキルを進化させました");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
-		List<String> lore = new ArrayList<>();
+		List<String> lore;
 
 		switch(playerdata.GBstage){
 		case 1:
