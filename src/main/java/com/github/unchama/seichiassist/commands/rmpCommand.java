@@ -47,12 +47,12 @@ public class rmpCommand implements TabExecutor {
 			sender.sendMessage(ChatColor.GREEN + "このコマンドはコンソールから実行してください");
 			return true;
 		} else {
-			try {
-				int days = 7;
-				boolean removeFlg = false;
-				String worldName = args[2];
+			int days = 7;
+			boolean removeFlg = false;
+			String worldName = args[2];
 
-				//<日数>を数値変換
+			//<日数>を数値変換
+			try {
 				if (args.length > 0) days = Integer.parseInt(args[0]);
 				//<削除フラグ>を判定(保護を掛けて整地する整地ワールドに限る)
 				if ((args.length > 1) && (args[1].equals("true"))) {
