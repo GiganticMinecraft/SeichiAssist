@@ -1,5 +1,4 @@
 @echo off
-mkdir libraries
 call :wget %1
 goto :END
 
