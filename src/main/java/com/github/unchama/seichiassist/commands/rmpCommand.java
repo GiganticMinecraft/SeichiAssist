@@ -94,9 +94,7 @@ public class rmpCommand implements TabExecutor {
 				
 				} else {
 					//一覧表示
-					targets.forEach(target -> {
-						sender.sendMessage(ChatColor.GREEN.toString() + "[rmp] List Region -> " + worldName + "." + target);
-					});
+					targets.forEach(target -> sender.sendMessage(ChatColor.GREEN.toString() + "[rmp] List Region -> " + worldName + "." + target));
 				}
 			} catch (NumberFormatException e) {
 				//parseIntエラー
