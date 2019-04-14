@@ -51,14 +51,10 @@ public class VotingFairyTaskRunnable {
 
 	public static String dispToggleVFTime(int toggle){
 
-		String s;
-
-		s = toggle == 1 ? "30分"
+		return toggle == 1 ? "30分"
 		  : toggle == 2 ? "1時間"
 		  : toggle == 3 ? "1時間30分"
 		  : toggle == 4 ? "2時間"
 				  : "エラー";
-
-		return s;
 	}
 }
