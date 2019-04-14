@@ -34,17 +34,17 @@ public class Config{
 		plugin.saveConfig();
 	}
 
-	//instance.ymlがない時にDefaultのファイルを生成
+	//config.ymlがない時にDefaultのファイルを生成
 	public void saveDefaultConfig(){
 		plugin.saveDefaultConfig();
 	}
 
-	//instance.ymlファイルからの読み込み
+	//config.ymlファイルからの読み込み
 	public FileConfiguration getConfig(){
 		return plugin.getConfig();
 	}
 
-	//instance.ymlファイルからガチャデータの読み込み
+	//config.ymlファイルからガチャデータの読み込み
 	public void loadGachaData(){
 		int num = config.getInt("gachanum");
 		int i;
