@@ -35,9 +35,7 @@ public class GachaData {
 	}
 	public static GachaData runGacha() {
 		double sum = 1.0;
-		double rand;
-
-		rand = Math.random();
+		double rand = Math.random();
 
 		for (GachaData gachadata : SeichiAssist.gachadatalist) {
 		    sum -= gachadata.probability;
