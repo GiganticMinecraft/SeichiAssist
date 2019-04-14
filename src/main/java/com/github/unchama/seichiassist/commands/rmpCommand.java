@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.ExternalPlugins;
+import com.sk89q.worldguard.bukkit.RegionContainer;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -71,27 +73,23 @@ public class rmpCommand implements TabExecutor {
 				}
 
 				//コマンドで指定されたワールドの全Regionを取得する
-				Map<String, ProtectedRegion> regions = Util.getWorldGuard().getRegionContainer().get(Bukkit.getWorld(worldName)).getRegions();
+				final RegionContainer regionContainer = ExternalPlugins.getWorldGuard().getRegionContainer();
+				Map<String, ProtectedRegion> regions = regionContainer.get(Bukkit.getWorld(worldName)).getRegions();
+				//__global__ は除外
+				//spawn も除外
+				regions.entrySet().removeIf(stringProtectedRegionEntry -> stringProtectedRegionEntry.getKey().equals("__global__") || stringProtectedRegionEntry.getKey().equals("spawn"));
 				//結果格納用List
-				List<String> targets = new ArrayList<>();
-
-				//各Regionに対してチェック
-				for (String id : regions.keySet()) {
-					//__global__Regionは除外
-					if (id.equals("__global__")) continue;
-					//spawnRegionも除外
-					if (id.equals("spawn")) continue;
-					//Region内の全OwnerがLeaverなら該当するRegionのIDを結果Listに格納する
-					if (isAllLeave(regions.get(id).getOwners())) targets.add(id);
-				}
-
+				List<String> targets = regions.entrySet().parallelStream()
+						.filter(stringProtectedRegionEntry -> isAllLeave(regions.get(stringProtectedRegionEntry.getKey()).getOwners()))
+						.map(Map.Entry::getKey)
+						.collect(Collectors.toList());
 				//結果処理
 				if (targets.size() == 0) {
 					sender.sendMessage(ChatColor.GREEN + "該当Regionは存在しません");
 				} else if (removeFlg) {
 					//該当領域削除
 					targets.forEach(target -> {
-						Util.getWorldGuard().getRegionContainer().get(Bukkit.getWorld(worldName)).removeRegion(target);
+						regionContainer.get(Bukkit.getWorld(worldName)).removeRegion(target);
 						sender.sendMessage(ChatColor.YELLOW.toString() + "[rmp] Deleted Region -> " + worldName + "." + target);
 					});
 				
