@@ -397,7 +397,8 @@ public class Util {
 		final int minute;
 		final int hour;
 		String time = "";
-		hour = Math.round(second / 3600);
+		// Math.floor は double を返す
+		hour = (int) Math.floor(second / 3600);
 		second -= hour * 3600;
 		minute = Math.round(second / 60);
 		if(hour != 0){
