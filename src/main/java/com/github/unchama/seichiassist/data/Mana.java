@@ -152,7 +152,6 @@ public class Mana {
 			return;
 		}
 		*/
-		double t_max;
 		//レベルが10行っていない時レベルの値で処理を終了
 		if(level < 10){
 			//temp_max = level;
@@ -160,7 +159,7 @@ public class Mana {
 			return 0.0;
 		}
 		//１０行ってる時の処理
-		t_max = 100;
+		double t_max = 100;
 		int increase = 10;
 		int inc_inc = 2;
 		//１１以降の処理
