@@ -126,7 +126,7 @@ public enum ActiveSkillEffect {
 	}
 
 
-	public static String getNamebyNum(int effectnum) {
+	public static String getNamebyNum(final int effectnum) {
 		ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 		return Arrays.stream(skilleffect)
 				.filter(activeSkillEffect -> activeSkillEffect.getNum() == effectnum)
