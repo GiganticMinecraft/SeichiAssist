@@ -66,7 +66,9 @@ public class Mana {
 	}
 	//現在のバーを削除する（更新するときは不要）
 	public void removeBar(){
-		try{manabar.removeAll();}catch(NullPointerException e){}
+		if (manabar != null) {
+			manabar.removeAll();
+		}
 	}
 	public void increaseMana(double i,Player player,int level){
 		this.m += i;
