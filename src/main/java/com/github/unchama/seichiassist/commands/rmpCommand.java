@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.github.unchama.seichiassist.util.ExternalPlugins;
 import com.sk89q.worldguard.bukkit.RegionContainer;
@@ -14,12 +14,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.command.defaults.PluginsCommand;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
-import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
