@@ -1,5 +1,5 @@
 @echo off
-
+mkdir lib
 call :wget %1
 goto :END
 
