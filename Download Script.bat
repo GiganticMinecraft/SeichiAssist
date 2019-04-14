@@ -61,7 +61,7 @@ echo Š®—¹
 echo SeichiAssist
 call core https://tt002.mcimserver.net/textures/upload/SeichiAssist.jar lib
 echo Š®—¹
-Spigot 1.12.2
+echo Spigot 1.12.2
 call core https://cdn.getbukkit.org/spigot/spigot-1.12.2.jar lib
 echo Š®—¹
 echo WorldBoarder
