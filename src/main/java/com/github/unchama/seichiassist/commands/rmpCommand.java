@@ -74,12 +74,13 @@ public class rmpCommand implements TabExecutor {
 
 				//コマンドで指定されたワールドの全Regionを取得する
 				final RegionContainer regionContainer = ExternalPlugins.getWorldGuard().getRegionContainer();
+				// (イミュータブル)
 				Map<String, ProtectedRegion> regions = regionContainer.get(Bukkit.getWorld(worldName)).getRegions();
 				//__global__ は除外
 				//spawn も除外
-				regions.entrySet().removeIf(stringProtectedRegionEntry -> stringProtectedRegionEntry.getKey().equals("__global__") || stringProtectedRegionEntry.getKey().equals("spawn"));
 				//結果格納用List
 				List<String> targets = regions.entrySet().parallelStream()
+						.filter(stringProtectedRegionEntry -> !stringProtectedRegionEntry.getKey().equals("__global__") && !stringProtectedRegionEntry.getKey().equals("spawn"))
 						.filter(stringProtectedRegionEntry -> isAllLeave(regions.get(stringProtectedRegionEntry.getKey()).getOwners()))
 						.map(Map.Entry::getKey)
 						.collect(Collectors.toList());
