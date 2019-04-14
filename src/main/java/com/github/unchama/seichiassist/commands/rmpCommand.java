@@ -69,32 +69,35 @@ public class rmpCommand implements TabExecutor {
 					sender.sendMessage(ChatColor.RED + "失敗");
 					return true;
 				}
-
 				//コマンドで指定されたワールドの全Regionを取得する
 				final RegionContainer regionContainer = ExternalPlugins.getWorldGuard().getRegionContainer();
 				// (イミュータブル)
-				Map<String, ProtectedRegion> regions = regionContainer.get(Bukkit.getWorld(worldName)).getRegions();
+				final Map<String, ProtectedRegion> regions = regionContainer.get(Bukkit.getWorld(worldName)).getRegions();
+
 				//__global__ は除外
 				//spawn も除外
 				//結果格納用List
-				List<String> targets = regions.entrySet().parallelStream()
-						.filter(stringProtectedRegionEntry -> !stringProtectedRegionEntry.getKey().equals("__global__") && !stringProtectedRegionEntry.getKey().equals("spawn"))
-						.filter(stringProtectedRegionEntry -> isAllLeave(regions.get(stringProtectedRegionEntry.getKey()).getOwners()))
+				final List<String> removalTargets = regions.entrySet().parallelStream()
+						.filter(entry -> {
+							final String regionName = entry.getKey();
+							final ProtectedRegion region = entry.getValue();
+							return !regionName.equals("__global__") && !regionName.equals("spawn") && isAllLeave(region.getOwners());
+						})
 						.map(Map.Entry::getKey)
 						.collect(Collectors.toList());
 				//結果処理
-				if (targets.size() == 0) {
+				if (removalTargets.size() == 0) {
 					sender.sendMessage(ChatColor.GREEN + "該当Regionは存在しません");
 				} else if (removeFlg) {
 					//該当領域削除
-					targets.forEach(target -> {
+					removalTargets.forEach(target -> {
 						regionContainer.get(Bukkit.getWorld(worldName)).removeRegion(target);
 						sender.sendMessage(ChatColor.YELLOW.toString() + "[rmp] Deleted Region -> " + worldName + "." + target);
 					});
 				
 				} else {
 					//一覧表示
-					targets.forEach(target -> sender.sendMessage(ChatColor.GREEN.toString() + "[rmp] List Region -> " + worldName + "." + target));
+					removalTargets.forEach(target -> sender.sendMessage(ChatColor.GREEN.toString() + "[rmp] List Region -> " + worldName + "." + target));
 				}
 			} catch (NumberFormatException e) {
 				//parseIntエラー
