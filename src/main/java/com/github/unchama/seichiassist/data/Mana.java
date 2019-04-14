@@ -107,7 +107,6 @@ public class Mana {
 			setMax(100000);
 			return;
 		}
-		double t_max;
 		//レベルが10行っていない時レベルの値で処理を終了(修正:マナは0)
 		if(level < 10){
 			//this.max = level;
@@ -115,7 +114,7 @@ public class Mana {
 			return;
 		}
 		//１０行ってる時の処理
-		t_max = 100;
+		double t_max = 100;
 		int increase = 10;
 		int inc_inc = 2;
 		//１１以降の処理
@@ -130,7 +129,6 @@ public class Mana {
 		t_max += playerdata.added_mana * SeichiAssist.config.getContributeAddedMana();
 
 		this.setMax(t_max);
-		return;
 	}
 
 	/**
