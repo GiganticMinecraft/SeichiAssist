@@ -1,85 +1,85 @@
 @echo off
-echo Q. é–‹ç™ºç’°å¢ƒã®ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã¯è¡Œã„ã¾ã™ã‹?
+echo Q. ŠJ”­ŠÂ‹«‚Ìƒ_ƒEƒ“ƒ[ƒh‚Ís‚¢‚Ü‚·‚©?
 set /p que="y/n>"
 if "%que%"=="n" goto libdownload
 echo Eclipse 4.4 Luna
 set /p que="y/n>"
 if "%que%"=="n" goto jdkdownload 
-echo Eclipse 4.4 Luna ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ã¾ã™ã€‚ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã¯7-zipã¨ã‹ãŒã‚ã£ãŸã‚‰ã§ããŸã‘ã©æ¨™æº–ã§ã¯å†…è”µã•ã‚Œã¦ãªã„ã®ã§ç„¡ç†ã§ã™ã€‚
+echo Eclipse 4.4 Luna ‚ğƒ_ƒEƒ“ƒ[ƒh‚µ‚Ü‚·BƒCƒ“ƒXƒg[ƒ‹‚Í7-zip‚Æ‚©‚ª‚ ‚Á‚½‚ç‚Å‚«‚½‚¯‚Ç•W€‚Å‚Í“à‘ ‚³‚ê‚Ä‚È‚¢‚Ì‚Å–³—‚Å‚·B
 echo 32bit?
 set /p que="y/n>"
-echo Eclipse 4.4 luna ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ã¦ã„ã¾ã™ã€‚ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ãªã„ã§ãã ã•ã„ã€‚
+echo Eclipse 4.4 luna ‚ğƒ_ƒEƒ“ƒ[ƒh‚µ‚Ä‚¢‚Ü‚·BƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚È‚¢‚Å‚­‚¾‚³‚¢B
 if "%que%"=="y" call core http://ftp.jaist.ac.jp/pub/mergedoc/pleiades/4.4/pleiades-e4.4-java-32bit_20150310.zip eclipse Create
 if "%que%"=="n" echo for 64Bit
 if "%que%"=="n" call core http://ftp.jaist.ac.jp/pub/mergedoc/pleiades/4.4/pleiades-e4.4-java_20150310.zip eclipse Create
-echo ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ãŒçµ‚äº†ã—ã¾ã—ãŸã€‚
+echo ƒ_ƒEƒ“ƒ[ƒh‚ªI—¹‚µ‚Ü‚µ‚½B
 :jdkdownload
-echo JDK 1.8ã®ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã‚’è¡Œã„ã¾ã™
+echo JDK 1.8‚Ìƒ_ƒEƒ“ƒ[ƒh‚ğs‚¢‚Ü‚·
 set /p que="y/n>"
 if "%que%"=="n" goto mysqldownload
 echo 32bit?
 set /p que="y/n>"
-echo JDK 1.8 ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ã¦ã„ã¾ã™ã€‚ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ãªã„ã§ãã ã•ã„ã€‚
+echo JDK 1.8 ‚ğƒ_ƒEƒ“ƒ[ƒh‚µ‚Ä‚¢‚Ü‚·BƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚È‚¢‚Å‚­‚¾‚³‚¢B
 if "%que%"=="y" call core https://download.oracle.com/otn-pub/java/jdk/8u201-b09/42970487e3af4f5aa5bca3f542482c60/jdk-8u201-windows-i586.exe jdk Create
 if "%que%"=="n" echo for 64bit
 if "%que%"=="n" call core https://download.oracle.com/otn-pub/java/jdk/8u201-b09/42970487e3af4f5aa5bca3f542482c60/jdk-8u201-windows-x64.exe jdk Create
-echo ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ãŒçµ‚äº†ã—ã¾ã—ãŸã€‚
+echo ƒ_ƒEƒ“ƒ[ƒh‚ªI—¹‚µ‚Ü‚µ‚½B
 :mysqldownload
-echo Mysql-Connecter-Javaã®ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã‚’è¡Œã„ã¾ã™
+echo Mysql-Connecter-Java‚Ìƒ_ƒEƒ“ƒ[ƒh‚ğs‚¢‚Ü‚·
 set /p que="y/n>"
 if "%que%"=="n" goto libdownload
 echo 32bit?
 set /p que="y/n>"
-echo Mysql-Connecter-Java ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ã¦ã„ã¾ã™ã€‚ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ãªã„ã§ãã ã•ã„ã€‚
+echo Mysql-Connecter-Java ‚ğƒ_ƒEƒ“ƒ[ƒh‚µ‚Ä‚¢‚Ü‚·BƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚È‚¢‚Å‚­‚¾‚³‚¢B
 if "%que%"=="y" core call https://downloads.mysql.com/archives/get/file/mysql-connector-java-gpl-5.1.35.msi plugin Create
-echo ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ãŒçµ‚äº†ã—ã¾ã—ãŸã€‚
+echo ƒ_ƒEƒ“ƒ[ƒh‚ªI—¹‚µ‚Ü‚µ‚½B
 :libdownload
-echo ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ã¾ã™
+echo ƒ‰ƒCƒuƒ‰ƒŠ‚ğƒ_ƒEƒ“ƒ[ƒh‚µ‚Ü‚·
 set /p que="y/n>"
 if "%que%"=="n" goto sqldownload
 echo CoreProtect
 call core https://tt002.mcimserver.net/textures/upload/CoreProtect-2.14.4.jar lib Create
-echo å®Œäº†
+echo Š®—¹
 echo item-nbt-api
 call core https://tt002.mcimserver.net/textures/upload/item-nbt-api-plugin-1.8.2-SNAPSHOT.jar lib
-echo å®Œäº†
+echo Š®—¹
 echo Multiverse-Core
 call core https://media.forgecdn.net/files/2428/161/Multiverse-Core-2.5.0.jar lib
-echo å®Œäº†
+echo Š®—¹
 echo Multiverse-Portals
 call core https://media.forgecdn.net/files/2428/333/Multiverse-Portals-2.5.0.jar lib
-echo å®Œäº†
+echo Š®—¹
 echo ParticleAPI
 call core https://tt002.mcimserver.net/textures/upload/ParticleAPI_v2.1.1.jar lib
-echo å®Œäº†
+echo Š®—¹
 echo RegenWorld
 call core https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar lib
-echo å®Œäº†
+echo Š®—¹
 echo SeasonalEvents
 call core https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar lib
-echo å®Œäº†
+echo Š®—¹
 echo SeichiAssist
 call core https://tt002.mcimserver.net/textures/upload/SeichiAssist.jar lib
-echo å®Œäº†
+echo Š®—¹
 Spigot 1.12.2
 call core https://cdn.getbukkit.org/spigot/spigot-1.12.2.jar lib
-echo å®Œäº†
+echo Š®—¹
 echo WorldBoarder
 call core https://media.forgecdn.net/files/2415/838/WorldBorder.jar lib
-echo å®Œäº†
+echo Š®—¹
 echo WorldEdit
 call core https://media.forgecdn.net/files/2597/538/worldedit-bukkit-6.1.9.jar lib
-echo å®Œäº†
+echo Š®—¹
 echo WorldGuard
 call core https://media.forgecdn.net/files/2610/618/worldguard-bukkit-6.2.2.jar lib
-echo å®Œäº†
+echo Š®—¹
 :sqldownload
-echo ä¸€éƒ¨å¿…è¦ãªSQLãƒ‡ãƒ¼ã‚¿ã®ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã‚’è¡Œã„ã¾ã™
+echo ˆê•”•K—v‚ÈSQLƒf[ƒ^‚Ìƒ_ƒEƒ“ƒ[ƒh‚ğs‚¢‚Ü‚·
 set /p que="y/n>"
 if "%que%"=="n" exit
-echo ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ã¦ã„ã¾ã™...
+echo ƒ_ƒEƒ“ƒ[ƒh‚µ‚Ä‚¢‚Ü‚·...
 call core https://red.minecraftserver.jp/attachments/download/892/gachadata.sql sql
 call core https://red.minecraftserver.jp/attachments/download/891/msgachadata.sql sql
-echo å®Œäº†ã—ã¾ã—ãŸã€‚
+echo Š®—¹‚µ‚Ü‚µ‚½B
 pause
 :end
