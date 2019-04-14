@@ -949,7 +949,7 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new WorldRegenListener(), this);
 		//正月イベント用
 		new NewYearsEvent(this);
-		// BungeeCordとのI/F
+		// BungeeCordとのI/O
 		Bukkit.getMessenger().registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this));
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "SeichiAssistBungee");
 
