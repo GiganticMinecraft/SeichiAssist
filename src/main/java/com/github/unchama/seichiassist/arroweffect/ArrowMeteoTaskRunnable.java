@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -16,7 +15,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class ArrowMeteoTaskRunnable extends BukkitRunnable{
-	SeichiAssist plugin = SeichiAssist.plugin;
+	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
 	Location ploc;

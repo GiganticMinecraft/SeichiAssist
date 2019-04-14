@@ -36,7 +36,7 @@ import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	private SeichiAssist plugin = SeichiAssist.plugin;
+	private SeichiAssist plugin = SeichiAssist.instance;
 	//アクティブスキルの実行
 	@EventHandler
 	public void onPlayerActiveSkillEvent(BlockBreakEvent event){

@@ -43,7 +43,7 @@ import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerClickListener implements Listener {
-	SeichiAssist plugin = SeichiAssist.plugin;
+	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
 	//アクティブスキル処理

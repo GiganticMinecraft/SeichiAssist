@@ -12,7 +12,6 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Chicken;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +25,7 @@ import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class MagicTaskRunnable extends BukkitRunnable {
-	SeichiAssist plugin = SeichiAssist.plugin;
+	SeichiAssist plugin = SeichiAssist.instance;
 	// プレイヤー情報
 	Player player;
 	// プレイヤーデータ

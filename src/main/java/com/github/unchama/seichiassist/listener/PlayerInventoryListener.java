@@ -60,7 +60,7 @@ import com.google.common.io.ByteStreams;
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
-	SeichiAssist plugin = SeichiAssist.plugin;
+	SeichiAssist plugin = SeichiAssist.instance;
 	private Config config = SeichiAssist.config;
 	private Sql sql = SeichiAssist.sql;
 	//サーバー選択メニュー
@@ -109,22 +109,22 @@ public class PlayerInventoryListener implements Listener {
 			if(meta.getDisplayName().contains("アルカディアサーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s1");
-				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+				player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
 			}else if(meta.getDisplayName().contains("エデンサーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s2");
-				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+				player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
 			}else if(meta.getDisplayName().contains("ヴァルハラサーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s3");
-				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+				player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
 			}else if(meta.getDisplayName().contains("公共施設サーバー")){
 				byteArrayDataOutput.writeUTF("Connect");
 				byteArrayDataOutput.writeUTF("s7");
-				player.sendPluginMessage(SeichiAssist.plugin, "BungeeCord",
+				player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
 						byteArrayDataOutput.toByteArray());
 			}
 		}
@@ -623,7 +623,7 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 1.5);
 				//インベントリを開く
-				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.RED + "" + ChatColor.BOLD + "ゴミ箱(取扱注意)"));
+				player.openInventory(SeichiAssist.instance.getServer().createInventory(null, 9*4 ,ChatColor.RED + "" + ChatColor.BOLD + "ゴミ箱(取扱注意)"));
 			}
 
 
@@ -632,7 +632,7 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
 				//インベントリを開く
-				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください"));
+				player.openInventory(SeichiAssist.instance.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください"));
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.END_CRYSTAL)){
@@ -648,7 +648,7 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
 				//インベントリを開く
-				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい鉱石を入れてください"));
+				player.openInventory(SeichiAssist.instance.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい鉱石を入れてください"));
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.GOLDEN_APPLE)){
@@ -656,7 +656,7 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
 				//インベントリを開く
-				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ"));
+				player.openInventory(SeichiAssist.instance.getServer().createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ"));
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND_AXE) && itemstackcurrent.getItemMeta().getDisplayName().contains("限定タイタン")){
@@ -664,7 +664,7 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
 				//インベントリを開く
-				player.openInventory(SeichiAssist.plugin.getServer().createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "修繕したい限定タイタンを入れてネ"));
+				player.openInventory(SeichiAssist.instance.getServer().createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "修繕したい限定タイタンを入れてネ"));
 			}
 
 			// インベントリ共有ボタン

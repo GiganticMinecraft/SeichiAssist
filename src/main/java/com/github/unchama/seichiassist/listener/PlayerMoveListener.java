@@ -31,6 +31,6 @@ public class PlayerMoveListener implements Listener {
 		// 移動により回復カウントをキャンセルする
 		try { pd.activeskilldata.manaregenetask.cancel(); } catch (NullPointerException e) {}
 		// 5秒後から5秒間隔でマナ回復タスクを呼び出す
-		pd.activeskilldata.manaregenetask = new ManaRegeneTaskRunnable(player).runTaskTimer(SeichiAssist.plugin, 100, 100);
+		pd.activeskilldata.manaregenetask = new ManaRegeneTaskRunnable(player).runTaskTimer(SeichiAssist.instance, 100, 100);
 	}
 }

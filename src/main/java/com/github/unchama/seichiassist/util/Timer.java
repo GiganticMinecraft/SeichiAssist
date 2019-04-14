@@ -10,7 +10,7 @@ public class Timer {
     private long t0, time;
     private String timeUnit;
     
-    private SeichiAssist plugin = SeichiAssist.plugin;
+    private SeichiAssist plugin = SeichiAssist.instance;
      
     public Timer() {
         this(NANOSECOND);

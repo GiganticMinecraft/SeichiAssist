@@ -23,7 +23,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
  */
 public class CheckAlreadyExistPlayerDataTaskRunnable extends BukkitRunnable{
 
-	private SeichiAssist plugin = SeichiAssist.plugin;
+	private SeichiAssist plugin = SeichiAssist.instance;
 	private Config config = SeichiAssist.config;
 
 	private Sql sql = SeichiAssist.sql;
@@ -53,7 +53,7 @@ public class CheckAlreadyExistPlayerDataTaskRunnable extends BukkitRunnable{
 		// TODO 自動生成されたメソッド・スタブ
 
 		//対象プレイヤーがオフラインなら処理終了
-		if(SeichiAssist.plugin.getServer().getPlayer(uuid) == null){
+		if(SeichiAssist.instance.getServer().getPlayer(uuid) == null){
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + name + "はオフラインの為取得処理を中断");
 			return;
 		}

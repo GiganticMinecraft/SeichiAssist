@@ -16,7 +16,7 @@ public final class ExternalPlugins {
 
 	//コアプロテクトAPIを返す
 	public static CoreProtectAPI getCoreProtect() {
-		Plugin plugin = SeichiAssist.plugin.getServer().getPluginManager().getPlugin("CoreProtect");
+		Plugin plugin = SeichiAssist.instance.getServer().getPluginManager().getPlugin("CoreProtect");
 
 		// Check that CoreProtect is loaded
 		if (!(plugin instanceof CoreProtect)) {
@@ -39,7 +39,7 @@ public final class ExternalPlugins {
 
 	//ワールドガードAPIを返す
 	public static WorldGuardPlugin getWorldGuard() {
-		Plugin plugin = SeichiAssist.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+		Plugin plugin = SeichiAssist.instance.getServer().getPluginManager().getPlugin("WorldGuard");
 
 	    // WorldGuard may not be loaded
 	    if (!(plugin instanceof WorldGuardPlugin)) {

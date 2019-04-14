@@ -24,7 +24,7 @@ import com.github.unchama.seichiassist.util.BukkitSerialization;
  */
 public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
-	private SeichiAssist plugin = SeichiAssist.plugin;
+	private SeichiAssist plugin = SeichiAssist.instance;
 	private Sql sql = SeichiAssist.sql;
 	private static Config config = SeichiAssist.config;
 
@@ -246,7 +246,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
  			return;
  		}/*else{
  			//再試行
- 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + playerdata.name + "のプレイヤーデータ保存再試行(" + (i+1) + "回目)");
+ 			instance.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + playerdata.name + "のプレイヤーデータ保存再試行(" + (i+1) + "回目)");
  			i++;
  			return;
  		}*/

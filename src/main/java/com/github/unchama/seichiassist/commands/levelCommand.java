@@ -69,7 +69,7 @@ public class levelCommand implements TabExecutor{
 				sender.sendMessage(playerdata.name+"のレベルを" + playerdata.level + "に設定しました");
 				//プレイヤーがオンラインの時表示名を変更
 				if(!playerdata.isOffline()){
-					Player player = SeichiAssist.plugin.getServer().getPlayer(playerdata.name);
+					Player player = SeichiAssist.instance.getServer().getPlayer(playerdata.name);
 					playerdata.setDisplayName(player);
 				}
 			}
@@ -139,7 +139,7 @@ public class levelCommand implements TabExecutor{
 									sender.sendMessage(playerdata.name+"の整地量を" + playerdata.totalbreaknum + "に設定しました");
 									//プレイヤーがオンラインの時表示名を変更
 									if(!playerdata.isOffline()){
-										Player player = SeichiAssist.plugin.getServer().getPlayer(playerdata.name);
+										Player player = SeichiAssist.instance.getServer().getPlayer(playerdata.name);
 										playerdata.setDisplayName(player);
 									}
 									//}
@@ -166,7 +166,7 @@ public class levelCommand implements TabExecutor{
 									//sender.sendMessage(playerdata.name+"の整地量を" + playerdata.totalbreaknum + "に設定しました");
 									//プレイヤーがオンラインの時表示名を変更
 									//if(!playerdata.isOffline()){
-									//	Player player = SeichiAssist.plugin.getServer().getPlayer(playerdata.name);
+									//	Player player = SeichiAssist.instance.getServer().getPlayer(playerdata.name);
 									//	playerdata.setDisplayName(player);
 									//}
 									//}

@@ -72,7 +72,7 @@ import com.github.unchama.seichiassist.util.Util;
 
 public class SeichiAssist extends JavaPlugin{
 
-	public static SeichiAssist plugin;
+	public static SeichiAssist instance;
 	//デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
 	public static boolean DEBUG = false;
 	//ガチャシステムのメンテナンスフラグ
@@ -844,7 +844,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	@Override
 	public void onEnable(){
-		plugin = this;
+		instance = this;
 
 		//チャンネルを追加
         String pluginChannel = "BungeeCord";
@@ -857,15 +857,15 @@ public class SeichiAssist extends JavaPlugin{
 
 		if(SeichiAssist.config.getDebugMode()==1){
 			//debugmode=1の時は最初からデバッグモードで鯖を起動
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "seichiassistをデバッグモードで起動します");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "コンソールから/seichi debugmode");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "を実行するといつでもONOFFを切り替えられます");
+			instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "seichiassistをデバッグモードで起動します");
+			instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "コンソールから/seichi debugmode");
+			instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "を実行するといつでもONOFFを切り替えられます");
 			DEBUG = true;
 		}else{
 			//debugmode=0の時は/seichi debugmodeによる変更コマンドも使えない
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "seichiassistを通常モードで起動します");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "デバッグモードを使用する場合は");
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "config.ymlの設定値を書き換えて再起動してください");
+			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "seichiassistを通常モードで起動します");
+			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "デバッグモードを使用する場合は");
+			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "config.ymlの設定値を書き換えて再起動してください");
 		}
 
 		//MySQL系の設定はすべてSql.javaに移動
@@ -916,22 +916,22 @@ public class SeichiAssist extends JavaPlugin{
 
 		//コマンドの登録
 		commandlist = new HashMap<>();
-		commandlist.put("gacha",new gachaCommand(plugin));
-		commandlist.put("seichi",new seichiCommand(plugin));
-		commandlist.put("ef",new effectCommand(plugin));
-		commandlist.put("level",new levelCommand(plugin));
-		commandlist.put("lastquit",new lastquitCommand(plugin));
-		commandlist.put("stick",new stickCommand(plugin));
-		commandlist.put("rmp",new rmpCommand(plugin));
-		commandlist.put("shareinv",new shareinvCommand(plugin));
-		commandlist.put("mebius",new mebiusCommand(plugin));
-		commandlist.put("unlockachv", new AchieveCommand(plugin));
-		commandlist.put("halfguard", new HalfBlockProtectCommand(plugin));
-		commandlist.put("event", new EventCommand(plugin));
-		commandlist.put("contribute", new contributeCommand(plugin));
-		commandlist.put("subhome", new subHomeCommand(plugin));
+		commandlist.put("gacha",new gachaCommand(instance));
+		commandlist.put("seichi",new seichiCommand(instance));
+		commandlist.put("ef",new effectCommand(instance));
+		commandlist.put("level",new levelCommand(instance));
+		commandlist.put("lastquit",new lastquitCommand(instance));
+		commandlist.put("stick",new stickCommand(instance));
+		commandlist.put("rmp",new rmpCommand(instance));
+		commandlist.put("shareinv",new shareinvCommand(instance));
+		commandlist.put("mebius",new mebiusCommand(instance));
+		commandlist.put("unlockachv", new AchieveCommand(instance));
+		commandlist.put("halfguard", new HalfBlockProtectCommand(instance));
+		commandlist.put("event", new EventCommand(instance));
+		commandlist.put("contribute", new contributeCommand(instance));
+		commandlist.put("subhome", new subHomeCommand(instance));
 		commandlist.put("gtfever", new GiganticFeverCommand());
-		commandlist.put("minehead", new MineHeadCommand(plugin));
+		commandlist.put("minehead", new MineHeadCommand(instance));
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);

@@ -91,13 +91,13 @@ public class Sql{
 		}
 		/*
 		if(!connectDB()){
-			plugin.getLogger().info("データベース接続に失敗しました");
+			instance.getLogger().info("データベース接続に失敗しました");
 			return false;
 		}
 		*/
 		/*
 		if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
-			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
+			instance.getLogger().info("playerdataテーブル作成に失敗しました");
 			return false;
 		}
 		*/
@@ -168,7 +168,7 @@ public class Sql{
 	    		return false;
 	    	}
 		}
-		//plugin.getLogger().info("sqlコネクション正常");
+		//instance.getLogger().info("sqlコネクション正常");
 		return true;
 	}
 
@@ -693,7 +693,7 @@ public class Sql{
 		//次に現在のgachadatalistでmysqlを更新
 		for(GachaData gachadata : SeichiAssist.gachadatalist){
 			//Inventory作ってガチャのitemstackに突っ込む
-			Inventory inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1);
+			Inventory inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1);
 			inventory.setItem(0,gachadata.itemstack);
 
 			command = "insert into " + db + "." + table + " (probability,amount,itemstack)"
@@ -722,7 +722,7 @@ public class Sql{
 		//次に現在のgachadatalistでmysqlを更新
 		for(MineStackGachaData gachadata : SeichiAssist.msgachadatalist){
 			//Inventory作ってガチャのitemstackに突っ込む
-			Inventory inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1);
+			Inventory inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1);
 			inventory.setItem(0,gachadata.itemstack);
 
 			command = "insert into " + db + "." + table + " (probability,amount,level,obj_name,itemstack)"

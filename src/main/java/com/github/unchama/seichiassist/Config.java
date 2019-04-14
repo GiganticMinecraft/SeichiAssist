@@ -34,17 +34,17 @@ public class Config{
 		plugin.saveConfig();
 	}
 
-	//plugin.ymlがない時にDefaultのファイルを生成
+	//instance.ymlがない時にDefaultのファイルを生成
 	public void saveDefaultConfig(){
 		plugin.saveDefaultConfig();
 	}
 
-	//plugin.ymlファイルからの読み込み
+	//instance.ymlファイルからの読み込み
 	public FileConfiguration getConfig(){
 		return plugin.getConfig();
 	}
 
-	//plugin.ymlファイルからガチャデータの読み込み
+	//instance.ymlファイルからガチャデータの読み込み
 	public void loadGachaData(){
 		int num = config.getInt("gachanum");
 		int i;
@@ -54,7 +54,7 @@ public class Config{
 			gachadata.amount = config.getInt("amount" + i);
 			gachadata.probability = config.getDouble("probability" + i);
 			SeichiAssist.gachadatalist.add(gachadata);
-			//plugin.getLogger().info(i + "番目のガチャデータロード完了");
+			//instance.getLogger().info(i + "番目のガチャデータロード完了");
 		}
 		plugin.getLogger().info("合計" + (i-1) + "個のガチャデータのLoadを完了しました");
 	}

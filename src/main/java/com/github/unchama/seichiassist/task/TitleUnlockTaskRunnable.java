@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 //import org.bukkit.metadata.FixedMetadataValue;
-//import org.bukkit.plugin.java.JavaPlugin;
+//import org.bukkit.instance.java.JavaPlugin;
 
 public class TitleUnlockTaskRunnable {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -20,11 +20,11 @@ public class TitleUnlockTaskRunnable {
 	PlayerData playerdata;
 	int TryTitleNo;
 
-//    private JavaPlugin plugin;
+//    private JavaPlugin instance;
 
-//	public void BlockLineUp(JavaPlugin plugin) {
-//		this.plugin = plugin;
-//		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+//	public void BlockLineUp(JavaPlugin instance) {
+//		this.instance = instance;
+//		instance.getServer().getPluginManager().registerEvents(this, instance);
 //	}
 
 

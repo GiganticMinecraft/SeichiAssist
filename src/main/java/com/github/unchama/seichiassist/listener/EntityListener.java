@@ -39,7 +39,7 @@ import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
 
 public class EntityListener implements Listener {
-	SeichiAssist plugin = SeichiAssist.plugin;
+	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 
 	@EventHandler
@@ -377,8 +377,8 @@ public class EntityListener implements Listener {
 			//念のためエラー分岐
 			if(playerdata_damager == null){
 				damager.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[PvP処理]でエラー発生");
-				plugin.getLogger().warning(damager.getName()+ "のplayerdataがありません。開発者に報告してください");
+				instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[PvP処理]でエラー発生");
+				instance.getLogger().warning(damager.getName()+ "のplayerdataがありません。開発者に報告してください");
 				return;
 			}
 			if(!playerdata_damager.pvpflag){
@@ -391,8 +391,8 @@ public class EntityListener implements Listener {
 			//念のためエラー分岐
 			if(playerdata_entity == null){
 				entity.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[PvP処理]でエラー発生");
-				plugin.getLogger().warning(entity.getName()+ "のplayerdataがありません。開発者に報告してください");
+				instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[PvP処理]でエラー発生");
+				instance.getLogger().warning(entity.getName()+ "のplayerdataがありません。開発者に報告してください");
 				return;
 			}
 			if(!playerdata_entity.pvpflag){

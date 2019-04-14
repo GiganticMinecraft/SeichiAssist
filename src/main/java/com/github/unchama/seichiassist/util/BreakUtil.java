@@ -137,7 +137,7 @@ public class BreakUtil {
 	}
 
 	public static boolean addItemtoMineStack(Player player, ItemStack itemstack) {
-		SeichiAssist plugin = SeichiAssist.plugin;
+		SeichiAssist plugin = SeichiAssist.instance;
 		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 		Config config = SeichiAssist.config;
 		//もしサバイバルでなければ処理を終了

@@ -20,7 +20,7 @@ import java.util.*;
  * 正月イベント関連クラス
  */
 public class NewYearsEvent implements Listener {
-    private static SeichiAssist plugin = SeichiAssist.plugin;
+    private static SeichiAssist plugin = SeichiAssist.instance;
     private static Config config = SeichiAssist.config;
     private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap;
 

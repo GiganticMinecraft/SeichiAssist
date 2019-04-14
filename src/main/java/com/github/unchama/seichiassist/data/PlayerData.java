@@ -256,7 +256,7 @@ public class PlayerData {
 		this.level = 1;
 		this.mebius = new MebiusTaskRunnable(this);
 		this.numofsorryforbug = 0;
-		this.inventory = SeichiAssist.plugin.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
+		this.inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 		this.rgnum = 0;
 		this.minestack = new MineStack();
 		this.minestackflag = true;
@@ -415,7 +415,7 @@ public class PlayerData {
 
 	//オフラインかどうか
 	public boolean isOffline() {
-		return SeichiAssist.plugin.getServer().getPlayer(uuid) == null;
+		return SeichiAssist.instance.getServer().getPlayer(uuid) == null;
 	}
 
 

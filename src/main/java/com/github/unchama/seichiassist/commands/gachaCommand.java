@@ -636,7 +636,7 @@ public class gachaCommand implements TabExecutor{
 				continue;
 			}
 			//プレイヤー型を取得
-			Player player = plugin.getServer().getPlayer(playerdata.uuid);
+			Player player = instance.getServer().getPlayer(playerdata.uuid);
 			playerdata.numofsorryforbug += num;
 			//プレイヤーにお知らせしちゃう
 			playerdata.NotifySorryForBug(player);

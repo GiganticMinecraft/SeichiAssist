@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 //import org.bukkit.metadata.FixedMetadataValue;
-//import org.bukkit.plugin.java.JavaPlugin;
+//import org.bukkit.instance.java.JavaPlugin;
 import com.github.unchama.seichiassist.util.Util;
 
 public class LimitedLoginEvent {
@@ -24,11 +24,11 @@ public class LimitedLoginEvent {
 	PlayerData playerdata;
 	String lastcheckdate ;
 
-//    private JavaPlugin plugin;
+//    private JavaPlugin instance;
 
-//	public void BlockLineUp(JavaPlugin plugin) {
-//		this.plugin = plugin;
-//		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+//	public void BlockLineUp(JavaPlugin instance) {
+//		this.instance = instance;
+//		instance.getServer().getPluginManager().registerEvents(this, instance);
 //	}
 
 

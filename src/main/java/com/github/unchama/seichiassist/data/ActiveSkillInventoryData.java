@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +26,7 @@ import com.github.unchama.seichiassist.Sql;
 public class ActiveSkillInventoryData {
 	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	static Sql sql = SeichiAssist.sql;
-	SeichiAssist plugin = SeichiAssist.plugin;
+	SeichiAssist plugin = SeichiAssist.instance;
 
 	//アクティブスキルメニュー
 	public static Inventory getActiveSkillMenuData(Player p){

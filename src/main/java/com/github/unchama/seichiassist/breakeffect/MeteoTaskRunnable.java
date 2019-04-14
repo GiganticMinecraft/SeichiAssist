@@ -11,7 +11,6 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LargeFireball;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -25,7 +24,7 @@ import com.github.unchama.seichiassist.task.ArrowControlTaskRunnable;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class MeteoTaskRunnable extends BukkitRunnable{
-	SeichiAssist plugin = SeichiAssist.plugin;
+	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	//プレイヤー情報
 	Player player;

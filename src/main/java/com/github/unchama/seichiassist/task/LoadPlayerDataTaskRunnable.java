@@ -40,7 +40,7 @@ import com.github.unchama.seichiassist.util.Timer;
  */
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
-	private SeichiAssist plugin = SeichiAssist.plugin;
+	private SeichiAssist plugin = SeichiAssist.instance;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private Sql sql = SeichiAssist.sql;
 	private static Config config = SeichiAssist.config;
@@ -80,7 +80,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	public void run() {
 
 		//対象プレイヤーがオフラインなら処理終了
-		if(SeichiAssist.plugin.getServer().getPlayer(uuid) == null){
+		if(SeichiAssist.instance.getServer().getPlayer(uuid) == null){
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "はオフラインの為取得処理を中断");
 			cancel();
 			return;

@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.task.AssaultTaskRunnable;
 
 public class ActiveSkillData {
-	SeichiAssist plugin = SeichiAssist.plugin;
+	SeichiAssist plugin = SeichiAssist.instance;
 	//アクティブスキルポイント
 	public int skillpoint;
 	//アクティブスキルエフェクトポイント

@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -23,7 +22,7 @@ import com.github.unchama.seichiassist.util.Util;
  *
  */
 public class HalfHourTaskRunnable extends BukkitRunnable{
-	SeichiAssist plugin = SeichiAssist.plugin;
+	SeichiAssist plugin = SeichiAssist.instance;
 	Sql sql = SeichiAssist.sql;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 

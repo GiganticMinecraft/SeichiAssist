@@ -30,7 +30,7 @@ public enum ActiveSkillPremiumEffect {
 */
 	;
 
-	SeichiAssist plugin = SeichiAssist.plugin;
+	SeichiAssist plugin = SeichiAssist.instance;
 
 	private int num;
 	private String sql_name;

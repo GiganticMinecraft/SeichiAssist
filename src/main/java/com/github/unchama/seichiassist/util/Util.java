@@ -7,12 +7,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import net.coreprotect.CoreProtect;
-import net.coreprotect.CoreProtectAPI;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 import org.bukkit.Bukkit;
@@ -37,11 +34,8 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.Plugin;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class Util {
 	// インスタンスを作成したところでメソッドが呼べるわけでもないので封印
@@ -199,7 +193,7 @@ public class Util {
 	}
 
 	public static void sendAdminMessage(String str){
-		SeichiAssist plugin = SeichiAssist.plugin;
+		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			if(player.hasPermission("SeichiAssist.admin")){
 				player.sendMessage(str);
@@ -209,14 +203,14 @@ public class Util {
 
 
 	public static void sendEveryMessage(String str){
-		SeichiAssist plugin = SeichiAssist.plugin;
+		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.sendMessage(str);
 		}
 	}
 
 	public static void sendEveryMessageWithoutIgnore(String str){
-		SeichiAssist plugin = SeichiAssist.plugin;
+		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			if (SeichiAssist.playermap.get(player.getUniqueId()).everymessageflag) {
 				player.sendMessage(str);
@@ -228,14 +222,14 @@ public class Util {
 	 * json形式のチャットを送信する際に使用
 	 */
 	public static void sendEveryMessage(BaseComponent base){
-		SeichiAssist plugin = SeichiAssist.plugin;
+		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.spigot().sendMessage(base);
 		}
 	}
 
 	public static void sendEveryMessageWithoutIgnore(BaseComponent base){
-		SeichiAssist plugin = SeichiAssist.plugin;
+		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			if (SeichiAssist.playermap.get(player.getUniqueId()).everymessageflag) {
 				player.spigot().sendMessage(base);
@@ -375,13 +369,13 @@ public class Util {
 	}
 
 	public static void sendEverySound(Sound str, float a, float b){
-		SeichiAssist plugin = SeichiAssist.plugin;
+		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			player.playSound(player.getLocation(), str, a, b);
 		}
 	}
 	public static void sendEverySoundWithoutIgnore(Sound str, float a, float b){
-		SeichiAssist plugin = SeichiAssist.plugin;
+		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			if (SeichiAssist.playermap.get(player.getUniqueId()).everysoundflag) {
 				player.playSound(player.getLocation(), str, a, b);
