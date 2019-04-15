@@ -307,7 +307,7 @@ public class Config{
     /**
      * 各種URLを返します.
      * @param typeName Url以下の項目名
-     * @return 該当URL.ただし,typeNameが謝っていた場合は""を返します.
+     * @return 該当URL.ただし,typeNameが誤っていた場合は""を返します.
      */
     public String getUrl(String typeName) {
 	    return config.getString("Url." + typeName);
