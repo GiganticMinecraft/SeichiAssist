@@ -37,7 +37,7 @@ public class HalfBlockProtectCommand implements TabExecutor {
         return false;
     }
 
-    private String getStats (Boolean canBreak) {
+    private String getStats (boolean canBreak) {
         if (canBreak) {
             return ChatColor.GREEN + "破壊可能";
         } else {
