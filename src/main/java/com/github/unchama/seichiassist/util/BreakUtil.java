@@ -59,17 +59,22 @@ public class BreakUtil {
 			return false;
 		}
 
-		if(!equalignoreWorld(player.getWorld().getName())){
+		if(!equalsIgnoreNameCaseWorld(player.getWorld().getName())){
 			//コアプロテクトのクラスを取得
-			CoreProtectAPI CoreProtect = ExternalPlugins.getCoreProtect();
+			CoreProtectAPI coreProtect = ExternalPlugins.getCoreProtect();
 			//破壊ログを設定
-			boolean success = CoreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
-			//もし失敗したらプレイヤーに報告し処理を終了
-			if(!success){
-				player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
-				return false;
+			if (coreProtect == null) {
+				SeichiAssist.instance.getLogger().warning("CoreProtectにアクセスできませんでした。");
+			} else {
+				boolean success = coreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
+				//もし失敗したらプレイヤーに報告し処理を終了
+				if(!success){
+					player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
+					return false;
+				}
 			}
 		}
+
 		if(material == Material.CHEST || material == Material.TRAPPED_CHEST){
 			if(!playerdata.chestflag){
 				player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は無効化されています");
@@ -82,7 +87,7 @@ public class BreakUtil {
 
 		return true;
 	}
-	private static boolean equalignoreWorld(String name) {
+	private static boolean equalsIgnoreNameCaseWorld(String name) {
 		List<String> ignoreworldlist = SeichiAssist.ignoreWorldlist;
 		for(String s : ignoreworldlist){
 			if(name.equalsIgnoreCase(s.toLowerCase())){
@@ -92,7 +97,7 @@ public class BreakUtil {
 		return false;
 	}
 	//ブロックを破壊する処理、ドロップも含む、統計増加も含む
-	public static void BreakBlock(Player player,Block breakblock,Location centerofblock,ItemStack tool,Boolean stepflag) {
+	public static void breakBlock(Player player, Block breakblock, Location centerofblock, ItemStack tool, boolean stepflag) {
 
 		Material material = breakblock.getType();
 		if(!SeichiAssist.materiallist.contains(material)){
@@ -102,20 +107,24 @@ public class BreakUtil {
 		ItemStack itemstack = dropItemOnTool(breakblock,tool);
 
 		//農地か草の道の場合土をドロップ
-		if(material == Material.GRASS_PATH || material == Material.SOIL){
-			itemstack = new ItemStack(Material.DIRT,1);
+		if(material == Material.GRASS_PATH || material == Material.SOIL) {
+			// DIRT, amount = 1
+			itemstack = new ItemStack(Material.DIRT);
 		}
-		if(material.equals(Material.MOB_SPAWNER)){
+
+		if(material.equals(Material.MOB_SPAWNER)) {
 			itemstack = null;
 		}
-		if(material.equals(Material.GLOWING_REDSTONE_ORE)){
+
+		if(material.equals(Material.GLOWING_REDSTONE_ORE)) {
 			material = Material.REDSTONE_ORE;
 		}
-		if(material.equals(Material.AIR)){
+
+		if(material.equals(Material.AIR)) {
 			return;
 		}
 
-		if(itemstack != null){
+		if(itemstack != null) {
 			//アイテムをドロップさせる
 			if(!addItemtoMineStack(player,itemstack)){
 				breakblock.getWorld().dropItemNaturally(centerofblock,itemstack);
@@ -125,10 +134,11 @@ public class BreakUtil {
 		//ブロックを空気に変える
 		breakblock.setType(Material.AIR);
 
-		if(stepflag){
+		if(stepflag) {
 			//あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
 			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,material);
 		}
+
 		//プレイヤーの統計を１増やす
 		if(material != Material.GRASS_PATH && material != Material.SOIL && material != Material.MOB_SPAWNER){
 			player.incrementStatistic(Statistic.MINE_BLOCK, material);
