@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -125,11 +126,10 @@ public enum ActiveSkillPremiumEffect {
 
 	public static String getNamebyNum(int effectnum) {
 		ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-		for (final ActiveSkillEffect activeSkillEffect : skilleffect) {
-			if (activeSkillEffect.getNum() == effectnum) {
-				return activeSkillEffect.getName();
-			}
-	    }
-		return "未設定";
+		return Arrays.stream(skilleffect)
+				.filter(activeSkillEffect -> activeSkillEffect.getNum() == effectnum)
+				.findFirst()
+				.map(ActiveSkillEffect::getName)
+				.orElse("未設定");
 	}
 }
