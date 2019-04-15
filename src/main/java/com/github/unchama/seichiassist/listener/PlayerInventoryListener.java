@@ -5452,7 +5452,7 @@ public class PlayerInventoryListener implements Listener {
     		//妖精音トグル
     		else if (itemstackcurrent.getType().equals(Material.JUKEBOX)){
     			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-    			playerdata.toggleVFSound = playerdata.toggleVFSound ? false : true;
+    			playerdata.toggleVFSound = !playerdata.toggleVFSound;
     			player.openInventory(MenuInventoryData.getVotingMenuData(player));
     		}
 
