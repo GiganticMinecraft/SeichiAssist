@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.data.slot.button;
 
 import com.github.unchama.seichiassist.data.itemstack.builder.component.ItemStackBuilder;
+import com.github.unchama.seichiassist.data.slot.AbstractSlotBuilder;
 import com.github.unchama.seichiassist.data.slot.Slot;
+import com.github.unchama.seichiassist.data.slot.base.BaseSlot;
 import com.github.unchama.seichiassist.data.slot.base.BaseSlotBuilder;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +20,7 @@ import static java.util.Objects.requireNonNull;
  * @author karayuu
  * @see Button
  */
-public class ButtonBuilder extends BaseSlotBuilder {
+public class ButtonBuilder extends AbstractSlotBuilder<ButtonBuilder> {
     private List<SlotActionHandler> handlers;
 
     private ButtonBuilder(@Nonnull ItemStackBuilder builder) {
@@ -52,8 +54,12 @@ public class ButtonBuilder extends BaseSlotBuilder {
         return this;
     }
 
+    /**
+     * {@link Button} を生成します.
+     *
+     * @return 生成された {@link Button}
+     */
     @Nonnull
-    @Override
     public Button build() {
         if (this.position == -1) {
             throw new IllegalArgumentException("Slot.Builderにおいては,Slotの設置位置をpositionにて設定する必要があります.");

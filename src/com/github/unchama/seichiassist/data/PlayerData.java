@@ -35,6 +35,8 @@ import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
 
+import javax.annotation.Nonnull;
+
 
 public class PlayerData {
 	static Config config = SeichiAssist.config;
@@ -1046,4 +1048,32 @@ public class PlayerData {
 
 		mana.calcMaxMana(p, this.level);
 	}
+
+	/**
+	 * 木の棒メニュー等で用いられる整地レベルの説明文を取得します.
+	 * スターレベルを保持していたら,スターレベルも同時に表示します.
+	 *
+	 * @return 整地レベルの説明文
+	 */
+	@Nonnull
+	public String getSeichiLevelDescription() {
+		if (this.starlevel <= 0) {
+			return ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + this.level;
+		} else {
+			return ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + this.level + "☆" + this.starlevel;
+		}
+	}
+
+	/**
+	 * 次のレベルまでの残り必要整地量の説明文を取得します.
+	 * レベルが {@link SeichiAssist#levellist} で指定された最大レベルを超えている場合, 負の値となることに注意してください.
+	 *
+	 * @return 残り必要整地量の説明文(ただし,レベルが最大の時は必要整地量は負となる)
+	 */
+	@Nonnull
+	public String getRemainLevelDescription() {
+		return ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:"
+				+ (SeichiAssist.levellist.get(this.level) - this.totalbreaknum);
+	}
+
 }

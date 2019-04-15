@@ -65,13 +65,5 @@ public interface Slot {
          */
         @Nonnull
         Slot.Builder at(int position);
-
-        /**
-         * {@link Slot} を生成します.
-         *
-         * @return 生成された {@link Slot}
-         */
-        @Nonnull
-        Slot build();
     }
 }

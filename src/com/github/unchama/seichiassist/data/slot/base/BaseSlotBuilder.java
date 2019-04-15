@@ -38,8 +38,12 @@ public class BaseSlotBuilder extends AbstractSlotBuilder<BaseSlotBuilder> {
         return this;
     }
 
+    /**
+     * {@link BaseSlot} を生成します.
+     *
+     * @return 生成された {@link BaseSlot}
+     */
     @Nonnull
-    @Override
     public BaseSlot build() {
         if (this.position == -1) {
             throw new IllegalArgumentException("Slot.Builderにおいては,Slotの設置位置をpositionにて設定する必要があります.");
