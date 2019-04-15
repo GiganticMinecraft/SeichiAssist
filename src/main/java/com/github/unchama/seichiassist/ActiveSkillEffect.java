@@ -77,11 +77,11 @@ public enum ActiveSkillEffect {
 	}
 	//エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
 	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
-		switch(this.toString()){
-		case "EXPLOSION":
+		switch(this) {
+		case EXPLOSION:
 			new ExplosionTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 0);
 			break;
-		case "BLIZZARD":
+		case BLIZZARD:
 			if(playerdata.activeskilldata.skillnum < 3){
 				new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			}else{
@@ -94,7 +94,7 @@ public enum ActiveSkillEffect {
 			}
 
 			break;
-		case "METEO":
+		case METEO:
 			if(playerdata.activeskilldata.skillnum < 3){
 				new MeteoTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			}else{
@@ -109,14 +109,14 @@ public enum ActiveSkillEffect {
 
 	//エフェクトの実行処理分岐
 	public void runArrowEffect(Player player){
-		switch(this.toString()){
-		case "EXPLOSION":
+		switch(this){
+		case EXPLOSION:
 			new ArrowExplosionTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
-		case "BLIZZARD":
+		case BLIZZARD:
 			new ArrowBlizzardTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
-		case "METEO":
+		case METEO:
 			new ArrowMeteoTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
 		default :
@@ -138,14 +138,14 @@ public enum ActiveSkillEffect {
 	public void runAssaultEffect(Player player, PlayerData playerdata,
 			ItemStack tool, ArrayList<Block> arrayList, Coordinate start,
 			Coordinate end, Location centerofblock) {
-		switch(this.toString()){
-		case "EXPLOSION":
+		switch(this){
+		case EXPLOSION:
 			player.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, player.getEyeLocation(), 1, 3.0, 3.0, 3.0, 1);
 			break;
-		case "BLIZZARD":
+		case BLIZZARD:
 			player.getWorld().spawnParticle(Particle.SNOW_SHOVEL, player.getEyeLocation(), 1, 3.0, 3.0, 3.0, 1);
 			break;
-		case "METEO":
+		case METEO:
 			player.getWorld().spawnParticle(Particle.DRIP_LAVA, player.getEyeLocation(), 1, 3.0, 3.0, 3.0, 1);
 			break;
 		default :
