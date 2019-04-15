@@ -10,8 +10,8 @@ anchors:
     save_workspace: &save_workspace
       persist_to_workspace:
         root: ./workspace
-          paths:
-            - '*'
+        paths:
+          - '*'
     load_workspace: &load_workspace
       attach_workspace:
         at: '/workspace'
