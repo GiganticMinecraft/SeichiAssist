@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.task;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
@@ -911,8 +912,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9001){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 1 &&
-					Calendar.getInstance().get(Calendar.DATE) == 1){
+				if(isDay(1, 1)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9001解除！あけおめ！");
@@ -923,8 +923,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9002){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 12 &&
-						Calendar.getInstance().get(Calendar.DATE) == 25){
+				if(isDay(12, 25)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9002解除！めりくり！");
@@ -935,8 +934,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9003){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 12 &&
-						Calendar.getInstance().get(Calendar.DATE) == 31){
+				if(isDay(12, 31)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9003解除！よいお年を！");
@@ -969,8 +967,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9006){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 2 &&
-					Calendar.getInstance().get(Calendar.DATE) == 3){
+				if(isDay(2, 3)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9006解除！おめでとうございます！");
@@ -981,8 +978,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9007){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 2 &&
-					Calendar.getInstance().get(Calendar.DATE) == 11){
+				if(isDay(2, 11)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9007解除！おめでとうございます！");
@@ -993,8 +989,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9008){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 2 &&
-					Calendar.getInstance().get(Calendar.DATE) == 14){
+				if(isDay(2, 14)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9008解除！おめでとうございます！");
@@ -1016,8 +1011,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9010){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 3 &&
-					Calendar.getInstance().get(Calendar.DATE) == 3){
+				if(isDay(3, 3)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9010解除！おめでとうございます！");
@@ -1028,8 +1022,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9011){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 3 &&
-					Calendar.getInstance().get(Calendar.DATE) == 14){
+				if(isDay(3, 14)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9011解除！おめでとうございます！");
@@ -1040,8 +1033,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9012){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 3 &&
-					Calendar.getInstance().get(Calendar.DATE) == 20){
+				if(isDay(3, 20)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9012解除！おめでとうございます！");
@@ -1063,8 +1055,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9014){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 4 &&
-					Calendar.getInstance().get(Calendar.DATE) == 1){
+				if(isDay(4, 1)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9014解除！おめでとうございます！");
@@ -1075,8 +1066,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9015){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 4 &&
-					Calendar.getInstance().get(Calendar.DATE) == 15){
+				if(isDay(4, 15)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9015解除！おめでとうございます！");
@@ -1087,8 +1077,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9016){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 4 &&
-					Calendar.getInstance().get(Calendar.DATE) == 22){
+				if(isDay(4, 22)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9016解除！おめでとうございます！");
@@ -1110,8 +1099,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9018){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 5 &&
-					Calendar.getInstance().get(Calendar.DATE) == 5){
+				if(isDay(5, 5)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9018解除！おめでとうございます！");
@@ -1122,8 +1110,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9019){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 5 &&
-					Calendar.getInstance().get(Calendar.DATE) == 5){
+				if(isDay(5, 5)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9019解除！おめでとうございます！");
@@ -1134,8 +1121,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9020){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 5 &&
-					Calendar.getInstance().get(Calendar.DATE) == 14){
+				if(isDay(5, 14)){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No9020解除！おめでとうございます！");
@@ -1157,11 +1143,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9022){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 6 &&
-					Calendar.getInstance().get(Calendar.DATE) == 12){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9022解除！おめでとうございます！");
+				if(isDay(6, 12)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9022解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9022は条件を満たしていません。");
 				}
@@ -1169,11 +1154,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9023){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 6 &&
-					Calendar.getInstance().get(Calendar.DATE) == 17){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9023解除！おめでとうございます！");
+				if(isDay(6, 17)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9023解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9023は条件を満たしていません。");
 				}
@@ -1181,11 +1165,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9024){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 6 &&
-					Calendar.getInstance().get(Calendar.DATE) == 29){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9024解除！おめでとうございます！");
+				if(isDay(6, 29)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9024解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9024は条件を満たしていません。");
 				}
@@ -1194,9 +1177,9 @@ public class TitleUnlockTaskRunnable {
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
 				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 7 ){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9025解除！おめでとうございます！");
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9025解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9025は条件を満たしていません。");
 				}
@@ -1204,11 +1187,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9026){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 7 &&
-					Calendar.getInstance().get(Calendar.DATE) == 7){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9026解除！おめでとうございます！");
+				if(isDay(7, 7)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9026解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9026は条件を満たしていません。");
 				}
@@ -1216,11 +1198,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9027){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 7 &&
-					Calendar.getInstance().get(Calendar.DATE) == 17){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9027解除！おめでとうございます！");
+				if(isDay(7, 17)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9027解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9027は条件を満たしていません。");
 				}
@@ -1228,11 +1209,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9028){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 7 &&
-					Calendar.getInstance().get(Calendar.DATE) == 29){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9028解除！おめでとうございます！");
+				if(isDay(7, 29)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9028解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9028は条件を満たしていません。");
 				}
@@ -1241,9 +1221,9 @@ public class TitleUnlockTaskRunnable {
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
 				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 8 ){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9029解除！おめでとうございます！");
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9029解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9029は条件を満たしていません。");
 				}
@@ -1251,11 +1231,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9030){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 8 &&
-					Calendar.getInstance().get(Calendar.DATE) == 7){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9030解除！おめでとうございます！");
+				if(isDay(8, 7)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9030解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9030は条件を満たしていません。");
 				}
@@ -1263,11 +1242,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9031){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 8 &&
-					Calendar.getInstance().get(Calendar.DATE) == 16){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9031解除！おめでとうございます！");
+				if(isDay(8, 16)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9031解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9031は条件を満たしていません。");
 				}
@@ -1275,11 +1253,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9032){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 8 &&
-					Calendar.getInstance().get(Calendar.DATE) == 29){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9032解除！おめでとうございます！");
+				if(isDay(8, 29)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9032解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9032は条件を満たしていません。");
 				}
@@ -1288,9 +1265,9 @@ public class TitleUnlockTaskRunnable {
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
 				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 9 ){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9033解除！おめでとうございます！");
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9033解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9033は条件を満たしていません。");
 				}
@@ -1298,11 +1275,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9034){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 9 &&
-					Calendar.getInstance().get(Calendar.DATE) == 2){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9034解除！おめでとうございます！");
+				if(isDay(9, 2)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9034解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9034は条件を満たしていません。");
 				}
@@ -1310,11 +1286,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9035){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 9 &&
-					Calendar.getInstance().get(Calendar.DATE) == 12){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9035解除！おめでとうございます！");
+				if(isDay(9, 12)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9035解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9035は条件を満たしていません。");
 				}
@@ -1322,11 +1297,10 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 9036){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(Calendar.getInstance().get(Calendar.MONTH) + 1 == 9 &&
-					Calendar.getInstance().get(Calendar.DATE) == 29){
-				//解禁時のフラグ変更処理
-				playerdata.TitleFlags.set(TryTitleNo);
-				player.sendMessage("実績No9036解除！おめでとうございます！");
+				if(isDay(9, 29)){
+					//解禁時のフラグ変更処理
+					playerdata.TitleFlags.set(TryTitleNo);
+					player.sendMessage("実績No9036解除！おめでとうございます！");
 				}else{
 					player.sendMessage("実績No9036は条件を満たしていません。");
 				}
@@ -1342,5 +1316,16 @@ public class TitleUnlockTaskRunnable {
 
 		}else {
 		}
+	}
+
+	/**
+	 * 指定された月日かどうかを返します。
+	 * @param expectedMonth 指定する月。例: バレンタインなら {@code 2}
+	 * @param expectedDay 指定する日。例: バレンタインなら {@code 11}
+	 * @return 指定された月日かどうか
+	 */
+	public boolean isDay(int expectedMonth, int expectedDay) {
+		final LocalDate date = LocalDate.now();
+		return date.getMonth().getValue() == expectedMonth && date.getDayOfMonth() == expectedDay;
 	}
 }
