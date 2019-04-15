@@ -13,7 +13,10 @@ import org.inventivetalent.particle.ParticleEffect;
 
 import com.github.unchama.seichiassist.data.Coordinate;
 
-public class EffectUtil {
+public final class EffectUtil {
+	private EffectUtil() {
+
+	}
 
 	public static void playEffectCircle(Player player, Effect effect,
 			int radius) {

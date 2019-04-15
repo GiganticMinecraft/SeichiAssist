@@ -31,7 +31,11 @@ import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 
-public class BreakUtil {
+public final class BreakUtil {
+	private BreakUtil() {
+
+	}
+
 	//他のプラグインの影響があってもブロックを破壊できるのか
 	@SuppressWarnings("deprecation")
 	public static boolean canBreak(Player player ,Block breakblock) {
@@ -136,7 +140,7 @@ public class BreakUtil {
 
 		if(stepflag) {
 			//あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
-			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND,material);
+			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND ,material);
 		}
 
 		//プレイヤーの統計を１増やす

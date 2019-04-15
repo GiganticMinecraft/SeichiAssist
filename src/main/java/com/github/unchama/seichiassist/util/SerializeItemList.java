@@ -11,6 +11,10 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 public class SerializeItemList {
+	private SerializeItemList() {
+
+	}
+
 	public static String toBase64(List<ItemStack> items) {
 		String serial = "";
 		try {

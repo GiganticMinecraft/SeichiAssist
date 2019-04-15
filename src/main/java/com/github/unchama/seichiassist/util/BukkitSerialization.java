@@ -15,7 +15,11 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 
-public class BukkitSerialization {
+public final class BukkitSerialization {
+    private BukkitSerialization() {
+
+    }
+
     public static String toBase64(Inventory inventory) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

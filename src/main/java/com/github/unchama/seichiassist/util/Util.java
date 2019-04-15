@@ -37,7 +37,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 
-public class Util {
+public final class Util {
 	// インスタンスを作成したところでメソッドが呼べるわけでもないので封印
 	private Util() {
 
