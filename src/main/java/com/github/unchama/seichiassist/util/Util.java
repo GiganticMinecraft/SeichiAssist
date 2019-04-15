@@ -368,17 +368,17 @@ public class Util {
 		return list.toString().replaceAll(",", "\n").replaceAll("\\[", " ").replaceAll("\\]", "\n");
 	}
 
-	public static void sendEverySound(Sound str, float a, float b){
+	public static void sendEverySound(Sound kind, float a, float b){
 		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
-			player.playSound(player.getLocation(), str, a, b);
+			player.playSound(player.getLocation(), kind, a, b);
 		}
 	}
-	public static void sendEverySoundWithoutIgnore(Sound str, float a, float b){
+	public static void sendEverySoundWithoutIgnore(Sound kind, float a, float b){
 		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
 			if (SeichiAssist.playermap.get(player.getUniqueId()).everysoundflag) {
-				player.playSound(player.getLocation(), str, a, b);
+				player.playSound(player.getLocation(), kind, a, b);
 			}
 		}
 	}
