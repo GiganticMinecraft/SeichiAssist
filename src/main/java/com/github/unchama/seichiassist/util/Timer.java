@@ -2,30 +2,44 @@ package com.github.unchama.seichiassist.util;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 
+import java.util.concurrent.TimeUnit;
+
 public class Timer {
-    public static final String MILLISECOND = "ms";
-    public static final String SECOND = "s";
-    public static final String NANOSECOND = "ns";
-     
-    private long t0, time;
-    private String timeUnit;
+    private long t0, nanoSeconds;
+    private TimeUnit timeUnit;
     
-    private SeichiAssist plugin = SeichiAssist.instance;
-     
     public Timer() {
-        this(NANOSECOND);
+        this(TimeUnit.NANOSECONDS);
     }
-     
+
+    @Deprecated
     public Timer(String timeUnit) {
-        setTimeUnit(timeUnit);
+        this(convertToUnit(timeUnit));
+    }
+
+    public Timer(TimeUnit unit) {
+        timeUnit = unit;
     }
      
-    public String getTimeUnit() {
+    public TimeUnit getTimeUnit() {
         return timeUnit;
     }
      
     public final void setTimeUnit(String timeUnit) {
-        this.timeUnit = timeUnit;
+        this.timeUnit = convertToUnit(timeUnit);
+    }
+
+    private static TimeUnit convertToUnit(String unit) {
+        switch (unit) {
+            case "ms":
+                return TimeUnit.MILLISECONDS;
+            case "s":
+                return TimeUnit.SECONDS;
+            case "ns":
+                return TimeUnit.NANOSECONDS;
+            default:
+                throw new RuntimeException("Timerはサポートされていない単位を受け取りました: " + unit);
+        }
     }
      
     public void start() {
@@ -33,20 +47,16 @@ public class Timer {
     }
     
     public void stop() {
-        time = System.nanoTime() - t0;
+        nanoSeconds = System.nanoTime() - t0;
     }
      
-    public double getTime() {
-        if(timeUnit.equals(NANOSECOND)) return time;
-        if(timeUnit.equals(SECOND)) return time / 1000000000.0;
-        if(timeUnit.equals(MILLISECOND)) return time / 1000000.0;
-        return time;
+    public long getNanoSeconds() {
+        return nanoSeconds;
     }
     
     public void sendLapTimeMessage(String message){
-    	time = System.nanoTime() - t0;
-    	plugin.getServer().getConsoleSender().sendMessage(message + "(time: "+ this.getTime() +" ms)");
+    	nanoSeconds = System.nanoTime() - t0;
+        SeichiAssist.instance.getServer().getConsoleSender().sendMessage(message + "(time: "+ this.getNanoSeconds() +" ns)");
     	t0 = System.nanoTime();
     }
-    
 }
