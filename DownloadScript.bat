@@ -25,9 +25,10 @@ set /p que="y/n>"
 if "%que%"=="y" call core http://ftp.jaist.ac.jp/pub/mergedoc/pleiades/4.4/pleiades-e4.4-java-32bit_20150310.zip
 if "%que%"=="n" echo for 64Bit
 if "%que%"=="n" call core http://ftp.jaist.ac.jp/pub/mergedoc/pleiades/4.4/pleiades-e4.4-java_20150310.zip
-echo ダウンロードが終了しました。
+echo 解凍を行います
+powershell %currentDir%\ExpandZip.ps1
 :jdkdownload
-echo JDKをダウンロード、インストールします。
+echo JDKをダウンロードします。
 echo その前に
 echo Javaの利用規約に同意する必要があります。
 echo https://www.oracle.com/technetwork/java/javase/terms/license/index.html
@@ -38,9 +39,6 @@ if "%que%"=="y" goto jdkdl
 goto mysqldownload
 :jdkdl
 powershell %currentDir%\jdkDownload.ps1
-echo 解凍を行います
-powershell %currentDir%\ExpandZip.ps1
-jdk-x32.exe /s
 :mysqldownload
 echo Mysql-Connecter-Javaのダウンロードを行います
 call core https://downloads.mysql.com/archives/get/file/mysql-connector-java-gpl-5.1.35.msi plugin Create
