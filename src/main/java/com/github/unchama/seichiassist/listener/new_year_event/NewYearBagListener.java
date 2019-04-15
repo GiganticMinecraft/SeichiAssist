@@ -53,7 +53,7 @@ public class NewYearBagListener implements Listener {
         }
 
         if (isDrop()) {
-            if (Util.isPlayerInventryFill(player)) {
+            if (Util.isPlayerInventryFull(player)) {
                 Util.dropItem(player, getNewYearBag());
                 player.sendMessage(ChatColor.RED + "インベントリがいっぱいのため「お年玉袋」がドロップしました");
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 3f, 1f);

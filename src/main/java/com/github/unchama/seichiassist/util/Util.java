@@ -153,7 +153,7 @@ public class Util {
 	}
 
 	//プレイヤーのインベントリがフルかどうか確認
-	public static boolean isPlayerInventryFill(Player player){
+	public static boolean isPlayerInventryFull(Player player){
 		return (player.getInventory().firstEmpty() == -1);
 	}
 	//指定されたアイテムを指定されたプレイヤーにドロップする
@@ -172,7 +172,7 @@ public class Util {
 	 * @param itemStack 付与するアイテム
 	 */
 	public static void addItemToPlayerSafely(Player player, ItemStack itemStack) {
-		if (isPlayerInventryFill(player)) {
+		if (isPlayerInventryFull(player)) {
 			dropItem(player, itemStack);
 		} else {
 			addItem(player, itemStack);

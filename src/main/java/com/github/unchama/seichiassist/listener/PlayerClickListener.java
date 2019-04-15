@@ -285,7 +285,7 @@ public class PlayerClickListener implements Listener {
 				String str = "";
 
 				//プレゼントを格納orドロップ
-				if(!Util.isPlayerInventryFill(player)){
+				if(!Util.isPlayerInventryFull(player)){
 					Util.addItem(player,present.itemstack);
 				}else{
 					Util.dropItem(player,present.itemstack);
@@ -598,7 +598,7 @@ public class PlayerClickListener implements Listener {
 		ItemStack useItem = p.getInventory().getItemInMainHand();
 		if(!Util.isMineHeadItem(useItem)) {return;}							//専用アイテムを持っていない場合無視
 
-		if(Util.isPlayerInventryFill(p)) {return;}
+		if(Util.isPlayerInventryFull(p)) {return;}
 
 		Action action = e.getAction();
 		if(!action.equals(Action.LEFT_CLICK_BLOCK)) {return;}				//ブロックの左クリックじゃない場合無視
@@ -608,7 +608,7 @@ public class PlayerClickListener implements Listener {
 
 		if(!BreakUtil.canBreak(p, targetBlock)) {return;}					//壊せない場合無視
 
-		if(Util.isPlayerInventryFill(p)) {									//インベントリに空がない場合無視
+		if(Util.isPlayerInventryFull(p)) {									//インベントリに空がない場合無視
 			p.sendMessage(ChatColor.RED + "インベントリがいっぱいです");
 			return;
 		}

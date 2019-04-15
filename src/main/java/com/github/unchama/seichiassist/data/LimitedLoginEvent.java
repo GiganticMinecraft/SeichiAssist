@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
 //import org.bukkit.metadata.FixedMetadataValue;
 //import org.bukkit.instance.java.JavaPlugin;
 import com.github.unchama.seichiassist.util.Util;
@@ -89,7 +88,7 @@ public class LimitedLoginEvent {
 								p.sendMessage("【"+ MessageT +"】"+ Amount +"個のガチャ券をプレゼント！");
 								int count = 1;
 								while(count <= Amount ){
-									if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+									if(player.getInventory().contains(skull) || !Util.isPlayerInventryFull(player)){
 										Util.addItem(player,skull);
 									}else{
 										Util.dropItem(player,skull);

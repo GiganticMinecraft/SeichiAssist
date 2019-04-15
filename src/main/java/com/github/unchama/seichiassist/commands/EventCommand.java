@@ -31,7 +31,7 @@ public class EventCommand implements TabExecutor {
             return false;
         } else if (args[0].equalsIgnoreCase("get")) {
             Player player = (Player) commandSender;
-            if (Util.isPlayerInventryFill(player)) {
+            if (Util.isPlayerInventryFull(player)) {
                 Util.dropItem(player, NewYearBagListener.getNewYearBag());
                 Util.dropItem(player, NewYearItemListener.getNewYearApple());
             } else {
