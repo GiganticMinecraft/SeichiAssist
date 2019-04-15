@@ -251,18 +251,18 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)
 					&& itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地報酬ガチャ券を受け取る")){
 				//連打防止クールダウン処理
-				if(!playerdata.gachacooldownflag){
-					return;
-				}else{
+				if (playerdata.gachacooldownflag) {
 			        //連打による負荷防止の為クールダウン処理
 					new CoolDownTaskRunnable(player,false,false,true).runTaskLater(plugin,20);
+				} else {
+					return;
 				}
 
 				ItemStack skull = Util.getskull(Util.getName(player));
 				int count = 0;
 				while(playerdata.gachapoint >= config.getGachaPresentInterval() && count < 576){
 					playerdata.gachapoint -= config.getGachaPresentInterval();
-					if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+					if(player.getInventory().contains(skull) || !Util.isPlayerInventryFull(player)){
 						Util.addItem(player,skull);
 					}else{
 						Util.dropItem(player,skull);
@@ -297,7 +297,7 @@ public class PlayerInventoryListener implements Listener {
 				int count = 0;
 				while(n > 0){
 					playerdata.numofsorryforbug--;
-					if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+					if(player.getInventory().contains(skull) || !Util.isPlayerInventryFull(player)){
 						Util.addItem(player,skull);
 					}else{
 						Util.dropItem(player,skull);
@@ -307,7 +307,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
-				player.sendMessage(ChatColor.GREEN + "運営チームから"+count+ "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
+				player.sendMessage(ChatColor.GREEN + "運営チームから" + count + "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました");
 
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				itemmeta.setLore(MenuInventoryData.SorryGachaGetButtonLore(playerdata));
@@ -336,7 +336,7 @@ public class PlayerInventoryListener implements Listener {
 				skull.setItemMeta(skullmeta);
 
 				//渡すか、落とすか
-				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFull(player)){
 					Util.addItem(player,skull);
 				}else{
 					Util.dropItem(player,skull);
@@ -394,9 +394,9 @@ public class PlayerInventoryListener implements Listener {
 					}
 				}
 				//実際のeffect値をsum-1の切り捨て整数値に設定
-				minespeedlv = (int)(sum - 1);
+				minespeedlv = (int) Math.floor(sum - 1);
 
-				int maxSpeed = 0;
+				int maxSpeed;
 				if (playerdata.effectflag == 0) {
                     maxSpeed = 25565;
                     player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
@@ -413,6 +413,7 @@ public class PlayerInventoryListener implements Listener {
 					maxSpeed = 600;
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(600制限)");
 				} else {
+					maxSpeed = 0;
 					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
 				}
 
@@ -2487,7 +2488,7 @@ public class PlayerInventoryListener implements Listener {
 	private int giveMineStack(Player player,int minestack,ItemStack itemstack){
 		if(minestack >= itemstack.getMaxStackSize()){ //スタック数が64でないアイテムにも対応
 			itemstack.setAmount(itemstack.getMaxStackSize());
-			if(!Util.isPlayerInventryFill(player)){
+			if(!Util.isPlayerInventryFull(player)){
 				Util.addItem(player,itemstack);
 			}else{
 				Util.dropItem(player,itemstack);
@@ -2498,7 +2499,7 @@ public class PlayerInventoryListener implements Listener {
 			return minestack;
 		}else{
 			itemstack.setAmount(minestack);
-			if(!Util.isPlayerInventryFill(player)){
+			if(!Util.isPlayerInventryFull(player)){
 				Util.addItem(player,itemstack);
 			}else{
 				Util.dropItem(player,itemstack);
@@ -2538,7 +2539,7 @@ public class PlayerInventoryListener implements Listener {
 		}
 		if(minestack >= itemstack.getMaxStackSize()){ //スタック数が64でないアイテムにも対応
 			itemstack.setAmount(itemstack.getMaxStackSize());
-			if(!Util.isPlayerInventryFill(player)){
+			if(!Util.isPlayerInventryFull(player)){
 				Util.addItem(player,itemstack);
 			}else{
 				Util.dropItem(player,itemstack);
@@ -2549,7 +2550,7 @@ public class PlayerInventoryListener implements Listener {
 			return minestack;
 		}else{
 			itemstack.setAmount(minestack);
-			if(!Util.isPlayerInventryFill(player)){
+			if(!Util.isPlayerInventryFull(player)){
 				Util.addItem(player,itemstack);
 			}else{
 				Util.dropItem(player,itemstack);
@@ -2675,7 +2676,7 @@ public class PlayerInventoryListener implements Listener {
              * step2 非対象商品をインベントリに戻す
              */
             for(ItemStack m : dropitem){
-                if(!Util.isPlayerInventryFill(player)){
+                if(!Util.isPlayerInventryFull(player)){
                     Util.addItem(player,m);
                 }else{
                     Util.dropItem(player,m);
@@ -2687,7 +2688,7 @@ public class PlayerInventoryListener implements Listener {
             ItemStack skull = Util.getExchangeskull(Util.getName(player));
             int count = 0;
             while(givegacha > 0){
-                if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+                if(player.getInventory().contains(skull) || !Util.isPlayerInventryFull(player)){
                     Util.addItem(player,skull);
                 }else{
                     Util.dropItem(player,skull);
@@ -5043,7 +5044,7 @@ public class PlayerInventoryListener implements Listener {
 
             int count = 0;
             while(giveticket > 0){
-            	if(player.getInventory().contains(exchangeticket) || !Util.isPlayerInventryFill(player)){
+            	if(player.getInventory().contains(exchangeticket) || !Util.isPlayerInventryFull(player)){
             		Util.addItem(player, exchangeticket);
             	}else{
             		Util.dropItem(player, exchangeticket);
@@ -5124,14 +5125,14 @@ public class PlayerInventoryListener implements Listener {
 
             //返却処理
             for(ItemStack m : dropitem){
-                if(!Util.isPlayerInventryFill(player)){
+                if(!Util.isPlayerInventryFull(player)){
                     Util.addItem(player,m);
                 }else{
                     Util.dropItem(player,m);
                 }
             }
             for(ItemStack m : retore){
-            	if(!Util.isPlayerInventryFill(player)){
+            	if(!Util.isPlayerInventryFull(player)){
             		Util.addItem(player,m);
             	}else{
             		Util.dropItem(player, m);
@@ -5246,7 +5247,7 @@ public class PlayerInventoryListener implements Listener {
              * step2 非対象商品をインベントリに戻す
              */
             for(ItemStack m : dropitem){
-                if(!Util.isPlayerInventryFill(player)){
+                if(!Util.isPlayerInventryFull(player)){
                     Util.addItem(player,m);
                 }else{
                     Util.dropItem(player,m);
@@ -5258,7 +5259,7 @@ public class PlayerInventoryListener implements Listener {
             ItemStack ringo = Util.getMaxRingo(Util.getName(player));
             int count = 0;
             while(giveringo > 0){
-                if(player.getInventory().contains(ringo) || !Util.isPlayerInventryFill(player)){
+                if(player.getInventory().contains(ringo) || !Util.isPlayerInventryFull(player)){
                     Util.addItem(player,ringo);
                 }else{
                     Util.dropItem(player,ringo);
@@ -5308,7 +5309,7 @@ public class PlayerInventoryListener implements Listener {
 					}
 				}
 
-				if(!Util.isPlayerInventryFill(player)) {
+				if(!Util.isPlayerInventryFull(player)) {
 					 Util.addItem(player,m);
 				 }else {
 					 Util.dropItem(player,m);
@@ -5382,7 +5383,7 @@ public class PlayerInventoryListener implements Listener {
 					//ガチャ券プレゼント処理
 					ItemStack skull = Util.getVoteskull(Util.getName(player));
 					for (int i = 0; i < 10; i++){
-						if(player.getInventory().contains(skull) || !Util.isPlayerInventryFill(player)){
+						if(player.getInventory().contains(skull) || !Util.isPlayerInventryFull(player)){
 							Util.addItem(player,skull);
 						}else{
 							Util.dropItem(player,skull);
@@ -5392,22 +5393,22 @@ public class PlayerInventoryListener implements Listener {
 					//ピッケルプレゼント処理(レベル50になるまで)
 					if(playerdata.level < 50){
 						ItemStack pickaxe = ItemData.getSuperPickaxe(1);
-						if(!Util.isPlayerInventryFill(player)){
-							Util.addItem(player, pickaxe);
-						}else{
+						if (Util.isPlayerInventryFull(player)) {
 							Util.dropItem(player, pickaxe);
+						} else {
+							Util.addItem(player, pickaxe);
 						}
 					}
 
                   //投票ギフト処理(レベル50から)
                     if(playerdata.level >= 50){
                         ItemStack gift = ItemData.getVotingGift(1);
-                        if(!Util.isPlayerInventryFill(player)){
-                            Util.addItem(player, gift);
-                        }else{
-                            Util.dropItem(player, gift);
-                        }
-                    }
+						if (Util.isPlayerInventryFull(player)) {
+							Util.dropItem(player, gift);
+						} else {
+							Util.addItem(player, gift);
+						}
+					}
 					//エフェクトポイント加算処理
 					playerdata.activeskilldata.effectpoint += 10;
 
