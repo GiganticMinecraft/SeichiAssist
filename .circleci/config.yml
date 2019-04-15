@@ -5,7 +5,7 @@ anchors:
   docker:
     maven_docker: &maven_docker
       docker:
-        -image: maven:3.6.0-jdk-8
+        - image: maven:3.6.0-jdk-8
   workspace:
     save_workspace: &save_workspace
       persist_to_workspace:
