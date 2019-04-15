@@ -1,0 +1,74 @@
+# .circleci/config.yml for CircleCI 2.0
+version: 2
+
+anchors:
+  docker:
+    maven_docker: &maven_docker
+      docker:
+        -image: maven:3.6.0-jdk-8
+  workspace:
+    save_workspace: &save_workspace
+      persist_to_workspace:
+        root: ./workspace
+        paths:
+          - '*'
+    load_workspace: &load_workspace
+      attach_workspace:
+        at: '/workspace'
+
+jobs:
+  install:
+    <<: *maven_docker
+    working_directory: ~/repo
+    steps:
+      - run: mkdir -p workspace/localDependencies
+      - run: scp -r $DEPENDENCY_REPOSITORY_HOST workspace/localDependencies/
+      - *save_workspace
+  build:
+    <<: *maven_docker
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - attach_workspace:
+          at: '/workspace'
+      - run: mkdir -p localDependencies && cp -R workspace/localDependencies localDependencies
+      - run: mvn install
+      - run: mkdir -p workspace/target && cp target/**.jar workspace/target
+      - *save_workspace
+  deploy_debug:
+    <<: *maven_docker
+    working_directory: ~/repo
+    steps:
+      - *load_workspace
+      - run: scp ./workspace/target/**.jar $DEBUG_DEPLOY_TARGET_HOST
+  deploy_production:
+    <<: *maven_docker
+    working_directory: ~/repo
+    steps:
+      - *load_workspace
+      - run: scp ./workspace/target/**.jar $PRODUCTION_DEPLOY_TARGET_HOST
+
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - deploy_production:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+      - deploy_debug:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - develop
