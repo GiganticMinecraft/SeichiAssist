@@ -2,11 +2,11 @@ package com.github.unchama.seichiassist;
 
 import java.util.List;
 
+import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.util.Util;
 
 public class Config{
 	private static FileConfiguration config;
@@ -61,55 +61,55 @@ public class Config{
 
 
 	public double getMinuteMineSpeed(){
-		return Util.toDouble(config.getString("minutespeedamount"));
+		return TypeConverter.toDouble(config.getString("minutespeedamount"));
 	}
 	public double getLoginPlayerMineSpeed(){
-		return Util.toDouble(config.getString("onlineplayersamount"));
+		return TypeConverter.toDouble(config.getString("onlineplayersamount"));
 	}
 	public int getGachaPresentInterval(){
-		return Util.toInt(config.getString("presentinterval"));
+		return TypeConverter.toInt(config.getString("presentinterval"));
 	}
 	public int getDefaultMineAmount(){
-		return Util.toInt(config.getString("defaultmineamount"));
+		return TypeConverter.toInt(config.getString("defaultmineamount"));
 	}
 	public int getDualBreaklevel(){
-		return Util.toInt(config.getString("dualbreaklevel"));
+		return TypeConverter.toInt(config.getString("dualbreaklevel"));
 	}
 	public int getTrialBreaklevel(){
-		return Util.toInt(config.getString("trialbreaklevel"));
+		return TypeConverter.toInt(config.getString("trialbreaklevel"));
 	}
 	public int getExplosionlevel(){
-		return Util.toInt(config.getString("explosionlevel"));
+		return TypeConverter.toInt(config.getString("explosionlevel"));
 	}
 	public int getThunderStormlevel() {
-		return Util.toInt(config.getString("thunderstormlevel"));
+		return TypeConverter.toInt(config.getString("thunderstormlevel"));
 	}
 	public int getBlizzardlevel() {
-		return Util.toInt(config.getString("blizzardlevel"));
+		return TypeConverter.toInt(config.getString("blizzardlevel"));
 	}
 	public int getMeteolevel() {
-		return Util.toInt(config.getString("meteolevel"));
+		return TypeConverter.toInt(config.getString("meteolevel"));
 	}
 	public int getGravitylevel() {
-		return Util.toInt(config.getString("gravitylevel"));
+		return TypeConverter.toInt(config.getString("gravitylevel"));
 	}
 
 	public int getMultipleIDBlockBreaklevel(){
-		return Util.toInt(config.getString("multipleidblockbreaklevel"));
+		return TypeConverter.toInt(config.getString("multipleidblockbreaklevel"));
 	}
 
 	public double getDropExplevel(int i){
-		return Util.toDouble(config.getString("dropexplevel" + i,""));
+		return TypeConverter.toDouble(config.getString("dropexplevel" + i,""));
 	}
 
 	public int getPassivePortalInventorylevel() {
-		return Util.toInt(config.getString("passiveportalinventorylevel"));
+		return TypeConverter.toInt(config.getString("passiveportalinventorylevel"));
 	}
 	public int getDokodemoEnderlevel() {
-		return Util.toInt(config.getString("dokodemoenderlevel"));
+		return TypeConverter.toInt(config.getString("dokodemoenderlevel"));
 	}
 	public int getMineStacklevel(int i) {
-		return Util.toInt(config.getString("minestacklevel" + i,""));
+		return TypeConverter.toInt(config.getString("minestacklevel" + i,""));
 	}
 	public String getDB(){
 		return config.getString("db");
@@ -150,24 +150,24 @@ public class Config{
 
 	//サーバー番号取得
 	public int getServerNum() {
-		return Util.toInt(config.getString("servernum"));
+		return TypeConverter.toInt(config.getString("servernum"));
 	}
 
 	//サブホーム最大数取得
 	public int getSubHomeMax() {
-		return Util.toInt(config.getString("subhomemax"));
+		return TypeConverter.toInt(config.getString("subhomemax"));
 	}
 
 	public int getDebugMode() {
-		return Util.toInt(config.getString("debugmode"));
+		return TypeConverter.toInt(config.getString("debugmode"));
 	}
 
 	public int getMebiusDebug() {
-		return Util.toInt(config.getString("mebiusdebug"));
+		return TypeConverter.toInt(config.getString("mebiusdebug"));
 	}
 
 	public int rateGiganticToRingo() {
-		return Util.toInt(config.getString("rategigantictoringo"));
+		return TypeConverter.toInt(config.getString("rategigantictoringo"));
 	}
 
 	/**
@@ -192,11 +192,11 @@ public class Config{
 	 * @return
 	 */
 	public int getGridLimitPerWorld(String world) {
-		return Util.toInt(config.getString("GridLimitPerWorld." + world,config.getString("GridLimitDefault")));
+		return TypeConverter.toInt(config.getString("GridLimitPerWorld." + world,config.getString("GridLimitDefault")));
 	}
 
 	public int getTemplateKeepAmount() {
-		return Util.toInt(config.getString("GridTemplateKeepAmount"));
+		return TypeConverter.toInt(config.getString("GridTemplateKeepAmount"));
 	}
 
 	public int getRoadY() {

@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.data;
 
+import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.potion.PotionEffectType;
-
-import com.github.unchama.seichiassist.util.Util;
 
 public class EffectData {
 	public PotionEffectType potioneffecttype;
@@ -42,18 +41,18 @@ public class EffectData {
 
 	public String EDtoString(int id,int _duration,double _amplifier){
 		if(id == 0){
-			return "+" + _amplifier +  " 不明な上昇値_" +Util.toTimeString(_duration/20);
+			return "+" + _amplifier +  " 不明な上昇値_" + TypeConverter.toTimeString(_duration/20);
 		}else if(id == 1){
 			return "+" + _amplifier +  " 接続人数から";
 		}else if(id == 2){
 			return "+" + _amplifier +  " 整地量から";
 		}else if(id == 3){
-			return "+" + _amplifier +  " ﾄﾞﾗｹﾞﾅｲﾀｲﾑから_" +Util.toTimeString(_duration/20);
+			return "+" + _amplifier +  " ﾄﾞﾗｹﾞﾅｲﾀｲﾑから_" + TypeConverter.toTimeString(_duration/20);
 		}else if(id == 4){
-			return "+" + _amplifier +  " 投票ボーナスから_" +Util.toTimeString(_duration/20);
+			return "+" + _amplifier +  " 投票ボーナスから_" + TypeConverter.toTimeString(_duration/20);
 		}else if(id == 5){
-			return "+" + _amplifier +  " コマンド入力から_" +Util.toTimeString(_duration/20);
+			return "+" + _amplifier +  " コマンド入力から_" + TypeConverter.toTimeString(_duration/20);
 		}
-		return "+" + _amplifier +  " 不明な上昇値_" +Util.toTimeString(_duration/20);
+		return "+" + _amplifier +  " 不明な上昇値_" + TypeConverter.toTimeString(_duration/20);
 	}
 }

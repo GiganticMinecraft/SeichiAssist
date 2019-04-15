@@ -5,6 +5,7 @@ import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.TypeConverter;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -18,7 +19,6 @@ import com.github.unchama.seichiassist.OfflineUUID;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
 
 public class levelCommand implements TabExecutor{
 	public SeichiAssist plugin;
@@ -86,7 +86,7 @@ public class levelCommand implements TabExecutor{
 					sender.sendMessage("/level set unchama 1 のように、変更したいプレイヤーとレベルを入力してください");
 					return true;
 				}
-				int num = Util.toInt(args[2]);
+				int num = TypeConverter.toInt(args[2]);
 
 				//すべてのプレイヤーデータについて処理
 				//for(PlayerData playerdata:SeichiAssist.playermap.values()){

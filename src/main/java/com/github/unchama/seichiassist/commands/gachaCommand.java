@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -101,7 +102,7 @@ public class gachaCommand implements TabExecutor{
 				//プレイヤー名を取得
 				String name = Util.getName(args[1]);
 				//個数取得
-				int num = Util.toInt(args[2]);
+				int num = TypeConverter.toInt(args[2]);
 
 				if(!name.equalsIgnoreCase("all")){
 					//プレイヤー名がallでない時の処理
@@ -176,7 +177,7 @@ public class gachaCommand implements TabExecutor{
 				//プレイヤー名を取得(小文字にする)
 				String name = Util.getName(args[1]);
 				//配布ポイント数取得
-				int num = Util.toInt(args[2]);
+				int num = TypeConverter.toInt(args[2]);
 
 				//プレイヤーオンライン時はplayerdataに直接反映、オフライン時はsqlに送信(結果をsenderへ)
 				sender.sendMessage(ChatColor.YELLOW + name + "のプレミアムエフェクトポイント配布処理開始…");
@@ -253,10 +254,10 @@ public class gachaCommand implements TabExecutor{
 			 */
 
 			if(args.length==2){
-				int id = Util.toInt(args[1]);
+				int id = TypeConverter.toInt(args[1]);
 				Gachagive(player,id,null);
 			} else if(args.length==3){
-				int id = Util.toInt(args[1]);
+				int id = TypeConverter.toInt(args[1]);
 				Gachagive(player,id,args[2]);
 			}
 			return true;
@@ -278,7 +279,7 @@ public class gachaCommand implements TabExecutor{
 				return true;
 			}
 
-			int id = Util.toInt(args[1]);
+			int id = TypeConverter.toInt(args[1]);
 			Gachagive(player, id, player.getName());
 			return true;
 		}
@@ -300,7 +301,7 @@ public class gachaCommand implements TabExecutor{
 			 * ここまで
 			 */
 
-			double probability = Util.toDouble(args[1]);
+			double probability = TypeConverter.toDouble(args[1]);
 			Gachaadd(player,probability);
 			return true;
 		}else if(args[0].equalsIgnoreCase("addms2")){
@@ -320,8 +321,8 @@ public class gachaCommand implements TabExecutor{
 			 * ここまで
 			 */
 
-			double probability = Util.toDouble(args[1]);
-			int level = Util.toInt(args[3]);
+			double probability = TypeConverter.toDouble(args[1]);
+			int level = TypeConverter.toInt(args[3]);
 			Gachaaddms2(player,probability, args[2], level);
 			return true;
 		}else if(args[0].equalsIgnoreCase("addms")){
@@ -330,8 +331,8 @@ public class gachaCommand implements TabExecutor{
 				return true;
 			}
 
-			int level = Util.toInt(args[2]);
-			int num = Util.toInt(args[3]);
+			int level = TypeConverter.toInt(args[2]);
+			int num = TypeConverter.toInt(args[3]);
 			Gachaaddms(sender, args[1],level,num);
 
 			return true;
@@ -340,7 +341,7 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage("/gacha remove 2 のように、削除したいリスト番号を入力してください");
 				return true;
 			}
-			int num = Util.toInt(args[1]);
+			int num = TypeConverter.toInt(args[1]);
 			Gacharemove(sender,num);
 			return true;
 		}else if(args[0].equalsIgnoreCase("removems")){
@@ -355,8 +356,8 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage("/gacha setamount 2 1 のように、変更したいリスト番号と変更後のアイテム個数を入力してください");
 				return true;
 			}
-			int num = Util.toInt(args[1]);
-			int amount = Util.toInt(args[2]);
+			int num = TypeConverter.toInt(args[1]);
+			int amount = TypeConverter.toInt(args[2]);
 			GachaEditAmount(sender,num,amount);
 			return true;
 		}else if(args[0].equalsIgnoreCase("setprob")){
@@ -364,8 +365,8 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage("/gacha setprob 2 1 のように、変更したいリスト番号と変更後の確率を入力してください");
 				return true;
 			}
-			int num = Util.toInt(args[1]);
-			double probability = Util.toDouble(args[2]);
+			int num = TypeConverter.toInt(args[1]);
+			double probability = TypeConverter.toDouble(args[2]);
 			GachaEditProbability(sender,num,probability);
 			return true;
 		}else if(args[0].equalsIgnoreCase("move")){
@@ -373,8 +374,8 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage("/gacha move 2 10 のように、変更したいリスト番号と変更後のリスト番号を入力してください");
 				return true;
 			}
-			int num = Util.toInt(args[1]);
-			int tonum = Util.toInt(args[2]);
+			int num = TypeConverter.toInt(args[1]);
+			int tonum = TypeConverter.toInt(args[2]);
 			GachaMove(sender,num,tonum);
 			return true;
 		}else if(args[0].equalsIgnoreCase("list")){
@@ -408,7 +409,7 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage("/gacha demo 10000  のように、試行したい回数を入力して下さい");
 				return true;
 			}
-			int n = Util.toInt(args[1]);
+			int n = TypeConverter.toInt(args[1]);
 			if(n > 1000000){
 				sender.sendMessage("100万回以上は指定出来ません");
 				return true;

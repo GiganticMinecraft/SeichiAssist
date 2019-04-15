@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,7 +14,6 @@ import org.bukkit.entity.Player;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
 
 public class contributeCommand implements TabExecutor {
 	SeichiAssist plugin;
@@ -47,7 +47,7 @@ public class contributeCommand implements TabExecutor {
 		}else if(args[0].equalsIgnoreCase("add") && args.length == 3){
 
 			//sqlをusernameで操作
-			if (sql.setContribute(sender, args[1], Util.toInt(args[2]))) {
+			if (sql.setContribute(sender, args[1], TypeConverter.toInt(args[2]))) {
 				sender.sendMessage(ChatColor.GREEN + args[1] + "に貢献度ポイント" + args[2] + "を追加しました");
 
 				//指定プレイヤーがオンラインの場合即時反映
@@ -58,16 +58,16 @@ public class contributeCommand implements TabExecutor {
 					PlayerData givenplayerdata = SeichiAssist.playermap.get(givenuuid);
 
 					//splを直接書き換えているのでplayerdataを同じ数値だけ変化させてから計算させる
-					givenplayerdata.contribute_point += Util.toInt(args[2]);
+					givenplayerdata.contribute_point += TypeConverter.toInt(args[2]);
 
-					givenplayerdata.isContribute(givenplayer, Util.toInt(args[2]));
+					givenplayerdata.isContribute(givenplayer, TypeConverter.toInt(args[2]));
 				}
 			}
 			return true;
 		}else if(args[0].equalsIgnoreCase("remove") && args.length == 3){
 
 			//sqlをusernameで操作
-			if (sql.setContribute(sender, args[1], (-1 * Util.toInt(args[2])))) {
+			if (sql.setContribute(sender, args[1], (-1 * TypeConverter.toInt(args[2])))) {
 				sender.sendMessage(ChatColor.GREEN + args[1] + "の貢献度ポイントを" + args[2] + "減少させました");
 
 				//指定プレイヤーがオンラインの場合即時反映
@@ -78,9 +78,9 @@ public class contributeCommand implements TabExecutor {
 					PlayerData givenplayerdata = SeichiAssist.playermap.get(givenuuid);
 
 					//splを直接書き換えているのでplayerdataを同じ数値だけ変化させてから計算させる
-					givenplayerdata.contribute_point += (-1 * Util.toInt(args[2]));
+					givenplayerdata.contribute_point += (-1 * TypeConverter.toInt(args[2]));
 
-					givenplayerdata.isContribute(givenplayer, (-1 * Util.toInt(args[2])));
+					givenplayerdata.isContribute(givenplayer, (-1 * TypeConverter.toInt(args[2])));
 				}
 				return true;
 			}

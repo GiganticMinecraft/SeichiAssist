@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -51,7 +52,7 @@ public class subHomeCommand implements TabExecutor {
 		}
 		else if(args.length == 1){
 			try{
-				int num = Util.toInt(args[0]);
+				int num = TypeConverter.toInt(args[0]);
 				if(num >= 1 && maxsubhome >= num){
 					Location l = playerdata.GetSubHome(num-1);
 					if(l != null){
@@ -80,7 +81,7 @@ public class subHomeCommand implements TabExecutor {
 		}
 		else if(args.length == 2){
 			try{
-				int num = Util.toInt(args[1]);
+				int num = TypeConverter.toInt(args[1]);
 				if(num >= 1 && maxsubhome >= num){
 					if(args[0].equalsIgnoreCase("set")){
 						playerdata.SetSubHome(player.getLocation(), num-1);

@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.util;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -152,19 +151,6 @@ public class Util {
 		return lore;
 	}
 
-	//String -> double
-	public static double toDouble(String s){
-		return Double.parseDouble(s);
-	}
-	//String -> int
-	public static int toInt(String s) {
-		return Integer.parseInt(s);
-	}
-	//double -> .1double
-	public static double Decimal(double d) {
-		BigDecimal bi = new BigDecimal(String.valueOf(d));
-		return bi.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
-	}
 	//プレイヤーのインベントリがフルかどうか確認
 	public static boolean isPlayerInventryFill(Player player){
 		return (player.getInventory().firstEmpty() == -1);
@@ -383,32 +369,6 @@ public class Util {
 		}
 	}
 
-	public static int toSecond(int _tick){
-		return _tick/20;
-	}
-
-	public static String toTimeString(int second) {
-		final int minute;
-		final int hour;
-		String time = "";
-		// Math.floor は double を返す
-		hour = (int) Math.floor(second / 3600);
-		second -= hour * 3600;
-		minute = Math.round(second / 60);
-		if(hour != 0){
-			time = hour + "時間";
-		}
-		if(minute != 0){
-			time = time + minute + "分";
-		}
-		/*
-		if(second != 0){
-			time = time + second + "秒";
-		}
-		*/
-		return time;
-	}
-
 	//プレイヤーネームを格納（toLowerCaseで全て小文字にする。)
 	public static String getName(Player p) {
 		return p.getName().toLowerCase();
@@ -484,14 +444,7 @@ public class Util {
 		}
 		return false;
 	}
-	//boolean -> int
-	public static int toInt(boolean flag) {
-		if(flag){
-			return 1;
-		}else{
-			return 0;
-		}
-	}
+
 	//Listの中でひとつでもstringに該当するものがあればtrueを開放します。
 	public static int LoreContains(List<String> lore, String string) {
 		for(int i = 0; i < lore.size(); i++){
@@ -754,7 +707,7 @@ public class Util {
 	public static String getTimeZone(Calendar cal) {
 		Date date = cal.getTime();
 		SimpleDateFormat format = new SimpleDateFormat("HH");
-		int n = toInt(format.format(date));
+		int n = TypeConverter.toInt(format.format(date));
 		return    4<=n && n<10 ? "morning"
 				:10<=n && n<18 ? "day"
 						:"night";

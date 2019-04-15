@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -162,7 +163,7 @@ public class seichiCommand implements TabExecutor {
 			if(args.length == 4){
 				//引数が４つの場合
 				//numを取得
-				int num = Util.toInt(args[3]);
+				int num = TypeConverter.toInt(args[3]);
 				if(num == 0){
 					id = 0;
 				}else if(num == 1){
@@ -185,9 +186,9 @@ public class seichiCommand implements TabExecutor {
 				sender.sendMessage("idが指定されていないので、プレイヤーへの説明文には\n「コマンド入力による上昇値」と表示されます");
 			}
 			//持続時間を取得
-			int duration = Util.toInt(args[1]);
+			int duration = TypeConverter.toInt(args[1]);
 			//effect値を取得
-			double amplifier = Util.toDouble(args[2]);
+			double amplifier = TypeConverter.toDouble(args[2]);
 
 			//プレイヤー名をlowercaseする
 			String name = Util.getName(args[0]);
@@ -216,7 +217,7 @@ public class seichiCommand implements TabExecutor {
 				//エフェクトデータリストにこの効果を追加
 				playerdata.effectdatalist.add(new EffectData(duration,amplifier,id));
 				//メッセージ送信
-				sender.sendMessage(ChatColor.LIGHT_PURPLE + name + "に上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました");
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + name + "に上昇値"+amplifier+"を" + TypeConverter.toTimeString(duration/20) + "追加しました");
 			}else{
 				//player名がallだった時の処理
 
@@ -226,7 +227,7 @@ public class seichiCommand implements TabExecutor {
 					playerdata.effectdatalist.add(new EffectData(duration,amplifier,id));
 				}
 				//メッセージ送信
-				sender.sendMessage(ChatColor.LIGHT_PURPLE + "全てのプレイヤーに上昇値"+amplifier+"を" + Util.toTimeString(duration/20) + "追加しました");
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + "全てのプレイヤーに上昇値"+amplifier+"を" + TypeConverter.toTimeString(duration/20) + "追加しました");
 			}
 			return true;
 		}
