@@ -52,12 +52,15 @@ workflows:
   version: 2
   test_and_build:
     jobs:
-      - build:
+      - install:
           filters:
             branches:
               only:
                 - master
                 - develop
+      - build:
+          requires:
+            - install
       - deploy_production:
           requires:
             - build
