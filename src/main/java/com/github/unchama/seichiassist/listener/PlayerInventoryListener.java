@@ -196,14 +196,12 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData2(player));
-				return;
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
-				return;
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.CHEST)){
@@ -216,7 +214,6 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMineStackMainMenu(player));
-				return;
 			}
 			//スキルメニューを開く
 			else if(itemstackcurrent.getType().equals(Material.ENCHANTED_BOOK)){
@@ -230,28 +227,24 @@ public class PlayerInventoryListener implements Listener {
 				}
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 0.8);
-				return;
 			}
 			//整地神番付を開く
 			else if(itemstackcurrent.getType().equals(Material.COOKIE) && itemstackcurrent.getItemMeta().getDisplayName().contains("整地神")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getRankingList(player,0));
-				return;
 			}
 			//整地神番付を開く
 			else if(itemstackcurrent.getType().equals(Material.COOKIE) && itemstackcurrent.getItemMeta().getDisplayName().contains("ログイン神")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getRankingList_playtick(player,0));
-				return;
 			}
 			//整地神番付を開く
 			else if(itemstackcurrent.getType().equals(Material.COOKIE) && itemstackcurrent.getItemMeta().getDisplayName().contains("投票神")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getRankingList_p_vote(player,0));
-				return;
 			}
 
 			//溜まったガチャ券をインベントリへ
@@ -745,7 +738,6 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
-				return;
 			}
 
 			else if(itemstackcurrent.getType().equals(Material.DIAMOND_PICKAXE)){
@@ -979,7 +971,6 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
-				return;
 			}
 			else if(itemstackcurrent.getType().equals(Material.STONE_BUTTON)){
 				if(itemstackcurrent.getItemMeta().getDisplayName().contains("リセット")){
@@ -1020,7 +1011,6 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 1, (float) 0.5);
 				player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
-				return;
 			}
 		}
 	}
@@ -2209,7 +2199,6 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
-				return;
 			}
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
@@ -2280,7 +2269,6 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
-				return;
 			}
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
@@ -2351,7 +2339,6 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
-				return;
 			}
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
@@ -2422,7 +2409,6 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
-				return;
 			}
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
@@ -2493,7 +2479,6 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
-				return;
 			}
 		}
 	}
@@ -4953,7 +4938,6 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleSpecial(player));
-				return;
 			}
     	}
     }
@@ -5450,7 +5434,6 @@ public class PlayerInventoryListener implements Listener {
     		else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
-				return;
 			}
 
     		//妖精時間トグル

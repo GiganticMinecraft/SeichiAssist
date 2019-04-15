@@ -468,8 +468,7 @@ public class RegionInventoryListener implements Listener {
             if (itemstackcurrent.getType().equals(Material.BARRIER)) {
                 player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
                 player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
-                return;
-            } else {
+			} else {
                 int slot = event.getSlot();
 
                 if (templateMap.get(slot) == null) {

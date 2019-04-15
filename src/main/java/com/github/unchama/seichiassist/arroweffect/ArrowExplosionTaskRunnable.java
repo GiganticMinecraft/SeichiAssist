@@ -66,7 +66,6 @@ public class ArrowExplosionTaskRunnable extends BukkitRunnable{
 			proj.remove();
 			SeichiAssist.entitylist.remove(proj);
 			this.cancel();
-			return;
 		}
 	}
 

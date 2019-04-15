@@ -67,7 +67,6 @@ public class ArrowMeteoTaskRunnable extends BukkitRunnable{
 			proj.remove();
 			SeichiAssist.entitylist.remove(proj);
 			this.cancel();
-			return;
 		}
 	}
 

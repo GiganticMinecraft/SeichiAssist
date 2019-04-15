@@ -74,7 +74,6 @@ public enum ActiveSkillPremiumEffect {
 	//獲得させる処理
 	public void setObtained(Map<Integer,Boolean> flagmap) {
 		flagmap.put(getNum(), true);
-		return;
 	}
 	//エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
 	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
@@ -99,7 +98,6 @@ public enum ActiveSkillPremiumEffect {
 		default :
 			break;
 		}
-		return;
 	}
 
 	//エフェクトの実行処理分岐
@@ -120,7 +118,6 @@ public enum ActiveSkillPremiumEffect {
 		default :
 			break;
 		}
-		return;
 	}
 
 

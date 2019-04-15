@@ -397,6 +397,5 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			playerdata.isContribute(p, addMana);
 		}
 		timer.sendLapTimeMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ読込完了");
-		return;
 	}
 }
