@@ -48,27 +48,27 @@ public class GachaItemListener implements Listener {
 		if(!itemmeta.hasLore())return;
 		List<String> lore = itemmeta.getLore();
 
-		if(Util.LoreContains(lore,"マナ完全回復") > 0){
+		if(Util.loreIndexOf(lore,"マナ完全回復") > 0){
 			mana.fullMana(player,level);
 			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
 		}
 
-		if(Util.LoreContains(lore,"マナ回復（小）") > 0){
+		if(Util.loreIndexOf(lore,"マナ回復（小）") > 0){
 			mana.increaseMana(300, player, level);
 			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
 		}
 
-		if(Util.LoreContains(lore,"マナ回復（中）") > 0){
+		if(Util.loreIndexOf(lore,"マナ回復（中）") > 0){
 			mana.increaseMana(1500, player, level);
 			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
 		}
 
-		if(Util.LoreContains(lore,"マナ回復（大）") > 0){
+		if(Util.loreIndexOf(lore,"マナ回復（大）") > 0){
 			mana.increaseMana(10000, player, level);
 			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
 		}
 
-		if(Util.LoreContains(lore,"マナ回復（極）") > 0){
+		if(Util.loreIndexOf(lore,"マナ回復（極）") > 0){
 			mana.increaseMana(100000, player, level);
 			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
 		}

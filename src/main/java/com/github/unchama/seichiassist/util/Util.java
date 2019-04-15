@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 
@@ -445,12 +446,17 @@ public class Util {
 		return false;
 	}
 
-	//Listの中でひとつでもstringに該当するものがあればtrueを開放します。
-	public static int LoreContains(List<String> lore, String string) {
-		for(int i = 0; i < lore.size(); i++){
-			if(lore.get(i).contains(string))return i;
-		}
-		return -1;
+	/**
+	 * loreを捜査して、要素の中に{@code find}が含まれているかを調べる。
+	 * @param lore 探される対象
+	 * @param find 探す文字列
+	 * @return 見つかった場合はその添字、見つからなかった場合は-1
+	 */
+	public static int loreIndexOf(List<String> lore, String find) {
+		return IntStream.range(0, lore.size())
+				.filter(i -> lore.get(i).contains(find))
+				.findFirst()
+				.orElse(-1);
 	}
 	public static boolean isGachaTicket(ItemStack itemstack) {
 		if(!itemstack.getType().equals(Material.SKULL_ITEM)){
@@ -820,7 +826,7 @@ public class Util {
 
 	public static boolean isMineHeadItem(ItemStack itemstack) {
 		if(itemstack.getType().equals(Material.CARROT_STICK) &&
-				LoreContains(itemstack.getItemMeta().getLore(), "頭を狩り取る形をしている...") >= 0 ) {return true;}
+				loreIndexOf(itemstack.getItemMeta().getLore(), "頭を狩り取る形をしている...") >= 0 ) {return true;}
 		return false;
 	}
 
@@ -891,7 +897,7 @@ public class Util {
 
 	public static boolean isLimitedTitanItem(ItemStack itemstack) {
 		if(itemstack.getType().equals(Material.DIAMOND_AXE) &&
-				LoreContains(itemstack.getItemMeta().getLore(), "特別なタイタンをあなたに♡") >= 0 ) {return true;}
+				loreIndexOf(itemstack.getItemMeta().getLore(), "特別なタイタンをあなたに♡") >= 0 ) {return true;}
 		return false;
 	}
 
