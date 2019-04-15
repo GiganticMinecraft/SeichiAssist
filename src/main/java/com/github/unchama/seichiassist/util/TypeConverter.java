@@ -40,7 +40,7 @@ public final class TypeConverter {
 			time = hour + "時間";
 		}
 		if(minute != 0){
-			time = time + minute + "分";
+			time += minute + "分";
 		}
 		/*
 		if(second != 0){
