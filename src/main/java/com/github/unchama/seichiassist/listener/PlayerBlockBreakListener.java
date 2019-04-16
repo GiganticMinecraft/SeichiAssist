@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.ExternalPlugins;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -50,7 +51,7 @@ public class PlayerBlockBreakListener implements Listener {
 		Block block = event.getBlock();
 
 		//他人の保護がかかっている場合は処理を終了
-		if(!Util.getWorldGuard().canBuild(player, block.getLocation()))return;
+		if(!ExternalPlugins.getWorldGuard().canBuild(player, block.getLocation()))return;
 
 		//ブロックのタイプを取得
 		Material material = block.getType();
@@ -337,7 +338,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breakblocknum==0){
-			BreakUtil.BreakBlock(player, block, centerofblock, tool,true);
+			BreakUtil.breakBlock(player, block, centerofblock, tool,true);
 			return;
 		}//スキルの処理
 		else{
@@ -514,14 +515,14 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breaklist.size()==0){
-			BreakUtil.BreakBlock(player, block, centerofblock, tool,true);
+			BreakUtil.breakBlock(player, block, centerofblock, tool,true);
 			return;
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.activeskilldata.effectnum == 0){
 			breaklist.add(block);
 			SeichiAssist.allblocklist.add(block);
 			for(Block b:breaklist){
-				BreakUtil.BreakBlock(player, b, centerofblock, tool,false);
+				BreakUtil.breakBlock(player, b, centerofblock, tool,false);
 				SeichiAssist.allblocklist.remove(b);
 			}
 		}
@@ -570,7 +571,7 @@ public class PlayerBlockBreakListener implements Listener {
 		PlayerData data = SeichiAssist.playermap.get(p.getUniqueId());
 
 		//そもそも自分の保護じゃなきゃ処理かけない
-		if(!Util.getWorldGuard().canBuild(p, b.getLocation())) {
+		if(!ExternalPlugins.getWorldGuard().canBuild(p, b.getLocation())) {
 			return;
 		}
 

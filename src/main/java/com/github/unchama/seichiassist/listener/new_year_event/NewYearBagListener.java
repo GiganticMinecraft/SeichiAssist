@@ -48,7 +48,7 @@ public class NewYearBagListener implements Listener {
         }
 
         //自分の保護範囲外ではドロップさせない
-        if (!Util.getWorldGuard().canBuild(player, block)) {
+        if (!ExternalPlugins.getWorldGuard().canBuild(player, block)) {
             return;
         }
 

@@ -56,12 +56,12 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 			//1回目のrun
 			if(playerdata.activeskilldata.skillnum > 2){
 				for(Block b : breaklist){
-					BreakUtil.BreakBlock(player, b, droploc, tool, false);
+					BreakUtil.breakBlock(player, b, droploc, tool, false);
 					b.setType(Material.PACKED_ICE);
 				}
 			}else{
 				for(Block b : breaklist){
-					BreakUtil.BreakBlock(player, b, droploc, tool, true);
+					BreakUtil.breakBlock(player, b, droploc, tool, true);
 					SeichiAssist.allblocklist.remove(b);
 				}
 				cancel();

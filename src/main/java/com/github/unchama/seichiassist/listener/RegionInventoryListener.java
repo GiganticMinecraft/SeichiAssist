@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.ExternalPlugins;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Location;
@@ -49,8 +50,8 @@ import com.sk89q.worldguard.protection.util.DomainInputResolver;
  */
 public class RegionInventoryListener implements Listener {
     HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-    static WorldGuardPlugin Wg = Util.getWorldGuard();
-    static WorldEditPlugin We = Util.getWorldEdit();
+    static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
+    static WorldEditPlugin We = ExternalPlugins.getWorldEdit();
     static Config config = SeichiAssist.config;
 
     /**
@@ -162,7 +163,7 @@ public class RegionInventoryListener implements Listener {
             else if(itemstackcurrent.getType().equals(Material.GOLD_AXE)){
                 // 保護の設定
                 player.closeInventory();
-                Selection selection = Util.getWorldEdit().getSelection(player);
+                Selection selection = ExternalPlugins.getWorldEdit().getSelection(player);
                 if(!player.hasPermission("worldguard.region.claim")){
                     player.sendMessage(ChatColor.RED + "このワールドでは保護を申請できません");
                     return;

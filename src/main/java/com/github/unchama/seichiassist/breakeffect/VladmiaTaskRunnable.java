@@ -63,7 +63,7 @@ public class VladmiaTaskRunnable extends BukkitRunnable{
 
 
 		for(Block b : breaklist){
-			BreakUtil.BreakBlock(player, b, droploc, tool, false);
+			BreakUtil.breakBlock(player, b, droploc, tool, false);
 			new moveParticleTaskRunnable(player,b,Color.RED).runTaskTimer(plugin, 0, 3);
 		}
 	}

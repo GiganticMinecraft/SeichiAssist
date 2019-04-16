@@ -81,7 +81,7 @@ public class MagicTaskRunnable extends BukkitRunnable {
 			int rd = new Random().nextInt(colors.length);
 
 			for (Block b : breaklist) {
-				BreakUtil.BreakBlock(player, b, droploc, tool, false);
+				BreakUtil.breakBlock(player, b, droploc, tool, false);
 				b.setType(Material.WOOL);
 				state = b.getState();
 				red = (Wool) state.getData();

@@ -122,12 +122,12 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 		player.getWorld().playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, (float)1, (float)((Math.random()*0.4)+0.8));
 		if(playerdata.activeskilldata.skillnum > 2){
 			for(Block b : breaklist){
-				BreakUtil.BreakBlock(player, b, droploc, tool, false);
+				BreakUtil.breakBlock(player, b, droploc, tool, false);
 				SeichiAssist.allblocklist.remove(b);
 			}
 		}else{
 			for(Block b : breaklist){
-				BreakUtil.BreakBlock(player, b, droploc, tool, true);
+				BreakUtil.breakBlock(player, b, droploc, tool, true);
 				SeichiAssist.allblocklist.remove(b);
 			}
 		}

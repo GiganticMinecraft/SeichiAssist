@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.unchama.seichiassist.util.ExternalPlugins;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -32,8 +33,8 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
  * @author karayuu
  */
 public class RegionMenuData {
-    static WorldGuardPlugin Wg = Util.getWorldGuard();
-    static WorldEditPlugin We = Util.getWorldEdit();
+    static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
+    static WorldEditPlugin We = ExternalPlugins.getWorldEdit();
     static Config config = SeichiAssist.config;
     static NumberFormat nfNum = NumberFormat.getNumberInstance();
 
@@ -66,7 +67,7 @@ public class RegionMenuData {
         itemmeta1.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         List<String> lore1 = new ArrayList<>();
 
-        Selection selection = Util.getWorldEdit().getSelection(player);
+        Selection selection = ExternalPlugins.getWorldEdit().getSelection(player);
 
         if(!player.hasPermission("worldguard.region.claim")){
             lore1.addAll(Arrays.asList(ChatColor.RED + "このワールドでは"
