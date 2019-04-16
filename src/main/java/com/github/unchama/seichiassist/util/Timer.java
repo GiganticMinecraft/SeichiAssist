@@ -9,7 +9,7 @@ public class Timer {
     private TimeUnit timeUnit;
     
     public Timer() {
-        this(TimeUnit.NANOSECONDS);
+        this(TimeUnit.MILLISECONDS);
     }
 
     @Deprecated

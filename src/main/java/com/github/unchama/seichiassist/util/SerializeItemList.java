@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public final class SerializeItemList {
 			}
 			// 変換後のシリアルデータを取得
 			serial = Base64Coder.encodeLines(outputStream.toByteArray());
-		} catch (Exception e) {
+		} catch (ClassCastException | IOException e) {
 			e.printStackTrace();
 			serial = "";
 		}
@@ -65,7 +66,7 @@ public final class SerializeItemList {
 				// ストリームを閉じる
 				dataInput.close();
 			}
-		} catch (Exception e) {
+		} catch (ClassCastException | IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 			items.clear();
 		}
