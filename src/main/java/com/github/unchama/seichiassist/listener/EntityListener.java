@@ -55,7 +55,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 		Projectile proj = e;
-    	projsource = proj.getShooter();
+		projsource = proj.getShooter();
 		if(!(projsource instanceof Player)){
 			return;
 		}
@@ -339,11 +339,11 @@ public class EntityListener implements Listener {
 	@EventHandler
 	public void onEntityExplodeEvent(EntityExplodeEvent event){
 		Entity e = event.getEntity();
-	    if ( e instanceof Projectile){
-	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
-	    		event.setCancelled(true);
-	    	}
-	    }
+		if ( e instanceof Projectile){
+			if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+				event.setCancelled(true);
+			}
+		}
 
 	}
 
@@ -351,20 +351,20 @@ public class EntityListener implements Listener {
 	@EventHandler
 	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
 		Entity e = event.getDamager();
-	    if ( e instanceof Projectile){
-	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
-	    		event.setCancelled(true);
-	    	}
-	    }
+		if ( e instanceof Projectile){
+			if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+				event.setCancelled(true);
+			}
+		}
 	}
 	@EventHandler
 	public void onPotionSplashEvent(PotionSplashEvent event){
 		Entity e = event.getPotion();
-	    if ( e instanceof Projectile){
-	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
-	    		event.setCancelled(true);
-	    	}
-	    }
+		if ( e instanceof Projectile){
+			if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+				event.setCancelled(true);
+			}
+		}
 	}
 
 	/*

@@ -161,10 +161,10 @@ public class AchieveCommand implements TabExecutor{
 									//ユーザー「ALL」がいた場合専用の処理
 									//相手がオンラインかどうか
 									Player givenplayer = Bukkit.getServer().getPlayer(args[1]);
-							        if (givenplayer == null) {
-							            sender.sendMessage(args[1] + " は現在このサーバーにログインしていません。");
-							            return true;
-							        }
+									if (givenplayer == null) {
+										sender.sendMessage(args[1] + " は現在このサーバーにログインしていません。");
+										return true;
+									}
 									UUID givenuuid = givenplayer.getUniqueId();
 									PlayerData givenplayerdata = playermap.get(givenuuid);
 									//該当実績を既に取得している場合処理をスキップ
@@ -208,7 +208,7 @@ public class AchieveCommand implements TabExecutor{
 									}
 									return true;
 								}
-					        }
+							}
 							UUID givenuuid = givenplayer.getUniqueId();
 							PlayerData givenplayerdata = playermap.get(givenuuid);
 							try{

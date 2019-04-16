@@ -289,27 +289,27 @@ public class Config{
 	}
 
 	public int getGiganticFeverMinutes() {
-	    return config.getInt("gigantic_fever_minutes");
-    }
+		return config.getInt("gigantic_fever_minutes");
+	}
 
-    public String getGiganticFeverDisplayTime() {
-	    int minute = getGiganticFeverMinutes();
+	public String getGiganticFeverDisplayTime() {
+		int minute = getGiganticFeverMinutes();
 
-	    int hours = minute / 60;
-	    int minutes = minute - 60 * hours;
+		int hours = minute / 60;
+		int minutes = minute - 60 * hours;
 
-	    return hours + "時間" + minutes + "分";
-    }
-    public int getGiganticBerserkLimit() {
-    	return config.getInt("GBLimit");
-    }
+		return hours + "時間" + minutes + "分";
+	}
+	public int getGiganticBerserkLimit() {
+		return config.getInt("GBLimit");
+	}
 
-    /**
-     * 各種URLを返します.
-     * @param typeName Url以下の項目名
-     * @return 該当URL.ただし,typeNameが誤っていた場合は""を返します.
-     */
-    public String getUrl(String typeName) {
-	    return config.getString("Url." + typeName);
-    }
+	/**
+	 * 各種URLを返します.
+	 * @param typeName Url以下の項目名
+	 * @return 該当URL.ただし,typeNameが誤っていた場合は""を返します.
+	 */
+	public String getUrl(String typeName) {
+		return config.getString("Url." + typeName);
+	}
 }

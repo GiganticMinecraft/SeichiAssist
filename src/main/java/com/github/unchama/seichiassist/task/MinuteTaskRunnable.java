@@ -134,9 +134,9 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 				//effect上限値を判定
 				int maxSpeed = 0;
 				if (playerdata.effectflag == 0) {
-                    maxSpeed = 25565;
-                } else if (playerdata.effectflag == 1) {
-				    maxSpeed = 127;
+					maxSpeed = 25565;
+				} else if (playerdata.effectflag == 1) {
+					maxSpeed = 127;
 				} else if(playerdata.effectflag == 2) {
 					maxSpeed = 200;
 				} else if(playerdata.effectflag == 3) {
@@ -209,75 +209,75 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			 * 実績解除判定
 			 */
 			//実績解除処理部分の読みこみ
-    		TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
-    		//No1000系統の解禁チェック
-    		int checkNo = 1001 ;
-    		for(;checkNo < 1013 ;){
-    			if(!playerdata.TitleFlags.get(checkNo)){
-    				TUTR.TryTitle(player,checkNo);
-    			}
-    			checkNo ++ ;
-    		}
-    		//No3000系統の解禁チェック
-    		checkNo = 3001 ;
-    		for(;checkNo < 3020 ;){
-    			if(!playerdata.TitleFlags.get(checkNo)){
-    				TUTR.TryTitle(player,checkNo);
-    			}
-    			checkNo ++ ;
-    		}
-    		//No4000系統の解禁チェック
-    		checkNo = 4001 ;
-    		for(;checkNo < 4024 ;){
-    			if(!playerdata.TitleFlags.get(checkNo)){
-    				TUTR.TryTitle(player,checkNo);
-    			}
-    			checkNo ++ ;
-    		}
-    		//No5000系統の解禁チェック
-    		checkNo = 5001 ;
-    		for(;checkNo < 5009 ;){
-    			if(!playerdata.TitleFlags.get(checkNo)){
-    				TUTR.TryTitle(player,checkNo);
-    			}
-    			checkNo ++ ;
-    		}
-    		//No5100系統の解禁チェック
-    		checkNo = 5101 ;
-    		for(;checkNo < 5121 ;){
-    			if(!playerdata.TitleFlags.get(checkNo)){
-    				TUTR.TryTitle(player,checkNo);
-    			}
-    			checkNo ++ ;
-    		}
-    		//No6000系統の解禁チェック
-    		checkNo = 6001 ;
-    		for(;checkNo < 6009 ;){
-    			if(!playerdata.TitleFlags.get(checkNo)){
-    				TUTR.TryTitle(player,checkNo);
-    			}
-    			checkNo ++ ;
-    		}
-    		//No8000系統の解禁チェック
-    		checkNo = 8001 ;
-    		for(;checkNo < 8003 ;){
-    			if(!playerdata.TitleFlags.get(checkNo)){
-    				TUTR.TryTitle(player,checkNo);
-    			}
-    			checkNo ++ ;
-    		}
+			TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//No1000系統の解禁チェック
+			int checkNo = 1001 ;
+			for(;checkNo < 1013 ;){
+				if(!playerdata.TitleFlags.get(checkNo)){
+					TUTR.TryTitle(player,checkNo);
+				}
+				checkNo ++ ;
+			}
+			//No3000系統の解禁チェック
+			checkNo = 3001 ;
+			for(;checkNo < 3020 ;){
+				if(!playerdata.TitleFlags.get(checkNo)){
+					TUTR.TryTitle(player,checkNo);
+				}
+				checkNo ++ ;
+			}
+			//No4000系統の解禁チェック
+			checkNo = 4001 ;
+			for(;checkNo < 4024 ;){
+				if(!playerdata.TitleFlags.get(checkNo)){
+					TUTR.TryTitle(player,checkNo);
+				}
+				checkNo ++ ;
+			}
+			//No5000系統の解禁チェック
+			checkNo = 5001 ;
+			for(;checkNo < 5009 ;){
+				if(!playerdata.TitleFlags.get(checkNo)){
+					TUTR.TryTitle(player,checkNo);
+				}
+				checkNo ++ ;
+			}
+			//No5100系統の解禁チェック
+			checkNo = 5101 ;
+			for(;checkNo < 5121 ;){
+				if(!playerdata.TitleFlags.get(checkNo)){
+					TUTR.TryTitle(player,checkNo);
+				}
+				checkNo ++ ;
+			}
+			//No6000系統の解禁チェック
+			checkNo = 6001 ;
+			for(;checkNo < 6009 ;){
+				if(!playerdata.TitleFlags.get(checkNo)){
+					TUTR.TryTitle(player,checkNo);
+				}
+				checkNo ++ ;
+			}
+			//No8000系統の解禁チェック
+			checkNo = 8001 ;
+			for(;checkNo < 8003 ;){
+				if(!playerdata.TitleFlags.get(checkNo)){
+					TUTR.TryTitle(player,checkNo);
+				}
+				checkNo ++ ;
+			}
 
-    		//投票妖精関連
-    		if (playerdata.usingVotingFairy) {
-    			VotingFairyTaskRunnable.run(player);
-    		}
+			//投票妖精関連
+			if (playerdata.usingVotingFairy) {
+				VotingFairyTaskRunnable.run(player);
+			}
 
-    		//GiganticBerserk
-    		playerdata.GBcd = 0;
+			//GiganticBerserk
+			playerdata.GBcd = 0;
 
 		}
 
-        time++;
+		time++;
 		GiganticFeverCommand.checkTime(); //GiganticFeverの時間チェック
 	}
 }

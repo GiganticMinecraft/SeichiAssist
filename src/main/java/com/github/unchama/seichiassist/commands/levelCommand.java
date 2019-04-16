@@ -90,24 +90,24 @@ public class levelCommand implements TabExecutor{
 
 				//すべてのプレイヤーデータについて処理
 				//for(PlayerData playerdata:SeichiAssist.playermap.values()){
-			    	OfflinePlayer op = Bukkit.getOfflinePlayer(args[1]);
-			    		UUID uuid = null;
-			    		if(op!=null){
-			    			uuid = op.getUniqueId();
-			    		} else {
-			    			try {
-			    				uuid = OfflineUUID.getUUID(args[1], true);
-			    			} catch (SocketTimeoutException e) {
-			    				// TODO 自動生成された catch ブロック
-			    				//e.printStackTrace();
-			    			} catch (IllegalArgumentException e) {
-			    				// TODO 自動生成された catch ブロック
-			    				//e.printStackTrace();
-			    			} catch (IOException e) {
-			    				// TODO 自動生成された catch ブロック
-			    				//e.printStackTrace();
-			    			}
-			    		}
+					OfflinePlayer op = Bukkit.getOfflinePlayer(args[1]);
+						UUID uuid = null;
+						if(op!=null){
+							uuid = op.getUniqueId();
+						} else {
+							try {
+								uuid = OfflineUUID.getUUID(args[1], true);
+							} catch (SocketTimeoutException e) {
+								// TODO 自動生成された catch ブロック
+								//e.printStackTrace();
+							} catch (IllegalArgumentException e) {
+								// TODO 自動生成された catch ブロック
+								//e.printStackTrace();
+							} catch (IOException e) {
+								// TODO 自動生成された catch ブロック
+								//e.printStackTrace();
+							}
+						}
 						PlayerData playerdata = null;
 						if(uuid!=null){
 							playerdata = SeichiAssist.playermap.get(uuid); //get(UUID);
@@ -182,7 +182,7 @@ public class levelCommand implements TabExecutor{
 							 } else {
 								 sender.sendMessage("指定されたプレイヤーはプレイ履歴がありません");
 							 }
-				    	}
+						}
 			} else {
 				sender.sendMessage("このコマンドはデバッグモード時のみ使用可能です");
 			}

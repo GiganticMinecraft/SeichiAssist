@@ -169,9 +169,9 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 				//実績のフラグ(BitSet)保存用変換処理
 				long[] TitleArray = playerdata.TitleFlags.toLongArray();
-		        String[] TitleNums = Arrays.stream(TitleArray).mapToObj(Long::toHexString).toArray(String[]::new);
-		        String FlagString = String.join(",", TitleNums);
-		        command += ",TitleFlags = '" + FlagString + "'" ;
+				String[] TitleNums = Arrays.stream(TitleArray).mapToObj(Long::toHexString).toArray(String[]::new);
+				String FlagString = String.join(",", TitleNums);
+				command += ",TitleFlags = '" + FlagString + "'" ;
 
 		//グリッド式保護設定保存
 		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {

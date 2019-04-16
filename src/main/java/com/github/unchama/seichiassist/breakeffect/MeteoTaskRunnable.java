@@ -72,7 +72,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 		soundradius = 5;
 
 		//音を設定するか設定
-        soundflag = playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum();
+		soundflag = playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum();
 		if(playerdata.activeskilldata.skillnum > 2){
 			launchFireball();
 		}
@@ -91,16 +91,16 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 		launchloc.setDirection(vec);
 		vec.normalize();
 		proj = player.getWorld().spawn(launchloc,LargeFireball.class);
-        proj.setShooter(player);
-        proj.setMetadata("Effect", new FixedMetadataValue(plugin, true));
+		proj.setShooter(player);
+		proj.setMetadata("Effect", new FixedMetadataValue(plugin, true));
 		double k = 1.0;
-        vec.setX(vec.getX() * k);
-        vec.setY(vec.getY() * k);
-        vec.setZ(vec.getZ() * k);
-        proj.setShooter(player);
-        proj.setMetadata("Effect", new FixedMetadataValue(plugin, true));
-        proj.setVelocity(vec);
-        new ArrowControlTaskRunnable(proj,centerbreakloc).runTaskTimer(plugin, 0, 1);
+		vec.setX(vec.getX() * k);
+		vec.setY(vec.getY() * k);
+		vec.setZ(vec.getZ() * k);
+		proj.setShooter(player);
+		proj.setMetadata("Effect", new FixedMetadataValue(plugin, true));
+		proj.setVelocity(vec);
+		new ArrowControlTaskRunnable(proj,centerbreakloc).runTaskTimer(plugin, 0, 1);
 	}
 
 	@Override

@@ -220,8 +220,8 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  				playerdata.LimitedLoginCount =rs.getInt("LimitedLoginCount");
 
  				//連続・通算ログインの情報、およびその更新
- 		        Calendar cal = Calendar.getInstance();
- 		        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+ 				Calendar cal = Calendar.getInstance();
+ 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
  				if(rs.getString("lastcheckdate").equals("") || rs.getString("lastcheckdate") == null){
  					playerdata.lastcheckdate = sdf.format(cal.getTime());
  				}else {
@@ -236,7 +236,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  					playerdata.TotalJoin = 1 ;
  				}
 
- 		        try {
+ 				try {
 					Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
 					Date LastDate = sdf.parse(playerdata.lastcheckdate);
 					long TodayLong = TodayDate.getTime();
@@ -255,14 +255,14 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
- 		        playerdata.lastcheckdate = sdf.format(cal.getTime());
+ 				playerdata.lastcheckdate = sdf.format(cal.getTime());
 
- 		        //連続投票の更新
- 		        String lastvote = rs.getString("lastvote");
- 		        if(lastvote.equals("") || lastvote == null){
- 		        	playerdata.ChainVote = 0;
- 		        }else {
- 		        	try {
+ 				//連続投票の更新
+ 				String lastvote = rs.getString("lastvote");
+ 				if(lastvote.equals("") || lastvote == null){
+ 					playerdata.ChainVote = 0;
+ 				}else {
+ 					try {
  						Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
  						Date LastDate = sdf.parse(lastvote);
  						long TodayLong = TodayDate.getTime();
@@ -277,15 +277,15 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  					} catch (ParseException e) {
  						e.printStackTrace();
  					}
- 		        }
+ 				}
 
  				//実績解除フラグのBitSet型への復元処理
  				//初回nullエラー回避のための分岐
  				try {
  				String[] Titlenums = rs.getString("TitleFlags").split(",");
- 		        long[] Titlearray = Arrays.stream(Titlenums).mapToLong(x -> Long.parseUnsignedLong(x, 16)).toArray();
- 		        BitSet TitleFlags = BitSet.valueOf(Titlearray);
- 		        playerdata.TitleFlags = TitleFlags ;
+ 				long[] Titlearray = Arrays.stream(Titlenums).mapToLong(x -> Long.parseUnsignedLong(x, 16)).toArray();
+ 				BitSet TitleFlags = BitSet.valueOf(Titlearray);
+ 				playerdata.TitleFlags = TitleFlags ;
  				}
  				catch(NullPointerException e){
  					playerdata.TitleFlags = new BitSet(10000);

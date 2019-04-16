@@ -38,10 +38,10 @@ public class GachaData {
 		double rand = Math.random();
 
 		for (GachaData gachadata : SeichiAssist.gachadatalist) {
-		    sum -= gachadata.probability;
-		    if (sum <= rand) {
-                return new GachaData(gachadata);
-            }
+			sum -= gachadata.probability;
+			if (sum <= rand) {
+				return new GachaData(gachadata);
+			}
 		}
 		return new GachaData(Util.getGachaRingo(),1.0,1);
 	}
@@ -53,8 +53,8 @@ public class GachaData {
 			int index = Util.loreIndexOf(mlore, "所有者");
 			if(index >= 0){
 				//保有者であれば交換
-                //保有者でなければ交換できない
-                return mlore.get(index).toLowerCase().contains(name);
+				//保有者でなければ交換できない
+				return mlore.get(index).toLowerCase().contains(name);
 			}//所有者の記載がなければ交換できる。
 			else{
 				return true;
@@ -67,8 +67,8 @@ public class GachaData {
 		List<String> mlore,lore;
 		lore = this.itemstack.getItemMeta().getLore();
 		mlore = m.getItemMeta().getLore();
-        return mlore.containsAll(lore) && this.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName());
-    }
+		return mlore.containsAll(lore) && this.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName());
+	}
 
 	public void addname(String name) {
 		ItemMeta meta = this.itemstack.getItemMeta();

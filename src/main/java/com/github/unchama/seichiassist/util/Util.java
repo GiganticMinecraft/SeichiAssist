@@ -714,7 +714,7 @@ public final class Util {
 		Date date = cal.getTime();
 		SimpleDateFormat format = new SimpleDateFormat("HH");
 		int n = TypeConverter.toInt(format.format(date));
-		return    4<=n && n<10 ? "morning"
+		return	4<=n && n<10 ? "morning"
 				:10<=n && n<18 ? "day"
 						:"night";
 	}
@@ -754,32 +754,32 @@ public final class Util {
 		return worldname;
 	}
 
-    public static void setDifficulty(List<String> worldNameList, Difficulty difficulty) {
-        for (String name : worldNameList) {
-            World world = Bukkit.getWorld(name);
-            if (world == null) {
-                Bukkit.getLogger().warning(name + "という名前のワールドは存在しません。");
-                continue;
-            }
-            world.setDifficulty(difficulty);
-        }
-    }
+	public static void setDifficulty(List<String> worldNameList, Difficulty difficulty) {
+		for (String name : worldNameList) {
+			World world = Bukkit.getWorld(name);
+			if (world == null) {
+				Bukkit.getLogger().warning(name + "という名前のワールドは存在しません。");
+				continue;
+			}
+			world.setDifficulty(difficulty);
+		}
+	}
 
-    /**
-     * 指定した名前のマインスタックの番号を返す
-     * @param s SeichiAssist.javaのminestacklistに定義されてる英語名
-     * @return マインスタック番号(見つからなかった場合は-1)
-     */
-    public static int MineStackobjname_indexOf(String s){
-        int id = -1;
-        for(int x = 0 ; x < SeichiAssist.minestacklist.size() ; x++){
-            if( s.equals( SeichiAssist.minestacklist.get(x).getMineStackObjName() ) ){
-                id = x;
-                break;
-            }
-        }
-        return id;
-    }
+	/**
+	 * 指定した名前のマインスタックの番号を返す
+	 * @param s SeichiAssist.javaのminestacklistに定義されてる英語名
+	 * @return マインスタック番号(見つからなかった場合は-1)
+	 */
+	public static int MineStackobjname_indexOf(String s){
+		int id = -1;
+		for(int x = 0 ; x < SeichiAssist.minestacklist.size() ; x++){
+			if( s.equals( SeichiAssist.minestacklist.get(x).getMineStackObjName() ) ){
+				id = x;
+				break;
+			}
+		}
+		return id;
+	}
 
 	public static boolean isEnemy(EntityType type) {
 		switch(type){

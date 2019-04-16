@@ -98,7 +98,7 @@ public class ActiveSkillData {
 		for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : activeskillpremiumeffect) {
 			premiumeffectflagmap.put(activeSkillPremiumEffect.getNum(), false);
 		}
-        area = null;
+		area = null;
 		assaultarea = null;
 
 		mana = new Mana();

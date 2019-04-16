@@ -50,8 +50,8 @@ public enum ActiveSkillPremiumEffect {
 	}
 
 	public int getNum(){
-        return this.num;
-    }
+		return this.num;
+	}
 	public String getsqlName(){
 		return this.sql_name;
 	}

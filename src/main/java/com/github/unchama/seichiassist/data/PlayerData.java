@@ -760,9 +760,9 @@ public class PlayerData {
 
 	public void setSubHomeName(String s){
 		if (s == null) {
-		    //SQL初期化時(つまりサーバーに導入時)必ず入力がカラムの内容がnullになるためその対策
-		    return;
-        }
+			//SQL初期化時(つまりサーバーに導入時)必ず入力がカラムの内容がnullになるためその対策
+			return;
+		}
 		try {
 			byte[] bytes = Hex.decodeHex(s.toCharArray());
 			String str = new String(bytes,StandardCharsets.UTF_8);

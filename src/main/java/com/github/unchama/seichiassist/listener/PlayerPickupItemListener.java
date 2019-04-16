@@ -98,22 +98,22 @@ public class PlayerPickupItemListener implements Listener {
 		/*
 		if(playerdata!=null){
 			String name = playerdata.name;
-		    for(GachaData gachadata : gachadatalist){
-		        if(!gachadata.itemstack.hasItemMeta()){
-		             continue;
-		        }else if(!gachadata.itemstack.getItemMeta().hasLore()){
-		             continue;
-		        }
-		        //ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
-		        if(gachadata.compare(itemstack,name)){
-		        	if(SeichiAssist.DEBUG){
-		        		player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
-		            }
-		        if(gachadata.itemstack.getItemMeta().getLore().equals(itemstack.getItemMeta().getLore())
-		          &&gachadata.itemstack.getItemMeta().getDisplayName().equals(itemstack.getItemMeta().getDisplayName())){
-		            }
-		        }
-		    }
+			for(GachaData gachadata : gachadatalist){
+				if(!gachadata.itemstack.hasItemMeta()){
+					 continue;
+				}else if(!gachadata.itemstack.getItemMeta().hasLore()){
+					 continue;
+				}
+				//ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
+				if(gachadata.compare(itemstack,name)){
+					if(SeichiAssist.DEBUG){
+						player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
+					}
+				if(gachadata.itemstack.getItemMeta().getLore().equals(itemstack.getItemMeta().getLore())
+				  &&gachadata.itemstack.getItemMeta().getDisplayName().equals(itemstack.getItemMeta().getDisplayName())){
+					}
+				}
+			}
 		}
 		*/
 

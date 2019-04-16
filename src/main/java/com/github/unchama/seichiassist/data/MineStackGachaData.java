@@ -51,8 +51,8 @@ public class MineStackGachaData {
 			int index = Util.loreIndexOf(mlore, "所有者");
 			if(index >= 0){
 				//保有者であれば交換
-                //保有者でなければ交換できない
-                return mlore.get(index).toLowerCase().contains(name);
+				//保有者でなければ交換できない
+				return mlore.get(index).toLowerCase().contains(name);
 			}//所有者の記載がなければ交換できる。
 			else{
 				return true;
@@ -79,7 +79,7 @@ public class MineStackGachaData {
 				Banner b1 = (Banner) bs1.getBlockState();
 				List<Pattern> p1 = b1.getPatterns();
 
-                return p0.containsAll(p1);
+				return p0.containsAll(p1);
 			}
 			return true;
 		}

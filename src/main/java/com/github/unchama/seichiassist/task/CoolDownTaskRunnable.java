@@ -16,7 +16,7 @@ public class CoolDownTaskRunnable  extends BukkitRunnable{
 	UUID uuid;
 	PlayerData playerdata;
 	boolean voteflag = false;
-    public static final String VOTE = "VOTE";
+	public static final String VOTE = "VOTE";
 	boolean soundflag = false;
 	public static final String SOUND = "SOUND";
 	boolean gachaflag = false;
