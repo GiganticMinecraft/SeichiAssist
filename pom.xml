@@ -39,42 +39,42 @@
       <artifactId>CoreProtect</artifactId>
       <version>null</version>
       <scope>system</scope>
-      <systemPath>${basedir}/localDependencies/CoreProtect.jar</systemPath>
+      <systemPath>${basedir}/localDependencies/CoreProtect-2.14.4.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>local.item-nbt-api-plugin</groupId>
       <artifactId>item-nbt-api-plugin</artifactId>
       <version>null</version>
       <scope>system</scope>
-      <systemPath>${basedir}/localDependencies/item-nbt-api-plugin.jar</systemPath>
+      <systemPath>${basedir}/localDependencies/item-nbt-api-plugin-1.8.2-SNAPSHOT.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>local.Multiverse-Core</groupId>
       <artifactId>Multiverse-Core</artifactId>
       <version>null</version>
       <scope>system</scope>
-      <systemPath>${basedir}/localDependencies/Multiverse-Core.jar</systemPath>
+      <systemPath>${basedir}/localDependencies/Multiverse-Core-2.5.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>local.Multiverse-Portals</groupId>
       <artifactId>Multiverse-Portals</artifactId>
       <version>null</version>
       <scope>system</scope>
-      <systemPath>${basedir}/localDependencies/Multiverse-Portals.jar</systemPath>
+      <systemPath>${basedir}/localDependencies/Multiverse-Portals-2.5.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>local.ParticleAPI</groupId>
       <artifactId>ParticleAPI</artifactId>
       <version>null</version>
       <scope>system</scope>
-      <systemPath>${basedir}/localDependencies/ParticleAPI.jar</systemPath>
+      <systemPath>${basedir}/localDependencies/ParticleAPI_v2.1.1.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>local.spigot</groupId>
       <artifactId>spigot</artifactId>
       <version>null</version>
       <scope>system</scope>
-      <systemPath>${basedir}/localDependencies/spigot.jar</systemPath>
+      <systemPath>${basedir}/localDependencies/spigot-1.12.2.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>local.WorldBorder</groupId>
@@ -88,21 +88,21 @@
       <artifactId>worldedit-bukkit</artifactId>
       <version>null</version>
       <scope>system</scope>
-      <systemPath>${basedir}/localDependencies/worldedit-bukkit.jar</systemPath>
+      <systemPath>${basedir}/localDependencies/worldedit-bukkit-6.1.9.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>local.worldguard-bukkit</groupId>
       <artifactId>worldguard-bukkit</artifactId>
       <version>null</version>
       <scope>system</scope>
-      <systemPath>${basedir}/localDependencies/worldguard-bukkit.jar</systemPath>
+      <systemPath>${basedir}/localDependencies/worldguard-bukkit-6.2.2.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>local.RegenWorld</groupId>
       <artifactId>RegenWorld</artifactId>
       <version>null</version>
       <scope>system</scope>
-      <systemPath>${basedir}/localDependencies/RegenWorld.jar</systemPath>
+      <systemPath>${basedir}/localDependencies/RegenWorld-1.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>local.SeasonalEvents</groupId>
