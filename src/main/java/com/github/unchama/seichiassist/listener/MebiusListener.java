@@ -432,7 +432,7 @@ public class MebiusListener implements Listener {
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなただけのMEBIUSを育てましょう！");
 		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.instance, () -> getPlayerData(player).mebius.speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！"), 10);
 		player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
-		if (!Util.isPlayerInventryFull(player)) {
+		if (!Util.isPlayerInventoryFull(player)) {
 			Util.addItem(player, mebius);
 		} else {
 			player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "所持しきれないためMEBIUSをドロップしました。");

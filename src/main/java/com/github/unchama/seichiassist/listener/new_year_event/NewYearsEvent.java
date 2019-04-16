@@ -78,7 +78,7 @@ public class NewYearsEvent implements Listener {
             return;
         }
 
-        if (Util.isPlayerInventryFull(player)) {
+        if (Util.isPlayerInventoryFull(player)) {
             player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリが一杯のため,アイテムが入手できませんでした。");
             player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリに空きを作ってから再度サーバーに参加してください。");
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);

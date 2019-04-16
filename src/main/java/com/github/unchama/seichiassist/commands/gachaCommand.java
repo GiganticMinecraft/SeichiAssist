@@ -470,7 +470,7 @@ public class gachaCommand implements TabExecutor{
 			//String str = "";
 
 			//プレゼントを格納orドロップ
-			if(!Util.isPlayerInventryFull(player)){
+			if(!Util.isPlayerInventoryFull(player)){
 				Util.addItem(player,present.itemstack);
 			}else{
 				Util.dropItem(player,present.itemstack);

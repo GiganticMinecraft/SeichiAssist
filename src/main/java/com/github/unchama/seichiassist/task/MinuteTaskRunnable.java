@@ -186,7 +186,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			if(playerdata.gachapoint >= config.getGachaPresentInterval() && playerdata.gachaflag){
 				ItemStack skull = Util.getskull(name);
 				playerdata.gachapoint -= config.getGachaPresentInterval();
-				if(player.getInventory().contains(skull) || !Util.isPlayerInventryFull(player)){
+				if(player.getInventory().contains(skull) || !Util.isPlayerInventoryFull(player)){
 					Util.addItem(player,skull);
 					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー。右クリックで使えるゾ");
 				}else{

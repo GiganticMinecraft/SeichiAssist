@@ -46,7 +46,7 @@ public class stickCommand implements TabExecutor {
 			//コマンド長が０の時の処理
 			ItemStack itemstack = new ItemStack(Material.STICK,1);
 			itemstack.setAmount(1); //念のため追加
-			if(!Util.isPlayerInventryFull(player)){
+			if(!Util.isPlayerInventoryFull(player)){
 				Util.addItem(player,itemstack);
 				player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, (float)0.1, (float)1);
 			}else{

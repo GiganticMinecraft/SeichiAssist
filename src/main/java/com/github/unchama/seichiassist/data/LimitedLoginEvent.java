@@ -88,7 +88,7 @@ public class LimitedLoginEvent {
 								p.sendMessage("【"+ MessageT +"】"+ Amount +"個のガチャ券をプレゼント！");
 								int count = 1;
 								while(count <= Amount ){
-									if(player.getInventory().contains(skull) || !Util.isPlayerInventryFull(player)){
+									if(player.getInventory().contains(skull) || !Util.isPlayerInventoryFull(player)){
 										Util.addItem(player,skull);
 									}else{
 										Util.dropItem(player,skull);
