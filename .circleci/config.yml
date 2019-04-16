@@ -21,8 +21,10 @@ jobs:
     <<: *maven_docker
     working_directory: ~/repo
     steps:
-      - run: mkdir -p workspace/localDependencies
-      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT -r $DEPENDENCY_REPOSITORY_HOST workspace/localDependencies/ > /dev/null 2>&1
+      - run: mkdir -p workspace
+      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT -r $DEPENDENCY_REPOSITORY_HOST workspace > /dev/null 2>&1
+      - run: mv workspace/dependencies workspace/localDependencies
+      - run: ls -al workspace/localDependencies
       - *save_workspace
   build:
     <<: *maven_docker
@@ -31,7 +33,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: '/workspace'
-      - run: mkdir -p localDependencies && cp -R /workspace/localDependencies localDependencies
+      - run: mkdir -p localDependencies && cp -R /workspace/localDependencies/. localDependencies
+      - run: ls -al localDependencies
       - run: mvn install
       - run: mkdir -p workspace/target && cp target/**.jar workspace/target
       - *save_workspace
