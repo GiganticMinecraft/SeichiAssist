@@ -50,7 +50,7 @@ public final class SerializeItemList {
 		List<ItemStack> items = new ArrayList<>();
 		try {
 			// String検査
-			if ((serial.length() != 0) && (!serial.equals(null))) {
+			if (serial != null && serial.length() != 0) {
 				// ByteArray入力ストリーム
 				ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(serial));
 				// Object入力ストリーム
