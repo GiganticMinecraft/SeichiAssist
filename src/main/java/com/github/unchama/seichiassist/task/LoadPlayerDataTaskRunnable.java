@@ -30,7 +30,7 @@ import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.LimitedLoginEvent;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
-import com.github.unchama.seichiassist.util.MilliSecondTimer;
+import com.github.unchama.seichiassist.util.MillisecondTimer;
 
 /**
  * プレイヤーデータロードを実施する処理(非同期で実行すること)
@@ -60,10 +60,10 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	Statement stmt = null;
 	ResultSet rs = null;
 	String db;
-	MilliSecondTimer timer;
+	MillisecondTimer timer;
 
 	public LoadPlayerDataTaskRunnable(PlayerData playerData) {
-		timer = MilliSecondTimer.initializedTimerInstance();
+		timer = MillisecondTimer.getInitializedTimerInstance();
 		db = SeichiAssist.config.getDB();
 		p = Bukkit.getPlayer(playerData.uuid);
 		playerdata = playerData;

@@ -2,13 +2,13 @@ package com.github.unchama.seichiassist.util;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 
-public class MilliSecondTimer {
+public class MillisecondTimer {
 	private long startTime;
 
-	private MilliSecondTimer() {}
+	private MillisecondTimer() {}
 
-	public static MilliSecondTimer initializedTimerInstance() {
-		MilliSecondTimer timer = new MilliSecondTimer();
+	public static MillisecondTimer getInitializedTimerInstance() {
+		MillisecondTimer timer = new MillisecondTimer();
 		timer.resetTimer();
 		return timer;
 	}
