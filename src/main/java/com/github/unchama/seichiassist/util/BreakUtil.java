@@ -140,7 +140,7 @@ public final class BreakUtil {
 
 		if(stepflag) {
 			//あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
-			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND ,material);
+			breakblock.getWorld().playEffect(breakblock.getLocation(), Effect.STEP_SOUND, material);
 		}
 
 		//プレイヤーの統計を１増やす
