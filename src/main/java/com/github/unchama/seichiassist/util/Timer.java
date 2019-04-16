@@ -54,9 +54,9 @@ public class Timer {
         return nanoSeconds;
     }
     
-    public void sendLapTimeMessage(String message){
+    public void sendLapTimeMessage(String message) {
     	nanoSeconds = System.nanoTime() - t0;
-        SeichiAssist.instance.getServer().getConsoleSender().sendMessage(message + "(time: "+ this.getNanoSeconds() +" ns)");
+        SeichiAssist.instance.getServer().getConsoleSender().sendMessage(message + "(time: "+ this.getNanoSeconds() / 1000 +" ms)");
     	t0 = System.nanoTime();
     }
 }
