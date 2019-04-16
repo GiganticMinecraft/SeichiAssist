@@ -518,7 +518,7 @@ public class MebiusListener implements Listener {
 	}
 
 	// 見た目更新Lv
-	private static final Map<Integer, Material> APPEARANCE = new LinkedHashMap<>() {
+	private static final Map<Integer, Material> APPEARANCE = new LinkedHashMap() {
 		{
 			put(1, Material.LEATHER_HELMET);
 			put(5, Material.GOLD_HELMET);
@@ -533,7 +533,7 @@ public class MebiusListener implements Listener {
 		String name = NAMEHEAD + DEFNAME;
 		String nickname = "";
 		int level = 1;
-		Map<Enchantment, Integer> ench = new LinkedHashMap<>() {
+		Map<Enchantment, Integer> ench = new LinkedHashMap() {
 			{
 				put(Enchantment.DURABILITY, 3);
 				put(Enchantment.MENDING, 1);
