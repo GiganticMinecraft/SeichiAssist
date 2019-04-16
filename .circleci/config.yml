@@ -32,6 +32,7 @@ jobs:
       - attach_workspace:
           at: '/workspace'
       - run: mkdir -p localDependencies && cp -R /workspace/localDependencies localDependencies
+      - run: ls -al localDependencies
       - run: mvn install
       - run: mkdir -p workspace/target && cp target/**.jar workspace/target
       - *save_workspace
