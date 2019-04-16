@@ -22,7 +22,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - run: mkdir -p workspace/localDependencies
-      - run: scp -r $DEPENDENCY_REPOSITORY_HOST workspace/localDependencies/ > /dev/null 2>&1
+      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT -r $DEPENDENCY_REPOSITORY_HOST workspace/localDependencies/ > /dev/null 2>&1
       - *save_workspace
   build:
     <<: *maven_docker
@@ -40,13 +40,13 @@ jobs:
     working_directory: ~/repo
     steps:
       - *load_workspace
-      - run: scp ./workspace/target/**.jar $DEBUG_DEPLOY_TARGET_HOST > /dev/null 2>&1
+      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT ./workspace/target/**.jar $DEBUG_DEPLOY_TARGET_HOST > /dev/null 2>&1
   deploy_production:
     <<: *maven_docker
     working_directory: ~/repo
     steps:
       - *load_workspace
-      - run: scp ./workspace/target/**.jar $PRODUCTION_DEPLOY_TARGET_HOST > /dev/null 2>&1
+      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT ./workspace/target/**.jar $PRODUCTION_DEPLOY_TARGET_HOST > /dev/null 2>&1
 
 workflows:
   version: 2
