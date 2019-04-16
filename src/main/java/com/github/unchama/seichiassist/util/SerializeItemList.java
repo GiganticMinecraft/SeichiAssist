@@ -23,17 +23,16 @@ public class SerializeItemList {
 				// ByteArray出力ストリーム
 				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 				// Object出力ストリーム
-				BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+				try (BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
+					// 要素数格納
+					dataOutput.writeInt(items.size());
+					// アイテム実態格納
+					for (ItemStack item : items) {
+						dataOutput.writeObject(item);
+					}
 
-				// 要素数格納
-				dataOutput.writeInt(items.size());
-				// アイテム実態格納
-				for (ItemStack item : items) {
-					dataOutput.writeObject(item);
+					// ストリームが閉じられる
 				}
-
-				// ストリームを閉じる
-				dataOutput.close();
 				// 変換後のシリアルデータを取得
 				serial = Base64Coder.encodeLines(outputStream.toByteArray());
 			}
