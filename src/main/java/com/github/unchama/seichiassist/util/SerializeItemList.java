@@ -16,26 +16,28 @@ public class SerializeItemList {
 	}
 
 	public static String toBase64(List<ItemStack> items) {
-		String serial = "";
+		if (items.isEmpty()) {
+			return "";
+		}
+
+		String serial;
 		try {
 			// List検査
-			if (!items.isEmpty()) {
-				// ByteArray出力ストリーム
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				// Object出力ストリーム
-				try (BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
-					// 要素数格納
-					dataOutput.writeInt(items.size());
-					// アイテム実態格納
-					for (ItemStack item : items) {
-						dataOutput.writeObject(item);
-					}
-
-					// ストリームが閉じられる
+			// ByteArray出力ストリーム
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			// Object出力ストリーム
+			try (BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
+				// 要素数格納
+				dataOutput.writeInt(items.size());
+				// アイテム実態格納
+				for (ItemStack item : items) {
+					dataOutput.writeObject(item);
 				}
-				// 変換後のシリアルデータを取得
-				serial = Base64Coder.encodeLines(outputStream.toByteArray());
+
+				// ストリームが閉じられる
 			}
+			// 変換後のシリアルデータを取得
+			serial = Base64Coder.encodeLines(outputStream.toByteArray());
 		} catch (Exception e) {
 			e.printStackTrace();
 			serial = "";
