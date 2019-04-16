@@ -1,5 +1,7 @@
 # SeichiAssist
 
+[![CircleCI](https://circleci.com/gh/GiganticMinecraft/SeichiAssist/tree/master.svg?style=svg)](https://circleci.com/gh/GiganticMinecraft/SeichiAssist/tree/master)
+
 ## 開発環境
 - [eclipse 4.4 luna](http://mergedoc.osdn.jp/)
 - [JDK 1.8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
@@ -22,8 +24,8 @@
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
-- [gachadata.spl](https://red.minecraftserver.jp/attachments/download/892/gachadata.sql) -> import to "gachadata" table.
-- [msgachadata.spl](https://red.minecraftserver.jp/attachments/download/891/msgachadata.sql) -> import to "msgachadata" table.
+- [gachadata.spl](https://red.minecraftserver.jp/attachments/download/895/gachadata.sql) -> import to "gachadata" table.
+- [msgachadata.spl](https://red.minecraftserver.jp/attachments/download/894/msgachadata.sql) -> import to "msgachadata" table.
 
 ## 利用条件
 - GPLv3ライセンスでの公開です。ソースコードの使用規約等はGPLv3ライセンスに従います。

@@ -9,3 +9,5 @@
 *.iml
 /bins/
 /test/
+/target/
+/localDependencies/
