@@ -46,9 +46,7 @@ public class Sql{
 	public Connection con = null;
 	private Statement stmt = null;
 
-	public static String exc;
 	private SeichiAssist plugin;
-	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private static Config config = SeichiAssist.config;
 
 	//コンストラクタ
@@ -72,27 +70,17 @@ public class Sql{
 			plugin.getLogger().info("Mysqlドライバーのインスタンス生成に失敗しました");
 			return false;
 		}
+
 		//sql鯖への接続とdb作成
 		if(!connectMySQL()){
 			plugin.getLogger().info("SQL接続に失敗しました");
 			return false;
 		}
+
 		if(!createDB()){
 			plugin.getLogger().info("データベース作成に失敗しました");
 			return false;
 		}
-		/*
-		if(!connectDB()){
-			instance.getLogger().info("データベース接続に失敗しました");
-			return false;
-		}
-		*/
-		/*
-		if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
-			instance.getLogger().info("playerdataテーブル作成に失敗しました");
-			return false;
-		}
-		*/
 
 		if(!createGachaDataTable(SeichiAssist.GACHADATA_TABLENAME)){
 			plugin.getLogger().info("gachadataテーブル作成に失敗しました");
@@ -194,7 +182,7 @@ public class Sql{
 			return true;
 		}catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
+			e.getMessage();
 			e.printStackTrace();
 			return false;
 		}
@@ -473,7 +461,6 @@ public class Sql{
 			}
 		} catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			player.sendMessage(ChatColor.RED + "投票特典の受け取りに失敗しました");
 			return 0;
@@ -515,7 +502,6 @@ public class Sql{
 			}
 		} catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
 			return 0;
@@ -624,7 +610,6 @@ public class Sql{
 			}
 		} catch (SQLException | IOException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
 		}
@@ -653,7 +638,6 @@ public class Sql{
 			}
 		} catch (SQLException | IOException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
 		}
@@ -742,7 +726,6 @@ public class Sql{
 			}
 		} catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
 		}
@@ -765,7 +748,6 @@ public class Sql{
 			}
 		} catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
 		}
@@ -788,7 +770,6 @@ public class Sql{
 			}
 		} catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
 		}
@@ -811,7 +792,6 @@ public class Sql{
 			}
 		} catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
 		}
@@ -836,7 +816,6 @@ public class Sql{
 			}
 		} catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
 		}
@@ -913,7 +892,6 @@ public class Sql{
 			}
 		} catch (SQLException | IOException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			return null;
 		}
@@ -932,7 +910,6 @@ public class Sql{
 			}
 		} catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			return null;
 		}
@@ -963,7 +940,6 @@ public class Sql{
 			}
 		} catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			return null;
 		}
@@ -1040,7 +1016,6 @@ public class Sql{
 			}
 		} catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
 			e.printStackTrace();
 			return false;
 		}
