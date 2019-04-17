@@ -122,11 +122,11 @@ public enum ActiveSkillPremiumEffect {
 
 
 	public static String getNamebyNum(int effectnum) {
-		ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+		ActiveSkillPremiumEffect[] skilleffect = ActiveSkillPremiumEffect.values();
 		return Arrays.stream(skilleffect)
 				.filter(activeSkillEffect -> activeSkillEffect.getNum() == effectnum)
 				.findFirst()
-				.map(ActiveSkillEffect::getName)
+				.map(ActiveSkillPremiumEffect::getName)
 				.orElse("未設定");
 	}
 }
