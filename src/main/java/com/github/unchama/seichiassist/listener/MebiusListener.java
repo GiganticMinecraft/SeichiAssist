@@ -238,7 +238,7 @@ public class MebiusListener implements Listener {
 				return;
 			}
 			getPlayerData(player).mebius.speak(getMessage(msgs,
-                    Objects.requireNonNull(getNickname(player)), monsterName));
+					Objects.requireNonNull(getNickname(player)), monsterName));
 		} catch (NullPointerException e) {
 		}
 	}
@@ -356,32 +356,32 @@ public class MebiusListener implements Listener {
 	}
 
 	public static boolean setNickname(Player player, String name) {
-	    if (!isEquip(player)) {
-	        return false;
-        } else {
-	        ItemStack mebius = player.getInventory().getHelmet();
-            NBTItem nbtItem = new NBTItem(mebius);
-            nbtItem.setString("nickname", name);
-            player.getInventory().setHelmet(nbtItem.getItem());
-            getPlayerData(player).mebius.speakForce("わーい、ありがとう！今日から君のこと" + ChatColor.GREEN + name + ChatColor.RESET + "って呼ぶね！");
-            return true;
-        }
-    }
+		if (!isEquip(player)) {
+			return false;
+		} else {
+			ItemStack mebius = player.getInventory().getHelmet();
+			NBTItem nbtItem = new NBTItem(mebius);
+			nbtItem.setString("nickname", name);
+			player.getInventory().setHelmet(nbtItem.getItem());
+			getPlayerData(player).mebius.speakForce("わーい、ありがとう！今日から君のこと" + ChatColor.GREEN + name + ChatColor.RESET + "って呼ぶね！");
+			return true;
+		}
+	}
 
-    public static String getNickname(Player player) {
-	    if (!isEquip(player)) {
-	        return null;
-        } else {
-	        ItemStack mebius = player.getInventory().getHelmet();
-	        NBTItem nbtItem = new NBTItem(mebius);
-	        if (nbtItem.getString("nickname").isEmpty()) {
-	            nbtItem.setString("nickname", player.getName());
-	            return player.getName();
-            } else {
-	            return nbtItem.getString("nickname");
-            }
-        }
-    }
+	public static String getNickname(Player player) {
+		if (!isEquip(player)) {
+			return null;
+		} else {
+			ItemStack mebius = player.getInventory().getHelmet();
+			NBTItem nbtItem = new NBTItem(mebius);
+			if (nbtItem.getString("nickname").isEmpty()) {
+				nbtItem.setString("nickname", player.getName());
+				return player.getName();
+			} else {
+				return nbtItem.getString("nickname");
+			}
+		}
+	}
 
 	// Mebius用private
 	// Mebius最大Lv
@@ -462,8 +462,8 @@ public class MebiusListener implements Listener {
 		if (debugFlg) {
 			chk /= 100;
 		}
-        return chk == 0;
-    }
+		return chk == 0;
+	}
 
 	// Mebiusドロップ率
 	private static final int dropPer = 50000;
@@ -474,8 +474,8 @@ public class MebiusListener implements Listener {
 		if (debugFlg) {
 			chk /= 100;
 		}
-        return chk == 0;
-    }
+		return chk == 0;
+	}
 
 	// Mebius更新処理
 	private static void levelUp(Player player) {
@@ -518,7 +518,7 @@ public class MebiusListener implements Listener {
 	}
 
 	// 見た目更新Lv
-	private static final Map<Integer, Material> APPEARANCE = new LinkedHashMap<>() {
+	private static final Map<Integer, Material> APPEARANCE = new LinkedHashMap() {
 		{
 			put(1, Material.LEATHER_HELMET);
 			put(5, Material.GOLD_HELMET);
@@ -533,7 +533,7 @@ public class MebiusListener implements Listener {
 		String name = NAMEHEAD + DEFNAME;
 		String nickname = "";
 		int level = 1;
-		Map<Enchantment, Integer> ench = new LinkedHashMap<>() {
+		Map<Enchantment, Integer> ench = new LinkedHashMap() {
 			{
 				put(Enchantment.DURABILITY, 3);
 				put(Enchantment.MENDING, 1);
@@ -568,8 +568,8 @@ public class MebiusListener implements Listener {
 		mebius.setItemMeta(meta);
 
 		NBTItem nbtItem = new NBTItem(mebius);
-        nbtItem.setString("nickname", nickname);
-        mebius = nbtItem.getItem();
+		nbtItem.setString("nickname", nickname);
+		mebius = nbtItem.getItem();
 
 		return mebius;
 	}

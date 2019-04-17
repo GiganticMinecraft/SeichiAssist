@@ -45,9 +45,9 @@ public class effectCommand implements TabExecutor {
 			//エフェクトフラグを切り替え
 			int effectflag = (playerdata.effectflag + 1) % 6;
 			if (effectflag == 0) {
-                sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(無制限)");
-            } else if (effectflag == 1) {
-			    sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(127制限)");
+				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(無制限)");
+			} else if (effectflag == 1) {
+				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(127制限)");
 			} else if (effectflag == 2) {
 				sender.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(200制限)");
 			} else if (effectflag == 3) {
@@ -118,10 +118,10 @@ public class effectCommand implements TabExecutor {
 		rand = Math.random();
 
 		for (GachaData gachadata : SeichiAssist.gachadatalist) {
-		    sum -= gachadata.probability;
-		    if (sum <= rand) {
-                return gachadata.probability;
-            }
+			sum -= gachadata.probability;
+			if (sum <= rand) {
+				return gachadata.probability;
+			}
 		}
 		return 1.0;
 	}

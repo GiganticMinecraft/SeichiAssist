@@ -15,36 +15,36 @@ import java.util.*;
  */
 public class EventCommand implements TabExecutor {
 
-    SeichiAssist plugin;
+	SeichiAssist plugin;
 
-    public EventCommand(SeichiAssist plugin){
-        this.plugin = plugin;
-    }
+	public EventCommand(SeichiAssist plugin){
+		this.plugin = plugin;
+	}
 
-    @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        if (!(commandSender instanceof Player)) {
-            return false;
-        }
+	@Override
+	public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+		if (!(commandSender instanceof Player)) {
+			return false;
+		}
 
-        if (args.length == 0) {
-            return false;
-        } else if (args[0].equalsIgnoreCase("get")) {
-            Player player = (Player) commandSender;
-            if (Util.isPlayerInventoryFull(player)) {
-                Util.dropItem(player, NewYearBagListener.getNewYearBag());
-                Util.dropItem(player, NewYearItemListener.getNewYearApple());
-            } else {
-                Util.addItem(player, NewYearBagListener.getNewYearBag());
-                Util.addItem(player, NewYearItemListener.getNewYearApple());
-            }
-            return true;
-        }
-        return false;
-    }
+		if (args.length == 0) {
+			return false;
+		} else if (args[0].equalsIgnoreCase("get")) {
+			Player player = (Player) commandSender;
+			if (Util.isPlayerInventoryFull(player)) {
+				Util.dropItem(player, NewYearBagListener.getNewYearBag());
+				Util.dropItem(player, NewYearItemListener.getNewYearApple());
+			} else {
+				Util.addItem(player, NewYearBagListener.getNewYearBag());
+				Util.addItem(player, NewYearItemListener.getNewYearApple());
+			}
+			return true;
+		}
+		return false;
+	}
 
-    @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        return null;
-    }
+	@Override
+	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+		return null;
+	}
 }

@@ -1,0 +1,80 @@
+# .circleci/config.yml for CircleCI 2.0
+version: 2
+
+anchors:
+  docker:
+    maven_docker: &maven_docker
+      docker:
+        - image: maven:3.6.0-jdk-8
+  workspace:
+    save_workspace: &save_workspace
+      persist_to_workspace:
+        root: ./workspace
+        paths:
+          - '*'
+    load_workspace: &load_workspace
+      attach_workspace:
+        at: '/workspace'
+
+jobs:
+  install:
+    <<: *maven_docker
+    working_directory: ~/repo
+    steps:
+      - run: mkdir -p workspace
+      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT -r $DEPENDENCY_REPOSITORY_HOST workspace > /dev/null 2>&1
+      - run: mv workspace/dependencies workspace/localDependencies
+      - run: ls -al workspace/localDependencies
+      - *save_workspace
+  build:
+    <<: *maven_docker
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - attach_workspace:
+          at: '/workspace'
+      - run: mkdir -p localDependencies && cp -R /workspace/localDependencies/. localDependencies
+      - run: ls -al localDependencies
+      - run: mvn install
+      - run: mkdir -p workspace/target && cp target/**.jar workspace/target
+      - *save_workspace
+  deploy_debug:
+    <<: *maven_docker
+    working_directory: ~/repo
+    steps:
+      - *load_workspace
+      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /workspace/target/**.jar $DEBUG_DEPLOY_TARGET_HOST > /dev/null 2>&1
+  deploy_production:
+    <<: *maven_docker
+    working_directory: ~/repo
+    steps:
+      - *load_workspace
+      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /workspace/target/**.jar $PRODUCTION_DEPLOY_TARGET_HOST > /dev/null 2>&1
+
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      - install:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - build:
+          requires:
+            - install
+      - deploy_production:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+      - deploy_debug:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - develop

@@ -259,9 +259,9 @@ public final class BreakUtil {
 				}
 			}
 		}
-        return i != SeichiAssist.minestacklist.size();
+		return i != SeichiAssist.minestacklist.size();
 
-    }
+	}
 	@SuppressWarnings("deprecation")
 	public static ItemStack dropItemOnTool(Block breakblock, ItemStack tool) {
 		ItemStack dropitem = null;
@@ -269,14 +269,14 @@ public final class BreakUtil {
 		Material breakmaterial = breakblock.getType();
 		int fortunelevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
 		double rand = Math.random();
-        int bonus = (int) (rand * ((fortunelevel + 2)) - 1);
-        if (bonus <= 1) {
-            bonus = 1;
-        }
-        byte b = breakblock.getData();
-        byte b_tree = b;
-        b_tree &= 0x03;
-        b &= 0x0F;
+		int bonus = (int) (rand * ((fortunelevel + 2)) - 1);
+		if (bonus <= 1) {
+			bonus = 1;
+		}
+		byte b = breakblock.getData();
+		byte b_tree = b;
+		b_tree &= 0x03;
+		b &= 0x0F;
 
 		int silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH);
 		if(silktouch > 0){
@@ -636,11 +636,11 @@ public final class BreakUtil {
 				// カウンタをクリア
 				openCount = 0;
 				// 重力値を加算(水をは2倍にする)
-                if (target.getType().equals(Material.WATER)) {
-                    gravity += 2;
-                } else {
-                    gravity++;
-                }
+				if (target.getType().equals(Material.WATER)) {
+					gravity += 2;
+				} else {
+					gravity++;
+				}
 			}
 		}
 

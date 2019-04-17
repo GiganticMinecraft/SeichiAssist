@@ -7,7 +7,7 @@ import org.bukkit.*;
  * Created by karayuu on 2018/06/04
  */
 public final class MineStackFarmObj extends MineStackObj {
-    public MineStackFarmObj(String objname, String japanesename, int level, Material material, int durability) {
-        super(objname, japanesename, level, material, durability, false, -1, 2);
-    }
+	public MineStackFarmObj(String objname, String japanesename, int level, Material material, int durability) {
+		super(objname, japanesename, level, material, durability, false, -1, 2);
+	}
 }

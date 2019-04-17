@@ -81,8 +81,8 @@ public class Mana {
 		displayMana(player,level);
 	}
 	public boolean hasMana(double h){
-        return compare(m, h) >= 0;
-    }
+		return compare(m, h) >= 0;
+	}
 
 	private int compare(double x, double y) {
 		if(x > y)return 1;

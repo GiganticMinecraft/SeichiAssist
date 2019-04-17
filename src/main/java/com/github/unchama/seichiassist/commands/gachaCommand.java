@@ -618,10 +618,10 @@ public class gachaCommand implements TabExecutor{
 		rand = Math.random();
 
 		for (GachaData gachadata : SeichiAssist.gachadatalist) {
-		    sum -= gachadata.probability;
-		    if (sum <= rand) {
-                return gachadata.probability;
-            }
+			sum -= gachadata.probability;
+			if (sum <= rand) {
+				return gachadata.probability;
+			}
 		}
 		return 1.0;
 	}

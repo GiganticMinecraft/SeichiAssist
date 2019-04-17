@@ -57,12 +57,12 @@ public class ExplosionTaskRunnable extends BukkitRunnable{
 		}
 		if(playerdata.activeskilldata.skillnum > 2){
 			for(Block b : breaklist){
-				BreakUtil.BreakBlock(player, b, droploc, tool, false);
+				BreakUtil.breakBlock(player, b, droploc, tool, false);
 				SeichiAssist.allblocklist.remove(b);
 			}
 		}else{
 			for(Block b : breaklist){
-				BreakUtil.BreakBlock(player, b, droploc, tool, true);
+				BreakUtil.breakBlock(player, b, droploc, tool, true);
 				SeichiAssist.allblocklist.remove(b);
 			}
 		}

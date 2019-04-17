@@ -5,8 +5,6 @@ import org.bukkit.potion.PotionType;
 
 import com.github.unchama.seichiassist.data.Coordinate;
 
-
-
 public enum ActiveSkill{
 	ARROW(1,"","","","エビフライ・ドライブ","ホーリー・ショット","ツァーリ・ボンバ","アーク・ブラスト","ファンタズム・レイ","スーパー・ノヴァ",""),
 	MULTI(2,"","","","トム・ボウイ","サンダー・ストーム","スターライト・ブレイカー","アース・ディバイド","ヘブン・ゲイボルグ","ディシジョン",""),
@@ -45,8 +43,8 @@ public enum ActiveSkill{
 	}
 
 	public int gettypenum() {
-        return this.typenum;
-    }
+		return this.typenum;
+	}
 	public String getLv1Name(){
 		return this.lv1name;
 	}
@@ -637,19 +635,4 @@ public enum ActiveSkill{
 		}
 		return potiontype;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

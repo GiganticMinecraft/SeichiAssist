@@ -88,7 +88,7 @@ public class SeichiAssist extends JavaPlugin{
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
 
-    private HashMap<String, TabExecutor> commandlist;
+	private HashMap<String, TabExecutor> commandlist;
 	public static Sql sql;
 	public static Config config;
 
@@ -560,7 +560,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackBuildObj("step5","石レンガハーフブロック",1,Material.STEP,5)
 
 			,new MineStackBuildObj("red_nether_brick"	,"赤いネザーレンガ"	,1,Material.RED_NETHER_BRICK,0)
-			,new MineStackBuildObj("nether_wart_block"    ,"ネザ－ウォートブロック"    ,1,Material.NETHER_WART_BLOCK,0)
+			,new MineStackBuildObj("nether_wart_block"	,"ネザ－ウォートブロック"	,1,Material.NETHER_WART_BLOCK,0)
 
 			//2018.6追加分
 			,new MineStackBuildObj("furnace", "かまど", 1, Material.FURNACE, 0)
@@ -775,7 +775,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	);
 
-    public static List<MineStackObj> minestacklist = null;
+	public static List<MineStackObj> minestacklist = null;
 
 	//public static final int minestacksize=minestacklist.size();
 	public static final boolean minestack_sql_enable=true; //ここは必ずtrue(falseのときはSQL初期設定+SQL入出力しない[デバッグ用])
@@ -839,17 +839,17 @@ public class SeichiAssist extends JavaPlugin{
 
 	//整地ワールドのリスト(保護の有無は問わない)
 	public static final List<String> seichiWorldList = Arrays.asList(
-	        "world_SW", "world_SW_2", "world_SW_3", "world_SW_nether", "world_SW_the_end"
-    );
+			"world_SW", "world_SW_2", "world_SW_3", "world_SW_nether", "world_SW_the_end"
+	);
 
 	@Override
 	public void onEnable(){
 		instance = this;
 
 		//チャンネルを追加
-        String pluginChannel = "BungeeCord";
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this,
-                pluginChannel);
+		String pluginChannel = "BungeeCord";
+		Bukkit.getMessenger().registerOutgoingPluginChannel(this,
+				pluginChannel);
 
 		//コンフィグ系の設定は全てConfig.javaに移動
 		config = new Config(this);
@@ -880,7 +880,7 @@ public class SeichiAssist extends JavaPlugin{
 		}
 
 		//リスト結合(ガチャ品(ガチャリンゴなど)+ガチャ品(本体))
-        List<MineStackObj> minestacklistgacha1;
+		List<MineStackObj> minestacklistgacha1;
 
 		//mysqlからMineStack用ガチャデータ読み込み
 		if (sql.loadMineStackGachaData()) { //MineStack用ガチャデータを読み込んだ

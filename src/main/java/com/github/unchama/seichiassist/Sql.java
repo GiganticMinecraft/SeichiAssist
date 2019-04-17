@@ -137,9 +137,9 @@ public class Sql{
 			}
 			con = DriverManager.getConnection(url, id, pw);
 			stmt = con.createStatement();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    	return false;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
 		}
 		return true;
 	}
@@ -156,17 +156,17 @@ public class Sql{
 				stmt = con.createStatement();
 				//connectDB();
 			}
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    	//イクセプションった時に接続再試行
-	    	plugin.getLogger().warning("sqlExceptionを検出。再接続試行");
-	    	if(connectMySQL()){
-	    		plugin.getLogger().info("sqlコネクション正常");
-	    		return true;
-	    	}else{
-	    		plugin.getLogger().warning("sqlコネクション不良を検出");
-	    		return false;
-	    	}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			//イクセプションった時に接続再試行
+			plugin.getLogger().warning("sqlExceptionを検出。再接続試行");
+			if(connectMySQL()){
+				plugin.getLogger().info("sqlコネクション正常");
+				return true;
+			}else{
+				plugin.getLogger().warning("sqlコネクション不良を検出");
+				return false;
+			}
 		}
 		//instance.getLogger().info("sqlコネクション正常");
 		return true;
@@ -178,16 +178,16 @@ public class Sql{
 	 * @return 成否
 	 */
 	public boolean disconnect(){
-	    if (con != null){
-	    	try{
-	    		stmt.close();
+		if (con != null){
+			try{
+				stmt.close();
 				con.close();
-	    	}catch (SQLException e){
-	    		e.printStackTrace();
-	    		return false;
-	    	}
-	    }
-	    return true;
+			}catch (SQLException e){
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
 	}
 
 	//コマンド出力関数
@@ -466,8 +466,8 @@ public class Sql{
 			player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
 			return 0;
 		}else{
-	        //連打による負荷防止の為クールダウン処理
-	        new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
+			//連打による負荷防止の為クールダウン処理
+			new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
 		}
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
@@ -512,8 +512,8 @@ public class Sql{
 			player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
 			return 0;
 		}else{
-	        //連打による負荷防止の為クールダウン処理
-	        new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
+			//連打による負荷防止の為クールダウン処理
+			new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
 		}
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
@@ -1038,7 +1038,7 @@ public class Sql{
 		Material material;
 		List<String> lore;
 		int count = 0;
-        ActiveSkillPremiumEffect[] effect = ActiveSkillPremiumEffect.values();
+		ActiveSkillPremiumEffect[] effect = ActiveSkillPremiumEffect.values();
 
 		String table = SeichiAssist.DONATEDATA_TABLENAME;
 		String command = "select * from " + db + "." + table + " where playername = '" + playerdata.name + "'";

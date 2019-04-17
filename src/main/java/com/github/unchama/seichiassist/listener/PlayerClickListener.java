@@ -105,13 +105,13 @@ public class PlayerClickListener implements Listener {
 
 			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-			        //クールダウン処理
-			        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
-			        if(cooldown > 5){
-			        	new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
-			        }else{
-			        	new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
-			        }
+					//クールダウン処理
+					long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
+					if(cooldown > 5){
+						new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+					}else{
+						new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
+					}
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){
 						runArrowSkill(player,Arrow.class);
@@ -142,13 +142,13 @@ public class PlayerClickListener implements Listener {
 
 			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
 				if(playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
-			        //クールダウン処理
-			        long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
-			        if(cooldown > 5){
-			        	new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
-			        }else{
-			        	new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
-			        }
+					//クールダウン処理
+					long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
+					if(cooldown > 5){
+						new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+					}else{
+						new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
+					}
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){
 						runArrowSkill(player,Arrow.class);
@@ -174,30 +174,30 @@ public class PlayerClickListener implements Listener {
 		Location ploc = player.getLocation();
 
 		//発射する音を再生する.
-    	player.playSound(ploc, Sound.ENTITY_ARROW_SHOOT, 1, 1);
+		player.playSound(ploc, Sound.ENTITY_ARROW_SHOOT, 1, 1);
 
-    	//スキルを実行する処理
-        Location loc = player.getLocation();
-        loc.add(loc.getDirection()).add(0,1.6,0);
-        Vector vec = loc.getDirection();
-        double k = 1.0;
-        vec.setX(vec.getX() * k);
-        vec.setY(vec.getY() * k);
-        vec.setZ(vec.getZ() * k);
-        final T proj = player.getWorld().spawn(loc, clazz);
-        proj.setShooter(player);
-        proj.setGravity(false);
-        //読み込み方法
-        /*
-         * Projectile proj = event.getEntity();
-		    if ( proj instanceof Arrow && proj.hasMetadata("ArrowSkill") ) {
-		    }
-         */
-        proj.setMetadata("ArrowSkill", new FixedMetadataValue(plugin, true));
-        proj.setVelocity(vec);
+		//スキルを実行する処理
+		Location loc = player.getLocation();
+		loc.add(loc.getDirection()).add(0,1.6,0);
+		Vector vec = loc.getDirection();
+		double k = 1.0;
+		vec.setX(vec.getX() * k);
+		vec.setY(vec.getY() * k);
+		vec.setZ(vec.getZ() * k);
+		final T proj = player.getWorld().spawn(loc, clazz);
+		proj.setShooter(player);
+		proj.setGravity(false);
+		//読み込み方法
+		/*
+		 * Projectile proj = event.getEntity();
+			if ( proj instanceof Arrow && proj.hasMetadata("ArrowSkill") ) {
+			}
+		 */
+		proj.setMetadata("ArrowSkill", new FixedMetadataValue(plugin, true));
+		proj.setVelocity(vec);
 
-        //矢を消去する処理
-        new EntityRemoveTaskRunnable(proj).runTaskLater(plugin,100);
+		//矢を消去する処理
+		new EntityRemoveTaskRunnable(proj).runTaskLater(plugin,100);
 	}
 
 
@@ -241,7 +241,7 @@ public class PlayerClickListener implements Listener {
 		if(!playerdata.gachacooldownflag){
 			return;
 		}else{
-	        //連打による負荷防止の為クールダウン処理
+			//連打による負荷防止の為クールダウン処理
 			new CoolDownTaskRunnable(player,false,false,true).runTaskLater(plugin,4);
 		}
 

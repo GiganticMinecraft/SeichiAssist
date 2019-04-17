@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.ExternalPlugins;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -54,7 +55,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 		Projectile proj = e;
-    	projsource = proj.getShooter();
+		projsource = proj.getShooter();
 		if(!(projsource instanceof Player)){
 			return;
 		}
@@ -77,7 +78,7 @@ public class EntityListener implements Listener {
 
 
 		//他人の保護がかかっている場合は処理を終了
-		if(!Util.getWorldGuard().canBuild(player, block.getLocation())){
+		if(!ExternalPlugins.getWorldGuard().canBuild(player, block.getLocation())){
 			return;
 		}
 
@@ -316,7 +317,7 @@ public class EntityListener implements Listener {
 		//エフェクトが指定されていないときの処理
 		if(playerdata.activeskilldata.effectnum == 0){
 			for(Block b:breaklist){
-				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,false);
+				BreakUtil.breakBlock(player, b, player.getLocation(), tool,false);
 				SeichiAssist.allblocklist.remove(b);
 			}
 		}
@@ -338,11 +339,11 @@ public class EntityListener implements Listener {
 	@EventHandler
 	public void onEntityExplodeEvent(EntityExplodeEvent event){
 		Entity e = event.getEntity();
-	    if ( e instanceof Projectile){
-	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
-	    		event.setCancelled(true);
-	    	}
-	    }
+		if ( e instanceof Projectile){
+			if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+				event.setCancelled(true);
+			}
+		}
 
 	}
 
@@ -350,20 +351,20 @@ public class EntityListener implements Listener {
 	@EventHandler
 	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
 		Entity e = event.getDamager();
-	    if ( e instanceof Projectile){
-	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
-	    		event.setCancelled(true);
-	    	}
-	    }
+		if ( e instanceof Projectile){
+			if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+				event.setCancelled(true);
+			}
+		}
 	}
 	@EventHandler
 	public void onPotionSplashEvent(PotionSplashEvent event){
 		Entity e = event.getPotion();
-	    if ( e instanceof Projectile){
-	    	if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
-	    		event.setCancelled(true);
-	    	}
-	    }
+		if ( e instanceof Projectile){
+			if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+				event.setCancelled(true);
+			}
+		}
 	}
 
 	/*

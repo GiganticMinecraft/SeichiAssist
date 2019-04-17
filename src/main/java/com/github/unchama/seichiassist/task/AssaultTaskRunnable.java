@@ -353,7 +353,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 				value.setType(Material.AIR);
 			}
 			for(Block b:breaklist){
-				BreakUtil.BreakBlock(player, b, player.getLocation(), tool,false);
+				BreakUtil.breakBlock(player, b, player.getLocation(), tool,false);
 				SeichiAssist.allblocklist.remove(b);
 			}
 		}
@@ -361,6 +361,6 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	}
 
 	private boolean isCanceled() {
-        return playerdata.activeskilldata.mineflagnum == 0 || errorflag || playerdata.activeskilldata.assaulttype == 0;
+		return playerdata.activeskilldata.mineflagnum == 0 || errorflag || playerdata.activeskilldata.assaulttype == 0;
 	}
 }

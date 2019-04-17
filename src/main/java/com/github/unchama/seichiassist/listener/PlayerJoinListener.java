@@ -49,13 +49,13 @@ public class PlayerJoinListener implements Listener {
 			player.getInventory().addItem(new ItemStack(Material.DIAMOND_PICKAXE));
 			player.getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
 
-            player.getInventory().addItem(new ItemStack(Material.LOG, 64, (short) 0),
-                    new ItemStack(Material.LOG, 64, (short) 0),
-                    new ItemStack(Material.LOG, 64, (short) 2),
-                    new ItemStack(Material.LOG_2, 64, (short) 1));
+			player.getInventory().addItem(new ItemStack(Material.LOG, 64, (short) 0),
+					new ItemStack(Material.LOG, 64, (short) 0),
+					new ItemStack(Material.LOG, 64, (short) 2),
+					new ItemStack(Material.LOG_2, 64, (short) 1));
 
-            /* 期間限定ダイヤ配布.期間終了したので64→32に変更して恒久継続 */
-            player.getInventory().addItem(new ItemStack(Material.DIAMOND, 32));
+			/* 期間限定ダイヤ配布.期間終了したので64→32に変更して恒久継続 */
+			player.getInventory().addItem(new ItemStack(Material.DIAMOND, 32));
 
 			player.sendMessage("初期装備を配布しました。Eキーで確認してネ");
 			//メビウスおひとつどうぞ
