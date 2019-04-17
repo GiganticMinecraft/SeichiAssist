@@ -30,7 +30,7 @@ import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.LimitedLoginEvent;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
-import com.github.unchama.seichiassist.util.MillisecondTimer;
+import com.github.unchama.util.MillisecondTimer;
 
 /**
  * プレイヤーデータロードを実施する処理(非同期で実行すること)
