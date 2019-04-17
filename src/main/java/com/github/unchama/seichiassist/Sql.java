@@ -1,31 +1,5 @@
 package com.github.unchama.seichiassist;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -35,14 +9,36 @@ import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.util.ActionStatus;
+import com.github.unchama.util.Try;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.*;
+import java.util.function.Function;
+
+import static com.github.unchama.util.ActionStatus.Fail;
+import static com.github.unchama.util.ActionStatus.Ok;
 
 //MySQL操作関数
 //TODO: 直接SQLに変数を連結しているが、順次PreparedStatementに置き換えていきたい
 public class Sql{
-	private final String url;
-	private final String db;
-	private final String id;
-	private final String pw;
+	private @NotNull final String url;
+	private @NotNull final String db;
+	private @NotNull final String id;
+	private @NotNull final String pw;
 	public Connection con = null;
 	private Statement stmt = null;
 
@@ -50,7 +46,7 @@ public class Sql{
 	private static Config config = SeichiAssist.config;
 
 	//コンストラクタ
-	Sql(String url, String db, String id, String pw){
+	Sql(@NotNull String url, @NotNull String db, @NotNull String id, @NotNull String pw){
 		this.url = url;
 		this.db = db;
 		this.id = id;
@@ -60,51 +56,35 @@ public class Sql{
 	/**
 	 * 接続関数
 	 */
-	public boolean connect() {
+	public ActionStatus connectAndInitializeDatabase() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 		} catch (InstantiationException | IllegalAccessException
 				| ClassNotFoundException e) {
 			e.printStackTrace();
 			plugin.getLogger().info("Mysqlドライバーのインスタンス生成に失敗しました");
-			return false;
+			return Fail;
 		}
 
-		//sql鯖への接続とdb作成
-		if(!connectMySQL()){
-			plugin.getLogger().info("SQL接続に失敗しました");
-			return false;
+		final Function<String, String> errorMessageForTable = (tableName) -> tableName + "テーブル作成に失敗しました";
+
+		final Try<String> tryResult =
+				Try.begin("SQL接続に失敗しました", this::establishMySQLConnection)
+				.ifOkThen("データベース作成に失敗しました", this::createDB)
+				.ifOkThen(errorMessageForTable.apply("gachadata"), this::createGachaDataTable)
+				.ifOkThen(errorMessageForTable.apply("MineStack用gachadata"), this::createMineStackGachaDataTable)
+				.ifOkThen(errorMessageForTable.apply("donatedata"), this::createDonateDataTable)
+				.ifOkThen(errorMessageForTable.apply("playerdata"), this::createPlayerDataTable);
+
+		if (tryResult instanceof Try.FailedTry) {
+			plugin.getLogger().info(((Try.FailedTry<String>)tryResult).failValue);
+			return Fail;
 		}
 
-		if(!createDB()){
-			plugin.getLogger().info("データベース作成に失敗しました");
-			return false;
-		}
-
-		if(!createGachaDataTable(SeichiAssist.GACHADATA_TABLENAME)){
-			plugin.getLogger().info("gachadataテーブル作成に失敗しました");
-			return false;
-		}
-
-		if(!createMineStackGachaDataTable(SeichiAssist.MINESTACK_GACHADATA_TABLENAME)){
-			plugin.getLogger().info("MineStack用gachadataテーブル作成に失敗しました");
-			return false;
-		}
-
-		if(!createDonateDataTable(SeichiAssist.DONATEDATA_TABLENAME)){
-			plugin.getLogger().info("donatedataテーブル作成に失敗しました");
-			return false;
-		}
-
-        if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
-            plugin.getLogger().info("playerdataテーブル作成に失敗しました");
-            return false;
-        }
-
-		return true;
+		return Ok;
 	}
 
-	private boolean connectMySQL(){
+	private ActionStatus establishMySQLConnection(){
 		try {
 			if(stmt != null && !stmt.isClosed()){
 				stmt.close();
@@ -112,15 +92,18 @@ public class Sql{
 			}
 			con = DriverManager.getConnection(url, id, pw);
 			stmt = con.createStatement();
+			return Ok;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
+			return Fail;
 		}
-		return true;
 	}
 
-	//接続正常ならtrue、そうでなければ再接続試行後正常でtrue、だめならfalseを返す
-	public boolean checkConnection(){
+	/**
+	 * 接続正常ならtrue、そうでなければ再接続試行後正常でtrue、だめならfalseを返す
+	 */
+	// TODO このメソッドの戻り値はどこにも使われていない。異常系はその状態を引きずらずに処理を止めるべき
+	public ActionStatus ensureConnection(){
 		try {
 			if(con.isClosed()){
 				plugin.getLogger().warning("sqlConnectionクローズを検出。再接続試行");
@@ -129,22 +112,21 @@ public class Sql{
 			if(stmt.isClosed()){
 				plugin.getLogger().warning("sqlStatementクローズを検出。再接続試行");
 				stmt = con.createStatement();
-				//connectDB();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			//イクセプションった時に接続再試行
 			plugin.getLogger().warning("sqlExceptionを検出。再接続試行");
-			if(connectMySQL()){
+			if(establishMySQLConnection() == Ok){
 				plugin.getLogger().info("sqlコネクション正常");
-				return true;
+				return Ok;
 			}else{
 				plugin.getLogger().warning("sqlコネクション不良を検出");
-				return false;
+				return Fail;
 			}
 		}
-		//instance.getLogger().info("sqlコネクション正常");
-		return true;
+
+		return Ok;
 	}
 
 	/**
@@ -152,34 +134,35 @@ public class Sql{
 	 *
 	 * @return 成否
 	 */
-	public boolean disconnect(){
+	public ActionStatus disconnect(){
 		if (con != null){
 			try{
 				stmt.close();
 				con.close();
 			}catch (SQLException e){
 				e.printStackTrace();
-				return false;
+				return Fail;
 			}
 		}
-		return true;
+		return Ok;
 	}
 
-	//コマンド出力関数
-	//@param command コマンド内容
-	//@return 成否
-	//@throws SQLException
+	/**
+	 * コマンド実行関数
+	 * @param command コマンド内容
+	 * @return 成否
+	 */
 	//private変更禁止！(処理がバッティングします)
-	private boolean putCommand(String command){
-		checkConnection();
+	private ActionStatus executeCommand(String command) {
+		ensureConnection();
 		try {
 			stmt.executeUpdate(command);
-			return true;
+			return Ok;
 		}catch (SQLException e) {
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			e.getMessage();
 			e.printStackTrace();
-			return false;
+			return Fail;
 		}
 	}
 
@@ -189,46 +172,33 @@ public class Sql{
 	 *
 	 * @return 成否
 	 */
-	public boolean createDB(){
-		if(db==null){
-			return false;
-		}
+	public ActionStatus createDB(){
 		String command;
 		command = "CREATE DATABASE IF NOT EXISTS " + db
 				+ " character set utf8 collate utf8_general_ci";
-		return putCommand(command);
+		return executeCommand(command);
 	}
-
-	/*
-	private boolean connectDB() {
-		String command;
-		command = "use " + db;
-		return putCommand(command);
-	}
-	*/
 
 	/**
 	 * テーブル作成
 	 * 失敗時には変数excにエラーメッセージを格納
 	 *
-	 * @param table テーブル名
 	 * @return 成否
 	 */
-	public boolean createPlayerDataTable(String table){
-		if(table==null){
-			return false;
-		}
+	private ActionStatus createPlayerDataTable(){
+		final String tableName = SeichiAssist.PLAYERDATA_TABLENAME;
+
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
-				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
+				"CREATE TABLE IF NOT EXISTS " + db + "." + tableName +
 						"(name varchar(30) unique," +
 						"uuid varchar(128) unique)";
-		if(!putCommand(command)){
-			return false;
+		if (executeCommand(command) == Fail) {
+			return Fail;
 		}
 		//必要なcolumnを随時追加
 		command =
-				"alter table " + db + "." + table +
+				"alter table " + db + "." + tableName +
 						" add column if not exists effectflag tinyint default 0" +
 						",add column if not exists minestackflag boolean default true" +
 						",add column if not exists messageflag boolean default false" +
@@ -360,69 +330,74 @@ public class Sql{
 		//バレンタインイベント用
 		command += ",add column if not exists hasChocoGave boolean default false";
 
-		return putCommand(command);
+		return executeCommand(command);
 	}
 
 	//ガチャデータテーブル作成
-	public boolean createGachaDataTable(String table){
-		if(table==null){
-			return false;
-		}
+	public ActionStatus createGachaDataTable() {
+		final String tableName = SeichiAssist.GACHADATA_TABLENAME;
+
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
-				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
+				"CREATE TABLE IF NOT EXISTS " + db + "." + tableName +
 						"(id int auto_increment unique,"
 						+ "amount int(11))";
-		if(!putCommand(command)){
-			return false;
+
+		if (executeCommand(command) == Fail) {
+			return Fail;
 		}
+
 		//必要なcolumnを随時追加
 		command =
-				"alter table " + db + "." + table +
+				"alter table " + db + "." + tableName +
 						" add column if not exists probability double default 0.0" +
 						",add column if not exists itemstack blob default null" +
 						"";
-		return putCommand(command);
+
+		return executeCommand(command);
 	}
 
 	//MineStack用ガチャデータテーブル作成
-	public boolean createMineStackGachaDataTable(String table){
-		if(table==null){
-			return false;
-		}
+	public ActionStatus createMineStackGachaDataTable(){
+		final String tableName = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
+
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
-				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
+				"CREATE TABLE IF NOT EXISTS " + db + "." + tableName +
 						"(id int auto_increment unique,"
 						+ "amount int(11))";
-		if(!putCommand(command)){
-			return false;
+
+		if (executeCommand(command) == Fail) {
+			return Fail;
 		}
+
 		//必要なcolumnを随時追加
 		command =
-				"alter table " + db + "." + table +
+				"alter table " + db + "." + tableName +
 						" add column if not exists probability double default 0.0" +
 						",add column if not exists level int(11) default 0" +
 						",add column if not exists obj_name tinytext default null" +
 						",add column if not exists itemstack blob default null" +
 						"";
-		return putCommand(command);
+
+		return executeCommand(command);
 	}
 
-	public boolean createDonateDataTable(String table){
-		if(table==null){
-			return false;
-		}
+	public ActionStatus createDonateDataTable() {
+		final String tableName = SeichiAssist.DONATEDATA_TABLENAME;
+
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
-				"CREATE TABLE IF NOT EXISTS " + db + "." + table +
+				"CREATE TABLE IF NOT EXISTS " + db + "." + tableName +
 						"(id int auto_increment unique)";
-		if(!putCommand(command)){
-			return false;
+
+		if (executeCommand(command) == Fail){
+			return Fail;
 		}
+
 		//必要なcolumnを随時追加
 		command =
-				"alter table " + db + "." + table +
+				"alter table " + db + "." + tableName +
 						" add column if not exists playername varchar(20) default null" +
 						",add column if not exists playeruuid varchar(128) default null" +
 						",add column if not exists effectnum int default null" +
@@ -431,8 +406,10 @@ public class Sql{
 						",add column if not exists usepoint int default 0" +
 						",add column if not exists date datetime default null" +
 						"";
-		return putCommand(command);
+
+		return executeCommand(command);
 	}
+
 	//投票特典配布時の処理(p_givenvoteの値の更新もココ)
 	public int compareVotePoint(Player player,final PlayerData playerdata){
 
@@ -465,7 +442,7 @@ public class Sql{
 			command = "update " + db + "." + table
 					+ " set p_givenvote = " + p_vote
 					+ " where uuid like '" + struuid + "'";
-			if(!putCommand(command)){
+			if(executeCommand(command) == Fail){
 				player.sendMessage(ChatColor.RED + "投票特典の受け取りに失敗しました");
 				return 0;
 			}
@@ -506,7 +483,7 @@ public class Sql{
 			command = "update " + db + "." + table
 					+ " set numofsorryforbug = numofsorryforbug - 576"
 					+ " where uuid like '" + struuid + "'";
-			if(!putCommand(command)){
+			if(executeCommand(command) == Fail){
 				player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
 				return 0;
 			}
@@ -517,7 +494,7 @@ public class Sql{
 			command = "update " + db + "." + table
 					+ " set numofsorryforbug = 0"
 					+ " where uuid like '" + struuid + "'";
-			if(!putCommand(command)){
+			if (executeCommand(command) == Fail) {
 				player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
 				return 0;
 			}
@@ -530,7 +507,7 @@ public class Sql{
 	}
 
 	//投票時にmysqlに投票ポイントを加算しておく処理
-	public boolean addVotePoint(String name) {
+	public ActionStatus addVotePoint(String name) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command;
 
@@ -542,12 +519,12 @@ public class Sql{
 
 				+ " where name like '" + name + "'";
 
-		return putCommand(command);
+		return executeCommand(command);
 
 	}
 
 	//プレミアムエフェクトポイントを加算しておく処理
-	public boolean addPremiumEffectPoint(String name,int num) {
+	public ActionStatus addPremiumEffectPoint(String name, int num) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command;
 
@@ -559,17 +536,17 @@ public class Sql{
 
 				+ " where name like '" + name + "'";
 
-		return putCommand(command);
+		return executeCommand(command);
 	}
 
 
 	//指定されたプレイヤーにガチャ券を送信する
-	public boolean addPlayerBug(String name,int num) {
+	public ActionStatus addPlayerBug(String name, int num) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "update " + db + "." + table
 				+ " set numofsorryforbug = numofsorryforbug + " + num
 				+ " where name like '" + name + "'";
-		return putCommand(command);
+		return executeCommand(command);
 	}
 
 	public void loadPlayerData(PlayerData playerdata) {
@@ -648,7 +625,7 @@ public class Sql{
 
 		//まずmysqlのガチャテーブルを初期化(中身全削除)
 		String command = "truncate table " + db + "." + table;
-		if(!putCommand(command)){
+		if(executeCommand(command) == Fail){
 			return false;
 		}
 
@@ -664,7 +641,7 @@ public class Sql{
 					+ "," + gachadata.amount
 					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
 					+ ")";
-			if(!putCommand(command)){
+			if(executeCommand(command) == Fail){
 				return false;
 			}
 		}
@@ -677,7 +654,7 @@ public class Sql{
 
 		//まずmysqlのガチャテーブルを初期化(中身全削除)
 		String command = "truncate table " + db + "." + table;
-		if(!putCommand(command)){
+		if(executeCommand(command) == Fail){
 			return false;
 		}
 
@@ -695,7 +672,8 @@ public class Sql{
 					+ ",'" + gachadata.obj_name + "'"
 					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
 					+ ")";
-			if(!putCommand(command)){
+
+			if (executeCommand(command) == Fail) {
 				return false;
 			}
 		}
@@ -818,15 +796,15 @@ public class Sql{
 	}
 
 	//プレイヤーレベル全リセット
-	public boolean resetAllPlayerLevel(){
+	public ActionStatus resetAllPlayerLevel(){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "update " + db + "." + table
 				+ " set level = 1";
-		return putCommand(command);
+		return executeCommand(command);
 	}
 
 	//プレイヤーのレベルと整地量をセット
-	public boolean resetPlayerLevelandBreaknum(UUID uuid){
+	public ActionStatus resetPlayerLevelandBreaknum(UUID uuid){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = uuid.toString();
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
@@ -842,11 +820,11 @@ public class Sql{
 		//最後の処理
 		command = command + " where uuid like '" + struuid + "'";
 
-		return putCommand(command);
+		return executeCommand(command);
 	}
 
 	//プレイヤーのレベルと整地量をセット(プレイヤーデータが無い場合)
-	public boolean resetPlayerLevelandBreaknum(UUID uuid, int level){
+	public ActionStatus resetPlayerLevelandBreaknum(UUID uuid, int level){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = uuid.toString();
 		//PlayerData playerdata = SeichiAssist.playermap.get(uuid);
@@ -861,17 +839,17 @@ public class Sql{
 		//最後の処理
 		command = command + " where uuid like '" + struuid + "'";
 
-		return putCommand(command);
+		return executeCommand(command);
 	}
 
 
 
 	//全員に詫びガチャの配布
-	public boolean addAllPlayerBug(int amount){
+	public ActionStatus addAllPlayerBug(int amount){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command = "update " + db + "." + table
 				+ " set numofsorryforbug = numofsorryforbug + " + amount;
-		return putCommand(command);
+		return executeCommand(command);
 	}
 
 	//指定プレイヤーの四次元ポケットの中身取得
@@ -942,8 +920,8 @@ public class Sql{
 	}
 
 	//
-	public boolean addPremiumEffectBuy(PlayerData playerdata,
-									   ActiveSkillPremiumEffect effect) {
+	public ActionStatus addPremiumEffectBuy(PlayerData playerdata,
+											ActiveSkillPremiumEffect effect) {
 		String table = SeichiAssist.DONATEDATA_TABLENAME;
 		//
 		String command = "insert into " + db + "." + table
@@ -956,9 +934,10 @@ public class Sql{
 				+ effect.getUsePoint() + ","
 				+ "cast( now() as datetime )"
 				+ ")";
-		return putCommand(command);
+
+		return executeCommand(command);
 	}
-	public boolean addDonate(String name,int point) {
+	public ActionStatus addDonate(String name, int point) {
 		String table = SeichiAssist.DONATEDATA_TABLENAME;
 		String command = "insert into " + db + "." + table
 				+ " (playername,getpoint,date) "
@@ -967,7 +946,7 @@ public class Sql{
 				+ point + ","
 				+ "cast( now() as datetime )"
 				+ ")";
-		return putCommand(command);
+		return executeCommand(command);
 	}
 
 	public boolean loadDonateData(PlayerData playerdata, Inventory inventory) {
@@ -1039,9 +1018,9 @@ public class Sql{
 			command = "UPDATE " + db + "." + table + " " +
 					"SET shareinv = '" + data + "' " +
 					"WHERE uuid = '" + struuid + "'";
-			if (!putCommand(command)) {
+			if (executeCommand(command) == Fail) {
 				player.sendMessage(ChatColor.RED + "アイテムの収納に失敗しました");
-				Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> saveShareInv(putCommand failed)");
+				Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> saveShareInv(executeCommand failed)");
 				return false;
 			}
 		} catch (SQLException e) {
@@ -1082,7 +1061,7 @@ public class Sql{
 		String command = "UPDATE " + db + "." + table + " " +
 				"SET shareinv = '' " +
 				"WHERE uuid = '" + struuid + "'";
-		if (!putCommand(command)) {
+		if (executeCommand(command) == Fail) {
 			player.sendMessage(ChatColor.RED + "アイテムのクリアに失敗しました");
 			Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> clearShareInv");
 			return false;
@@ -1140,7 +1119,7 @@ public class Sql{
 		if (uuid != null) {
 			command += " WHERE uuid = '" + uuid.toString() + "'";
 		}
-		if (!putCommand(command)) {
+		if (executeCommand(command) == Fail) {
 			Bukkit.getLogger().warning("sql failed. -> setAnniversary");
 			return false;
 		}

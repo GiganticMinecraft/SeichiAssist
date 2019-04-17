@@ -85,7 +85,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			return;
 		}
 		//sqlコネクションチェック
-		sql.checkConnection();
+		sql.ensureConnection();
 		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
 		try {
 			stmt = sql.con.createStatement();

@@ -57,7 +57,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 	public void run() {
 		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
 		//sqlコネクションチェック
-		sql.checkConnection();
+		sql.ensureConnection();
 		try {
 			stmt = sql.con.createStatement();
 		} catch (SQLException e1) {

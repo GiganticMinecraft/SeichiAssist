@@ -58,7 +58,7 @@ public class CheckAlreadyExistPlayerDataTaskRunnable extends BukkitRunnable{
 			return;
 		}
 		//sqlコネクションチェック
-		sql.checkConnection();
+		sql.ensureConnection();
 		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
 		try {
 			stmt = con.createStatement();

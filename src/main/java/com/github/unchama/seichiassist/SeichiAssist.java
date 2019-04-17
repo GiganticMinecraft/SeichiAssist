@@ -69,6 +69,9 @@ import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
 
+import static com.github.unchama.util.ActionStatus.Fail;
+import static com.github.unchama.util.ActionStatus.Ok;
+
 
 public class SeichiAssist extends JavaPlugin{
 
@@ -869,8 +872,9 @@ public class SeichiAssist extends JavaPlugin{
 		}
 
 		//MySQL系の設定はすべてSql.javaに移動
+		// TODO nullチェック
 		sql = new Sql(config.getURL(), config.getDB(), config.getID(), config.getPW());
-		if(!sql.connect()){
+		if (sql.connectAndInitializeDatabase() == Ok) {
 			getLogger().info("データベース初期処理にエラーが発生しました");
 		}
 
@@ -1003,7 +1007,7 @@ public class SeichiAssist extends JavaPlugin{
 		}
 
 		//sqlコネクションチェック
-		sql.checkConnection();
+		sql.ensureConnection();
 		for(Player p : getServer().getOnlinePlayers()){
 			//UUIDを取得
 			UUID uuid = p.getUniqueId();
@@ -1022,7 +1026,7 @@ public class SeichiAssist extends JavaPlugin{
 			new PlayerDataSaveTaskRunnable(playerdata,true,true).run();
 		}
 
-		if(!sql.disconnect()){
+		if(sql.disconnect() == Fail){
 			getLogger().info("データベース切断に失敗しました");
 		}
 
