@@ -22,6 +22,13 @@
 - RegenWorld_1.0 [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
 - SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) | [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
 
+## ビルド
+前提プラグインのjarを`${プロジェクトディレクトリ}/localDependencies`にコピーしてください。
+Mavenがコマンドラインで使える状態で`mvn install`を実行すると、`target`フォルダにjarが出力されます。
+
+IntelliJ IDEAを開発に使用している場合、プロジェクトをmavenプロジェクトとして読み込み、
+MavenタブからLifecycle -> installを実行すれば`target`フォルダにjarが出力されます。
+
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
 - [gachadata.spl](https://red.minecraftserver.jp/attachments/download/895/gachadata.sql) -> import to "gachadata" table.
