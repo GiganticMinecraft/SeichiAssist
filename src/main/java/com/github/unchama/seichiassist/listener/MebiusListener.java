@@ -151,14 +151,14 @@ public class MebiusListener implements Listener {
 	// ダメージを受けた時
 	@EventHandler
 	public void onDamage(EntityDamageByEntityEvent event) {
-		final List<String> breakmsgs = Arrays.asList(
+		final Set<String> breakmsgs = SetFactory.of(
 				"いたた…もうすぐ壊れちゃいそうだ…",
 				"もうダメかも…こんなところで、悔しいなぁ",
 				"お願い、修繕して欲しいよ…",
 				"ごめんね…これ以上は[str1]のこと、守ってあげられそうにないよ…",
 				"もっと[str1]と、旅したかったなぁ",
 				"まだ平気…壊れるまでは、[str1]のことを守るんだ…");
-		final List<String> warnmsgs = Arrays.asList(
+		final Set<String> warnmsgs = SetFactory.of(
 				"[str2]からの攻撃だ！気を付けて！",
 				"お前なんか余裕なんだからなー！さあ[str1]、やっちゃえ！",
 				"びっくりしたなー！人が休んでるときにー！",
@@ -197,7 +197,7 @@ public class MebiusListener implements Listener {
 	// 壊れたとき
 	@EventHandler
 	public void onBreak(PlayerItemBreakEvent event) {
-		final List<String> msgs = Arrays.asList(
+		final Set<String> msgs = SetFactory.of(
 				"ここまでかぁっ…[str1]と一緒に旅したこと、すごく楽しかったなぁ…",
 				"この先[str1]のこと、守ってあげられなくなっちゃった…ごめんね…",
 				"僕、少しは[str1]の役に立てたかなぁ…もしそうだったら、嬉しいなぁ",
@@ -248,7 +248,7 @@ public class MebiusListener implements Listener {
 
 	// ブロックを破壊した時
 	public static void onBlockBreak(BlockBreakEvent event) {
-		final List<String> msgs = Arrays.asList(
+		final Set<String> msgs = SetFactory.of(
 				"ポコポコポコポコ…整地の音って、落ち着くねえ。",
 				"頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
 				"一生懸命掘ってると、いつの間にか無心になっちゃうよねえ…！",
@@ -725,8 +725,8 @@ public class MebiusListener implements Listener {
 	}
 
 	// メッセージリストからランダムに取り出し、タグを置換する
-	private static String getMessage(List<String> messages, String str1, String str2) {
-		String msg = messages.get(new Random().nextInt(messages.size()));
+	private static String getMessage(Set<String> messages, String str1, String str2) {
+		String msg = new ArrayList<>(messages).get(new Random().nextInt(messages.size()));
 		if (!str1.isEmpty()) {
 			msg = msg.replace("[str1]", str1 + ChatColor.RESET);
 		}
