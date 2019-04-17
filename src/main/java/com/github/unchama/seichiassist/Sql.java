@@ -46,12 +46,11 @@ public class Sql{
 	public Connection con = null;
 	private Statement stmt = null;
 
-	private SeichiAssist plugin;
+	private SeichiAssist plugin = SeichiAssist.instance;
 	private static Config config = SeichiAssist.config;
 
 	//コンストラクタ
-	Sql(SeichiAssist plugin ,String url, String db, String id, String pw){
-		this.plugin = plugin;
+	Sql(String url, String db, String id, String pw){
 		this.url = url;
 		this.db = db;
 		this.id = id;
@@ -61,7 +60,7 @@ public class Sql{
 	/**
 	 * 接続関数
 	 */
-	public boolean connect(){
+	public boolean connect() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 		} catch (InstantiationException | IllegalAccessException
@@ -97,15 +96,11 @@ public class Sql{
 			return false;
 		}
 
+        if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
+            plugin.getLogger().info("playerdataテーブル作成に失敗しました");
+            return false;
+        }
 
-		return true;
-	}
-
-	public boolean connect1(){
-		if(!createPlayerDataTable(SeichiAssist.PLAYERDATA_TABLENAME)){
-			plugin.getLogger().info("playerdataテーブル作成に失敗しました");
-			return false;
-		}
 		return true;
 	}
 

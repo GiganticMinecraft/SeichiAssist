@@ -869,7 +869,7 @@ public class SeichiAssist extends JavaPlugin{
 		}
 
 		//MySQL系の設定はすべてSql.javaに移動
-		sql = new Sql(this,config.getURL(), config.getDB(), config.getID(), config.getPW());
+		sql = new Sql(config.getURL(), config.getDB(), config.getID(), config.getPW());
 		if(!sql.connect()){
 			getLogger().info("データベース初期処理にエラーが発生しました");
 		}
@@ -905,11 +905,6 @@ public class SeichiAssist extends JavaPlugin{
 		} else {
 			getLogger().info("MineStack用ガチャデータのロードに失敗しました");
 		}
-
-		if(!sql.connect1()){
-			getLogger().info("データベース初期処理にエラーが発生しました");
-		}
-
 
 
 		//
