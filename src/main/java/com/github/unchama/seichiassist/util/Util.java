@@ -825,9 +825,8 @@ public final class Util {
 	}
 
 	public static boolean isMineHeadItem(ItemStack itemstack) {
-		if(itemstack.getType().equals(Material.CARROT_STICK) &&
-				loreIndexOf(itemstack.getItemMeta().getLore(), "頭を狩り取る形をしている...") >= 0 ) {return true;}
-		return false;
+		return itemstack.getType().equals(Material.CARROT_STICK) &&
+				loreIndexOf(itemstack.getItemMeta().getLore(), "頭を狩り取る形をしている...") >= 0;
 	}
 
 	public static ItemStack getMineHeadItem() {
@@ -896,9 +895,8 @@ public final class Util {
 	}
 
 	public static boolean isLimitedTitanItem(ItemStack itemstack) {
-		if(itemstack.getType().equals(Material.DIAMOND_AXE) &&
-				loreIndexOf(itemstack.getItemMeta().getLore(), "特別なタイタンをあなたに♡") >= 0 ) {return true;}
-		return false;
+		return itemstack.getType().equals(Material.DIAMOND_AXE) &&
+				loreIndexOf(itemstack.getItemMeta().getLore(), "特別なタイタンをあなたに♡") >= 0;
 	}
 
 }

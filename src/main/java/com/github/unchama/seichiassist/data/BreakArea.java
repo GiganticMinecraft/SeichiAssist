@@ -57,7 +57,7 @@ public class BreakArea {
 		return dir;
 	}
 	public void setDir(String dir) {
-		this.dir = new String(dir);
+		this.dir = dir;
 	}
 	//破壊範囲の設定
 	public void makeArea() {
