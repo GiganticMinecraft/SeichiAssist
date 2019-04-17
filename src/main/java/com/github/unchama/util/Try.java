@@ -1,5 +1,7 @@
 package com.github.unchama.util;
 
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.github.unchama.util.ActionStatus.Ok;
@@ -25,6 +27,20 @@ public interface Try<F> {
      */
     Try<F> ifOkThen(F failValue, Supplier<ActionStatus> action);
 
+    /**
+     * @return このインスタンスが {@link FailedTry} ならば失敗時の値を含んだ {@link Optional} を、
+     * そうでなければ {@link Optional#empty()} を返す。
+     */
+    Optional<F> failedValue();
+
+    /**
+     * @return このインスタンスが {@link FailedTry} ならば失敗時の値を {@code function} で変換した値を、
+     * そうでなければ {@code defaultValue} を返す。
+     */
+    default <U> U mapFailValue(U defaultValue, Function<F, U> function) {
+        return failedValue().map(function).orElse(defaultValue);
+    }
+
     final class SuccessfulTry<F> implements Try<F> {
         private SuccessfulTry() {}
 
@@ -38,10 +54,15 @@ public interface Try<F> {
 
             return this;
         }
+
+        @Override
+        public Optional<F> failedValue() {
+            return Optional.empty();
+        }
     }
 
     final class FailedTry<F> implements Try<F> {
-        public final F failValue;
+        private final F failValue;
 
         private FailedTry(F failValue) {
             this.failValue = failValue;
@@ -51,9 +72,14 @@ public interface Try<F> {
         public Try<F> ifOkThen(F failValue, Supplier<ActionStatus> action) {
             return this;
         }
+
+        @Override
+        public Optional<F> failedValue() {
+            return Optional.of(failValue);
+        }
     }
 
-    public static <F> Try<F> begin(F failValue, Supplier<ActionStatus> action) {
+    static <F> Try<F> begin(F failValue, Supplier<ActionStatus> action) {
         return new SuccessfulTry<F>().ifOkThen(failValue, action);
     }
 }

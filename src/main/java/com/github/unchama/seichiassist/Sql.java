@@ -36,7 +36,7 @@ import static com.github.unchama.util.ActionStatus.Ok;
 //TODO: 直接SQLに変数を連結しているが、順次PreparedStatementに置き換えていきたい
 public class Sql{
 	private @NotNull final String url;
-	private @NotNull final String db;
+	private @NotNull final String databaseName;
 	private @NotNull final String id;
 	private @NotNull final String pw;
 	public Connection con = null;
@@ -46,9 +46,9 @@ public class Sql{
 	private static Config config = SeichiAssist.config;
 
 	//コンストラクタ
-	Sql(@NotNull String url, @NotNull String db, @NotNull String id, @NotNull String pw){
+	Sql(@NotNull String url, @NotNull String databaseName, @NotNull String id, @NotNull String pw){
 		this.url = url;
-		this.db = db;
+		this.databaseName = databaseName;
 		this.id = id;
 		this.pw = pw;
 	}
@@ -59,8 +59,7 @@ public class Sql{
 	public ActionStatus connectAndInitializeDatabase() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-		} catch (InstantiationException | IllegalAccessException
-				| ClassNotFoundException e) {
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			e.printStackTrace();
 			plugin.getLogger().info("Mysqlドライバーのインスタンス生成に失敗しました");
 			return Fail;
@@ -76,12 +75,7 @@ public class Sql{
 				.ifOkThen(errorMessageForTable.apply("donatedata"), this::createDonateDataTable)
 				.ifOkThen(errorMessageForTable.apply("playerdata"), this::createPlayerDataTable);
 
-		if (tryResult instanceof Try.FailedTry) {
-			plugin.getLogger().info(((Try.FailedTry<String>)tryResult).failValue);
-			return Fail;
-		}
-
-		return Ok;
+		return tryResult.mapFailValue(Ok, failedMessage -> { plugin.getLogger().info(failedMessage); return Fail; });
 	}
 
 	private ActionStatus establishMySQLConnection(){
@@ -100,7 +94,7 @@ public class Sql{
 	}
 
 	/**
-	 * 接続正常ならtrue、そうでなければ再接続試行後正常でtrue、だめならfalseを返す
+	 * 接続正常ならOk、そうでなければ再接続試行後正常でOk、だめならFailを返す
 	 */
 	// TODO このメソッドの戻り値はどこにも使われていない。異常系はその状態を引きずらずに処理を止めるべき
 	public ActionStatus ensureConnection(){
@@ -135,11 +129,11 @@ public class Sql{
 	 * @return 成否
 	 */
 	public ActionStatus disconnect(){
-		if (con != null){
-			try{
+		if (con != null) {
+			try {
 				stmt.close();
 				con.close();
-			}catch (SQLException e){
+			} catch (SQLException e) {
 				e.printStackTrace();
 				return Fail;
 			}
@@ -173,8 +167,7 @@ public class Sql{
 	 * @return 成否
 	 */
 	public ActionStatus createDB(){
-		String command;
-		command = "CREATE DATABASE IF NOT EXISTS " + db
+		String command = "CREATE DATABASE IF NOT EXISTS " + databaseName
 				+ " character set utf8 collate utf8_general_ci";
 		return executeCommand(command);
 	}
@@ -190,7 +183,7 @@ public class Sql{
 
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
-				"CREATE TABLE IF NOT EXISTS " + db + "." + tableName +
+				"CREATE TABLE IF NOT EXISTS " + databaseName + "." + tableName +
 						"(name varchar(30) unique," +
 						"uuid varchar(128) unique)";
 		if (executeCommand(command) == Fail) {
@@ -198,7 +191,7 @@ public class Sql{
 		}
 		//必要なcolumnを随時追加
 		command =
-				"alter table " + db + "." + tableName +
+				"alter table " + databaseName + "." + tableName +
 						" add column if not exists effectflag tinyint default 0" +
 						",add column if not exists minestackflag boolean default true" +
 						",add column if not exists messageflag boolean default false" +
@@ -309,9 +302,6 @@ public class Sql{
 			command += ",add column if not exists left_" + i + " int default 0";
 		}
 
-		command += "";
-
-
 		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
 		for (final ActiveSkillEffect activeSkillEffect : activeskilleffect) {
 			command = command +
@@ -339,7 +329,7 @@ public class Sql{
 
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
-				"CREATE TABLE IF NOT EXISTS " + db + "." + tableName +
+				"CREATE TABLE IF NOT EXISTS " + databaseName + "." + tableName +
 						"(id int auto_increment unique,"
 						+ "amount int(11))";
 
@@ -349,7 +339,7 @@ public class Sql{
 
 		//必要なcolumnを随時追加
 		command =
-				"alter table " + db + "." + tableName +
+				"alter table " + databaseName + "." + tableName +
 						" add column if not exists probability double default 0.0" +
 						",add column if not exists itemstack blob default null" +
 						"";
@@ -363,7 +353,7 @@ public class Sql{
 
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
-				"CREATE TABLE IF NOT EXISTS " + db + "." + tableName +
+				"CREATE TABLE IF NOT EXISTS " + databaseName + "." + tableName +
 						"(id int auto_increment unique,"
 						+ "amount int(11))";
 
@@ -373,7 +363,7 @@ public class Sql{
 
 		//必要なcolumnを随時追加
 		command =
-				"alter table " + db + "." + tableName +
+				"alter table " + databaseName + "." + tableName +
 						" add column if not exists probability double default 0.0" +
 						",add column if not exists level int(11) default 0" +
 						",add column if not exists obj_name tinytext default null" +
@@ -388,7 +378,7 @@ public class Sql{
 
 		//テーブルが存在しないときテーブルを新規作成
 		String command =
-				"CREATE TABLE IF NOT EXISTS " + db + "." + tableName +
+				"CREATE TABLE IF NOT EXISTS " + databaseName + "." + tableName +
 						"(id int auto_increment unique)";
 
 		if (executeCommand(command) == Fail){
@@ -397,7 +387,7 @@ public class Sql{
 
 		//必要なcolumnを随時追加
 		command =
-				"alter table " + db + "." + tableName +
+				"alter table " + databaseName + "." + tableName +
 						" add column if not exists playername varchar(20) default null" +
 						",add column if not exists playeruuid varchar(128) default null" +
 						",add column if not exists effectnum int default null" +
@@ -424,7 +414,7 @@ public class Sql{
 		String struuid = playerdata.uuid.toString();
 		int p_vote = 0;
 		int p_givenvote = 0;
-		String command = "select p_vote,p_givenvote from " + db + "."  + table
+		String command = "select p_vote,p_givenvote from " + databaseName + "."  + table
 				+ " where uuid = '" + struuid + "'";
 		try (ResultSet lrs = stmt.executeQuery(command)) {
 			while (lrs.next()) {
@@ -439,7 +429,7 @@ public class Sql{
 		}
 		//比較して差があればその差の値を返す(同時にp_givenvoteも更新しておく)
 		if(p_vote > p_givenvote){
-			command = "update " + db + "." + table
+			command = "update " + databaseName + "." + table
 					+ " set p_givenvote = " + p_vote
 					+ " where uuid like '" + struuid + "'";
 			if(executeCommand(command) == Fail){
@@ -466,7 +456,7 @@ public class Sql{
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
 		int numofsorryforbug = 0;
-		String command = "select numofsorryforbug from " + db + "." + table
+		String command = "select numofsorryforbug from " + databaseName + "." + table
 				+ " where uuid = '" + struuid + "'";
 		try (ResultSet lrs = stmt.executeQuery(command)){
 			while (lrs.next()) {
@@ -480,7 +470,7 @@ public class Sql{
 		}
 		//576より多い場合はその値を返す(同時にnumofsorryforbugから-576)
 		if(numofsorryforbug > 576) {
-			command = "update " + db + "." + table
+			command = "update " + databaseName + "." + table
 					+ " set numofsorryforbug = numofsorryforbug - 576"
 					+ " where uuid like '" + struuid + "'";
 			if(executeCommand(command) == Fail){
@@ -491,7 +481,7 @@ public class Sql{
 			return 576;
 		}//0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
 		else if(numofsorryforbug > 0){
-			command = "update " + db + "." + table
+			command = "update " + databaseName + "." + table
 					+ " set numofsorryforbug = 0"
 					+ " where uuid like '" + struuid + "'";
 			if (executeCommand(command) == Fail) {
@@ -511,12 +501,8 @@ public class Sql{
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String command;
 
-		command = "update " + db + "." + table
-				+ " set"
-
-				//1加算
-				+ " p_vote = p_vote + 1"
-
+		command = "update " + databaseName + "." + table
+				+ " set p_vote = p_vote + 1" //1加算
 				+ " where name like '" + name + "'";
 
 		return executeCommand(command);
@@ -525,15 +511,9 @@ public class Sql{
 
 	//プレミアムエフェクトポイントを加算しておく処理
 	public ActionStatus addPremiumEffectPoint(String name, int num) {
-		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command;
-
-		command = "update " + db + "." + table
-				+ " set"
-
-				//引数で来たポイント数分加算
-				+ " premiumeffectpoint = premiumeffectpoint + " + num
-
+		final String table = SeichiAssist.PLAYERDATA_TABLENAME;
+		final String command = "update " + databaseName + "." + table
+				+ " set premiumeffectpoint = premiumeffectpoint + " + num //引数で来たポイント数分加算
 				+ " where name like '" + name + "'";
 
 		return executeCommand(command);
@@ -543,9 +523,10 @@ public class Sql{
 	//指定されたプレイヤーにガチャ券を送信する
 	public ActionStatus addPlayerBug(String name, int num) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "update " + db + "." + table
+		String command = "update " + databaseName + "." + table
 				+ " set numofsorryforbug = numofsorryforbug + " + num
 				+ " where name like '" + name + "'";
+
 		return executeCommand(command);
 	}
 
@@ -570,7 +551,7 @@ public class Sql{
 		String table = SeichiAssist.GACHADATA_TABLENAME;
 		List<GachaData> gachadatalist = new ArrayList<>();
 		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
-		String command = "select * from " + db + "." + table;
+		String command = "select * from " + databaseName + "." + table;
 		try (ResultSet lrs = stmt.executeQuery(command)) {
 			while (lrs.next()) {
 				GachaData gachadata = new GachaData();
@@ -596,7 +577,7 @@ public class Sql{
 		String table = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
 		List<MineStackGachaData> gachadatalist = new ArrayList<>();
 		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
-		String command = "select * from " + db + "." + table;
+		String command = "select * from " + databaseName + "." + table;
 		try (ResultSet lrs = stmt.executeQuery(command)){
 			while (lrs.next()) {
 				MineStackGachaData gachadata = new MineStackGachaData();
@@ -624,7 +605,7 @@ public class Sql{
 		String table = SeichiAssist.GACHADATA_TABLENAME;
 
 		//まずmysqlのガチャテーブルを初期化(中身全削除)
-		String command = "truncate table " + db + "." + table;
+		String command = "truncate table " + databaseName + "." + table;
 		if(executeCommand(command) == Fail){
 			return false;
 		}
@@ -635,7 +616,7 @@ public class Sql{
 			Inventory inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1);
 			inventory.setItem(0,gachadata.itemstack);
 
-			command = "insert into " + db + "." + table + " (probability,amount,itemstack)"
+			command = "insert into " + databaseName + "." + table + " (probability,amount,itemstack)"
 					+ " values"
 					+ "(" + gachadata.probability
 					+ "," + gachadata.amount
@@ -653,7 +634,7 @@ public class Sql{
 		String table = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
 
 		//まずmysqlのガチャテーブルを初期化(中身全削除)
-		String command = "truncate table " + db + "." + table;
+		String command = "truncate table " + databaseName + "." + table;
 		if(executeCommand(command) == Fail){
 			return false;
 		}
@@ -664,7 +645,7 @@ public class Sql{
 			Inventory inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1);
 			inventory.setItem(0,gachadata.itemstack);
 
-			command = "insert into " + db + "." + table + " (probability,amount,level,obj_name,itemstack)"
+			command = "insert into " + databaseName + "." + table + " (probability,amount,level,obj_name,itemstack)"
 					+ " values"
 					+ "(" + gachadata.probability
 					+ "," + gachadata.amount
@@ -686,7 +667,7 @@ public class Sql{
 		List<RankData> ranklist = SeichiAssist.ranklist;
 		ranklist.clear();
 		SeichiAssist.allplayerbreakblockint = 0;
-		String command = "select name,level,totalbreaknum from " + db + "." + table
+		String command = "select name,level,totalbreaknum from " + databaseName + "." + table
 				+ " order by totalbreaknum desc";
 		try (ResultSet lrs = stmt.executeQuery(command)){
 			while (lrs.next()) {
@@ -710,7 +691,7 @@ public class Sql{
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		List<RankData> ranklist = SeichiAssist.ranklist_playtick;
 		ranklist.clear();
-		String command = "select name,playtick from " + db + "." + table
+		String command = "select name,playtick from " + databaseName + "." + table
 				+ " order by playtick desc";
 		try (ResultSet lrs = stmt.executeQuery(command)){
 			while (lrs.next()) {
@@ -732,7 +713,7 @@ public class Sql{
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		List<RankData> ranklist = SeichiAssist.ranklist_p_vote;
 		ranklist.clear();
-		String command = "select name,p_vote from " + db + "." + table
+		String command = "select name,p_vote from " + databaseName + "." + table
 				+ " order by p_vote desc";
 		try (ResultSet lrs = stmt.executeQuery(command)){
 			while (lrs.next()) {
@@ -754,7 +735,7 @@ public class Sql{
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		List<RankData> ranklist = SeichiAssist.ranklist_premiumeffectpoint;
 		ranklist.clear();
-		String command = "select name,premiumeffectpoint from " + db + "." + table
+		String command = "select name,premiumeffectpoint from " + databaseName + "." + table
 				+ " order by premiumeffectpoint desc";
 		try (ResultSet lrs = stmt.executeQuery(command)){
 			while (lrs.next()) {
@@ -777,7 +758,7 @@ public class Sql{
 		SeichiAssist.allplayergiveapplelong = 0;
 		ranklist.clear();
 
-		String command = "select name,p_apple from " + db + "." + table
+		String command = "select name,p_apple from " + databaseName + "." + table
 				+ " order by p_apple desc";
 		try (ResultSet lrs = stmt.executeQuery(command)){
 			while (lrs.next()) {
@@ -798,7 +779,7 @@ public class Sql{
 	//プレイヤーレベル全リセット
 	public ActionStatus resetAllPlayerLevel(){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "update " + db + "." + table
+		String command = "update " + databaseName + "." + table
 				+ " set level = 1";
 		return executeCommand(command);
 	}
@@ -811,7 +792,7 @@ public class Sql{
 		int level = playerdata.level;
 		long totalbreaknum = playerdata.totalbreaknum;
 
-		String command = "update " + db + "." + table
+		String command = "update " + databaseName + "." + table
 				+ " set"
 
 				+ " level = " + level
@@ -830,7 +811,7 @@ public class Sql{
 		//PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		int totalbreaknum = SeichiAssist.levellist.get(level-1);
 
-		String command = "update " + db + "." + table
+		String command = "update " + databaseName + "." + table
 				+ " set"
 
 				+ " level = " + level
@@ -847,7 +828,7 @@ public class Sql{
 	//全員に詫びガチャの配布
 	public ActionStatus addAllPlayerBug(int amount){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "update " + db + "." + table
+		String command = "update " + databaseName + "." + table
 				+ " set numofsorryforbug = numofsorryforbug + " + amount;
 		return executeCommand(command);
 	}
@@ -857,7 +838,7 @@ public class Sql{
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = uuid.toString();
 		Inventory inventory = null;
-		String command = "select inventory from " + db + "." + table
+		String command = "select inventory from " + databaseName + "." + table
 				+ " where uuid like '" + struuid + "'";
 		try (ResultSet lrs = stmt.executeQuery(command)){
 			while (lrs.next()) {
@@ -875,7 +856,7 @@ public class Sql{
 	public String selectLastQuit(String name){
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String lastquit = "";
-		String command = "select lastquit from " + db + "." + table
+		String command = "select lastquit from " + databaseName + "." + table
 				+ " where name = '" + name + "'";
 		try (ResultSet lrs = stmt.executeQuery(command)){
 			while (lrs.next()) {
@@ -893,7 +874,7 @@ public class Sql{
 	public Map<UUID, String> selectLeavers(int days){
 		Map<UUID, String> leavers = new HashMap<>();
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "select name, uuid from " + db + "." + table
+		String command = "select name, uuid from " + databaseName + "." + table
 				+ " where ((lastquit <= date_sub(curdate(), interval " + days + " day))"
 				+ " or (lastquit is null)) and (name != '') and (uuid != '')";
 		try (ResultSet lrs = stmt.executeQuery(command)) {
@@ -924,7 +905,7 @@ public class Sql{
 											ActiveSkillPremiumEffect effect) {
 		String table = SeichiAssist.DONATEDATA_TABLENAME;
 		//
-		String command = "insert into " + db + "." + table
+		String command = "insert into " + databaseName + "." + table
 				+ " (playername,playeruuid,effectnum,effectname,usepoint,date) "
 				+ "value("
 				+ "'" + playerdata.name + "',"
@@ -939,7 +920,7 @@ public class Sql{
 	}
 	public ActionStatus addDonate(String name, int point) {
 		String table = SeichiAssist.DONATEDATA_TABLENAME;
-		String command = "insert into " + db + "." + table
+		String command = "insert into " + databaseName + "." + table
 				+ " (playername,getpoint,date) "
 				+ "value("
 				+ "'" + name + "',"
@@ -958,7 +939,7 @@ public class Sql{
 		ActiveSkillPremiumEffect[] effect = ActiveSkillPremiumEffect.values();
 
 		String table = SeichiAssist.DONATEDATA_TABLENAME;
-		String command = "select * from " + db + "." + table + " where playername = '" + playerdata.name + "'";
+		String command = "select * from " + databaseName + "." + table + " where playername = '" + playerdata.name + "'";
 		try (ResultSet lrs = stmt.executeQuery(command)){
 			while (lrs.next()) {
 				//ポイント購入の処理
@@ -1005,7 +986,7 @@ public class Sql{
 		new CoolDownTaskRunnable(player, CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin, 200);
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
-		String command = "SELECT shareinv FROM " + db + "." + table + " " +
+		String command = "SELECT shareinv FROM " + databaseName + "." + table + " " +
 				"WHERE uuid = '" + struuid + "'";
 		try (ResultSet lrs = stmt.executeQuery(command)) {
 			lrs.next();
@@ -1015,7 +996,7 @@ public class Sql{
 				player.sendMessage(ChatColor.RED + "既にアイテムが収納されています");
 				return false;
 			}
-			command = "UPDATE " + db + "." + table + " " +
+			command = "UPDATE " + databaseName + "." + table + " " +
 					"SET shareinv = '" + data + "' " +
 					"WHERE uuid = '" + struuid + "'";
 			if (executeCommand(command) == Fail) {
@@ -1041,7 +1022,7 @@ public class Sql{
 		new CoolDownTaskRunnable(player,CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin,200);
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
-		String command = "SELECT shareinv FROM " + db + "." + table + " " +
+		String command = "SELECT shareinv FROM " + databaseName + "." + table + " " +
 				"WHERE uuid = '" + struuid + "'";
 		String shareinv = null;
 		try (ResultSet lrs = stmt.executeQuery(command)) {
@@ -1058,7 +1039,7 @@ public class Sql{
 	public boolean clearShareInv(Player player, PlayerData playerdata) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
 		String struuid = playerdata.uuid.toString();
-		String command = "UPDATE " + db + "." + table + " " +
+		String command = "UPDATE " + databaseName + "." + table + " " +
 				"SET shareinv = '' " +
 				"WHERE uuid = '" + struuid + "'";
 		if (executeCommand(command) == Fail) {
@@ -1079,9 +1060,9 @@ public class Sql{
 	 */
 	public boolean writegiveachvNo(Player sender, String targetName, String achvNo) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String select = "SELECT giveachvNo FROM " + db + "." + table + " " +
+		String select = "SELECT giveachvNo FROM " + databaseName + "." + table + " " +
 				"WHERE name LIKE '" + targetName + "'";
-		String update = "UPDATE " + db + "." + table + " " +
+		String update = "UPDATE " + databaseName + "." + table + " " +
 				" SET giveachvNo = " + achvNo +
 				" WHERE name LIKE '" + targetName + "'";
 
@@ -1114,7 +1095,7 @@ public class Sql{
 	// anniversary変更
 	public boolean setAnniversary(boolean anniversary, UUID uuid) {
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String command = "UPDATE " + db + "." + table + " " +
+		String command = "UPDATE " + databaseName + "." + table + " " +
 				"SET anniversary = " + anniversary;
 		if (uuid != null) {
 			command += " WHERE uuid = '" + uuid.toString() + "'";
@@ -1131,7 +1112,7 @@ public class Sql{
 		int point;
 
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String select = "SELECT contribute_point FROM " + db + "." + table + " " +
+		String select = "SELECT contribute_point FROM " + databaseName + "." + table + " " +
 				"WHERE name LIKE '" + targetName + "'";
 
 		// selectで確認
@@ -1151,7 +1132,7 @@ public class Sql{
 		}
 
 		try {
-			String update = "UPDATE " + db + "." + table + " " +
+			String update = "UPDATE " + databaseName + "." + table + " " +
 					" SET contribute_point = " + point +
 					" WHERE name LIKE '" + targetName + "'";
 
@@ -1170,7 +1151,7 @@ public class Sql{
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 		String lastvote;
 		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String select = "SELECT lastvote FROM " + db + "." + table + " " +
+		String select = "SELECT lastvote FROM " + databaseName + "." + table + " " +
 				"WHERE name LIKE '" + name + "'";
 		try (ResultSet lrs = stmt.executeQuery(select)) {
 			// 初回のnextがnull→データが1件も無い場合
@@ -1186,7 +1167,7 @@ public class Sql{
 
 			lrs.close();
 
-			String update = "UPDATE " + db + "." + table + " " +
+			String update = "UPDATE " + databaseName + "." + table + " " +
 					" SET lastvote = '" + sdf.format(cal.getTime()) + "'" +
 					" WHERE name LIKE '" + name + "'";
 
@@ -1196,7 +1177,7 @@ public class Sql{
 			e.printStackTrace();
 			return false;
 		}
-		select = "SELECT chainvote FROM " + db + "." + table + " " +
+		select = "SELECT chainvote FROM " + databaseName + "." + table + " " +
 				"WHERE name LIKE '" + name + "'";
 		try (ResultSet lrs = stmt.executeQuery(select)) {
 			// 初回のnextがnull→データが1件も無い場合
@@ -1232,7 +1213,7 @@ public class Sql{
 
 			lrs.close();
 
-			String update = "UPDATE " + db + "." + table + " " +
+			String update = "UPDATE " + databaseName + "." + table + " " +
 					" SET chainvote = " + count +
 					" WHERE name LIKE '" + name + "'";
 
