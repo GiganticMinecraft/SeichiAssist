@@ -77,8 +77,8 @@ public enum ActiveSkillPremiumEffect {
 	}
 	//エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
 	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
-		switch(this.toString()){
-		case "MAGIC":
+		switch(this){
+		case MAGIC:
 			if(SeichiAssist.DEBUG){
 				new MagicTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskTimer(plugin, 0, 100);
 			}else{
@@ -86,15 +86,17 @@ public enum ActiveSkillPremiumEffect {
 			}
 
 			break;
-		case "BLADE":
+			/*
+		case BLADE:
 			new BladeTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			break;
-		case "VLADMIA":
+		case VLADMIA:
 			new VladmiaTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			break;
-		case "TIAMAT":
+		case TIAMAT:
 			new TiamatTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			break;
+			 */
 		default :
 			break;
 		}
@@ -102,19 +104,21 @@ public enum ActiveSkillPremiumEffect {
 
 	//エフェクトの実行処理分岐
 	public void runArrowEffect(Player player){
-		switch(this.toString()){
-		case "MAGIC":
+		switch(this){
+		case MAGIC:
 			new ArrowMagicTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
-		case "BLADE":
+			/*
+		case BLADE:
 			new ArrowBladeTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
-		case "VLADMIA":
+		case VLADMIA:
 			new ArrowVladmiaTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
-		case "TIAMAT":
+		case TIAMAT:
 			new ArrowTiamatTaskRunnable(player).runTaskTimer(plugin,0,1);
 			break;
+			 */
 		default :
 			break;
 		}
