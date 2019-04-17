@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -106,7 +107,7 @@ public class SeichiAssist extends JavaPlugin{
 	public static List<MineStackGachaData> msgachadatalist = new ArrayList<>();
 
 	//Playerdataに依存するデータリスト
-	public static final HashMap<UUID,PlayerData> playermap = new HashMap<>();
+	public static final ConcurrentHashMap<UUID,PlayerData> playermap = new ConcurrentHashMap<>();
 
 	//総採掘量ランキング表示用データリスト
 	public static final List<RankData> ranklist = new ArrayList<>();
