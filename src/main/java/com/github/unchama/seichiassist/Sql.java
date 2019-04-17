@@ -62,13 +62,6 @@ public class Sql{
 
 	/**
 	 * 接続関数
-	 *
-	 * @param url 接続先url
-	 * @param id ユーザーID
-	 * @param pw ユーザーPW
-	 * @param db データベースネーム
-	 * @param table テーブルネーム
-	 * @return
 	 */
 	public boolean connect(){
 		try {
@@ -211,7 +204,6 @@ public class Sql{
 	 * データベース作成
 	 * 失敗時には変数excにエラーメッセージを格納
 	 *
-	 * @param table テーブル名
 	 * @return 成否
 	 */
 	public boolean createDB(){
