@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.Set;
 
 import net.coreprotect.CoreProtectAPI;
 
@@ -512,7 +513,7 @@ public final class BreakUtil {
 	}
 
 	public static boolean BlockEqualsMaterialList(Block b){
-		List<Material> m = SeichiAssist.materiallist;
+		Set<Material> m = SeichiAssist.materiallist;
 		for (Material material : m) {
 			if (b.getType().equals(material)) {
 				return true;

@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -781,7 +781,7 @@ public class SeichiAssist extends JavaPlugin{
 	public static final boolean minestack_sql_enable=true; //ここは必ずtrue(falseのときはSQL初期設定+SQL入出力しない[デバッグ用])
 
 
-	public static final List<Material> materiallist = Arrays.asList(
+	public static final Set<Material> materiallist = EnumSet.of(
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
 			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
 			,Material.COAL_ORE,Material.IRON_ORE,Material.GOLD_ORE,Material.DIAMOND_ORE
@@ -804,26 +804,26 @@ public class SeichiAssist extends JavaPlugin{
 			,Material.QUARTZ_BLOCK
 			,Material.CHEST,Material.TRAPPED_CHEST
 			);
-	public static final List<Material> luckmateriallist = Arrays.asList(
+	public static final Set<Material> luckmateriallist = EnumSet.of(
 			Material.COAL_ORE,Material.DIAMOND_ORE,Material.LAPIS_ORE,Material.EMERALD_ORE,
 			Material.REDSTONE_ORE,Material.GLOWING_REDSTONE_ORE,Material.QUARTZ_ORE
 			);
-	public static final List<Material> breakmateriallist = Arrays.asList(
+	public static final Set<Material> breakmateriallist = EnumSet.of(
 			Material.DIAMOND_PICKAXE,Material.DIAMOND_AXE,Material.DIAMOND_SPADE,
 			Material.WOOD_PICKAXE,						  Material.WOOD_SPADE,
 			Material.IRON_PICKAXE,Material.IRON_AXE,Material.IRON_SPADE,
 			Material.GOLD_PICKAXE,Material.GOLD_AXE,Material.GOLD_SPADE
 			);
-	public static final List<Material> cancelledmateriallist = Arrays.asList(
+	public static final Set<Material> cancelledmateriallist = EnumSet.of(
 			Material.CHEST,Material.ENDER_CHEST,Material.TRAPPED_CHEST,Material.ANVIL,Material.ARMOR_STAND
 			,Material.BEACON,Material.BIRCH_DOOR,Material.BIRCH_FENCE_GATE,Material.BIRCH_WOOD_STAIRS
 			,Material.BOAT,Material.FURNACE,Material.WORKBENCH,Material.HOPPER,Material.MINECART
 			);
 
-	public static final Set<Material> transparentmateriallist = new HashSet<>(Arrays.asList(
+	public static final Set<Material> transparentmateriallist = EnumSet.of(
 			Material.BEDROCK,Material.AIR
-			));
-	public static final List<Material> gravitymateriallist = Arrays.asList(
+			);
+	public static final Set<Material> gravitymateriallist = EnumSet.of(
 			Material.LOG, Material.LOG_2,Material.LEAVES,Material.LEAVES_2
 			);
 	//スキル破壊ブロック分のcoreprotectログ保存処理を除外するワールドリスト(coreprotectログデータ肥大化の軽減が目的)
