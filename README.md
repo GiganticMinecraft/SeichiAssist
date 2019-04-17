@@ -24,6 +24,7 @@
 
 ## ビルド
 前提プラグインのjarを`${プロジェクトディレクトリ}/localDependencies`にコピーしてください。
+
 Mavenがコマンドラインで使える状態で`mvn install`を実行すると、`target`フォルダにjarが出力されます。
 
 IntelliJ IDEAを開発に使用している場合、プロジェクトをmavenプロジェクトとして読み込み、
