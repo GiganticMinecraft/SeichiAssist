@@ -37,6 +37,7 @@ import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
 
 //MySQL操作関数
+//TODO: 直接SQLに変数を連結しているが、順次PreparedStatementに置き換えていきたい
 public class Sql{
 	private final String url;
 	private final String db;

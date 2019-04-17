@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist;
 
+// TODO: すべてのスキルについて埋める
 public enum Skills {
 	// SPECIAL
 	NONE("[この表示を目にした場合はバグです]", 0, 0, 0, 99999, 99999, null, Kind.SINGLE),
