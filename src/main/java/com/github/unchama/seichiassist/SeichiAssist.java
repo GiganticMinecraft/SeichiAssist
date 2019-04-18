@@ -918,7 +918,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist = new HashMap<>();
 		commandlist.put("gacha",new gachaCommand(instance));
 		commandlist.put("seichi",new seichiCommand(instance));
-		commandlist.put("ef",new EffectCommand(instance));
+		commandlist.put("ef",new EffectCommand());
 		commandlist.put("level",new levelCommand(instance));
 		commandlist.put("lastquit",new lastquitCommand(instance));
 		commandlist.put("stick",new stickCommand(instance));
