@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Supplier;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 
@@ -38,8 +39,9 @@ public class PlayerDataManipulator {
         return gateway.databaseName + "." + DatabaseConstants.PLAYERDATA_TABLENAME;
     }
 
-    //投票特典配布時の処理(p_givenvoteの値の更新もココ)
-    public int compareVotePoint(Player player, final PlayerData playerdata){
+    private int ifCoolDownDoneThenGet(final Player player,
+                                        final PlayerData playerdata,
+                                        final Supplier<Integer> supplier) {
         //連打による負荷防止の為クールダウン処理
         if(!playerdata.votecooldownflag){
             player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
@@ -47,91 +49,91 @@ public class PlayerDataManipulator {
         }
         new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
 
-        final String struuid = playerdata.uuid.toString();
+        return supplier.get();
+    }
 
-        int p_vote = 0;
-        int p_givenvote = 0;
+    //投票特典配布時の処理(p_givenvoteの値の更新もココ)
+    public int compareVotePoint(Player player, final PlayerData playerdata){
+        return ifCoolDownDoneThenGet(player, playerdata, () -> {
+            final String struuid = playerdata.uuid.toString();
 
-        String command = "select p_vote,p_givenvote from " + getTableReference() + " where uuid = '" + struuid + "'";
-        try (ResultSet lrs = gateway.executeQuery(command)) {
-            while (lrs.next()) {
-                p_vote = lrs.getInt("p_vote");
-                p_givenvote = lrs.getInt("p_givenvote");
-            }
-        } catch (SQLException e) {
-            java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-            e.printStackTrace();
-            player.sendMessage(ChatColor.RED + "投票特典の受け取りに失敗しました");
-            return 0;
-        }
-        //比較して差があればその差の値を返す(同時にp_givenvoteも更新しておく)
-        if(p_vote > p_givenvote){
-            command = "update " + getTableReference()
-                    + " set p_givenvote = " + p_vote
-                    + " where uuid like '" + struuid + "'";
-            if (gateway.executeUpdate(command) == Fail) {
+            int p_vote = 0;
+            int p_givenvote = 0;
+
+            String command = "select p_vote,p_givenvote from " + getTableReference() + " where uuid = '" + struuid + "'";
+            try (ResultSet lrs = gateway.executeQuery(command)) {
+                while (lrs.next()) {
+                    p_vote = lrs.getInt("p_vote");
+                    p_givenvote = lrs.getInt("p_givenvote");
+                }
+            } catch (SQLException e) {
+                java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+                e.printStackTrace();
                 player.sendMessage(ChatColor.RED + "投票特典の受け取りに失敗しました");
                 return 0;
             }
+            //比較して差があればその差の値を返す(同時にp_givenvoteも更新しておく)
+            if(p_vote > p_givenvote){
+                command = "update " + getTableReference()
+                        + " set p_givenvote = " + p_vote
+                        + " where uuid like '" + struuid + "'";
+                if (gateway.executeUpdate(command) == Fail) {
+                    player.sendMessage(ChatColor.RED + "投票特典の受け取りに失敗しました");
+                    return 0;
+                }
 
-            return p_vote - p_givenvote;
-        }
-        player.sendMessage(ChatColor.YELLOW + "投票特典は全て受け取り済みのようです");
-        return 0;
-
+                return p_vote - p_givenvote;
+            }
+            player.sendMessage(ChatColor.YELLOW + "投票特典は全て受け取り済みのようです");
+            return 0;
+        });
     }
 
     //最新のnumofsorryforbug値を返してmysqlのnumofsorrybug値を初期化する処理
     public int givePlayerBug(Player player,final PlayerData playerdata) {
-        //連打による負荷防止の為クールダウン処理
-        if(!playerdata.votecooldownflag){
-            player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
-            return 0;
-        }
-        new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
+        return ifCoolDownDoneThenGet(player, playerdata, () -> {
+            String struuid = playerdata.uuid.toString();
+            int numofsorryforbug = 0;
 
-
-        String struuid = playerdata.uuid.toString();
-        int numofsorryforbug = 0;
-
-        String command = "select numofsorryforbug from " + getTableReference() + " where uuid = '" + struuid + "'";
-        try (ResultSet lrs = gateway.executeQuery(command)){
-            while (lrs.next()) {
-                numofsorryforbug = lrs.getInt("numofsorryforbug");
-            }
-        } catch (SQLException e) {
-            java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-            e.printStackTrace();
-            player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
-            return 0;
-        }
-
-        if(numofsorryforbug > 576) {
-            // 576より多い場合はその値を返す(同時にnumofsorryforbugから-576)
-            command = "update " + getTableReference()
-                    + " set numofsorryforbug = numofsorryforbug - 576"
-                    + " where uuid like '" + struuid + "'";
-            if(gateway.executeUpdate(command) == Fail){
+            String command = "select numofsorryforbug from " + getTableReference() + " where uuid = '" + struuid + "'";
+            try (ResultSet lrs = gateway.executeQuery(command)) {
+                while (lrs.next()) {
+                    numofsorryforbug = lrs.getInt("numofsorryforbug");
+                }
+            } catch (SQLException e) {
+                java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+                e.printStackTrace();
                 player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
                 return 0;
             }
 
-            return 576;
-        } else if(numofsorryforbug > 0) {
-            // 0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
-            command = "update " + getTableReference()
-                    + " set numofsorryforbug = 0"
-                    + " where uuid like '" + struuid + "'";
-            if (gateway.executeUpdate(command) == Fail) {
-                player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
-                return 0;
+            if (numofsorryforbug > 576) {
+                // 576より多い場合はその値を返す(同時にnumofsorryforbugから-576)
+                command = "update " + getTableReference()
+                        + " set numofsorryforbug = numofsorryforbug - 576"
+                        + " where uuid like '" + struuid + "'";
+                if (gateway.executeUpdate(command) == Fail) {
+                    player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
+                    return 0;
+                }
+
+                return 576;
+            } else if (numofsorryforbug > 0) {
+                // 0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
+                command = "update " + getTableReference()
+                        + " set numofsorryforbug = 0"
+                        + " where uuid like '" + struuid + "'";
+                if (gateway.executeUpdate(command) == Fail) {
+                    player.sendMessage(ChatColor.RED + "ガチャ券の受け取りに失敗しました");
+                    return 0;
+                }
+
+                return numofsorryforbug;
             }
 
-            return numofsorryforbug;
-        }
-
-        player.sendMessage(ChatColor.YELLOW + "ガチャ券は全て受け取り済みのようです");
-        return 0;
+            player.sendMessage(ChatColor.YELLOW + "ガチャ券は全て受け取り済みのようです");
+            return 0;
+        });
     }
 
     /**
@@ -524,6 +526,7 @@ public class PlayerDataManipulator {
         }
         return true;
     }
+
     //ランキング表示用に上げたりんご数のカラムだけ全員分引っ張る
     public boolean setRanking_p_apple() {
         List<RankData> ranklist = SeichiAssist.ranklist_p_apple;
