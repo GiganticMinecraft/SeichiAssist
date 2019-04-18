@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.github.unchama.seichiassist.util.TypeConverter;
+import com.github.unchama.util.ActionStatus;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -17,6 +18,8 @@ import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.util.Util;
+
+import static com.github.unchama.util.ActionStatus.Fail;
 
 public class gachaCommand implements TabExecutor{
 	public SeichiAssist plugin;
@@ -111,7 +114,7 @@ public class gachaCommand implements TabExecutor{
 					sender.sendMessage(ChatColor.YELLOW + name + "のガチャ券配布処理開始…");
 
 					//mysqlにも書き込んどく
-					if(!sql.addPlayerBug(name,num)){
+					if(sql.addPlayerBug(name,num) == Fail){
 						sender.sendMessage(ChatColor.RED + "失敗");
 					}else{
 						sender.sendMessage(ChatColor.GREEN + "ガチャ券" + num +"枚加算成功");
@@ -125,7 +128,7 @@ public class gachaCommand implements TabExecutor{
 					sender.sendMessage(ChatColor.YELLOW + "全プレイヤーへのガチャ券配布処理開始…");
 
 					//MySql処理
-					if(!sql.addAllPlayerBug(num)){
+					if(sql.addAllPlayerBug(num) == Fail){
 						sender.sendMessage(ChatColor.RED + "失敗");
 					}else{
 						sender.sendMessage(ChatColor.GREEN + "ガチャ券" + num +"枚加算成功");
@@ -152,7 +155,7 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage(ChatColor.YELLOW + name + "の投票特典配布処理開始…");
 
 				//mysqlにも書き込んどく
-				if(!sql.addVotePoint(name)){
+				if(sql.addVotePoint(name) == Fail){
 					sender.sendMessage(ChatColor.RED + "失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "成功");
@@ -183,7 +186,7 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage(ChatColor.YELLOW + name + "のプレミアムエフェクトポイント配布処理開始…");
 
 				//mysqlにも書き込んどく
-				if(!sql.addPremiumEffectPoint(name,num) || !sql.addDonate(name, num)){
+				if(sql.addPremiumEffectPoint(name,num) == Fail || sql.addDonate(name, num) == Fail){
 					sender.sendMessage(ChatColor.RED + "失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "成功");

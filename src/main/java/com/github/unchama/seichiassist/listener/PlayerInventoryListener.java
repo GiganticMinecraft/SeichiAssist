@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.unchama.util.ActionStatus;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -56,6 +57,8 @@ import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
+import static com.github.unchama.util.ActionStatus.Fail;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -1137,7 +1140,7 @@ public class PlayerInventoryListener implements Listener {
 						} else {
 							activeSkillPremiumEffect.setObtained(playerdata.activeskilldata.premiumeffectflagmap);
 							player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました");
-							if (!sql.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect)) {
+							if (sql.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
 								player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。");
 							}
 							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 1.2);

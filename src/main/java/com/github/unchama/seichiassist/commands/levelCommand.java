@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.github.unchama.seichiassist.util.TypeConverter;
+import com.github.unchama.util.ActionStatus;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -19,6 +20,8 @@ import com.github.unchama.seichiassist.OfflineUUID;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
+
+import static com.github.unchama.util.ActionStatus.Fail;
 
 public class levelCommand implements TabExecutor{
 	public SeichiAssist plugin;
@@ -74,9 +77,10 @@ public class levelCommand implements TabExecutor{
 				}
 			}
 			//MySqlの値も処理
-			if(!sql.resetAllPlayerLevel()){
+			if (sql.resetAllPlayerLevel() == Fail) {
 				sender.sendMessage("mysqlのレベルの初期化に失敗しました");
-			}else{
+			}
+			else{
 				sender.sendMessage("mysqlに保存されている全プレイヤーのレベルを初期化しました");
 			}
 			return true;
@@ -144,7 +148,7 @@ public class levelCommand implements TabExecutor{
 									}
 									//}
 									//MySqlの値も処理
-									if(!sql.resetPlayerLevelandBreaknum(uuid)){
+									if(sql.resetPlayerLevelandBreaknum(uuid) == Fail){
 									sender.sendMessage("mysqlのレベルと整地量の設定に失敗しました");
 									}else{
 										sender.sendMessage("mysqlに保存されている指定したプレイヤーのレベルと整地量を設定しました");
@@ -171,7 +175,7 @@ public class levelCommand implements TabExecutor{
 									//}
 									//}
 									//MySqlの値も処理
-									if(!sql.resetPlayerLevelandBreaknum(uuid, num)){
+									if(sql.resetPlayerLevelandBreaknum(uuid, num) == Fail){
 									sender.sendMessage("mysqlのレベルと整地量の設定に失敗しました");
 									}else{
 										sender.sendMessage("mysqlに保存されている指定したプレイヤーのレベルと整地量を設定しました");
