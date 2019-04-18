@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.database.ddl;
+package com.github.unchama.seichiassist.database.init.ddl;
 
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;

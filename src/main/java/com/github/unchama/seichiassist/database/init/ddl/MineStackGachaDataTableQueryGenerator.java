@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.database.ddl;
+package com.github.unchama.seichiassist.database.init.ddl;
 
 /**
  * playerdataテーブルの初期化クエリを計算するクラス
