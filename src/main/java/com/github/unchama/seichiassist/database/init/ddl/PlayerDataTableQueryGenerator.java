@@ -24,7 +24,7 @@ public class PlayerDataTableQueryGenerator {
                 "uuid varchar(128) unique)";
     }
 
-    public String generateAdditionalColumnAlterQuery() {
+    public String generateColumnCreationQuery() {
         //必要なcolumnを随時追加
         String command =
                 "alter table " + tableReferenceName +

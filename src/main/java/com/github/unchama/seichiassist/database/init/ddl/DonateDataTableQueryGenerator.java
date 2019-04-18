@@ -14,7 +14,7 @@ public class DonateDataTableQueryGenerator {
                 "(id int auto_increment unique)";
     }
 
-    public String generateAdditionalColumnAlterQuery() {
+    public String generateColumnCreationQuery() {
         return "alter table " + tableReferenceName +
                 " add column if not exists playername varchar(20) default null" +
                 ",add column if not exists playeruuid varchar(128) default null" +

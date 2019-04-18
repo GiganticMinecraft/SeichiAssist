@@ -15,7 +15,7 @@ public class GachaDataTableQueryGenerator {
                         + "amount int(11))";
     }
 
-    public String generateAdditionalColumnAlterQuery() {
+    public String generateColumnCreationQuery() {
         return "alter table " + tableReferenceName +
                 " add column if not exists probability double default 0.0" +
                 ",add column if not exists itemstack blob default null";

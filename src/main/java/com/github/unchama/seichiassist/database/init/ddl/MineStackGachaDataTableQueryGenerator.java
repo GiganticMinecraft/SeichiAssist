@@ -17,7 +17,7 @@ public class MineStackGachaDataTableQueryGenerator {
                 + "amount int(11))";
     }
 
-    public String generateAdditionalColumnAlterQuery() {
+    public String generateColumnCreationQuery() {
         //必要なcolumnを随時追加
         return "alter table " + tableReferenceName +
                 " add column if not exists probability double default 0.0" +

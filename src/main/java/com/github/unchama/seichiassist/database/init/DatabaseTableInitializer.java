@@ -54,7 +54,7 @@ public class DatabaseTableInitializer {
 
         return ValuelessTry
                 .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
-                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateAdditionalColumnAlterQuery()))
+                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
                 .overallStatus();
     }
 
@@ -72,7 +72,7 @@ public class DatabaseTableInitializer {
 
         return ValuelessTry
                 .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
-                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateAdditionalColumnAlterQuery()))
+                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
                 .overallStatus();
     }
 
@@ -90,7 +90,7 @@ public class DatabaseTableInitializer {
 
         return ValuelessTry
                 .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
-                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateAdditionalColumnAlterQuery()))
+                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
                 .overallStatus();
     }
 
@@ -102,7 +102,7 @@ public class DatabaseTableInitializer {
 
         return ValuelessTry
                 .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
-                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateAdditionalColumnAlterQuery()))
+                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
                 .overallStatus();
     }
 
