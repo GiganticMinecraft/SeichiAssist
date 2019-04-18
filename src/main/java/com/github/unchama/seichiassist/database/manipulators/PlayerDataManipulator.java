@@ -465,7 +465,7 @@ public class PlayerDataManipulator {
     }
 
     //ランキング表示用にプレイ時間のカラムだけ全員分引っ張る
-    public boolean setRanking_playtick() {
+    public boolean setPlayTickRanking() {
         List<RankData> ranklist = SeichiAssist.ranklist_playtick;
         ranklist.clear();
         String command = "select name,playtick from " + getTableReference()
@@ -486,7 +486,7 @@ public class PlayerDataManipulator {
     }
 
     //ランキング表示用に投票数のカラムだけ全員分引っ張る
-    public boolean setRanking_p_vote() {
+    public boolean setVoteNumberRanking() {
         List<RankData> ranklist = SeichiAssist.ranklist_p_vote;
         ranklist.clear();
         String command = "select name,p_vote from " + getTableReference()
@@ -507,7 +507,7 @@ public class PlayerDataManipulator {
     }
 
     //ランキング表示用にプレミアムエフェクトポイントのカラムだけ全員分引っ張る
-    public boolean setRanking_premiumeffectpoint() {
+    public boolean setPremiumEffectPointRanking() {
         List<RankData> ranklist = SeichiAssist.ranklist_premiumeffectpoint;
         ranklist.clear();
         String command = "select name,premiumeffectpoint from " + getTableReference()
@@ -528,7 +528,7 @@ public class PlayerDataManipulator {
     }
 
     //ランキング表示用に上げたりんご数のカラムだけ全員分引っ張る
-    public boolean setRanking_p_apple() {
+    public boolean setAppleNumberRanking() {
         List<RankData> ranklist = SeichiAssist.ranklist_p_apple;
         SeichiAssist.allplayergiveapplelong = 0;
         ranklist.clear();

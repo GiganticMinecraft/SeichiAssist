@@ -958,19 +958,19 @@ public class SeichiAssist extends JavaPlugin{
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!databaseGateway.playerDataManipulator.setRanking_playtick()){
+		if(!databaseGateway.playerDataManipulator.setPlayTickRanking()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!databaseGateway.playerDataManipulator.setRanking_p_vote()){
+		if(!databaseGateway.playerDataManipulator.setVoteNumberRanking()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!databaseGateway.playerDataManipulator.setRanking_premiumeffectpoint()){
+		if(!databaseGateway.playerDataManipulator.setPremiumEffectPointRanking()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!databaseGateway.playerDataManipulator.setRanking_p_apple()){
+		if(!databaseGateway.playerDataManipulator.setAppleNumberRanking()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
