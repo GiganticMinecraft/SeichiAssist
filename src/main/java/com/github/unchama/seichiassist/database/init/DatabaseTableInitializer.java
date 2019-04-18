@@ -3,16 +3,19 @@ package com.github.unchama.seichiassist.database.init;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.database.DatabaseConstants;
-import com.github.unchama.seichiassist.database.init.ddl.DonateDataTableQueryGenerator;
-import com.github.unchama.seichiassist.database.init.ddl.GachaDataTableQueryGenerator;
-import com.github.unchama.seichiassist.database.init.ddl.MineStackGachaDataTableQueryGenerator;
-import com.github.unchama.seichiassist.database.init.ddl.PlayerDataTableQueryGenerator;
+import com.github.unchama.seichiassist.database.init.ddl.*;
 import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.Try;
 import com.github.unchama.util.ValuelessTry;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 import static com.github.unchama.util.ActionStatus.Ok;
@@ -28,82 +31,60 @@ public class DatabaseTableInitializer {
         this.config = config;
     }
 
+    private String referenceFor(String tableName) {
+        return this.gateway.databaseName + "." + tableName;
+    }
+
     public ActionStatus initializeTables() {
         final Function<String, String> errorMessageForTable = (tableName) -> tableName + "テーブル作成に失敗しました";
 
-        final Try<String> tryResult =
-                Try.begin(errorMessageForTable.apply("gachadata"), this::createGachaDataTable)
-                        .ifOkThen(errorMessageForTable.apply("MineStack用gachadata"), this::createMineStackGachaDataTable)
-                        .ifOkThen(errorMessageForTable.apply("donatedata"), this::createDonateDataTable)
-                        .ifOkThen(errorMessageForTable.apply("playerdata"), this::createPlayerDataTable);
+        final String playerDataTableName = DatabaseConstants.PLAYERDATA_TABLENAME;
+        final String gachaDataTableName = DatabaseConstants.GACHADATA_TABLENAME;
+        final String mineStackGachaDataTableName = DatabaseConstants.MINESTACK_GACHADATA_TABLENAME;
+        final String donateDataTableName = DatabaseConstants.DONATEDATA_TABLENAME;
 
-        return tryResult.mapFailValue(Ok, failedMessage -> { logger.info(failedMessage); return Fail; });
-    }
+        final Map<String, TableInitializationQueryGenerator> tableQueryGenerators =
+                new HashMap<String, TableInitializationQueryGenerator>() {
+                    {
+                        put(
+                                playerDataTableName,
+                                new PlayerDataTableQueryGenerator(referenceFor(playerDataTableName), config)
+                        );
+                        put(
+                                gachaDataTableName,
+                                new GachaDataTableQueryGenerator(referenceFor(gachaDataTableName))
+                        );
+                        put(
+                                mineStackGachaDataTableName,
+                                new MineStackGachaDataTableQueryGenerator(referenceFor(mineStackGachaDataTableName))
+                        );
+                        put(
+                                donateDataTableName,
+                                new DonateDataTableQueryGenerator(referenceFor(donateDataTableName))
+                        );
+                    }
+                };
 
-    /**
-     * playerdataテーブルの作成及び初期化を行うメソッド。
-     *
-     * @return 成否
-     */
-    private ActionStatus createPlayerDataTable(){
-        final String tableName = DatabaseConstants.PLAYERDATA_TABLENAME;
-        final String tableReference = gateway.databaseName + "." + tableName;
+        final Function<TableInitializationQueryGenerator, ActionStatus> initializeTable = (queryGenerator) ->
+                ValuelessTry
+                        .begin(() -> gateway.executeUpdate(queryGenerator.generateTableCreationQuery()))
+                        .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
+                        .overallStatus();
 
-        final PlayerDataTableQueryGenerator queryGenerator =
-                new PlayerDataTableQueryGenerator(tableReference, config);
+        final List<Pair<String, Supplier<ActionStatus>>> initializations =
+                tableQueryGenerators.entrySet()
+                        .stream()
+                        .map((entry) -> {
+                            final String errorMessage = errorMessageForTable.apply(entry.getKey());
+                            final TableInitializationQueryGenerator queryGenerator = entry.getValue();
+                            final Supplier<ActionStatus> initialization = () -> initializeTable.apply(queryGenerator);
 
-        return ValuelessTry
-                .begin(() -> gateway.executeUpdate(queryGenerator.generateTableCreationQuery()))
-                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
-                .overallStatus();
-    }
+                            return Pair.of(errorMessage, initialization);
+                        })
+                        .collect(Collectors.toList());
 
-    /**
-     * gachadataテーブルの作成及び初期化を行うメソッド。
-     *
-     * @return 成否
-     */
-    private ActionStatus createGachaDataTable() {
-        final String tableName = DatabaseConstants.GACHADATA_TABLENAME;
-        final String tableReference = gateway.databaseName + "." + tableName;
-
-        final GachaDataTableQueryGenerator queryGenerator =
-                new GachaDataTableQueryGenerator(tableReference);
-
-        return ValuelessTry
-                .begin(() -> gateway.executeUpdate(queryGenerator.generateTableCreationQuery()))
-                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
-                .overallStatus();
-    }
-
-    /**
-     * minestackテーブルの作成及び初期化を行うメソッド。
-     *
-     * @return 成否
-     */
-    private ActionStatus createMineStackGachaDataTable(){
-        final String tableName = DatabaseConstants.MINESTACK_GACHADATA_TABLENAME;
-        final String tableReference = gateway.databaseName + "." + tableName;
-
-        final MineStackGachaDataTableQueryGenerator queryGenerator =
-                new MineStackGachaDataTableQueryGenerator(tableReference);
-
-        return ValuelessTry
-                .begin(() -> gateway.executeUpdate(queryGenerator.generateTableCreationQuery()))
-                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
-                .overallStatus();
-    }
-
-    private ActionStatus createDonateDataTable() {
-        final String tableReference = gateway.databaseName + "." + DatabaseConstants.DONATEDATA_TABLENAME;
-
-        final DonateDataTableQueryGenerator queryGenerator =
-                new DonateDataTableQueryGenerator(tableReference);
-
-        return ValuelessTry
-                .begin(() -> gateway.executeUpdate(queryGenerator.generateTableCreationQuery()))
-                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
-                .overallStatus();
+        return Try.sequentially(initializations)
+                .mapFailValue(Ok, failedMessage -> { logger.info(failedMessage); return Fail; });
     }
 
 }

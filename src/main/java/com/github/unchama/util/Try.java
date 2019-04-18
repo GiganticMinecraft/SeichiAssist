@@ -1,5 +1,8 @@
 package com.github.unchama.util;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -85,5 +88,15 @@ public interface Try<F> {
 
     static <F> Try<F> begin(F failValue, Supplier<ActionStatus> action) {
         return new SuccessfulTry<F>().ifOkThen(failValue, action);
+    }
+
+    static <F> Try<F> sequentially(Collection<Pair<F, Supplier<ActionStatus>>> actions) {
+        Try<F> currentTry = new SuccessfulTry<>();
+
+        for (final Pair<F, Supplier<ActionStatus>> action: actions) {
+            currentTry = currentTry.ifOkThen(action.getLeft(), action.getRight());
+        }
+
+        return currentTry;
     }
 }
