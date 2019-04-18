@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.database.DatabaseConstants;
 import com.github.unchama.seichiassist.database.init.ddl.*;
 import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.Try;
+import com.github.unchama.util.Unit;
 import com.github.unchama.util.ValuelessTry;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -83,8 +84,10 @@ public class DatabaseTableInitializer {
                         })
                         .collect(Collectors.toList());
 
-        return Try.sequentially(initializations)
-                .mapFailValue(Ok, failedMessage -> { logger.info(failedMessage); return Fail; });
+        return Try
+                .sequentially(initializations)
+                .mapFailed(failedMessage -> { logger.info(failedMessage); return Unit.instance; })
+                .overallStatus();
     }
 
 }

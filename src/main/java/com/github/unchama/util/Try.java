@@ -37,15 +37,17 @@ public interface Try<F> {
     Optional<F> failedValue();
 
     /**
-     * @return このインスタンスが {@link FailedTry} ならば失敗時の値を {@code function} で変換した値を、
-     * そうでなければ {@code defaultValue} を返す。
+     * @return このインスタンスが失敗を表現するならば、失敗時の値を {@code function} で変換した失敗したTryを、
+     * そうでなければ成功しているTryを返す。
      */
-    default <U> U mapFailValue(U defaultValue, Function<? super F, U> function) {
-        return failedValue().map(function).orElse(defaultValue);
+    default <U> Try<U> mapFailed(Function<? super F, U> function) {
+        return failedValue()
+                .map((value) -> (Try<U>) new FailedTry<>(function.apply(value)))
+                .orElse(new SuccessfulTry<>());
     }
 
     default ActionStatus overallStatus() {
-        return mapFailValue(Ok, (_value) -> Fail);
+        return failedValue().map((_value) -> Fail).orElse(Ok);
     }
 
     final class SuccessfulTry<F> implements Try<F> {

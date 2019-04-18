@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.database.manipulators.MineStackGachaDataM
 import com.github.unchama.seichiassist.database.manipulators.PlayerDataManipulator;
 import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.Try;
+import com.github.unchama.util.Unit;
 import com.github.unchama.util.ValuelessTry;
 import org.jetbrains.annotations.NotNull;
 
@@ -87,7 +88,8 @@ public class DatabaseGateway {
 				})
 				.ifOkThen("SQL接続に失敗しました", this::establishMySQLConnection)
 				.ifOkThen("データベース作成に失敗しました", this::createDB)
-				.mapFailValue(Ok, failedMessage -> { plugin.getLogger().info(failedMessage); return Fail; });
+				.mapFailed(failedMessage -> { plugin.getLogger().info(failedMessage); return Unit.instance; })
+				.overallStatus();
 	}
 
 	private ActionStatus establishMySQLConnection(){
