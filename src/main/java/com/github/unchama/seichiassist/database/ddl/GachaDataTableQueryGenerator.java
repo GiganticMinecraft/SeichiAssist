@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.database.init;
+package com.github.unchama.seichiassist.database.ddl;
 
 public class GachaDataTableQueryGenerator {
 
