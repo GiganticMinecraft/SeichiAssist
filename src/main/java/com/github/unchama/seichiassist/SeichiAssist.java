@@ -80,11 +80,10 @@ public class SeichiAssist extends JavaPlugin{
 	//ガチャシステムのメンテナンスフラグ
 	public static boolean gachamente = false;
 
+	// TODO これらは DatabaseConstants に移されるべき
 	public static final String PLAYERDATA_TABLENAME = "playerdata";
 	static final String GACHADATA_TABLENAME = "gachadata";
 	static final String DONATEDATA_TABLENAME = "donatedata";
-
-	//MineStack用ガチャデータを作成する
 	static final String MINESTACK_GACHADATA_TABLENAME = "msgachadata";
 
 	public static final String SEICHIWORLDNAME = "world_sw";

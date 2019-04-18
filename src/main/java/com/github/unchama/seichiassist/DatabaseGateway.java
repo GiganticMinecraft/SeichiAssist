@@ -4,10 +4,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
-import com.github.unchama.seichiassist.database.ddl.DonateDataTableQueryGenerator;
-import com.github.unchama.seichiassist.database.ddl.GachaDataTableQueryGenerator;
-import com.github.unchama.seichiassist.database.ddl.MineStackGachaDataTableQueryGenerator;
-import com.github.unchama.seichiassist.database.ddl.PlayerDataTableQueryGenerator;
+import com.github.unchama.seichiassist.database.init.DatabaseTableInitializer;
 import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTaskRunnable;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
@@ -32,7 +29,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.*;
-import java.util.function.Function;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 import static com.github.unchama.util.ActionStatus.Ok;
@@ -44,14 +40,13 @@ public class DatabaseGateway {
     //TODO: 直接SQLに変数を連結しているが、順次PreparedStatementに置き換えていきたい
 
     private @NotNull final String databaseUrl;
-	private @NotNull final String databaseName;
+	public @NotNull final String databaseName;
 	private @NotNull final String loginId;
 	private @NotNull final String password;
 	public Connection con = null;
 	private Statement stmt = null;
 
 	private SeichiAssist plugin = SeichiAssist.instance;
-	private static Config config = SeichiAssist.config;
 
 	private DatabaseGateway(@NotNull String databaseUrl, @NotNull String databaseName, @NotNull String loginId, @NotNull String password){
 		this.databaseUrl = databaseUrl;
@@ -65,8 +60,15 @@ public class DatabaseGateway {
 													 @NotNull String loginId,
 													 @NotNull String password) {
 	    final DatabaseGateway instance = new DatabaseGateway(databaseUrl, databaseName, loginId, password);
+	    final DatabaseTableInitializer tableInitializer =
+				new DatabaseTableInitializer(instance, instance.plugin.getLogger(), SeichiAssist.config);
 
-	    if (instance.connectAndInitializeDatabase() == Fail) {
+	    final ActionStatus initializationStatus = ValuelessTry
+				.begin(instance::connectToAndInitializeDatabase)
+				.ifOkThen(tableInitializer::initializeTables)
+				.overallStatus();
+
+	    if (initializationStatus == Fail) {
 	        instance.plugin.getLogger().info("データベース初期処理にエラーが発生しました");
         }
 
@@ -76,26 +78,20 @@ public class DatabaseGateway {
 	/**
 	 * 接続関数
 	 */
-	private ActionStatus connectAndInitializeDatabase() {
-		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-			e.printStackTrace();
-			plugin.getLogger().info("Mysqlドライバーのインスタンス生成に失敗しました");
-			return Fail;
-		}
-
-		final Function<String, String> errorMessageForTable = (tableName) -> tableName + "テーブル作成に失敗しました";
-
-		final Try<String> tryResult =
-				Try.begin("SQL接続に失敗しました", this::establishMySQLConnection)
+	private ActionStatus connectToAndInitializeDatabase() {
+		return Try
+				.begin("Mysqlドライバーのインスタンス生成に失敗しました", () -> {
+					try {
+						Class.forName("com.mysql.jdbc.Driver").newInstance();
+						return Ok;
+					} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+						e.printStackTrace();
+						return Fail;
+					}
+				})
+				.ifOkThen("SQL接続に失敗しました", this::establishMySQLConnection)
 				.ifOkThen("データベース作成に失敗しました", this::createDB)
-				.ifOkThen(errorMessageForTable.apply("gachadata"), this::createGachaDataTable)
-				.ifOkThen(errorMessageForTable.apply("MineStack用gachadata"), this::createMineStackGachaDataTable)
-				.ifOkThen(errorMessageForTable.apply("donatedata"), this::createDonateDataTable)
-				.ifOkThen(errorMessageForTable.apply("playerdata"), this::createPlayerDataTable);
-
-		return tryResult.mapFailValue(Ok, failedMessage -> { plugin.getLogger().info(failedMessage); return Fail; });
+				.mapFailValue(Ok, failedMessage -> { plugin.getLogger().info(failedMessage); return Fail; });
 	}
 
 	private ActionStatus establishMySQLConnection(){
@@ -166,8 +162,7 @@ public class DatabaseGateway {
 	 * @param command コマンド内容
 	 * @return 成否
 	 */
-	// private変更禁止！(処理がバッティングします)
-	private ActionStatus executeQuery(String command) {
+	public ActionStatus executeQuery(String command) {
 		ensureConnection();
 		try {
 			stmt.executeUpdate(command);
@@ -189,73 +184,6 @@ public class DatabaseGateway {
 		String command = "CREATE DATABASE IF NOT EXISTS " + databaseName
 				+ " character set utf8 collate utf8_general_ci";
 		return executeQuery(command);
-	}
-
-	/**
-	 * playerdataテーブルの作成及び初期化を行うメソッド。
-	 *
-	 * @return 成否
-	 */
-	private ActionStatus createPlayerDataTable(){
-		final String tableName = SeichiAssist.PLAYERDATA_TABLENAME;
-		final String tableReference = databaseName + "." + tableName;
-
-		final PlayerDataTableQueryGenerator queryGenerator =
-				new PlayerDataTableQueryGenerator(tableReference, config);
-
-        return ValuelessTry
-				.begin(() -> executeQuery(queryGenerator.generateCreateQuery()))
-				.ifOkThen(() -> executeQuery(queryGenerator.generateAdditionalColumnAlterQuery()))
-				.overallStatus();
-	}
-
-	/**
-	 * gachadataテーブルの作成及び初期化を行うメソッド。
-	 *
-	 * @return 成否
-	 */
-	private ActionStatus createGachaDataTable() {
-		final String tableName = SeichiAssist.GACHADATA_TABLENAME;
-		final String tableReference = databaseName + "." + tableName;
-
-		final GachaDataTableQueryGenerator queryGenerator =
-				new GachaDataTableQueryGenerator(tableReference);
-
-		return ValuelessTry
-				.begin(() -> executeQuery(queryGenerator.generateCreateQuery()))
-				.ifOkThen(() -> executeQuery(queryGenerator.generateAdditionalColumnAlterQuery()))
-				.overallStatus();
-	}
-
-	/**
-	 * minestackテーブルの作成及び初期化を行うメソッド。
-	 *
-	 * @return 成否
-	 */
-	private ActionStatus createMineStackGachaDataTable(){
-		final String tableName = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
-        final String tableReference = databaseName + "." + tableName;
-
-        final MineStackGachaDataTableQueryGenerator queryGenerator =
-				new MineStackGachaDataTableQueryGenerator(tableReference);
-
-        return ValuelessTry
-				.begin(() -> executeQuery(queryGenerator.generateCreateQuery()))
-				.ifOkThen(() -> executeQuery(queryGenerator.generateAdditionalColumnAlterQuery()))
-				.overallStatus();
-	}
-
-	private ActionStatus createDonateDataTable() {
-		final String tableName = SeichiAssist.DONATEDATA_TABLENAME;
-        final String tableReference = databaseName + "." + tableName;
-
-        final DonateDataTableQueryGenerator queryGenerator =
-				new DonateDataTableQueryGenerator(tableReference);
-
-        return ValuelessTry
-				.begin(() -> executeQuery(queryGenerator.generateCreateQuery()))
-				.ifOkThen(() -> executeQuery(queryGenerator.generateAdditionalColumnAlterQuery()))
-		        .overallStatus();
 	}
 
 	//投票特典配布時の処理(p_givenvoteの値の更新もココ)
@@ -678,8 +606,6 @@ public class DatabaseGateway {
 
 		return executeQuery(command);
 	}
-
-
 
 	//全員に詫びガチャの配布
 	public ActionStatus addAllPlayerBug(int amount){
