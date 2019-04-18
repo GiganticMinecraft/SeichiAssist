@@ -24,8 +24,7 @@ import static com.github.unchama.util.ActionStatus.Fail;
 
 public class levelCommand implements TabExecutor{
 	public SeichiAssist plugin;
-	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-
+	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 	public levelCommand(SeichiAssist plugin){
 		this.plugin = plugin;

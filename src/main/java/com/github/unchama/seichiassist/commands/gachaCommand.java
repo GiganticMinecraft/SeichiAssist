@@ -22,7 +22,7 @@ import static com.github.unchama.util.ActionStatus.Fail;
 
 public class gachaCommand implements TabExecutor{
 	public SeichiAssist plugin;
-	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
+	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 
 	public gachaCommand(SeichiAssist plugin){
