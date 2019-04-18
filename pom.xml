@@ -48,6 +48,10 @@
       <id>spring-repo</id>
       <url>http://repo.spring.io/plugins-release/</url>
     </repository>
+    <repository>
+        <id>sponge-repo</id>
+        <url>https://repo.spongepowered.org/maven</url>
+    </repository>
   </repositories>
 
   <dependencies>
