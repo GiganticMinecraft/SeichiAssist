@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.seichiassist.util.*;
-import org.bukkit.ChatColor;
 import org.bukkit.*;
 import org.bukkit.enchantments.*;
 import org.bukkit.inventory.*;
