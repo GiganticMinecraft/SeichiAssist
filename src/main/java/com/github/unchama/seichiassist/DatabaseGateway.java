@@ -37,10 +37,13 @@ import java.util.function.Function;
 import static com.github.unchama.util.ActionStatus.Fail;
 import static com.github.unchama.util.ActionStatus.Ok;
 
-//MySQL操作関数
-//TODO: 直接SQLに変数を連結しているが、順次PreparedStatementに置き換えていきたい
-public class Sql {
-	private @NotNull final String databaseUrl;
+/**
+ * データベースとのデータをやり取りするためのゲートウェイとして機能するオブジェクトのクラス
+ */
+public class DatabaseGateway {
+    //TODO: 直接SQLに変数を連結しているが、順次PreparedStatementに置き換えていきたい
+
+    private @NotNull final String databaseUrl;
 	private @NotNull final String databaseName;
 	private @NotNull final String loginId;
 	private @NotNull final String password;
@@ -50,18 +53,18 @@ public class Sql {
 	private SeichiAssist plugin = SeichiAssist.instance;
 	private static Config config = SeichiAssist.config;
 
-	private Sql(@NotNull String databaseUrl, @NotNull String databaseName, @NotNull String loginId, @NotNull String password){
+	private DatabaseGateway(@NotNull String databaseUrl, @NotNull String databaseName, @NotNull String loginId, @NotNull String password){
 		this.databaseUrl = databaseUrl;
 		this.databaseName = databaseName;
 		this.loginId = loginId;
 		this.password = password;
 	}
 
-	static Sql createInitializedInstance(@NotNull String databaseUrl,
-                                         @NotNull String databaseName,
-                                         @NotNull String loginId,
-                                         @NotNull String password) {
-	    final Sql instance = new Sql(databaseUrl, databaseName, loginId, password);
+	static DatabaseGateway createInitializedInstance(@NotNull String databaseUrl,
+													 @NotNull String databaseName,
+													 @NotNull String loginId,
+													 @NotNull String password) {
+	    final DatabaseGateway instance = new DatabaseGateway(databaseUrl, databaseName, loginId, password);
 
 	    if (instance.connectAndInitializeDatabase() == Fail) {
 	        instance.plugin.getLogger().info("データベース初期処理にエラーが発生しました");
@@ -73,7 +76,7 @@ public class Sql {
 	/**
 	 * 接続関数
 	 */
-	public ActionStatus connectAndInitializeDatabase() {
+	private ActionStatus connectAndInitializeDatabase() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {

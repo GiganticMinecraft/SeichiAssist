@@ -57,7 +57,7 @@ public class PlayerDeathEventListener implements Listener {
 				p.sendMessage("整地サーバー1周年の記念品を入手しました。");
 				p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
 				playerdata.anniversary = false;
-				SeichiAssist.sql.setAnniversary(false, p.getUniqueId());
+				SeichiAssist.databaseGateway.setAnniversary(false, p.getUniqueId());
 			}
 		}
 	}

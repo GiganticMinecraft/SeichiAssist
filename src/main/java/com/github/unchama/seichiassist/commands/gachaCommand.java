@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.DatabaseGateway;
 import com.github.unchama.seichiassist.util.TypeConverter;
-import com.github.unchama.util.ActionStatus;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.util.Util;
@@ -23,7 +22,7 @@ import static com.github.unchama.util.ActionStatus.Fail;
 
 public class gachaCommand implements TabExecutor{
 	public SeichiAssist plugin;
-	Sql sql = SeichiAssist.sql;
+	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 
 	public gachaCommand(SeichiAssist plugin){
@@ -114,7 +113,7 @@ public class gachaCommand implements TabExecutor{
 					sender.sendMessage(ChatColor.YELLOW + name + "のガチャ券配布処理開始…");
 
 					//mysqlにも書き込んどく
-					if(sql.addPlayerBug(name,num) == Fail){
+					if(databaseGateway.addPlayerBug(name,num) == Fail){
 						sender.sendMessage(ChatColor.RED + "失敗");
 					}else{
 						sender.sendMessage(ChatColor.GREEN + "ガチャ券" + num +"枚加算成功");
@@ -128,7 +127,7 @@ public class gachaCommand implements TabExecutor{
 					sender.sendMessage(ChatColor.YELLOW + "全プレイヤーへのガチャ券配布処理開始…");
 
 					//MySql処理
-					if(sql.addAllPlayerBug(num) == Fail){
+					if(databaseGateway.addAllPlayerBug(num) == Fail){
 						sender.sendMessage(ChatColor.RED + "失敗");
 					}else{
 						sender.sendMessage(ChatColor.GREEN + "ガチャ券" + num +"枚加算成功");
@@ -155,12 +154,12 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage(ChatColor.YELLOW + name + "の投票特典配布処理開始…");
 
 				//mysqlにも書き込んどく
-				if(sql.addVotePoint(name) == Fail){
+				if(databaseGateway.addVotePoint(name) == Fail){
 					sender.sendMessage(ChatColor.RED + "失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "成功");
 				}
-				if(!sql.addChainVote(name)){
+				if(!databaseGateway.addChainVote(name)){
 					sender.sendMessage(ChatColor.RED + "連続投票数の記録に失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "連続投票数の記録に成功");
@@ -186,7 +185,7 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage(ChatColor.YELLOW + name + "のプレミアムエフェクトポイント配布処理開始…");
 
 				//mysqlにも書き込んどく
-				if(sql.addPremiumEffectPoint(name,num) == Fail || sql.addDonate(name, num) == Fail){
+				if(databaseGateway.addPremiumEffectPoint(name,num) == Fail || databaseGateway.addDonate(name, num) == Fail){
 					sender.sendMessage(ChatColor.RED + "失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "成功");
@@ -205,7 +204,7 @@ public class gachaCommand implements TabExecutor{
 				return true;
 		}else if(args[0].equalsIgnoreCase("reload")){
 			//gacha reload と入力したとき
-			if(!sql.loadGachaData()){
+			if(!databaseGateway.loadGachaData()){
 				sender.sendMessage("mysqlからガチャデータのロードできませんでした");
 			}else{
 				sender.sendMessage("mysqlからガチャデータをロードしました");
@@ -221,7 +220,7 @@ public class gachaCommand implements TabExecutor{
 
 		}else if(args[0].equalsIgnoreCase("save")){
 			//gacha save と入力したとき
-			if(!sql.saveGachaData()){
+			if(!databaseGateway.saveGachaData()){
 				sender.sendMessage("mysqlにガチャデータを保存できませんでした");
 			}else{
 				sender.sendMessage("mysqlにガチャデータを保存しました");
@@ -230,7 +229,7 @@ public class gachaCommand implements TabExecutor{
 
 		}else if(args[0].equalsIgnoreCase("savems")){
 			//gacha save と入力したとき
-			if(!sql.saveMineStackGachaData()){
+			if(!databaseGateway.saveMineStackGachaData()){
 				sender.sendMessage("mysqlにMineStack用ガチャデータを保存できませんでした");
 			}else{
 				sender.sendMessage("mysqlにMineStack用ガチャデータを保存しました");
@@ -647,7 +646,7 @@ public class gachaCommand implements TabExecutor{
 			sender.sendMessage(ChatColor.LIGHT_PURPLE + "" + num +"個のガチャ券をお詫びとして" + playerdata.name + "のデータに更新しました");
 		}
 		//MySqlの値も処理
-		if(!sql.addAllPlayerBug(num)){
+		if(!databaseGateway.addAllPlayerBug(num)){
 			sender.sendMessage("mysqlへのガチャの加算に失敗しました");
 		}else{
 			sender.sendMessage("mysqlに保存されている全プレイヤーへガチャ券" + num +"枚を加算しました");

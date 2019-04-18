@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.DatabaseGateway;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -14,7 +15,6 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class AchieveCommand implements TabExecutor{
@@ -47,7 +47,7 @@ public class AchieveCommand implements TabExecutor{
 	public boolean onCommand(CommandSender sender, Command cmd,
 	String label, String[] args) {
 
-		Sql sql = SeichiAssist.sql;
+		DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 		//final String table = SeichiAssist.PLAYERDATA_TABLENAME;
 
@@ -203,7 +203,7 @@ public class AchieveCommand implements TabExecutor{
 								}else{
 									sender.sendMessage(args[1] + " は現在サーバーにいないため、予約付与システムを利用します。");
 									//sqlをusernameで操作
-									if (sql.writegiveachvNo((Player) sender, args[1], args[0])) {
+									if (databaseGateway.writegiveachvNo((Player) sender, args[1], args[0])) {
 										sender.sendMessage(args[1] + "へ、実績No"+ args[0] + "の付与の予約が完了しました。");
 									}
 									return true;

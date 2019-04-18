@@ -25,7 +25,7 @@ import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.DatabaseGateway;
 import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.LimitedLoginEvent;
@@ -42,7 +42,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.instance;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	private Sql sql = SeichiAssist.sql;
+	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	private static Config config = SeichiAssist.config;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
@@ -85,10 +85,10 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			return;
 		}
 		//sqlコネクションチェック
-		sql.ensureConnection();
+		databaseGateway.ensureConnection();
 		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
 		try {
-			stmt = sql.con.createStatement();
+			stmt = databaseGateway.con.createStatement();
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}

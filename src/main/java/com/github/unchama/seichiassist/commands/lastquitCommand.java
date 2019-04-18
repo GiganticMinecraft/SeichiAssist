@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.commands;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.DatabaseGateway;
 import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.ChatColor;
 
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class lastquitCommand implements TabExecutor{
 	public SeichiAssist plugin;
-	Sql sql = SeichiAssist.sql;
+	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 
 	public lastquitCommand(SeichiAssist plugin){
@@ -41,7 +41,7 @@ public class lastquitCommand implements TabExecutor{
 			sender.sendMessage(ChatColor.YELLOW + name + "の最終ログアウト日時を照会します…");
 
 			//mysql
-			String lastquit = sql.selectLastQuit(name);
+			String lastquit = databaseGateway.selectLastQuit(name);
 			if (lastquit.equals("")) {
 				sender.sendMessage(ChatColor.RED + "失敗");
 				sender.sendMessage(ChatColor.RED + "プレイヤー名やプレイヤー名が変更されていないか確認してください");

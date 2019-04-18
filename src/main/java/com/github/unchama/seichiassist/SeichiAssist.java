@@ -70,7 +70,6 @@ import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
 
 import static com.github.unchama.util.ActionStatus.Fail;
-import static com.github.unchama.util.ActionStatus.Ok;
 
 
 public class SeichiAssist extends JavaPlugin{
@@ -92,7 +91,7 @@ public class SeichiAssist extends JavaPlugin{
 	public static final String DEBUGWORLDNAME = "world";
 
 	private HashMap<String, TabExecutor> commandlist;
-	public static Sql sql;
+	public static DatabaseGateway databaseGateway;
 	public static Config config;
 
 	public static final int SUB_HOME_DATASIZE = 98;	//DB上でのサブホーム1つ辺りのデータサイズ　xyz各10*3+ワールド名64+区切り文字1*4
@@ -873,10 +872,10 @@ public class SeichiAssist extends JavaPlugin{
 
 		//MySQL系の設定はすべてSql.javaに移動
 		// TODO nullチェック
-		sql = Sql.createInitializedInstance(config.getURL(), config.getDB(), config.getID(), config.getPW());
+		databaseGateway = DatabaseGateway.createInitializedInstance(config.getURL(), config.getDB(), config.getID(), config.getPW());
 
 		//mysqlからガチャデータ読み込み
-		if(!sql.loadGachaData()){
+		if(!databaseGateway.loadGachaData()){
 			getLogger().info("ガチャデータのロードに失敗しました");
 		}
 
@@ -884,7 +883,7 @@ public class SeichiAssist extends JavaPlugin{
 		List<MineStackObj> minestacklistgacha1;
 
 		//mysqlからMineStack用ガチャデータ読み込み
-		if (sql.loadMineStackGachaData()) { //MineStack用ガチャデータを読み込んだ
+		if (databaseGateway.loadMineStackGachaData()) { //MineStack用ガチャデータを読み込んだ
 			getLogger().info("MineStack用ガチャデータのロードに成功しました");
 			minestacklistgacha1 = creategachaminestacklist();
 
@@ -953,27 +952,27 @@ public class SeichiAssist extends JavaPlugin{
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){
 			//プレイヤーデータを生成
-			sql.loadPlayerData(new PlayerData(p));
+			databaseGateway.loadPlayerData(new PlayerData(p));
 		}
 
 		//ランキングデータをセット
-		if(!sql.setRanking()){
+		if(!databaseGateway.setRanking()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!sql.setRanking_playtick()){
+		if(!databaseGateway.setRanking_playtick()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!sql.setRanking_p_vote()){
+		if(!databaseGateway.setRanking_p_vote()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!sql.setRanking_premiumeffectpoint()){
+		if(!databaseGateway.setRanking_premiumeffectpoint()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!sql.setRanking_p_apple()){
+		if(!databaseGateway.setRanking_p_apple()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
@@ -1004,7 +1003,7 @@ public class SeichiAssist extends JavaPlugin{
 		}
 
 		//sqlコネクションチェック
-		sql.ensureConnection();
+		databaseGateway.ensureConnection();
 		for(Player p : getServer().getOnlinePlayers()){
 			//UUIDを取得
 			UUID uuid = p.getUniqueId();
@@ -1023,7 +1022,7 @@ public class SeichiAssist extends JavaPlugin{
 			new PlayerDataSaveTaskRunnable(playerdata,true,true).run();
 		}
 
-		if(sql.disconnect() == Fail){
+		if(databaseGateway.disconnect() == Fail){
 			getLogger().info("データベース切断に失敗しました");
 		}
 

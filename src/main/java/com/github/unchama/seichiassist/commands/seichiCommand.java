@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.DatabaseGateway;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -11,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
@@ -20,7 +20,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class seichiCommand implements TabExecutor {
 	SeichiAssist plugin;
-	Sql sql = SeichiAssist.sql;
+	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 	public seichiCommand(SeichiAssist _plugin){
 		plugin = _plugin;
@@ -143,7 +143,7 @@ public class seichiCommand implements TabExecutor {
 					@SuppressWarnings("deprecation")
 					UUID uuid = plugin.getServer().getOfflinePlayer(name).getUniqueId();
 					//mysqlからinventory持ってくる
-					Inventory inventory = sql.selectInventory(uuid);
+					Inventory inventory = databaseGateway.selectInventory(uuid);
 					//inventoryが取得できなかった場合処理終了
 					if(inventory == null){
 						sender.sendMessage("mysqlからインベントリを取得できませんでした");
@@ -239,7 +239,7 @@ public class seichiCommand implements TabExecutor {
 				return true;
 			}
 			// SQLの全登録データをtrueに変更
-			sql.setAnniversary(true, null);
+			databaseGateway.setAnniversary(true, null);
 			sender.sendMessage("Anniversaryアイテムの配布を開始しました。");
 			return true;
 		}

@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.github.unchama.util.ActionStatus;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -41,7 +40,7 @@ import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.DatabaseGateway;
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.GachaData;
@@ -65,7 +64,7 @@ public class PlayerInventoryListener implements Listener {
 	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
 	SeichiAssist plugin = SeichiAssist.instance;
 	private Config config = SeichiAssist.config;
-	private Sql sql = SeichiAssist.sql;
+	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	//サーバー選択メニュー
 	@EventHandler
 	public void onPlayerClickServerSwitchMenuEvent(InventoryClickEvent event){
@@ -290,7 +289,7 @@ public class PlayerInventoryListener implements Listener {
 					&& itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る")){
 
 				//nは最新のnumofsorryforbugの値になる(上限値576個)
-				int n = sql.givePlayerBug(player,playerdata);
+				int n = databaseGateway.givePlayerBug(player,playerdata);
 				//0だったら処理終了
 				if(n == 0){
 					return;
@@ -1140,7 +1139,7 @@ public class PlayerInventoryListener implements Listener {
 						} else {
 							activeSkillPremiumEffect.setObtained(playerdata.activeskilldata.premiumeffectflagmap);
 							player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました");
-							if (sql.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
+							if (databaseGateway.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
 								player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。");
 							}
 							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 1.2);
@@ -5371,7 +5370,7 @@ public class PlayerInventoryListener implements Listener {
 			if(itemstackcurrent.getType().equals(Material.DIAMOND)){
 
 				//nは特典をまだ受け取ってない投票分
-				int n = sql.compareVotePoint(player,playerdata);
+				int n = databaseGateway.compareVotePoint(player,playerdata);
 				//投票数に変化が無ければ処理終了
 				if(n == 0){
 					return;
