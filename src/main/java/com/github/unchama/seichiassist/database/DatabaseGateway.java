@@ -57,7 +57,7 @@ public class DatabaseGateway {
 		this.password = password;
 	}
 
-	static DatabaseGateway createInitializedInstance(@NotNull String databaseUrl,
+	public static DatabaseGateway createInitializedInstance(@NotNull String databaseUrl,
 													 @NotNull String databaseName,
 													 @NotNull String loginId,
 													 @NotNull String password) {
