@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.database.init;
 
 import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.database.DatabaseConstants;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.database.init.ddl.*;
 import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.Try;
@@ -17,9 +17,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import static com.github.unchama.util.ActionStatus.Fail;
-import static com.github.unchama.util.ActionStatus.Ok;
 
 public class DatabaseTableInitializer {
     private final DatabaseGateway gateway;
