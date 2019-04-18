@@ -81,8 +81,7 @@ public class DatabaseTableInitializer {
                         })
                         .collect(Collectors.toList());
 
-        return Try
-                .sequentially(initializations)
+        return Try.sequentially(initializations)
                 .mapFailed(failedMessage -> { logger.info(failedMessage); return Unit.instance; })
                 .overallStatus();
     }
