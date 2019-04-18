@@ -873,10 +873,7 @@ public class SeichiAssist extends JavaPlugin{
 
 		//MySQL系の設定はすべてSql.javaに移動
 		// TODO nullチェック
-		sql = new Sql(config.getURL(), config.getDB(), config.getID(), config.getPW());
-		if (sql.connectAndInitializeDatabase() == Ok) {
-			getLogger().info("データベース初期処理にエラーが発生しました");
-		}
+		sql = Sql.createInitializedInstance(config.getURL(), config.getDB(), config.getID(), config.getPW());
 
 		//mysqlからガチャデータ読み込み
 		if(!sql.loadGachaData()){

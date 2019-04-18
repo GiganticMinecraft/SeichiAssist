@@ -39,24 +39,36 @@ import static com.github.unchama.util.ActionStatus.Ok;
 
 //MySQL操作関数
 //TODO: 直接SQLに変数を連結しているが、順次PreparedStatementに置き換えていきたい
-public class Sql{
-	private @NotNull final String url;
+public class Sql {
+	private @NotNull final String databaseUrl;
 	private @NotNull final String databaseName;
-	private @NotNull final String id;
-	private @NotNull final String pw;
+	private @NotNull final String loginId;
+	private @NotNull final String password;
 	public Connection con = null;
 	private Statement stmt = null;
 
 	private SeichiAssist plugin = SeichiAssist.instance;
 	private static Config config = SeichiAssist.config;
 
-	//コンストラクタ
-	Sql(@NotNull String url, @NotNull String databaseName, @NotNull String id, @NotNull String pw){
-		this.url = url;
+	private Sql(@NotNull String databaseUrl, @NotNull String databaseName, @NotNull String loginId, @NotNull String password){
+		this.databaseUrl = databaseUrl;
 		this.databaseName = databaseName;
-		this.id = id;
-		this.pw = pw;
+		this.loginId = loginId;
+		this.password = password;
 	}
+
+	static Sql createInitializedInstance(@NotNull String databaseUrl,
+                                         @NotNull String databaseName,
+                                         @NotNull String loginId,
+                                         @NotNull String password) {
+	    final Sql instance = new Sql(databaseUrl, databaseName, loginId, password);
+
+	    if (instance.connectAndInitializeDatabase() == Fail) {
+	        instance.plugin.getLogger().info("データベース初期処理にエラーが発生しました");
+        }
+
+	    return instance;
+    }
 
 	/**
 	 * 接続関数
@@ -89,7 +101,7 @@ public class Sql{
 				stmt.close();
 				con.close();
 			}
-			con = DriverManager.getConnection(url, id, pw);
+			con = DriverManager.getConnection(databaseUrl, loginId, password);
 			stmt = con.createStatement();
 			return Ok;
 		} catch (SQLException e) {
@@ -106,7 +118,7 @@ public class Sql{
 		try {
 			if(con.isClosed()){
 				plugin.getLogger().warning("sqlConnectionクローズを検出。再接続試行");
-				con = DriverManager.getConnection(url, id, pw);
+				con = DriverManager.getConnection(databaseUrl, loginId, password);
 			}
 			if(stmt.isClosed()){
 				plugin.getLogger().warning("sqlStatementクローズを検出。再接続試行");
