@@ -41,7 +41,7 @@ public class lastquitCommand implements TabExecutor{
 			sender.sendMessage(ChatColor.YELLOW + name + "の最終ログアウト日時を照会します…");
 
 			//mysql
-			String lastquit = databaseGateway.selectLastQuit(name);
+			String lastquit = databaseGateway.playerDataManipulator.selectLastQuit(name);
 			if (lastquit.equals("")) {
 				sender.sendMessage(ChatColor.RED + "失敗");
 				sender.sendMessage(ChatColor.RED + "プレイヤー名やプレイヤー名が変更されていないか確認してください");

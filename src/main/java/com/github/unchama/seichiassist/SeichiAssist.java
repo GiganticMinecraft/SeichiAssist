@@ -952,27 +952,27 @@ public class SeichiAssist extends JavaPlugin{
 		//オンラインの全てのプレイヤーを処理
 		for(Player p : getServer().getOnlinePlayers()){
 			//プレイヤーデータを生成
-			databaseGateway.loadPlayerData(new PlayerData(p));
+			databaseGateway.playerDataManipulator.loadPlayerData(new PlayerData(p));
 		}
 
 		//ランキングデータをセット
-		if(!databaseGateway.setRanking()){
+		if(!databaseGateway.playerDataManipulator.setRanking()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!databaseGateway.setRanking_playtick()){
+		if(!databaseGateway.playerDataManipulator.setRanking_playtick()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!databaseGateway.setRanking_p_vote()){
+		if(!databaseGateway.playerDataManipulator.setRanking_p_vote()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!databaseGateway.setRanking_premiumeffectpoint()){
+		if(!databaseGateway.playerDataManipulator.setRanking_premiumeffectpoint()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!databaseGateway.setRanking_p_apple()){
+		if(!databaseGateway.playerDataManipulator.setRanking_p_apple()){
 			getLogger().info("ランキングデータの作成に失敗しました");
 		}
 

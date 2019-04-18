@@ -48,7 +48,7 @@ public class shareinvCommand implements TabExecutor {
 		ItemStack air = new ItemStack(Material.AIR);
 		// 収納中なら取り出す
 		if (playerdata.shareinv) {
-			String serial = databaseGateway.loadShareInv(player, playerdata);
+			String serial = databaseGateway.playerDataManipulator.loadShareInv(player, playerdata);
 			if (serial.equals("")) {
 				player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "収納アイテムが存在しません。");
 			} else if (serial != null) {
@@ -90,7 +90,7 @@ public class shareinvCommand implements TabExecutor {
 				pi.setArmorContents(armor);
 				pi.setStorageContents(contents);
 				// SQLデータをクリア
-				databaseGateway.clearShareInv(player, playerdata);
+				databaseGateway.playerDataManipulator.clearShareInv(player, playerdata);
 				playerdata.shareinv = false;
 				player.sendMessage(ChatColor.GREEN + "アイテムを取得しました。手持ちにあったアイテムはドロップしました。");
 				Bukkit.getLogger().info(Util.getName(player) + "がアイテム取り出しを実施(SQL送信成功)");
@@ -115,7 +115,7 @@ public class shareinvCommand implements TabExecutor {
 				// 収納失敗
 				player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "収納アイテムの変換に失敗しました。");
 			} else {
-				if (databaseGateway.saveShareInv(player, playerdata, serial)) {
+				if (databaseGateway.playerDataManipulator.saveShareInv(player, playerdata, serial)) {
 					// 収納成功により現所持アイテムを全て削除
 					pi.setItemInOffHand(air);
 					for (int cnt = 0; cnt < armor.length; cnt++) {

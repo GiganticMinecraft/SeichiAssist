@@ -76,7 +76,7 @@ public class levelCommand implements TabExecutor{
 				}
 			}
 			//MySqlの値も処理
-			if (databaseGateway.resetAllPlayerLevel() == Fail) {
+			if (databaseGateway.playerDataManipulator.resetAllPlayerLevel() == Fail) {
 				sender.sendMessage("mysqlのレベルの初期化に失敗しました");
 			}
 			else{
@@ -147,7 +147,7 @@ public class levelCommand implements TabExecutor{
 									}
 									//}
 									//MySqlの値も処理
-									if(databaseGateway.resetPlayerLevelandBreaknum(uuid) == Fail){
+									if(databaseGateway.playerDataManipulator.resetPlayerLevelandBreaknum(uuid) == Fail){
 									sender.sendMessage("mysqlのレベルと整地量の設定に失敗しました");
 									}else{
 										sender.sendMessage("mysqlに保存されている指定したプレイヤーのレベルと整地量を設定しました");
@@ -174,7 +174,7 @@ public class levelCommand implements TabExecutor{
 									//}
 									//}
 									//MySqlの値も処理
-									if(databaseGateway.resetPlayerLevelandBreaknum(uuid, num) == Fail){
+									if(databaseGateway.playerDataManipulator.resetPlayerLevelandBreaknum(uuid, num) == Fail){
 									sender.sendMessage("mysqlのレベルと整地量の設定に失敗しました");
 									}else{
 										sender.sendMessage("mysqlに保存されている指定したプレイヤーのレベルと整地量を設定しました");

@@ -53,8 +53,8 @@ public class DatabaseTableInitializer {
                 new PlayerDataTableQueryGenerator(tableReference, config);
 
         return ValuelessTry
-                .begin(() -> gateway.executeQuery(queryGenerator.generateCreateQuery()))
-                .ifOkThen(() -> gateway.executeQuery(queryGenerator.generateAdditionalColumnAlterQuery()))
+                .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
+                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateAdditionalColumnAlterQuery()))
                 .overallStatus();
     }
 
@@ -71,8 +71,8 @@ public class DatabaseTableInitializer {
                 new GachaDataTableQueryGenerator(tableReference);
 
         return ValuelessTry
-                .begin(() -> gateway.executeQuery(queryGenerator.generateCreateQuery()))
-                .ifOkThen(() -> gateway.executeQuery(queryGenerator.generateAdditionalColumnAlterQuery()))
+                .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
+                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateAdditionalColumnAlterQuery()))
                 .overallStatus();
     }
 
@@ -89,8 +89,8 @@ public class DatabaseTableInitializer {
                 new MineStackGachaDataTableQueryGenerator(tableReference);
 
         return ValuelessTry
-                .begin(() -> gateway.executeQuery(queryGenerator.generateCreateQuery()))
-                .ifOkThen(() -> gateway.executeQuery(queryGenerator.generateAdditionalColumnAlterQuery()))
+                .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
+                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateAdditionalColumnAlterQuery()))
                 .overallStatus();
     }
 
@@ -102,8 +102,8 @@ public class DatabaseTableInitializer {
                 new DonateDataTableQueryGenerator(tableReference);
 
         return ValuelessTry
-                .begin(() -> gateway.executeQuery(queryGenerator.generateCreateQuery()))
-                .ifOkThen(() -> gateway.executeQuery(queryGenerator.generateAdditionalColumnAlterQuery()))
+                .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
+                .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateAdditionalColumnAlterQuery()))
                 .overallStatus();
     }
 

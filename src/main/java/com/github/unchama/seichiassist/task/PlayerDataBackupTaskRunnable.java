@@ -41,26 +41,26 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 				Bukkit.getLogger().warning("PlayerDataBackupTaskRunnable");
 				continue;
 			}
-			databaseGateway.savePlayerData(playerdata);
+			databaseGateway.playerDataManipulator.savePlayerData(playerdata);
 		}
 
 		Util.sendEveryMessage(ChatColor.AQUA + "プレイヤーデータセーブ完了");
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "プレイヤーデータセーブ完了");
 
 		//ランキングデータをセット
-		if(!databaseGateway.setRanking()){
+		if(!databaseGateway.playerDataManipulator.setRanking()){
 			plugin.getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!databaseGateway.setRanking_playtick()){
+		if(!databaseGateway.playerDataManipulator.setRanking_playtick()){
 			plugin.getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!databaseGateway.setRanking_p_vote()){
+		if(!databaseGateway.playerDataManipulator.setRanking_p_vote()){
 			plugin.getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!databaseGateway.setRanking_premiumeffectpoint()){
+		if(!databaseGateway.playerDataManipulator.setRanking_premiumeffectpoint()){
 			plugin.getLogger().info("ランキングデータの作成に失敗しました");
 		}
 	}

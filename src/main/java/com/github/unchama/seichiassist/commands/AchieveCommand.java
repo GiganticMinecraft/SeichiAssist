@@ -203,7 +203,7 @@ public class AchieveCommand implements TabExecutor{
 								}else{
 									sender.sendMessage(args[1] + " は現在サーバーにいないため、予約付与システムを利用します。");
 									//sqlをusernameで操作
-									if (databaseGateway.writegiveachvNo((Player) sender, args[1], args[0])) {
+									if (databaseGateway.playerDataManipulator.writegiveachvNo((Player) sender, args[1], args[0])) {
 										sender.sendMessage(args[1] + "へ、実績No"+ args[0] + "の付与の予約が完了しました。");
 									}
 									return true;

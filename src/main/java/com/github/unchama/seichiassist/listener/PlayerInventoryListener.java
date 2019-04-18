@@ -289,7 +289,7 @@ public class PlayerInventoryListener implements Listener {
 					&& itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る")){
 
 				//nは最新のnumofsorryforbugの値になる(上限値576個)
-				int n = databaseGateway.givePlayerBug(player,playerdata);
+				int n = databaseGateway.playerDataManipulator.givePlayerBug(player,playerdata);
 				//0だったら処理終了
 				if(n == 0){
 					return;
@@ -5370,7 +5370,7 @@ public class PlayerInventoryListener implements Listener {
 			if(itemstackcurrent.getType().equals(Material.DIAMOND)){
 
 				//nは特典をまだ受け取ってない投票分
-				int n = databaseGateway.compareVotePoint(player,playerdata);
+				int n = databaseGateway.playerDataManipulator.compareVotePoint(player,playerdata);
 				//投票数に変化が無ければ処理終了
 				if(n == 0){
 					return;

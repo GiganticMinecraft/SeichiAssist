@@ -143,7 +143,7 @@ public class seichiCommand implements TabExecutor {
 					@SuppressWarnings("deprecation")
 					UUID uuid = plugin.getServer().getOfflinePlayer(name).getUniqueId();
 					//mysqlからinventory持ってくる
-					Inventory inventory = databaseGateway.selectInventory(uuid);
+					Inventory inventory = databaseGateway.playerDataManipulator.selectInventory(uuid);
 					//inventoryが取得できなかった場合処理終了
 					if(inventory == null){
 						sender.sendMessage("mysqlからインベントリを取得できませんでした");
@@ -239,7 +239,7 @@ public class seichiCommand implements TabExecutor {
 				return true;
 			}
 			// SQLの全登録データをtrueに変更
-			databaseGateway.setAnniversary(true, null);
+			databaseGateway.playerDataManipulator.setAnniversary(true, null);
 			sender.sendMessage("Anniversaryアイテムの配布を開始しました。");
 			return true;
 		}

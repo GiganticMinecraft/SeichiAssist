@@ -39,7 +39,7 @@ public class PlayerQuitListener implements Listener {
 		//タスクをすべて終了する
 		playerdata.activeskilldata.RemoveAllTask();
 		//saveplayerdata
-		databaseGateway.saveQuitPlayerData(playerdata);
+		databaseGateway.playerDataManipulator.saveQuitPlayerData(playerdata);
 
 		//不要なplayerdataを削除
 		playermap.remove(uuid);

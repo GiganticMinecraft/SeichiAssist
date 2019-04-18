@@ -63,7 +63,7 @@ public class rmpCommand implements TabExecutor {
 					}
 				}
 				//mysqlからログインしていないプレイヤーリストを取得
-				leavers = databaseGateway.selectLeavers(days);
+				leavers = databaseGateway.playerDataManipulator.selectLeavers(days);
 				if (leavers == null) {
 					//DBエラー
 					sender.sendMessage(ChatColor.RED + "失敗");

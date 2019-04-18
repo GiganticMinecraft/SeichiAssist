@@ -34,7 +34,7 @@ public class PlayerJoinListener implements Listener {
 
 		// プレイヤーデータ作成
 		// 新しく作成したPlayerDataを引数とする
-		databaseGateway.loadPlayerData(new PlayerData(player));
+		databaseGateway.playerDataManipulator.loadPlayerData(new PlayerData(player));
 
 		// 初見さんへの処理
 

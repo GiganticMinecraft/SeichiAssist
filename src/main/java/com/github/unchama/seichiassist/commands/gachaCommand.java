@@ -113,7 +113,7 @@ public class gachaCommand implements TabExecutor{
 					sender.sendMessage(ChatColor.YELLOW + name + "のガチャ券配布処理開始…");
 
 					//mysqlにも書き込んどく
-					if(databaseGateway.addPlayerBug(name,num) == Fail){
+					if(databaseGateway.playerDataManipulator.addPlayerBug(name,num) == Fail){
 						sender.sendMessage(ChatColor.RED + "失敗");
 					}else{
 						sender.sendMessage(ChatColor.GREEN + "ガチャ券" + num +"枚加算成功");
@@ -127,7 +127,7 @@ public class gachaCommand implements TabExecutor{
 					sender.sendMessage(ChatColor.YELLOW + "全プレイヤーへのガチャ券配布処理開始…");
 
 					//MySql処理
-					if(databaseGateway.addAllPlayerBug(num) == Fail){
+					if(databaseGateway.playerDataManipulator.addAllPlayerBug(num) == Fail){
 						sender.sendMessage(ChatColor.RED + "失敗");
 					}else{
 						sender.sendMessage(ChatColor.GREEN + "ガチャ券" + num +"枚加算成功");
@@ -153,12 +153,12 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage(ChatColor.YELLOW + lowerCasePlayerName + "の投票特典配布処理開始…");
 
 				//mysqlにも書き込んどく
-				if(databaseGateway.incrementVotePoint(lowerCasePlayerName) == Fail){
+				if(databaseGateway.playerDataManipulator.incrementVotePoint(lowerCasePlayerName) == Fail){
 					sender.sendMessage(ChatColor.RED + "失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "成功");
 				}
-				if(!databaseGateway.addChainVote(lowerCasePlayerName)){
+				if(!databaseGateway.playerDataManipulator.addChainVote(lowerCasePlayerName)){
 					sender.sendMessage(ChatColor.RED + "連続投票数の記録に失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "連続投票数の記録に成功");
@@ -184,7 +184,7 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage(ChatColor.YELLOW + name + "のプレミアムエフェクトポイント配布処理開始…");
 
 				//mysqlにも書き込んどく
-				if(databaseGateway.addPremiumEffectPoint(name,num) == Fail || databaseGateway.addDonate(name, num) == Fail){
+				if(databaseGateway.playerDataManipulator.addPremiumEffectPoint(name,num) == Fail || databaseGateway.addDonate(name, num) == Fail){
 					sender.sendMessage(ChatColor.RED + "失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "成功");
