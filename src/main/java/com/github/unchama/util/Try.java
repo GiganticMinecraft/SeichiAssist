@@ -9,11 +9,10 @@ import static com.github.unchama.util.ActionStatus.Ok;
 /**
  * @author kory
  *
- * 失敗する可能性のある処理を実行するための構造を備えたインターフェース
- * @param <F> 失敗時の値
+ * 失敗する可能性のある処理を逐次実行するための構造を備えたインターフェース
+ * @param <F> 失敗時に記録される値の型
  */
 public interface Try<F> {
-
     /**
      * このインスタンスが{@link SuccessfulTry}ならば、{@code action}を実行し、
      * {@link FailedTry}ならば{@code action}は実行せず内部状態を保つ。
