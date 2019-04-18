@@ -53,7 +53,7 @@ public class DatabaseTableInitializer {
                 new PlayerDataTableQueryGenerator(tableReference, config);
 
         return ValuelessTry
-                .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
+                .begin(() -> gateway.executeUpdate(queryGenerator.generateTableCreationQuery()))
                 .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
                 .overallStatus();
     }
@@ -71,7 +71,7 @@ public class DatabaseTableInitializer {
                 new GachaDataTableQueryGenerator(tableReference);
 
         return ValuelessTry
-                .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
+                .begin(() -> gateway.executeUpdate(queryGenerator.generateTableCreationQuery()))
                 .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
                 .overallStatus();
     }
@@ -89,7 +89,7 @@ public class DatabaseTableInitializer {
                 new MineStackGachaDataTableQueryGenerator(tableReference);
 
         return ValuelessTry
-                .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
+                .begin(() -> gateway.executeUpdate(queryGenerator.generateTableCreationQuery()))
                 .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
                 .overallStatus();
     }
@@ -101,7 +101,7 @@ public class DatabaseTableInitializer {
                 new DonateDataTableQueryGenerator(tableReference);
 
         return ValuelessTry
-                .begin(() -> gateway.executeUpdate(queryGenerator.generateCreateQuery()))
+                .begin(() -> gateway.executeUpdate(queryGenerator.generateTableCreationQuery()))
                 .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
                 .overallStatus();
     }

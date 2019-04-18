@@ -3,20 +3,22 @@ package com.github.unchama.seichiassist.database.init.ddl;
 /**
  * playerdataテーブルの初期化クエリを計算するクラス
  */
-public class MineStackGachaDataTableQueryGenerator {
+public class MineStackGachaDataTableQueryGenerator implements TableInitializationQueryGenerator {
     private final String tableReferenceName;
 
     public MineStackGachaDataTableQueryGenerator(String tableReferenceName) {
         this.tableReferenceName = tableReferenceName;
     }
 
-    public String generateCreateQuery() {
+    @Override
+    public String generateTableCreationQuery() {
         //テーブルが存在しないときテーブルを新規作成
         return "CREATE TABLE IF NOT EXISTS " + tableReferenceName +
                 "(id int auto_increment unique,"
                 + "amount int(11))";
     }
 
+    @Override
     public String generateColumnCreationQuery() {
         //必要なcolumnを随時追加
         return "alter table " + tableReferenceName +

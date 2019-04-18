@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.database.init.ddl;
 
-public class DonateDataTableQueryGenerator {
+public class DonateDataTableQueryGenerator implements TableInitializationQueryGenerator {
 
     private final String tableReferenceName;
 
@@ -8,12 +8,14 @@ public class DonateDataTableQueryGenerator {
         this.tableReferenceName = tableReferenceName;
     }
 
-    public String generateCreateQuery() {
+    @Override
+    public String generateTableCreationQuery() {
         //テーブルが存在しないときテーブルを新規作成
         return "CREATE TABLE IF NOT EXISTS " + tableReferenceName +
                 "(id int auto_increment unique)";
     }
 
+    @Override
     public String generateColumnCreationQuery() {
         return "alter table " + tableReferenceName +
                 " add column if not exists playername varchar(20) default null" +

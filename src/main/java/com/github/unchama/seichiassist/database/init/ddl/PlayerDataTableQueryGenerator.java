@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 /**
  * playerdataテーブルの初期化クエリを計算するクラス
  */
-public class PlayerDataTableQueryGenerator {
+public class PlayerDataTableQueryGenerator implements TableInitializationQueryGenerator {
     private final String tableReferenceName;
     private final Config config;
 
@@ -17,13 +17,16 @@ public class PlayerDataTableQueryGenerator {
         this.config = config;
     }
 
-    public String generateCreateQuery() {
+
+    @Override
+    public String generateTableCreationQuery() {
         //テーブルが存在しないときテーブルを新規作成
         return "CREATE TABLE IF NOT EXISTS " + tableReferenceName +
                 "(name varchar(30) unique," +
                 "uuid varchar(128) unique)";
     }
 
+    @Override
     public String generateColumnCreationQuery() {
         //必要なcolumnを随時追加
         String command =
