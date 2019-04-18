@@ -106,7 +106,7 @@ public class SeichiAssist extends JavaPlugin{
 	public static List<MineStackGachaData> msgachadatalist = new ArrayList<>();
 
 	//Playerdataに依存するデータリスト
-	public static final HashMap<UUID,PlayerData> playermap = new HashMap<>();
+	public static final HashMap<UUID, PlayerData> playermap = new HashMap<>();
 
 	//総採掘量ランキング表示用データリスト
 	public static final List<RankData> ranklist = new ArrayList<>();
