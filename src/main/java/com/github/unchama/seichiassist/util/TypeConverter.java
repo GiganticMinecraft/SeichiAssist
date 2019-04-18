@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.util;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public final class TypeConverter {
 	// 不必要なインスタンス化を防ぐため封印
@@ -58,4 +59,13 @@ public final class TypeConverter {
 			return 0;
 		}
 	}
+
+	public static Optional<Integer> tryToParseInt(String parsed) {
+		try {
+			return Optional.of(Integer.parseInt(parsed));
+		} catch (NumberFormatException ex) {
+			return Optional.empty();
+		}
+	}
+
 }
