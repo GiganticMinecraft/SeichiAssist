@@ -1,21 +1,20 @@
 package com.github.unchama.seichiassist;
 
-public class MebiusTalk {
-	private final String mebiusSerif;
-	private final String playerSerif;
+public final class MebiusTalk {
+	private final String mebiusMessage;
+	private final String playerMessage;
 
-	public MebiusTalk(String mebiusSerif, String playerSerif) {
-
-		this.mebiusSerif = mebiusSerif;
-		this.playerSerif = playerSerif;
+	public MebiusTalk(String mebiusMessage, String playerMessage) {
+		this.mebiusMessage = mebiusMessage;
+		this.playerMessage = playerMessage;
 	}
 
-	public String getPlayerSerif() {
-		return playerSerif;
+	public String getPlayerMessage() {
+		return playerMessage;
 	}
 
-	public String getMebiusSerif() {
-		return mebiusSerif;
+	public String getMebiusMessage() {
+		return mebiusMessage;
 	}
 
 	/**
@@ -26,9 +25,9 @@ public class MebiusTalk {
 	@Deprecated
 	public String get(int i) {
 		if (i == 0) {
-			return getMebiusSerif();
+			return getMebiusMessage();
 		} else if (i == 1) {
-			return getPlayerSerif();
+			return getPlayerMessage();
 		} else {
 			throw new IndexOutOfBoundsException();
 		}
@@ -37,7 +36,7 @@ public class MebiusTalk {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof MebiusTalk) {
-			return ((MebiusTalk) obj).mebiusSerif.equals(this.mebiusSerif) && ((MebiusTalk) obj).playerSerif.equals(this.playerSerif);
+			return ((MebiusTalk) obj).mebiusMessage.equals(this.mebiusMessage) && ((MebiusTalk) obj).playerMessage.equals(this.playerMessage);
 		} else {
 			return false;
 		}

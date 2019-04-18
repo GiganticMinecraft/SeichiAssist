@@ -1150,7 +1150,8 @@ public class MenuInventoryData {
 	public static ItemMeta MineStackToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<>();
 		if(playerdata.minestackflag){
-			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+			itemmeta.addEnchant(Enchantment.DIG_SPEED, 1, false);
+			itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在ONです");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
 		}else{
