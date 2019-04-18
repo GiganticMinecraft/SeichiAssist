@@ -83,9 +83,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	// TODO これらは DatabaseConstants に移されるべき
 	public static final String PLAYERDATA_TABLENAME = "playerdata";
-	public static final String GACHADATA_TABLENAME = "gachadata";
 	public static final String DONATEDATA_TABLENAME = "donatedata";
-	public static final String MINESTACK_GACHADATA_TABLENAME = "msgachadata";
 
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
@@ -875,7 +873,7 @@ public class SeichiAssist extends JavaPlugin{
 		databaseGateway = DatabaseGateway.createInitializedInstance(config.getURL(), config.getDB(), config.getID(), config.getPW());
 
 		//mysqlからガチャデータ読み込み
-		if(!databaseGateway.loadGachaData()){
+		if(!databaseGateway.gachaDataManipulator.loadGachaData()){
 			getLogger().info("ガチャデータのロードに失敗しました");
 		}
 
@@ -883,7 +881,7 @@ public class SeichiAssist extends JavaPlugin{
 		List<MineStackObj> minestacklistgacha1;
 
 		//mysqlからMineStack用ガチャデータ読み込み
-		if (databaseGateway.loadMineStackGachaData()) { //MineStack用ガチャデータを読み込んだ
+		if (databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) { //MineStack用ガチャデータを読み込んだ
 			getLogger().info("MineStack用ガチャデータのロードに成功しました");
 			minestacklistgacha1 = creategachaminestacklist();
 

@@ -1139,7 +1139,7 @@ public class PlayerInventoryListener implements Listener {
 						} else {
 							activeSkillPremiumEffect.setObtained(playerdata.activeskilldata.premiumeffectflagmap);
 							player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました");
-							if (databaseGateway.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
+							if (databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
 								player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。");
 							}
 							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 1.2);

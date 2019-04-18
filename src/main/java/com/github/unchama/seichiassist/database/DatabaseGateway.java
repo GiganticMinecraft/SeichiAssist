@@ -1,31 +1,17 @@
 package com.github.unchama.seichiassist.database;
 
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.database.init.DatabaseTableInitializer;
+import com.github.unchama.seichiassist.database.manipulators.DonateDataManipulator;
+import com.github.unchama.seichiassist.database.manipulators.GachaDataManipulator;
+import com.github.unchama.seichiassist.database.manipulators.MineStackGachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.PlayerDataManipulator;
-import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTaskRunnable;
-import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
-import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.Try;
 import com.github.unchama.util.ValuelessTry;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.sql.*;
-import java.util.*;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 import static com.github.unchama.util.ActionStatus.Ok;
@@ -43,6 +29,9 @@ public class DatabaseGateway {
 
 	// TODO これらはこのクラスに入るべきではなさそう
     public final PlayerDataManipulator playerDataManipulator;
+    public final GachaDataManipulator gachaDataManipulator;
+    public final MineStackGachaDataManipulator mineStackGachaDataManipulator;
+    public final DonateDataManipulator donateDataManipulator;
 
 	public Connection con = null;
 	private Statement stmt = null;
@@ -56,7 +45,10 @@ public class DatabaseGateway {
 		this.password = password;
 
 		this.playerDataManipulator = new PlayerDataManipulator(this);
-	}
+        this.gachaDataManipulator = new GachaDataManipulator(this);
+        this.mineStackGachaDataManipulator = new MineStackGachaDataManipulator(this);
+        this.donateDataManipulator = new DonateDataManipulator(this);
+    }
 
 	public static DatabaseGateway createInitializedInstance(@NotNull String databaseUrl,
 													 @NotNull String databaseName,
@@ -192,196 +184,6 @@ public class DatabaseGateway {
 		String command = "CREATE DATABASE IF NOT EXISTS " + databaseName
 				+ " character set utf8 collate utf8_general_ci";
 		return executeUpdate(command);
-	}
-
-	//ガチャデータロード
-	public boolean loadGachaData(){
-		final String tableReference = databaseName + "." + SeichiAssist.GACHADATA_TABLENAME;
-		List<GachaData> gachadatalist = new ArrayList<>();
-
-		String command = "select * from " + tableReference;
-		try (ResultSet lrs = stmt.executeQuery(command)) {
-			while (lrs.next()) {
-				GachaData gachadata = new GachaData();
-				Inventory inventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"));
-				gachadata.itemstack = (inventory.getItem(0));
-				gachadata.amount = lrs.getInt("amount");
-				gachadata.probability = lrs.getDouble("probability");
-				gachadatalist.add(gachadata);
-			}
-		} catch (SQLException | IOException e) {
-			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			e.printStackTrace();
-			return false;
-		}
-		SeichiAssist.gachadatalist.clear();
-		SeichiAssist.gachadatalist.addAll(gachadatalist);
-		return true;
-
-	}
-
-	//MineStack用ガチャデータロード
-	public boolean loadMineStackGachaData(){
-		final String tableReference = databaseName + "." + SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
-		List<MineStackGachaData> gachadatalist = new ArrayList<>();
-
-		String command = "select * from " + tableReference;
-		try (ResultSet lrs = stmt.executeQuery(command)){
-			while (lrs.next()) {
-				MineStackGachaData gachadata = new MineStackGachaData();
-				Inventory inventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"));
-				gachadata.itemstack = (inventory.getItem(0));
-				gachadata.amount = lrs.getInt("amount");
-				gachadata.level = lrs.getInt("level");
-				gachadata.obj_name = lrs.getString("obj_name");
-				gachadata.probability = lrs.getDouble("probability");
-				gachadatalist.add(gachadata);
-			}
-		} catch (SQLException | IOException e) {
-			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			e.printStackTrace();
-			return false;
-		}
-		SeichiAssist.msgachadatalist.clear();
-		SeichiAssist.msgachadatalist.addAll(gachadatalist);
-		return true;
-	}
-
-	//ガチャデータセーブ
-	public boolean saveGachaData(){
-		String tableReference = databaseName + "." + SeichiAssist.GACHADATA_TABLENAME;
-
-		//まずmysqlのガチャテーブルを初期化(中身全削除)
-		String command = "truncate table " + tableReference;
-		if(executeUpdate(command) == Fail){
-			return false;
-		}
-
-		//次に現在のgachadatalistでmysqlを更新
-		for(GachaData gachadata : SeichiAssist.gachadatalist){
-			//Inventory作ってガチャのitemstackに突っ込む
-			Inventory inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1);
-			inventory.setItem(0,gachadata.itemstack);
-
-			command = "insert into " + tableReference + " (probability,amount,itemstack)"
-					+ " values"
-					+ "(" + gachadata.probability
-					+ "," + gachadata.amount
-					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
-					+ ")";
-			if(executeUpdate(command) == Fail){
-				return false;
-			}
-		}
-		return true;
-	}
-
-	//MineStack用ガチャデータセーブ
-	public boolean saveMineStackGachaData(){
-		String tableReference = databaseName + "." + SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
-
-		//まずmysqlのガチャテーブルを初期化(中身全削除)
-		String command = "truncate table " + tableReference;
-		if(executeUpdate(command) == Fail){
-			return false;
-		}
-
-		//次に現在のgachadatalistでmysqlを更新
-		for(MineStackGachaData gachadata : SeichiAssist.msgachadatalist){
-			//Inventory作ってガチャのitemstackに突っ込む
-			Inventory inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1);
-			inventory.setItem(0,gachadata.itemstack);
-
-			command = "insert into " + tableReference + " (probability,amount,level,obj_name,itemstack)"
-					+ " values"
-					+ "(" + gachadata.probability
-					+ "," + gachadata.amount
-					+ "," + gachadata.level
-					+ ",'" + gachadata.obj_name + "'"
-					+ ",'" + BukkitSerialization.toBase64(inventory) + "'"
-					+ ")";
-
-			if (executeUpdate(command) == Fail) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public ActionStatus addPremiumEffectBuy(PlayerData playerdata,
-											ActiveSkillPremiumEffect effect) {
-		String tableReference = databaseName + "." + SeichiAssist.DONATEDATA_TABLENAME;
-		String command = "insert into " + tableReference
-				+ " (playername,playeruuid,effectnum,effectname,usepoint,date) "
-				+ "value("
-				+ "'" + playerdata.name + "',"
-				+ "'" + playerdata.uuid.toString() + "',"
-				+ effect.getNum() + ","
-				+ "'" + effect.getsqlName() + "',"
-				+ effect.getUsePoint() + ","
-				+ "cast( now() as datetime )"
-				+ ")";
-
-		return executeUpdate(command);
-	}
-
-	public ActionStatus addDonate(String name, int point) {
-		String tableReference = databaseName + "." + SeichiAssist.DONATEDATA_TABLENAME;
-		String command = "insert into " + tableReference
-				+ " (playername,getpoint,date) "
-				+ "value("
-				+ "'" + name + "',"
-				+ point + ","
-				+ "cast( now() as datetime )"
-				+ ")";
-		return executeUpdate(command);
-	}
-
-	public boolean loadDonateData(PlayerData playerdata, Inventory inventory) {
-		ItemStack itemstack;
-		ItemMeta itemmeta;
-		Material material;
-		List<String> lore;
-		int count = 0;
-		ActiveSkillPremiumEffect[] effect = ActiveSkillPremiumEffect.values();
-
-		String tableReference = databaseName + "." + SeichiAssist.DONATEDATA_TABLENAME;
-		String command = "select * from " + tableReference + " where playername = '" + playerdata.name + "'";
-		try (ResultSet lrs = stmt.executeQuery(command)){
-			while (lrs.next()) {
-				//ポイント購入の処理
-				if(lrs.getInt("getpoint")>0){
-					itemstack = new ItemStack(Material.DIAMOND);
-					itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND);
-					itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付");
-					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "" + "金額：" + lrs.getInt("getpoint")*100,
-							ChatColor.RESET + "" +  ChatColor.GREEN + "" + "プレミアムエフェクトポイント：+" + lrs.getInt("getpoint"),
-							ChatColor.RESET + "" +  ChatColor.GREEN + "" + "日時：" + lrs.getString("date")
-					);
-					itemmeta.setLore(lore);
-					itemstack.setItemMeta(itemmeta);
-					inventory.setItem(count,itemstack);
-				}else if(lrs.getInt("usepoint")>0){
-					int num = lrs.getInt("effectnum")-1;
-					material = effect[num].getMaterial();
-					itemstack = new ItemStack(material);
-					itemmeta = Bukkit.getItemFactory().getItemMeta(material);
-					itemmeta.setDisplayName(ChatColor.RESET + "" +  ChatColor.YELLOW + "購入エフェクト：" + effect[num].getName());
-					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GOLD + "" + "プレミアムエフェクトポイント： -" + lrs.getInt("usepoint"),
-							ChatColor.RESET + "" +  ChatColor.GOLD + "" + "日時：" + lrs.getString("date")
-					);
-					itemmeta.setLore(lore);
-					itemstack.setItemMeta(itemmeta);
-					inventory.setItem(count,itemstack);
-				}
-				count ++;
-			}
-		} catch (SQLException e) {
-			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			e.printStackTrace();
-			return false;
-		}
-		return true;
 	}
 
 }

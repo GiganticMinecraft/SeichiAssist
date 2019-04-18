@@ -95,8 +95,7 @@ public class DatabaseTableInitializer {
     }
 
     private ActionStatus createDonateDataTable() {
-        final String tableName = DatabaseConstants.DONATEDATA_TABLENAME;
-        final String tableReference = gateway.databaseName + "." + tableName;
+        final String tableReference = gateway.databaseName + "." + DatabaseConstants.DONATEDATA_TABLENAME;
 
         final DonateDataTableQueryGenerator queryGenerator =
                 new DonateDataTableQueryGenerator(tableReference);

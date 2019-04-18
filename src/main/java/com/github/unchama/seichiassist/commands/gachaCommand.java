@@ -184,7 +184,7 @@ public class gachaCommand implements TabExecutor{
 				sender.sendMessage(ChatColor.YELLOW + name + "のプレミアムエフェクトポイント配布処理開始…");
 
 				//mysqlにも書き込んどく
-				if(databaseGateway.playerDataManipulator.addPremiumEffectPoint(name,num) == Fail || databaseGateway.addDonate(name, num) == Fail){
+				if(databaseGateway.playerDataManipulator.addPremiumEffectPoint(name,num) == Fail || databaseGateway.donateDataManipulator.addDonate(name, num) == Fail){
 					sender.sendMessage(ChatColor.RED + "失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "成功");
@@ -203,7 +203,7 @@ public class gachaCommand implements TabExecutor{
 				return true;
 		}else if(args[0].equalsIgnoreCase("reload")){
 			//gacha reload と入力したとき
-			if(!databaseGateway.loadGachaData()){
+			if(!databaseGateway.gachaDataManipulator.loadGachaData()){
 				sender.sendMessage("mysqlからガチャデータのロードできませんでした");
 			}else{
 				sender.sendMessage("mysqlからガチャデータをロードしました");
@@ -219,7 +219,7 @@ public class gachaCommand implements TabExecutor{
 
 		}else if(args[0].equalsIgnoreCase("save")){
 			//gacha save と入力したとき
-			if(!databaseGateway.saveGachaData()){
+			if(!databaseGateway.gachaDataManipulator.saveGachaData()){
 				sender.sendMessage("mysqlにガチャデータを保存できませんでした");
 			}else{
 				sender.sendMessage("mysqlにガチャデータを保存しました");
@@ -228,7 +228,7 @@ public class gachaCommand implements TabExecutor{
 
 		}else if(args[0].equalsIgnoreCase("savems")){
 			//gacha save と入力したとき
-			if(!databaseGateway.saveMineStackGachaData()){
+			if(!databaseGateway.mineStackGachaDataManipulator.saveMineStackGachaData()){
 				sender.sendMessage("mysqlにMineStack用ガチャデータを保存できませんでした");
 			}else{
 				sender.sendMessage("mysqlにMineStack用ガチャデータを保存しました");

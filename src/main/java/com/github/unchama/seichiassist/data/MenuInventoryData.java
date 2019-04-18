@@ -1912,9 +1912,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
 
-		databaseGateway.loadDonateData(playerdata,inventory);
-
-
+		databaseGateway.donateDataManipulator.loadDonateData(playerdata,inventory);
 
 		return inventory;
 	}
