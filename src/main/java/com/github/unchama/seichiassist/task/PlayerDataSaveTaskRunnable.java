@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.*;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.DatabaseGateway;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 

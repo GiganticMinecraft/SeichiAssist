@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.OfflineUUID;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.DatabaseGateway;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 import static com.github.unchama.util.ActionStatus.Fail;

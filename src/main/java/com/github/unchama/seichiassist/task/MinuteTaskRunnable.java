@@ -4,7 +4,7 @@ package com.github.unchama.seichiassist.task;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.DatabaseGateway;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;

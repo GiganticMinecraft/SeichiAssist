@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.database.init;
 
 import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.DatabaseGateway;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.database.DatabaseConstants;
 import com.github.unchama.seichiassist.database.ddl.DonateDataTableQueryGenerator;
 import com.github.unchama.seichiassist.database.ddl.GachaDataTableQueryGenerator;

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -82,9 +83,9 @@ public class SeichiAssist extends JavaPlugin{
 
 	// TODO これらは DatabaseConstants に移されるべき
 	public static final String PLAYERDATA_TABLENAME = "playerdata";
-	static final String GACHADATA_TABLENAME = "gachadata";
-	static final String DONATEDATA_TABLENAME = "donatedata";
-	static final String MINESTACK_GACHADATA_TABLENAME = "msgachadata";
+	public static final String GACHADATA_TABLENAME = "gachadata";
+	public static final String DONATEDATA_TABLENAME = "donatedata";
+	public static final String MINESTACK_GACHADATA_TABLENAME = "msgachadata";
 
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";

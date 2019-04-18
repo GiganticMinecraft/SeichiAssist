@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.github.unchama.seichiassist.DatabaseGateway;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.ExternalPlugins;
 import com.sk89q.worldguard.bukkit.RegionContainer;
 import net.md_5.bungee.api.ChatColor;

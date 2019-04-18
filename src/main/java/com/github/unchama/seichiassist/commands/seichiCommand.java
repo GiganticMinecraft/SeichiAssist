@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.DatabaseGateway;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

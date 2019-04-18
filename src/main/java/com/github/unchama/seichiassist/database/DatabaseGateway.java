@@ -1,5 +1,7 @@
-package com.github.unchama.seichiassist;
+package com.github.unchama.seichiassist.database;
 
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -63,10 +65,11 @@ public class DatabaseGateway {
 	    final DatabaseTableInitializer tableInitializer =
 				new DatabaseTableInitializer(instance, instance.plugin.getLogger(), SeichiAssist.config);
 
-	    final ActionStatus initializationStatus = ValuelessTry
-				.begin(instance::connectToAndInitializeDatabase)
-				.ifOkThen(tableInitializer::initializeTables)
-				.overallStatus();
+	    final ActionStatus initializationStatus =
+				ValuelessTry
+					.begin(instance::connectToAndInitializeDatabase)
+					.ifOkThen(tableInitializer::initializeTables)
+					.overallStatus();
 
 	    if (initializationStatus == Fail) {
 	        instance.plugin.getLogger().info("データベース初期処理にエラーが発生しました");
