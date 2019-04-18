@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.database.manipulators;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
+import com.github.unchama.seichiassist.database.DatabaseConstants;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTaskRunnable;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
@@ -33,6 +34,10 @@ public class PlayerDataManipulator {
         this.gateway = gateway;
     }
 
+    private String getTableReference() {
+        return gateway.databaseName + "." + DatabaseConstants.PLAYERDATA_TABLENAME;
+    }
+
     //投票特典配布時の処理(p_givenvoteの値の更新もココ)
     public int compareVotePoint(Player player, final PlayerData playerdata){
         //連打による負荷防止の為クールダウン処理
@@ -42,13 +47,12 @@ public class PlayerDataManipulator {
         }
         new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
 
-        final String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         final String struuid = playerdata.uuid.toString();
 
         int p_vote = 0;
         int p_givenvote = 0;
 
-        String command = "select p_vote,p_givenvote from " + tableReference + " where uuid = '" + struuid + "'";
+        String command = "select p_vote,p_givenvote from " + getTableReference() + " where uuid = '" + struuid + "'";
         try (ResultSet lrs = gateway.executeQuery(command)) {
             while (lrs.next()) {
                 p_vote = lrs.getInt("p_vote");
@@ -62,7 +66,7 @@ public class PlayerDataManipulator {
         }
         //比較して差があればその差の値を返す(同時にp_givenvoteも更新しておく)
         if(p_vote > p_givenvote){
-            command = "update " + tableReference
+            command = "update " + getTableReference()
                     + " set p_givenvote = " + p_vote
                     + " where uuid like '" + struuid + "'";
             if (gateway.executeUpdate(command) == Fail) {
@@ -86,12 +90,11 @@ public class PlayerDataManipulator {
         }
         new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
 
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
 
         String struuid = playerdata.uuid.toString();
         int numofsorryforbug = 0;
 
-        String command = "select numofsorryforbug from " + tableReference + " where uuid = '" + struuid + "'";
+        String command = "select numofsorryforbug from " + getTableReference() + " where uuid = '" + struuid + "'";
         try (ResultSet lrs = gateway.executeQuery(command)){
             while (lrs.next()) {
                 numofsorryforbug = lrs.getInt("numofsorryforbug");
@@ -105,7 +108,7 @@ public class PlayerDataManipulator {
 
         if(numofsorryforbug > 576) {
             // 576より多い場合はその値を返す(同時にnumofsorryforbugから-576)
-            command = "update " + tableReference
+            command = "update " + getTableReference()
                     + " set numofsorryforbug = numofsorryforbug - 576"
                     + " where uuid like '" + struuid + "'";
             if(gateway.executeUpdate(command) == Fail){
@@ -116,7 +119,7 @@ public class PlayerDataManipulator {
             return 576;
         } else if(numofsorryforbug > 0) {
             // 0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
-            command = "update " + tableReference
+            command = "update " + getTableReference()
                     + " set numofsorryforbug = 0"
                     + " where uuid like '" + struuid + "'";
             if (gateway.executeUpdate(command) == Fail) {
@@ -137,8 +140,7 @@ public class PlayerDataManipulator {
      * @return 処理の成否
      */
     public ActionStatus incrementVotePoint(String playerName) {
-        final String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
-        final String command = "update " + tableReference
+        final String command = "update " + getTableReference()
                 + " set p_vote = p_vote + 1" //1加算
                 + " where name like '" + playerName + "'";
 
@@ -152,8 +154,7 @@ public class PlayerDataManipulator {
      * @return 処理の成否
      */
     public ActionStatus addPremiumEffectPoint(String playerName, int num) {
-        final String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
-        final String command = "update " + tableReference
+        final String command = "update " + getTableReference()
                 + " set premiumeffectpoint = premiumeffectpoint + " + num //引数で来たポイント数分加算
                 + " where name like '" + playerName + "'";
 
@@ -163,8 +164,7 @@ public class PlayerDataManipulator {
 
     //指定されたプレイヤーにガチャ券を送信する
     public ActionStatus addPlayerBug(String playerName, int num) {
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
-        String command = "update " + tableReference
+        String command = "update " + getTableReference()
                 + " set numofsorryforbug = numofsorryforbug + " + num
                 + " where name like '" + playerName + "'";
 
@@ -175,8 +175,7 @@ public class PlayerDataManipulator {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         String lastvote;
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
-        String select = "SELECT lastvote FROM " + tableReference + " " +
+        String select = "SELECT lastvote FROM " + getTableReference() + " " +
                 "WHERE name LIKE '" + name + "'";
         try (ResultSet lrs = gateway.executeQuery(select)) {
             // 初回のnextがnull→データが1件も無い場合
@@ -192,7 +191,7 @@ public class PlayerDataManipulator {
 
             lrs.close();
 
-            String update = "UPDATE " + tableReference + " " +
+            String update = "UPDATE " + getTableReference() + " " +
                     " SET lastvote = '" + sdf.format(cal.getTime()) + "'" +
                     " WHERE name LIKE '" + name + "'";
 
@@ -202,7 +201,7 @@ public class PlayerDataManipulator {
             e.printStackTrace();
             return false;
         }
-        select = "SELECT chainvote FROM " +tableReference + " " +
+        select = "SELECT chainvote FROM " +getTableReference() + " " +
                 "WHERE name LIKE '" + name + "'";
         try (ResultSet lrs = gateway.executeQuery(select)) {
             // 初回のnextがnull→データが1件も無い場合
@@ -238,7 +237,7 @@ public class PlayerDataManipulator {
 
             lrs.close();
 
-            String update = "UPDATE " + tableReference + " " +
+            String update = "UPDATE " + getTableReference() + " " +
                     " SET chainvote = " + count +
                     " WHERE name LIKE '" + name + "'";
 
@@ -254,8 +253,7 @@ public class PlayerDataManipulator {
     public boolean setContribute(CommandSender sender, String targetName, int p) {
         int point;
 
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
-        String select = "SELECT contribute_point FROM " + tableReference + " " + "WHERE name LIKE '" + targetName + "'";
+        String select = "SELECT contribute_point FROM " + getTableReference() + " " + "WHERE name LIKE '" + targetName + "'";
 
         // selectで確認
         try (ResultSet lrs = gateway.executeQuery(select)) {
@@ -273,7 +271,7 @@ public class PlayerDataManipulator {
             return false;
         }
 
-        String update = "UPDATE " + tableReference + " " +
+        String update = "UPDATE " + getTableReference() + " " +
                 " SET contribute_point = " + point +
                 " WHERE name LIKE '" + targetName + "'";
 
@@ -287,8 +285,7 @@ public class PlayerDataManipulator {
 
     // anniversary変更
     public boolean setAnniversary(boolean anniversary, UUID uuid) {
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
-        String command = "UPDATE " + tableReference + " " + "SET anniversary = " + anniversary;
+        String command = "UPDATE " + getTableReference() + " " + "SET anniversary = " + anniversary;
         if (uuid != null) {
             command += " WHERE uuid = '" + uuid.toString() + "'";
         }
@@ -308,10 +305,9 @@ public class PlayerDataManipulator {
      * @return 成否…true: 成功、false: 失敗
      */
     public boolean writegiveachvNo(Player sender, String targetName, String achvNo) {
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
-        String select = "SELECT giveachvNo FROM " + tableReference + " " +
+        String select = "SELECT giveachvNo FROM " + getTableReference() + " " +
                 "WHERE name LIKE '" + targetName + "'";
-        String update = "UPDATE " + tableReference + " " +
+        String update = "UPDATE " + getTableReference() + " " +
                 " SET giveachvNo = " + achvNo +
                 " WHERE name LIKE '" + targetName + "'";
 
@@ -350,9 +346,8 @@ public class PlayerDataManipulator {
         }
         //連打による負荷防止の為クールダウン処理
         new CoolDownTaskRunnable(player, CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin, 200);
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         String struuid = playerdata.uuid.toString();
-        String command = "SELECT shareinv FROM " + tableReference + " " +
+        String command = "SELECT shareinv FROM " + getTableReference() + " " +
                 "WHERE uuid = '" + struuid + "'";
         try (ResultSet lrs = gateway.executeQuery(command)) {
             lrs.next();
@@ -362,7 +357,7 @@ public class PlayerDataManipulator {
                 player.sendMessage(ChatColor.RED + "既にアイテムが収納されています");
                 return false;
             }
-            command = "UPDATE " + tableReference + " " +
+            command = "UPDATE " + getTableReference() + " " +
                     "SET shareinv = '" + data + "' " +
                     "WHERE uuid = '" + struuid + "'";
             if (gateway.executeUpdate(command) == Fail) {
@@ -386,9 +381,8 @@ public class PlayerDataManipulator {
         }
         //連打による負荷防止の為クールダウン処理
         new CoolDownTaskRunnable(player,CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin,200);
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         String struuid = playerdata.uuid.toString();
-        String command = "SELECT shareinv FROM " + tableReference + " " +
+        String command = "SELECT shareinv FROM " + getTableReference() + " " +
                 "WHERE uuid = '" + struuid + "'";
         String shareinv = null;
         try (ResultSet lrs = gateway.executeQuery(command)) {
@@ -403,9 +397,8 @@ public class PlayerDataManipulator {
     }
 
     public boolean clearShareInv(Player player, PlayerData playerdata) {
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         String struuid = playerdata.uuid.toString();
-        String command = "UPDATE " + tableReference + " " +
+        String command = "UPDATE " + getTableReference() + " " +
                 "SET shareinv = '' " +
                 "WHERE uuid = '" + struuid + "'";
         if (gateway.executeUpdate(command) == Fail) {
@@ -419,8 +412,7 @@ public class PlayerDataManipulator {
     //lastquitがdays日以上(または未登録)のプレイヤー名を配列で取得
     public Map<UUID, String> selectLeavers(int days){
         Map<UUID, String> leavers = new HashMap<>();
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
-        String command = "select name, uuid from " + tableReference
+        String command = "select name, uuid from " + getTableReference()
                 + " where ((lastquit <= date_sub(curdate(), interval " + days + " day))"
                 + " or (lastquit is null)) and (name != '') and (uuid != '')";
         try (ResultSet lrs = gateway.executeQuery(command)) {
@@ -448,11 +440,10 @@ public class PlayerDataManipulator {
 
     //ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
     public boolean setRanking() {
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         List<RankData> ranklist = SeichiAssist.ranklist;
         ranklist.clear();
         SeichiAssist.allplayerbreakblockint = 0;
-        String command = "select name,level,totalbreaknum from " + tableReference
+        String command = "select name,level,totalbreaknum from " + getTableReference()
                 + " order by totalbreaknum desc";
         try (ResultSet lrs = gateway.executeQuery(command)){
             while (lrs.next()) {
@@ -473,10 +464,9 @@ public class PlayerDataManipulator {
 
     //ランキング表示用にプレイ時間のカラムだけ全員分引っ張る
     public boolean setRanking_playtick() {
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         List<RankData> ranklist = SeichiAssist.ranklist_playtick;
         ranklist.clear();
-        String command = "select name,playtick from " + tableReference
+        String command = "select name,playtick from " + getTableReference()
                 + " order by playtick desc";
         try (ResultSet lrs = gateway.executeQuery(command)){
             while (lrs.next()) {
@@ -495,10 +485,9 @@ public class PlayerDataManipulator {
 
     //ランキング表示用に投票数のカラムだけ全員分引っ張る
     public boolean setRanking_p_vote() {
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         List<RankData> ranklist = SeichiAssist.ranklist_p_vote;
         ranklist.clear();
-        String command = "select name,p_vote from " + tableReference
+        String command = "select name,p_vote from " + getTableReference()
                 + " order by p_vote desc";
         try (ResultSet lrs = gateway.executeQuery(command)){
             while (lrs.next()) {
@@ -517,10 +506,9 @@ public class PlayerDataManipulator {
 
     //ランキング表示用にプレミアムエフェクトポイントのカラムだけ全員分引っ張る
     public boolean setRanking_premiumeffectpoint() {
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         List<RankData> ranklist = SeichiAssist.ranklist_premiumeffectpoint;
         ranklist.clear();
-        String command = "select name,premiumeffectpoint from " + tableReference
+        String command = "select name,premiumeffectpoint from " + getTableReference()
                 + " order by premiumeffectpoint desc";
         try (ResultSet lrs = gateway.executeQuery(command)){
             while (lrs.next()) {
@@ -538,12 +526,11 @@ public class PlayerDataManipulator {
     }
     //ランキング表示用に上げたりんご数のカラムだけ全員分引っ張る
     public boolean setRanking_p_apple() {
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         List<RankData> ranklist = SeichiAssist.ranklist_p_apple;
         SeichiAssist.allplayergiveapplelong = 0;
         ranklist.clear();
 
-        String command = "select name,p_apple from " + tableReference + " order by p_apple desc";
+        String command = "select name,p_apple from " + getTableReference() + " order by p_apple desc";
         try (ResultSet lrs = gateway.executeQuery(command)){
             while (lrs.next()) {
                 RankData rankdata = new RankData();
@@ -562,21 +549,19 @@ public class PlayerDataManipulator {
 
     //プレイヤーレベル全リセット
     public ActionStatus resetAllPlayerLevel(){
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
-        String command = "update " + tableReference
+        String command = "update " + getTableReference()
                 + " set level = 1";
         return gateway.executeUpdate(command);
     }
 
     //プレイヤーのレベルと整地量をセット
     public ActionStatus resetPlayerLevelandBreaknum(UUID uuid){
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         String struuid = uuid.toString();
         PlayerData playerdata = SeichiAssist.playermap.get(uuid);
         int level = playerdata.level;
         long totalbreaknum = playerdata.totalbreaknum;
 
-        final String command = "update " + tableReference
+        final String command = "update " + getTableReference()
                 + " set"
                 + " level = " + level
                 + ",totalbreaknum = " + totalbreaknum
@@ -587,11 +572,10 @@ public class PlayerDataManipulator {
 
     //プレイヤーのレベルと整地量をセット(プレイヤーデータが無い場合)
     public ActionStatus resetPlayerLevelandBreaknum(UUID uuid, int level){
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         String struuid = uuid.toString();
         int totalbreaknum = SeichiAssist.levellist.get(level-1);
 
-        String command = "update " + tableReference
+        String command = "update " + getTableReference()
                 + " set"
                 + " level = " + level
                 + ",totalbreaknum = " + totalbreaknum
@@ -602,17 +586,15 @@ public class PlayerDataManipulator {
 
     //全員に詫びガチャの配布
     public ActionStatus addAllPlayerBug(int amount){
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
-        String command = "update " + tableReference + " set numofsorryforbug = numofsorryforbug + " + amount;
+        String command = "update " + getTableReference() + " set numofsorryforbug = numofsorryforbug + " + amount;
         return gateway.executeUpdate(command);
     }
 
     //指定プレイヤーの四次元ポケットの中身取得
     public Inventory selectInventory(UUID uuid){
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         String struuid = uuid.toString();
         Inventory inventory = null;
-        String command = "select inventory from " + tableReference
+        String command = "select inventory from " + getTableReference()
                 + " where uuid like '" + struuid + "'";
         try (ResultSet lrs = gateway.executeQuery(command)){
             while (lrs.next()) {
@@ -628,9 +610,8 @@ public class PlayerDataManipulator {
 
     //指定プレイヤーのlastquitを取得
     public String selectLastQuit(String name){
-        String tableReference = gateway.databaseName + "." + SeichiAssist.PLAYERDATA_TABLENAME;
         String lastquit = "";
-        String command = "select lastquit from " + tableReference + " where name = '" + name + "'";
+        String command = "select lastquit from " + getTableReference() + " where name = '" + name + "'";
         try (ResultSet lrs = gateway.executeQuery(command)){
             while (lrs.next()) {
                 lastquit = lrs.getString("lastquit");
