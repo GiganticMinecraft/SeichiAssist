@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.github.unchama.util.ActionStatus.Fail;
 import static com.github.unchama.util.ActionStatus.Ok;
 
 /**
@@ -36,8 +37,12 @@ public interface Try<F> {
      * @return このインスタンスが {@link FailedTry} ならば失敗時の値を {@code function} で変換した値を、
      * そうでなければ {@code defaultValue} を返す。
      */
-    default <U> U mapFailValue(U defaultValue, Function<F, U> function) {
+    default <U> U mapFailValue(U defaultValue, Function<? super F, U> function) {
         return failedValue().map(function).orElse(defaultValue);
+    }
+
+    default ActionStatus overallStatus() {
+        return mapFailValue(Ok, (_value) -> Fail);
     }
 
     final class SuccessfulTry<F> implements Try<F> {
