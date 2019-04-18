@@ -140,26 +140,25 @@ public class gachaCommand implements TabExecutor{
 
 		}else if(args[0].equalsIgnoreCase("vote")){
 			if(args.length != 2){
-				//引数が2でない時の処理
+				//引数が2つでない時の処理
 				sender.sendMessage(ChatColor.RED + "/gacha vote <プレイヤー名>");
 				sender.sendMessage("投票特典配布用コマンドです");
 				return true;
 			}else{
-				//引数が2の時の処理
+				//引数が2つの時の処理
 
-				//プレイヤー名を取得(小文字にする)
-				String name = Util.getName(args[1]);
+				String lowerCasePlayerName = Util.getName(args[1]);
 
 				//プレイヤーオンライン、オフラインにかかわらずsqlに送信(マルチ鯖におけるコンフリクト防止の為)
-				sender.sendMessage(ChatColor.YELLOW + name + "の投票特典配布処理開始…");
+				sender.sendMessage(ChatColor.YELLOW + lowerCasePlayerName + "の投票特典配布処理開始…");
 
 				//mysqlにも書き込んどく
-				if(databaseGateway.addVotePoint(name) == Fail){
+				if(databaseGateway.incrementVotePoint(lowerCasePlayerName) == Fail){
 					sender.sendMessage(ChatColor.RED + "失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "成功");
 				}
-				if(!databaseGateway.addChainVote(name)){
+				if(!databaseGateway.addChainVote(lowerCasePlayerName)){
 					sender.sendMessage(ChatColor.RED + "連続投票数の記録に失敗");
 				}else{
 					sender.sendMessage(ChatColor.GREEN + "連続投票数の記録に成功");
