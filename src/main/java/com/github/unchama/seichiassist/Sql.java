@@ -4,6 +4,9 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
+import com.github.unchama.seichiassist.database.init.DonateDataTableQueryGenerator;
+import com.github.unchama.seichiassist.database.init.GachaDataTableQueryGenerator;
+import com.github.unchama.seichiassist.database.init.MineStackGachaDataTableQueryGenerator;
 import com.github.unchama.seichiassist.database.init.PlayerDataTableQueryGenerator;
 import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTaskRunnable;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
@@ -167,7 +170,7 @@ public class Sql{
 	 *
 	 * @return 成否
 	 */
-	public ActionStatus createDB(){
+	private ActionStatus createDB(){
 		String command = "CREATE DATABASE IF NOT EXISTS " + databaseName
 				+ " character set utf8 collate utf8_general_ci";
 		return executeCommand(command);
@@ -191,85 +194,53 @@ public class Sql{
 				.overallStatus();
 	}
 
-	//ガチャデータテーブル作成
-	public ActionStatus createGachaDataTable() {
+	/**
+	 * gachadataテーブルの作成及び初期化を行うメソッド。
+	 *
+	 * @return 成否
+	 */
+	private ActionStatus createGachaDataTable() {
 		final String tableName = SeichiAssist.GACHADATA_TABLENAME;
 		final String tableReference = databaseName + "." + tableName;
 
-		return ValuelessTry.begin(() -> {
-            //テーブルが存在しないときテーブルを新規作成
-            final String command =
-                    "CREATE TABLE IF NOT EXISTS " + tableReference +
-                            "(id int auto_increment unique,"
-                            + "amount int(11))";
+		final GachaDataTableQueryGenerator queryGenerator =
+				new GachaDataTableQueryGenerator(tableReference);
 
-		    return executeCommand(command);
-        }).ifOkThen(() -> {
-            //必要なcolumnを随時追加
-            final String command =
-                    "alter table " + tableReference +
-                            " add column if not exists probability double default 0.0" +
-                            ",add column if not exists itemstack blob default null" +
-                            "";
-
-            return executeCommand(command);
-        }).overallStatus();
+		return ValuelessTry
+				.begin(() -> executeCommand(queryGenerator.generateCreateQuery()))
+				.ifOkThen(() -> executeCommand(queryGenerator.generateAdditionalColumnAlterQuery()))
+				.overallStatus();
 	}
 
-	//MineStack用ガチャデータテーブル作成
-	public ActionStatus createMineStackGachaDataTable(){
+	/**
+	 * minestackテーブルの作成及び初期化を行うメソッド。
+	 *
+	 * @return 成否
+	 */
+	private ActionStatus createMineStackGachaDataTable(){
 		final String tableName = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
         final String tableReference = databaseName + "." + tableName;
 
-        return ValuelessTry.begin(() -> {
-            //テーブルが存在しないときテーブルを新規作成
-            final String command =
-                    "CREATE TABLE IF NOT EXISTS " + tableReference +
-                            "(id int auto_increment unique,"
-                            + "amount int(11))";
+        final MineStackGachaDataTableQueryGenerator queryGenerator =
+				new MineStackGachaDataTableQueryGenerator(tableReference);
 
-            return executeCommand(command);
-        }).ifOkThen(() -> {
-            //必要なcolumnを随時追加
-            final String command =
-                    "alter table " + tableReference +
-                            " add column if not exists probability double default 0.0" +
-                            ",add column if not exists level int(11) default 0" +
-                            ",add column if not exists obj_name tinytext default null" +
-                            ",add column if not exists itemstack blob default null" +
-                            "";
-
-            return executeCommand(command);
-        }).overallStatus();
+        return ValuelessTry
+				.begin(() -> executeCommand(queryGenerator.generateCreateQuery()))
+				.ifOkThen(() -> executeCommand(queryGenerator.generateAdditionalColumnAlterQuery()))
+				.overallStatus();
 	}
 
-	public ActionStatus createDonateDataTable() {
+	private ActionStatus createDonateDataTable() {
 		final String tableName = SeichiAssist.DONATEDATA_TABLENAME;
         final String tableReference = databaseName + "." + tableName;
 
-        return ValuelessTry.begin(() -> {
-            //テーブルが存在しないときテーブルを新規作成
-            final String command =
-                    "CREATE TABLE IF NOT EXISTS " + databaseName + "." + tableName +
-                            "(id int auto_increment unique)";
+        final DonateDataTableQueryGenerator queryGenerator =
+				new DonateDataTableQueryGenerator(tableReference);
 
-            return executeCommand(command);
-        }).ifOkThen(() -> {
-            //必要なcolumnを随時追加
-            final String command =
-                    "alter table " + databaseName + "." + tableName +
-                            " add column if not exists playername varchar(20) default null" +
-                            ",add column if not exists playeruuid varchar(128) default null" +
-                            ",add column if not exists effectnum int default null" +
-                            ",add column if not exists effectname varchar(20) default null" +
-                            ",add column if not exists getpoint int default 0" +
-                            ",add column if not exists usepoint int default 0" +
-                            ",add column if not exists date datetime default null" +
-                            "";
-
-            return executeCommand(command);
-        }).overallStatus();
-
+        return ValuelessTry
+				.begin(() -> executeCommand(queryGenerator.generateCreateQuery()))
+				.ifOkThen(() -> executeCommand(queryGenerator.generateAdditionalColumnAlterQuery()))
+		        .overallStatus();
 	}
 
 	//投票特典配布時の処理(p_givenvoteの値の更新もココ)
