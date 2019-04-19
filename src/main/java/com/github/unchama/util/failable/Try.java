@@ -1,7 +1,6 @@
 package com.github.unchama.util.failable;
 
 import com.github.unchama.util.ActionStatus;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
 import java.util.Collection;
