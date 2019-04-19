@@ -7,11 +7,10 @@ import com.github.unchama.seichiassist.database.manipulators.GachaDataManipulato
 import com.github.unchama.seichiassist.database.manipulators.MineStackGachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.PlayerDataManipulator;
 import com.github.unchama.util.ActionStatus;
+import com.github.unchama.util.Unit;
 import com.github.unchama.util.failable.FailableAction;
 import com.github.unchama.util.failable.Try;
-import com.github.unchama.util.Unit;
 import com.github.unchama.util.failable.TryWithoutFailValue;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
@@ -75,21 +74,24 @@ public class DatabaseGateway {
 	    return instance;
     }
 
+    private ActionStatus createDatabaseDriverInstance() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			return Ok;
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			e.printStackTrace();
+			return Fail;
+		}
+	}
+
 	/**
 	 * 接続関数
 	 */
 	private ActionStatus connectToAndInitializeDatabase() {
 		return Try
 				.sequence(
-						new FailableAction<>("Mysqlドライバーのインスタンス生成に失敗しました", () -> {
-							try {
-								Class.forName("com.mysql.jdbc.Driver").newInstance();
-								return Ok;
-							} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-								e.printStackTrace();
-								return Fail;
-							}
-						}),
+						new FailableAction<>("Mysqlドライバーのインスタンス生成に失敗しました",
+								this::createDatabaseDriverInstance),
 						new FailableAction<>("SQL接続に失敗しました", this::establishMySQLConnection),
 						new FailableAction<>("データベース作成に失敗しました", this::createDB)
 				)
