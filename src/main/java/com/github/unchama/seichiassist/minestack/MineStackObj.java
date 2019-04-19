@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.Material;
-import org.bukkit.enchantments.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 public class MineStackObj implements Comparable<MineStackObj>{
