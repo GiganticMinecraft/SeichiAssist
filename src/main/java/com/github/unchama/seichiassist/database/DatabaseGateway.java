@@ -9,10 +9,12 @@ import com.github.unchama.seichiassist.database.manipulators.PlayerDataManipulat
 import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.Try;
 import com.github.unchama.util.Unit;
-import com.github.unchama.util.ValuelessTry;
+import com.github.unchama.util.TryWithoutFailValue;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
+import java.util.function.Supplier;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 import static com.github.unchama.util.ActionStatus.Ok;
@@ -59,11 +61,12 @@ public class DatabaseGateway {
 	    final DatabaseTableInitializer tableInitializer =
 				new DatabaseTableInitializer(instance, instance.plugin.getLogger(), SeichiAssist.config);
 
-	    final ActionStatus initializationStatus =
-				ValuelessTry
-					.begin(instance::connectToAndInitializeDatabase)
-					.ifOkThen(tableInitializer::initializeTables)
-					.overallStatus();
+	    final ActionStatus initializationStatus = TryWithoutFailValue
+				.sequence(
+					instance::connectToAndInitializeDatabase,
+					tableInitializer::initializeTables
+				)
+				.overallStatus();
 
 	    if (initializationStatus == Fail) {
 	        instance.plugin.getLogger().info("データベース初期処理にエラーが発生しました");
@@ -77,17 +80,19 @@ public class DatabaseGateway {
 	 */
 	private ActionStatus connectToAndInitializeDatabase() {
 		return Try
-				.begin("Mysqlドライバーのインスタンス生成に失敗しました", () -> {
-					try {
-						Class.forName("com.mysql.jdbc.Driver").newInstance();
-						return Ok;
-					} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-						e.printStackTrace();
-						return Fail;
-					}
-				})
-				.ifOkThen("SQL接続に失敗しました", this::establishMySQLConnection)
-				.ifOkThen("データベース作成に失敗しました", this::createDB)
+				.sequence(
+						Pair.of("Mysqlドライバーのインスタンス生成に失敗しました", () -> {
+							try {
+								Class.forName("com.mysql.jdbc.Driver").newInstance();
+								return Ok;
+							} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+								e.printStackTrace();
+								return Fail;
+							}
+						}),
+						Pair.of("SQL接続に失敗しました", this::establishMySQLConnection),
+						Pair.of("データベース作成に失敗しました", this::createDB)
+				)
 				.mapFailed(failedMessage -> { plugin.getLogger().info(failedMessage); return Unit.instance; })
 				.overallStatus();
 	}

@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.database.init.ddl.*;
 import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.Try;
 import com.github.unchama.util.Unit;
-import com.github.unchama.util.ValuelessTry;
+import com.github.unchama.util.TryWithoutFailValue;
 import com.github.unchama.util.collection.MapFactory;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -51,9 +51,11 @@ public class DatabaseTableInitializer {
         );
 
         final Function<TableInitializationQueryGenerator, ActionStatus> initializeTable = (queryGenerator) ->
-                ValuelessTry
-                        .begin(() -> gateway.executeUpdate(queryGenerator.generateTableCreationQuery()))
-                        .ifOkThen(() -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery()))
+                TryWithoutFailValue
+                        .sequence(
+                                () -> gateway.executeUpdate(queryGenerator.generateTableCreationQuery()),
+                                () -> gateway.executeUpdate(queryGenerator.generateColumnCreationQuery())
+                        )
                         .overallStatus();
 
         final List<Pair<String, Supplier<ActionStatus>>> initializations =
@@ -68,7 +70,7 @@ public class DatabaseTableInitializer {
                         })
                         .collect(Collectors.toList());
 
-        return Try.sequentially(initializations)
+        return Try.sequence(initializations)
                 .mapFailed(failedMessage -> { logger.info(failedMessage); return Unit.instance; })
                 .overallStatus();
     }
