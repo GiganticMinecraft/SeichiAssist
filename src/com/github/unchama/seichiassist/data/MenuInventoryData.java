@@ -902,8 +902,8 @@ public class MenuInventoryData {
         itemstack.setItemMeta(MineStackToggleMeta(pd,itemmeta));
         inventory.setItem(0,itemstack);
 
-		itemstack = new ItemStack(Material.STONE,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE);
+		itemstack = new ItemStack(Material.DIAMOND_ORE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "鉱石系アイテム");
 		itemstack.setItemMeta(itemmeta);
