@@ -2,7 +2,6 @@ package com.github.unchama.util.failable;
 
 import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.Unit;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,8 +16,8 @@ import java.util.stream.Collectors;
 public class TryWithoutFailValue {
     @SafeVarargs
     public static Try<Unit> sequence(Supplier<ActionStatus>... actions) {
-        final Collection<Pair<Unit, Supplier<ActionStatus>>> actionsWithFailValues = Arrays
-                .stream(actions).map((action) -> Pair.of(Unit.instance, action))
+        final Collection<FailableAction<Unit>> actionsWithFailValues = Arrays
+                .stream(actions).map((action) -> new FailableAction<>(Unit.instance, action))
                 .collect(Collectors.toList());
 
         return Try.sequence(actionsWithFailValues);

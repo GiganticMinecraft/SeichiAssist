@@ -93,18 +93,18 @@ public abstract class Try<F> {
         return new SuccessfulTry<>();
     }
 
-    public static <F> Try<F> sequence(Collection<Pair<F, Supplier<ActionStatus>>> actions) {
+    public static <F> Try<F> sequence(Collection<FailableAction<F>> actions) {
         Try<F> currentTry = Try.succeed();
 
-        for (final Pair<F, Supplier<ActionStatus>> action: actions) {
-            currentTry = currentTry.ifOkThen(action.getLeft(), action.getRight());
+        for (final FailableAction<F> action: actions) {
+            currentTry = currentTry.ifOkThen(action.failValue, action.action);
         }
 
         return currentTry;
     }
 
     @SafeVarargs
-    public static <F> Try<F> sequence(Pair<F, Supplier<ActionStatus>>... actions) {
+    public static <F> Try<F> sequence(FailableAction<F>... actions) {
         return sequence(Arrays.asList(actions));
     }
 }

@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.database.DatabaseConstants;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.database.init.ddl.*;
 import com.github.unchama.util.ActionStatus;
+import com.github.unchama.util.failable.FailableAction;
 import com.github.unchama.util.failable.Try;
 import com.github.unchama.util.Unit;
 import com.github.unchama.util.failable.TryWithoutFailValue;
@@ -58,7 +59,7 @@ public class DatabaseTableInitializer {
                         )
                         .overallStatus();
 
-        final List<Pair<String, Supplier<ActionStatus>>> initializations =
+        final List<FailableAction<String>> initializations =
                 tableQueryGenerators.entrySet()
                         .stream()
                         .map((entry) -> {
@@ -66,7 +67,7 @@ public class DatabaseTableInitializer {
                             final TableInitializationQueryGenerator queryGenerator = entry.getValue();
                             final Supplier<ActionStatus> initialization = () -> initializeTable.apply(queryGenerator);
 
-                            return Pair.of(errorMessage, initialization);
+                            return new FailableAction<>(errorMessage, initialization);
                         })
                         .collect(Collectors.toList());
 

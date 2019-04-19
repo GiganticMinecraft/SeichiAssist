@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.database.manipulators.GachaDataManipulato
 import com.github.unchama.seichiassist.database.manipulators.MineStackGachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.PlayerDataManipulator;
 import com.github.unchama.util.ActionStatus;
+import com.github.unchama.util.failable.FailableAction;
 import com.github.unchama.util.failable.Try;
 import com.github.unchama.util.Unit;
 import com.github.unchama.util.failable.TryWithoutFailValue;
@@ -80,7 +81,7 @@ public class DatabaseGateway {
 	private ActionStatus connectToAndInitializeDatabase() {
 		return Try
 				.sequence(
-						Pair.of("Mysqlドライバーのインスタンス生成に失敗しました", () -> {
+						new FailableAction<>("Mysqlドライバーのインスタンス生成に失敗しました", () -> {
 							try {
 								Class.forName("com.mysql.jdbc.Driver").newInstance();
 								return Ok;
@@ -89,8 +90,8 @@ public class DatabaseGateway {
 								return Fail;
 							}
 						}),
-						Pair.of("SQL接続に失敗しました", this::establishMySQLConnection),
-						Pair.of("データベース作成に失敗しました", this::createDB)
+						new FailableAction<>("SQL接続に失敗しました", this::establishMySQLConnection),
+						new FailableAction<>("データベース作成に失敗しました", this::createDB)
 				)
 				.mapFailed(failedMessage -> { plugin.getLogger().info(failedMessage); return Unit.instance; })
 				.overallStatus();
