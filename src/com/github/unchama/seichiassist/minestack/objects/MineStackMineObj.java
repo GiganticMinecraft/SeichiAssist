@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.minestack.objects;
 
-import com.github.unchama.seichiassist.minestack.*;
-import org.bukkit.*;
+import org.bukkit.Material;
+
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 
 /**
  * Created by karayuu on 2018/06/04

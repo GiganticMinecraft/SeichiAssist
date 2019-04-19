@@ -214,82 +214,44 @@ public class SeichiAssist extends JavaPlugin{
 			2000,3000,4000,5000,6000,7000,8000,9000,10000
 			);
 
+
+	//2019.18 MineStack順序大幅いれかえのため、追加分の履歴が一部消えています by kaworuko
 	private static final List<MineStackObj> minestacklistmine = new ArrayList<MineStackObj>(Arrays.asList(
 
-			new MineStackMineObj("dirt","土",1,Material.DIRT,0)
-			,new MineStackMineObj("grass","草ブロック",1,Material.GRASS,0)
-			,new MineStackMineObj("cobblestone","丸石",1,Material.COBBLESTONE, 0)
-			,new MineStackMineObj("stone","石",1,Material.STONE,0)
-			,new MineStackMineObj("granite","花崗岩",1,Material.STONE,1)
-			,new MineStackMineObj("diorite","閃緑岩",1,Material.STONE,3)
-			,new MineStackMineObj("andesite","安山岩",1,Material.STONE,5)
 
-			,new MineStackMineObj("gravel","砂利",1,Material.GRAVEL,0)
-			,new MineStackMineObj("flint","火打石",1,Material.FLINT,0)
-			,new MineStackMineObj("flint_and_steel","火打石と打ち金",1,Material.FLINT_AND_STEEL,0)
-			,new MineStackMineObj("sand","砂",1,Material.SAND,0)
-			,new MineStackMineObj("sandstone","砂岩",1,Material.SANDSTONE,0)
-			,new MineStackMineObj("sandstone1","模様入りの砂岩",1,Material.SANDSTONE,1)
-			,new MineStackMineObj("sandstone2","なめらかな砂岩",1,Material.SANDSTONE,2)
-
-			,new MineStackMineObj("netherrack","ネザーラック",1,Material.NETHERRACK,0)
-			,new MineStackMineObj("soul_sand","ソウルサンド",1,Material.SOUL_SAND,0)
+			new MineStackMineObj("coal_ore","石炭鉱石",1,Material.COAL_ORE,0)
 			,new MineStackMineObj("coal","石炭",1,Material.COAL,0)
+			,new MineStackMineObj("coal_block", "石炭ブロック", 1, Material.COAL_BLOCK, 0)
 
 			//2018.6追加分
 			,new MineStackMineObj("coal_1", "木炭",1,  Material.COAL, 1)
-			,new MineStackMineObj("coal_ore","石炭鉱石",1,Material.COAL_ORE,0)
-			,new MineStackMineObj("ender_stone","エンドストーン",1,Material.ENDER_STONE,0)
+
 			,new MineStackMineObj("iron_ore","鉄鉱石",1,Material.IRON_ORE,0)
-			,new MineStackMineObj("obsidian","黒曜石",1,Material.OBSIDIAN,0)
-			,new MineStackMineObj("packed_ice","氷塊",1,Material.PACKED_ICE, 0)
-			,new MineStackMineObj("quartz","ネザー水晶",1,Material.QUARTZ,0)
+			,new MineStackMineObj("iron_ingot","鉄インゴット",1,Material.IRON_INGOT,0)
+			,new MineStackMineObj("iron_block", "鉄ブロック", 1, Material.IRON_BLOCK, 0)
+
 			,new MineStackMineObj("quartz_ore","ネザー水晶鉱石",1,Material.QUARTZ_ORE,0)
-			,new MineStackMineObj("magma","マグマブロック",1,Material.MAGMA,0)
+			,new MineStackMineObj("quartz","ネザー水晶",1,Material.QUARTZ,0)
+
 			,new MineStackMineObj("gold_ore","金鉱石",1,Material.GOLD_ORE,0)
-			,new MineStackMineObj("glowstone_dust","グロウストーンダスト",1,Material.GLOWSTONE_DUST,0)
-			,new MineStackMineObj("glowstone","グロウストーン",1,Material.GLOWSTONE,0)
+			,new MineStackMineObj("gold_ingot","金インゴット",1,Material.GOLD_INGOT,0)
+			,new MineStackMineObj("gold_block", "金ブロック", 1, Material.GOLD_BLOCK, 0)
 
 
 			,new MineStackMineObj("redstone_ore","レッドストーン鉱石",1,Material.REDSTONE_ORE,0)
-			,new MineStackMineObj("lapis_lazuli","ラピスラズリ",1,Material.INK_SACK,4)
-			,new MineStackMineObj("lapis_ore","ラピスラズリ鉱石",1,Material.LAPIS_ORE,0)
-			,new MineStackMineObj("diamond","ダイヤモンド",1,Material.DIAMOND,0)
-			,new MineStackMineObj("diamond_ore","ダイヤモンド鉱石",1,Material.DIAMOND_ORE,0)
-			,new MineStackMineObj("emerald","エメラルド",1,Material.EMERALD,0)
-			,new MineStackMineObj("emerald_ore","エメラルド鉱石",1,Material.EMERALD_ORE,0)
 
-			//2018.6追加分
+			,new MineStackMineObj("lapis_ore","ラピスラズリ鉱石",1,Material.LAPIS_ORE,0)
+			,new MineStackMineObj("lapis_lazuli","ラピスラズリ",1,Material.INK_SACK,4)
 			,new MineStackMineObj("lapis_block", "ラピスラズリブロック", 1, Material.LAPIS_BLOCK, 0)
-			,new MineStackMineObj("iron_block", "鉄ブロック", 1, Material.IRON_BLOCK, 0)
-			,new MineStackMineObj("coal_block", "石炭ブロック", 1, Material.COAL_BLOCK, 0)
-			,new MineStackMineObj("gold_block", "金ブロック", 1, Material.GOLD_BLOCK, 0)
+
+			,new MineStackMineObj("diamond_ore","ダイヤモンド鉱石",1,Material.DIAMOND_ORE,0)
+			,new MineStackMineObj("diamond","ダイヤモンド",1,Material.DIAMOND,0)
 			,new MineStackMineObj("diamond_block", "ダイヤモンドブロック", 1, Material.DIAMOND_BLOCK, 0)
-			//2019.2追加分
+
+			,new MineStackMineObj("emerald_ore","エメラルド鉱石",1,Material.EMERALD_ORE,0)
+			,new MineStackMineObj("emerald","エメラルド",1,Material.EMERALD,0)
 			,new MineStackMineObj("emerald_block", "エメラルドブロック", 1, Material.EMERALD_BLOCK, 0)
 
-
-			,new MineStackMineObj("red_sand","赤い砂",1,Material.SAND,1)
-			,new MineStackMineObj("red_sandstone","赤い砂岩",1,Material.RED_SANDSTONE,0)
-
-			,new MineStackMineObj("clay","粘土(ブロック)",1,Material.CLAY,0)
-			,new MineStackMineObj("mossy_cobblestone","苔石",1,Material.MOSSY_COBBLESTONE,0)
-			,new MineStackMineObj("ice","氷",1,Material.ICE,0)
-			,new MineStackMineObj("dirt1","粗い土",1,Material.DIRT,1)
-			,new MineStackMineObj("dirt2","ポドゾル",1,Material.DIRT,2)
-
-			,new MineStackMineObj("snow_block","雪",1,Material.SNOW_BLOCK,0)
-			,new MineStackMineObj("snow_layer","雪タイル",1,Material.SNOW,0)
-			,new MineStackMineObj("snow_ball","雪玉",1,Material.SNOW_BALL,0)
-
-
-			,new MineStackMineObj("mycel","菌糸",1,Material.MYCEL,0)
-
-			,new MineStackMineObj("bone_block","骨ブロック",1,Material.BONE_BLOCK,0)
-
-			//2018.6追加分
-			,new MineStackMineObj("sponge", "スポンジ", 1, Material.SPONGE, 0)
-			,new MineStackMineObj("wet_sponge", "濡れたスポンジ", 1, Material.SPONGE, 1)
 
 	));
 
@@ -304,7 +266,6 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackDropObj("sulphur","火薬",1,Material.SULPHUR,0)
 			,new MineStackDropObj("arrow","矢",1,Material.ARROW,0)
 			,new MineStackDropObj("spider_eye","蜘蛛の目",1,Material.SPIDER_EYE,0)
-
 			,new MineStackDropObj("string","糸",1,Material.STRING,0)
 
 			//2018.6追加分
@@ -314,39 +275,6 @@ public class SeichiAssist extends JavaPlugin{
 			//2019.2追加分
 			,new MineStackDropObj("glass_bottle", "ガラス瓶", 1, Material.GLASS_BOTTLE, 0)
 			,new MineStackDropObj("gold_nugget", "金塊", 1, Material.GOLD_NUGGET, 0)
-
-
-			//2018.6追加分
-			,new MineStackDropObj("egg","卵",1,Material.EGG,0)
-			,new MineStackDropObj("pork","生の豚肉",1,Material.PORK,0)
-			,new MineStackDropObj("cooked_porkchop","焼き豚",1,Material.GRILLED_PORK,0)
-
-			,new MineStackDropObj("raw_chicken","生の鶏肉",1,Material.RAW_CHICKEN,0)
-			,new MineStackDropObj("cooked_chicken","焼き鳥",1,Material.COOKED_CHICKEN,0)
-			,new MineStackDropObj("mutton","生の羊肉",1,Material.MUTTON,0)
-
-			//2018.6追加分
-			,new MineStackDropObj("cooked_mutton", "焼いた羊肉", 1, Material.COOKED_MUTTON, 0)
-
-			,new MineStackDropObj("raw_beef","生の牛肉",1,Material.RAW_BEEF,0)
-
-			//2018.6追加分
-			,new MineStackDropObj("cooked_beaf", "ステーキ", 1, Material.COOKED_BEEF, 0)
-			,new MineStackDropObj("rabbit", "生の兎肉", 1, Material.RABBIT, 0)
-			,new MineStackDropObj("cooked_rabbit", "焼き兎肉", 1, Material.COOKED_RABBIT, 0)
-
-			,new MineStackDropObj("raw_fish0","生魚",1,Material.RAW_FISH,0)
-
-			//2018.6追加分
-			,new MineStackDropObj("cooked_fish0", "焼き魚",1, Material.COOKED_FISH, 0)
-
-			,new MineStackDropObj("raw_fish1","生鮭",1,Material.RAW_FISH,1)
-
-			//2018.6追加分
-			,new MineStackDropObj("cooked_fish1", "焼き鮭", 1,Material.COOKED_FISH, 1)
-
-			,new MineStackDropObj("raw_fish2","クマノミ",1,Material.RAW_FISH,2)
-			,new MineStackDropObj("raw_fish3","フグ",1,Material.RAW_FISH,3)
 			,new MineStackDropObj("blaze_rod","ブレイズロッド",1,Material.BLAZE_ROD,0)
 			,new MineStackDropObj("blaze_powder","ブレイズパウダー",1,Material.BLAZE_POWDER,0)
 			,new MineStackDropObj("ghast_tear","ガストの涙",1,Material.GHAST_TEAR,0)
@@ -354,33 +282,20 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackDropObj("prismarine_shard","プリズマリンの欠片",1,Material.PRISMARINE_SHARD,0)
 			,new MineStackDropObj("prismarine_crystals","プリズマリンクリスタル",1,Material.PRISMARINE_CRYSTALS,0)
 			,new MineStackDropObj("feather","羽",1,Material.FEATHER,0)
-			,new MineStackDropObj("ink_sack0","イカスミ",1,Material.INK_SACK,0)
 			,new MineStackDropObj("leather","革",1,Material.LEATHER,0)
 			,new MineStackDropObj("rabbit_hide","ウサギの皮",1,Material.RABBIT_HIDE,0)
 			,new MineStackDropObj("rabbit_foot","ウサギの足",1,Material.RABBIT_FOOT,0)
-
-			//2019.2追加分
-			,new MineStackDropObj("bread", "パン", 1, Material.BREAD, 0)
-			,new MineStackDropObj("sugar", "砂糖", 1, Material.SUGAR, 0)
-			,new MineStackDropObj("baked_potato", "ベイクドポテト", 1, Material.BAKED_POTATO, 0)
-			,new MineStackDropObj("cake", "ケーキ", 1, Material.CAKE, 0)
-			,new MineStackDropObj("mushroom_stew", "キノコシチュー", 1, Material.MUSHROOM_SOUP, 0)
-			,new MineStackDropObj("rabbit_stew", "ウサギシチュー", 1, Material.RABBIT_STEW, 0)
-			,new MineStackDropObj("beetroot_soup", "ビートルートスープ", 1, Material.BEETROOT_SOUP, 0)
-			,new MineStackDropObj("bowl", "ボウル", 1, Material.BOWL, 0)
 			,new MineStackDropObj("dragon_egg", "エンドラの卵", 1, Material.DRAGON_EGG, 0)
+
+			//2019.4追加分
+			,new MineStackDropObj("shulker_shell", "シュルカーの殻", 1, Material.SHULKER_SHELL, 0)
+			,new MineStackDropObj("totem_of_undying", "不死のトーテム", 1, Material.TOTEM, 0)
+
 	));
 
 	private static final List<MineStackObj> minestacklistfarm = new ArrayList<MineStackObj>(Arrays.asList(
 			//以下採掘で入手可能な農業系ブロック
-			new MineStackFarmObj("log","オークの原木",1,Material.LOG,0)
-			,new MineStackFarmObj("log1","マツの原木",1,Material.LOG,1)
-			,new MineStackFarmObj("log2","シラカバの原木",1,Material.LOG,2)
-			,new MineStackFarmObj("log3","ジャングルの原木",1,Material.LOG,3)
-			,new MineStackFarmObj("log_2","アカシアの原木",1,Material.LOG_2,0)
-			,new MineStackFarmObj("log_21","ダークオークの原木",1,Material.LOG_2,1)
-
-			,new MineStackFarmObj("seeds","種",1,Material.SEEDS,0)
+			new MineStackFarmObj("seeds","種",1,Material.SEEDS,0)
 			,new MineStackFarmObj("apple","リンゴ",1,Material.APPLE,0)
 			,new MineStackFarmObj("long_grass1","草",1,Material.LONG_GRASS,1)
 			,new MineStackFarmObj("long_grass2","シダ",1,Material.LONG_GRASS,2)
@@ -436,131 +351,198 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackFarmObj("beetroot_seeds","ビートルートの種",1,Material.BEETROOT_SEEDS,0)
 			,new MineStackFarmObj("carrot_item","ニンジン",1,Material.CARROT_ITEM,0)
 			,new MineStackFarmObj("potato_item","ジャガイモ",1,Material.POTATO_ITEM,0)
+
+			//2019.4追加分
+			,new MineStackFarmObj("poisonous_potato","青くなったジャガイモ",1,Material.POISONOUS_POTATO,0)
+
 			,new MineStackFarmObj("wheat","小麦",1,Material.WHEAT,0)
 			,new MineStackFarmObj("pumpkin_seeds","カボチャの種",1,Material.PUMPKIN_SEEDS,0)
 			,new MineStackFarmObj("melon_seeds","スイカの種",1,Material.MELON_SEEDS,0)
 			,new MineStackFarmObj("nether_stalk","ネザーウォート",1,Material.NETHER_STALK,0)
+
 			//2018.6追加分
 			,new MineStackFarmObj("chorus_fruit", "コーラスフルーツ", 1, Material.CHORUS_FRUIT, 0)
+
 			//2019.2追加分
-			,new MineStackFarmObj("chorus_plant", "コーラスプラント", 1, Material.CHORUS_PLANT, 0)
 			,new MineStackFarmObj("chorus_flower", "コーラスフラワー", 1, Material.CHORUS_FLOWER, 0)
+
+			//2018.6追加分
+			,new MineStackFarmObj("egg","卵",1,Material.EGG,0)
+			,new MineStackFarmObj("pork","生の豚肉",1,Material.PORK,0)
+			,new MineStackFarmObj("cooked_porkchop","焼き豚",1,Material.GRILLED_PORK,0)
+			,new MineStackFarmObj("raw_chicken","生の鶏肉",1,Material.RAW_CHICKEN,0)
+			,new MineStackFarmObj("cooked_chicken","焼き鳥",1,Material.COOKED_CHICKEN,0)
+			,new MineStackFarmObj("mutton","生の羊肉",1,Material.MUTTON,0)
+			,new MineStackFarmObj("cooked_mutton", "焼いた羊肉", 1, Material.COOKED_MUTTON, 0)
+			,new MineStackFarmObj("raw_beef","生の牛肉",1,Material.RAW_BEEF,0)
+			,new MineStackFarmObj("cooked_beaf", "ステーキ", 1, Material.COOKED_BEEF, 0)
+			,new MineStackFarmObj("rabbit", "生の兎肉", 1, Material.RABBIT, 0)
+			,new MineStackFarmObj("cooked_rabbit", "焼き兎肉", 1, Material.COOKED_RABBIT, 0)
+			,new MineStackFarmObj("raw_fish0","生魚",1,Material.RAW_FISH,0)
+			,new MineStackFarmObj("cooked_fish0", "焼き魚",1, Material.COOKED_FISH, 0)
+			,new MineStackFarmObj("raw_fish1","生鮭",1,Material.RAW_FISH,1)
+			,new MineStackFarmObj("cooked_fish1", "焼き鮭", 1,Material.COOKED_FISH, 1)
+			,new MineStackFarmObj("raw_fish2","クマノミ",1,Material.RAW_FISH,2)
+			,new MineStackFarmObj("raw_fish3","フグ",1,Material.RAW_FISH,3)
+
+			//2019.2追加分
+			,new MineStackFarmObj("bread", "パン", 1, Material.BREAD, 0)
+			,new MineStackFarmObj("sugar", "砂糖", 1, Material.SUGAR, 0)
+			,new MineStackFarmObj("baked_potato", "ベイクドポテト", 1, Material.BAKED_POTATO, 0)
+			,new MineStackFarmObj("cake", "ケーキ", 1, Material.CAKE, 0)
+			,new MineStackFarmObj("mushroom_stew", "キノコシチュー", 1, Material.MUSHROOM_SOUP, 0)
+			,new MineStackFarmObj("rabbit_stew", "ウサギシチュー", 1, Material.RABBIT_STEW, 0)
+			,new MineStackFarmObj("beetroot_soup", "ビートルートスープ", 1, Material.BEETROOT_SOUP, 0)
+			,new MineStackFarmObj("bowl", "ボウル", 1, Material.BOWL, 0)
+
 	));
 
 	private static final List<MineStackObj> minestacklistbuild = new ArrayList<MineStackObj>(Arrays.asList(
 
 			//以下建築系ブロック
-			new MineStackBuildObj("step0","石ハーフブロック",1,Material.STEP,0)
-			,new MineStackBuildObj("step3","丸石ハーフブロック",1,Material.STEP,3)
-
-			,new MineStackBuildObj("polished_granite"	,"磨かれた花崗岩"	,1,Material.STONE,2)
-			,new MineStackBuildObj("polished_diorite"	,"磨かれた閃緑岩"	,1,Material.STONE,4)
-			,new MineStackBuildObj("polished_andesite"	,"磨かれた安山岩"	,1,Material.STONE,6)
-
+			new MineStackBuildObj("log","オークの原木",1,Material.LOG,0)
+			,new MineStackBuildObj("wood","オークの木材",1,Material.WOOD,0)
 			,new MineStackBuildObj("wood_step0","オークの木材ハーフブロック",1,Material.WOOD_STEP,0)
+			,new MineStackBuildObj("oak_stairs", "オークの木の階段", 1, Material.WOOD_STAIRS, 0)
+			,new MineStackBuildObj("fence","オークのフェンス",1,Material.FENCE,0)
+			,new MineStackBuildObj("log1","マツの原木",1,Material.LOG,1)
+			,new MineStackBuildObj("wood_1", "マツの木材", 1, Material.WOOD, 1)
 			,new MineStackBuildObj("wood_step1","マツの木材ハーフブロック",1,Material.WOOD_STEP,1)
+			,new MineStackBuildObj("spruce_stairs", "マツの木の階段", 1, Material.SPRUCE_WOOD_STAIRS, 0)
+			,new MineStackBuildObj("spruce_fence", "マツのフェンス", 1, Material.SPRUCE_FENCE, 0)
+			,new MineStackBuildObj("log2","シラカバの原木",1,Material.LOG,2)
+			,new MineStackBuildObj("wood_2", "シラカバの木材", 1, Material.WOOD, 2)
 			,new MineStackBuildObj("wood_step2","シラカバの木材ハーフブロック",1,Material.WOOD_STEP,2)
+			,new MineStackBuildObj("birch_stairs", "シラカバの木の階段", 1, Material.BIRCH_WOOD_STAIRS, 0)
+			,new MineStackBuildObj("birch_fence", "シラカバのフェンス", 1, Material.BIRCH_FENCE, 0)
+			,new MineStackBuildObj("log3","ジャングルの原木",1,Material.LOG,3)
+			,new MineStackBuildObj("wood_3", "ジャングルの木材", 1, Material.WOOD, 3)
 			,new MineStackBuildObj("wood_step3","ジャングルの木材ハーフブロック",1,Material.WOOD_STEP,3)
+			,new MineStackBuildObj("jungle_stairs", "ジャングルの木の階段", 1, Material.JUNGLE_WOOD_STAIRS, 0)
+			,new MineStackBuildObj("jungle_fence", "ジャングルのフェンス", 1, Material.JUNGLE_FENCE, 0)
+			,new MineStackBuildObj("log_2","アカシアの原木",1,Material.LOG_2,0)
+			,new MineStackBuildObj("wood_4", "アカシアの木材", 1, Material.WOOD, 4)
 			,new MineStackBuildObj("wood_step4","アカシアの木材ハーフブロック",1,Material.WOOD_STEP,4)
+			,new MineStackBuildObj("acacia_stairs", "アカシアの木の階段", 1, Material.ACACIA_STAIRS, 0)
+			,new MineStackBuildObj("acacia_fence", "アカシアのフェンス", 1, Material.ACACIA_FENCE, 0)
+			,new MineStackBuildObj("log_21","ダークオークの原木",1,Material.LOG_2,1)
+			,new MineStackBuildObj("wood_5", "ダークオークの木材", 1, Material.WOOD, 5)
 			,new MineStackBuildObj("wood_step5","ダークオークの木材ハーフブロック",1,Material.WOOD_STEP,5)
+			,new MineStackBuildObj("dark_oak_stairs", "ダークオークの木の階段", 1, Material.DARK_OAK_STAIRS, 0)
+			,new MineStackBuildObj("dark_oak_fence","ダークオークのフェンス",1,Material.DARK_OAK_FENCE,0)
 
+			,new MineStackBuildObj("cobblestone","丸石",1,Material.COBBLESTONE, 0)
+			,new MineStackBuildObj("step3","丸石ハーフブロック",1,Material.STEP,3)
+			,new MineStackBuildObj("stone_stairs", "丸石の階段", 1, Material.COBBLESTONE_STAIRS, 0)
+			,new MineStackBuildObj("cobblestone_wall_0", "丸石の壁", 1, Material.COBBLE_WALL, 0)
+			,new MineStackBuildObj("mossy_cobblestone","苔石",1,Material.MOSSY_COBBLESTONE,0)
+			,new MineStackBuildObj("cobblestone_wall_1", "苔石の壁", 1, Material.COBBLE_WALL, 1)
+			,new MineStackBuildObj("stone","石",1,Material.STONE,0)
+			,new MineStackBuildObj("step0","石ハーフブロック",1,Material.STEP,0)
+			,new MineStackBuildObj("smooth_brick0","石レンガ",1,Material.SMOOTH_BRICK,0)
+			,new MineStackBuildObj("step5","石レンガハーフブロック",1,Material.STEP,5)
+			,new MineStackBuildObj("smooth_stairs", "石レンガの階段", 1, Material.SMOOTH_STAIRS, 0)
+			,new MineStackBuildObj("smooth_brick3","模様入り石レンガ", 1,Material.SMOOTH_BRICK,3)
+			,new MineStackBuildObj("smooth_brick1","苔石レンガ",1,Material.SMOOTH_BRICK,1)
+			,new MineStackBuildObj("smooth_brick2","ひびの入った石レンガ",1,Material.SMOOTH_BRICK,2)
+
+			,new MineStackBuildObj("sand","砂",1,Material.SAND,0)
+			,new MineStackBuildObj("sandstone","砂岩",1,Material.SANDSTONE,0)
 			,new MineStackBuildObj("step1","砂岩ハーフブロック",1,Material.STEP,1)
-			,new MineStackBuildObj("glass"				,"ガラス"			,1,Material.GLASS,0)
+			,new MineStackBuildObj("standstone_stairs", "砂岩の階段", 1, Material.SANDSTONE_STAIRS, 0)
+			,new MineStackBuildObj("sandstone1","模様入りの砂岩",1,Material.SANDSTONE,1)
+			,new MineStackBuildObj("sandstone2","なめらかな砂岩",1,Material.SANDSTONE,2)
 
-			,new MineStackBuildObj("iron_ingot","鉄インゴット",1,Material.IRON_INGOT,0)
+			,new MineStackBuildObj("red_sand","赤い砂",1,Material.SAND,1)
+			,new MineStackBuildObj("red_sandstone","赤い砂岩",1,Material.RED_SANDSTONE,0)
+			,new MineStackBuildObj("stone_slab20","赤い砂岩ハーフブロック",1,Material.STONE_SLAB2,0)
+			,new MineStackBuildObj("red_sandstone_stairs", "赤い砂岩の階段",1 ,Material.RED_SANDSTONE_STAIRS, 0)
+			,new MineStackBuildObj("red_sandstone1","模様入りの赤い砂岩",1,Material.RED_SANDSTONE,1)
+			,new MineStackBuildObj("red_sandstone2","なめらかな赤い砂岩",1,Material.RED_SANDSTONE,2)
 
-			,new MineStackBuildObj("nether_brick","ネザーレンガ(ブロック)",1,Material.NETHER_BRICK,0)
-			,new MineStackBuildObj("nether_brick_fence","ネザーレンガのフェンス",1,Material.NETHER_FENCE,0)
-			,new MineStackBuildObj("nether_brick_stairs","ネザーレンガの階段",1,Material.NETHER_BRICK_STAIRS,0)
+			,new MineStackBuildObj("clay_ball"			,"粘土"			,1,Material.CLAY_BALL,0)
+			,new MineStackBuildObj("clay","粘土(ブロック)",1,Material.CLAY,0)
+			,new MineStackBuildObj("brick_item"			,"レンガ"			,1,Material.CLAY_BRICK,0)
+			,new MineStackBuildObj("brick","レンガ(ブロック)"	,1,Material.BRICK,0)
+			,new MineStackBuildObj("step4","レンガハーフブロック",1,Material.STEP,4)
+			,new MineStackBuildObj("brick_stairs", "レンガの階段", 1, Material.BRICK_STAIRS, 0)
 
-			,new MineStackBuildObj("step6","ネザーレンガハーフブロック",1,Material.STEP,6)
-
-			,new MineStackBuildObj("torch","松明",1,Material.TORCH,0)
-			,new MineStackBuildObj("jack_o_lantern","ジャック・オ・ランタン",1,Material.JACK_O_LANTERN,0)
-			,new MineStackBuildObj("nether_brick_item"	,"ネザーレンガ"		,1,Material.NETHER_BRICK_ITEM,0)
-
-			,new MineStackBuildObj("step7","ネザー水晶ハーフブロック",1,Material.STEP,7)
 			,new MineStackBuildObj("quartz_block"		,"ネザー水晶ブロック"	,1,Material.QUARTZ_BLOCK,0)
-
-			//2018.6追加分
+			,new MineStackBuildObj("step7","ネザー水晶ハーフブロック",1,Material.STEP,7)
+			,new MineStackBuildObj("quartz_stairs", "ネザー水晶の階段", 1, Material.QUARTZ_STAIRS, 0)
 			,new MineStackBuildObj("quartz_block1", "模様入りネザー水晶ブロック", 1, Material.QUARTZ_BLOCK, 1)
 			,new MineStackBuildObj("quartz_block2", "柱状ネザー水晶ブロック", 1, Material.QUARTZ_BLOCK, 2)
 
+			,new MineStackBuildObj("netherrack","ネザーラック",1,Material.NETHERRACK,0)
+			,new MineStackBuildObj("nether_brick_item"	,"ネザーレンガ"		,1,Material.NETHER_BRICK_ITEM,0)
+			,new MineStackBuildObj("nether_brick","ネザーレンガ(ブロック)",1,Material.NETHER_BRICK,0)
+			,new MineStackBuildObj("step6","ネザーレンガハーフブロック",1,Material.STEP,6)
+			,new MineStackBuildObj("nether_brick_stairs","ネザーレンガの階段",1,Material.NETHER_BRICK_STAIRS,0)
+			,new MineStackBuildObj("nether_brick_fence","ネザーレンガのフェンス",1,Material.NETHER_FENCE,0)
+
+			,new MineStackBuildObj("red_nether_brick"	,"赤いネザーレンガ"	,1,Material.RED_NETHER_BRICK,0)
+			,new MineStackBuildObj("nether_wart_block"    ,"ネザ－ウォートブロック"    ,1,Material.NETHER_WART_BLOCK,0)
+
+			,new MineStackBuildObj("ender_stone","エンドストーン",1,Material.ENDER_STONE,0)
 			,new MineStackBuildObj("end_bricks","エンドストーンレンガ",1,Material.END_BRICKS,0)
 
 			,new MineStackBuildObj("purpur_block","プルパーブロック",1,Material.PURPUR_BLOCK,0)
 			,new MineStackBuildObj("purpur_pillar","柱状プルパーブロック",1,Material.PURPUR_PILLAR,0)
-			,new MineStackBuildObj("purpur_stairs","プルパーの階段",1,Material.PURPUR_STAIRS,0)
-
 			,new MineStackBuildObj("purpur_slab","プルパーハーフブロック",1,Material.PURPUR_SLAB,0)
-
-			,new MineStackBuildObj("gold_ingot","金インゴット",1,Material.GOLD_INGOT,0)
-
-
-
-			,new MineStackBuildObj("wood","オークの木材",1,Material.WOOD,0)
-			//2018.6追加分
-			,new MineStackBuildObj("wood_1", "マツの木材", 1, Material.WOOD, 1)
-			,new MineStackBuildObj("wood_2", "シラカバの木材", 1, Material.WOOD, 2)
-			,new MineStackBuildObj("wood_3", "ジャングルの木材", 1, Material.WOOD, 3)
-			,new MineStackBuildObj("wood_4", "アカシアの木材", 1, Material.WOOD, 4)
-			,new MineStackBuildObj("wood_5", "ダークオークの木材", 1, Material.WOOD, 5)
-			,new MineStackBuildObj("oak_stairs", "オークの木の階段", 1, Material.WOOD_STAIRS, 0)
-			,new MineStackBuildObj("dark_oak_stairs", "ダークオークの木の階段", 1, Material.DARK_OAK_STAIRS, 0)
-			,new MineStackBuildObj("smooth_stairs", "石レンガの階段", 1, Material.SMOOTH_STAIRS, 0)
-			,new MineStackBuildObj("stone_stairs", "丸石の階段", 1, Material.COBBLESTONE_STAIRS, 0)
-			,new MineStackBuildObj("brick_stairs", "レンガの階段", 1, Material.BRICK_STAIRS, 0)
-			,new MineStackBuildObj("standstone_stairs", "砂岩の階段", 1, Material.SANDSTONE_STAIRS, 0)
-			,new MineStackBuildObj("spruce_stairs", "マツの木の階段", 1, Material.SPRUCE_WOOD_STAIRS, 0)
-			,new MineStackBuildObj("birch_stairs", "シラカバの木の階段", 1, Material.BIRCH_WOOD_STAIRS, 0)
-			,new MineStackBuildObj("jungle_stairs", "ジャングルの木の階段", 1, Material.JUNGLE_WOOD_STAIRS, 0)
-			,new MineStackBuildObj("quartz_stairs", "ネザー水晶の階段", 1, Material.QUARTZ_STAIRS, 0)
-			,new MineStackBuildObj("acacia_stairs", "アカシアの木の階段", 1, Material.ACACIA_STAIRS, 0)
-			,new MineStackBuildObj("red_sandstone_stairs", "赤い砂岩の階段",1 ,Material.RED_SANDSTONE_STAIRS, 0)
-
-			,new MineStackBuildObj("fence","オークのフェンス",1,Material.FENCE,0)
-			,new MineStackBuildObj("dark_oak_fence","ダークオークのフェンス",1,Material.DARK_OAK_FENCE,0)
-			//2018.6追加分
-			,new MineStackBuildObj("spruce_fence", "マツのフェンス", 1, Material.SPRUCE_FENCE, 0)
-			,new MineStackBuildObj("birch_fence", "シラカバのフェンス", 1, Material.BIRCH_FENCE, 0)
-			,new MineStackBuildObj("jungle_fence", "ジャングルのフェンス", 1, Material.JUNGLE_FENCE, 0)
-			,new MineStackBuildObj("acacia_fence", "アカシアのフェンス", 1, Material.ACACIA_FENCE, 0)
-			,new MineStackBuildObj("cobblestone_wall_0", "丸石の壁", 1, Material.COBBLE_WALL, 0)
-			,new MineStackBuildObj("cobblestone_wall_1", "苔石の壁", 1, Material.COBBLE_WALL, 1)
-			,new MineStackBuildObj("bookshelf", "本棚", 1, Material.BOOKSHELF, 0)
-
-			,new MineStackBuildObj("bucket","バケツ",1,Material.BUCKET,0)
-			,new MineStackBuildObj("water_bucket","水入りバケツ",1,Material.WATER_BUCKET,0)
-			,new MineStackBuildObj("lava_bucket","溶岩入りバケツ",1,Material.LAVA_BUCKET,0)
-			,new MineStackBuildObj("milk_bucket","牛乳",1,Material.MILK_BUCKET,0)
-
-			,new MineStackBuildObj("stone_slab20","赤い砂岩ハーフブロック",1,Material.STONE_SLAB2,0)
+			,new MineStackBuildObj("purpur_stairs","プルパーの階段",1,Material.PURPUR_STAIRS,0)
 
 			,new MineStackBuildObj("prismarine0","プリズマリン",1,Material.PRISMARINE,0)
 			,new MineStackBuildObj("prismarine1","プリズマリンレンガ",1,Material.PRISMARINE,1)
 			,new MineStackBuildObj("prismarine2","ダークプリズマリン",1,Material.PRISMARINE,2)
 			,new MineStackBuildObj("sea_lantern","シーランタン",1,Material.SEA_LANTERN,0)
 
+
+			,new MineStackBuildObj("granite","花崗岩",1,Material.STONE,1)
+			,new MineStackBuildObj("polished_granite"	,"磨かれた花崗岩"	,1,Material.STONE,2)
+			,new MineStackBuildObj("diorite","閃緑岩",1,Material.STONE,3)
+			,new MineStackBuildObj("polished_diorite"	,"磨かれた閃緑岩"	,1,Material.STONE,4)
+			,new MineStackBuildObj("andesite","安山岩",1,Material.STONE,5)
+			,new MineStackBuildObj("polished_andesite"	,"磨かれた安山岩"	,1,Material.STONE,6)
+
+			,new MineStackBuildObj("dirt","土",1,Material.DIRT,0)
+			,new MineStackBuildObj("grass","草ブロック",1,Material.GRASS,0)
+			,new MineStackBuildObj("gravel","砂利",1,Material.GRAVEL,0)
+			,new MineStackBuildObj("flint","火打石",1,Material.FLINT,0)
+			,new MineStackBuildObj("flint_and_steel","火打石と打ち金",1,Material.FLINT_AND_STEEL,0)
+			,new MineStackBuildObj("dirt1","粗い土",1,Material.DIRT,1)
+			,new MineStackBuildObj("dirt2","ポドゾル",1,Material.DIRT,2)
+			,new MineStackBuildObj("snow_block","雪",1,Material.SNOW_BLOCK,0)
+			,new MineStackBuildObj("snow_layer","雪タイル",1,Material.SNOW,0)
+			,new MineStackBuildObj("snow_ball","雪玉",1,Material.SNOW_BALL,0)
+			,new MineStackBuildObj("ice","氷",1,Material.ICE,0)
+			,new MineStackBuildObj("packed_ice","氷塊",1,Material.PACKED_ICE, 0)
+			,new MineStackBuildObj("mycel","菌糸",1,Material.MYCEL,0)
+			,new MineStackBuildObj("bone_block","骨ブロック",1,Material.BONE_BLOCK,0)
+
+			//2018.6追加分
+			,new MineStackBuildObj("sponge", "スポンジ", 1, Material.SPONGE, 0)
+			,new MineStackBuildObj("wet_sponge", "濡れたスポンジ", 1, Material.SPONGE, 1)
+
+			,new MineStackBuildObj("soul_sand","ソウルサンド",1,Material.SOUL_SAND,0)
+			,new MineStackBuildObj("magma","マグマブロック",1,Material.MAGMA,0)
+			,new MineStackBuildObj("obsidian","黒曜石",1,Material.OBSIDIAN,0)
+			,new MineStackBuildObj("glowstone_dust","グロウストーンダスト",1,Material.GLOWSTONE_DUST,0)
+			,new MineStackBuildObj("glowstone","グロウストーン",1,Material.GLOWSTONE,0)
+
 			//2018.6追加
+			,new MineStackBuildObj("torch","松明",1,Material.TORCH,0)
+			,new MineStackBuildObj("jack_o_lantern","ジャック・オ・ランタン",1,Material.JACK_O_LANTERN,0)
 			,new MineStackBuildObj("end_rod", "エンドロッド", 1, Material.END_ROD, 0)
 
-			,new MineStackBuildObj("step4","レンガハーフブロック",1,Material.STEP,4)
-			,new MineStackBuildObj("clay_ball"			,"粘土"			,1,Material.CLAY_BALL,0)
-			,new MineStackBuildObj("brick"				,"レンガ(ブロック)"	,1,Material.BRICK,0)
-			,new MineStackBuildObj("brick_item"			,"レンガ"			,1,Material.CLAY_BRICK,0)
+			,new MineStackBuildObj("bucket","バケツ",1,Material.BUCKET,0)
+			,new MineStackBuildObj("water_bucket","水入りバケツ",1,Material.WATER_BUCKET,0)
+			,new MineStackBuildObj("lava_bucket","溶岩入りバケツ",1,Material.LAVA_BUCKET,0)
+			,new MineStackBuildObj("milk_bucket","牛乳",1,Material.MILK_BUCKET,0)
 
 			,new MineStackBuildObj("web","クモの巣",1,Material.WEB,0)
 			,new MineStackBuildObj("rails","レール",1,Material.RAILS,0)
 
-			,new MineStackBuildObj("smooth_brick0","石レンガ",1,Material.SMOOTH_BRICK,0)
-			,new MineStackBuildObj("smooth_brick1","苔石レンガ",1,Material.SMOOTH_BRICK,1)
-			,new MineStackBuildObj("smooth_brick2","ひびの入った石レンガ",1,Material.SMOOTH_BRICK,2)
-			,new MineStackBuildObj("smooth_brick3","模様入り石レンガ", 1,Material.SMOOTH_BRICK,3)
 
-			,new MineStackBuildObj("step5","石レンガハーフブロック",1,Material.STEP,5)
-
-			,new MineStackBuildObj("red_nether_brick"	,"赤いネザーレンガ"	,1,Material.RED_NETHER_BRICK,0)
-			,new MineStackBuildObj("nether_wart_block"    ,"ネザ－ウォートブロック"    ,1,Material.NETHER_WART_BLOCK,0)
 
 			//2018.6追加分
 			,new MineStackBuildObj("furnace", "かまど", 1, Material.FURNACE, 0)
@@ -569,6 +551,7 @@ public class SeichiAssist extends JavaPlugin{
 
 			//2019.2追加分
 			,new MineStackBuildObj("book","本", 1, Material.BOOK, 0)
+			,new MineStackBuildObj("bookshelf", "本棚", 1, Material.BOOKSHELF, 0)
 			,new MineStackBuildObj("iron_bars","鉄格子", 1, Material.IRON_FENCE, 0)
 			,new MineStackBuildObj("anvil","金床", 1, Material.ANVIL, 0)
 			,new MineStackBuildObj("cauldron","大釜", 1, Material.CAULDRON_ITEM, 0)
@@ -584,29 +567,81 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackBuildObj("end_crystal","エンドクリスタル", 1, Material.END_CRYSTAL, 0)
 			,new MineStackBuildObj("enchanting_table","エンチャントテーブル", 1, Material.ENCHANTMENT_TABLE, 0)
 
+			//2019.4追加
+			,new MineStackBuildObj("jukebox","ジュークボックス", 1, Material.JUKEBOX, 0)
 
 
 			//2019.2採掘系より移動、追加
 
-			,new MineStackBuildObj("hard_clay","堅焼き粘土",1,Material.HARD_CLAY,0)
+			,new MineStackBuildObj("hard_clay","テラコッタ",1,Material.HARD_CLAY,0)
+			,new MineStackBuildObj("stained_clay","白色のテラコッタ",1,Material.STAINED_CLAY,0)
+			,new MineStackBuildObj("stained_clay1","橙色のテラコッタ",1,Material.STAINED_CLAY,1)
+			,new MineStackBuildObj("stained_clay2","赤紫色のテラコッタ",1,Material.STAINED_CLAY,2)
+			,new MineStackBuildObj("stained_clay3","空色のテラコッタ",1,Material.STAINED_CLAY,3)
+			,new MineStackBuildObj("stained_clay4","黄色のテラコッタ",1,Material.STAINED_CLAY,4)
+			,new MineStackBuildObj("stained_clay5","黄緑色のテラコッタ",1,Material.STAINED_CLAY,5)
+			,new MineStackBuildObj("stained_clay6","桃色のテラコッタ",1,Material.STAINED_CLAY,6)
+			,new MineStackBuildObj("stained_clay7","灰色のテラコッタ",1,Material.STAINED_CLAY,7)
+			,new MineStackBuildObj("stained_clay8","薄灰色のテラコッタ",1,Material.STAINED_CLAY,8)
+			,new MineStackBuildObj("stained_clay9","水色のテラコッタ",1,Material.STAINED_CLAY,9)
+			,new MineStackBuildObj("stained_clay10","紫色のテラコッタ",1,Material.STAINED_CLAY,10)
+			,new MineStackBuildObj("stained_clay11","青色のテラコッタ",1,Material.STAINED_CLAY,11)
+			,new MineStackBuildObj("stained_clay12","茶色のテラコッタ",1,Material.STAINED_CLAY,12)
+			,new MineStackBuildObj("stained_clay13","緑色のテラコッタ",1,Material.STAINED_CLAY,13)
+			,new MineStackBuildObj("stained_clay14","赤色のテラコッタ",1,Material.STAINED_CLAY,14)
+			,new MineStackBuildObj("stained_clay15","黒色のテラコッタ",1,Material.STAINED_CLAY,15)
 
-			,new MineStackBuildObj("stained_clay","白色の堅焼き粘土",1,Material.STAINED_CLAY,0)
-			,new MineStackBuildObj("stained_clay1","橙色の堅焼き粘土",1,Material.STAINED_CLAY,1)
-			,new MineStackBuildObj("stained_clay2","赤紫の堅焼き粘土",1,Material.STAINED_CLAY,2)
-			,new MineStackBuildObj("stained_clay3","空色の堅焼き粘土",1,Material.STAINED_CLAY,3)
-			,new MineStackBuildObj("stained_clay4","黄色の堅焼き粘土",1,Material.STAINED_CLAY,4)
-			,new MineStackBuildObj("stained_clay5","黄緑色の堅焼き粘土",1,Material.STAINED_CLAY,5)
-			,new MineStackBuildObj("stained_clay6","桃色の堅焼き粘土",1,Material.STAINED_CLAY,6)
-			,new MineStackBuildObj("stained_clay7","灰色の堅焼き粘土",1,Material.STAINED_CLAY,7)
-			,new MineStackBuildObj("stained_clay8","薄灰色の堅焼き粘土",1,Material.STAINED_CLAY,8)
-			,new MineStackBuildObj("stained_clay9","水色の堅焼き粘土",1,Material.STAINED_CLAY,9)
-			,new MineStackBuildObj("stained_clay10","紫色の堅焼き粘土",1,Material.STAINED_CLAY,10)
-			,new MineStackBuildObj("stained_clay11","青色の堅焼き粘土",1,Material.STAINED_CLAY,11)
-			,new MineStackBuildObj("stained_clay12","茶色の堅焼き粘土",1,Material.STAINED_CLAY,12)
-			,new MineStackBuildObj("stained_clay13","緑色の堅焼き粘土",1,Material.STAINED_CLAY,13)
-			,new MineStackBuildObj("stained_clay14","赤色の堅焼き粘土",1,Material.STAINED_CLAY,14)
-			,new MineStackBuildObj("stained_clay15","黒色の堅焼き粘土",1,Material.STAINED_CLAY,15)
 
+			//2019.4追加
+			,new MineStackBuildObj("concrete","白色のコンクリート",1,Material.CONCRETE,0)
+			,new MineStackBuildObj("concrete","橙色のコンクリート",1,Material.CONCRETE,1)
+			,new MineStackBuildObj("concrete","赤紫色のコンクリート",1,Material.CONCRETE,2)
+			,new MineStackBuildObj("concrete","空色のコンクリート",1,Material.CONCRETE,3)
+			,new MineStackBuildObj("concrete","黄色のコンクリート",1,Material.CONCRETE,4)
+			,new MineStackBuildObj("concrete","黄緑色のコンクリート",1,Material.CONCRETE,5)
+			,new MineStackBuildObj("concrete","桃色のコンクリート",1,Material.CONCRETE,6)
+			,new MineStackBuildObj("concrete","灰色のコンクリート",1,Material.CONCRETE,7)
+			,new MineStackBuildObj("concrete","薄灰色のコンクリート",1,Material.CONCRETE,8)
+			,new MineStackBuildObj("concrete","水色のコンクリート",1,Material.CONCRETE,9)
+			,new MineStackBuildObj("concrete","紫色のコンクリート",1,Material.CONCRETE,10)
+			,new MineStackBuildObj("concrete","青色のコンクリート",1,Material.CONCRETE,11)
+			,new MineStackBuildObj("concrete","茶色のコンクリート",1,Material.CONCRETE,12)
+			,new MineStackBuildObj("concrete","緑色のコンクリート",1,Material.CONCRETE,13)
+			,new MineStackBuildObj("concrete","赤色のコンクリート",1,Material.CONCRETE,14)
+			,new MineStackBuildObj("concrete","黒色のコンクリート",1,Material.CONCRETE,15)
+
+			,new MineStackBuildObj("concrete_powder","白色のコンクリートパウダー",1,Material.CONCRETE_POWDER,0)
+			,new MineStackBuildObj("concrete_powder","橙色のコンクリートパウダー",1,Material.CONCRETE_POWDER,1)
+			,new MineStackBuildObj("concrete_powder","赤紫色のコンクリートパウダー",1,Material.CONCRETE_POWDER,2)
+			,new MineStackBuildObj("concrete_powder","空色のコンクリートパウダー",1,Material.CONCRETE_POWDER,3)
+			,new MineStackBuildObj("concrete_powder","黄色のコンクリートパウダー",1,Material.CONCRETE_POWDER,4)
+			,new MineStackBuildObj("concrete_powder","黄緑色のコンクリートパウダー",1,Material.CONCRETE_POWDER,5)
+			,new MineStackBuildObj("concrete_powder","桃色のコンクリートパウダー",1,Material.CONCRETE_POWDER,6)
+			,new MineStackBuildObj("concrete_powder","灰色のコンクリートパウダー",1,Material.CONCRETE_POWDER,7)
+			,new MineStackBuildObj("concrete_powder","薄灰色のコンクリートパウダー",1,Material.CONCRETE_POWDER,8)
+			,new MineStackBuildObj("concrete_powder","水色のコンクリートパウダー",1,Material.CONCRETE_POWDER,9)
+			,new MineStackBuildObj("concrete_powder","紫色のコンクリートパウダー",1,Material.CONCRETE_POWDER,10)
+			,new MineStackBuildObj("concrete_powder","青色のコンクリートパウダー",1,Material.CONCRETE_POWDER,11)
+			,new MineStackBuildObj("concrete_powder","茶色のコンクリートパウダー",1,Material.CONCRETE_POWDER,12)
+			,new MineStackBuildObj("concrete_powder","緑色のコンクリートパウダー",1,Material.CONCRETE_POWDER,13)
+			,new MineStackBuildObj("concrete_powder","赤色のコンクリートパウダー",1,Material.CONCRETE_POWDER,14)
+			,new MineStackBuildObj("concrete_powder","黒色のコンクリートパウダー",1,Material.CONCRETE_POWDER,15)
+
+			,new MineStackBuildObj("white_glazed_terracotta","白色の彩釉テラコッタ",1,Material.WHITE_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("orange_glazed_terracotta","橙色の彩釉テラコッタ",1,Material.ORANGE_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("magenta_glazed_terracotta","赤紫色の彩釉テラコッタ",1,Material.MAGENTA_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("light_blue_glazed_terracotta","空色の彩釉テラコッタ",1,Material.LIGHT_BLUE_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("yellow_glazed_terracotta","黄色の彩釉テラコッタ",1,Material.YELLOW_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("lime_glazed_terracotta","黄緑色の彩釉テラコッタ",1,Material.LIME_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("pink_glazed_terracotta","桃色の彩釉テラコッタ",1,Material.PINK_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("gray_glazed_terracotta","灰色の彩釉テラコッタ",1,Material.GRAY_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("silver_glazed_terracotta","薄灰色の彩釉テラコッタ",1,Material.SILVER_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("cyan_glazed_terracotta","青緑色の彩釉テラコッタ",1,Material.CYAN_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("blue_glazed_terracotta","青色の彩釉テラコッタ",1,Material.BLUE_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("brown_glazed_terracotta","茶色の彩釉テラコッタ",1,Material.BROWN_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("green_glazed_terracotta","緑色の彩釉テラコッタ",1,Material.GREEN_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("red_glazed_terracotta","赤色の彩釉テラコッタ",1,Material.RED_GLAZED_TERRACOTTA,0)
+			,new MineStackBuildObj("black_glazed_terracotta","黒色の彩釉テラコッタ",1,Material.BLACK_GLAZED_TERRACOTTA,0)
 
 			//2018.6追加
 			,new MineStackBuildObj("wool_0", "羊毛", 1, Material.WOOL, 0)
@@ -641,6 +676,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackBuildObj("carpet_13", "緑色のカーペット", 1, Material.CARPET, 13)
 			,new MineStackBuildObj("carpet_14", "赤色のカーペット", 1, Material.CARPET, 14)
 			,new MineStackBuildObj("carpet_15", "黒色のカーペット", 1, Material.CARPET, 15)
+			,new MineStackBuildObj("glass"				,"ガラス"			,1,Material.GLASS,0)
 			,new MineStackBuildObj("stained_glass_0", "白色の色付きガラス", 1, Material.STAINED_GLASS, 0)
 			,new MineStackBuildObj("stained_glass_1", "橙色の色付きガラス", 1, Material.STAINED_GLASS, 1)
 			,new MineStackBuildObj("stained_glass_2", "赤紫色の色付きガラス", 1, Material.STAINED_GLASS, 2)
@@ -658,22 +694,22 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackBuildObj("stained_glass_14", "赤色の色付きガラス", 1, Material.STAINED_GLASS, 14)
 			,new MineStackBuildObj("stained_glass_15", "黒色の色付きガラス", 1, Material.STAINED_GLASS, 15)
 			,new MineStackBuildObj("glass_panel", "板ガラス", 1, Material.THIN_GLASS, 0)
-			,new MineStackBuildObj("glass_panel_0", "白色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 0)
-			,new MineStackBuildObj("glass_panel_1", "橙色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 1)
-			,new MineStackBuildObj("glass_panel_2", "赤紫色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 2)
-			,new MineStackBuildObj("glass_panel_3", "空色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 3)
-			,new MineStackBuildObj("glass_panel_4", "黄色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 4)
-			,new MineStackBuildObj("glass_panel_5", "黄緑色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 5)
-			,new MineStackBuildObj("glass_panel_6", "桃色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 6)
-			,new MineStackBuildObj("glass_panel_7", "灰色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 7)
-			,new MineStackBuildObj("glass_panel_8", "薄灰色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 8)
-			,new MineStackBuildObj("glass_panel_9", "水色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 9)
-			,new MineStackBuildObj("glass_panel_10", "紫色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 10)
-			,new MineStackBuildObj("glass_panel_11", "青色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 11)
-			,new MineStackBuildObj("glass_panel_12", "茶色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 12)
-			,new MineStackBuildObj("glass_panel_13", "緑色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 13)
-			,new MineStackBuildObj("glass_panel_14", "赤色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 14)
-			,new MineStackBuildObj("glass_panel_15", "黒色の色付きガラス版", 1, Material.STAINED_GLASS_PANE, 15)
+			,new MineStackBuildObj("glass_panel_0", "白色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 0)
+			,new MineStackBuildObj("glass_panel_1", "橙色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 1)
+			,new MineStackBuildObj("glass_panel_2", "赤紫色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 2)
+			,new MineStackBuildObj("glass_panel_3", "空色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 3)
+			,new MineStackBuildObj("glass_panel_4", "黄色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 4)
+			,new MineStackBuildObj("glass_panel_5", "黄緑色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 5)
+			,new MineStackBuildObj("glass_panel_6", "桃色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 6)
+			,new MineStackBuildObj("glass_panel_7", "灰色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 7)
+			,new MineStackBuildObj("glass_panel_8", "薄灰色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 8)
+			,new MineStackBuildObj("glass_panel_9", "水色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 9)
+			,new MineStackBuildObj("glass_panel_10", "紫色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 10)
+			,new MineStackBuildObj("glass_panel_11", "青色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 11)
+			,new MineStackBuildObj("glass_panel_12", "茶色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 12)
+			,new MineStackBuildObj("glass_panel_13", "緑色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 13)
+			,new MineStackBuildObj("glass_panel_14", "赤色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 14)
+			,new MineStackBuildObj("glass_panel_15", "黒色の色付きガラス板", 1, Material.STAINED_GLASS_PANE, 15)
 			,new MineStackBuildObj("dye_1", "赤色の染料", 1, Material.INK_SACK, 1)
 			,new MineStackBuildObj("dye_2", "緑色の染料", 1, Material.INK_SACK, 2)
 			,new MineStackBuildObj("dye_5", "紫色の染料", 1, Material.INK_SACK, 5)
@@ -687,6 +723,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackBuildObj("dye_13", "赤紫色の染料", 1, Material.INK_SACK, 13)
 			,new MineStackBuildObj("dye_14", "橙色の染料", 1, Material.INK_SACK, 14)
 			,new MineStackBuildObj("dye_15", "骨粉", 1, Material.INK_SACK, 15)
+			,new MineStackBuildObj("ink_sack0","イカスミ",1,Material.INK_SACK,0)
 
 
 	));

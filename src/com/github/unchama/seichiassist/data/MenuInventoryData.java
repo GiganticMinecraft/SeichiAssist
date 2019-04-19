@@ -169,7 +169,7 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack機能");
 		lore.clear();
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "説明しよう!MineStackとは…"
-				, ChatColor.RESET + "" + "主要ブロックを無限にスタック出来る!"
+				, ChatColor.RESET + "" + "主要アイテムを無限にスタック出来る!"
 				, ChatColor.RESET + "" + "スタックしたアイテムは"
 				, ChatColor.RESET + "" + "ここから取り出せるゾ!"
 				));
@@ -178,7 +178,7 @@ public class MenuInventoryData {
 		}else{
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで開く");
 		}
-		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※スタックしたブロックは");
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※スタックしたアイテムは");
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "各サバイバルサーバー間で");
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "共有されます");
 		itemmeta.setLore(lore);
@@ -905,7 +905,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.STONE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE);
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "採掘系アイテム");
+		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "鉱石系アイテム");
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(1,itemstack);
 
@@ -921,7 +921,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.SEEDS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SEEDS);
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "農業系アイテム");
+		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "農業・食料系アイテム");
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(3,itemstack);
 
@@ -1016,11 +1016,11 @@ public class MenuInventoryData {
 		//Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
 		Inventory inventory = null;
 		if(stack_type==0){
-			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "採掘系MineStack");
+			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "鉱石系MineStack");
 		} else if(stack_type==1){
 			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ドロップ系MineStack");
 		} else if(stack_type==2){
-			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "農業系MineStack");
+			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "農業・食料系MineStack");
 		} else if(stack_type==3){
 			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "建築系MineStack");
 		} else if(stack_type==4){
