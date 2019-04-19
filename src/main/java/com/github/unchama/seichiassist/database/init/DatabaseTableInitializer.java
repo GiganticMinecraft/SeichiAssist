@@ -8,9 +8,9 @@ import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.Try;
 import com.github.unchama.util.Unit;
 import com.github.unchama.util.ValuelessTry;
+import com.github.unchama.util.collection.MapFactory;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -41,27 +41,14 @@ public class DatabaseTableInitializer {
         final String mineStackGachaDataTableName = DatabaseConstants.MINESTACK_GACHADATA_TABLENAME;
         final String donateDataTableName = DatabaseConstants.DONATEDATA_TABLENAME;
 
-        final Map<String, TableInitializationQueryGenerator> tableQueryGenerators =
-                new HashMap<String, TableInitializationQueryGenerator>() {
-                    {
-                        put(
-                                playerDataTableName,
-                                new PlayerDataTableQueryGenerator(referenceFor(playerDataTableName), config)
-                        );
-                        put(
-                                gachaDataTableName,
-                                new GachaDataTableQueryGenerator(referenceFor(gachaDataTableName))
-                        );
-                        put(
-                                mineStackGachaDataTableName,
-                                new MineStackGachaDataTableQueryGenerator(referenceFor(mineStackGachaDataTableName))
-                        );
-                        put(
-                                donateDataTableName,
-                                new DonateDataTableQueryGenerator(referenceFor(donateDataTableName))
-                        );
-                    }
-                };
+        final Map<String, TableInitializationQueryGenerator> tableQueryGenerators = MapFactory.of(
+                Pair.of(playerDataTableName,
+                        new PlayerDataTableQueryGenerator(referenceFor(playerDataTableName), config)),
+                Pair.of(gachaDataTableName, new GachaDataTableQueryGenerator(referenceFor(gachaDataTableName))),
+                Pair.of(mineStackGachaDataTableName,
+                        new MineStackGachaDataTableQueryGenerator(referenceFor(mineStackGachaDataTableName))),
+                Pair.of(donateDataTableName, new DonateDataTableQueryGenerator(referenceFor(donateDataTableName)))
+        );
 
         final Function<TableInitializationQueryGenerator, ActionStatus> initializeTable = (queryGenerator) ->
                 ValuelessTry
