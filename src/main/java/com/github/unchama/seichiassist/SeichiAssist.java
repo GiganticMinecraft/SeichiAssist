@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.minestack.MineStackObjs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -68,7 +69,6 @@ import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
-
 
 public class SeichiAssist extends JavaPlugin{
 
@@ -217,60 +217,60 @@ public class SeichiAssist extends JavaPlugin{
 	private static final List<MineStackObj> minestacklistmine = Arrays.asList(
 
 			new MineStackMineObj("dirt","土",1,Material.DIRT,0)
-			,new MineStackMineObj("grass","草ブロック",1,Material.GRASS,0)
-			,new MineStackMineObj("cobblestone","丸石",1,Material.COBBLESTONE, 0)
-			,new MineStackMineObj("stone","石",1,Material.STONE,0)
-			,new MineStackMineObj("granite","花崗岩",1,Material.STONE,1)
-			,new MineStackMineObj("diorite","閃緑岩",1,Material.STONE,3)
-			,new MineStackMineObj("andesite","安山岩",1,Material.STONE,5)
+			,MineStackObjs.GRASS.obj
+			,MineStackObjs.COBBLESTONE.obj
+			,MineStackObjs.STONE.obj
+			,MineStackObjs.GRANITE.obj
+			,MineStackObjs.DIORITE.obj
+			,MineStackObjs.ANDESITE.obj
 
-			,new MineStackMineObj("gravel","砂利",1,Material.GRAVEL,0)
+			,MineStackObjs.GRAVEL.obj
 			,new MineStackMineObj("flint","火打石",1,Material.FLINT,0)
 			,new MineStackMineObj("flint_and_steel","火打石と打ち金",1,Material.FLINT_AND_STEEL,0)
-			,new MineStackMineObj("sand","砂",1,Material.SAND,0)
-			,new MineStackMineObj("sandstone","砂岩",1,Material.SANDSTONE,0)
+			,MineStackObjs.SAND.obj
+			,MineStackObjs.SANDSTONE.obj
 			,new MineStackMineObj("sandstone1","模様入りの砂岩",1,Material.SANDSTONE,1)
 			,new MineStackMineObj("sandstone2","なめらかな砂岩",1,Material.SANDSTONE,2)
 
-			,new MineStackMineObj("netherrack","ネザーラック",1,Material.NETHERRACK,0)
-			,new MineStackMineObj("soul_sand","ソウルサンド",1,Material.SOUL_SAND,0)
-			,new MineStackMineObj("coal","石炭",1,Material.COAL,0)
+			,MineStackObjs.NETHERRACK.obj
+			,MineStackObjs.SOUL_SAND.obj
+			,MineStackObjs.COAL.obj
 
 			//2018.6追加分
-			,new MineStackMineObj("coal_1", "木炭",1,  Material.COAL, 1)
-			,new MineStackMineObj("coal_ore","石炭鉱石",1,Material.COAL_ORE,0)
-			,new MineStackMineObj("ender_stone","エンドストーン",1,Material.ENDER_STONE,0)
-			,new MineStackMineObj("iron_ore","鉄鉱石",1,Material.IRON_ORE,0)
-			,new MineStackMineObj("obsidian","黒曜石",1,Material.OBSIDIAN,0)
-			,new MineStackMineObj("packed_ice","氷塊",1,Material.PACKED_ICE, 0)
-			,new MineStackMineObj("quartz","ネザー水晶",1,Material.QUARTZ,0)
-			,new MineStackMineObj("quartz_ore","ネザー水晶鉱石",1,Material.QUARTZ_ORE,0)
-			,new MineStackMineObj("magma","マグマブロック",1,Material.MAGMA,0)
-			,new MineStackMineObj("gold_ore","金鉱石",1,Material.GOLD_ORE,0)
+			,MineStackObjs.CHARCOAL.obj
+			,MineStackObjs.COAL_ORE.obj
+			,MineStackObjs.END_STONE.obj
+			,MineStackObjs.IRON_ORE.obj
+			,MineStackObjs.OBSIDIAN.obj
+			,MineStackObjs.PACKED_ICE.obj
+			,MineStackObjs.QUARTZ.obj
+			,MineStackObjs.QUARTZ_ORE.obj
+			,MineStackObjs.MAGMA.obj
+			,MineStackObjs.GOLD_ORE.obj
 			,new MineStackMineObj("glowstone_dust","グロウストーンダスト",1,Material.GLOWSTONE_DUST,0)
-			,new MineStackMineObj("glowstone","グロウストーン",1,Material.GLOWSTONE,0)
+			,MineStackObjs.GLOWSTONE.obj
 
 
-			,new MineStackMineObj("redstone_ore","レッドストーン鉱石",1,Material.REDSTONE_ORE,0)
-			,new MineStackMineObj("lapis_lazuli","ラピスラズリ",1,Material.INK_SACK,4)
-			,new MineStackMineObj("lapis_ore","ラピスラズリ鉱石",1,Material.LAPIS_ORE,0)
-			,new MineStackMineObj("diamond","ダイヤモンド",1,Material.DIAMOND,0)
-			,new MineStackMineObj("diamond_ore","ダイヤモンド鉱石",1,Material.DIAMOND_ORE,0)
-			,new MineStackMineObj("emerald","エメラルド",1,Material.EMERALD,0)
-			,new MineStackMineObj("emerald_ore","エメラルド鉱石",1,Material.EMERALD_ORE,0)
+			,MineStackObjs.REDSTONE_ORE.obj
+			,MineStackObjs.LAPIS_LAZULI.obj
+			,MineStackObjs.LAPIS_ORE.obj
+			,MineStackObjs.DIAMOND.obj
+			,MineStackObjs.DIAMOND_ORE.obj
+			,MineStackObjs.EMERALD.obj
+			,MineStackObjs.EMERALD_ORE.obj
 
 			//2018.6追加分
-			,new MineStackMineObj("lapis_block", "ラピスラズリブロック", 1, Material.LAPIS_BLOCK, 0)
-			,new MineStackMineObj("iron_block", "鉄ブロック", 1, Material.IRON_BLOCK, 0)
-			,new MineStackMineObj("coal_block", "石炭ブロック", 1, Material.COAL_BLOCK, 0)
-			,new MineStackMineObj("gold_block", "金ブロック", 1, Material.GOLD_BLOCK, 0)
-			,new MineStackMineObj("diamond_block", "ダイヤモンドブロック", 1, Material.DIAMOND_BLOCK, 0)
+			,MineStackObjs.LAPIS_BLOCK.obj
+			,MineStackObjs.IRON_BLOCK.obj
+			,MineStackObjs.COAL_ORE.obj
+			,MineStackObjs.GOLD_BLOCK.obj
+			,MineStackObjs.DIAMOND_BLOCK.obj
 			//2019.2追加分
 			,new MineStackMineObj("emerald_block", "エメラルドブロック", 1, Material.EMERALD_BLOCK, 0)
 
 
-			,new MineStackMineObj("red_sand","赤い砂",1,Material.SAND,1)
-			,new MineStackMineObj("red_sandstone","赤い砂岩",1,Material.RED_SANDSTONE,0)
+			,MineStackObjs.RED_SAND.obj
+			,MineStackObjs.RED_SANDSTONE.obj
 
 			,new MineStackMineObj("clay","粘土(ブロック)",1,Material.CLAY,0)
 			,new MineStackMineObj("mossy_cobblestone","苔石",1,Material.MOSSY_COBBLESTONE,0)
@@ -590,15 +590,15 @@ public class SeichiAssist extends JavaPlugin{
 
 			,new MineStackBuildObj("hard_clay","堅焼き粘土",1,Material.HARD_CLAY,0)
 
-			,new MineStackBuildObj("stained_clay","白色の堅焼き粘土",1,Material.STAINED_CLAY,0)
-			,new MineStackBuildObj("stained_clay1","橙色の堅焼き粘土",1,Material.STAINED_CLAY,1)
+			,MineStackObjs.WHITE_STAINED_HARDENED_CLAY.obj
+			,MineStackObjs.ORANGE_STAINED_HARDENED_CLAY.obj
 			,new MineStackBuildObj("stained_clay2","赤紫の堅焼き粘土",1,Material.STAINED_CLAY,2)
 			,new MineStackBuildObj("stained_clay3","空色の堅焼き粘土",1,Material.STAINED_CLAY,3)
-			,new MineStackBuildObj("stained_clay4","黄色の堅焼き粘土",1,Material.STAINED_CLAY,4)
+			,MineStackObjs.YELLOW_STAINED_HARDENED_CLAY.obj
 			,new MineStackBuildObj("stained_clay5","黄緑色の堅焼き粘土",1,Material.STAINED_CLAY,5)
 			,new MineStackBuildObj("stained_clay6","桃色の堅焼き粘土",1,Material.STAINED_CLAY,6)
 			,new MineStackBuildObj("stained_clay7","灰色の堅焼き粘土",1,Material.STAINED_CLAY,7)
-			,new MineStackBuildObj("stained_clay8","薄灰色の堅焼き粘土",1,Material.STAINED_CLAY,8)
+			,MineStackObjs.LIGHT_GRAY_STAINED_HARDENED_CLAY.obj
 			,new MineStackBuildObj("stained_clay9","水色の堅焼き粘土",1,Material.STAINED_CLAY,9)
 			,new MineStackBuildObj("stained_clay10","紫色の堅焼き粘土",1,Material.STAINED_CLAY,10)
 			,new MineStackBuildObj("stained_clay11","青色の堅焼き粘土",1,Material.STAINED_CLAY,11)
