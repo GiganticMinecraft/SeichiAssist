@@ -83,3 +83,8 @@ commands:
       usage: /<command>
       permission: multiseichiplugin.minehead
       permission-message: You don't have <permission>
+  regms:
+      description: This is a MineStack register command.
+      usage: /<command>
+      permission: multiseichiplugin.regms
+      permission-message: You don't have <permission>
