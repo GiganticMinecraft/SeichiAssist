@@ -5,9 +5,9 @@ import com.github.unchama.seichiassist.database.DatabaseConstants;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.database.init.ddl.*;
 import com.github.unchama.util.ActionStatus;
-import com.github.unchama.util.Try;
+import com.github.unchama.util.failable.Try;
 import com.github.unchama.util.Unit;
-import com.github.unchama.util.TryWithoutFailValue;
+import com.github.unchama.util.failable.TryWithoutFailValue;
 import com.github.unchama.util.collection.MapFactory;
 import org.apache.commons.lang3.tuple.Pair;
 

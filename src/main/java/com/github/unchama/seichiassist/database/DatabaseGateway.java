@@ -7,14 +7,13 @@ import com.github.unchama.seichiassist.database.manipulators.GachaDataManipulato
 import com.github.unchama.seichiassist.database.manipulators.MineStackGachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.PlayerDataManipulator;
 import com.github.unchama.util.ActionStatus;
-import com.github.unchama.util.Try;
+import com.github.unchama.util.failable.Try;
 import com.github.unchama.util.Unit;
-import com.github.unchama.util.TryWithoutFailValue;
+import com.github.unchama.util.failable.TryWithoutFailValue;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
-import java.util.function.Supplier;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 import static com.github.unchama.util.ActionStatus.Ok;
