@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.commands.RegisterMineStackCommand;
 import com.github.unchama.seichiassist.minestack.MineStackObjs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -932,6 +933,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("subhome", new subHomeCommand(instance));
 		commandlist.put("gtfever", new GiganticFeverCommand());
 		commandlist.put("minehead", new MineHeadCommand(instance));
+		commandlist.put("regms", new RegisterMineStackCommand());
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
