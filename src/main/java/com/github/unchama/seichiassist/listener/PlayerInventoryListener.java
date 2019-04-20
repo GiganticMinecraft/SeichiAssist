@@ -1975,31 +1975,28 @@ public class PlayerInventoryListener implements Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 			//ページ変更処理
-			if (itemstackcurrent.getType().equals(Material.SKULL_ITEM)) {
-				SkullMeta skullMeta = (SkullMeta) itemstackcurrent.getItemMeta();
-				if (skullMeta.hasOwner()) {
-					switch (skullMeta.getOwner()) {
-						case "MHF_ArrowLeft": {
-							player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-							player.openInventory(MenuInventoryData.getMineStackMainMenu(player));
-							return;
-						}
+			if (itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")) {
+				/* ArrowLeftを使っているのはメインメニューに戻るボタンのみ。その部分の処理 */
+				//開く音を再生
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.openInventory(MenuInventoryData.getMineStackMainMenu(player));
+				return;
+			}
 
-						case "MHF_ArrowDown": {
-							/* ArrowDownならば、次ページ移行処理 */
-							ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-							MineStackMenuTransfer(topinventory, player, itemmeta);
-							return;
-						}
+			//追加
+			if (itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")) {
+				/* ArrowDownならば、次ページ移行処理 */
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				MineStackMenuTransfer(topinventory, player, itemmeta);
+				return;
+			}
 
-						case "MHF_ArrowUp": {
-							/* ArrowUpならば、前ページ移行処理 */
-							ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-							MineStackMenuTransfer(topinventory, player, itemmeta);
-							return;
-						}
-					}
-				}
+			//追加
+			if (itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")) {
+				/* ArrowUpならば、前ページ移行処理 */
+				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+				MineStackMenuTransfer(topinventory, player, itemmeta);
+				return;
 			}
 
 			if (itemstackcurrent.getType().equals(Material.IRON_PICKAXE)) {
