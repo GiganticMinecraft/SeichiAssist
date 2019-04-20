@@ -383,7 +383,7 @@ public class gachaCommand implements TabExecutor{
 			if(args.length != 1){
 				sender.sendMessage("/gacha list で現在登録されているガチャアイテムを全て表示します");
 			}
-			if(SeichiAssist.gachadatalist.isEmpty()){
+			if(MineStackRegistry.getGachaDataes().isEmpty()){
 				sender.sendMessage("ガチャが設定されていません");
 				return true;
 			}
@@ -393,7 +393,7 @@ public class gachaCommand implements TabExecutor{
 			if(args.length != 1){
 				sender.sendMessage("/gacha listms で現在登録されているガチャアイテムを全て表示します");
 			}
-			if(SeichiAssist.msgachadatalist.isEmpty()){
+			if(MineStackRegistry.getGachaDataes().isEmpty()){
 				sender.sendMessage("MineStack用ガチャリストが設定されていません");
 				return true;
 			}

@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
@@ -2526,7 +2527,7 @@ public class PlayerInventoryListener implements Listener {
 			meta.setDisplayName(Util.getGachaRingoName());
 			meta.setLore(Util.getGachaRingoLore());
 		} else if(num>=0){ //他のガチャアイテムの場合 -2以下は他のアイテムに対応させる
-			MineStackGachaData g = new MineStackGachaData(SeichiAssist.msgachadatalist.get(num));
+			MineStackGachaData g = new MineStackGachaData(MineStackRegistry.getGachaPrises().get(num));
 			UUID uuid = player.getUniqueId();
 			PlayerData playerdata = playermap.get(uuid);
 			String name = playerdata.name;

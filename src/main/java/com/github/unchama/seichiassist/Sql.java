@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -684,8 +685,8 @@ public class Sql{
 			e.printStackTrace();
 			return false;
 		}
-		SeichiAssist.msgachadatalist.clear();
-		SeichiAssist.msgachadatalist.addAll(gachadatalist);
+		MineStackRegistry.getGachaPrises().clear();
+		gachadatalist.forEach(MineStackRegistry::addGachaPrise);
 		return true;
 
 	}
@@ -734,7 +735,7 @@ public class Sql{
 		}
 
 		//次に現在のgachadatalistでmysqlを更新
-		for(MineStackGachaData gachadata : SeichiAssist.msgachadatalist){
+		for(MineStackGachaData gachadata : MineStackRegistry.getGachaPrises()){
 			//Inventory作ってガチャのitemstackに突っ込む
 			Inventory inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1);
 			inventory.setItem(0,gachadata.itemstack);

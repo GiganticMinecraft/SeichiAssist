@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.Set;
 
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import net.coreprotect.CoreProtectAPI;
 
 import org.bukkit.ChatColor;
@@ -231,7 +232,7 @@ public final class BreakUtil {
 							}
 						} else {
 							//ガチャ品
-							MineStackGachaData g = SeichiAssist.msgachadatalist.get(SeichiAssist.minestacklist.get(i).getGachatype());
+							MineStackGachaData g = MineStackRegistry.getGachaPrises().get(SeichiAssist.minestacklist.get(i).getGachatype());
 							String name = playerdata.name; //プレイヤーのネームを見る
 							if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
 								if(!Util.ItemStackContainsOwnerName(itemstack, name)){

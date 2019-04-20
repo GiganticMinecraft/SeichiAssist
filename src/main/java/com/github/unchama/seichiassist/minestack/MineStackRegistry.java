@@ -32,6 +32,8 @@ public final class MineStackRegistry {
 	private static Set<MineStackGachaObj> gacha = SetFactory.of();
 	private static Set<MineStackMineObj> mining = SetFactory.of();
 	private static List<GachaData> gachaData = new ArrayList<>();
+	private static List<MineStackGachaData> msgds = new ArrayList<>();
+
 	private MineStackRegistry() {
 		
 	}
@@ -95,6 +97,7 @@ public final class MineStackRegistry {
 		return Collections.unmodifiableSet(rs);
 	}
 
+	// SeichiAssistに準拠
 	public static Set<MineStackObj> getAllRegistered() {
 		final Set<MineStackObj> ret = SetFactory.of();
 		ret.addAll(rs);
@@ -170,6 +173,10 @@ public final class MineStackRegistry {
 
 	public static List<MineStackGachaData> getGachaPrises() {
 		return Collections.unmodifiableList(msgds);
+	}
+
+	public static void discardGachaPrises() {
+		msgds.clear();
 	}
 
 	public static void saveGachaMaterials() {

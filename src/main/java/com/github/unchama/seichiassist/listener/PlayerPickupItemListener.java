@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.listener;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import org.bukkit.*;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -154,7 +155,7 @@ public class PlayerPickupItemListener implements Listener {
 							}
 						} else {
 							//ガチャ品
-							MineStackGachaData g = SeichiAssist.msgachadatalist.get(SeichiAssist.minestacklist.get(i).getGachatype());
+							MineStackGachaData g = MineStackRegistry.getGachaPrises().get(SeichiAssist.minestacklist.get(i).getGachatype());
 							String name = playerdata.name; //プレイヤーのネームを見る
 							//player.sendMessage("Debug A");
 							if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
