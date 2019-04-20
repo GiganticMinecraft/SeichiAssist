@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 
 public class MineStack {

@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
 
 /**
