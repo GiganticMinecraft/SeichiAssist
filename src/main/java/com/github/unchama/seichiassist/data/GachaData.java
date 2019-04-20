@@ -10,6 +10,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
 
+/**
+ * ガチャのアイテム、確率、量を格納するPOJO。
+ */
 public class GachaData {
 	//アイテムデータ格納
 	public ItemStack itemstack;
