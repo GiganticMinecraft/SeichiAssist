@@ -29,11 +29,19 @@ public class MineStackGachaData {
 		probability = 0.0;
 		amount = 0;
 	}
-	public MineStackGachaData(String _obj_name, ItemStack _itemstack,double _probability,int _amount){
+
+	private MineStackGachaData(String _obj_name, ItemStack _itemstack,double _probability,int _amount){
 		obj_name = _obj_name;
 		itemstack = _itemstack.clone();
 		probability = _probability;
 		amount = _amount;
+	}
+
+	public MineStackGachaData(String obj_name, GachaData gd) {
+		this.obj_name = obj_name;
+		this.itemstack = gd.itemstack;
+		this.probability = gd.probability;
+		this.amount = gd.amount;
 	}
 
 	public MineStackGachaData(MineStackGachaData gachadata) {
