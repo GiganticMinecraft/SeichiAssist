@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,11 +22,10 @@ import org.bukkit.potion.PotionType;
 
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
 
 public class ActiveSkillInventoryData {
 	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	static Sql sql = SeichiAssist.sql;
+	static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	SeichiAssist plugin = SeichiAssist.instance;
 
 	//アクティブスキルメニュー

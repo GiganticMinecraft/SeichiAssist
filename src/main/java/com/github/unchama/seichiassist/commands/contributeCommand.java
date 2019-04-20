@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,7 +13,6 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class contributeCommand implements TabExecutor {
@@ -33,7 +33,7 @@ public class contributeCommand implements TabExecutor {
 			String[] args) {
 
 
-		Sql sql = SeichiAssist.sql;
+		DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 
 		//受け取るプレイヤーの情報を取得
@@ -47,7 +47,7 @@ public class contributeCommand implements TabExecutor {
 		}else if(args[0].equalsIgnoreCase("add") && args.length == 3){
 
 			//sqlをusernameで操作
-			if (sql.setContribute(sender, args[1], TypeConverter.toInt(args[2]))) {
+			if (databaseGateway.playerDataManipulator.setContribute(sender, args[1], TypeConverter.toInt(args[2]))) {
 				sender.sendMessage(ChatColor.GREEN + args[1] + "に貢献度ポイント" + args[2] + "を追加しました");
 
 				//指定プレイヤーがオンラインの場合即時反映
@@ -67,7 +67,7 @@ public class contributeCommand implements TabExecutor {
 		}else if(args[0].equalsIgnoreCase("remove") && args.length == 3){
 
 			//sqlをusernameで操作
-			if (sql.setContribute(sender, args[1], (-1 * TypeConverter.toInt(args[2])))) {
+			if (databaseGateway.playerDataManipulator.setContribute(sender, args[1], (-1 * TypeConverter.toInt(args[2])))) {
 				sender.sendMessage(ChatColor.GREEN + args[1] + "の貢献度ポイントを" + args[2] + "減少させました");
 
 				//指定プレイヤーがオンラインの場合即時反映

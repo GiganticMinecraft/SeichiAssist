@@ -5,14 +5,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 
+import com.github.unchama.seichiassist.*;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 
@@ -25,7 +22,7 @@ import com.github.unchama.seichiassist.util.BukkitSerialization;
 public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.instance;
-	private Sql sql = SeichiAssist.sql;
+	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	private static Config config = SeichiAssist.config;
 
 	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
@@ -57,9 +54,9 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 	public void run() {
 		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
 		//sqlコネクションチェック
-		sql.checkConnection();
+		databaseGateway.ensureConnection();
 		try {
-			stmt = sql.con.createStatement();
+			stmt = databaseGateway.con.createStatement();
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}

@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -23,7 +23,7 @@ import com.github.unchama.seichiassist.util.Util;
  */
 public class HalfHourTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.instance;
-	Sql sql = SeichiAssist.sql;
+	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 
 	public HalfHourTaskRunnable() {

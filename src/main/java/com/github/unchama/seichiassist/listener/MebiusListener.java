@@ -8,8 +8,7 @@ import java.net.URLConnection;
 import java.util.*;
 
 import com.github.unchama.seichiassist.MebiusTalk;
-import com.github.unchama.seichiassist.util.SetFactory;
-import com.google.common.collect.Sets;
+import com.github.unchama.util.collection.SetFactory;
 import de.tr7zw.itemnbtapi.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

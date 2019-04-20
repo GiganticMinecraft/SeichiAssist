@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.ExternalPlugins;
 import com.sk89q.worldguard.bukkit.RegionContainer;
 import net.md_5.bungee.api.ChatColor;
@@ -17,12 +18,11 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class rmpCommand implements TabExecutor {
-	static Sql sql = SeichiAssist.sql;
+	static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	private Map<UUID, String> leavers;
 
 	public rmpCommand(SeichiAssist plugin){
@@ -63,7 +63,7 @@ public class rmpCommand implements TabExecutor {
 					}
 				}
 				//mysqlからログインしていないプレイヤーリストを取得
-				leavers = sql.selectLeavers(days);
+				leavers = databaseGateway.playerDataManipulator.selectLeavers(days);
 				if (leavers == null) {
 					//DBエラー
 					sender.sendMessage(ChatColor.RED + "失敗");

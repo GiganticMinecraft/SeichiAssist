@@ -11,13 +11,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class PlayerQuitListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	Sql sql = SeichiAssist.sql;
+	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 	//プレイヤーがquitした時に実行
 	@EventHandler(priority = EventPriority.HIGH)
@@ -39,7 +39,7 @@ public class PlayerQuitListener implements Listener {
 		//タスクをすべて終了する
 		playerdata.activeskilldata.RemoveAllTask();
 		//saveplayerdata
-		sql.saveQuitPlayerData(playerdata);
+		databaseGateway.playerDataManipulator.saveQuitPlayerData(playerdata);
 
 		//不要なplayerdataを削除
 		playermap.remove(uuid);
