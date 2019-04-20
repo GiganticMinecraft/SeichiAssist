@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -634,6 +635,32 @@ public class Sql{
 
 	}
 
+	public List<MineStackGachaData> getMineStackGachaDataL() {
+		String table = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
+		List<MineStackGachaData> gachadatalist = new ArrayList<>();
+		//SELECT `totalbreaknum` FROM `playerdata` WHERE 1 ORDER BY `playerdata`.`totalbreaknum` DESC
+		String command = "select * from " + db + "." + table;
+		try (ResultSet lrs = stmt.executeQuery(command)){
+			while (lrs.next()) {
+				MineStackGachaData gachadata = new MineStackGachaData();
+				Inventory inventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"));
+				gachadata.itemstack = (inventory.getItem(0));
+				gachadata.amount = lrs.getInt("amount");
+				gachadata.level = lrs.getInt("level");
+				gachadata.obj_name = lrs.getString("obj_name");
+				gachadata.probability = lrs.getDouble("probability");
+				gachadatalist.add(gachadata);
+			}
+		} catch (SQLException | IOException e) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exc = e.getMessage();
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+
+		return gachadatalist;
+	}
+
 	//MineStack用ガチャデータロード
 	public boolean loadMineStackGachaData(){
 		String table = SeichiAssist.MINESTACK_GACHADATA_TABLENAME;
@@ -663,8 +690,7 @@ public class Sql{
 
 	}
 
-	//ガチャデータセーブ
-	public boolean saveGachaData(){
+	public boolean saveGachaData(List<GachaData> data) {
 		String table = SeichiAssist.GACHADATA_TABLENAME;
 
 		//まずmysqlのガチャテーブルを初期化(中身全削除)
@@ -674,7 +700,7 @@ public class Sql{
 		}
 
 		//次に現在のgachadatalistでmysqlを更新
-		for(GachaData gachadata : SeichiAssist.gachadatalist){
+		for(GachaData gachadata : data) {
 			//Inventory作ってガチャのitemstackに突っ込む
 			Inventory inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1);
 			inventory.setItem(0,gachadata.itemstack);
@@ -690,6 +716,11 @@ public class Sql{
 			}
 		}
 		return true;
+	}
+
+	//ガチャデータセーブ
+	public boolean saveGachaData(){
+		return saveGachaData(SeichiAssist.gachadatalist);
 	}
 
 	//MineStack用ガチャデータセーブ
