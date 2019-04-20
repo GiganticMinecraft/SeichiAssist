@@ -326,15 +326,15 @@ public class gachaCommand implements TabExecutor{
 			int level = TypeConverter.toInt(args[3]);
 			Gachaaddms2(player,probability, args[2], level);
 			return true;
-		}else if(args[0].equalsIgnoreCase("addms")){
-			if(args.length != 3){
-				sender.sendMessage("/gacha addms <名前> <ID>  のように、追加したいアイテムの名前とIDを入力してください");
+		} else if(args[0].equalsIgnoreCase("addms")) {
+			if(args.length != 4){
+				sender.sendMessage("/gacha addms <名前> <レベル> <ID> のように、追加したいアイテムの名前とID、レベルを入力してください");
 				return true;
 			}
 
 			int level = TypeConverter.toInt(args[2]);
 			int num = TypeConverter.toInt(args[3]);
-			Gachaaddms(sender, args[1],level,num);
+			Gachaaddms(sender, args[1], level, num);
 
 			return true;
 		}else if(args[0].equalsIgnoreCase("remove")){
