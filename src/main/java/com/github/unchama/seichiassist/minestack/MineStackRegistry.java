@@ -64,6 +64,11 @@ public final class MineStackRegistry {
 	}
 	
 	// gacha
+
+	/**
+	 * ガチャ景品をMineStackに格納できるものとして覚えさせる
+	 * @param gachaObj 覚えさせるもの
+	 */
 	public static void addGachaMaterial(final MineStackGachaObj gachaObj) {
 		gacha.add(gachaObj);
 	}
@@ -101,12 +106,70 @@ public final class MineStackRegistry {
 		return ret;
 	}
 
-	public static void addGachaPrise(final GachaData gd) {
+	public static void addGachaData(final GachaData gd) {
 		gachaData.add(gd);
 	}
 
-	public static List<GachaData> getGachaPrises() {
+	public static void removeGachaData(final GachaData gd) {
+		gachaData.remove(gd);
+	}
+
+	/**
+	 * 登録されたGachaDataの量のアップデート
+	 * @param gd ガチャデータ
+	 * @param newAmount 新しい量
+	 */
+	public static void updateGachaDataAmount(final GachaData gd, final int newAmount) {
+		if (!gachaData.contains(gd)) {
+			SeichiAssist.instance.getLogger().warning("" + gd + "は登録されていません");
+			return;
+		}
+
+		gachaData.get(gachaData.indexOf(gd)).amount = newAmount;
+	}
+
+	/**
+	 * 登録されたGachaDataの確率のアップデート
+	 * @param gd ガチャデータ
+	 * @param newProbability 新しい確率
+	 */
+	public static void updateGachaDataProbability(final GachaData gd, final double newProbability) {
+		if (!gachaData.contains(gd)) {
+			SeichiAssist.instance.getLogger().warning("" + gd + "は登録されていません");
+			return;
+		}
+
+		gachaData.get(gachaData.indexOf(gd)).probability = newProbability;
+	}
+
+	public static void moveAndInsertGachaData(final GachaData gd, final int newIndex) {
+		if (!gachaData.contains(gd)) {
+			SeichiAssist.instance.getLogger().warning("" + gd + "は登録されていません");
+			return;
+		}
+		gachaData.remove(gd);
+		gachaData.add(newIndex-1,gd);
+	}
+
+	public static void discardGachaData() {
+		gachaData.clear();
+	}
+
+
+	public static List<GachaData> getGachaDataes() {
 		return Collections.unmodifiableList(gachaData);
+	}
+
+	public static void addGachaPrise(final MineStackGachaData msgd) {
+		msgds.add(msgd);
+	}
+
+	public static void removeGachaPrise(final MineStackGachaData msgd) {
+		msgds.remove(msgd);
+	}
+
+	public static List<MineStackGachaData> getGachaPrises() {
+		return Collections.unmodifiableList(msgds);
 	}
 
 	public static void saveGachaMaterials() {

@@ -451,12 +451,12 @@ public class gachaCommand implements TabExecutor{
 	public static void Gachagive(Player player, int _id, String name) {
 
 		int id = _id-1;
-		if(id>=-1 && id<MineStackRegistry.getGachaPrises().size()){
+		if(id>=-1 && id<MineStackRegistry.getGachaDataes().size()){
 			//プレゼント用ガチャデータ作成
 			GachaData present;
 			//ガチャ実行
 			if(id>=0){
-				present = new GachaData(MineStackRegistry.getGachaPrises().get(id));
+				present = new GachaData(MineStackRegistry.getGachaDataes().get(id));
 			} else {
 				present = new GachaData(Util.getGachaRingo(),1.0,1);
 			}
@@ -488,22 +488,22 @@ public class gachaCommand implements TabExecutor{
 		gachadata.amount = inventory.getItemInMainHand().getAmount();
 		gachadata.probability = probability;
 
-		MineStackRegistry.addGachaPrise(gachadata);
+		MineStackRegistry.addGachaData(gachadata);
 		player.sendMessage(gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + gachadata.amount + "個を確率" + gachadata.probability + "としてガチャに追加しました");
 		player.sendMessage("/gacha saveでmysqlに保存してください");
 	}
 
 	private void Gachaaddms(CommandSender sender, String s, int level, int num) {
 		int temp = num-1;
-		if(temp>=0 && temp<MineStackRegistry.getGachaPrises().size()){
-			GachaData g = MineStackRegistry.getGachaPrises().get(temp);
+		if(temp>=0 && temp<MineStackRegistry.getGachaDataes().size()){
+			GachaData g = MineStackRegistry.getGachaDataes().get(temp);
 			MineStackGachaData mg = new MineStackGachaData();
 			mg.amount = g.amount;
 			mg.itemstack = g.itemstack;
 			mg.probability = g.probability;
 			mg.level = level;
 			mg.obj_name = s;
-			MineStackRegistry.addGachaMaterial(mg);
+			MineStackRegistry.addGachaPrise(mg);
 			sender.sendMessage("データガチャリストID" + num + "のデータを" + "変数名:" + s + ",レベル:" + level + "でMineStack用ガチャデータリストに追加しました");
 			sender.sendMessage("/gacha savemsでmysqlに保存してください");
 		}
@@ -519,7 +519,7 @@ public class gachaCommand implements TabExecutor{
 		gachadata.obj_name = name;
 		gachadata.level = level;
 
-		SeichiAssist.msgachadatalist.add(gachadata);
+		MineStackRegistry.addGachaPrise(gachadata);
 		player.sendMessage(gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + gachadata.amount + "個を確率" + gachadata.probability + "としてMineStack用ガチャリストに追加しました");
 		player.sendMessage("/gacha savemsでmysqlに保存してください");
 	}
@@ -528,7 +528,7 @@ public class gachaCommand implements TabExecutor{
 		int i = 1;
 		double totalprobability = 0.0;
 		sender.sendMessage(ChatColor.RED + "アイテム番号|アイテム名|アイテム数|出現確率");
-		for (GachaData gachadata : MineStackRegistry.getGachaPrises()) {
+		for (GachaData gachadata : MineStackRegistry.getGachaDataes()) {
 			sender.sendMessage(i + "|" + gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "|" + gachadata.amount + "|" + gachadata.probability + "(" + (gachadata.probability*100) + "%)");
 			totalprobability += gachadata.probability;
 			i++;
@@ -540,7 +540,7 @@ public class gachaCommand implements TabExecutor{
 		int i = 1;
 		//double totalprobability = 0.0;
 		sender.sendMessage(ChatColor.RED + "アイテム番号|レベル|変数名|アイテム名|アイテム数|出現確率");
-		for (MineStackGachaData gachadata : MineStackRegistry.getGachaMaterials()) {
+		for (MineStackGachaData gachadata : MineStackRegistry.getGachaPrises()) {
 			sender.sendMessage(i + "|" + gachadata.level + "|" + gachadata.obj_name + "|" + gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "|" + gachadata.amount + "|" + gachadata.probability + "(" + (gachadata.probability*100) + "%)");
 			//totalprobability += gachadata.probability;
 			i++;
@@ -549,65 +549,62 @@ public class gachaCommand implements TabExecutor{
 		//sender.sendMessage(ChatColor.RED + "合計確率は100%以内に収まるようにしてください");
 	}
 	private void Gacharemove(CommandSender sender,int num) {
-		if(num < 1 || SeichiAssist.gachadatalist.size() < num){
+		if(num < 1 || MineStackRegistry.getGachaDataes().size() < num){
 			sender.sendMessage("アイテム番号が間違っているようです");
 			return;
 		}
-		GachaData gachadata = SeichiAssist.gachadatalist.get(num-1);
-		SeichiAssist.gachadatalist.remove(num-1);
+		GachaData gachadata = MineStackRegistry.getGachaDataes().get(num-1);
+		MineStackRegistry.removeGachaData(gachadata);
 		sender.sendMessage(num + "|" + gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "|" + gachadata.amount + "|" + gachadata.probability + "を削除しました");
 		sender.sendMessage("/gacha saveでmysqlに保存してください");
 	}
 	private void Gacharemovems(CommandSender sender) {
 
-		if(SeichiAssist.msgachadatalist.size() == 0){
+		if(MineStackRegistry.getGachaPrises().isEmpty()){
 			sender.sendMessage("MineStack用ガチャデータリストが空です");
 			return;
 		}
-		int size = SeichiAssist.msgachadatalist.size();
-		MineStackGachaData mg = SeichiAssist.msgachadatalist.get(size-1);
-		SeichiAssist.msgachadatalist.remove(size-1);
+		int size = MineStackRegistry.getGachaPrises().size();
+		MineStackGachaData mg = MineStackRegistry.getGachaPrises().get(size-1);
+		MineStackRegistry.removeGachaPrise(mg);
 		sender.sendMessage(size + "|" + mg.level + "|" + mg.obj_name + "|" + mg.itemstack.getType().toString() + "/" + mg.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "|" + mg.amount + "|" + mg.probability + "を削除しました");
 		sender.sendMessage("/gacha savemsでmysqlに保存してください");
 	}
 	private void GachaEditAmount(CommandSender sender,int num,int amount) {
-		if(num < 1 || SeichiAssist.gachadatalist.size() < num){
+		if(num < 1 || MineStackRegistry.getGachaDataes().size() < num){
 			sender.sendMessage("アイテム番号が間違っているようです");
 			return;
 		}
-		GachaData gachadata = SeichiAssist.gachadatalist.get(num-1);
-		gachadata.amount = amount;
-		SeichiAssist.gachadatalist.set(num-1,gachadata);
+		GachaData gachadata = MineStackRegistry.getGachaDataes().get(num-1);
+		MineStackRegistry.updateGachaDataAmount(gachadata, amount);
 		sender.sendMessage(num + "|" + gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "のアイテム数を" + gachadata.amount + "個に変更しました");
 	}
 	private void GachaEditProbability(CommandSender sender,int num,double probability) {
-		if(num < 1 || SeichiAssist.gachadatalist.size() < num){
+		if(num < 1 || MineStackRegistry.getGachaDataes().size() < num){
 			sender.sendMessage("アイテム番号が間違っているようです");
 			return;
 		}
-		GachaData gachadata = SeichiAssist.gachadatalist.get(num-1);
-		gachadata.probability = probability;
-		SeichiAssist.gachadatalist.set(num-1,gachadata);
+		GachaData gachadata = MineStackRegistry.getGachaDataes().get(num-1);
+		MineStackRegistry.updateGachaDataProbability(gachadata, probability);
 		sender.sendMessage(num + "|" + gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "の確率を" + gachadata.probability + "個に変更しました");
 		sender.sendMessage("/gacha saveでmysqlに保存してください");
 	}
 	private void GachaMove(CommandSender sender,int num,int tonum) {
-		if(num < 1 || SeichiAssist.gachadatalist.size() < num){
+		if(num < 1 || MineStackRegistry.getGachaDataes().size() < num){
 			sender.sendMessage("アイテム番号が間違っているようです");
 			return;
 		}
-		if(tonum < 1 || SeichiAssist.gachadatalist.size() < tonum){
+		if(tonum < 1 || MineStackRegistry.getGachaDataes().size() < tonum){
 			sender.sendMessage("アイテム番号が間違っているようです");
 			return;
 		}
-		GachaData gachadata = SeichiAssist.gachadatalist.get(num-1);
-		SeichiAssist.gachadatalist.remove(num-1);
-		SeichiAssist.gachadatalist.add(tonum-1,gachadata);
+		GachaData gachadata = MineStackRegistry.getGachaDataes().get(num-1);
+		MineStackRegistry.moveAndInsertGachaData(gachadata, tonum-1);
 		sender.sendMessage(num + "|" + gachadata.itemstack.getType().toString() + "/" + gachadata.itemstack.getItemMeta().getDisplayName() + ChatColor.RESET + "をリスト番号" + tonum + "番に移動しました");
 		sender.sendMessage("/gacha saveでmysqlに保存してください");
 	}
 	private void Gachaclear(CommandSender sender) {
-		SeichiAssist.gachadatalist.clear();
+		MineStackRegistry.discardGachaData();
 		sender.sendMessage("すべて削除しました");
 		sender.sendMessage("/gacha saveを実行するとmysqlのデータも全削除されます");
 		sender.sendMessage("削除を取り消すには/gacha reloadコマンドを実行します");
@@ -618,7 +615,7 @@ public class gachaCommand implements TabExecutor{
 
 		rand = Math.random();
 
-		for (GachaData gachadata : SeichiAssist.gachadatalist) {
+		for (GachaData gachadata : MineStackRegistry.getGachaDataes()) {
 			sum -= gachadata.probability;
 			if (sum <= rand) {
 				return gachadata.probability;

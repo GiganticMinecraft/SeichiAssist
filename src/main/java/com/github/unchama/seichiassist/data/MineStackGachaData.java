@@ -30,6 +30,7 @@ public class MineStackGachaData {
 		amount = 0;
 	}
 
+	// DIDN'T USED
 	private MineStackGachaData(String _obj_name, ItemStack _itemstack,double _probability,int _amount){
 		obj_name = _obj_name;
 		itemstack = _itemstack.clone();
