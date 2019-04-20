@@ -13,6 +13,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.github.unchama.seichiassist.util.Util;
 
+/**
+ * MineStackに格納するガチャ景品の内部データ留保用？
+ */
 public class MineStackGachaData {
 	public String obj_name;
 	//アイテムデータ格納
