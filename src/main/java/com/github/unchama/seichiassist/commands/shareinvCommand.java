@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -14,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.SerializeItemList;
 import com.github.unchama.seichiassist.util.Util;
@@ -43,12 +43,12 @@ public class shareinvCommand implements TabExecutor {
 
 	public void shareInv(Player player) {
 		PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
-		Sql sql = SeichiAssist.sql;
+		DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 		ItemStack air = new ItemStack(Material.AIR);
 		// 収納中なら取り出す
 		if (playerdata.shareinv) {
-			String serial = sql.loadShareInv(player, playerdata);
+			String serial = databaseGateway.playerDataManipulator.loadShareInv(player, playerdata);
 			if (serial.equals("")) {
 				player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "収納アイテムが存在しません。");
 			} else if (serial != null) {
@@ -90,7 +90,7 @@ public class shareinvCommand implements TabExecutor {
 				pi.setArmorContents(armor);
 				pi.setStorageContents(contents);
 				// SQLデータをクリア
-				sql.clearShareInv(player, playerdata);
+				databaseGateway.playerDataManipulator.clearShareInv(player, playerdata);
 				playerdata.shareinv = false;
 				player.sendMessage(ChatColor.GREEN + "アイテムを取得しました。手持ちにあったアイテムはドロップしました。");
 				Bukkit.getLogger().info(Util.getName(player) + "がアイテム取り出しを実施(SQL送信成功)");
@@ -115,7 +115,7 @@ public class shareinvCommand implements TabExecutor {
 				// 収納失敗
 				player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "収納アイテムの変換に失敗しました。");
 			} else {
-				if (sql.saveShareInv(player, playerdata, serial)) {
+				if (databaseGateway.playerDataManipulator.saveShareInv(player, playerdata, serial)) {
 					// 収納成功により現所持アイテムを全て削除
 					pi.setItemInOffHand(air);
 					for (int cnt = 0; cnt < armor.length; cnt++) {

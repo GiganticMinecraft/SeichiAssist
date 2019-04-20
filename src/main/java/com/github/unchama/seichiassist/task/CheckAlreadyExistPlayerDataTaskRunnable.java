@@ -12,7 +12,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 /**
@@ -26,8 +26,8 @@ public class CheckAlreadyExistPlayerDataTaskRunnable extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.instance;
 	private Config config = SeichiAssist.config;
 
-	private Sql sql = SeichiAssist.sql;
-	private Connection con = sql.con;
+	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
+	private Connection con = databaseGateway.con;
 	private final String table = SeichiAssist.PLAYERDATA_TABLENAME;
 	private String db = config.getDB();
 
@@ -58,7 +58,7 @@ public class CheckAlreadyExistPlayerDataTaskRunnable extends BukkitRunnable{
 			return;
 		}
 		//sqlコネクションチェック
-		sql.checkConnection();
+		databaseGateway.ensureConnection();
 		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
 		try {
 			stmt = con.createStatement();

@@ -26,7 +26,7 @@ import com.github.unchama.seasonalevents.events.valentine.Valentine;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
@@ -39,7 +39,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 
 public class MenuInventoryData {
 	private static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	private static Sql sql = SeichiAssist.sql;
+	private static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	private static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
 
 	//二つ名組合せシステム用
@@ -1913,9 +1913,7 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(27,itemstack);
 
-		sql.loadDonateData(playerdata,inventory);
-
-
+		databaseGateway.donateDataManipulator.loadDonateData(playerdata,inventory);
 
 		return inventory;
 	}

@@ -9,13 +9,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.instance;
-	private Sql sql = SeichiAssist.sql;
+	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 
 	public PlayerDataBackupTaskRunnable(){
@@ -41,26 +41,26 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 				Bukkit.getLogger().warning("PlayerDataBackupTaskRunnable");
 				continue;
 			}
-			sql.savePlayerData(playerdata);
+			databaseGateway.playerDataManipulator.savePlayerData(playerdata);
 		}
 
 		Util.sendEveryMessage(ChatColor.AQUA + "プレイヤーデータセーブ完了");
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "プレイヤーデータセーブ完了");
 
 		//ランキングデータをセット
-		if(!sql.setRanking()){
+		if(!databaseGateway.playerDataManipulator.setRanking()){
 			plugin.getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!sql.setRanking_playtick()){
+		if(!databaseGateway.playerDataManipulator.setPlayTickRanking()){
 			plugin.getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!sql.setRanking_p_vote()){
+		if(!databaseGateway.playerDataManipulator.setVoteNumberRanking()){
 			plugin.getLogger().info("ランキングデータの作成に失敗しました");
 		}
 
-		if(!sql.setRanking_premiumeffectpoint()){
+		if(!databaseGateway.playerDataManipulator.setPremiumEffectPointRanking()){
 			plugin.getLogger().info("ランキングデータの作成に失敗しました");
 		}
 	}

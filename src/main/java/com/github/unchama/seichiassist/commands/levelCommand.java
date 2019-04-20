@@ -17,13 +17,14 @@ import org.bukkit.entity.Player;
 
 import com.github.unchama.seichiassist.OfflineUUID;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Sql;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.data.PlayerData;
+
+import static com.github.unchama.util.ActionStatus.Fail;
 
 public class levelCommand implements TabExecutor{
 	public SeichiAssist plugin;
-	Sql sql = SeichiAssist.sql;
-
+	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 	public levelCommand(SeichiAssist plugin){
 		this.plugin = plugin;
@@ -74,9 +75,10 @@ public class levelCommand implements TabExecutor{
 				}
 			}
 			//MySqlの値も処理
-			if(!sql.resetAllPlayerLevel()){
+			if (databaseGateway.playerDataManipulator.resetAllPlayerLevel() == Fail) {
 				sender.sendMessage("mysqlのレベルの初期化に失敗しました");
-			}else{
+			}
+			else{
 				sender.sendMessage("mysqlに保存されている全プレイヤーのレベルを初期化しました");
 			}
 			return true;
@@ -144,7 +146,7 @@ public class levelCommand implements TabExecutor{
 									}
 									//}
 									//MySqlの値も処理
-									if(!sql.resetPlayerLevelandBreaknum(uuid)){
+									if(databaseGateway.playerDataManipulator.resetPlayerLevelandBreaknum(uuid) == Fail){
 									sender.sendMessage("mysqlのレベルと整地量の設定に失敗しました");
 									}else{
 										sender.sendMessage("mysqlに保存されている指定したプレイヤーのレベルと整地量を設定しました");
@@ -171,7 +173,7 @@ public class levelCommand implements TabExecutor{
 									//}
 									//}
 									//MySqlの値も処理
-									if(!sql.resetPlayerLevelandBreaknum(uuid, num)){
+									if(databaseGateway.playerDataManipulator.resetPlayerLevelandBreaknum(uuid, num) == Fail){
 									sender.sendMessage("mysqlのレベルと整地量の設定に失敗しました");
 									}else{
 										sender.sendMessage("mysqlに保存されている指定したプレイヤーのレベルと整地量を設定しました");
