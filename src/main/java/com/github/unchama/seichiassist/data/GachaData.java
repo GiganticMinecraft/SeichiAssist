@@ -10,6 +10,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
 
+/**
+ * @deprecated
+ * @see com.github.unchama.seichiassist.data.MineStackGachaData で完全に代替できる
+ */
+@Deprecated
 public class GachaData {
 	//アイテムデータ格納
 	public ItemStack itemstack;
@@ -17,17 +22,21 @@ public class GachaData {
 	public double probability;
 	//アイテム数
 	public int amount;
+	@Deprecated
 	public GachaData(){
 		itemstack = null;
 		probability = 0.0;
 		amount = 0;
 	}
+
+	@Deprecated
 	public GachaData(ItemStack _itemstack,double _probability,int _amount){
 		itemstack = _itemstack.clone();
 		probability = _probability;
 		amount = _amount;
 	}
 
+	@Deprecated
 	public GachaData(GachaData gachadata) {
 		this.itemstack = gachadata.itemstack.clone();
 		this.probability = gachadata.probability;
