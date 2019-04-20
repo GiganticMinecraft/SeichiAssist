@@ -95,6 +95,7 @@ public class MineStackObj implements Comparable<MineStackObj>{
 	public boolean getNameloreflag(){
 		return nameloreflag;
 	}
+	// TODO: enum化
 	public int getGachatype(){
 		return gachatype;
 	}
