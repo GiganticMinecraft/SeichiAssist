@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist;
 
 import java.util.List;
 
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;

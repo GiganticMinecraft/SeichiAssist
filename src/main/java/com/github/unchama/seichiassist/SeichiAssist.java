@@ -1069,6 +1069,8 @@ public class SeichiAssist extends JavaPlugin{
 				minestacklist.add(new MineStackGachaObj(g.obj_name,null,g.level,g.itemstack.getType(),i,g.itemstack.getItemMeta().getLore()));
 			}
 		}
+		// 念の為distinctしたほうがいいのかもしれない (ただし、順序が保証されないようなので要検討)
+		// return minestacklist.parallelStream().distinct().collect(Collectors.toList());
 		return minestacklist;
 	}
 
