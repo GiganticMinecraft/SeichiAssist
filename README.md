@@ -27,6 +27,11 @@
 
 Mavenがコマンドラインで使える状態で`mvn install`を実行すると、`target`フォルダにjarが出力されます。
 
+Eclipseを開発に使用している場合、プロジェクトをmavenプロジェクトとして読み込み、
+実行(R) -> 実行(S) -> Maven Clean を実行
+そのあと、実行(R) -> 実行(S) -> Maven Install を実行
+すれば`target`フォルダにjarが出力されます。
+
 IntelliJ IDEAを開発に使用している場合、プロジェクトをmavenプロジェクトとして読み込み、
 MavenタブからLifecycle -> installを実行すれば`target`フォルダにjarが出力されます。
 
