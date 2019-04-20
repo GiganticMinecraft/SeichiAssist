@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.minestack;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.minestack.objects.MineStackBuildObj;
 import com.github.unchama.seichiassist.minestack.objects.MineStackDropObj;
 import com.github.unchama.seichiassist.minestack.objects.MineStackFarmObj;
@@ -11,8 +12,12 @@ import com.github.unchama.seichiassist.minestack.objects.MineStackRsObj;
 import com.github.unchama.seichiassist.util.SetFactory;
 import org.apache.commons.lang.NotImplementedException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -26,7 +31,7 @@ public final class MineStackRegistry {
 	private static Set<MineStackFarmObj> farm = SetFactory.of();
 	private static Set<MineStackGachaObj> gacha = SetFactory.of();
 	private static Set<MineStackMineObj> mining = SetFactory.of();
-
+	private static List<GachaData> gachaData = new ArrayList<>();
 	private MineStackRegistry() {
 		
 	}
@@ -96,12 +101,16 @@ public final class MineStackRegistry {
 		return ret;
 	}
 
+	public static void addGachaPrise(final GachaData gd) {
+		gachaData.add(gd);
+	}
+
+	public static List<GachaData> getGachaPrises() {
+		return Collections.unmodifiableList(gachaData);
+	}
+
 	public static void saveGachaMaterials() {
-		SeichiAssist.sql.saveGachaData(gacha
-				.parallelStream()
-				.map(mineStackGachaObj -> new GachaData(mineStackGachaObj.getItemStack(), alwaysFail()/* TODO: 確率を得る */, mineStackGachaObj.getItemStack().getAmount()))
-				.collect(Collectors.toList())
-		);
+		SeichiAssist.sql.saveGachaData(gachaData.parallelStream().collect(Collectors.toList()));
 	}
 
 	/**
@@ -114,13 +123,27 @@ public final class MineStackRegistry {
 		throw new NotImplementedException();
 	}
 
-	public static void loadGachaMaterials() {
+	/**
+	 *
+	 * @return ロードが成功したかどうか (true=成功)
+	 */
+	public static boolean loadGachaMaterials() {
 		// 除去した差分を反映するため
+		final List<MineStackGachaData> o = SeichiAssist.sql.getMineStackGachaDataL();
+		if (o == null) return false;
 		gacha.clear();
-		gacha.addAll(SeichiAssist.sql.getMineStackGachaDataL()
+		// Streamは再利用できない
+		gacha.addAll(o
 				.parallelStream()
 				.map(mineStackGachaData -> new MineStackGachaObj(mineStackGachaData.obj_name, null, mineStackGachaData.level, mineStackGachaData.itemstack.getType(), mineStackGachaData.itemstack.getDurability()))
 				.collect(Collectors.toList())
 		);
+		gachaData.clear();
+		gachaData.addAll(o
+				.parallelStream()
+				.map(mineStackGachaData -> new GachaData(mineStackGachaData.itemstack, mineStackGachaData.probability, mineStackGachaData.amount))
+				.collect(Collectors.toList())
+		);
+		return true;
 	}
 }

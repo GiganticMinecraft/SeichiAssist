@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.github.unchama.seichiassist.commands.RegisterMineStackCommand;
 import com.github.unchama.seichiassist.minestack.MineStackObjs;
@@ -889,7 +890,6 @@ public class SeichiAssist extends JavaPlugin{
 			//minestacklist.addAll(minestacklistbase);
 			minestacklistgacha.addAll(creategachaminestacklist());
 
-			minestacklist = new ArrayList<>();
 			minestacklistmine.forEach(MineStackRegistry::addMiningMaterial);
 			minestacklistbuild.forEach(MineStackRegistry::addBuildingMaterial);
 			minestacklistdrop.forEach(MineStackRegistry::addDropMaterial);
@@ -899,7 +899,7 @@ public class SeichiAssist extends JavaPlugin{
 			Collections.sort(minestacklistgacha);
 
 			minestacklistgacha.forEach(MineStackRegistry::addGachaMaterial);
-
+			minestacklist = MineStackRegistry.getAllRegistered().parallelStream().collect(Collectors.toList());
 		} else {
 			getLogger().info("MineStack用ガチャデータのロードに失敗しました");
 		}

@@ -655,7 +655,7 @@ public class Sql{
 			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
 			exc = e.getMessage();
 			e.printStackTrace();
-			return Collections.emptyList();
+			return null;
 		}
 
 		return gachadatalist;
