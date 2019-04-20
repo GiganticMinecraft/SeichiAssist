@@ -6,6 +6,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.Set;
 
+import com.github.unchama.seichiassist.data.MineStack;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import net.coreprotect.CoreProtectAPI;
 
@@ -196,12 +198,14 @@ public final class BreakUtil {
 		}
 
 		int i;
-		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
-			if(material.equals(SeichiAssist.minestacklist.get(i).getMaterial()) &&
-				itemstack.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){
+		final List<MineStackObj> r = MineStackRegistry.getAllRegistered();
+		for(i=0; i<r.size(); i++){
+			final MineStackObj z = r.get(i);
+			if(material.equals(z.getMaterial()) &&
+				itemstack.getDurability() == z.getDurability()){
 				//この時点でIDとサブIDが一致している
-				if(SeichiAssist.minestacklist.get(i).getNameloreflag()==false && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
-					if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+				if(z.getNameloreflag()==false && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
+					if(playerdata.level < config.getMineStacklevel(z.getLevel())){
 						//レベルを満たしていない
 						return false;
 					} else {
@@ -209,7 +213,7 @@ public final class BreakUtil {
 						//delete_flag=true;
 						break;
 					}
-				} else if(SeichiAssist.minestacklist.get(i).getNameloreflag()==true && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
+				} else if(z.getNameloreflag()==true && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
 					//名前・説明文付き
 					ItemMeta meta = itemstack.getItemMeta();
 					/*
@@ -218,12 +222,12 @@ public final class BreakUtil {
 					}
 					*/
 					//この時点で名前と説明文がある
-						if(SeichiAssist.minestacklist.get(i).getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
+						if(z.getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
 							if( !(meta.getDisplayName().equals(Util.getGachaRingoName()))
 								|| !(meta.getLore().equals(Util.getGachaRingoLore())) ){
 								return false;
 							}
-							if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+							if(playerdata.level < config.getMineStacklevel(z.getLevel())){
 								//レベルを満たしていない
 								return false;
 							} else {
@@ -232,7 +236,7 @@ public final class BreakUtil {
 							}
 						} else {
 							//ガチャ品
-							MineStackGachaData g = MineStackRegistry.getGachaPrises().get(SeichiAssist.minestacklist.get(i).getGachatype());
+							MineStackGachaData g = MineStackRegistry.getGachaPrises().get(z.getGachatype());
 							String name = playerdata.name; //プレイヤーのネームを見る
 							if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
 								if(!Util.ItemStackContainsOwnerName(itemstack, name)){
@@ -247,7 +251,7 @@ public final class BreakUtil {
 								//gachadata.itemstack.isSimilar(itemstack)でスタックサイズ以外が一致しているか判定可能
 								//continue; //アイテムの中身が違う
 							} else { //中身が同じ場合のみここに入る
-								if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+								if(playerdata.level < config.getMineStacklevel(z.getLevel())){
 									//レベルを満たしていない
 									return false;
 								} else {
@@ -261,7 +265,7 @@ public final class BreakUtil {
 				}
 			}
 		}
-		return i != SeichiAssist.minestacklist.size();
+		return i != r.size();
 
 	}
 	@SuppressWarnings("deprecation")

@@ -211,7 +211,7 @@ public class gachaCommand implements TabExecutor{
 			return true;
 		}else if(args[0].equalsIgnoreCase("loadfromyml")){
 			//config.ymlから読み込む(mysql移行用コマンド)
-			SeichiAssist.gachadatalist.clear();
+			MineStackRegistry.discardGachaData();
 			SeichiAssist.config.loadGachaData();
 			sender.sendMessage("config.ymlからガチャデータをロードしました");
 			sender.sendMessage("/gacha saveでmysqlに保存してください");

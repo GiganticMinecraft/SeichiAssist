@@ -16,8 +16,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -293,8 +295,9 @@ public class Sql{
 
 		//MineStack関連をすべてfor文に変更
 		if(SeichiAssist.minestack_sql_enable){
-			for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
-				command += ",add column if not exists stack_" + SeichiAssist.minestacklist.get(i).getMineStackObjName() + " int default 0";
+			final List<MineStackObj> r = MineStackRegistry.getAllRegistered();
+			for (MineStackObj mineStackObj : r) {
+				command += ",add column if not exists stack_" + mineStackObj.getMineStackObjName() + " int default 0";
 			}
 		}
 
@@ -630,8 +633,8 @@ public class Sql{
 			e.printStackTrace();
 			return false;
 		}
-		SeichiAssist.gachadatalist.clear();
-		SeichiAssist.gachadatalist.addAll(gachadatalist);
+		MineStackRegistry.discardGachaData();
+		gachadatalist.forEach(MineStackRegistry::addGachaData);
 		return true;
 
 	}
@@ -721,7 +724,7 @@ public class Sql{
 
 	//ガチャデータセーブ
 	public boolean saveGachaData(){
-		return saveGachaData(SeichiAssist.gachadatalist);
+		return saveGachaData(MineStackRegistry.getGachaDataes());
 	}
 
 	//MineStack用ガチャデータセーブ

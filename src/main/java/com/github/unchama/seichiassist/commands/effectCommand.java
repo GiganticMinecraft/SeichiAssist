@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -117,7 +118,7 @@ public class effectCommand implements TabExecutor {
 
 		rand = Math.random();
 
-		for (GachaData gachadata : SeichiAssist.gachadatalist) {
+		for (GachaData gachadata : MineStackRegistry.getGachaDataes()) {
 			sum -= gachadata.probability;
 			if (sum <= rand) {
 				return gachadata.probability;

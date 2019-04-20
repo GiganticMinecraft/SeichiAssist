@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -40,7 +41,7 @@ public class GachaData {
 		double sum = 1.0;
 		double rand = Math.random();
 
-		for (GachaData gachadata : SeichiAssist.gachadatalist) {
+		for (GachaData gachadata : MineStackRegistry.getGachaDataes()) {
 			sum -= gachadata.probability;
 			if (sum <= rand) {
 				return new GachaData(gachadata);

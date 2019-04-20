@@ -7,7 +7,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import com.github.unchama.seichiassist.util.ExternalPlugins;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.Bukkit;
@@ -994,12 +996,9 @@ public class MenuInventoryData {
 
 	//Minestack全ページ(切り替え式)
 	public static Inventory getMineStackMenu(Player p, int page, int stack_type){
-		int minestack_stacktype_size=0;
-		for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
-			if(SeichiAssist.minestacklist.get(i).getStacktype()==stack_type){
-				minestack_stacktype_size++;
-			}
-		}
+		int minestack_stacktype_size;
+		final List<MineStackObj> registered = MineStackRegistry.getAllRegistered();
+		minestack_stacktype_size = (int) IntStream.range(0, registered.size()).filter(i -> registered.get(i).getStacktype() == stack_type).count();
 
 		//現在の最大ページ数を取得(1ページ=0,2ページ=1,...)
 		int maxpage = (minestack_stacktype_size + 1) / 45;
@@ -1065,7 +1064,7 @@ public class MenuInventoryData {
 		int iii=0;
 		int ii = start + page*45 - 1;
 		while(ii_temp<ii){
-			if(SeichiAssist.minestacklist.get(iii).getStacktype()!=stack_type){//対象外
+			if(MineStackRegistry.getAllRegistered().get(iii).getStacktype()!=stack_type){//対象外
 				iii++;
 			} else {
 				iii++;
@@ -1074,11 +1073,11 @@ public class MenuInventoryData {
 		}
 
 		while(i<max){
-			while(SeichiAssist.minestacklist.get(iii).getStacktype()!=stack_type){
+			while(MineStackRegistry.getAllRegistered().get(iii).getStacktype()!=stack_type){
 				iii++;
 			}
 			//この時点で「stack_typeのii番目」のインデックスになっている
-			MineStackObj msobj = SeichiAssist.minestacklist.get(iii);
+			MineStackObj msobj = MineStackRegistry.getAllRegistered().get(iii);
 			if(msobj.getItemStack()==null){
 				setMineStackButton(inventory, playerdata.minestack.getNum(iii), new ItemStack(msobj.getMaterial(), 1, (short)msobj.getDurability()),  SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
 				iii++;

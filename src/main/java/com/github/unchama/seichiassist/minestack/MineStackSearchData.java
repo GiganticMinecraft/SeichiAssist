@@ -13,7 +13,7 @@ public class MineStackSearchData {
 	private String katakana;
 
 	MineStackSearchData(MineStackObj obj, String enName, String katakana) {
-		this.index = SeichiAssist.minestacklist.indexOf(obj);
+		this.index = MineStackRegistry.getAllRegistered().indexOf(obj);
 		this.obj = obj;
 		this.jpName = obj.getJapaneseName();
 		this.enName = enName;

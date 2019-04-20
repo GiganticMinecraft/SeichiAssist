@@ -12,9 +12,12 @@ import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.minestack.MineStackObj;
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -337,8 +340,9 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 				//MineStack関連をすべてfor文に変更
  				if(SeichiAssist.minestack_sql_enable){
- 					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
- 						int temp_num = rs.getInt("stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName());
+ 					final List<MineStackObj> r = MineStackRegistry.getAllRegistered();
+ 					for(int i = 0; i<r.size(); i++){
+ 						int temp_num = rs.getInt("stack_"+r.get(i).getMineStackObjName());
  						playerdata.minestack.setNum(i, temp_num);
  					}
  				}

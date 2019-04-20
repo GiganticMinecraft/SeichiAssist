@@ -98,7 +98,7 @@ public final class MineStackRegistry {
 	}
 
 	// SeichiAssistに準拠
-	public static Set<MineStackObj> getAllRegistered() {
+	public static List<MineStackObj> getAllRegistered() {
 		final Set<MineStackObj> ret = SetFactory.of();
 		ret.addAll(rs);
 		ret.addAll(build);
@@ -106,7 +106,9 @@ public final class MineStackRegistry {
 		ret.addAll(farm);
 		ret.addAll(gacha);
 		ret.addAll(mining);
-		return ret;
+
+		// Setなのでdistinctは不要
+		return ret.parallelStream().collect(Collectors.toList());
 	}
 
 	public static void addGachaData(final GachaData gd) {

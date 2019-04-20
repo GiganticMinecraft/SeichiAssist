@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import net.md_5.bungee.api.ChatColor;
 
@@ -60,7 +61,7 @@ import com.google.common.io.ByteStreams;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
+	List<GachaData> gachadatalist = MineStackRegistry.getGachaDataes();
 	SeichiAssist plugin = SeichiAssist.instance;
 	private Config config = SeichiAssist.config;
 	private Sql sql = SeichiAssist.sql;
@@ -1723,7 +1724,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			if(SeichiAssist.DEBUG){
-				player.sendMessage("MineStackSize = " + SeichiAssist.minestacklist.size());
+				player.sendMessage("MineStackSize = " + MineStackRegistry.getAllRegistered().size());
 			}
 
 			/*
@@ -1967,7 +1968,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			if(SeichiAssist.DEBUG){
-				player.sendMessage("MineStackSize = " + SeichiAssist.minestacklist.size());
+				player.sendMessage("MineStackSize = " + MineStackRegistry.getAllRegistered().size());
 			}
 
 			/*
@@ -2011,16 +2012,18 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				itemstackcurrent.setItemMeta(MenuInventoryData.MineStackToggleMeta(playerdata,itemmeta));
 			} else {
-				for (int i = 0; i < SeichiAssist.minestacklist.size(); i++) {
-					if (itemstackcurrent.getType().equals(SeichiAssist.minestacklist.get(i).getMaterial())
-							&& itemstackcurrent.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()) { //MaterialとサブIDが一致
+				final List<MineStackObj> registered = MineStackRegistry.getAllRegistered();
+				for (int i = 0; i < MineStackRegistry.getAllRegistered().size(); i++) {
+					final MineStackObj it = registered.get(i);
+					if (itemstackcurrent.getType().equals(it.getMaterial())
+							&& itemstackcurrent.getDurability() == it.getDurability()) { //MaterialとサブIDが一致
 
-						if (!SeichiAssist.minestacklist.get(i).getNameloreflag()) {
+						if (!it.getNameloreflag()) {
 							/* loreが無いとき */
 
 							//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
 							//このアイテムの解放レベル
-							int level = SeichiAssist.config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel());
+							int level = SeichiAssist.config.getMineStacklevel(it.getLevel());
 							int level_ = 0;
 							//String temp = null;
 							for (int j = 0; j < itemstackcurrent.getItemMeta().getLore().size(); j++) {
@@ -2038,19 +2041,19 @@ public class PlayerInventoryListener implements Listener {
 							if (level==level_) {
 								/* 開放レベルとクリックしたMineStackボタンのLvが同じとき */
 								String itemstack_name = itemstackcurrent.getItemMeta().getDisplayName();
-								String minestack_name = SeichiAssist.minestacklist.get(i).getJapaneseName();
+								String minestack_name = it.getJapaneseName();
 								itemstack_name = itemstack_name.replaceAll("§[0-9A-Za-z]","");
 								minestack_name = minestack_name.replaceAll("§[0-9A-Za-z]","");
 								if (itemstack_name.equals(minestack_name)) { //表記はアイテム名だけなのでアイテム名で判定
-									playerdata.minestack.setNum(i, (giveMineStack(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability() ))) );
+									playerdata.minestack.setNum(i, (giveMineStack(player,playerdata.minestack.getNum(i),new ItemStack(it.getMaterial(), 1, (short)it.getDurability() ))) );
 									open_flag = (Util.getMineStackTypeindex(i) + 1) / 45;
-									open_flag_type = SeichiAssist.minestacklist.get(i).getStacktype();
+									open_flag_type = it.getStacktype();
 								}
 							}
-						} else if (SeichiAssist.minestacklist.get(i).getNameloreflag() && itemstackcurrent.getItemMeta().hasDisplayName()) { //名前と説明文がある
+						} else if (it.getNameloreflag() && itemstackcurrent.getItemMeta().hasDisplayName()) { //名前と説明文がある
 							//System.out.println("debug AA");
 							//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
-							int level = SeichiAssist.config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel());
+							int level = SeichiAssist.config.getMineStacklevel(it.getLevel());
 							int level_ = 0;
 							//String temp = null;
 							for(int j=0; j<itemstackcurrent.getItemMeta().getLore().size(); j++){
@@ -2074,48 +2077,48 @@ public class PlayerInventoryListener implements Listener {
 								//System.out.println(itemstackcurrent.getItemMeta().getDisplayName());
 								//System.out.println(SeichiAssist.minestacklist.get(i).getJapaneseName());
 								String itemstack_name = itemstackcurrent.getItemMeta().getDisplayName();
-								String minestack_name = SeichiAssist.minestacklist.get(i).getJapaneseName();
+								String minestack_name = it.getJapaneseName();
 								itemstack_name = itemstack_name.replaceAll("§[0-9A-Za-z]","");
 								minestack_name = minestack_name.replaceAll("§[0-9A-Za-z]","");
 								//System.out.println(itemstack_name);
 								//System.out.println(minestack_name);
 
-								if(SeichiAssist.minestacklist.get(i).getGachatype()==-1){//ガチャアイテムにはない（がちゃりんご）
+								if(it.getGachatype()==-1){//ガチャアイテムにはない（がちゃりんご）
 									if(itemstack_name.equals(minestack_name)){ //表記はアイテム名だけなのでアイテム名で判定
-										playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability()),-1)));
+										playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(it.getMaterial(), 1, (short)it.getDurability()),-1)));
 										open_flag = (Util.getMineStackTypeindex(i)+1)/45;
-										open_flag_type=SeichiAssist.minestacklist.get(i).getStacktype();
+										open_flag_type=it.getStacktype();
 									}
 								} else { //ガチャアイテム(処理は同じでも念のためデバッグ用に分離)
-									if(SeichiAssist.minestacklist.get(i).getGachatype()>=0){
+									if(it.getGachatype()>=0){
 										if(itemstack_name.equals(minestack_name)){ //表記はアイテム名だけなのでアイテム名で判定
 											//盾、バナーの模様判定
-											if( ( itemstackcurrent.getType().equals(Material.SHIELD) || (itemstackcurrent.getType().equals(Material.BANNER)) ) && SeichiAssist.minestacklist.get(i).getItemStack().getType().equals(itemstackcurrent.getType())){
+											if( ( itemstackcurrent.getType().equals(Material.SHIELD) || (itemstackcurrent.getType().equals(Material.BANNER)) ) && it.getItemStack().getType().equals(itemstackcurrent.getType())){
 												BlockStateMeta bs0 = (BlockStateMeta) itemstackcurrent.getItemMeta();
 												Banner b0 = (Banner) bs0.getBlockState();
 												List<org.bukkit.block.banner.Pattern> p0 = b0.getPatterns();
 
-												BlockStateMeta bs1 = (BlockStateMeta) SeichiAssist.minestacklist.get(i).getItemStack().getItemMeta();
+												BlockStateMeta bs1 = (BlockStateMeta) it.getItemStack().getItemMeta();
 												Banner b1 = (Banner) bs1.getBlockState();
 												List<org.bukkit.block.banner.Pattern> p1 = b1.getPatterns();
 
 												if(p0.containsAll(p1)){
-													playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability()),SeichiAssist.minestacklist.get(i).getGachatype())));
+													playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(it.getMaterial(), 1, (short)it.getDurability()),SeichiAssist.minestacklist.get(i).getGachatype())));
 													open_flag = (Util.getMineStackTypeindex(i)+1)/45;
-													open_flag_type=SeichiAssist.minestacklist.get(i).getStacktype();
+													open_flag_type=it.getStacktype();
 												}
 											} else {
-												playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(SeichiAssist.minestacklist.get(i).getMaterial(), 1, (short)SeichiAssist.minestacklist.get(i).getDurability()),SeichiAssist.minestacklist.get(i).getGachatype())));
+												playerdata.minestack.setNum(i, (giveMineStackNameLore(player,playerdata.minestack.getNum(i),new ItemStack(it.getMaterial(), 1, (short)it.getDurability()),SeichiAssist.minestacklist.get(i).getGachatype())));
 												open_flag = (Util.getMineStackTypeindex(i)+1)/45;
-												open_flag_type=SeichiAssist.minestacklist.get(i).getStacktype();
+												open_flag_type=it.getStacktype();
 											}
 										}
 									}
 								}
 							}
 						}
-						if (SeichiAssist.minestacklist.get(i).getGachatype() == -1) {
-							playerdata.hisotryData.add(i, SeichiAssist.minestacklist.get(i));
+						if (it.getGachatype() == -1) {
+							playerdata.hisotryData.add(i, it);
 						}
 					}
 

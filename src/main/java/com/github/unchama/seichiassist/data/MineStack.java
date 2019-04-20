@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 
 public class MineStack {
 	private int[] nums;
@@ -89,7 +90,7 @@ public class MineStack {
 	*/
 
 	public MineStack(){
-		nums = new int[SeichiAssist.minestacklist.size()];
+		nums = new int[MineStackRegistry.getAllRegistered().size()];
 		/*
 		stone = 0;
 		dirt = 0;

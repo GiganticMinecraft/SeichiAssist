@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 import org.bukkit.Bukkit;
@@ -579,14 +580,8 @@ public final class Util {
 	}
 
 	public static int getMineStackTypeindex(int idx){
-		int temp = 0;
-		int type = SeichiAssist.minestacklist.get(idx).getStacktype();
-		for (int i = 0; i < idx; i++) {
-			if (SeichiAssist.minestacklist.get(i).getStacktype() == type) {
-				temp++;
-			}
-		}
-		return temp;
+		int type = MineStackRegistry.getAllRegistered().get(idx).getStacktype();
+		return (int) IntStream.range(0, idx).filter(i -> MineStackRegistry.getAllRegistered().get(i).getStacktype() == type).count();
 	}
 
 	/**
@@ -771,14 +766,10 @@ public final class Util {
 	 * @return マインスタック番号(見つからなかった場合は-1)
 	 */
 	public static int MineStackobjname_indexOf(String s){
-		int id = -1;
-		for(int x = 0 ; x < SeichiAssist.minestacklist.size() ; x++){
-			if( s.equals( SeichiAssist.minestacklist.get(x).getMineStackObjName() ) ){
-				id = x;
-				break;
-			}
-		}
-		return id;
+		return IntStream.range(0, MineStackRegistry.getAllRegistered().size())
+				.filter(x -> s.equals(MineStackRegistry.getAllRegistered().get(x).getMineStackObjName()))
+				.findFirst()
+				.orElse(-1);
 	}
 
 	public static boolean isEnemy(EntityType type) {

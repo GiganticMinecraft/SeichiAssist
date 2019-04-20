@@ -4,7 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.List;
 
+import com.github.unchama.seichiassist.minestack.MineStackObj;
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -136,8 +139,10 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 				//MineStack関連は全てfor文に変更
 				if(SeichiAssist.minestack_sql_enable){
-					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
-						command += ",stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName()+ " = "
+					// FIXME: OFF-BY-ONE ERROR?
+					final List<MineStackObj> r = MineStackRegistry.getAllRegistered();
+					for(int i=0; i<r.size(); i++){
+						command += ",stack_"+r.get(i).getMineStackObjName()+ " = "
 							+ playerdata.minestack.getNum(i);
 					}
 				}

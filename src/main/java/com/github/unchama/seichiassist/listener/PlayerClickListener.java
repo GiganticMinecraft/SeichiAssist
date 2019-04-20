@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.minestack.MineStackRegistry;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -45,7 +46,7 @@ import com.github.unchama.seichiassist.util.Util;
 public class PlayerClickListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
+	List<GachaData> gachadatalist = MineStackRegistry.getGachaDataes();
 	//アクティブスキル処理
 	@EventHandler
 	public void onPlayerActiveSkillEvent(PlayerInteractEvent event){

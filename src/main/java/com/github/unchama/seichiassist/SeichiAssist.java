@@ -778,6 +778,11 @@ public class SeichiAssist extends JavaPlugin{
 
 	);
 
+	/**
+	 * @deprecated
+	 * @see MineStackRegistry#getAllRegistered()
+	 */
+	@Deprecated
 	public static List<MineStackObj> minestacklist = null;
 
 	//public static final int minestacksize=minestacklist.size();
@@ -1073,8 +1078,6 @@ public class SeichiAssist extends JavaPlugin{
 		// return minestacklist.parallelStream().distinct().collect(Collectors.toList());
 		return minestacklist;
 	}
-
-
 }
 
 
