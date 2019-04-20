@@ -1076,4 +1076,14 @@ public class PlayerData {
 				+ (SeichiAssist.levellist.get(this.level) - this.totalbreaknum);
 	}
 
+
+	public List<String> getPlayerInfoLore() {
+		List<String> lore = new ArrayList<>();
+		lore.add(getSeichiLevelDescription());
+		if (this.level < SeichiAssist.levellist.size()) {
+			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(this.level) - this.totalbreaknum));
+		}
+		//TODO: WIP
+        return lore;
+	}
 }
