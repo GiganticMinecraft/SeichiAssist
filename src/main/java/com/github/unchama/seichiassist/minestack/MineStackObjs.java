@@ -45,11 +45,13 @@ public enum MineStackObjs {
 	RED_SAND(new MineStackMineObj("red_sand","赤い砂",1,Material.SAND,1)),
 	RED_SANDSTONE(new MineStackMineObj("red_sandstone","赤い砂岩",1,Material.RED_SANDSTONE,0)),
 	HARDENED_CLAY(new MineStackMineObj("hard_clay","堅焼き粘土",1,Material.HARD_CLAY,0)),
+	/* //OUTDATED
 	WHITE_STAINED_HARDENED_CLAY(new MineStackMineObj("stained_clay","白色の堅焼き粘土",1,Material.STAINED_CLAY,0)),
 	ORANGE_STAINED_HARDENED_CLAY(new MineStackMineObj("stained_clay1","橙色の堅焼き粘土",1,Material.STAINED_CLAY,1)),
 	YELLOW_STAINED_HARDENED_CLAY(new MineStackMineObj("stained_clay4","黄色の堅焼き粘土",1,Material.STAINED_CLAY,4)),
 	LIGHT_GRAY_STAINED_HARDENED_CLAY(new MineStackMineObj("stained_clay8","薄灰色の堅焼き粘土",1,Material.STAINED_CLAY,8)),
-
+	// ^^^
+	*/
 
 
 	;
