@@ -290,7 +290,8 @@ public class SeichiAssist extends JavaPlugin{
 			//2019.4追加分
 			,new MineStackDropObj("shulker_shell", "シュルカーの殻", 1, Material.SHULKER_SHELL, 0)
 			,new MineStackDropObj("totem_of_undying", "不死のトーテム", 1, Material.TOTEM, 0)
-
+			,new MineStackDropObj("dragon_head", "エンダードラゴンの頭", 1, Material.SKULL_ITEM,5)
+            ,new MineStackDropObj("wither_skeleton_skull", "ウィザースケルトンの頭", 1, Material.SKULL_ITEM,1)
 	));
 
 	private static final List<MineStackObj> minestacklistfarm = new ArrayList<MineStackObj>(Arrays.asList(
