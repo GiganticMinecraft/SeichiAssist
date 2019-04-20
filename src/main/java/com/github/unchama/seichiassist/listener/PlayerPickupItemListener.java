@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import com.github.unchama.seichiassist.minestack.MineStackRegistry;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
