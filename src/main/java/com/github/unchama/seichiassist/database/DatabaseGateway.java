@@ -52,29 +52,11 @@ public class DatabaseGateway {
         this.donateDataManipulator = new DonateDataManipulator(this);
     }
 
-	public static DatabaseGateway createInitializedInstance(@NotNull String databaseUrl,
-													 @NotNull String databaseName,
-													 @NotNull String loginId,
-													 @NotNull String password) {
-	    final DatabaseGateway instance = new DatabaseGateway(databaseUrl, databaseName, loginId, password);
-	    final DatabaseTableInitializer tableInitializer =
-				new DatabaseTableInitializer(instance, instance.plugin.getLogger(), SeichiAssist.config);
+	public ResultSet executeQuery(String query) throws SQLException {
+		return stmt.executeQuery(query);
+	}
 
-	    final ActionStatus initializationStatus = TryWithoutFailValue
-				.sequence(
-					instance::connectToAndInitializeDatabase,
-					tableInitializer::initializeTables
-				)
-				.overallStatus();
-
-	    if (initializationStatus == Fail) {
-	        instance.plugin.getLogger().info("データベース初期処理にエラーが発生しました");
-        }
-
-	    return instance;
-    }
-
-    private ActionStatus createDatabaseDriverInstance() {
+	private ActionStatus createDatabaseDriverInstance() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			return Ok;
@@ -82,21 +64,6 @@ public class DatabaseGateway {
 			e.printStackTrace();
 			return Fail;
 		}
-	}
-
-	/**
-	 * 接続関数
-	 */
-	private ActionStatus connectToAndInitializeDatabase() {
-		return Try
-				.sequence(
-						new FailableAction<>("Mysqlドライバーのインスタンス生成に失敗しました",
-								this::createDatabaseDriverInstance),
-						new FailableAction<>("SQL接続に失敗しました", this::establishMySQLConnection),
-						new FailableAction<>("データベース作成に失敗しました", this::createDB)
-				)
-				.mapFailed(failedMessage -> { plugin.getLogger().info(failedMessage); return Unit.instance; })
-				.overallStatus();
 	}
 
 	private ActionStatus establishMySQLConnection(){
@@ -145,24 +112,6 @@ public class DatabaseGateway {
 	}
 
 	/**
-	 * コネクション切断処理
-	 *
-	 * @return 成否
-	 */
-	public ActionStatus disconnect(){
-		if (con != null) {
-			try {
-				stmt.close();
-				con.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return Fail;
-			}
-		}
-		return Ok;
-	}
-
-	/**
 	 * コマンド実行関数
 	 * @param command コマンド内容
 	 * @return 成否
@@ -180,19 +129,67 @@ public class DatabaseGateway {
 		}
 	}
 
-	public ResultSet executeQuery(String query) throws SQLException {
-	    return stmt.executeQuery(query);
-    }
-
 	/**
 	 * データベース作成
 	 *
 	 * @return 成否
 	 */
 	private ActionStatus createDB(){
-		String command = "CREATE DATABASE IF NOT EXISTS " + databaseName
-				+ " character set utf8 collate utf8_general_ci";
+		String command = "CREATE DATABASE IF NOT EXISTS " + databaseName + " character set utf8 collate utf8_general_ci";
 		return executeUpdate(command);
 	}
 
+	/**
+	 * 接続関数
+	 */
+	private ActionStatus connectToAndInitializeDatabase() {
+		return Try
+				.sequence(
+						new FailableAction<>(
+								"Mysqlドライバーのインスタンス生成に失敗しました",
+								this::createDatabaseDriverInstance
+						),
+						new FailableAction<>("SQL接続に失敗しました", this::establishMySQLConnection),
+						new FailableAction<>("データベース作成に失敗しました", this::createDB)
+				)
+				.mapFailed(failedMessage -> { plugin.getLogger().info(failedMessage); return Unit.instance; })
+				.overallStatus();
+	}
+
+	public static DatabaseGateway createInitializedInstance(@NotNull String databaseUrl,
+															@NotNull String databaseName,
+															@NotNull String loginId,
+															@NotNull String password) {
+		final DatabaseGateway instance = new DatabaseGateway(databaseUrl, databaseName, loginId, password);
+		final DatabaseTableInitializer tableInitializer =
+				new DatabaseTableInitializer(instance, instance.plugin.getLogger(), SeichiAssist.config);
+
+		final ActionStatus initializationStatus = TryWithoutFailValue
+				.sequence(instance::connectToAndInitializeDatabase, tableInitializer::initializeTables)
+				.overallStatus();
+
+		if (initializationStatus == Fail) {
+			instance.plugin.getLogger().info("データベース初期処理にエラーが発生しました");
+		}
+
+		return instance;
+	}
+
+	/**
+	 * コネクション切断処理
+	 *
+	 * @return 成否
+	 */
+	public ActionStatus disconnect(){
+		if (con != null) {
+			try {
+				stmt.close();
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return Fail;
+			}
+		}
+		return Ok;
+	}
 }
