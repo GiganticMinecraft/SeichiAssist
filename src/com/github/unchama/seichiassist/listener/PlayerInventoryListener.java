@@ -1753,7 +1753,7 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 
-			if (itemstackcurrent.getType().equals(Material.STONE) && !itemstackcurrent.getItemMeta().hasLore()) {
+			if (itemstackcurrent.getType().equals(Material.DIAMOND_ORE) && !itemstackcurrent.getItemMeta().hasLore()) {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0, 0));
