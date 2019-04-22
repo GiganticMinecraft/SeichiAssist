@@ -36,6 +36,7 @@ jobs:
       - run: mkdir -p localDependencies && cp -R /workspace/localDependencies/. localDependencies
       - run: ls -al localDependencies
       - run: mvn test
+      - *save_workspace
   build:
     <<: *maven_docker
     working_directory: ~/repo
