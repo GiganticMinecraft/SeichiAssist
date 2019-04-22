@@ -55,13 +55,7 @@ public abstract class Try<F> {
 
         @Override
         public Try<F> ifOkThen(F failValue, Supplier<ActionStatus> action) {
-            final ActionStatus actionStatus = action.get();
-
-            if (actionStatus == Ok) {
-                return new FailedTry<>(failValue);
-            }
-
-            return this;
+            return action.get() == Ok ? this : new FailedTry<>(failValue);
         }
 
         @Override
