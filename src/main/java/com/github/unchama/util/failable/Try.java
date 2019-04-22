@@ -3,7 +3,7 @@ package com.github.unchama.util.failable;
 import com.github.unchama.util.ActionStatus;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -92,7 +92,7 @@ public abstract class Try<F> {
         return new SuccessfulTry<>();
     }
 
-    public static <F> Try<F> sequence(Collection<FailableAction<F>> actions) {
+    public static <F> Try<F> sequence(List<FailableAction<F>> actions) {
         Try<F> currentTry = Try.succeed();
 
         for (final FailableAction<F> action: actions) {

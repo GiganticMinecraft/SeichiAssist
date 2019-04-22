@@ -4,7 +4,7 @@ import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.Unit;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class TryWithoutFailValue {
     @SafeVarargs
     public static Try<Unit> sequence(Supplier<ActionStatus>... actions) {
-        final Collection<FailableAction<Unit>> actionsWithFailValues = Arrays
+        final List<FailableAction<Unit>> actionsWithFailValues = Arrays
                 .stream(actions).map((action) -> new FailableAction<>(Unit.instance, action))
                 .collect(Collectors.toList());
 
