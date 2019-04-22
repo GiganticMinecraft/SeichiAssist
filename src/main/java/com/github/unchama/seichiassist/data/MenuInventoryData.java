@@ -1,15 +1,21 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
+import com.github.unchama.seasonalevents.events.valentine.Valentine;
+import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.minestack.HistoryData;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
+import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
+import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
+import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.ExternalPlugins;
 import com.github.unchama.seichiassist.util.TypeConverter;
+import com.github.unchama.seichiassist.util.Util;
+import com.sk89q.worldguard.bukkit.WorldConfiguration;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,20 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.github.unchama.seasonalevents.events.valentine.Valentine;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.minestack.HistoryData;
-import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
-import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
-import com.github.unchama.seichiassist.util.ExperienceManager;
-import com.github.unchama.seichiassist.util.Util;
-import com.sk89q.worldguard.bukkit.WorldConfiguration;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.managers.RegionManager;
+import java.util.*;
 
 public class MenuInventoryData {
 	private static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
@@ -171,7 +164,7 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack機能");
 		lore.clear();
 		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "説明しよう!MineStackとは…"
-				, ChatColor.RESET + "" + "主要ブロックを無限にスタック出来る!"
+				, ChatColor.RESET + "" + "主要アイテムを無限にスタック出来る!"
 				, ChatColor.RESET + "" + "スタックしたアイテムは"
 				, ChatColor.RESET + "" + "ここから取り出せるゾ!"
 				));
@@ -180,7 +173,7 @@ public class MenuInventoryData {
 		}else{
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで開く");
 		}
-		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※スタックしたブロックは");
+		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※スタックしたアイテムは");
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "各サバイバルサーバー間で");
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "共有されます");
 		itemmeta.setLore(lore);
@@ -904,10 +897,10 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(MineStackToggleMeta(pd,itemmeta));
 		inventory.setItem(0,itemstack);
 
-		itemstack = new ItemStack(Material.STONE,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE);
+		itemstack = new ItemStack(Material.DIAMOND_ORE,1);
+		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "採掘系アイテム");
+		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "鉱石系アイテム");
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(1,itemstack);
 
@@ -923,7 +916,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.SEEDS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SEEDS);
 		//itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "農業系アイテム");
+		itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "農業・食料系アイテム");
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(3,itemstack);
 
@@ -1018,11 +1011,11 @@ public class MenuInventoryData {
 		//Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "MineStack");
 		Inventory inventory = null;
 		if(stack_type==0){
-			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "採掘系MineStack");
+			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "鉱石系MineStack");
 		} else if(stack_type==1){
 			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ドロップ系MineStack");
 		} else if(stack_type==2){
-			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "農業系MineStack");
+			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "農業・食料系MineStack");
 		} else if(stack_type==3){
 			inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "建築系MineStack");
 		} else if(stack_type==4){

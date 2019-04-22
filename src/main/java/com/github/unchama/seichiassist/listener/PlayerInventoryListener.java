@@ -1,15 +1,18 @@
 package com.github.unchama.seichiassist.listener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.github.unchama.seasonalevents.events.valentine.Valentine;
+import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.data.*;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.minestack.HistoryData;
+import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
+import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
+import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
+import com.github.unchama.seichiassist.util.ExperienceManager;
+import com.github.unchama.seichiassist.util.Util;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -34,28 +37,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.github.unchama.seasonalevents.events.valentine.Valentine;
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.data.ActiveSkillInventoryData;
-import com.github.unchama.seichiassist.data.EffectData;
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.ItemData;
-import com.github.unchama.seichiassist.data.MenuInventoryData;
-import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.minestack.HistoryData;
-import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
-import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
-import com.github.unchama.seichiassist.util.ExperienceManager;
-import com.github.unchama.seichiassist.util.Util;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 
@@ -524,7 +508,7 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 1.5);
 				player.openInventory(MenuInventoryData.getHomeMenuData(player));
 			}
-			
+
 			else if(itemstackcurrent.getType().equals(Material.COMPASS)){
 				// /rtp コマンド実行
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 1.5);
@@ -1746,7 +1730,7 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 
-			if (itemstackcurrent.getType().equals(Material.STONE) && !itemstackcurrent.getItemMeta().hasLore()) {
+			if (itemstackcurrent.getType().equals(Material.DIAMOND_ORE) && !itemstackcurrent.getItemMeta().hasLore()) {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMineStackMenu(player, 0, 0));
@@ -2145,11 +2129,11 @@ public class PlayerInventoryListener implements Listener {
 
 			//開く音を再生
 			player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-			if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "採掘系MineStack")){
+			if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "鉱石系MineStack")){
 				player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display - 1,0));
 			} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "ドロップ系MineStack")){
 				player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display - 1 ,1));
-			} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "農業系MineStack")){
+			} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "農業・食料系MineStack")){
 				player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display - 1,2));
 			} else if(topinventory.getTitle().equals(ChatColor.DARK_BLUE + "" + ChatColor.BOLD + "建築系MineStack")){
 				player.openInventory(MenuInventoryData.getMineStackMenu(player, page_display - 1,3));
