@@ -631,6 +631,9 @@ public class PlayerData {
 		}else if(p.getWorld().getName().equalsIgnoreCase("world_sw_zero")){
 			//整地ワールドzeroでは整地量2.0倍
 			result *= 2.0;
+		} else if (p.getWorld().getName().equalsIgnoreCase("world_sw")) {
+			//整地1の場合は整地量均一0.8倍
+			result *= 0.8;
 		}
 		return result;
 	}
