@@ -5,7 +5,7 @@
   <version>1.0.0-SNAPSHOT</version>
 
   <build>
-    <sourceDirectory>src</sourceDirectory>
+    <sourceDirectory>src/main/java</sourceDirectory>
     <resources>
       <resource>
         <directory>src</directory>
@@ -197,6 +197,12 @@
       <groupId>com.github.EngineHub.WorldGuard</groupId>
       <artifactId>worldguard-legacy</artifactId>
       <version>8eeab682db</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>17.0.0</version>
     </dependency>
 
   </dependencies>
