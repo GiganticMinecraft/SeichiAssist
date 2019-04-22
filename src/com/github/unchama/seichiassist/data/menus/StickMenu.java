@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.data.menus;
 
-import com.github.unchama.seichiassist.data.button.PlayerDataButton;
+import com.github.unchama.seichiassist.data.button.PlayerDataButtons;
 import com.github.unchama.seichiassist.data.menu.Menu;
 import com.github.unchama.seichiassist.data.menu.chest.ChestMenuBuilder;
 
@@ -22,7 +22,7 @@ public class StickMenu {
         stickMenu = ChestMenuBuilder.of()
                 .size(4 * 9)
                 .slots(
-                        PlayerDataButton.playerInfo
+                        PlayerDataButtons.playerInfo
                 )
                 .build();
     }

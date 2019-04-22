@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.data.slot.button.ButtonBuilder;
 /**
  * @author karayuu
  */
-public class PlayerDataButton {
+public class PlayerDataButtons {
     public static Button playerInfo = ButtonBuilder.from(
             SkullItemStackBuilder.of()
                     .setPlayerSkull()
