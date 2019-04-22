@@ -26,16 +26,6 @@ jobs:
       - run: mv workspace/dependencies workspace/localDependencies
       - run: ls -al workspace/localDependencies
       - *save_workspace
-  test:
-    <<: *maven_docker
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - attach_workspace:
-          at: '/workspace'
-      - run: mkdir -p localDependencies && cp -R /workspace/localDependencies/. localDependencies
-      - run: ls -al localDependencies
-      - run: mvn test
   build:
     <<: *maven_docker
     working_directory: ~/repo
@@ -71,15 +61,11 @@ workflows:
               only:
                 - master
                 - develop
-      - test:
-          requires:
-            - install
       - build:
           requires:
             - install
       - deploy_production:
           requires:
-            - test
             - build
           filters:
             branches:
@@ -87,7 +73,6 @@ workflows:
                 - master
       - deploy_debug:
           requires:
-            - test
             - build
           filters:
             branches:
