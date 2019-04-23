@@ -927,7 +927,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("mebius",new mebiusCommand(instance));
 		commandlist.put("unlockachv", new AchieveCommand());
 		commandlist.put("halfguard", new HalfBlockProtectCommand(instance));
-		commandlist.put("event", new EventCommand(instance));
+		commandlist.put("event", new EventCommand());
 		commandlist.put("contribute", new ContributeCommand());
 		commandlist.put("subhome", new subHomeCommand(instance));
 		commandlist.put("gtfever", new GiganticFeverCommand());
