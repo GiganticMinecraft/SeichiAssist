@@ -25,8 +25,6 @@ jobs:
           scp -oStrictHostKeyChecking=no -P $HOST_PORT -r $DEPENDENCY_REPOSITORY_HOST . > /dev/null 2>&1
           mv dependencies localDependencies
           ls -al localDependencies
-          mkdir -p localDependencies && cp -R /tmp/workspace/localDependencies/. localDependencies
-          ls -al localDependencies
       - restore_cache:
           keys:
             - gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lock" }}
