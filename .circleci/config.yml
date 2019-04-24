@@ -4,7 +4,7 @@ anchors:
   docker:
     gradle_docker: &gradle_docker
       docker:
-        - image: circleci/openjdk:8u181-jdk
+        - image: maven:3.6.0-jdk-8
   workspace:
     save_workspace: &save_workspace
       persist_to_workspace:
