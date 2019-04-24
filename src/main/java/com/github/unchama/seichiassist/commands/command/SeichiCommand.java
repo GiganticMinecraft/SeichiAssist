@@ -2,17 +2,12 @@ package com.github.unchama.seichiassist.commands.command;
 
 import com.github.unchama.seichiassist.commands.command.context.ArgumentSatisfier;
 import com.github.unchama.seichiassist.commands.command.context.CommandContext;
-import com.github.unchama.seichiassist.commands.command.result.CommandResult;
-import com.github.unchama.seichiassist.commands.command.result.IllegalArgument;
-import com.github.unchama.seichiassist.commands.command.result.NotEnoughArgument;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * @author unicroak
@@ -20,45 +15,65 @@ import java.util.function.Predicate;
 public final class SeichiCommand {
 
     private final List<ArgumentSatisfier> satisfierList;
-    private final Map<String, Consumer<CommandContext>> resultActionMap;
-    private Function<CommandContext, CommandResult> action;
+    private final Map<String, Consumer<SeichiCommand>> childCommandMap;
+
+    private Optional<Consumer<CommandContext>> action;
 
     private boolean mustBeExecutedByPlayer;
     private Consumer<CommandContext> failByExecutingOnConsole;
 
     private SeichiCommand() {
         this.satisfierList = new ArrayList<>(64);
-        this.resultActionMap = new HashMap<>();
+        this.childCommandMap = new HashMap<>();
     }
 
-    static boolean execute(Consumer<SeichiCommand> creator, CommandSender sender, String[] rawArguments) {
-        SeichiCommand seichiCommand = new SeichiCommand();
-        CommandContext commandContext = new CommandContext(sender, Arrays.asList(rawArguments), seichiCommand.satisfierList);
+    @SuppressWarnings("unchecked")
+    static boolean execute(Consumer<SeichiCommand> builder, CommandSender sender, String[] rawArguments) {
+        final SeichiCommand command = new SeichiCommand();
+        builder.accept(command);
+        final CommandContext context = new CommandContext(sender, Arrays.asList(rawArguments), command.satisfierList);
 
-        if (seichiCommand.mustBeExecutedByPlayer && !(sender instanceof Player)) {
-            seichiCommand.failByExecutingOnConsole.accept(commandContext);
+        if (command.mustBeExecutedByPlayer && !(sender instanceof Player)) {
+            command.failByExecutingOnConsole.accept(context);
             return true;
         }
 
-        CommandResult result;
-        try {
-            creator.accept(seichiCommand);
-            seichiCommand.action.apply(commandContext);
+        if (rawArguments.length != 0) {
+            Optional<String> labelOptional = Arrays.stream(rawArguments)
+                    .map(String::toUpperCase)
+                    .filter(command.childCommandMap::containsKey)
+                    .findFirst();
 
-            result = new CommandResult.Success();
-        } catch (IllegalArgumentException | ClassCastException ex) {
-            result = new IllegalArgument();
-        } catch (IndexOutOfBoundsException ex) {
-            result = new NotEnoughArgument();
+            if (labelOptional.isPresent()) {
+                SeichiCommand.execute(command.childCommandMap.get(labelOptional.get()), sender, rawArguments);
+                return true;
+            }
         }
 
-        seichiCommand
-                .resultActionMap
-                .getOrDefault(result.getClass().getName(), context -> {
-                })
-                .accept(commandContext);
+        if (rawArguments.length != command.satisfierList.size()) {
+            return false;
+        }
 
-        return result.isSuccess();
+        for (int index = 0; index < rawArguments.length; index++) {
+            final String rawArgument = rawArguments[index];
+            final ArgumentSatisfier satisfier = command.satisfierList.get(index);
+
+            final Optional argumentOptional = satisfier.tryTransform(rawArgument);
+            if (!argumentOptional.isPresent()) {
+                satisfier.ifFailOnTransform(context);
+                return true;
+            } else if (!satisfier.confirmBound(argumentOptional.get())) {
+                satisfier.ifFailOnBind(context);
+                return true;
+            }
+        }
+
+        if (!command.action.isPresent()) {
+            return false;
+        } else {
+            command.action.get().accept(context);
+            return true;
+        }
     }
 
     public SeichiCommand mustBeExecutedByPlayer(boolean mustBeExecutedByPlayer, Consumer<CommandContext> ifFail) {
@@ -77,29 +92,19 @@ public final class SeichiCommand {
     }
 
     @SuppressWarnings("unchecked")
-    public <A> SeichiCommand satisfyArgumentAt(int order, Function<String, A> transform, Predicate<A> binding) {
-        this.satisfierList.add(order, new ArgumentSatisfier(transform, binding));
+    public <S> SeichiCommand satisfyArgumentAt(int order, ArgumentSatisfier<S> satisfier) {
+        this.satisfierList.add(order, satisfier);
         return this;
     }
 
-    public <A> SeichiCommand satisfyArgumentAt(int order, Function<String, A> transform) {
-        return this.satisfyArgumentAt(order, transform, argument -> true);
-    }
-
-    // TODO: refactor
-    public <R extends CommandResult> SeichiCommand ifOn(Class<R> clazz, Consumer<CommandContext> action) {
-        String clazzName = clazz.getName();
-        resultActionMap.put(clazzName, action);
+    public SeichiCommand execute(Consumer<CommandContext> action) {
+        this.action = Optional.of(action);
         return this;
     }
 
-    public SeichiCommand execute(Function<CommandContext, CommandResult> action) {
-        this.action = action;
+    public SeichiCommand withChild(String label, Consumer<SeichiCommand> childCommandBuilder) {
+        childCommandMap.put(label.toUpperCase(), childCommandBuilder);
         return this;
-    }
-
-    public SeichiCommand withChild(String label, Function<ArgumentSatisfier, SeichiCommand> childCommand) {
-        return this; // TODO: implement
     }
 
 }

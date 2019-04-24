@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands.command.context;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author unicroak
@@ -24,10 +25,10 @@ public final class CommandContext {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getArgumentAt(int order) {
+    public <T> Optional<T> getArgumentAt(int order) {
         String rawArgument = rawArgumentList.get(order);
 
-        return (T) argumentList.get(order).transform(rawArgument);
+        return (Optional<T>) argumentList.get(order).tryTransform(rawArgument);
     }
 
 }
