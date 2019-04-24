@@ -1,11 +1,10 @@
-# .circleci/config.yml for CircleCI 2.0
-version: 2
+version: 2.1
 
 anchors:
   docker:
     gradle_docker: &gradle_docker
       docker:
-        - image: gradle:5.4.0-jdk8
+        - image: circleci/openjdk:8u181-jdk
   workspace:
     save_workspace: &save_workspace
       persist_to_workspace:
@@ -31,11 +30,10 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - attach_workspace:
-          at: '/workspace'
+      - *load_workspace
       - run: mkdir -p localDependencies && cp -R /workspace/localDependencies/. localDependencies
       - run: ls -al localDependencies
-      - run: gradle install
+      - run: ./gradlew install
       - run: mkdir -p workspace/builds && cp build/libs/**.jar workspace/builds
       - *save_workspace
   deploy_debug:
@@ -55,12 +53,13 @@ workflows:
   version: 2
   test_and_build:
     jobs:
-      - install:
-          filters:
-            branches:
-              only:
-                - master
-                - develop
+      - install
+        #:
+        #  filters:
+        #    branches:
+        #      $only:
+        #        - master
+        #        - develop
       - build:
           requires:
             - install
