@@ -4,6 +4,7 @@ plugins {
     java
     maven
     kotlin("jvm").version("1.3.30")
+    id("nebula.dependency-lock").version("2.2.4")
 }
 
 group = "SeichiAssist"
