@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.util.ExternalPlugins;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Location;

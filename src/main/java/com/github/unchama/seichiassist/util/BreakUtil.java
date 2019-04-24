@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.Set;
 
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import net.coreprotect.CoreProtectAPI;
 
 import org.bukkit.ChatColor;

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.util.ExternalPlugins;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;

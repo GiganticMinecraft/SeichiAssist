@@ -123,7 +123,7 @@ public class Menu {
         requireNonNull(slot);
         requireNonNull(inventory);
         requireNonNull(playerData);
-        Bukkit.getScheduler().runTaskAsynchronously(SeichiAssist.plugin,
+        Bukkit.getScheduler().runTaskAsynchronously(SeichiAssist.instance,
                 () -> inventory.setItem(slot.getPosition(), slot.getItemStack(playerData)));
     }
 }

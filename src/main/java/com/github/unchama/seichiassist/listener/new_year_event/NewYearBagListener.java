@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.listener.new_year_event;
 import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.*;
 import com.github.unchama.seichiassist.util.*;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import de.tr7zw.itemnbtapi.*;
 import org.bukkit.*;
 import org.bukkit.block.*;

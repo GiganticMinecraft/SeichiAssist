@@ -8,8 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.util.ExternalPlugins;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.util.TypeConverter;
+import com.github.unchama.seichiassist.util.external.WorldGuard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -456,12 +457,11 @@ public class MenuInventoryData {
 		inventory.setItem(17,itemstack);
 
 		//保護関連メニュー
-		WorldConfiguration wcfg = Wg.getGlobalStateManager().get(player.getWorld());
 		RegionManager manager = Wg.getRegionManager(player.getWorld());
 
 		List<String> lore3 = Arrays.asList(ChatColor.DARK_GRAY + "土地の保護が行えます"
 			, ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
-			, ChatColor.GRAY + "保護作成上限：" + ChatColor.AQUA + wcfg.getMaxRegionCount(player)
+			, ChatColor.GRAY + "保護作成上限：" + ChatColor.AQUA + WorldGuard.getMaxRegionCount(player, player.getWorld())
 			, ChatColor.GRAY + "現在のあなたの保護作成数：" + ChatColor.AQUA + manager.getRegionCountOfPlayer(Wg.wrapPlayer(player))
 		);
 		ItemStack icon3 = Util.getMenuIcon(Material.DIAMOND_AXE, 1,
