@@ -4,7 +4,7 @@ anchors:
   docker:
     gradle_docker: &gradle_docker
       docker:
-        - image: maven:3.6.0-jdk-8
+        - image: circleci/openjdk:8u181-jdk
   workspace:
     save_workspace: &save_workspace
       persist_to_workspace:
@@ -13,7 +13,7 @@ anchors:
           - '*'
     load_workspace: &load_workspace
       attach_workspace:
-        at: '/workspace'
+        at: '/tmp/workspace'
 
 jobs:
   install:
@@ -31,7 +31,7 @@ jobs:
     steps:
       - checkout
       - *load_workspace
-      - run: mkdir -p localDependencies && cp -R /workspace/localDependencies/. localDependencies
+      - run: mkdir -p localDependencies && cp -R /tmp/workspace/localDependencies/. localDependencies
       - run: ls -al localDependencies
       - run: ./gradlew install
       - run: mkdir -p workspace/builds && cp build/libs/**.jar workspace/builds
@@ -41,13 +41,13 @@ jobs:
     working_directory: ~/repo
     steps:
       - *load_workspace
-      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /workspace/builds/**.jar $DEBUG_DEPLOY_TARGET_HOST > /dev/null 2>&1
+      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $DEBUG_DEPLOY_TARGET_HOST > /dev/null 2>&1
   deploy_production:
     <<: *gradle_docker
     working_directory: ~/repo
     steps:
       - *load_workspace
-      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /workspace/builds/**.jar $PRODUCTION_DEPLOY_TARGET_HOST > /dev/null 2>&1
+      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $PRODUCTION_DEPLOY_TARGET_HOST > /dev/null 2>&1
 
 workflows:
   version: 2
