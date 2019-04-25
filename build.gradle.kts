@@ -1,3 +1,4 @@
+import org.apache.tools.ant.filters.ReplaceTokens
 import java.net.URI
 
 plugins {
@@ -38,6 +39,21 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 
     embed("org.flywaydb:flyway-core:5.2.4")
+}
+
+tasks.processResources {
+    filteringCharset = "UTF-8"
+    from(sourceSets.main.get().resources.srcDirs) {
+        include("**/*.yml")
+
+        val tokenReplacementMap = mapOf(
+                "version" to project.version,
+                "name" to project.rootProject.name
+        )
+
+        filter<ReplaceTokens>("tokens" to tokenReplacementMap)
+    }
+    from(projectDir) { include("LICENSE") }
 }
 
 tasks.jar {
