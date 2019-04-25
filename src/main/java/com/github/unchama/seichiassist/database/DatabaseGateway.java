@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.database;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.database.init.DatabaseTableInitializer;
 import com.github.unchama.seichiassist.database.manipulators.DonateDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.GachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.MineStackGachaDataManipulator;
@@ -161,11 +160,9 @@ public class DatabaseGateway {
 															@NotNull String loginId,
 															@NotNull String password) {
 		final DatabaseGateway instance = new DatabaseGateway(databaseUrl, databaseName, loginId, password);
-		final DatabaseTableInitializer tableInitializer =
-				new DatabaseTableInitializer(instance, instance.plugin.getLogger(), SeichiAssist.config);
 
 		final ActionStatus initializationStatus = TryWithoutFailValue
-				.sequence(instance::connectToAndInitializeDatabase, tableInitializer::initializeTables)
+				.sequence(instance::connectToAndInitializeDatabase)
 				.overallStatus();
 
 		if (initializationStatus == Fail) {
