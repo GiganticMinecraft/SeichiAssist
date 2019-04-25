@@ -44,7 +44,7 @@ dependencies {
 tasks.processResources {
     filteringCharset = "UTF-8"
     from(sourceSets.main.get().resources.srcDirs) {
-        include("**/*.yml")
+        include("**")
 
         val tokenReplacementMap = mapOf(
                 "version" to project.version,
