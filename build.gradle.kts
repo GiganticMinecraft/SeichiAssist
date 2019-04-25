@@ -25,9 +25,9 @@ repositories {
     maven { url = URI("https://repo.maven.apache.org/maven2") }
 }
 
-val embed: Configuration by configurations.creating {
-    extendsFrom(configurations.implementation.get())
-}
+val embed: Configuration by configurations.creating
+
+configurations.implementation { extendsFrom(embed) }
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "localDependencies", "include" to arrayOf("*.jar"))))
