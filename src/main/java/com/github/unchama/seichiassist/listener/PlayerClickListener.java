@@ -420,7 +420,7 @@ public class PlayerClickListener implements Listener {
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + ":ON-Under(下向き）");
 						break;
 					}
-					playerdata.activeskilldata.updataSkill(player, playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum, activemineflagnum);
+					playerdata.activeskilldata.updateSkill(player, playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum, activemineflagnum);
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 				}else if(playerdata.activeskilldata.skilltype > 0 && playerdata.activeskilldata.skillnum > 0
 						&& playerdata.activeskilldata.skilltype < 4
@@ -434,7 +434,7 @@ public class PlayerClickListener implements Listener {
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum) + ":ON");
 						break;
 					}
-					playerdata.activeskilldata.updataSkill(player, playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum, activemineflagnum);
+					playerdata.activeskilldata.updateSkill(player, playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum, activemineflagnum);
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 				}
 			}
@@ -458,7 +458,7 @@ public class PlayerClickListener implements Listener {
 					}else{
 						player.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype,playerdata.activeskilldata.assaultnum) + ":ON");
 					}
-					playerdata.activeskilldata.updataAssaultSkill(player, playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum,activemineflagnum);
+					playerdata.activeskilldata.updateAssaultSkill(player, playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum,activemineflagnum);
 					player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 				}
 			}

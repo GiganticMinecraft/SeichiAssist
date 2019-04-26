@@ -91,7 +91,7 @@ public class PlayerJoinListener implements Listener {
 					// メッセージを表示
 					p.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF");
 					// 内部状態をアサルトOFFに変更
-					pd.activeskilldata.updataAssaultSkill(p, pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum, 0);
+					pd.activeskilldata.updateAssaultSkill(p, pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum, 0);
 					// トグル音を鳴らす
 					p.playSound(p.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 				}
