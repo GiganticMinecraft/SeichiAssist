@@ -135,7 +135,7 @@ public class levelCommand implements TabExecutor{
 									playerdata.setLevelandTotalbreaknum(num);
 									//アクティブスキルポイントのリセット処理
 									playerdata.activeskilldata.reset();
-									//playerdata.updataLevel((Player)op);
+									//playerdata.updateLevel((Player)op);
 									//メッセージ送信
 									sender.sendMessage(playerdata.name+"のレベルを" + playerdata.level + "に設定しました");
 									sender.sendMessage(playerdata.name+"の整地量を" + playerdata.totalbreaknum + "に設定しました");
