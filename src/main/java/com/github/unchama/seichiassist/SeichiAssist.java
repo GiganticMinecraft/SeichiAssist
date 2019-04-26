@@ -866,7 +866,6 @@ public class SeichiAssist extends JavaPlugin{
 			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "config.ymlの設定値を書き換えて再起動してください");
 		}
 
-		//MySQL系の設定はすべてSql.javaに移動
 		// TODO nullチェック
 		databaseGateway = DatabaseGateway.createInitializedInstance(config.getURL(), config.getDB(), config.getID(), config.getPW());
 
