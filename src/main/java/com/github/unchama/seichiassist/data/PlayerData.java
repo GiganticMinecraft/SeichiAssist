@@ -358,7 +358,7 @@ public class PlayerData {
 		//破壊量データ(before)を設定
 		//minuteblock.before = totalbreaknum;
 		halfhourblock.before = totalbreaknum;
-		updataLevel(player);
+		updateLevel(player);
 		NotifySorryForBug(player);
 		activeskilldata.updateonJoin(player, level);
 		//サーバー保管経験値をクライアントに読み込み
@@ -414,7 +414,7 @@ public class PlayerData {
 
 
 	//レベルを更新
-	public void updataLevel(Player p) {
+	public void updateLevel(Player p) {
 		calcPlayerLevel(p);
 		calcStarLevel(p);
 		setDisplayName(p);

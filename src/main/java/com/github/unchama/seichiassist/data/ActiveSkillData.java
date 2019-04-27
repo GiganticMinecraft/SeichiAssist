@@ -104,7 +104,7 @@ public class ActiveSkillData {
 		mana = new Mana();
 	}
 	//activeskillpointをレベルに従って更新
-	public void updataActiveSkillPoint(Player player,int level) {
+	public void updateActiveSkillPoint(Player player,int level) {
 		int point = 0;
 		//レベルに応じたスキルポイント量を取得
 		for(int i = 1;i <= level;i++){
@@ -145,7 +145,7 @@ public class ActiveSkillData {
 		if(point < 0){
 			reset();
 			player.sendMessage("アクティブスキルポイントが負の値となっていたため、リセットしました。");
-			updataActiveSkillPoint(player,level);
+			updateActiveSkillPoint(player,level);
 		}else{
 			skillpoint = point;
 		}
@@ -173,7 +173,7 @@ public class ActiveSkillData {
 	public void RemoveAllTask() {
 		try{assaulttask.cancel();}catch(NullPointerException e){}
 	}
-	public void updataSkill(Player player ,int type, int skilllevel ,int mineflagnum) {
+	public void updateSkill(Player player ,int type, int skilllevel ,int mineflagnum) {
 		this.skilltype = type;
 		this.skillnum = skilllevel;
 		this.mineflagnum = mineflagnum;
@@ -187,7 +187,7 @@ public class ActiveSkillData {
 		}
 
 	}
-	public void updataAssaultSkill(Player player, int type, int skilllevel,int mineflagnum) {
+	public void updateAssaultSkill(Player player, int type, int skilllevel,int mineflagnum) {
 		this.assaulttype = type;
 		this.assaultnum = skilllevel;
 		this.mineflagnum = mineflagnum;
@@ -212,7 +212,7 @@ public class ActiveSkillData {
 
 		//アサルトスキルの実行
 		if(this.assaultflag && this.assaulttype != 0){
-			this.updataAssaultSkill(player,this.assaulttype,this.assaultnum,this.mineflagnum);
+			this.updateAssaultSkill(player,this.assaulttype,this.assaultnum,this.mineflagnum);
 			String name = ActiveSkill.getActiveSkillName(this.assaulttype, this.assaultnum);
 			player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル:" + name + "  を選択しています。");
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
@@ -220,7 +220,7 @@ public class ActiveSkillData {
 
 		//通常スキルの実行
 		if(this.skilltype != 0){
-			this.updataSkill(player, this.skilltype, this.skillnum,this.mineflagnum);
+			this.updateSkill(player, this.skilltype, this.skillnum,this.mineflagnum);
 			String name = ActiveSkill.getActiveSkillName(this.skilltype, this.skillnum);
 			player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  を選択しています。");
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
@@ -241,7 +241,7 @@ public class ActiveSkillData {
 
 	}
 	public void updateonJoin(Player player, int level) {
-		updataActiveSkillPoint(player, level);
+		updateActiveSkillPoint(player, level);
 		runTask(player);
 		mana.update(player,level);
 	}

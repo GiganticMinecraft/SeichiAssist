@@ -79,9 +79,9 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			//総整地量を更新(返り血で重み分け済みの1分間のブロック破壊量が返ってくる)
 			int increase = playerdata.calcMineBlock(player);
 			//Levelを設定(必ず総整地量更新後に実施！)
-			playerdata.updataLevel(player);
+			playerdata.updateLevel(player);
 			//activeskillpointを設定
-			playerdata.activeskilldata.updataActiveSkillPoint(player,playerdata.level);
+			playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
 			//総プレイ時間更新
 			playerdata.calcPlayTick(player);
 
