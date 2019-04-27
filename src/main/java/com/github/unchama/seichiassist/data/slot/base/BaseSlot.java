@@ -49,12 +49,6 @@ public class BaseSlot implements Slot {
     }
 
     @Override
-    public void setToInventory(@Nonnull Inventory inventory, @Nonnull PlayerData playerData) {
-        requireNonNull(playerData);
-        inventory.setItem(position, getItemStack(playerData));
-    }
-
-    @Override
     public void invoke(@Nonnull InventoryClickEvent event) {
         //何もしない.
     }

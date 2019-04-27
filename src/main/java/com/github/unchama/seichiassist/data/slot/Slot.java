@@ -37,15 +37,6 @@ public interface Slot {
     ItemStack getItemStack(@Nonnull PlayerData playerData);
 
     /**
-     * この {@link Slot} を与えられた {@link Inventory} にセットします.<br>
-     * 通常, {@link PlayerData} を持つ {@link Player} が {@link Inventory} を開いた際に実行されます.
-     *
-     * @param inventory  {@link Slot} をセットする {@link Inventory} ({@code null} は許容されません.)
-     * @param playerData {@link Player} の {@link PlayerData} ({@code null} は許容されません.)
-     */
-    void setToInventory(@Nonnull Inventory inventory, @Nonnull PlayerData playerData);
-
-    /**
      * {@link InventoryClickEvent} を与えて {@link Slot} の動作を行わせます.
      *
      * @param event {@link InventoryClickEvent}
