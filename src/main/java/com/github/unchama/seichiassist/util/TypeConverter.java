@@ -58,4 +58,18 @@ public final class TypeConverter {
 			return 0;
 		}
 	}
+
+	/**
+	 * 与えられた文字列がintに変換できるかどうかを判定する
+	 * 実際の変換結果を捨て変換可能であるかのみを見たいときに有用
+	 * @param string パースを試みる文字列
+	 * @return 変換可能性
+	 */
+	public static boolean isParsableToInteger(final String string) {
+		try {
+			toInt(string); return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
 }
