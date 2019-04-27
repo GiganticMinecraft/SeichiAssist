@@ -10,9 +10,9 @@ import com.github.unchama.seichiassist.data.slot.button.ButtonBuilder;
  */
 public class PlayerDataButtons {
     public static Button playerInfo = ButtonBuilder.from(
-            SkullItemStackBuilder.of()
-                    .setPlayerSkull()
-                    .title(data -> data.name + "の統計データ")
-                    .lore(PlayerData::getPlayerInfoLore)
+        SkullItemStackBuilder.of()
+            .setPlayerSkull()
+            .title(data -> data.name + "の統計データ")
+            .lore(PlayerData::getPlayerInfoLore)
     ).at(0).build();
 }

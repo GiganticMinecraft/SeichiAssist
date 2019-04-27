@@ -22,7 +22,7 @@ public class StickMenu {
         stickMenu = ChestMenuBuilder.of()
                 .size(4 * 9)
                 .slots(
-                        PlayerDataButtons.playerInfo
+                    PlayerDataButtons.playerInfo
                 )
                 .build();
     }
