@@ -16,7 +16,7 @@ import static java.util.Objects.requireNonNull;
  * @see BaseSlot
  */
 public class BaseSlotBuilder extends AbstractSlotBuilder<BaseSlotBuilder> {
-    protected BaseSlotBuilder(@Nonnull ItemStackBuilder builder) {
+    private BaseSlotBuilder(@Nonnull ItemStackBuilder builder) {
         super(requireNonNull(builder));
     }
 

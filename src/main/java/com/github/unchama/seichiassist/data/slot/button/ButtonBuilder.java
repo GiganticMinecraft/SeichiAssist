@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -21,7 +22,7 @@ import static java.util.Objects.requireNonNull;
  * @see Button
  */
 public class ButtonBuilder extends AbstractSlotBuilder<ButtonBuilder> {
-    private List<SlotActionHandler> handlers;
+    private List<SlotActionHandler> handlers = new ArrayList<>();
 
     private ButtonBuilder(@Nonnull ItemStackBuilder builder) {
         super(builder);
