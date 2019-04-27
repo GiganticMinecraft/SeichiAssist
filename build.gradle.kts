@@ -27,12 +27,15 @@ repositories {
     maven { url = URI("http://repo.spring.io/plugins-release/") }
     maven { url = URI("https://repo.spongepowered.org/maven") }
     maven { url = URI("https://repo.maven.apache.org/maven2") }
+    maven { url = URI("https://hub.spigotmc.org/nexus/content/repositories/snapshots")}
 }
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "localDependencies", "include" to arrayOf("*.jar"))))
 
     implementation("org.jetbrains:annotations:17.0.0")
+
+    implementation("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
     testImplementation("junit:junit:4.4")
