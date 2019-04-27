@@ -11,3 +11,6 @@
 /test/
 /target/
 /localDependencies/
+
+.gradle
+build
