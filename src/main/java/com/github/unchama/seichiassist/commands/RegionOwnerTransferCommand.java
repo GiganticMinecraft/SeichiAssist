@@ -30,16 +30,13 @@ public class RegionOwnerTransferCommand implements CommandExecutor, TabExecutor 
 
 		final Player player = (Player) sender;
 		final String regionName = args[0];
-		final ProtectedRegion c;
-		{
-			final RegionManager rm = WorldGuardPlugin.inst().getRegionManager(player.getWorld());
-			if (!rm.hasRegion(regionName)) {
-				player.sendMessage(regionName + "という名前の保護は存在しません。");
-				return true;
-			}
-
-			c = rm.getRegion(regionName);
+		final RegionManager rm = WorldGuardPlugin.inst().getRegionManager(player.getWorld());
+		if (!rm.hasRegion(regionName)) {
+			player.sendMessage(regionName + "という名前の保護は存在しません。");
+			return true;
 		}
+
+		final ProtectedRegion c = rm.getRegion(regionName);
 		if (c == null) {
 			player.sendMessage("エラーが発生しました。管理者に報告してください。");
 			return true;
