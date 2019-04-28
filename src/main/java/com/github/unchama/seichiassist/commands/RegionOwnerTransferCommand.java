@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * 保護のオーナー権限を引き渡すコマンド。
  */
-public class RegionOwnerTransferCommand implements CommandExecutor, TabExecutor {
+public class RegionOwnerTransferCommand implements TabExecutor {
 	@Override
 	// /x-transfer [name] [to Player]
 	public boolean onCommand(CommandSender sender, Command command, String actualCommand, String[] args) {
