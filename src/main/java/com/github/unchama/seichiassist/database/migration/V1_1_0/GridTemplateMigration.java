@@ -24,7 +24,11 @@ import static com.github.unchama.seichiassist.util.TypeConverter.isParsableToInt
                         "ahead_"  + templateId + " as ahead_length, " +
                         "behind_" + templateId + " as behind_length, " +
                         "right_"  + templateId + " as right_length, " +
-                        "left_"   + templateId + " as left_length from playerdata";
+                        "left_"   + templateId + " as left_length from playerdata where " +
+                        "ahead_"  + templateId + " != 0 or " +
+                        "behind_" + templateId + " != 0 or " +
+                        "right_"  + templateId + " != 0 or " +
+                        "left_"   + templateId + " != 0";
 
                 statement.executeUpdate(copyQuery);
 
