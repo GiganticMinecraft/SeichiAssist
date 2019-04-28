@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.commands;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Bukkit;
@@ -42,13 +43,14 @@ public class RegionOwnerTransferCommand implements TabExecutor {
 			return true;
 		}
 
-		if (!c.getOwners().contains(player.getUniqueId())) {
+		final DefaultDomain owners = c.getOwners();
+		if (!owners.contains(player.getUniqueId())) {
 			// permission denied
 			player.sendMessage("オーナーではないため権限を譲渡できません。");
 			return true;
 		}
 
-		if (c.getOwners().size() != 1) {
+		if (owners.size() != 1) {
 			// unsupported
 			player.sendMessage("オーナーが複数人いるため権限を譲渡できません。");
 			return true;
@@ -61,8 +63,8 @@ public class RegionOwnerTransferCommand implements TabExecutor {
 			return true;
 		}
 
-		c.getOwners().clear();
-		c.getOwners().addPlayer(maybeTarget.getUniqueId());
+		owners.clear();
+		owners.addPlayer(maybeTarget.getUniqueId());
 		player.sendMessage(newOwner + "に" + regionName + "のオーナー権限を譲渡しました。");
 		return true;
 	}
