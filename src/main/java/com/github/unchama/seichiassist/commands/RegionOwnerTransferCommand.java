@@ -6,7 +6,6 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
@@ -31,13 +30,18 @@ public class RegionOwnerTransferCommand implements TabExecutor {
 
 		final Player player = (Player) sender;
 		final String regionName = args[0];
-		final RegionManager rm = WorldGuardPlugin.inst().getRegionManager(player.getWorld());
-		if (!rm.hasRegion(regionName)) {
-			player.sendMessage(regionName + "という名前の保護は存在しません。");
-			return true;
-		}
+		final ProtectedRegion c;
 
-		final ProtectedRegion c = rm.getRegion(regionName);
+		// 意図的
+		{
+			final RegionManager rm = WorldGuardPlugin.inst().getRegionManager(player.getWorld());
+			if (!rm.hasRegion(regionName)) {
+				player.sendMessage(regionName + "という名前の保護は存在しません。");
+				return true;
+			}
+
+			c = rm.getRegion(regionName);
+		}
 		if (c == null) {
 			player.sendMessage("エラーが発生しました。管理者に報告してください。");
 			return true;
