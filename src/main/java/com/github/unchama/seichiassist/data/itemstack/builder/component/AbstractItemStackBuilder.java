@@ -35,6 +35,12 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
         return (T) this;
     }
 
+    /**
+     * ItemStack(ItemStackBuilder)の表示名を設定します.
+     *
+     * @param title PlayerDataを受け取り,表示名を返すFunction
+     * @return このBuilder
+     */
     @Nonnull
     public T title(@Nonnull String title) {
         requireNonNull(title);
@@ -50,6 +56,12 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
         return (T) this;
     }
 
+    /**
+     * ItemStack(ItemStackBuilder)のloreを設定します.
+     *
+     * @param lore PlayerDataを受け取り,loreを返すFunction
+     * @return このBuilder
+     */
     @Nonnull
     public T lore(@Nonnull List<String> lore) {
         requireNonNull(lore);
