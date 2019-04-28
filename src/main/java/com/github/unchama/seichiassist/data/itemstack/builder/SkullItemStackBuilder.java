@@ -4,7 +4,9 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.itemstack.builder.component.AbstractItemStackBuilder;
 import com.github.unchama.seichiassist.data.menu.Menu;
 import com.github.unchama.seichiassist.data.slot.Slot;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -68,7 +70,8 @@ public class SkullItemStackBuilder extends AbstractItemStackBuilder<SkullItemSta
         SkullMeta meta = (SkullMeta) component.getItemMeta(playerData);
 
         if (isPlayerSkull) {
-            meta.setOwner(playerData.name);
+            final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerData.uuid);
+            meta.setOwningPlayer(offlinePlayer);
         } else {
             meta.setOwner(ownerName);
         }
