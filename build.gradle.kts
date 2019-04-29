@@ -34,6 +34,9 @@ dependencies {
 
     implementation("org.jetbrains:annotations:17.0.0")
 
+    compile("org.eclipse.collections:eclipse-collections-api:9.2.0")
+    compile("org.eclipse.collections:eclipse-collections:9.2.0")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
     testImplementation("junit:junit:4.4")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.4.2")
