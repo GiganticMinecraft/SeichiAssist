@@ -54,7 +54,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 			final String iThObjectName = mineStackObj.getMineStackObjName();
 			final long iThObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj);
 
-			final String updateCommand = "insert into mine_stack"
+			final String updateCommand = "insert into seichiassist.mine_stack"
 					+ "(player_uuid, object_name, amount) values "
 					+ "(" + playerUuid + ", " + iThObjectName + ", " + iThObjectAmount +  ") "
 					+ "on duplicate key update amount = values(amount)";
@@ -70,7 +70,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 			final SubHome subHome = subHomeEntry.getValue();
 			final Location subHomeLocation = subHome.getLocation();
 
-			final String updateCommand = "insert into sub_home set " +
+			final String updateCommand = "insert into seichiassist.sub_home set " +
 					"player_id = " + playerUuid + ", " +
 					"server_id = " + serverId + ", " +
 					"id = " + subHomeId + ", " +
@@ -88,14 +88,14 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		final String playerUuid = playerdata.uuid.toString();
 
 		// 既存データをすべてクリアする
-		stmt.executeUpdate("delete from grid_template where designer_uuid = " + playerUuid);
+		stmt.executeUpdate("delete from seichiassist.grid_template where designer_uuid = " + playerUuid);
 
 		// 各グリッドテンプレートについてデータを保存する
 		for (Map.Entry<Integer, GridTemplate> templateEntry : playerdata.getTemplateMap().entrySet()) {
 			final int gridTemplateId = templateEntry.getKey();
 			final GridTemplate gridTemplate = templateEntry.getValue();
 
-			final String updateCommand = "insert into grid_template set " +
+			final String updateCommand = "insert into seichiassist.grid_template set " +
 					"id = " + gridTemplateId + ", " +
 					"designer_uuid = " + playerUuid + ", " +
 					"ahead_length = "  + gridTemplate.getAheadAmount()  + ", " +
@@ -112,23 +112,21 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		ActiveSkillEffect[] activeSkillEffects = ActiveSkillEffect.values();
 		final Set<ActiveSkillEffect> obtainedEffects = playerdata.activeskilldata.obtainedSkillEffects;
 
+		final String removeCommand = "delete from "
+				+ "seichiassist.unlocked_active_skill_effect "
+				+ "where player_uuid like '" + playerUuid + "'";
+		stmt.executeUpdate(removeCommand);
+
 		for (final ActiveSkillEffect activeSkillEffect : activeSkillEffects) {
 			String effectName = activeSkillEffect.getsqlName();
 			boolean isEffectUnlocked = obtainedEffects.contains(activeSkillEffect);
 
 			if (isEffectUnlocked) {
 				final String updateCommand = "insert into "
-						+ "unlocked_active_skill_effect(player_uuid, effect_name) "
-						+ "values (" + playerUuid + ", " + effectName + ") "
-						+ "on duplicate key update";
+						+ "seichiassist.unlocked_active_skill_effect(player_uuid, effect_name) "
+						+ "values (" + playerUuid + ", " + effectName + ")";
 
 				stmt.executeUpdate(updateCommand);
- 			} else {
-				final String removeCommand = "delete from "
-						+ "unlocked_active_skill_effect "
-						+ "where player_uuid = " + playerUuid + " "
-						+ "and effect_name = " + effectName;
-				stmt.executeUpdate(removeCommand);
 			}
 		}
 	}
@@ -138,30 +136,26 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		ActiveSkillPremiumEffect[] activeSkillPremiumEffects = ActiveSkillPremiumEffect.values();
 		final Set<ActiveSkillPremiumEffect> obtainedEffects = playerdata.activeskilldata.obtainedSkillPremiumEffects;
 
+		final String removeCommand = "delete from "
+				+ "seichiassist.unlocked_active_skill_premium_effect where "
+				+ "player_uuid like '" + playerUuid + "'";
+		stmt.executeUpdate(removeCommand);
+
 		for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : activeSkillPremiumEffects) {
 			String effectName = activeSkillPremiumEffect.getsqlName();
 			boolean isEffectUnlocked = obtainedEffects.contains(activeSkillPremiumEffect);
 
 			if (isEffectUnlocked) {
 				final String updateCommand = "insert into "
-						+ "unlocked_active_skill_premium_effect(player_uuid, effect_name) "
-						+ "values (" + playerUuid + ", " + effectName + ") "
-						+ "on duplicate key update";
+						+ "seichiassist.unlocked_active_skill_premium_effect(player_uuid, effect_name) "
+						+ "values (" + playerUuid + ", " + effectName + ")";
 
 				stmt.executeUpdate(updateCommand);
-			} else {
-				final String removeCommand = "delete from "
-						+ "unlocked_active_skill_premium_effect where "
-						+ "player_uuid like '" + playerUuid + "' and "
-						+ "effect_name = " + effectName;
-				stmt.executeUpdate(removeCommand);
 			}
 		}
 	}
 
 	private void updatePlayerDataColumns(Statement stmt) throws SQLException {
-		//引数のplayerdataをsqlにデータを送信
-		final String tableReferenceName = SeichiAssist.config.getDB() + SeichiAssist.PLAYERDATA_TABLENAME;
 		final String playerUuid = playerdata.uuid.toString();
 
 		//実績のフラグ(BitSet)保存用変換処理
@@ -169,7 +163,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		String[] titleNums = Arrays.stream(titleArray).mapToObj(Long::toHexString).toArray(String[]::new);
 		String flagString = String.join(",", titleNums);
 
-		final String command = "update " + tableReferenceName + " set"
+		final String command = "update seichiassist.playerdata set"
 				//名前更新処理
 				+ " name = '" + playerdata.name + "'"
 
