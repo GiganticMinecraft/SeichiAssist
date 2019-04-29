@@ -29,11 +29,13 @@ public class Menu {
 
     /**
      * Menuを作成します.
+     * 同時に {@link MenuHandler} に,この {@link Menu} を追加します.
      *
      * @param type このMenuの {@link InventoryType}
      */
     public Menu(InventoryType type) {
         this.type = type;
+        MenuHandler.getInstance().addMenu(this);
     }
 
     /**

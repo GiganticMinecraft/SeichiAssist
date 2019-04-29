@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.data.itemstack.builder.component;
 
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -18,7 +19,7 @@ public interface ItemStackBuilder {
      * @return このBuilder
      */
     @Nonnull
-    ItemStackBuilder title(@Nonnull Function<PlayerData, String> title);
+    ItemStackBuilder title(@Nonnull Function<PlayerData, Text> title);
 
     /**
      * ItemStack(ItemStackBuilder)のloreを設定します.
@@ -27,7 +28,7 @@ public interface ItemStackBuilder {
      * @return このBuilder
      */
     @Nonnull
-    ItemStackBuilder lore(@Nonnull Function<PlayerData, List<String>> lore);
+    ItemStackBuilder lore(@Nonnull Function<PlayerData, List<Text>> lore);
 
     /**
      * ItemStack(ItemStackBuilder)にエンチャントを付与します.

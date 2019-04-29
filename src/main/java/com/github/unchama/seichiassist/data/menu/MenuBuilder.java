@@ -12,10 +12,11 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 
 /**
+ * Menuを作成する抽象Builderクラスです.
  * @author karayuu
  */
 @SuppressWarnings("unchecked")
-public class MenuBuilder<T extends MenuBuilder<T>> {
+public abstract class MenuBuilder<T extends MenuBuilder<T>> {
     @Nonnull
     private InventoryType type;
 

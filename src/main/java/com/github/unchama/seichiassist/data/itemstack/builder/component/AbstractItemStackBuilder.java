@@ -2,10 +2,10 @@ package com.github.unchama.seichiassist.data.itemstack.builder.component;
 
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.itemstack.component.BaseIconComponent;
+import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.Material;
 
 import javax.annotation.Nonnull;
-
 import java.util.List;
 import java.util.function.Function;
 
@@ -29,7 +29,7 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
 
     @Override
     @Nonnull
-    public T title(@Nonnull Function<PlayerData, String> title) {
+    public T title(@Nonnull Function<PlayerData, Text> title) {
         requireNonNull(title);
         this.component.setTitle(title);
         return (T) this;
@@ -42,7 +42,7 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
      * @return このBuilder
      */
     @Nonnull
-    public T title(@Nonnull String title) {
+    public T title(@Nonnull Text title) {
         requireNonNull(title);
         this.component.setTitle(playerData -> title);
         return (T) this;
@@ -50,7 +50,7 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
 
     @Override
     @Nonnull
-    public T lore(@Nonnull Function<PlayerData, List<String>> lore) {
+    public T lore(@Nonnull Function<PlayerData, List<Text>> lore) {
         requireNonNull(lore);
         this.component.setLore(lore);
         return (T) this;
@@ -63,7 +63,7 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
      * @return このBuilder
      */
     @Nonnull
-    public T lore(@Nonnull List<String> lore) {
+    public T lore(@Nonnull List<Text> lore) {
         requireNonNull(lore);
         this.component.setLore(playerData -> lore);
         return (T) this;

@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.github.unchama.seichiassist.text.Text;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.bukkit.Bukkit;
@@ -1045,11 +1046,11 @@ public class PlayerData {
 	 * @return 整地レベルの説明文
 	 */
 	@Nonnull
-	public String getSeichiLevelDescription() {
+	private Text getSeichiLevelDescription() {
 		if (this.starlevel <= 0) {
-			return ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + this.level;
+			return Text.of("整地レベル:" + this.level, ChatColor.RESET, ChatColor.AQUA);
 		} else {
-			return ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + this.level + "☆" + this.starlevel;
+			return Text.of("整地レベル:" + this.level + "☆" + this.starlevel, ChatColor.RESET, ChatColor.AQUA);
 		}
 	}
 
@@ -1060,19 +1061,18 @@ public class PlayerData {
 	 * @return 残り必要整地量の説明文(ただし,レベルが最大の時は必要整地量は負となる)
 	 */
 	@Nonnull
-	public String getRemainLevelDescription() {
-		return ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:"
-				+ (SeichiAssist.levellist.get(this.level) - this.totalbreaknum);
+	private Text getRemainLevelDescription() {
+		return Text.of("次のレベルまで:" + (SeichiAssist.levellist.get(this.level) - this.totalbreaknum),
+			ChatColor.RESET, ChatColor.AQUA);
 	}
 
-
-	public List<String> getPlayerInfoLore() {
-		List<String> lore = new ArrayList<>();
+	public List<Text> getPlayerInfoLore() {
+		List<Text> lore = new ArrayList<>();
 		lore.add(getSeichiLevelDescription());
 		if (this.level < SeichiAssist.levellist.size()) {
-			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(this.level) - this.totalbreaknum));
+			lore.add(getRemainLevelDescription());
 		}
 		//TODO: WIP
-        return lore;
+		return lore;
 	}
 }

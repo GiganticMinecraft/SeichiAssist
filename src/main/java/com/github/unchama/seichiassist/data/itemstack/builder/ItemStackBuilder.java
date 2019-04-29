@@ -16,10 +16,10 @@ import static java.util.Objects.requireNonNull;
  * <p>
  * Created by karayuu on 2019/03/30
  */
-public class SlotItemStackBuilder extends AbstractItemStackBuilder<SlotItemStackBuilder> {
+public class ItemStackBuilder extends AbstractItemStackBuilder<ItemStackBuilder> {
     private Boolean showAttribute = false;
 
-    private SlotItemStackBuilder(@Nonnull Material material) {
+    private ItemStackBuilder(@Nonnull Material material) {
         super(material);
     }
 
@@ -29,9 +29,9 @@ public class SlotItemStackBuilder extends AbstractItemStackBuilder<SlotItemStack
      * @param material ItemStackに設定するMaterial ({@code null} は許容されません)
      */
     @Nonnull
-    public static SlotItemStackBuilder of(@Nonnull Material material) {
+    public static ItemStackBuilder of(@Nonnull Material material) {
         requireNonNull(material);
-        return new SlotItemStackBuilder(material);
+        return new ItemStackBuilder(material);
     }
 
     /**
@@ -40,7 +40,7 @@ public class SlotItemStackBuilder extends AbstractItemStackBuilder<SlotItemStack
      * @return このBuilder
      */
     @Nonnull
-    public SlotItemStackBuilder showAttribute() {
+    public ItemStackBuilder showAttribute() {
         this.showAttribute = true;
         return this;
     }

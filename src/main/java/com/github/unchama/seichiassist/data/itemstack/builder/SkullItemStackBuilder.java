@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.data.itemstack.builder;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.itemstack.builder.component.AbstractItemStackBuilder;
 import com.github.unchama.seichiassist.data.menu.Menu;
-import com.github.unchama.seichiassist.data.slot.Slot;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -35,11 +34,11 @@ public class SkullItemStackBuilder extends AbstractItemStackBuilder<SkullItemSta
 
     /**
      * {@link Material#SKULL_ITEM} に表示するskullのownerを設定します.
-     * {@link #setPlayerSkull()} と同時に指定された場合は, {@link #setPlayerSkull()} が優先されます.
+     * {@link #playerSkull()} と同時に指定された場合は, {@link #playerSkull()} が優先されます.
      *
      * @param ownerName ownerの名前 ({@code null} は許容されません.)
      * @return {@link SkullItemStackBuilder}
-     * @see #setPlayerSkull()
+     * @see #playerSkull()
      */
     @Nonnull
     public SkullItemStackBuilder owner(@Nonnull String ownerName) {
@@ -56,7 +55,7 @@ public class SkullItemStackBuilder extends AbstractItemStackBuilder<SkullItemSta
      * @see #owner(String)
      */
     @Nonnull
-    public SkullItemStackBuilder setPlayerSkull() {
+    public SkullItemStackBuilder playerSkull() {
         this.isPlayerSkull = true;
         return this;
     }
