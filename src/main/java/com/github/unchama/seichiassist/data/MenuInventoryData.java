@@ -7392,27 +7392,18 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.PAPER);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント" + (x+1) + "の情報");
-			Location l = playerdata.GetSubHome(x);
-			if (l == null || l.getWorld() == null){
-				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x+1) + "は"
-						, ChatColor.RESET + "" + ChatColor.GRAY + playerdata.subhome_name[x]
-						, ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています"
-						, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更"
-						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x+1) + "]"
-						, ChatColor.RESET + "" + ChatColor.GRAY + "ポイント未設定"
-						);
-			}
-			else {
-				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x+1) + "は"
-						, ChatColor.RESET + "" + ChatColor.GRAY + playerdata.subhome_name[x]
-						, ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています"
-						, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更"
-						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x+1) + "]"
-						, ChatColor.RESET + "" + ChatColor.GRAY + "" + Util.getWorldName(l.getWorld().getName()) + " x:" + (int)l.getX() + " y:" + (int)l.getY() + " z:" + (int)l.getZ()
-						);
-			}
-
-			itemmeta.setLore(lore);
+			Location l = playerdata.getSubHomeLocation(x);
+			final List<String> subHomeLore = !(l == null || l.getWorld() == null)
+					?
+					Arrays.asList(
+							ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x+1) + "は",
+							ChatColor.RESET + "" + ChatColor.GRAY + playerdata.getSubHomeName(x),
+							ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています",
+							ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更",
+							ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x+1) + "]",
+							ChatColor.RESET + "" + ChatColor.GRAY + "" + Util.getWorldName(l.getWorld().getName()) + " x:" + (int)l.getX() + " y:" + (int)l.getY() + " z:" + (int)l.getZ())
+					: Arrays.asList(ChatColor.GRAY + "サブホームポイント" + (x + 1), ChatColor.GRAY + "ポイント未設定");
+			itemmeta.setLore(subHomeLore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(11+x,itemstack);
 
@@ -7451,9 +7442,10 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.PAPER);
 			itemmeta = itemstack.getItemMeta();
 			itemmeta.setDisplayName(ChatColor.GREEN + "設定するサブホームポイントの情報");
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "No." + n
-					, ChatColor.RESET + "" + ChatColor.GRAY + "名称：" + playerdata.subhome_name[n-1]
-					);
+			lore = Arrays.asList(
+					ChatColor.RESET + "" + ChatColor.GRAY + "No." + n,
+					ChatColor.RESET + "" + ChatColor.GRAY + "名称：" + playerdata.getSubHomeName(n-1)
+			);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(4,itemstack);
