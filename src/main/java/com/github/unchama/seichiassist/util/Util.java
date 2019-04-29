@@ -1,28 +1,10 @@
 package com.github.unchama.seichiassist.util;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.IntStream;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 import net.md_5.bungee.api.chat.BaseComponent;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Difficulty;
-import org.bukkit.FireworkEffect;
+import org.bukkit.*;
 import org.bukkit.FireworkEffect.Builder;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.SkullType;
-import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.entity.EntityType;
@@ -34,8 +16,11 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.Nullable;
 
-import com.github.unchama.seichiassist.SeichiAssist;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public final class Util {
 	// インスタンスを作成したところでメソッドが呼べるわけでもないので封印
@@ -766,19 +751,13 @@ public final class Util {
 	}
 
 	/**
-	 * 指定した名前のマインスタックの番号を返す
-	 * @param s SeichiAssist.javaのminestacklistに定義されてる英語名
-	 * @return マインスタック番号(見つからなかった場合は-1)
+	 * 指定した名前のマインスタックオブジェクトを返す
 	 */
-	public static int MineStackobjname_indexOf(String s){
-		int id = -1;
-		for(int x = 0 ; x < SeichiAssist.minestacklist.size() ; x++){
-			if( s.equals( SeichiAssist.minestacklist.get(x).getMineStackObjName() ) ){
-				id = x;
-				break;
-			}
-		}
-		return id;
+	// TODO これはここにあるべきではない
+	@Deprecated public static @Nullable MineStackObj findMineStackObjectByName(String name) {
+		return SeichiAssist.minestacklist.stream()
+				.filter(obj -> name.equals(obj.getMineStackObjName()))
+				.findFirst().orElse(null);
 	}
 
 	public static boolean isEnemy(EntityType type) {

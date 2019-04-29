@@ -973,12 +973,13 @@ public class MenuInventoryData {
 		List<HistoryData> history = pd.hisotryData.getHistoryList();
 		int slot = 18;
 		for (HistoryData data : history) {
-			int index = data.index;
+
 			MineStackObj obj = data.obj;
+			final long objectAmount = pd.minestack.getStackedAmountOf(obj);
 			if (obj.getItemStack() == null) {
-				setMineStackButton(inventory, pd.minestack.getNum(index), new ItemStack(obj.getMaterial(), 1, (short)obj.getDurability()), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
+				setMineStackButton(inventory, objectAmount, new ItemStack(obj.getMaterial(), 1, (short)obj.getDurability()), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
 			} else {
-				setMineStackButton(inventory, pd.minestack.getNum(index), obj.getItemStack(), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
+				setMineStackButton(inventory, objectAmount, obj.getItemStack(), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
 			}
 			slot++;
 		}
@@ -1072,11 +1073,12 @@ public class MenuInventoryData {
 			}
 			//この時点で「stack_typeのii番目」のインデックスになっている
 			MineStackObj msobj = SeichiAssist.minestacklist.get(iii);
+			final long objectAmount = playerdata.minestack.getStackedAmountOf(msobj);
 			if(msobj.getItemStack()==null){
-				setMineStackButton(inventory, playerdata.minestack.getNum(iii), new ItemStack(msobj.getMaterial(), 1, (short)msobj.getDurability()),  SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
+				setMineStackButton(inventory, objectAmount, new ItemStack(msobj.getMaterial(), 1, (short)msobj.getDurability()),  SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
 				iii++;
 			} else {
-				setMineStackButton(inventory, playerdata.minestack.getNum(iii), msobj.getItemStack(), SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
+				setMineStackButton(inventory, objectAmount, msobj.getItemStack(), SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
 				iii++;
 			}
 			i++;
@@ -1156,7 +1158,7 @@ public class MenuInventoryData {
 		return itemmeta;
 	}
 	//MineStackボタン作成 Material版
-	public static Inventory setMineStackButton(Inventory inv,int minestack,Material type,int level,int set){
+	public static Inventory setMineStackButton(Inventory inv, long minestack,Material type,int level,int set){
 		ItemStack itemstack = new ItemStack(type,1);
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(type);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + type.toString());
@@ -1169,7 +1171,7 @@ public class MenuInventoryData {
 		return inv;
 	}
 	//MineStackボタン作成 Material版名前付き
-	public static Inventory setMineStackButton(Inventory inv,int minestack,Material type,int level,int set,String name){
+	public static Inventory setMineStackButton(Inventory inv, long minestack,Material type,int level,int set,String name){
 		ItemStack itemstack = new ItemStack(type,1);
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(type);
 		if(name!=null){
@@ -1186,7 +1188,7 @@ public class MenuInventoryData {
 		return inv;
 	}
 	//MineStackボタン作成 ItemStack版
-	public static Inventory setMineStackButton(Inventory inv,int minestack,ItemStack itemstack,int level,int set){
+	public static Inventory setMineStackButton(Inventory inv, long minestack, ItemStack itemstack,int level,int set){
 		itemstack.setAmount(1);
 		ItemMeta itemmeta = itemstack.getItemMeta();
 		//itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + itemmeta.getDisplayName());
@@ -1200,7 +1202,7 @@ public class MenuInventoryData {
 		return inv;
 	}
 	//MineStackボタン作成 ItemStack版名前付き
-	public static Inventory setMineStackButton(Inventory inv,int minestack,ItemStack itemstack,int level,int set, String name){
+	public static Inventory setMineStackButton(Inventory inv, long minestack,ItemStack itemstack,int level,int set, String name){
 		itemstack.setAmount(1);
 		ItemMeta itemmeta = itemstack.getItemMeta();
 		if(name!=null){

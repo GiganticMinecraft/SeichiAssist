@@ -1,22 +1,16 @@
 package com.github.unchama.seichiassist.listener;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.Mana;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
+import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
+import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.Mana;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.*;
 
 public class VotingFairyListener implements Listener {
 
@@ -141,8 +135,8 @@ public class VotingFairyListener implements Listener {
 			}
 
 			//りんご所持数で値変更
-			int gachaimo_minestack_num = Util.MineStackobjname_indexOf("gachaimo");
-			int l = playerdata.minestack.getNum(gachaimo_minestack_num);
+			final MineStackObj gachaimoObject = Util.findMineStackObjectByName("gachaimo");
+			long l = playerdata.minestack.getStackedAmountOf(gachaimoObject);
 
 			if(m > l) {
 				if (l == 0){
@@ -154,7 +148,7 @@ public class VotingFairyListener implements Listener {
 					double M = m,L = l;
 					n = ((L/M) <= 0.5 ? n * 0.5 : (n * L/M));
 				}
-				m = l;
+				m = (int)l;
 			}
 
 			//回復量に若干乱数をつける
@@ -164,7 +158,7 @@ public class VotingFairyListener implements Listener {
 			//マナ回復
 			mana.increaseMana(n, p, playerdata.level);
 			//りんごを減らす
-			playerdata.minestack.setNum(Util.MineStackobjname_indexOf("gachaimo"), playerdata.minestack.getNum(Util.MineStackobjname_indexOf("gachaimo")) - m);
+			playerdata.minestack.subtractStackedAmountOf(Util.findMineStackObjectByName("gachaimo"), m);
 			//減ったりんごの数をplayerdataに加算
 			playerdata.p_apple += m;
 
