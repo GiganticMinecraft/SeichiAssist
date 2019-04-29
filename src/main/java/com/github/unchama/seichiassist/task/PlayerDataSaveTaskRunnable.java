@@ -1,17 +1,25 @@
 package com.github.unchama.seichiassist.task;
 
-import java.sql.ResultSet;
+import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.GridTemplate;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.subhome.SubHome;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.util.BukkitSerialization;
+import com.github.unchama.util.ActionStatus;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Map;
 
-import com.github.unchama.seichiassist.*;
-import org.bukkit.ChatColor;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.BukkitSerialization;
+import static com.github.unchama.util.ActionStatus.Fail;
+import static com.github.unchama.util.ActionStatus.Ok;
 
 /**
  * プレイヤーデータをDBに保存する処理(非同期で実行すること)
@@ -20,55 +28,145 @@ import com.github.unchama.seichiassist.util.BukkitSerialization;
  *
  */
 public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
+	final private SeichiAssist plugin = SeichiAssist.instance;
+	final private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
+	final private int serverId = SeichiAssist.config.getServerNum();
+	final private boolean isOnDisable;
+	final private boolean logoutflag;
+	final PlayerData playerdata;
 
-	private SeichiAssist plugin = SeichiAssist.instance;
-	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-	private static Config config = SeichiAssist.config;
-
-	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
-
-	PlayerData playerdata;
-	String command;
-	int i;
-	//ondisableからの呼び出し時のみtrueにしておくフラグ
-	boolean isOnDisable;
-	//loginflag折る時にtrueにしておくフラグ
-	boolean logoutflag;
-	public static String exc;
-	String db;
-	Statement stmt = null;
-	ResultSet rs = null;
-
+	/**
+	 * @param _playerdata 保存するプレーヤーデータ
+	 * @param _isondisable ondisableからの呼び出し時のみtrueにしておくフラグ
+	 * @param _logoutflag loginflag折る時にtrueにしておくフラグ
+	 */
 	public PlayerDataSaveTaskRunnable(PlayerData _playerdata,boolean _isondisable,boolean _logoutflag) {
-		db = SeichiAssist.config.getDB();
-		command = "";
-		i = 0;
 		playerdata = _playerdata;
-		//ondisableからの呼び出し時のみtrueにしておくフラグ
 		isOnDisable = _isondisable;
-		//loginflag折る時にtrueにしておくフラグ
 		logoutflag = _logoutflag;
 	}
 
-	@Override
-	public void run() {
-		//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
-		//sqlコネクションチェック
-		databaseGateway.ensureConnection();
-		try {
-			stmt = databaseGateway.con.createStatement();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
+	private void updatePlayerMineStack(Statement stmt) throws SQLException {
+		final String playerUuid = playerdata.uuid.toString();
+		for (int i = 0; i < SeichiAssist.minestacklist.size(); i++) {
+			final String iThObjectName = SeichiAssist.minestacklist.get(i).getMineStackObjName();
+			final int iThObjectAmount = playerdata.minestack.getNum(i);
+
+			final String updateCommand = "insert into mine_stack"
+					+ "(player_uuid, object_name, amount) values "
+					+ "(" + playerUuid + ", " + iThObjectName + ", " + iThObjectAmount +  ") "
+					+ "on duplicate key update amount = values(amount)";
+
+			stmt.executeUpdate(updateCommand);
 		}
+	}
 
+	private void updateSubHome(Statement stmt) throws SQLException {
+		final String playerUuid = playerdata.uuid.toString();
+		for (Map.Entry<Integer, SubHome> subHomeEntry : playerdata.getSubHomeEntries()) {
+			final int subHomeId = subHomeEntry.getKey();
+			final SubHome subHome = subHomeEntry.getValue();
+			final Location subHomeLocation = subHome.getLocation();
+
+			final String updateCommand = "insert into sub_home set " +
+					"player_id = " + playerUuid + ", " +
+					"server_id = " + serverId + ", " +
+					"id = " + subHomeId + ", " +
+					"name = " + subHome.name + ", " +
+					"location_x = " + subHomeLocation.getX() + ", " +
+					"location_y = " + subHomeLocation.getY() + ", " +
+					"location_z = " + subHomeLocation.getZ() + ", " +
+					"world_name = " + subHomeLocation.getWorld();
+
+			stmt.executeUpdate(updateCommand);
+		}
+	}
+
+	private void updateGridTemplate(Statement stmt) throws SQLException {
+		final String playerUuid = playerdata.uuid.toString();
+
+		// 既存データをすべてクリアする
+		stmt.executeUpdate("delete from grid_template where designer_uuid = " + playerUuid);
+
+		// 各グリッドテンプレートについてデータを保存する
+		for (Map.Entry<Integer, GridTemplate> templateEntry : playerdata.getTemplateMap().entrySet()) {
+			final int gridTemplateId = templateEntry.getKey();
+			final GridTemplate gridTemplate = templateEntry.getValue();
+
+			final String updateCommand = "insert into grid_template set " +
+					"id = " + gridTemplateId + ", " +
+					"designer_uuid = " + playerUuid + ", " +
+					"ahead_length = "  + gridTemplate.getAheadAmount()  + ", " +
+					"behind_length = " + gridTemplate.getBehindAmount() + ", " +
+					"right_length = "  + gridTemplate.getRightAmount()  + ", " +
+					"left_length = "   + gridTemplate.getLeftAmount();
+
+			stmt.executeUpdate(updateCommand);
+		}
+	}
+
+	private void updateActiveSkillEffectUnlockState(Statement stmt) throws SQLException {
+		final String playerUuid = playerdata.uuid.toString();
+		ActiveSkillEffect[] activeSkillEffects = ActiveSkillEffect.values();
+		for (final ActiveSkillEffect activeSkillEffect : activeSkillEffects) {
+			String effectName = activeSkillEffect.getsqlName();
+			int effectId = activeSkillEffect.getNum();
+			boolean isEffectUnlocked = playerdata.activeskilldata.effectflagmap.get(effectId);
+
+			if (isEffectUnlocked) {
+				final String updateCommand = "insert into "
+						+ "unlocked_active_skill_effect(player_uuid, effect_name) "
+						+ "values (" + playerUuid + ", " + effectName + ") "
+						+ "on duplicate key update";
+
+				stmt.executeUpdate(updateCommand);
+ 			} else {
+				final String removeCommand = "delete from "
+						+ "unlocked_active_skill_effect "
+						+ "where player_uuid = " + playerUuid + " "
+						+ "and effect_name = " + effectName;
+				stmt.executeUpdate(removeCommand);
+			}
+		}
+	}
+
+	private void updateActiveSkillPremiumEffectUnlockState(Statement stmt) throws SQLException {
+		final String playerUuid = playerdata.uuid.toString();
+		ActiveSkillPremiumEffect[] activeSkillPremiumEffects = ActiveSkillPremiumEffect.values();
+
+		for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : activeSkillPremiumEffects) {
+			String effectName = activeSkillPremiumEffect.getsqlName();
+			int effectId = activeSkillPremiumEffect.getNum();
+			boolean isEffectUnlocked = playerdata.activeskilldata.premiumeffectflagmap.get(effectId);
+
+			if (isEffectUnlocked) {
+				final String updateCommand = "insert into "
+						+ "unlocked_active_skill_premium_effect(player_uuid, effect_name) "
+						+ "values (" + playerUuid + ", " + effectName + ") "
+						+ "on duplicate key update";
+
+				stmt.executeUpdate(updateCommand);
+			} else {
+				final String removeCommand = "delete from "
+						+ "unlocked_active_skill_premium_effect where "
+						+ "player_uuid like '" + playerUuid + "' and "
+						+ "effect_name = " + effectName;
+				stmt.executeUpdate(removeCommand);
+			}
+		}
+	}
+
+	private void updatePlayerDataColumns(Statement stmt) throws SQLException {
 		//引数のplayerdataをsqlにデータを送信
-		String table = SeichiAssist.PLAYERDATA_TABLENAME;
-		String struuid = playerdata.uuid.toString();
-		String command;
+		final String tableReferenceName = SeichiAssist.config.getDB() + SeichiAssist.PLAYERDATA_TABLENAME;
+		final String playerUuid = playerdata.uuid.toString();
 
-		command = "update " + db + "." + table
-				+ " set"
+		//実績のフラグ(BitSet)保存用変換処理
+		long[] titleArray = playerdata.TitleFlags.toLongArray();
+		String[] titleNums = Arrays.stream(titleArray).mapToObj(Long::toHexString).toArray(String[]::new);
+		String flagString = String.join(",", titleNums);
 
+		final String command = "update " + tableReferenceName + " set"
 				//名前更新処理
 				+ " name = '" + playerdata.name + "'"
 
@@ -111,37 +209,24 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",everysound = " + playerdata.everysoundflag
 				+ ",everymessage = " + playerdata.everymessageflag
 
-				+",displayTypeLv = " + playerdata.displayTypeLv
-				+",displayTitle1No = " + playerdata.displayTitle1No
-				+",displayTitle2No = " + playerdata.displayTitle2No
-				+",displayTitle3No = " + playerdata.displayTitle3No
-				+",giveachvNo = " + playerdata.giveachvNo
-				+",achvPointMAX = " + playerdata.achvPointMAX
-				+",achvPointUSE = " + playerdata.achvPointUSE
-				+",achvChangenum = " + playerdata.achvChangenum
-				+",starlevel = " + playerdata.starlevel
-				+",starlevel_Break = " + playerdata.starlevel_Break
-				+",starlevel_Time = " + playerdata.starlevel_Time
-				+",starlevel_Event = " + playerdata.starlevel_Event
+				+ ",displayTypeLv = " + playerdata.displayTypeLv
+				+ ",displayTitle1No = " + playerdata.displayTitle1No
+				+ ",displayTitle2No = " + playerdata.displayTitle2No
+				+ ",displayTitle3No = " + playerdata.displayTitle3No
+				+ ",giveachvNo = " + playerdata.giveachvNo
+				+ ",achvPointMAX = " + playerdata.achvPointMAX
+				+ ",achvPointUSE = " + playerdata.achvPointUSE
+				+ ",achvChangenum = " + playerdata.achvChangenum
+				+ ",starlevel = " + playerdata.starlevel
+				+ ",starlevel_Break = " + playerdata.starlevel_Break
+				+ ",starlevel_Time = " + playerdata.starlevel_Time
+				+ ",starlevel_Event = " + playerdata.starlevel_Event
 
-				+",lastcheckdate = '" + playerdata.lastcheckdate + "'"
-				+",ChainJoin = " + playerdata.ChainJoin
-				+",TotalJoin = " + playerdata.TotalJoin
-				+",LimitedLoginCount = " + playerdata.LimitedLoginCount;
+				+ ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
+				+ ",ChainJoin = " + playerdata.ChainJoin
+				+ ",TotalJoin = " + playerdata.TotalJoin
+				+ ",LimitedLoginCount = " + playerdata.LimitedLoginCount
 
-				//MineStack機能の数値更新処理
-
-				//MineStack関連は全てfor文に変更
-				if(SeichiAssist.minestack_sql_enable){
-					for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
-						command += ",stack_"+SeichiAssist.minestacklist.get(i).getMineStackObjName()+ " = "
-							+ playerdata.minestack.getNum(i);
-					}
-				}
-
-				//サブホームのデータ
-				command +=  ",homepoint_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeToString() + "'"
-						+ ",subhome_name_" + SeichiAssist.config.getServerNum() + " = '" + playerdata.SubHomeNameToString() + "'"
 				//建築
 				+ ",build_lv = " + playerdata.build_lv_get()
 				+ ",build_count = " + playerdata.build_count_get().toString()
@@ -157,92 +242,56 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ ",p_apple = " + playerdata.p_apple
 
 				//貢献度pt
-				+",added_mana = " + playerdata.added_mana
+				+ ",added_mana = " + playerdata.added_mana
 
-				+",GBstage = " + playerdata.GBstage
-				+",GBexp = " + playerdata.GBexp
-				+",GBlevel = " + playerdata.GBlevel
-				+",isGBStageUp = " + playerdata.isGBStageUp;
+				+ ",GBstage = " + playerdata.GBstage
+				+ ",GBexp = " + playerdata.GBexp
+				+ ",GBlevel = " + playerdata.GBlevel
+				+ ",isGBStageUp = " + playerdata.isGBStageUp
+				+ ",TitleFlags = '" + flagString + "'"
 
-				//実績のフラグ(BitSet)保存用変換処理
-				long[] TitleArray = playerdata.TitleFlags.toLongArray();
-				String[] TitleNums = Arrays.stream(TitleArray).mapToObj(Long::toHexString).toArray(String[]::new);
-				String FlagString = String.join(",", TitleNums);
-				command += ",TitleFlags = '" + FlagString + "'" ;
+				//正月イベント
+				+ ",hasNewYearSobaGive = " + playerdata.hasNewYearSobaGive
+				+ ",newYearBagAmount = " + playerdata.newYearBagAmount
 
-		//グリッド式保護設定保存
-		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
-			command += ",ahead_" + i + " = " + playerdata.getTemplateMap().get(i).getAheadAmount();
-			command += ",behind_" + i + " = " + playerdata.getTemplateMap().get(i).getBehindAmount();
-			command += ",right_" + i + " = " + playerdata.getTemplateMap().get(i).getRightAmount();
-			command += ",left_" + i + " = " + playerdata.getTemplateMap().get(i).getLeftAmount();
-		}
+				//バレンタインイベント
+				+ ",hasChocoGave = " + playerdata.hasChocoGave
 
-		//正月イベント
-		command += ",hasNewYearSobaGive = " + playerdata.hasNewYearSobaGive;
-		command += ",newYearBagAmount = " + playerdata.newYearBagAmount;
+				//loginflagを折る
+				+ ", loginflag = " + !logoutflag
 
-		//バレンタインイベント
-		command += ",hasChocoGave = " + playerdata.hasChocoGave;
+				+ " where uuid like '" + playerUuid + "'";
 
-		ActiveSkillEffect[] activeskilleffect = ActiveSkillEffect.values();
-		for (final ActiveSkillEffect activeSkillEffect : activeskilleffect) {
-			String sqlname = activeSkillEffect.getsqlName();
-			int num = activeSkillEffect.getNum();
-			boolean flag = playerdata.activeskilldata.effectflagmap.get(num);
-			command = command +
-					"," + sqlname + " = " + flag;
-		}
-		ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-		for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : premiumeffect) {
-			String sqlname = activeSkillPremiumEffect.getsqlName();
-			int num = activeSkillPremiumEffect.getNum();
-			boolean flag = playerdata.activeskilldata.premiumeffectflagmap.get(num);
-			command = command +
-					"," + sqlname + " = " + flag;
-		}
+		stmt.executeUpdate(command);
+	}
 
-		//loginflag折る処理
-		if(logoutflag){
-			command = command +
-					",loginflag = false";
-		}
-
-		//最後の処理
-		command = command + " where uuid like '" + struuid + "'";
-
-		boolean result;
-
+	private ActionStatus executeUpdate() {
 		try {
-			stmt.executeUpdate(command);
-			result = true;
-		}catch (SQLException e) {
-			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
-			exc = e.getMessage();
-			e.printStackTrace();
-			result = false;
-		}
+			//sqlコネクションチェック
+			databaseGateway.ensureConnection();
 
- 		if(isOnDisable){
- 			//ondisableメソッドからの呼び出しの時の処理
- 			if(result){
- 				plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + playerdata.name + "のプレイヤーデータ保存完了");
- 			}else{
- 				plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + playerdata.name + "のプレイヤーデータ保存失敗");
- 			}
-		}else if(/*i >= 4&&*/!result){
- 			//諦める
- 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + playerdata.name + "のプレイヤーデータ保存失敗");
- 			cancel();
-		}else if(result){
- 			//処理完了
- 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + playerdata.name + "のプレイヤーデータ保存完了");
- 			cancel();
-		}/*else{
- 			//再試行
- 			instance.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + playerdata.name + "のプレイヤーデータ保存再試行(" + (i+1) + "回目)");
- 			i++;
- 			return;
- 		}*/
+			//同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
+			final Statement localStatement = databaseGateway.con.createStatement();
+			updatePlayerDataColumns(localStatement);
+			updatePlayerMineStack(localStatement);
+			updateGridTemplate(localStatement);
+			updateSubHome(localStatement);
+			updateActiveSkillEffectUnlockState(localStatement);
+			updateActiveSkillPremiumEffectUnlockState(localStatement);
+			return Ok;
+		} catch (SQLException exception) {
+			java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");
+			exception.printStackTrace();
+			return Fail;
+		}
+	}
+
+	@Override
+	public void run() {
+		final String resultMessage = executeUpdate() == Ok
+				? ChatColor.GREEN + playerdata.name + "のプレイヤーデータ保存完了"
+				: ChatColor.RED + playerdata.name + "のプレイヤーデータ保存失敗";
+		plugin.getServer().getConsoleSender().sendMessage(resultMessage);
+		if (!isOnDisable) cancel();
 	}
 }
