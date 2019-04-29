@@ -83,3 +83,8 @@ commands:
       usage: /<command>
       permission: multiseichiplugin.minehead
       permission-message: You don't have <permission>
+  x-transfer:
+      description: Helps region owner tranship.
+      usage: /<command> [region name] [new owner name]
+      permission: multiseichiplugin.x-transfer
+      permission-message: You don't have <permission>
