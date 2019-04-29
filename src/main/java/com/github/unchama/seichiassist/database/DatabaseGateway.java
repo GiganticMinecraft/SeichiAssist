@@ -161,6 +161,7 @@ public class DatabaseGateway {
 				() -> Flyway.configure()
 						.dataSource(databaseUrl, loginId, password)
 						.baselineOnMigrate(true)
+						.locations("db/migration", "com/github/unchama/seichiassist/database/migration")
 						.baselineVersion("1.0.0")
 						.schemas("flyway_managed_schema")
 						.load().migrate()
