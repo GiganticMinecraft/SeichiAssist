@@ -3,13 +3,10 @@ package com.github.unchama.seichiassist.data.slot.button;
 import com.github.unchama.seichiassist.data.itemstack.builder.component.ItemStackBuilder;
 import com.github.unchama.seichiassist.data.slot.AbstractSlotBuilder;
 import com.github.unchama.seichiassist.data.slot.Slot;
-import com.github.unchama.seichiassist.data.slot.base.BaseSlot;
-import com.github.unchama.seichiassist.data.slot.base.BaseSlotBuilder;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
-
 import java.util.ArrayList;
 import java.util.List;
 

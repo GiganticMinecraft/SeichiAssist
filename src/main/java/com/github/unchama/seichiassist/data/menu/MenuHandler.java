@@ -19,7 +19,14 @@ import static java.util.Objects.requireNonNull;
 public class MenuHandler implements Listener {
     private static MenuHandler singleton = new MenuHandler();
 
-    private MenuHandler() {}
+    /**
+     * 登録された {@link Menu} の {@link List}
+     */
+    @Nonnull
+    private List<Menu> menus = new ArrayList<>();
+
+    private MenuHandler() {
+    }
 
     /**
      * {@link MenuHandler} のインスタンスを返します.
@@ -30,11 +37,6 @@ public class MenuHandler implements Listener {
         return singleton;
     }
 
-    /**
-     * 登録された {@link Menu} の {@link List}
-     */
-    @Nonnull
-    private List<Menu> menus = new ArrayList<>();
 
     /**
      * {@link Menu} 管理 {@link List} に {@link Menu} を追加します.
