@@ -1,0 +1,77 @@
+version: 2.1
+
+anchors:
+  docker:
+    gradle_docker: &gradle_docker
+      docker:
+        - image: circleci/openjdk:8u181-jdk
+  workspace:
+    save_workspace: &save_workspace
+      persist_to_workspace:
+        root: ./workspace
+        paths:
+          - '*'
+    load_workspace: &load_workspace
+      attach_workspace:
+        at: '/tmp/workspace'
+
+jobs:
+  build:
+    <<: *gradle_docker
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: |
+          scp -oStrictHostKeyChecking=no -P $HOST_PORT -r $DEPENDENCY_REPOSITORY_HOST . > /dev/null 2>&1
+          mv dependencies localDependencies
+          ls -al localDependencies
+      - restore_cache:
+          keys:
+            - gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lock" }}
+            - gradle-repo-v1-{{ .Branch }}-
+            - gradle-repo-v1-
+      - run: ./gradlew install
+      - save_cache:
+          paths:
+            - ~/.gradle
+            - ~/.m2 # Maven dependencies
+          key: gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lock" }}
+      - run: mkdir -p workspace/builds && cp build/libs/**.jar workspace/builds
+      - *save_workspace
+  deploy_debug:
+    <<: *gradle_docker
+    working_directory: ~/repo
+    steps:
+      - *load_workspace
+      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $DEBUG_DEPLOY_TARGET_HOST > /dev/null 2>&1
+  deploy_production:
+    <<: *gradle_docker
+    working_directory: ~/repo
+    steps:
+      - *load_workspace
+      - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $PRODUCTION_DEPLOY_TARGET_HOST > /dev/null 2>&1
+
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - deploy_production:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+      - deploy_debug:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - develop

@@ -9,3 +9,8 @@
 *.iml
 /bins/
 /test/
+/target/
+/localDependencies/
+
+.gradle
+build
