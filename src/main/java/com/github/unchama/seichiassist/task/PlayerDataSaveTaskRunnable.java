@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 import static com.github.unchama.util.ActionStatus.Ok;
@@ -108,10 +109,11 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 	private void updateActiveSkillEffectUnlockState(Statement stmt) throws SQLException {
 		final String playerUuid = playerdata.uuid.toString();
 		ActiveSkillEffect[] activeSkillEffects = ActiveSkillEffect.values();
+		final Set<ActiveSkillEffect> obtainedEffects = playerdata.activeskilldata.obtainedSkillEffects;
+
 		for (final ActiveSkillEffect activeSkillEffect : activeSkillEffects) {
 			String effectName = activeSkillEffect.getsqlName();
-			int effectId = activeSkillEffect.getNum();
-			boolean isEffectUnlocked = playerdata.activeskilldata.effectflagmap.get(effectId);
+			boolean isEffectUnlocked = obtainedEffects.contains(activeSkillEffect);
 
 			if (isEffectUnlocked) {
 				final String updateCommand = "insert into "
@@ -133,11 +135,11 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 	private void updateActiveSkillPremiumEffectUnlockState(Statement stmt) throws SQLException {
 		final String playerUuid = playerdata.uuid.toString();
 		ActiveSkillPremiumEffect[] activeSkillPremiumEffects = ActiveSkillPremiumEffect.values();
+		final Set<ActiveSkillPremiumEffect> obtainedEffects = playerdata.activeskilldata.obtainedSkillPremiumEffects;
 
 		for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : activeSkillPremiumEffects) {
 			String effectName = activeSkillPremiumEffect.getsqlName();
-			int effectId = activeSkillPremiumEffect.getNum();
-			boolean isEffectUnlocked = playerdata.activeskilldata.premiumeffectflagmap.get(effectId);
+			boolean isEffectUnlocked = obtainedEffects.contains(activeSkillPremiumEffect);
 
 			if (isEffectUnlocked) {
 				final String updateCommand = "insert into "

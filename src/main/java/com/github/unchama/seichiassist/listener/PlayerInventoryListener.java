@@ -1102,7 +1102,7 @@ public class PlayerInventoryListener implements Listener {
 							player.sendMessage(ChatColor.DARK_RED + "エフェクトポイントが足りません");
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.5);
 						} else {
-							activeSkillEffect.setObtained(playerdata.activeskilldata.effectflagmap);
+							playerdata.activeskilldata.obtainedSkillEffects.add(activeSkillEffect);
 							player.sendMessage(ChatColor.LIGHT_PURPLE + "エフェクト：" + activeSkillEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました");
 							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 1.2);
 							playerdata.activeskilldata.effectpoint -= activeSkillEffect.getUsePoint();
@@ -1121,7 +1121,7 @@ public class PlayerInventoryListener implements Listener {
 							player.sendMessage(ChatColor.DARK_RED + "プレミアムエフェクトポイントが足りません");
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.5);
 						} else {
-							activeSkillPremiumEffect.setObtained(playerdata.activeskilldata.premiumeffectflagmap);
+							playerdata.activeskilldata.obtainedSkillPremiumEffects.add(activeSkillPremiumEffect);
 							player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました");
 							if (databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
 								player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。");

@@ -1833,7 +1833,7 @@ public class MenuInventoryData {
 
 				for(int i = 0; i < skilleffect.length;i++){
 					//プレイヤーがそのスキルを取得している場合の処理
-					if(skilleffect[i].isObtained(playerdata.activeskilldata.effectflagmap)){
+					if (playerdata.activeskilldata.obtainedSkillEffects.contains(skilleffect[i])) {
 						itemstack = new ItemStack(skilleffect[i].getMaterial(),1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(skilleffect[i].getMaterial());
 						itemmeta.setDisplayName(skilleffect[i].getName());
@@ -1860,7 +1860,7 @@ public class MenuInventoryData {
 
 				for(int i = 0; i < premiumeffect.length;i++){
 					//プレイヤーがそのスキルを取得している場合の処理
-					if(premiumeffect[i].isObtained(playerdata.activeskilldata.premiumeffectflagmap)){
+					if (playerdata.activeskilldata.obtainedSkillEffects.contains(premiumeffect[i])) {
 						itemstack = new ItemStack(premiumeffect[i].getMaterial(),1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(premiumeffect[i].getMaterial());
 						itemmeta.setDisplayName(ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(premiumeffect[i].getName()));
