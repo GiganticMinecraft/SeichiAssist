@@ -924,6 +924,7 @@ public class SeichiAssist extends JavaPlugin{
 		commandlist.put("subhome", new subHomeCommand(instance));
 		commandlist.put("gtfever", new GiganticFeverCommand());
 		commandlist.put("minehead", new MineHeadCommand(instance));
+		commandlist.put("x-transfer", new RegionOwnerTransferCommand());
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
