@@ -878,7 +878,6 @@ public class SeichiAssist extends JavaPlugin{
 			getLogger().info("MineStack用ガチャデータのロードに成功しました");
 
 			minestacklistgacha.addAll(creategachaminestacklist());
-			Collections.sort(minestacklistgacha);
 
 			minestacklist = new ArrayList<>();
 			minestacklist.addAll(minestacklistmine);
