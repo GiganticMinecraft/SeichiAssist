@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.slot.Slot;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -101,17 +102,20 @@ public class Menu {
 
     /**
      * {@link InventoryClickEvent} を渡して該当 {@link Slot} に動作を行わせます.
+     * その後,メニューを開きなおします.
      *
      * @param event {@link InventoryClickEvent} ({@code null} は許容されません)
      */
-    public void invoke(@Nonnull InventoryClickEvent event) {
+    void invokeAndReopen(@Nonnull InventoryClickEvent event) {
         requireNonNull(event);
         final int position = event.getSlot();
+        final HumanEntity humanEntity = event.getWhoClicked();
         slots.forEach(slot -> {
             if (slot.getPosition() == position) {
                 slot.invoke(event);
             }
         });
+        open((Player) humanEntity);
     }
 
     /**

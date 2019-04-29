@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
 import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
-import com.github.unchama.seichiassist.util.ExternalPlugins;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
 import com.sk89q.worldguard.bukkit.WorldConfiguration;
