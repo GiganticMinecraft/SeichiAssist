@@ -23,7 +23,8 @@ public class PlayerDataButtons {
         .at(0)
         .handler(new SlotActionHandler(
             Triggers.RIGHT_CLICK,
-
+            //TODO: WIP
+            event -> {}
         ))
         .build();
 }

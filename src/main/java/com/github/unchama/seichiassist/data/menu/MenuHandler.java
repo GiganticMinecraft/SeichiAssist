@@ -47,11 +47,16 @@ public class MenuHandler implements Listener {
 
     /**
      * 各 {@link Menu#invoke(InventoryClickEvent)} を呼び出します.
+     * titleにて判断し, {@link InventoryClickEvent} を与えます.
      *
      * @param event {@link InventoryClickEvent}
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        menus.forEach(menu -> menu.invoke(event));
+        final String title = event.getInventory().getTitle();
+
+        menus.stream()
+             .filter(menu -> menu.getTitle().equals(title))
+             .forEach(menu -> menu.invoke(event));
     }
 }
