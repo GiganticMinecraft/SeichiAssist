@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.subhome.SubHome;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.util.ActionStatus;
 import org.bukkit.ChatColor;
@@ -49,9 +50,9 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 	private void updatePlayerMineStack(Statement stmt) throws SQLException {
 		final String playerUuid = playerdata.uuid.toString();
-		for (int i = 0; i < SeichiAssist.minestacklist.size(); i++) {
-			final String iThObjectName = SeichiAssist.minestacklist.get(i).getMineStackObjName();
-			final int iThObjectAmount = playerdata.minestack.getNum(i);
+		for (final MineStackObj mineStackObj : SeichiAssist.minestacklist) {
+			final String iThObjectName = mineStackObj.getMineStackObjName();
+			final long iThObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj);
 
 			final String updateCommand = "insert into mine_stack"
 					+ "(player_uuid, object_name, amount) values "
