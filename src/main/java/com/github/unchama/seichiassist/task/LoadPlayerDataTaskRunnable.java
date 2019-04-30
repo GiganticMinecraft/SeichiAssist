@@ -72,7 +72,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 	private void loadSubHomeData(Statement stmt) throws SQLException {
 		final String subHomeDataQuery = "select * from "
-				+ db + "." + DatabaseConstants.PLAYERDATA_TABLENAME + " where "
+				+ db + "." + DatabaseConstants.SUB_HOME_TABLENAME + " where "
 				+ "player_uuid like '" + stringUuid + "' and "
 				+ "server_id = " + config.getServerNum();
 
