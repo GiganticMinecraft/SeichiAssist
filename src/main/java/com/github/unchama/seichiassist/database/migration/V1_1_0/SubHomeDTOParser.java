@@ -20,12 +20,12 @@ import java.util.stream.IntStream;
     }
 
     private Optional<SubHomeDTO> parseIndividualRawData(int index,
-                                                        @NotNull List<String> homePointData,
+                                                        @NotNull List<@NotNull String> homePointData,
                                                         @NotNull String subHomeName) {
-        final String xCoordinate = homePointData.get(0);
-        final String yCoordinate = homePointData.get(1);
-        final String zCoordinate = homePointData.get(2);
-        final String worldName = homePointData.get(3);
+        final @NotNull String xCoordinate = homePointData.get(0);
+        final @NotNull String yCoordinate = homePointData.get(1);
+        final @NotNull String zCoordinate = homePointData.get(2);
+        final @NotNull String worldName = homePointData.get(3);
 
         // セットされていないかどうかはx座標データについて空文字テストをすれば十分である
         if (xCoordinate.equals("")) return Optional.empty();
