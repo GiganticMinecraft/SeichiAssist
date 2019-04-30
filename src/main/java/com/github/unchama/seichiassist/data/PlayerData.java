@@ -4,9 +4,11 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 
 import com.github.unchama.seichiassist.text.Text;
 import com.github.unchama.seichiassist.Worlds;
+import com.github.unchama.seichiassist.text.Warns;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.bukkit.Bukkit;
@@ -40,6 +42,8 @@ public class PlayerData {
     public String name;
     //UUID
     public UUID uuid;
+    //Player
+    public Player player;
     //エフェクトのフラグ
     public int effectflag;
     //内訳メッセージを出すフラグ
@@ -238,6 +242,7 @@ public class PlayerData {
         //初期値を設定
         this.loaded = false;
         this.name = Util.getName(player);
+        this.player = player;
         this.uuid = player.getUniqueId();
         this.effectflag = 0;
         this.messageflag = false;
@@ -1074,13 +1079,21 @@ public class PlayerData {
             ChatColor.RESET, ChatColor.AQUA);
     }
 
-    public List<Text> getPlayerInfoLore() {
+    /**
+     * Player統計のLore.
+     * //TODO: 暫定的にここにおいておく
+     */
+    public static Function<PlayerData, List<Text>> playerInfoLore = playerData -> {
+        final Player player = playerData.player;
         List<Text> lore = new ArrayList<>();
-        lore.add(getSeichiLevelDescription());
-        if (this.level < SeichiAssist.levellist.size()) {
-            lore.add(getRemainLevelDescription());
+        lore.add(playerData.getSeichiLevelDescription());
+        if (playerData.level < SeichiAssist.levellist.size()) {
+            lore.add(playerData.getRemainLevelDescription());
+        }
+        if (!Util.isSeichiWorld(player)) {
+            lore.addAll(Warns.seichiWorldWarning);
         }
         //TODO: WIP
         return lore;
-    }
+    };
 }

@@ -18,7 +18,7 @@ public class PlayerDataButtons {
                 .of()
                 .playerSkull()
                 .title(data -> Text.of(data.name + "の統計データ"))
-                .lore(PlayerData::getPlayerInfoLore)
+                .lore(PlayerData.playerInfoLore)
         )
         .at(0)
         .handler(new SlotActionHandler(
