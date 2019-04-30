@@ -9,8 +9,6 @@ public class MineStack {
 
 	private HashMap<MineStackObj, Long> objectCountMap = new HashMap<>();
 
-	public MineStack(){ }
-
 	public long getStackedAmountOf(@NotNull MineStackObj mineStackObj) {
 		if (objectCountMap.containsKey(mineStackObj)) {
 			return objectCountMap.get(mineStackObj);
