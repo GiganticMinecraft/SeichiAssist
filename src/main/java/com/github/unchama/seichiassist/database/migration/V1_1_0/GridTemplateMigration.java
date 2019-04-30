@@ -51,7 +51,7 @@ import static com.github.unchama.seichiassist.util.TypeConverter.isParsableToInt
         /*
          * ahead_i, behind_i, left_i, right_iのインデックスが必ず同時に生成されており、
          * 非負整数i, j, i < jに関してahead_jが存在するならahead_iも存在するという
-                * 仮定に基づいたロジックである。
+         * 仮定に基づいたロジックである。
          */
         final long gridTemplateColumnCount = playerDataColumnNames.stream()
                 .filter(tableName ->
