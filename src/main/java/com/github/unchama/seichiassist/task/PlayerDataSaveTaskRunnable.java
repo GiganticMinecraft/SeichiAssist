@@ -94,7 +94,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		final String playerUuid = playerdata.uuid.toString();
 
 		// 既存データをすべてクリアする
-		stmt.executeUpdate("delete from seichiassist.grid_template where designer_uuid = " + playerUuid);
+		stmt.executeUpdate("delete from seichiassist.grid_template where designer_uuid = '" + playerUuid + "'");
 
 		// 各グリッドテンプレートについてデータを保存する
 		for (Map.Entry<Integer, GridTemplate> templateEntry : playerdata.getTemplateMap().entrySet()) {
@@ -130,7 +130,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 			if (isEffectUnlocked) {
 				final String updateCommand = "insert into "
 						+ "seichiassist.unlocked_active_skill_effect(player_uuid, effect_name) "
-						+ "values (" + playerUuid + ", " + effectName + ")";
+						+ "values ('" + playerUuid + "', '" + effectName + "')";
 
 				stmt.executeUpdate(updateCommand);
 			}
@@ -154,7 +154,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 			if (isEffectUnlocked) {
 				final String updateCommand = "insert into "
 						+ "seichiassist.unlocked_active_skill_premium_effect(player_uuid, effect_name) "
-						+ "values (" + playerUuid + ", " + effectName + ")";
+						+ "values ('" + playerUuid + "', '" + effectName + "')";
 
 				stmt.executeUpdate(updateCommand);
 			}
