@@ -1,20 +1,19 @@
 package com.github.unchama.seichiassist;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import com.github.unchama.seichiassist.arroweffect.ArrowMagicTaskRunnable;
+import com.github.unchama.seichiassist.breakeffect.MagicTaskRunnable;
+import com.github.unchama.seichiassist.data.Coordinate;
+import com.github.unchama.seichiassist.data.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
-import com.github.unchama.seichiassist.arroweffect.ArrowMagicTaskRunnable;
-import com.github.unchama.seichiassist.breakeffect.MagicTaskRunnable;
-import com.github.unchama.seichiassist.data.Coordinate;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.util.Arrays;
+import java.util.List;
 
 public enum ActiveSkillPremiumEffect {
 
@@ -61,14 +60,7 @@ public enum ActiveSkillPremiumEffect {
 	public Material getMaterial(){
 		return this.material;
 	}
-	//プレイヤーが所持しているかどうか
-	public boolean isObtained(Map<Integer,Boolean> flagmap){
-		return flagmap.get(getNum());
-	}
-	//獲得させる処理
-	public void setObtained(Map<Integer,Boolean> flagmap) {
-		flagmap.put(getNum(), true);
-	}
+
 	//エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
 	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this){
@@ -119,12 +111,10 @@ public enum ActiveSkillPremiumEffect {
 	}
 
 
-	public static String getNamebyNum(int effectnum) {
-		ActiveSkillPremiumEffect[] skilleffect = ActiveSkillPremiumEffect.values();
-		return Arrays.stream(skilleffect)
-				.filter(activeSkillEffect -> activeSkillEffect.getNum() == effectnum)
-				.findFirst()
-				.map(ActiveSkillPremiumEffect::getName)
-				.orElse("未設定");
+	public static @Nullable ActiveSkillPremiumEffect fromSqlName(String sqlName) {
+		return Arrays
+				.stream(ActiveSkillPremiumEffect.values())
+				.filter((effect) -> sqlName.equals(effect.sql_name))
+				.findFirst().orElse(null);
 	}
 }

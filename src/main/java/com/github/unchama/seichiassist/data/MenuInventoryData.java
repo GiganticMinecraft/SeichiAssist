@@ -973,12 +973,13 @@ public class MenuInventoryData {
 		List<HistoryData> history = pd.hisotryData.getHistoryList();
 		int slot = 18;
 		for (HistoryData data : history) {
-			int index = data.index;
+
 			MineStackObj obj = data.obj;
+			final long objectAmount = pd.minestack.getStackedAmountOf(obj);
 			if (obj.getItemStack() == null) {
-				setMineStackButton(inventory, pd.minestack.getNum(index), new ItemStack(obj.getMaterial(), 1, (short)obj.getDurability()), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
+				setMineStackButton(inventory, objectAmount, new ItemStack(obj.getMaterial(), 1, (short)obj.getDurability()), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
 			} else {
-				setMineStackButton(inventory, pd.minestack.getNum(index), obj.getItemStack(), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
+				setMineStackButton(inventory, objectAmount, obj.getItemStack(), SeichiAssist.config.getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
 			}
 			slot++;
 		}
@@ -1072,11 +1073,12 @@ public class MenuInventoryData {
 			}
 			//この時点で「stack_typeのii番目」のインデックスになっている
 			MineStackObj msobj = SeichiAssist.minestacklist.get(iii);
+			final long objectAmount = playerdata.minestack.getStackedAmountOf(msobj);
 			if(msobj.getItemStack()==null){
-				setMineStackButton(inventory, playerdata.minestack.getNum(iii), new ItemStack(msobj.getMaterial(), 1, (short)msobj.getDurability()),  SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
+				setMineStackButton(inventory, objectAmount, new ItemStack(msobj.getMaterial(), 1, (short)msobj.getDurability()),  SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
 				iii++;
 			} else {
-				setMineStackButton(inventory, playerdata.minestack.getNum(iii), msobj.getItemStack(), SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
+				setMineStackButton(inventory, objectAmount, msobj.getItemStack(), SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
 				iii++;
 			}
 			i++;
@@ -1156,7 +1158,7 @@ public class MenuInventoryData {
 		return itemmeta;
 	}
 	//MineStackボタン作成 Material版
-	public static Inventory setMineStackButton(Inventory inv,int minestack,Material type,int level,int set){
+	public static Inventory setMineStackButton(Inventory inv, long minestack,Material type,int level,int set){
 		ItemStack itemstack = new ItemStack(type,1);
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(type);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + type.toString());
@@ -1169,7 +1171,7 @@ public class MenuInventoryData {
 		return inv;
 	}
 	//MineStackボタン作成 Material版名前付き
-	public static Inventory setMineStackButton(Inventory inv,int minestack,Material type,int level,int set,String name){
+	public static Inventory setMineStackButton(Inventory inv, long minestack,Material type,int level,int set,String name){
 		ItemStack itemstack = new ItemStack(type,1);
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(type);
 		if(name!=null){
@@ -1186,7 +1188,7 @@ public class MenuInventoryData {
 		return inv;
 	}
 	//MineStackボタン作成 ItemStack版
-	public static Inventory setMineStackButton(Inventory inv,int minestack,ItemStack itemstack,int level,int set){
+	public static Inventory setMineStackButton(Inventory inv, long minestack, ItemStack itemstack,int level,int set){
 		itemstack.setAmount(1);
 		ItemMeta itemmeta = itemstack.getItemMeta();
 		//itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + itemmeta.getDisplayName());
@@ -1200,7 +1202,7 @@ public class MenuInventoryData {
 		return inv;
 	}
 	//MineStackボタン作成 ItemStack版名前付き
-	public static Inventory setMineStackButton(Inventory inv,int minestack,ItemStack itemstack,int level,int set, String name){
+	public static Inventory setMineStackButton(Inventory inv, long minestack,ItemStack itemstack,int level,int set, String name){
 		itemstack.setAmount(1);
 		ItemMeta itemmeta = itemstack.getItemMeta();
 		if(name!=null){
@@ -1833,7 +1835,7 @@ public class MenuInventoryData {
 
 				for(int i = 0; i < skilleffect.length;i++){
 					//プレイヤーがそのスキルを取得している場合の処理
-					if(skilleffect[i].isObtained(playerdata.activeskilldata.effectflagmap)){
+					if (playerdata.activeskilldata.obtainedSkillEffects.contains(skilleffect[i])) {
 						itemstack = new ItemStack(skilleffect[i].getMaterial(),1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(skilleffect[i].getMaterial());
 						itemmeta.setDisplayName(skilleffect[i].getName());
@@ -1860,7 +1862,7 @@ public class MenuInventoryData {
 
 				for(int i = 0; i < premiumeffect.length;i++){
 					//プレイヤーがそのスキルを取得している場合の処理
-					if(premiumeffect[i].isObtained(playerdata.activeskilldata.premiumeffectflagmap)){
+					if (playerdata.activeskilldata.obtainedSkillEffects.contains(premiumeffect[i])) {
 						itemstack = new ItemStack(premiumeffect[i].getMaterial(),1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(premiumeffect[i].getMaterial());
 						itemmeta.setDisplayName(ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(premiumeffect[i].getName()));
@@ -7392,27 +7394,18 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.PAPER);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント" + (x+1) + "の情報");
-			Location l = playerdata.GetSubHome(x);
-			if (l == null || l.getWorld() == null){
-				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x+1) + "は"
-						, ChatColor.RESET + "" + ChatColor.GRAY + playerdata.subhome_name[x]
-						, ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています"
-						, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更"
-						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x+1) + "]"
-						, ChatColor.RESET + "" + ChatColor.GRAY + "ポイント未設定"
-						);
-			}
-			else {
-				lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x+1) + "は"
-						, ChatColor.RESET + "" + ChatColor.GRAY + playerdata.subhome_name[x]
-						, ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています"
-						, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更"
-						, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x+1) + "]"
-						, ChatColor.RESET + "" + ChatColor.GRAY + "" + Util.getWorldName(l.getWorld().getName()) + " x:" + (int)l.getX() + " y:" + (int)l.getY() + " z:" + (int)l.getZ()
-						);
-			}
-
-			itemmeta.setLore(lore);
+			Location l = playerdata.getSubHomeLocation(x);
+			final List<String> subHomeLore = !(l == null || l.getWorld() == null)
+					?
+					Arrays.asList(
+							ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x+1) + "は",
+							ChatColor.RESET + "" + ChatColor.GRAY + playerdata.getSubHomeName(x),
+							ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています",
+							ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更",
+							ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x+1) + "]",
+							ChatColor.RESET + "" + ChatColor.GRAY + "" + Util.getWorldName(l.getWorld().getName()) + " x:" + (int)l.getX() + " y:" + (int)l.getY() + " z:" + (int)l.getZ())
+					: Arrays.asList(ChatColor.GRAY + "サブホームポイント" + (x + 1), ChatColor.GRAY + "ポイント未設定");
+			itemmeta.setLore(subHomeLore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(11+x,itemstack);
 
@@ -7451,9 +7444,10 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.PAPER);
 			itemmeta = itemstack.getItemMeta();
 			itemmeta.setDisplayName(ChatColor.GREEN + "設定するサブホームポイントの情報");
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "No." + n
-					, ChatColor.RESET + "" + ChatColor.GRAY + "名称：" + playerdata.subhome_name[n-1]
-					);
+			lore = Arrays.asList(
+					ChatColor.RESET + "" + ChatColor.GRAY + "No." + n,
+					ChatColor.RESET + "" + ChatColor.GRAY + "名称：" + playerdata.getSubHomeName(n-1)
+			);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(4,itemstack);
