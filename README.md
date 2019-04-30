@@ -8,7 +8,7 @@
 - [mysql-connecter-java-5.1.35](https://downloads.mysql.com/archives/c-j/)
 
 ## 前提プラグイン
-- [spigot-1.12.2](https://cdn.getbukkit.org/spigot/spigot-1.12.2.jar)
+- [spigot-1.12.2](https://www.google.com/search?q=spigot+%E3%83%93%E3%83%AB%E3%83%89&oq=spigot+%E3%83%93%E3%83%AB%E3%83%89&aqs=chrome..69i57j0l2j69i61j0.6971j0j8&sourceid=chrome&ie=UTF-8)
 - [CoreProtect-2.14.4](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)
 - [item-nbt-api-plugin-1.8.2-SNAPSHOT](https://www.spigotmc.org/resources/item-entity-tile-nbt-api.7939/download?version=241690)
 - [Multiverse-Core-2.5.0](https://dev.bukkit.org/projects/multiverse-core/files/2428161/download)
