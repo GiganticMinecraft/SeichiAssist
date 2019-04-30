@@ -15,6 +15,7 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -123,7 +124,7 @@ public enum ActiveSkillEffect {
 				.orElse("未設定");
 	}
 
-	public static ActiveSkillEffect fromSqlName(final String sqlName) {
+	public static @Nullable ActiveSkillEffect fromSqlName(final String sqlName) {
 		return Arrays
 				.stream(ActiveSkillEffect.values())
 				.filter(effect -> sqlName.equals(effect.sql_name))

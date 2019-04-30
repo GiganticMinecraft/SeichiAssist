@@ -6,7 +6,6 @@ import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,15 +50,15 @@ import java.util.stream.Collectors;
          *
          * カラム名がそもそもenumのパラメータにより指定されているためこうする他無い。
          */
-        final Set<String> activeSkillEffectNames = Arrays
-                .stream(ActiveSkillEffect.values())
-                .map(ActiveSkillEffect::getsqlName)
+        final Set<String> activeSkillEffectNames = playerDataColumnNames
+                .stream()
+                .filter(columnName -> ActiveSkillEffect.fromSqlName(columnName) != null)
                 .collect(Collectors.toSet());
         migrateActiveSkillEffect(connection, activeSkillEffectNames);
 
-        final Set<String> activeSkillPremiumEffectNames = Arrays
-                .stream(ActiveSkillPremiumEffect.values())
-                .map(ActiveSkillPremiumEffect::getsqlName)
+        final Set<String> activeSkillPremiumEffectNames = playerDataColumnNames
+                .stream()
+                .filter(columnName -> ActiveSkillPremiumEffect.fromSqlName(columnName) != null)
                 .collect(Collectors.toSet());
         migrateActiveSkillPremiumEffect(connection, activeSkillPremiumEffectNames);
     }
