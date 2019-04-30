@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 
         for (SubHomeDTO subHomeDTO : subHomes) {
             final String templateCommand = subHomeDTO.generateTemplateForInsertionCommand();
-            try (final PreparedStatement preparedStatement = connection.prepareStatement(templateCommand)) {
-                preparedStatement.setString(1, subHomeDTO.name);
-                preparedStatement.execute();
+            try (final PreparedStatement statement = connection.prepareStatement(templateCommand)) {
+                statement.setString(1, subHomeDTO.name);
+                statement.execute();
             }
         }
     }

@@ -13,13 +13,14 @@ import java.util.stream.Collectors;
     /* package-private */ SkillEffectUnlockStateMigration() {}
 
     private static void migrateEffectUnlockStateColumn(final Connection connection,
-                                                final String newTableName,
-                                                final Set<String> effectColumnNames) {
+                                                       final String newTableName,
+                                                       final Set<String> effectColumnNames) {
         effectColumnNames.forEach(effectName -> {
             try (Statement statement = connection.createStatement()) {
-                final String copyQuery = "insert ignore into " + newTableName + "(player_uuid, effect_name) " +
-                        "select uuid as player_uuid, '" + effectName + "' as effect_name from playerdata where " + effectName;
-                statement.executeUpdate(copyQuery);
+                final String copyCommand = "insert ignore into " + newTableName + "(player_uuid, effect_name) " +
+                        "select uuid as player_uuid, '" + effectName + "' as effect_name from playerdata " +
+                        "where " +effectName;
+                statement.executeUpdate(copyCommand);
 
                 // 削除
                 statement.executeUpdate("alter table playerdata drop column " + effectName);
@@ -30,13 +31,13 @@ import java.util.stream.Collectors;
     }
 
     private static void migrateActiveSkillEffect(final Connection connection,
-                                          Set<String> activeSkillEffectNames) {
+                                                 Set<String> activeSkillEffectNames) {
         migrateEffectUnlockStateColumn(
                 connection, "unlocked_active_skill_effect", activeSkillEffectNames);
     }
 
     private static void migrateActiveSkillPremiumEffect(final Connection connection,
-                                                 Set<String> activeSkillPremiumEffectNames) {
+                                                        Set<String> activeSkillPremiumEffectNames) {
         migrateEffectUnlockStateColumn(
                 connection, "unlocked_active_skill_premium_effect", activeSkillPremiumEffectNames);
     }
