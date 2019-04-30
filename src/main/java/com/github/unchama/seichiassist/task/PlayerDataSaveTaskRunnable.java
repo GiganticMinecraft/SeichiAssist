@@ -57,7 +57,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 			final String updateCommand = "insert into seichiassist.mine_stack"
 					+ "(player_uuid, object_name, amount) values "
-					+ "(" + playerUuid + ", " + iThObjectName + ", " + iThObjectAmount +  ") "
+					+ "('" + playerUuid + "', '" + iThObjectName + "', '" + iThObjectAmount +  "') "
 					+ "on duplicate key update amount = values(amount)";
 
 			stmt.executeUpdate(updateCommand);
