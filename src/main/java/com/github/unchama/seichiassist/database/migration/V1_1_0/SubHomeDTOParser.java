@@ -61,13 +61,13 @@ import java.util.stream.IntStream;
 
     private List<Optional<SubHomeDTO>> parseRawData(@NotNull String homePointRawData,
                                                     @Nullable String parsedSubHomeNameData) {
-        if (parsedSubHomeNameData == null) return new ArrayList<>();
-
         final ArrayList<String> homePointSplitData = new ArrayList<>(Arrays.asList(homePointRawData.split(",")));
         final ArrayList<ArrayList<String>> rawHomePoints = chunk(homePointSplitData, 4);
+        final int subHomeCount = rawHomePoints.size();
 
-        final ArrayList<String> rawSubHomesNames = new ArrayList<>(Arrays.asList(parsedSubHomeNameData.split(",")));
-        final int subHomeCount = rawSubHomesNames.size();
+        final ArrayList<@NotNull String> rawSubHomesNames = parsedSubHomeNameData == null
+                ? new ArrayList<>(Collections.nCopies(subHomeCount, ""))
+                : new ArrayList<>(Arrays.asList(parsedSubHomeNameData.split(",")));
 
         return IntStream
                 .range(0, subHomeCount)
@@ -76,7 +76,8 @@ import java.util.stream.IntStream;
                 .collect(Collectors.toList());
     }
 
-    private @Nullable String parseSubHomeNameData(@NotNull String subHomeNameRawData) {
+    private @Nullable String parseSubHomeNameData(@Nullable String subHomeNameRawData) {
+        if (subHomeNameRawData == null) return null;
         try {
             return new String(Hex.decodeHex(subHomeNameRawData.toCharArray()), StandardCharsets.UTF_8);
         } catch (DecoderException e) {
@@ -86,7 +87,7 @@ import java.util.stream.IntStream;
     }
 
     /* package-private */ List<SubHomeDTO> parseRawDataAndFilterUndefineds(@NotNull String homePointRawData,
-                                                                           @NotNull String subHomeNameRawData) {
+                                                                           @Nullable String subHomeNameRawData) {
         return parseRawData(homePointRawData, parseSubHomeNameData(subHomeNameRawData)).stream()
                 .map(optionalData -> optionalData.orElse(null))
                 .filter(Objects::nonNull)

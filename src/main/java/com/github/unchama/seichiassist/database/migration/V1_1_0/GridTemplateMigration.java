@@ -37,8 +37,8 @@ import static com.github.unchama.seichiassist.util.TypeConverter.isParsableToInt
                         .map(direction -> "alter table playerdata drop column " + direction + "_" + templateId)
                         .collect(Collectors.toList());
 
-                for (String deleteQuery : deleteQueries) {
-                    statement.executeQuery(deleteQuery);
+                for (String deleteCommand : deleteQueries) {
+                    statement.executeUpdate(deleteCommand);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -58,6 +58,7 @@ import static com.github.unchama.seichiassist.util.TypeConverter.isParsableToInt
                         tableName.startsWith("ahead_") &&
                                 isParsableToInteger(tableName.substring("ahead_".length())))
                 .count();
+        System.out.println(gridTemplateColumnCount + " tables to migrate for grid template.");
         migrateGridTemplateColumn(connection, (int) gridTemplateColumnCount);
     }
 }

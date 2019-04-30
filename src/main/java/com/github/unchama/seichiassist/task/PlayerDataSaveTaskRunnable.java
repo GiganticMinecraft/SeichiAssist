@@ -14,6 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -63,24 +64,29 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 		}
 	}
 
-	private void updateSubHome(Statement stmt) throws SQLException {
+	private void updateSubHome() throws SQLException {
 		final String playerUuid = playerdata.uuid.toString();
 		for (Map.Entry<Integer, SubHome> subHomeEntry : playerdata.getSubHomeEntries()) {
 			final int subHomeId = subHomeEntry.getKey();
 			final SubHome subHome = subHomeEntry.getValue();
 			final Location subHomeLocation = subHome.getLocation();
 
-			final String updateCommand = "insert into seichiassist.sub_home set " +
-					"player_id = " + playerUuid + ", " +
-					"server_id = " + serverId + ", " +
-					"id = " + subHomeId + ", " +
-					"name = " + subHome.name + ", " +
-					"location_x = " + subHomeLocation.getX() + ", " +
-					"location_y = " + subHomeLocation.getY() + ", " +
-					"location_z = " + subHomeLocation.getZ() + ", " +
-					"world_name = " + subHomeLocation.getWorld();
+			final String template = "insert into seichiassist.sub_home set "
+					+ "player_id = ?, server_id = ?, id = ?, name = ?, location_x = ?, location_y = ?, "
+					+ "location_z = ?, world_name = ?";
 
-			stmt.executeUpdate(updateCommand);
+			try (PreparedStatement statement = databaseGateway.con.prepareStatement(template)) {
+				statement.setString(1, playerUuid);
+				statement.setInt(2, serverId);
+				statement.setInt(3, subHomeId);
+				statement.setString(4, subHome.name);
+				statement.setInt(5, (int) subHomeLocation.getX());
+				statement.setInt(6, (int) subHomeLocation.getY());
+				statement.setInt(7, (int) subHomeLocation.getZ());
+				statement.setString(8, subHomeLocation.getWorld().getName());
+
+				statement.executeUpdate();
+			}
 		}
 	}
 
@@ -272,7 +278,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 			updatePlayerDataColumns(localStatement);
 			updatePlayerMineStack(localStatement);
 			updateGridTemplate(localStatement);
-			updateSubHome(localStatement);
+			updateSubHome();
 			updateActiveSkillEffectUnlockState(localStatement);
 			updateActiveSkillPremiumEffectUnlockState(localStatement);
 			return Ok;

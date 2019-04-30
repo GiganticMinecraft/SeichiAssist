@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
                                                 final Set<String> effectColumnNames) {
         effectColumnNames.forEach(effectName -> {
             try (Statement statement = connection.createStatement()) {
-                final String copyQuery = "insert into " + newTableName + "(player_uuid, effect_name) " +
-                        "select uuid as player_uuid, " + effectName + " as effect_name where " + effectName;
+                final String copyQuery = "insert ignore into " + newTableName + "(player_uuid, effect_name) " +
+                        "select uuid as player_uuid, '" + effectName + "' as effect_name from playerdata where " + effectName;
                 statement.executeUpdate(copyQuery);
 
                 // 削除

@@ -13,8 +13,9 @@ import java.util.stream.Collectors;
         targetObjectNames.forEach(mineStackObjectName -> {
             try (Statement statement = connection.createStatement()) {
                 final String copyQuery = "insert into mine_stack(player_uuid, object_name, amount) select " +
-                        "uuid as player_uuid, " + mineStackObjectName + " as object_name " +
-                        "stack_" + mineStackObjectName + " as amount from playerdata";
+                        "uuid as player_uuid, '" + mineStackObjectName + "' as object_name, " +
+                        "stack_" + mineStackObjectName + " as amount from playerdata " +
+                        "where stack_" + mineStackObjectName + " != 0";
 
                 statement.executeUpdate(copyQuery);
 

@@ -1,46 +1,56 @@
 package com.github.unchama.seichiassist.database.migration.V1_1_0;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.sql.*;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /* package-private */ class SubHomeMigration implements Migration {
     /* package-private */ SubHomeMigration() {}
 
-    private static void copySubHomeColumns(final Statement statement, final String serverId) throws SQLException {
+    private static void copySubHomeColumns(final Connection connection, final String serverId) throws SQLException {
         final String homePointColumnName = "homepoint_" + serverId;
         final String subHomeNameColumnName = "subhome_name_" + serverId;
         final String selectQuery =
-                "select uuid, " + homePointColumnName + ", " + subHomeNameColumnName + " from playerdata";
+                "select uuid, " + homePointColumnName + ", " + subHomeNameColumnName + " from playerdata " +
+                "where " + homePointColumnName + " is not null";
 
-        final ResultSet homePointDataRow = statement.executeQuery(selectQuery);
+        final HashSet<SubHomeDTO> subHomes = new HashSet<>();
+        try (final ResultSet homePointResultSet = connection.createStatement().executeQuery(selectQuery)) {
+            while (homePointResultSet.next()) {
+                final String uuid = homePointResultSet.getString("uuid");
+                final @NotNull String homePointRawData = homePointResultSet.getString(homePointColumnName);
+                final @Nullable String subHomeNameRawData = homePointResultSet.getString(subHomeNameColumnName);
 
-        while (homePointDataRow.next()) {
-            final String uuid = homePointDataRow.getString("uuid");
-            final String homePointRawData = homePointDataRow.getString(homePointColumnName);
-            final String subHomeNameRawData = homePointDataRow.getString(subHomeNameColumnName);
+                final SubHomeDTOParser parser = new SubHomeDTOParser(uuid, serverId);
 
-            final SubHomeDTOParser parser = new SubHomeDTOParser(uuid, serverId);
-            for (SubHomeDTO subHomeDTO : parser.parseRawDataAndFilterUndefineds(homePointRawData, subHomeNameRawData)) {
-                statement.executeQuery(subHomeDTO.generateSingletonInsertionQuery());
+                subHomes.addAll(parser.parseRawDataAndFilterUndefineds(homePointRawData, subHomeNameRawData));
+            }
+        }
+
+        for (SubHomeDTO subHomeDTO : subHomes) {
+            final String templateCommand = subHomeDTO.generateTemplateForInsertionCommand();
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(templateCommand)) {
+                preparedStatement.setString(1, subHomeDTO.name);
+                preparedStatement.execute();
             }
         }
     }
 
     private static void deleteSubHomeColumns(final Statement statement, final String serverId) throws SQLException {
         for (String baseTableName : Arrays.asList("homepoint", "subhome_name")) {
-            statement.executeQuery("alter table playerdata drop column " + baseTableName + "_" + serverId);
+            statement.executeUpdate("alter table playerdata drop column " + baseTableName + "_" + serverId);
         }
     }
 
     private static void migrateSubHomeColumns(final Connection connection, final Set<String> serverIds) {
         serverIds.forEach(serverId -> {
             try (Statement statement = connection.createStatement()) {
-                copySubHomeColumns(statement, serverId);
+                copySubHomeColumns(connection, serverId);
                 deleteSubHomeColumns(statement, serverId);
             } catch (SQLException e) {
                 e.printStackTrace();

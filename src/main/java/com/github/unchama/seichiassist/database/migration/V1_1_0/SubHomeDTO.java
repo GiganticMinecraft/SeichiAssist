@@ -3,9 +3,6 @@ package com.github.unchama.seichiassist.database.migration.V1_1_0;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * サブホームの情報を含むData Transfer Objectのクラス
  */
@@ -13,7 +10,7 @@ import java.util.List;
     private final @NotNull String id;
     private final @NotNull String playerUuid;
     private final @NotNull String serverId;
-    private final @Nullable String name;
+    public final @Nullable String name;
     private final @NotNull String xCoordinate;
     private final @NotNull String yCoordinate;
     private final @NotNull String zCoordinate;
@@ -37,16 +34,11 @@ import java.util.List;
         this.worldName = worldName;
     }
 
-    /* package-private */ String generateSingletonInsertionQuery() {
-        final List<String> record =
-                Arrays.asList(
-                        playerUuid, serverId, id,
-                        name == null ? "null" : name,
-                        xCoordinate, yCoordinate, zCoordinate, worldName
-                );
-
+    /* package-private */ String generateTemplateForInsertionCommand() {
         return "insert into sub_home " +
                 "(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name) " +
-                "values (" + String.join(", ", record) + ")";
+                "values ('" + playerUuid + "', " + serverId + ", " + id + ", " +
+                "?, " + xCoordinate + ", " + yCoordinate + ", " + zCoordinate + ", '" + worldName + "')";
     }
+
 }
