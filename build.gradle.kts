@@ -13,12 +13,8 @@ version = "1.0.0-SNAPSHOT"
 description = """ギガンティック☆整地鯖の独自要素を司るプラグイン"""
 
 project.sourceSets {
-    getByName("main") {
-        java.srcDir("src/main/java")
-    }
-    getByName("test") {
-        java.srcDir("src/test/java")
-    }
+    getByName("main") { java.srcDir("src/main/java") }
+    getByName("test") { java.srcDir("src/test/java") }
 }
 
 repositories {
@@ -29,6 +25,10 @@ repositories {
     maven { url = URI("https://repo.maven.apache.org/maven2") }
 }
 
+val embed: Configuration by configurations.creating
+
+configurations.implementation { extendsFrom(embed) }
+
 dependencies {
     implementation(fileTree(mapOf("dir" to "localDependencies", "include" to arrayOf("*.jar"))))
 
@@ -37,12 +37,14 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
     testImplementation("junit:junit:4.4")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.4.2")
+
+    embed("org.flywaydb:flyway-core:5.2.4")
 }
 
 tasks.processResources {
     filteringCharset = "UTF-8"
     from(sourceSets.main.get().resources.srcDirs) {
-        include("**/*.yml")
+        include("**")
 
         val tokenReplacementMap = mapOf(
                 "version" to project.version,
@@ -52,4 +54,11 @@ tasks.processResources {
         filter<ReplaceTokens>("tokens" to tokenReplacementMap)
     }
     from(projectDir) { include("LICENSE") }
+}
+
+tasks.jar {
+    // Configurationをコピーしないと変更を行っているとみなされて怒られる
+    val embedConfiguration = embed.copy()
+
+    from(embedConfiguration.map { if (it.isDirectory) it else zipTree(it) })
 }

@@ -1,24 +1,9 @@
 package com.github.unchama.seichiassist.data;
 
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import com.github.unchama.seichiassist.Worlds;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.Statistic;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Worlds;
+import com.github.unchama.seichiassist.data.subhome.SubHome;
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent;
 import com.github.unchama.seichiassist.minestack.MineStackHistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
@@ -27,6 +12,15 @@ import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class PlayerData {
@@ -145,11 +139,9 @@ public class PlayerData {
 	//インベントリ共有ボタン連打防止用
 	public boolean shareinvcooldownflag;
 
-	//サブのホームポイント
-	private Location[] sub_home = new Location[SeichiAssist.config.getSubHomeMax()];
 	public int selectHomeNum;
 	public int setHomeNameNum;
-	public String[] subhome_name = new String[SeichiAssist.config.getSubHomeMax()];
+	private HashMap<Integer, SubHome> subHomeMap = new HashMap<>();
 	public boolean isSubHomeNameChange;
 
 	//LV・二つ名表示切替用
@@ -294,11 +286,6 @@ public class PlayerData {
 		this.starlevel_Time = 0 ;
 		this.starlevel_Event = 0 ;
 
-		for (int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
-//			this.sub_home[x] = new Location(null, 0, 0, 0);
-			this.sub_home[x] = null;
-			this.subhome_name[x] = "サブホームポイント" + (x+1);
-		}
 		this.build_lv = 1;
 		this.build_count = BigDecimal.ZERO;
 		this.build_count_flg = 0;
@@ -313,10 +300,6 @@ public class PlayerData {
 		this.canCreateRegion = true;
 		this.unitPerClick = 1;
 		this.templateMap = new HashMap<>();
-		for (int i = 0; i <= config.getTemplateKeepAmount() - 1; i++) {
-			this.templateMap.put(i, new GridTemplate(0, 0, 0, 0));
-		}
-
 		this.usingVotingFairy = false;
 		this.hasVotingFairyMana = 0;
 		this.VotingFairyRecoveryValue = 0;
@@ -710,79 +693,40 @@ public class PlayerData {
 		}
 	}
 
-
-
 	//サブホームの位置をセットする
-	public void SetSubHome(Location l,int x){
-		if(x >= 0 & x < SeichiAssist.config.getSubHomeMax() ){
-			this.sub_home[x] = l;
+	public void setSubHomeLocation(Location location, int subHomeIndex) {
+		if(subHomeIndex >= 0 & subHomeIndex < SeichiAssist.config.getSubHomeMax()) {
+			final @Nullable SubHome currentSubHome = this.subHomeMap.get(subHomeIndex);
+			final @Nullable String currentSubHomeName =
+					currentSubHome != null ? currentSubHome.name : null;
+
+			this.subHomeMap.put(subHomeIndex, new SubHome(location, currentSubHomeName));
 		}
 	}
 
-	//サブホームの位置を読み込む
-	public Location GetSubHome(int x){
-		if(x >= 0 & x < SeichiAssist.config.getSubHomeMax() ){
-			return this.sub_home[x];
-		}else{
-			return null;
-		}
-	}
-
-	//文字列からサブデータを読み込む（DB用）
-	public void SetSubHome(String str){
-		String[] s = str.split(",", -1);
-		for( int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
-			if (s.length < x*4+3){
-				break;
-			}
-//			if(s[x*4] != "" && s[x*4+1] != "" && s[x*4+2] != "" && s[x*4+3] != ""){	//未設定項目を飛ばす　何故かうまく動かない
-			if(s[x*4].length() > 0 && s[x*4+1].length() > 0 && s[x*4+2].length() > 0 && s[x*4+3].length() > 0 ){
-
-				Location l = new Location( Bukkit.getWorld(s[x*4+3]) , Integer.parseInt(s[x*4]) , Integer.parseInt(s[x*4+1]) , Integer.parseInt(s[x*4+2]) );
-				this.sub_home[x] = l;
+	public void setSubHomeName(@Nullable String name, int subHomeIndex) {
+		if(subHomeIndex >= 0 & subHomeIndex < SeichiAssist.config.getSubHomeMax()) {
+			final @Nullable SubHome currentSubHome = this.subHomeMap.get(subHomeIndex);
+			if (currentSubHome != null) {
+				this.subHomeMap.put(subHomeIndex, new SubHome(currentSubHome.getLocation(), name));
 			}
 		}
 	}
 
-	//サブホームデータを文字列で返す（DB用）
-	public String SubHomeToString(){
-		String s = "";
-		for( int x = 0 ; x < SeichiAssist.config.getSubHomeMax() ; x++){
-			if (this.sub_home[x] == null || sub_home[x].getWorld() == null){
-				//設定されてない場合
-				s += ",,,,";
-			}else{
-				//設定されてる場合
-				s += (int) sub_home[x].getX() +",";
-				s += (int) sub_home[x].getY() +",";
-				s += (int) sub_home[x].getZ() +",";
-				s += sub_home[x].getWorld().getName() +",";
-			}
-		}
-		return s;
+	// サブホームの位置を読み込む
+	public @Nullable Location getSubHomeLocation(int subHomeIndex){
+		final @Nullable SubHome subHome = this.subHomeMap.get(subHomeIndex);
+		return subHome != null ? subHome.getLocation() : null;
 	}
 
-	public void setSubHomeName(String s){
-		if (s == null) {
-			//SQL初期化時(つまりサーバーに導入時)必ず入力がカラムの内容がnullになるためその対策
-			return;
-		}
-		try {
-			byte[] bytes = Hex.decodeHex(s.toCharArray());
-			String str = new String(bytes,StandardCharsets.UTF_8);
-			String[] strs = str.split(",");
-			System.arraycopy(strs, 0, this.subhome_name, 0, strs.length);
-		} catch (DecoderException e) {
-			e.printStackTrace();
-		}
+	public @NotNull String getSubHomeName(int subHomeIndex) {
+		final @Nullable SubHome subHome = this.subHomeMap.get(subHomeIndex);
+		final @Nullable String subHomeName = subHome != null ? subHome.name : null;
+		return subHomeName != null ? subHomeName : "サブホームポイント" + subHomeIndex;
 	}
 
-	public String SubHomeNameToString(){
-		byte[] sbyte;
-		String str = String.join(",", this.subhome_name);
-		sbyte = str.getBytes(StandardCharsets.UTF_8);
-		String result = new String(Hex.encodeHex(sbyte));
-		return result;
+	public @NotNull Set<Map.Entry<Integer, SubHome>> getSubHomeEntries() {
+		return subHomeMap.entrySet();
 	}
 
 	public void build_count_flg_set(byte x){
