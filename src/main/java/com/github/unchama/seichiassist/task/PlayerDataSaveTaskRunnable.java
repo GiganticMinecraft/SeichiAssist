@@ -71,9 +71,10 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 			final SubHome subHome = subHomeEntry.getValue();
 			final Location subHomeLocation = subHome.getLocation();
 
-			final String template = "insert into seichiassist.sub_home set "
-					+ "player_uuid = ?, server_id = ?, id = ?, name = ?, location_x = ?, location_y = ?, "
-					+ "location_z = ?, world_name = ?";
+			final String template = "insert into seichiassist.sub_home"
+					+ "(player_uuid,server_id,id,name,location_x,location_y,location_z,world_name) values"
+					+ "(?,?,?,?,?,?,?,?) "
+					+ "on duplicate key update amount = values(name,location_x,location_y,location_z,world_name)";
 
 			try (PreparedStatement statement = databaseGateway.con.prepareStatement(template)) {
 				statement.setString(1, playerUuid);
