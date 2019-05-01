@@ -1,36 +1,14 @@
 package com.github.unchama.seichiassist.listener;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
-import net.md_5.bungee.api.ChatColor;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
-
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RegionMenuData;
-import com.github.unchama.seichiassist.util.ExternalPlugins;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.Direction;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
