@@ -39,6 +39,7 @@ public class Text {
      * @param chatColors 文字に色をつけたい時の {@link ChatColor}
      * @return {@link Text}
      */
+    @Nonnull
     public static Text of(@Nonnull final String string, @Nonnull final ChatColor... chatColors) {
         Text text = Text.of(string);
         List<ChatColor> colors = Arrays.asList(chatColors);
@@ -46,8 +47,21 @@ public class Text {
         return text;
     }
 
+    @Nonnull
     public static Text of() {
         return Text.of("");
+    }
+
+    /**
+     * {@link Text} を連結させて新しい {@link Text} を作成します.
+     *
+     * @param another_text 連結させる {@link Text}
+     * @return 新しい {@link Text}
+     */
+    @Nonnull
+    public Text also(@Nonnull Text another_text) {
+        requireNonNull(another_text);
+        return Text.of(this.string + another_text.stringValue());
     }
 
     /**
@@ -63,10 +77,12 @@ public class Text {
      * 元の {@link String} を取り出し(アンラップ)します.
      * @return アンラップした {@link String}
      */
+    @Nonnull
     public String stringValue() {
         return this.string;
     }
 
+    @Nonnull
     public static List<String> toStringList(@Nonnull List<Text> texts) {
         requireNonNull(texts);
         List<String> strings = new ArrayList<>();
