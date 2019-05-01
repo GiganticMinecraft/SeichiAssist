@@ -36,6 +36,8 @@ public class PlayerData {
 	public String name;
 	//UUID
 	public UUID uuid;
+	//Player
+    public Player player;
 	//エフェクトのフラグ
 	public int effectflag;
 	//内訳メッセージを出すフラグ
@@ -233,6 +235,7 @@ public class PlayerData {
 		this.loaded = false;
 		this.name = Util.getName(player);
 		this.uuid = player.getUniqueId();
+		this.player = player;
 		this.effectflag = 0;
 		this.messageflag = false;
 		//this.minuteblock = new MineBlock();
