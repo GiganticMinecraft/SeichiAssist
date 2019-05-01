@@ -72,7 +72,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 			final Location subHomeLocation = subHome.getLocation();
 
 			final String template = "insert into seichiassist.sub_home set "
-					+ "player_id = ?, server_id = ?, id = ?, name = ?, location_x = ?, location_y = ?, "
+					+ "player_uuid = ?, server_id = ?, id = ?, name = ?, location_x = ?, location_y = ?, "
 					+ "location_z = ?, world_name = ?";
 
 			try (PreparedStatement statement = databaseGateway.con.prepareStatement(template)) {
