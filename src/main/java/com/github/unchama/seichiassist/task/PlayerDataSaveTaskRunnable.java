@@ -103,7 +103,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 			final String updateCommand = "insert into seichiassist.grid_template set " +
 					"id = " + gridTemplateId + ", " +
-					"designer_uuid = " + playerUuid + ", " +
+					"designer_uuid = '" + playerUuid + "', " +
 					"ahead_length = "  + gridTemplate.getAheadAmount()  + ", " +
 					"behind_length = " + gridTemplate.getBehindAmount() + ", " +
 					"right_length = "  + gridTemplate.getRightAmount()  + ", " +
