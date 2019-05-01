@@ -227,7 +227,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 				playerdata.totalexp = rs.getInt("totalexp");
 
 				playerdata.expmarge = rs.getByte("expmarge");
-				playerdata.shareinv = (!rs.getString("shareinv").equals("") && rs.getString("shareinv") != null);
+				playerdata.shareinv = (!("".equals(rs.getString("shareinv"))) && rs.getString("shareinv") != null);
 				playerdata.everysoundflag = rs.getBoolean("everysound");
 				playerdata.everymessageflag = rs.getBoolean("everymessage");
 
