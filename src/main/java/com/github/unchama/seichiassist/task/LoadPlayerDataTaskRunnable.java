@@ -296,7 +296,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 				//連続投票の更新
 				String lastvote = rs.getString("lastvote");
-				if (lastvote.equals("") || lastvote == null) {
+				if ("".equals(lastvote) || lastvote == null) {
 					playerdata.ChainVote = 0;
 				} else {
 					try {
