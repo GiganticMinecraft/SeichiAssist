@@ -599,6 +599,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackBuildObj("gray_glazed_terracotta","灰色の彩釉テラコッタ",1,Material.GRAY_GLAZED_TERRACOTTA,0)
 			,new MineStackBuildObj("silver_glazed_terracotta","薄灰色の彩釉テラコッタ",1,Material.SILVER_GLAZED_TERRACOTTA,0)
 			,new MineStackBuildObj("cyan_glazed_terracotta","青緑色の彩釉テラコッタ",1,Material.CYAN_GLAZED_TERRACOTTA,0)
+		        ,new MineStackBuildObj("purple_glazed_terracotta","紫色の彩釉テラコッタ",1,Material.PURPLE_GLAZED_TERRACOTTA,0)
 			,new MineStackBuildObj("blue_glazed_terracotta","青色の彩釉テラコッタ",1,Material.BLUE_GLAZED_TERRACOTTA,0)
 			,new MineStackBuildObj("brown_glazed_terracotta","茶色の彩釉テラコッタ",1,Material.BROWN_GLAZED_TERRACOTTA,0)
 			,new MineStackBuildObj("green_glazed_terracotta","緑色の彩釉テラコッタ",1,Material.GREEN_GLAZED_TERRACOTTA,0)

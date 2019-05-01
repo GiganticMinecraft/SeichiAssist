@@ -227,7 +227,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 				playerdata.totalexp = rs.getInt("totalexp");
 
 				playerdata.expmarge = rs.getByte("expmarge");
-				playerdata.shareinv = (!rs.getString("shareinv").equals("") && rs.getString("shareinv") != null);
+				playerdata.shareinv = (!("".equals(rs.getString("shareinv"))) && rs.getString("shareinv") != null);
 				playerdata.everysoundflag = rs.getBoolean("everysound");
 				playerdata.everymessageflag = rs.getBoolean("everymessage");
 
@@ -296,7 +296,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 
 				//連続投票の更新
 				String lastvote = rs.getString("lastvote");
-				if (lastvote.equals("") || lastvote == null) {
+				if ("".equals(lastvote) || lastvote == null) {
 					playerdata.ChainVote = 0;
 				} else {
 					try {

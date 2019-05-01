@@ -71,9 +71,15 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 			final SubHome subHome = subHomeEntry.getValue();
 			final Location subHomeLocation = subHome.getLocation();
 
-			final String template = "insert into seichiassist.sub_home set "
-					+ "player_id = ?, server_id = ?, id = ?, name = ?, location_x = ?, location_y = ?, "
-					+ "location_z = ?, world_name = ?";
+			final String template = "insert into seichiassist.sub_home"
+					+ "(player_uuid,server_id,id,name,location_x,location_y,location_z,world_name) values "
+					+ "(?,?,?,?,?,?,?,?) "
+					+ "on duplicate key update "
+					+ "name = values(name), "
+					+ "location_x = values(location_x), "
+					+ "location_y = values(location_y), "
+					+ "location_z = values(location_z), "
+					+ "world_name = values(world_name)";
 
 			try (PreparedStatement statement = databaseGateway.con.prepareStatement(template)) {
 				statement.setString(1, playerUuid);
@@ -103,7 +109,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 
 			final String updateCommand = "insert into seichiassist.grid_template set " +
 					"id = " + gridTemplateId + ", " +
-					"designer_uuid = " + playerUuid + ", " +
+					"designer_uuid = '" + playerUuid + "', " +
 					"ahead_length = "  + gridTemplate.getAheadAmount()  + ", " +
 					"behind_length = " + gridTemplate.getBehindAmount() + ", " +
 					"right_length = "  + gridTemplate.getRightAmount()  + ", " +
