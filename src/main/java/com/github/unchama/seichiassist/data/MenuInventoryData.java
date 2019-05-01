@@ -650,7 +650,7 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "GT景品→椎名林檎変換システム");
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "不必要なGT大当り景品を"
 				, ChatColor.RESET + "" + ChatColor.GOLD + "椎名林檎" + ChatColor.RESET + ChatColor.GREEN + "と交換できます"
-				, ChatColor.RESET + "" +  ChatColor.GREEN + "出てきたインベントリ―に"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "出てきたインベントリーに"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "交換したい景品を入れて"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "escキーを押してください"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "たまにアイテムが消失しますが"
@@ -670,7 +670,7 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "限定タイタン修繕システム");
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "不具合によりテクスチャが反映されなくなってしまった"
 				, ChatColor.RESET + "" + ChatColor.GOLD + "ホワイトデーイベント限定タイタン" + ChatColor.RESET + ChatColor.GREEN + "を修繕できます"
-				, ChatColor.RESET + "" +  ChatColor.GREEN + "出てきたインベントリ―に"
+				, ChatColor.RESET + "" +  ChatColor.GREEN + "出てきたインベントリーに"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "修繕したいタイタンを入れて"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "escキーを押してください"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "たまにアイテムが消失しますが"
