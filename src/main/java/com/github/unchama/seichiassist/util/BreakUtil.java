@@ -8,14 +8,7 @@ import java.util.Set;
 
 import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import net.coreprotect.CoreProtectAPI;
-
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Effect;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Statistic;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
@@ -26,12 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Dye;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.Coordinate;
-import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.util.*;
 
 public final class BreakUtil {
 	private BreakUtil() {
@@ -197,42 +185,37 @@ public final class BreakUtil {
 
 		int i;
 		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
-			if(material.equals(SeichiAssist.minestacklist.get(i).getMaterial()) &&
-				itemstack.getDurability() == SeichiAssist.minestacklist.get(i).getDurability()){
+			final MineStackObj mineStackObj = SeichiAssist.minestacklist.get(i);
+			if(material.equals(mineStackObj.getMaterial()) &&
+				itemstack.getDurability() == mineStackObj.getDurability()){
 				//この時点でIDとサブIDが一致している
-				if(SeichiAssist.minestacklist.get(i).getNameloreflag()==false && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
-					if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+				if(!mineStackObj.getNameloreflag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
+					if(playerdata.level < config.getMineStacklevel(mineStackObj.getLevel())){
 						//レベルを満たしていない
 						return false;
 					} else {
-						playerdata.minestack.addNum(i, amount);
-						//delete_flag=true;
+						playerdata.minestack.addStackedAmountOf(mineStackObj, amount);
 						break;
 					}
-				} else if(SeichiAssist.minestacklist.get(i).getNameloreflag()==true && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
+				} else if(mineStackObj.getNameloreflag() && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
 					//名前・説明文付き
 					ItemMeta meta = itemstack.getItemMeta();
-					/*
-					if(meta==null || meta.getDisplayName()==null || meta.getLore()== null){
-						return;
-					}
-					*/
 					//この時点で名前と説明文がある
-						if(SeichiAssist.minestacklist.get(i).getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
+						if(mineStackObj.getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
 							if( !(meta.getDisplayName().equals(Util.getGachaRingoName()))
 								|| !(meta.getLore().equals(Util.getGachaRingoLore())) ){
 								return false;
 							}
-							if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+							if(playerdata.level < config.getMineStacklevel(mineStackObj.getLevel())){
 								//レベルを満たしていない
 								return false;
 							} else {
-								playerdata.minestack.addNum(i, amount);
+								playerdata.minestack.addStackedAmountOf(mineStackObj, amount);
 								break;
 							}
 						} else {
 							//ガチャ品
-							MineStackGachaData g = SeichiAssist.msgachadatalist.get(SeichiAssist.minestacklist.get(i).getGachatype());
+							MineStackGachaData g = SeichiAssist.msgachadatalist.get(mineStackObj.getGachatype());
 							String name = playerdata.name; //プレイヤーのネームを見る
 							if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
 								if(!Util.ItemStackContainsOwnerName(itemstack, name)){
@@ -247,11 +230,11 @@ public final class BreakUtil {
 								//gachadata.itemstack.isSimilar(itemstack)でスタックサイズ以外が一致しているか判定可能
 								//continue; //アイテムの中身が違う
 							} else { //中身が同じ場合のみここに入る
-								if(playerdata.level < config.getMineStacklevel(SeichiAssist.minestacklist.get(i).getLevel())){
+								if(playerdata.level < config.getMineStacklevel(mineStackObj.getLevel())){
 									//レベルを満たしていない
 									return false;
 								} else {
-									playerdata.minestack.addNum(i, amount);
+									playerdata.minestack.addStackedAmountOf(mineStackObj, amount);
 									//delete_flag=true;
 									break;
 								}

@@ -1,16 +1,16 @@
 package com.github.unchama.seichiassist.database;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.database.init.DatabaseTableInitializer;
 import com.github.unchama.seichiassist.database.manipulators.DonateDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.GachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.MineStackGachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.PlayerDataManipulator;
 import com.github.unchama.util.ActionStatus;
+import com.github.unchama.util.ClassUtils;
 import com.github.unchama.util.Unit;
 import com.github.unchama.util.failable.FailableAction;
 import com.github.unchama.util.failable.Try;
-import com.github.unchama.util.failable.TryWithoutFailValue;
+import org.flywaydb.core.Flyway;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
@@ -130,27 +130,16 @@ public class DatabaseGateway {
 	}
 
 	/**
-	 * データベース作成
-	 *
-	 * @return 成否
-	 */
-	private ActionStatus createDB(){
-		String command = "CREATE DATABASE IF NOT EXISTS " + databaseName + " character set utf8 collate utf8_general_ci";
-		return executeUpdate(command);
-	}
-
-	/**
 	 * 接続関数
 	 */
-	private ActionStatus connectToAndInitializeDatabase() {
+	private ActionStatus connectToDatabase() {
 		return Try
 				.sequence(
 						new FailableAction<>(
 								"Mysqlドライバーのインスタンス生成に失敗しました",
 								this::createDatabaseDriverInstance
 						),
-						new FailableAction<>("SQL接続に失敗しました", this::establishMySQLConnection),
-						new FailableAction<>("データベース作成に失敗しました", this::createDB)
+						new FailableAction<>("SQL接続に失敗しました", this::establishMySQLConnection)
 				)
 				.mapFailed(failedMessage -> { plugin.getLogger().info(failedMessage); return Unit.instance; })
 				.overallStatus();
@@ -160,15 +149,27 @@ public class DatabaseGateway {
 															@NotNull String databaseName,
 															@NotNull String loginId,
 															@NotNull String password) {
+		/*
+		 * Flywayクラスは、ロード時にstaticフィールドの初期化処理でJavaUtilLogCreatorをContextClassLoader経由で
+		 * インスタンス化を試みるが、ClassNotFoundExceptionを吐いてしまう。これはSpigotが使用しているクラスローダーが
+		 * ContextClassLoaderに指定されていないことに起因する。
+		 *
+		 * 明示的にプラグインクラスを読み込んだクラスローダーを使用することで正常に読み込みが完了する。
+ 		 */
+		ClassUtils.withThreadContextClassLoaderAs(
+				SeichiAssist.class.getClassLoader(),
+				() -> Flyway.configure()
+						.dataSource(databaseUrl, loginId, password)
+						.baselineOnMigrate(true)
+						.locations("db/migration", "com/github/unchama/seichiassist/database/migration")
+						.baselineVersion("1.0.0")
+						.schemas("flyway_managed_schema")
+						.load().migrate()
+		);
+
 		final DatabaseGateway instance = new DatabaseGateway(databaseUrl, databaseName, loginId, password);
-		final DatabaseTableInitializer tableInitializer =
-				new DatabaseTableInitializer(instance, instance.plugin.getLogger(), SeichiAssist.config);
 
-		final ActionStatus initializationStatus = TryWithoutFailValue
-				.sequence(instance::connectToAndInitializeDatabase, tableInitializer::initializeTables)
-				.overallStatus();
-
-		if (initializationStatus == Fail) {
+		if (instance.connectToDatabase() == Fail) {
 			instance.plugin.getLogger().info("データベース初期処理にエラーが発生しました");
 		}
 

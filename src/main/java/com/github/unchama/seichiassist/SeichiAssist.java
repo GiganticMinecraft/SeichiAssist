@@ -766,13 +766,12 @@ public class SeichiAssist extends JavaPlugin{
 
 	);
 
-	private static List<MineStackObj> minestacklistgacha = Arrays.asList(
-
-			//以下ガチャ系アイテム
-			new MineStackGachaObj("gachaimo",Util.getGachaRingoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaRingoLore())
-			,new MineStackGachaObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0)
-
-	);
+	// ガチャ系アイテム
+	// これは後に変更されるのでArrayListでないといけない
+	private static ArrayList<MineStackObj> minestacklistgacha = new ArrayList<>(Arrays.asList(
+			new MineStackGachaObj("gachaimo",Util.getGachaRingoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaRingoLore()),
+			new MineStackGachaObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0)
+	));
 
 	public static List<MineStackObj> minestacklist = null;
 
@@ -867,7 +866,6 @@ public class SeichiAssist extends JavaPlugin{
 			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "config.ymlの設定値を書き換えて再起動してください");
 		}
 
-		//MySQL系の設定はすべてSql.javaに移動
 		// TODO nullチェック
 		databaseGateway = DatabaseGateway.createInitializedInstance(config.getURL(), config.getDB(), config.getID(), config.getPW());
 
@@ -876,17 +874,11 @@ public class SeichiAssist extends JavaPlugin{
 			getLogger().info("ガチャデータのロードに失敗しました");
 		}
 
-		//リスト結合(ガチャ品(ガチャリンゴなど)+ガチャ品(本体))
-		List<MineStackObj> minestacklistgacha1;
-
 		//mysqlからMineStack用ガチャデータ読み込み
 		if (databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) { //MineStack用ガチャデータを読み込んだ
 			getLogger().info("MineStack用ガチャデータのロードに成功しました");
-			minestacklistgacha1 = creategachaminestacklist();
 
-
-			//minestacklist.addAll(minestacklistbase);
-			minestacklistgacha.addAll(minestacklistgacha1);
+			minestacklistgacha.addAll(creategachaminestacklist());
 
 			minestacklist = new ArrayList<>();
 			minestacklist.addAll(minestacklistmine);
@@ -894,17 +886,11 @@ public class SeichiAssist extends JavaPlugin{
 			minestacklist.addAll(minestacklistfarm);
 			minestacklist.addAll(minestacklistbuild);
 			minestacklist.addAll(minestacklistrs);
-
-			Collections.sort(minestacklistgacha);
-
 			minestacklist.addAll(minestacklistgacha);
 
 		} else {
 			getLogger().info("MineStack用ガチャデータのロードに失敗しました");
 		}
-
-
-		//
 
 		//コマンドの登録
 		commandlist = new HashMap<>();

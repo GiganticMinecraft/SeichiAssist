@@ -1,13 +1,13 @@
 package com.github.unchama.seichiassist.data;
 
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.external.ExternalPlugins;
+import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.Util.DirectionType;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -18,14 +18,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.util.Util;
-import com.github.unchama.seichiassist.util.Util.DirectionType;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.bukkit.selections.Selection;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import java.text.NumberFormat;
+import java.util.*;
 
 /**
  * 保護関連メニュー
@@ -373,27 +369,25 @@ public class RegionMenuData {
 	 */
 	private static ItemStack getGridtempMenuicon(int i, Player player) {
 		PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
-		Map<Integer, GridTemplate> templateMap = playerData.getTemplateMap();
+		@Nullable GridTemplate template = playerData.getTemplateMap().get(i);
 
-		if (templateMap.get(i).isEmpty()) {
+		if (template != null) {
+			List<String> lore = new ArrayList<>();
+			lore.add(ChatColor.GREEN + "設定内容");
+			lore.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + template.getAheadAmount() + ChatColor.GRAY + "ユニット");
+			lore.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + template.getBehindAmount() + ChatColor.GRAY + "ユニット");
+			lore.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + template.getRightAmount() + ChatColor.GRAY + "ユニット");
+			lore.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + template.getLeftAmount() + ChatColor.GRAY + "ユニット");
+			lore.add(ChatColor.GREEN + "左クリックで設定を読み込み");
+			lore.add(ChatColor.RED + "右クリックで現在の設定で上書き");
+			return Util.getMenuIcon(Material.CHEST, 1,
+					ChatColor.GREEN + "テンプレNo." + (i + 1) + "(設定済)", lore, true);
+		} else {
 			List<String> lore = new ArrayList<>();
 			lore.add(ChatColor.GREEN + "未設定");
 			lore.add(ChatColor.RED + "左クリックで現在の設定を保存");
-			ItemStack menuIcon = Util.getMenuIcon(Material.PAPER, 1,
+			return Util.getMenuIcon(Material.PAPER, 1,
 					ChatColor.RED + "テンプレNo." + (i + 1) , lore, true);
-			return menuIcon;
-		} else {
-			List<String> lore = new ArrayList<>();
-			lore.add(ChatColor.GREEN + "設定内容");
-			lore.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + templateMap.get(i).getAheadAmount() + ChatColor.GRAY + "ユニット");
-			lore.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + templateMap.get(i).getBehindAmount() + ChatColor.GRAY + "ユニット");
-			lore.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + templateMap.get(i).getRightAmount() + ChatColor.GRAY + "ユニット");
-			lore.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + templateMap.get(i).getLeftAmount() + ChatColor.GRAY + "ユニット");
-			lore.add(ChatColor.GREEN + "左クリックで設定を読み込み");
-			lore.add(ChatColor.RED + "右クリックで現在の設定で上書き");
-			ItemStack menuicon = Util.getMenuIcon(Material.CHEST, 1,
-					ChatColor.GREEN + "テンプレNo." + (i + 1) + "(設定済)", lore, true);
-			return menuicon;
 		}
 	}
 }
