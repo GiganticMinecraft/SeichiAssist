@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.Skulls;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -59,7 +60,7 @@ public class ActiveSkillInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				);
 		skullmeta.setLore(lore);
-		skullmeta.setOwner("MHF_ArrowLeft");
+		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(36,itemstack);
 
