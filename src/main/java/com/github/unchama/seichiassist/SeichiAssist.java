@@ -872,6 +872,7 @@ public class SeichiAssist extends JavaPlugin{
 		//mysqlからガチャデータ読み込み
 		if(!databaseGateway.gachaDataManipulator.loadGachaData()){
 			getLogger().info("ガチャデータのロードに失敗しました");
+			Bukkit.shutdown();
 		}
 
 		//mysqlからMineStack用ガチャデータ読み込み
@@ -890,6 +891,7 @@ public class SeichiAssist extends JavaPlugin{
 
 		} else {
 			getLogger().info("MineStack用ガチャデータのロードに失敗しました");
+			Bukkit.shutdown();
 		}
 
 		//コマンドの登録
@@ -939,25 +941,10 @@ public class SeichiAssist extends JavaPlugin{
 			databaseGateway.playerDataManipulator.loadPlayerData(new PlayerData(p));
 		}
 
-		//ランキングデータをセット
-		if(!databaseGateway.playerDataManipulator.setRanking()){
+		//ランキングリストを最新情報に更新する
+		if(!databaseGateway.playerDataManipulator.updateAllRankingList()){
 			getLogger().info("ランキングデータの作成に失敗しました");
-		}
-
-		if(!databaseGateway.playerDataManipulator.setPlayTickRanking()){
-			getLogger().info("ランキングデータの作成に失敗しました");
-		}
-
-		if(!databaseGateway.playerDataManipulator.setVoteNumberRanking()){
-			getLogger().info("ランキングデータの作成に失敗しました");
-		}
-
-		if(!databaseGateway.playerDataManipulator.setPremiumEffectPointRanking()){
-			getLogger().info("ランキングデータの作成に失敗しました");
-		}
-
-		if(!databaseGateway.playerDataManipulator.setAppleNumberRanking()){
-			getLogger().info("ランキングデータの作成に失敗しました");
+			Bukkit.shutdown();
 		}
 
 		//タスクスタート
