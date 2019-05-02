@@ -74,7 +74,7 @@ public class ActiveSkillInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype,playerdata.activeskilldata.skillnum)
 				, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるアクティブスキルポイント：" + playerdata.activeskilldata.skillpoint);
 		skullmeta.setLore(lore);
-		skullmeta.setOwner(playerdata.name);
+		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerdata.uuid));
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(0,itemstack);
 

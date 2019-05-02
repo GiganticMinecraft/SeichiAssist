@@ -114,7 +114,7 @@ public class MenuInventoryData {
 		lore.add("");
 
 		skullmeta.setLore(lore);
-		skullmeta.setOwner(playerdata.name);
+		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerdata.uuid));
 		//ExpBarトグル追加
 		itemstack.setItemMeta(dispExpBarToggleMeta(playerdata,skullmeta));
 		inventory.setItem(0,itemstack);
@@ -276,7 +276,8 @@ public class MenuInventoryData {
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "運営からのガチャ券を受け取る");
 		skullmeta.setLore(SorryGachaGetButtonLore(playerdata));
-		skullmeta.setOwner("whitecat_haru");
+		// whitecat_haru
+		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString("394f76df-883d-4855-9e6a-d1a800c1ab1c")));
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(29,itemstack);
 
@@ -1463,7 +1464,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "総整地量:" + rankdata.totalbreaknum);
 
 			skullmeta.setLore(lore);
-			skullmeta.setOwner(rankdata.name);
+			skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(rankdata.name));
 			itemstack.setItemMeta(skullmeta);
 			inventory.setItem(count2,itemstack);
 		}
@@ -1543,7 +1544,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "総ログイン時間:" + TypeConverter.toTimeString(TypeConverter.toSecond(rankdata.playtick)));
 
 			skullmeta.setLore(lore);
-			skullmeta.setOwner(rankdata.name);
+			skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(rankdata.name));
 			itemstack.setItemMeta(skullmeta);
 			inventory.setItem(count2,itemstack);
 		}
@@ -1626,7 +1627,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "総投票回数:" + rankdata.p_vote);
 
 			skullmeta.setLore(lore);
-			skullmeta.setOwner(rankdata.name);
+			skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(rankdata.name));
 			itemstack.setItemMeta(skullmeta);
 			inventory.setItem(count2,itemstack);
 		}
@@ -1707,7 +1708,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "総寄付金額:" + rankdata.premiumeffectpoint*100);
 
 			skullmeta.setLore(lore);
-			skullmeta.setOwner(rankdata.name);
+			skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(rankdata.name));
 			itemstack.setItemMeta(skullmeta);
 			inventory.setItem(count2,itemstack);
 		}
@@ -1809,7 +1810,8 @@ public class MenuInventoryData {
 
 						);
 				skullmeta.setLore(lore);
-				skullmeta.setOwner(playerdata.name);
+				// この操作は安全; メニューを開けているのにUUIDがないなんてことがないから
+				skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerdata.uuid)); //.setOwner(playerdata.name);
 				itemstack.setItemMeta(skullmeta);
 				inventory.setItem(0,itemstack);
 
