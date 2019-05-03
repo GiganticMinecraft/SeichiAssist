@@ -59,7 +59,8 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
     /**
      * ItemStack(ItemStackBuilder)のloreを設定します.
      *
-     * @param lore PlayerDataを受け取り,loreを返すFunction
+     * @param lore loreの {@link List}
+     *             {@link List} に {@code null} が含まれていた場合,その行は無視されます.
      * @return このBuilder
      */
     @Nonnull

@@ -65,7 +65,7 @@ public class MenuInventoryData {
 
 
 
-		int prank = playerdata.playerRankingPosition(player);
+		int prank = playerdata.playerRankingPosition();
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);

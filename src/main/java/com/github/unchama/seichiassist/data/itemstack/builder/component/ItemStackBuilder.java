@@ -25,6 +25,7 @@ public interface ItemStackBuilder {
      * ItemStack(ItemStackBuilder)のloreを設定します.
      *
      * @param lore PlayerDataを受け取り,loreを返すFunction
+     *             {@link List} に {@code null} が含まれていた場合,その行は無視されます.
      * @return このBuilder
      */
     @Nonnull

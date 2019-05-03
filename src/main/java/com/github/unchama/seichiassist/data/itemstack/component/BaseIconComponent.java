@@ -12,7 +12,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.github.unchama.seichiassist.text.Text.toStringList;
 import static java.util.Objects.requireNonNull;
@@ -59,11 +61,17 @@ public class BaseIconComponent {
         return lore;
     }
 
+    /**
+     * @param lore {@link List} として渡された要素に {@code null} が含まれていた場合,無視されます.
+     */
     public void setLore(@Nonnull Function<PlayerData, List<Text>> lore) {
         requireNonNull(lore);
         this.lore = lore;
     }
 
+    /**
+     * @param lore {@link List} として渡された要素に {@code null} が含まれていた場合,無視されます.
+     */
     public void setLore(@Nonnull List<Text> lore) {
         requireNonNull(lore);
         setLore(playerData -> lore);
@@ -92,7 +100,8 @@ public class BaseIconComponent {
         requireNonNull(playerData);
         ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
         meta.setDisplayName(title.apply(playerData).stringValue());
-        meta.setLore(toStringList(lore.apply(playerData)));
+        List<Text> collectLore = lore.apply(playerData).stream().filter(Objects::nonNull).collect(Collectors.toList());
+        meta.setLore(toStringList(collectLore));
 
         if (isEnchanted) {
             meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
