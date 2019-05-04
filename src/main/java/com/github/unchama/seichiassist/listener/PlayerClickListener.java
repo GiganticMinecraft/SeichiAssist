@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.data.menus.StickMenu;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -525,11 +526,12 @@ public class PlayerClickListener implements Listener {
 				}
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				Inventory inv = MenuInventoryData.getMenuData(player);
+				/*Inventory inv = MenuInventoryData.getMenuData(player);
 				if(inv == null){
 					return;
 				}
-				player.openInventory(inv);
+				player.openInventory(inv);*/
+                StickMenu.stickMenu.open(player);
 			}
 		}
 	}
