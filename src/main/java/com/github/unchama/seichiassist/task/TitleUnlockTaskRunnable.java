@@ -46,7 +46,7 @@ public class TitleUnlockTaskRunnable {
 		if(TryTitleNo == 1001){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) == 1){
+				if(playerdata.playerRankingPosition() == 1){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1001解除！おめでとうございます！");
@@ -55,7 +55,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 1002){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) < 6){
+				if(playerdata.playerRankingPosition() < 6){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1002解除！おめでとうございます！");
@@ -64,7 +64,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 1003){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) < 28){
+				if(playerdata.playerRankingPosition() < 28){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1003解除！おめでとうございます！");
@@ -73,7 +73,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 1004){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) < 51){
+				if(playerdata.playerRankingPosition() < 51){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1004解除！おめでとうございます！");
@@ -82,7 +82,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 1010){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) < 101){
+				if(playerdata.playerRankingPosition() < 101){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1010解除！おめでとうございます！");
@@ -91,7 +91,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 1011){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) < 251){
+				if(playerdata.playerRankingPosition() < 251){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1011解除！おめでとうございます！");
@@ -100,7 +100,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 1012){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) < 501){
+				if(playerdata.playerRankingPosition() < 501){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1012解除！おめでとうございます！");
@@ -109,7 +109,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 1005){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) < 751){
+				if(playerdata.playerRankingPosition() < 751){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1005解除！おめでとうございます！");
@@ -118,7 +118,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 1006){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) < 1001){
+				if(playerdata.playerRankingPosition() < 1001){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1006解除！おめでとうございます！");
@@ -127,7 +127,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 1007){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) < 2501){
+				if(playerdata.playerRankingPosition() < 2501){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1007解除！おめでとうございます！");
@@ -136,7 +136,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 1008){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) < 5001){
+				if(playerdata.playerRankingPosition() < 5001){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1008解除！おめでとうございます！");
@@ -145,7 +145,7 @@ public class TitleUnlockTaskRunnable {
 		}else if(TryTitleNo == 1009){
 			if(!playerdata.TitleFlags.get(TryTitleNo)){
 				//解除処理
-				if(playerdata.playerRankingPosition(player) < 10001){
+				if(playerdata.playerRankingPosition() < 10001){
 				//解禁時のフラグ変更処理
 				playerdata.TitleFlags.set(TryTitleNo);
 				player.sendMessage("実績No1009解除！おめでとうございます！");
