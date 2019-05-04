@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.data.slot.button.ButtonBuilder;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
 import com.github.unchama.seichiassist.data.slot.handler.Triggers;
 import com.github.unchama.seichiassist.text.Text;
+import org.bukkit.ChatColor;
 
 /**
  * @author karayuu
@@ -17,7 +18,7 @@ public class PlayerDataButtons {
             SkullItemStackBuilder
                 .of()
                 .playerSkull()
-                .title(data -> Text.of(data.name + "の統計データ"))
+                .title(data -> Text.of(data.name + "の統計データ", ChatColor.BOLD, ChatColor.YELLOW, ChatColor.UNDERLINE))
                 .lore(PlayerData.playerInfoLore)
         )
         .at(0)

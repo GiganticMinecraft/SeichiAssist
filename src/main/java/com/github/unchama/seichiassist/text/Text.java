@@ -43,8 +43,8 @@ public class Text {
     public static Text of(@Nonnull final String string, @Nonnull final ChatColor... chatColors) {
         Text text = Text.of(string);
         List<ChatColor> colors = Arrays.asList(chatColors);
-        text.addBefore(ChatColor.RESET + "");
         colors.forEach(color -> text.addBefore(color + ""));
+        text.addBefore(ChatColor.RESET + "");
         return text;
     }
 
@@ -70,8 +70,8 @@ public class Text {
      *
      * @param string 先頭に追加する文字列 ({@code null} は許容されない)
      */
-    private void addBefore(@Nonnull final String string) {
-        this.string = this.string + string;
+    public void addBefore(@Nonnull final String string) {
+        this.string = string + this.string;
     }
 
     /**
