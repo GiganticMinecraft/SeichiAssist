@@ -3,6 +3,8 @@ package com.github.unchama.seichiassist.data.menus;
 import com.github.unchama.seichiassist.data.button.PlayerDataButtons;
 import com.github.unchama.seichiassist.data.menu.Menu;
 import com.github.unchama.seichiassist.data.menu.chest.ChestMenuBuilder;
+import com.github.unchama.seichiassist.text.Text;
+import org.bukkit.ChatColor;
 
 import javax.annotation.Nonnull;
 
@@ -20,10 +22,11 @@ public class StickMenu {
 
     static {
         stickMenu = ChestMenuBuilder.of()
-                .size(4 * 9)
-                .slots(
-                    PlayerDataButtons.playerInfo
-                )
-                .build();
+                                    .size(4 * 9)
+                                    .title(Text.of("木の棒メニュー", ChatColor.DARK_PURPLE, ChatColor.BOLD))
+                                    .slots(
+                                        PlayerDataButtons.playerInfo
+                                    )
+                                    .build();
     }
 }

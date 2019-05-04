@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.data.menu;
 
 import com.github.unchama.seichiassist.data.slot.Slot;
+import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.event.inventory.InventoryType;
 
 import javax.annotation.Nonnull;
@@ -26,7 +27,7 @@ public abstract class MenuBuilder<T extends MenuBuilder<T>> {
     private int size;
 
     @Nonnull
-    private String title = "";
+    private Text title = Text.of();
 
     protected MenuBuilder(@Nonnull InventoryType type) {
         this.type = requireNonNull(type);
@@ -58,7 +59,7 @@ public abstract class MenuBuilder<T extends MenuBuilder<T>> {
         return (T) this;
     }
 
-    public T title(@Nonnull String title) {
+    public T title(@Nonnull Text title) {
         this.title = requireNonNull(title);
         return (T) this;
     }
@@ -67,7 +68,7 @@ public abstract class MenuBuilder<T extends MenuBuilder<T>> {
         Menu menu = new Menu(type);
         menu.addSlots(slots);
         menu.setSize(size);
-        menu.setTitle(title);
+        menu.setTitle(title.stringValue());
 
         return menu;
     }
