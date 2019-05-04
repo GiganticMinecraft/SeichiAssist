@@ -98,6 +98,7 @@ public class Menu {
             inventory = Bukkit.createInventory(null, type, title);
         }
         slots.forEach(slot -> setSlot(slot, inventory, data));
+        player.openInventory(inventory);
     }
 
     /**
