@@ -27,6 +27,11 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
         this.component = new BaseIconComponent(material);
     }
 
+    protected AbstractItemStackBuilder(@Nonnull Material material, short durability) {
+        requireNonNull(material);
+        this.component = new BaseIconComponent(material, durability);
+    }
+
     @Override
     @Nonnull
     public T title(@Nonnull Function<PlayerData, Text> title) {

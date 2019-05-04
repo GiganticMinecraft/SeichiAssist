@@ -23,6 +23,10 @@ public class ItemStackBuilder extends AbstractItemStackBuilder<ItemStackBuilder>
         super(material);
     }
 
+    private ItemStackBuilder(@Nonnull Material material, short durability) {
+        super(material, durability);
+    }
+
     /**
      * Iconを生成するBuilderを生成します.
      *
@@ -32,6 +36,18 @@ public class ItemStackBuilder extends AbstractItemStackBuilder<ItemStackBuilder>
     public static ItemStackBuilder of(@Nonnull Material material) {
         requireNonNull(material);
         return new ItemStackBuilder(material);
+    }
+
+    /**
+     * Iconを生成するBuilderを生成します.
+     *
+     * @param material ItemStackに設定するMaterial ({@code null} は許容されません)
+     * @param durability ダメージ値
+     */
+    @Nonnull
+    public static ItemStackBuilder of(@Nonnull Material material, short durability) {
+        requireNonNull(material);
+        return new ItemStackBuilder(material, durability);
     }
 
     /**

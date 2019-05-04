@@ -33,12 +33,18 @@ public class BaseIconComponent {
     private Function<PlayerData, List<Text>> lore;
     private Boolean isEnchanted = false;
     private int number = 1;
+    private short durability = 0;
 
     public BaseIconComponent(@Nonnull Material material) {
+        this(material, (short) 0);
+    }
+
+    public BaseIconComponent(@Nonnull Material material, short durability) {
         requireNonNull(material);
         this.material = material;
         this.title = playerData -> Text.of(Bukkit.getItemFactory().getItemMeta(material).getDisplayName());
         this.lore = playerData -> Collections.emptyList();
+        this.durability = durability;
     }
 
     @Nonnull
@@ -86,7 +92,7 @@ public class BaseIconComponent {
     }
 
     public ItemStack getItemStack() {
-        return new ItemStack(material, number);
+        return new ItemStack(material, number, durability);
     }
 
     /**

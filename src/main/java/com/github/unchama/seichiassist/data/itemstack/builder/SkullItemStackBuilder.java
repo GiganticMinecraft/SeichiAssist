@@ -21,11 +21,10 @@ public class SkullItemStackBuilder extends AbstractItemStackBuilder<SkullItemSta
     @Nonnull
     private String ownerName = "";
 
-    @Nonnull
     private boolean isPlayerSkull = false;
 
     private SkullItemStackBuilder() {
-        super(Material.SKULL_ITEM);
+        super(Material.SKULL_ITEM, (short) 3);
     }
 
     public static SkullItemStackBuilder of() {

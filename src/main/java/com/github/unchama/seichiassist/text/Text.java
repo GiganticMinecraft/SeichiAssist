@@ -90,4 +90,9 @@ public class Text {
         texts.forEach(text -> strings.add(text.stringValue()));
         return strings;
     }
+
+    @Override
+    public String toString() {
+        return stringValue();
+    }
 }
