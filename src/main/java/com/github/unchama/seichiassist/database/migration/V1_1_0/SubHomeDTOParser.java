@@ -1,12 +1,18 @@
 package com.github.unchama.seichiassist.database.migration.V1_1_0;
 
+import com.github.unchama.util.collection.ImmutableListFactory;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -47,7 +53,7 @@ import java.util.stream.IntStream;
      *
      * 余った要素は捨てられるので、戻り値の要素はすべて同じ長さ({@code chunkSize})を持つことになる。
      */
-    private static <T> ArrayList<ArrayList<T>> chunk(@NotNull ArrayList<T> inputList, int chunkSize) {
+    private static <T> List<List<T>> chunk(@NotNull List<T> inputList, int chunkSize) {
         final int inputListSize = inputList.size();
         final int outputListSize = inputListSize / chunkSize;
 
@@ -61,13 +67,13 @@ import java.util.stream.IntStream;
 
     private List<Optional<SubHomeDTO>> parseRawData(@NotNull String homePointRawData,
                                                     @Nullable String parsedSubHomeNameData) {
-        final ArrayList<String> homePointSplitData = new ArrayList<>(Arrays.asList(homePointRawData.split(",")));
-        final ArrayList<ArrayList<String>> rawHomePoints = chunk(homePointSplitData, 4);
+        final List<String> homePointSplitData = Arrays.asList(homePointRawData.split(","));
+        final List<List<String>> rawHomePoints = chunk(homePointSplitData, 4);
         final int subHomeCount = rawHomePoints.size();
 
-        final ArrayList<@NotNull String> rawSubHomesNames = parsedSubHomeNameData == null
-                ? new ArrayList<>(Collections.nCopies(subHomeCount, ""))
-                : new ArrayList<>(Arrays.asList(parsedSubHomeNameData.split(",")));
+        final List<@NotNull String> rawSubHomesNames = parsedSubHomeNameData == null
+                ? Collections.nCopies(subHomeCount, "")
+                : ImmutableListFactory.of(parsedSubHomeNameData.split(","));
 
         return IntStream
                 .range(0, subHomeCount)
