@@ -66,7 +66,7 @@ public final class Util {
         if (SeichiAssist.DEBUG) {
             return true;
         }
-        return Worlds.invocableSkillWorldNames.contains(worldName);
+        return Worlds.playersCanUseSkillWorldNames.contains(worldName);
     }
 
     /**

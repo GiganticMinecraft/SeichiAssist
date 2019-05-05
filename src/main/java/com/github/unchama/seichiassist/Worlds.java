@@ -21,13 +21,13 @@ public enum Worlds {
 
     private final String alphabetName;
     private final String japaneseName;
-    private final boolean isSeichi;
+    private final boolean isSeichiWorld;
     private final boolean isInvocableSkill;
 
-    Worlds(String alphabetName, String japaneseName, boolean isSeichi, boolean isInvocableSkill) {
+    Worlds(String alphabetName, String japaneseName, boolean isSeichiWorld, boolean isInvocableSkill) {
         this.alphabetName = alphabetName;
         this.japaneseName = japaneseName;
-        this.isSeichi = isSeichi;
+        this.isSeichiWorld = isSeichiWorld;
         this.isInvocableSkill = isInvocableSkill;
     }
 
@@ -36,15 +36,15 @@ public enum Worlds {
      */
     public static ImmutableList<String> seichiWorldNames =
         Lists.immutable.of(Worlds.values())
-                       .select(Worlds::isSeichi)
+                       .select(Worlds::isSeichiWorld)
                        .collect(Worlds::getAlphabetName);
 
     /**
      * スキル発動可能ワールドの英語名の {@link ImmutableList}
      */
-    public static ImmutableList<String> invocableSkillWorldNames =
+    public static ImmutableList<String> playersCanUseSkillWorldNames =
         Lists.immutable.of(Worlds.values())
-                       .select(Worlds::isInvocableSkill)
+                       .select(Worlds::playersCanUseSkill)
                        .collect(Worlds::getAlphabetName);
 
     /**
@@ -52,8 +52,8 @@ public enum Worlds {
      *
      * @return {@code true} : 整地ワールド / {@code false} : 整地ワールドではない
      */
-    public boolean isSeichi() {
-        return isSeichi;
+    public boolean isSeichiWorld() {
+        return isSeichiWorld;
     }
 
     /**
@@ -81,7 +81,7 @@ public enum Worlds {
      *
      * @return {@code true} : スキル発動可能ワールド / {@code false} : スキル発動不可ワールド
      */
-    public boolean isInvocableSkill() {
+    public boolean playersCanUseSkill() {
         return isInvocableSkill;
     }
 }
