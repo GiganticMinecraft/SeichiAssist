@@ -25,7 +25,7 @@ public class MebiusTaskRunnable extends BukkitRunnable {
 
 	// プレイヤー接続時に呼び出される
 	public MebiusTaskRunnable(PlayerData parent) {
-		p = Bukkit.getPlayer(parent.uuid);
+		p = parent.player;
 		if (MebiusListener.isEquip(p)) {
 			speak("おかえり" +Objects.requireNonNull(MebiusListener.getNickname(p))  + "！待ってたよ！");
 		}

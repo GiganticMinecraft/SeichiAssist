@@ -22,8 +22,8 @@ public class Warns {
         requireNonNull(player);
         if (!Util.isSeichiWorld(player)) {
             return Arrays.asList(
-                Text.of("整地ワールド以外では", ChatColor.RESET , ChatColor.RED),
-                Text.of("整地量とガチャ券は増えません", ChatColor.RESET, ChatColor.RED)
+                Text.of("整地ワールド以外では", ChatColor.RED),
+                Text.of("整地量とガチャ券は増えません", ChatColor.RED)
             );
         } else {
             return null;

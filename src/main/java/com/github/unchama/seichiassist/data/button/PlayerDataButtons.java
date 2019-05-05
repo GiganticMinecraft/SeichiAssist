@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.data.button;
 
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.descrptions.PlayerInfomationDescriptions;
 import com.github.unchama.seichiassist.data.itemstack.builder.SkullItemStackBuilder;
 import com.github.unchama.seichiassist.data.slot.button.Button;
 import com.github.unchama.seichiassist.data.slot.button.ButtonBuilder;
@@ -19,7 +19,7 @@ public class PlayerDataButtons {
                 .of()
                 .playerSkull()
                 .title(data -> Text.of(data.name + "の統計データ", ChatColor.BOLD, ChatColor.YELLOW, ChatColor.UNDERLINE))
-                .lore(PlayerData.playerInfoLore)
+                .lore(PlayerInfomationDescriptions.playerInfoLore)
         )
         .at(0)
         .handler(new SlotActionHandler(

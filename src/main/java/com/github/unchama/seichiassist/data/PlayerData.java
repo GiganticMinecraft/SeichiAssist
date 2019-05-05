@@ -9,14 +9,15 @@ import com.github.unchama.seichiassist.minestack.MineStackHistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
 import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
-import com.github.unchama.seichiassist.text.Templates;
-import com.github.unchama.seichiassist.text.Text;
-import com.github.unchama.seichiassist.text.Warns;
 import com.github.unchama.seichiassist.util.ExperienceManager;
-import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
@@ -24,17 +25,21 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.function.Function;
-
-import javax.annotation.Nonnull;
-
-import static com.github.unchama.seichiassist.util.ListUtil.addAll;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 
 public class PlayerData {
     //TODO:もちろんここにあるべきではない
-    private final static int passiveSkillProbability = 10;
+    public final static int passiveSkillProbability = 10;
 
     static Config config = SeichiAssist.config;
     //読み込み済みフラグ
@@ -1003,117 +1008,4 @@ public class PlayerData {
 
         mana.calcMaxMana(p, this.level);
     }
-
-    /**
-     * 木の棒メニュー等で用いられる整地レベルの説明文
-     * スターレベルを保持していたら,スターレベルも同時に表示します.
-     * TODO:ここにまとめておくべきではない -javaはifをreturnに使うことはできないので苦渋の決断
-     */
-    @Nonnull
-    private Text seichiLevelDescription = this.starlevel <= 0 ?
-        Text.of("整地レベル:" + this.level, ChatColor.AQUA) : Text.of("整地レベル:" + this.level + "☆" + this.starlevel, ChatColor.AQUA);
-
-    /**
-     * 次のレベルまでの残り必要整地量の説明文
-     * レベルが {@link SeichiAssist#levellist} で指定された最大レベルを超えている場合, {@code null} を返します.
-     * TODO:ここにまとめておくべきではない
-     */
-    @Nullable
-    private Text remainLevelDescription =
-        this.level < SeichiAssist.levellist.size() ?
-            Text.of("次のレベルまで:" + (SeichiAssist.levellist.get(this.level) - this.totalbreaknum), ChatColor.AQUA) : null;
-
-    /**
-     * パッシブスキルの説明文
-     * TODO:ここにあるべきではない
-     */
-    @Nonnull
-    private List<Text> passiveSkillDescription = Arrays.asList(
-        Text.of("パッシブスキル効果：", ChatColor.DARK_GRAY),
-        Text.of("1ブロック整地ごとに", ChatColor.DARK_GRAY),
-        Text.of(passiveSkillProbability + "%の確率で", ChatColor.DARK_GRAY),
-        Text.of(this.dispPassiveExp() + "のマナを獲得", ChatColor.DARK_GRAY)
-    );
-
-    /**
-     * 総整地量の説明文
-     * TODO:ここにあるべきではない
-     */
-    @Nonnull
-    private Text totalBreakAmountDescription = Text.of("総整地量：" + this.totalbreaknum, ChatColor.AQUA);
-
-    /**
-     * ランキングの順位の説明文
-     */
-    @Nonnull
-    private Text rankingDescription = Text.of("ランキング：" + this.playerRankingPosition() + "位", ChatColor.GOLD)
-                                          .also(Text.of("(" + SeichiAssist.ranklist.size() + "人中)", ChatColor.GRAY));
-
-    /**
-     * 一つ前のランキングのプレイヤーとの整地量の差を表す説明文を返します.
-     * ただし,1位のときは {@code null} を返します.
-     *
-     * @return 説明文
-     */
-    @Nullable
-    private Text rankingDiffDescription() {
-        if (this.playerRankingPosition() > 1) {
-            final int playerRanking = playerRankingPosition();
-            final RankData rankData = SeichiAssist.ranklist.get(playerRanking - 2);
-            return Text.of((playerRanking - 1) + "位(" + rankData.name + ")との差：" + (rankData.totalbreaknum - this.totalbreaknum), ChatColor.AQUA);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * 総ログイン時間の説明文
-     */
-    @Nonnull
-    private Text totalLoginTimeDescrpition =
-        Text.of("総ログイン時間：" + TypeConverter.toTimeString(TypeConverter.toSecond(this.playtick)), ChatColor.GRAY);
-
-    /**
-     * 通算ログイン日数の説明文
-     */
-    @Nonnull
-    private Text totalLoginDaysDescrption =
-        Text.of("通算ログイン日数：" + this.TotalJoin + "日", ChatColor.GRAY);
-    /**
-     * 連続ログイン日数の説明文
-     */
-    @Nonnull
-    private Text totalChainLoginDaysDescription =
-        Text.of("連続ログイン日数：" + this.ChainJoin + "日", ChatColor.GRAY);
-    /**
-     * 連続投票日数の説明文. ただし, {@link PlayerData#ChainVote} が 0の場合は {@code null} を返します.
-     */
-    @Nullable
-    private Text totalChainVoteDaysDescription = this.ChainVote > 0 ?
-        Text.of("連続投票日数：" + this.ChainVote + "日", ChatColor.GRAY) : null;
-
-    /**
-     * Player統計のLoreを返すFunction.
-     * TODO: 暫定的にここにおいておく
-     */
-    @Nonnull
-    public static Function<PlayerData, List<Text>> playerInfoLore = playerData -> {
-        List<Text> lore = new ArrayList<>();
-
-        lore.add(playerData.seichiLevelDescription);
-        lore.add(playerData.remainLevelDescription);
-        addAll(lore, Warns.seichiWorldWarning(playerData.player));
-        addAll(lore, playerData.passiveSkillDescription);
-        lore.add(playerData.totalBreakAmountDescription);
-        lore.add(playerData.rankingDescription);
-        lore.add(playerData.rankingDiffDescription());
-        lore.add(playerData.totalLoginTimeDescrpition);
-        lore.add(playerData.totalLoginDaysDescrption);
-        lore.add(playerData.totalChainLoginDaysDescription);
-        lore.add(playerData.totalChainVoteDaysDescription);
-        addAll(lore, Templates.playerInfoDescrpition);
-
-        //TODO: WIP
-        return lore;
-    };
 }
