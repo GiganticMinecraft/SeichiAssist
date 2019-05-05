@@ -1,13 +1,19 @@
 package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.seichiassist.Skulls;
-import com.github.unchama.seichiassist.util.*;
-import org.bukkit.*;
-import org.bukkit.enchantments.*;
-import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.*;
+import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.util.collection.ImmutableListFactory;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by karayuu on 2018/04/20
@@ -33,7 +39,7 @@ public class ItemData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
-		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" + ChatColor.DARK_GREEN + "所有者：" + name
 				, ChatColor.RESET + "" + ChatColor.DARK_RED + "レベルアップ記念です");
 		skullmeta.setLore(lore);
