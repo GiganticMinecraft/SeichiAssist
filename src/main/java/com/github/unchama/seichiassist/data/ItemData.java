@@ -11,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,7 +21,7 @@ public class ItemData {
 		ItemStack itemstack = new ItemStack(Material.DIAMOND_PICKAXE, amount);
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "Thanks for Voting!");
-		List<String> lore = Collections.singletonList("投票ありがとナス♡");
+		List<String> lore = ImmutableListFactory.of("投票ありがとナス♡");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 3, true);
 		itemmeta.addEnchant(Enchantment.DURABILITY, 3, true);
 		itemmeta.setLore(lore);

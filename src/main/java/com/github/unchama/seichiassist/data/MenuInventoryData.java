@@ -33,7 +33,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -2120,7 +2119,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BOOK,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認" );
-		lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.config.getTitle1(playerdata.displayTitle1No)
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.config.getTitle1(playerdata.displayTitle1No)
 				+ SeichiAssist.config.getTitle2(playerdata.displayTitle2No) + SeichiAssist.config.getTitle3(playerdata.displayTitle3No) + "」");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
