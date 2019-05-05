@@ -36,7 +36,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -691,7 +690,7 @@ public class MebiusListener implements Listener {
 	}
 
 	// Mebius Tips
-	private static final List<String> MTIPS = Arrays.asList(
+	private static final List<String> MTIPS = ImmutableListFactory.of(
 			"僕の名前は、/mebius naming <名前> コマンドで変更できるよ！<名前>の代わりに新しい名前を入れてね！",
 			"僕は整地によって成長するんだー。アイテムレベル30まであるんだよ！",
 			"僕たち兄弟のステータスはみんなバラバラなんだよー！",
