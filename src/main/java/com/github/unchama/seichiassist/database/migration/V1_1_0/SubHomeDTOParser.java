@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -67,7 +66,7 @@ import java.util.stream.IntStream;
 
     private List<Optional<SubHomeDTO>> parseRawData(@NotNull String homePointRawData,
                                                     @Nullable String parsedSubHomeNameData) {
-        final List<String> homePointSplitData = Arrays.asList(homePointRawData.split(","));
+        final List<String> homePointSplitData = ImmutableListFactory.of(homePointRawData.split(","));
         final List<List<String>> rawHomePoints = chunk(homePointSplitData, 4);
         final int subHomeCount = rawHomePoints.size();
 

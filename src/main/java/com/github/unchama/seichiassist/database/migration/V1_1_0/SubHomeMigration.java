@@ -1,10 +1,14 @@
 package com.github.unchama.seichiassist.database.migration.V1_1_0;
 
+import com.github.unchama.util.collection.ImmutableListFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.*;
-import java.util.Arrays;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,7 +46,7 @@ import java.util.stream.Collectors;
     }
 
     private static void deleteSubHomeColumns(final Statement statement, final String serverId) throws SQLException {
-        for (String baseTableName : Arrays.asList("homepoint", "subhome_name")) {
+        for (String baseTableName : ImmutableListFactory.of("homepoint", "subhome_name")) {
             statement.executeUpdate("alter table playerdata drop column " + baseTableName + "_" + serverId);
         }
     }
