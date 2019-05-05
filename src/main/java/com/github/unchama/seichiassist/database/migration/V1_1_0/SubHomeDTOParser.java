@@ -68,6 +68,7 @@ import java.util.stream.IntStream;
     private List<Optional<SubHomeDTO>> parseRawData(@NotNull String homePointRawData,
                                                     @Nullable String parsedSubHomeNameData) {
         final ArrayList<String> homePointSplitData = new ArrayList<>(Arrays.asList(homePointRawData.split(",")));
+        // NOTE: https://github.com/GiganticMinecraft/SeichiAssist/pull/110#discussion_r281012395 (変えると不整合が生じる)
         final ArrayList<ArrayList<String>> rawHomePoints = chunk(homePointSplitData, 4);
         final int subHomeCount = rawHomePoints.size();
 
