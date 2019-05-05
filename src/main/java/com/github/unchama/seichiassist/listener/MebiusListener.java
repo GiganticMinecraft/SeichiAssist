@@ -1,15 +1,12 @@
 package com.github.unchama.seichiassist.listener;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.*;
-
 import com.github.unchama.seichiassist.MebiusTalk;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import com.github.unchama.util.collection.SetFactory;
-import de.tr7zw.itemnbtapi.*;
+import de.tr7zw.itemnbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -33,9 +30,19 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
 
 public class MebiusListener implements Listener {
 	// Instanceアクセス用
@@ -391,10 +398,10 @@ public class MebiusListener implements Listener {
 	// 初期Name
 	private static final String DEFNAME = "MEBIUS";
 	// Mebius識別用の先頭Lore
-	private static final List<String> LOREFIRST = Arrays.asList(
+	private static final List<String> LOREFIRST = ImmutableListFactory.of(
 			ChatColor.RESET + "" + ChatColor.GRAY + "経験値瓶 効果2倍" + ChatColor.RED + "(整地レベル" + EXPBONUS + "未満限定)", "",
 			ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", "");
-	private static final List<String> LOREFIRST2 = Arrays.asList(
+	private static final List<String> LOREFIRST2 = ImmutableListFactory.of(
 			ChatColor.RESET + "", ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", ChatColor.RESET + "" + ChatColor.AQUA + "整地により成長する。", "");
 	private static final int LV = 4, TALK = 5, DEST = 6, OWNER = 8;
 	private static final String NAMEHEAD = ChatColor.RESET + "" + ChatColor.GOLD + "" + ChatColor.BOLD + "";
@@ -453,7 +460,7 @@ public class MebiusListener implements Listener {
 	}
 
 	// Mebiusレベルアップ確率テーブル
-	private static final List<Integer> lvPer = Arrays.asList(
+	private static final List<Integer> lvPer = ImmutableListFactory.of(
 			500, 500, 500, 500, 800, 800, 800, 800, 800, 1700,
 			1700, 1700, 1700, 1700, 1800, 1800, 1800, 1800, 1800, 2200,
 			2200, 2200, 2200, 2200, 2600, 2600, 2600, 2600, 3000, 3000);
@@ -556,7 +563,7 @@ public class MebiusListener implements Listener {
 		meta.setDisplayName(name);
 		// Lore生成
 		List<String> lore = new ArrayList<>(LOREFIRST2);
-		lore.addAll(Arrays.asList(ILHEAD + level, "", "", "", OWNERHEAD + player.getName().toLowerCase()));
+		lore.addAll(ImmutableListFactory.of(ILHEAD + level, "", "", "", OWNERHEAD + player.getName().toLowerCase()));
 		updateTalkDest(lore, level);
 		meta.setLore(lore);
 		// エンチャントを付与する
@@ -578,7 +585,7 @@ public class MebiusListener implements Listener {
 
 	// レベル別Talk
 	// TODO: ここをList<MebiusSerif>にする
-	private static final List<MebiusTalk> TALKDEST = Arrays.asList(
+	private static final List<MebiusTalk> TALKDEST = ImmutableListFactory.of(
 			new MebiusTalk("こんにちは！これからよろしくねー！", "いつの間にか被っていた。"), new MebiusTalk("僕のこと外さないでね？", "段々成長していくらしい。"), new MebiusTalk("モンスターって怖いねえ…", "どこから喋っているのだろう。"),
 			new MebiusTalk("どこでもルールって大切だね。", "ちゃんと守らなきゃね。"), new MebiusTalk("整地神様って知ってる？偉いんだよ！", "どうやら神様を知ってるみたい。"), new MebiusTalk("知らないこと、いっぱい学びたいなぁ。", "どこに記憶しているんだろう。"),
 			new MebiusTalk("ゾンビっておいしいのかな？", "それだけはやめておけ。"), new MebiusTalk("どこかに僕の兄弟が埋まってるんだー。", "採掘で手に入るのかな。"), new MebiusTalk("…はっ！寝てないからね！？", "たまに静かだよね。"),
@@ -626,16 +633,16 @@ public class MebiusListener implements Listener {
 	}
 
 	// エンチャント別レベル制限リスト
-	private static final List<Enchant> ENCHANT = new ArrayList<>(Arrays.asList(
+	private static final List<Enchant> ENCHANT = ImmutableListFactory.of(
 			new Enchant(Enchantment.PROTECTION_ENVIRONMENTAL, 2, 10, "ダメージ軽減"),
 			new Enchant(Enchantment.PROTECTION_FIRE, 6, 10, "火炎耐性"),
 			new Enchant(Enchantment.PROTECTION_PROJECTILE, 6, 10, "飛び道具耐性"),
 			new Enchant(Enchantment.PROTECTION_EXPLOSIONS, 6, 10, "爆発耐性"),
 			new Enchant(Enchantment.OXYGEN, 15, 3, "水中呼吸"),
 			new Enchant(Enchantment.WATER_WORKER, 15, 1, "水中採掘"),
-			new Enchant(Enchantment.DURABILITY, 2, 10, "耐久力")));
+			new Enchant(Enchantment.DURABILITY, 2, 10, "耐久力"));
 	private static final String UNBREAK = ChatColor.RESET + "" + ChatColor.AQUA + "耐久無限";
-	private static final List<String> ROMAN = Arrays.asList("", "", " II", " III", " IV", " V", " VI", " VII", " VIII", " IX", " X", " XI", " XII", " XIII", " XIV", " XV", " XVI", " XVII", " XVIII", " XIX", " XX");
+	private static final List<String> ROMAN = ImmutableListFactory.of("", "", " II", " III", " IV", " V", " VI", " VII", " VIII", " IX", " X", " XI", " XII", " XIII", " XIV", " XV", " XVI", " XVII", " XVIII", " XIX", " XX");
 
 	// エンチャント更新
 	private static void setEnchant(ItemMeta meta, int level, Player player) {

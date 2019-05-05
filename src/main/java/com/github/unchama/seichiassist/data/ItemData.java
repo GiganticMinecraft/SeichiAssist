@@ -11,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,7 +63,7 @@ public class ItemData {
 		ItemStack elsa = new ItemStack(Material.DIAMOND_BOOTS, amount);
 		ItemMeta elsaMeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BOOTS);
 		elsaMeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.ITALIC + "エルサ");
-		List<String> lore = Arrays.asList("",
+		List<String> lore = ImmutableListFactory.of("",
 				ChatColor.GREEN + "装備中の移動速度" + ChatColor.YELLOW + "(中)" + ChatColor.GREEN,
 				"",
 				ChatColor.YELLOW + "金床" + ChatColor.RED + "不可",
@@ -83,7 +82,7 @@ public class ItemData {
 		ItemStack gift = new ItemStack(Material.PAPER, amount);
 		ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
 		itemMeta.setDisplayName(ChatColor.AQUA  + "投票ギフト券");
-		List<String> lore = Arrays.asList("",
+		List<String> lore = ImmutableListFactory.of("",
 				ChatColor.WHITE + "公共施設鯖にある" ,
 				ChatColor.WHITE + "デパートで買い物ができます");
 		itemMeta.setLore(lore);
