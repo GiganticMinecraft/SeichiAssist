@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.minestack;
 
-import java.util.List;
-
 import org.bukkit.Material;
-import org.bukkit.enchantments.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-public class MineStackObj implements Comparable<MineStackObj>{
+import java.util.List;
+
+public class MineStackObj {
 
 	private String objname;
 	private String japanesename;
@@ -113,13 +113,5 @@ public class MineStackObj implements Comparable<MineStackObj>{
 	public Enchantment getNeeded_enchantment() {
 		return needed_enchantment;
 	}
-
-	@Override
-	public int compareTo(MineStackObj o) {
-		// TODO 自動生成されたメソッド・スタブ
-		return this.level-o.level;
-	}
-
-
 
 }

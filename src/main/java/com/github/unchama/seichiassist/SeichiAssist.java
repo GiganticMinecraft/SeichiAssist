@@ -598,6 +598,7 @@ public class SeichiAssist extends JavaPlugin{
 			,new MineStackBuildObj("gray_glazed_terracotta","灰色の彩釉テラコッタ",1,Material.GRAY_GLAZED_TERRACOTTA,0)
 			,new MineStackBuildObj("silver_glazed_terracotta","薄灰色の彩釉テラコッタ",1,Material.SILVER_GLAZED_TERRACOTTA,0)
 			,new MineStackBuildObj("cyan_glazed_terracotta","青緑色の彩釉テラコッタ",1,Material.CYAN_GLAZED_TERRACOTTA,0)
+		        ,new MineStackBuildObj("purple_glazed_terracotta","紫色の彩釉テラコッタ",1,Material.PURPLE_GLAZED_TERRACOTTA,0)
 			,new MineStackBuildObj("blue_glazed_terracotta","青色の彩釉テラコッタ",1,Material.BLUE_GLAZED_TERRACOTTA,0)
 			,new MineStackBuildObj("brown_glazed_terracotta","茶色の彩釉テラコッタ",1,Material.BROWN_GLAZED_TERRACOTTA,0)
 			,new MineStackBuildObj("green_glazed_terracotta","緑色の彩釉テラコッタ",1,Material.GREEN_GLAZED_TERRACOTTA,0)
@@ -765,13 +766,12 @@ public class SeichiAssist extends JavaPlugin{
 
 	);
 
-	private static List<MineStackObj> minestacklistgacha = Arrays.asList(
-
-			//以下ガチャ系アイテム
-			new MineStackGachaObj("gachaimo",Util.getGachaRingoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaRingoLore())
-			,new MineStackGachaObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0)
-
-	);
+	// ガチャ系アイテム
+	// これは後に変更されるのでArrayListでないといけない
+	private static ArrayList<MineStackObj> minestacklistgacha = new ArrayList<>(Arrays.asList(
+			new MineStackGachaObj("gachaimo",Util.getGachaRingoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaRingoLore()),
+			new MineStackGachaObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0)
+	));
 
 	public static List<MineStackObj> minestacklist = null;
 
@@ -866,26 +866,20 @@ public class SeichiAssist extends JavaPlugin{
 			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "config.ymlの設定値を書き換えて再起動してください");
 		}
 
-		//MySQL系の設定はすべてSql.javaに移動
 		// TODO nullチェック
 		databaseGateway = DatabaseGateway.createInitializedInstance(config.getURL(), config.getDB(), config.getID(), config.getPW());
 
 		//mysqlからガチャデータ読み込み
 		if(!databaseGateway.gachaDataManipulator.loadGachaData()){
 			getLogger().info("ガチャデータのロードに失敗しました");
+			Bukkit.shutdown();
 		}
-
-		//リスト結合(ガチャ品(ガチャリンゴなど)+ガチャ品(本体))
-		List<MineStackObj> minestacklistgacha1;
 
 		//mysqlからMineStack用ガチャデータ読み込み
 		if (databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) { //MineStack用ガチャデータを読み込んだ
 			getLogger().info("MineStack用ガチャデータのロードに成功しました");
-			minestacklistgacha1 = creategachaminestacklist();
 
-
-			//minestacklist.addAll(minestacklistbase);
-			minestacklistgacha.addAll(minestacklistgacha1);
+			minestacklistgacha.addAll(creategachaminestacklist());
 
 			minestacklist = new ArrayList<>();
 			minestacklist.addAll(minestacklistmine);
@@ -893,17 +887,12 @@ public class SeichiAssist extends JavaPlugin{
 			minestacklist.addAll(minestacklistfarm);
 			minestacklist.addAll(minestacklistbuild);
 			minestacklist.addAll(minestacklistrs);
-
-			Collections.sort(minestacklistgacha);
-
 			minestacklist.addAll(minestacklistgacha);
 
 		} else {
 			getLogger().info("MineStack用ガチャデータのロードに失敗しました");
+			Bukkit.shutdown();
 		}
-
-
-		//
 
 		//コマンドの登録
 		commandlist = new HashMap<>();
@@ -952,25 +941,10 @@ public class SeichiAssist extends JavaPlugin{
 			databaseGateway.playerDataManipulator.loadPlayerData(new PlayerData(p));
 		}
 
-		//ランキングデータをセット
-		if(!databaseGateway.playerDataManipulator.setRanking()){
+		//ランキングリストを最新情報に更新する
+		if(!databaseGateway.playerDataManipulator.updateAllRankingList()){
 			getLogger().info("ランキングデータの作成に失敗しました");
-		}
-
-		if(!databaseGateway.playerDataManipulator.setPlayTickRanking()){
-			getLogger().info("ランキングデータの作成に失敗しました");
-		}
-
-		if(!databaseGateway.playerDataManipulator.setVoteNumberRanking()){
-			getLogger().info("ランキングデータの作成に失敗しました");
-		}
-
-		if(!databaseGateway.playerDataManipulator.setPremiumEffectPointRanking()){
-			getLogger().info("ランキングデータの作成に失敗しました");
-		}
-
-		if(!databaseGateway.playerDataManipulator.setAppleNumberRanking()){
-			getLogger().info("ランキングデータの作成に失敗しました");
+			Bukkit.shutdown();
 		}
 
 		//タスクスタート
