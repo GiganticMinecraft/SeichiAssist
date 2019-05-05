@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -52,7 +53,7 @@ import java.util.stream.IntStream;
      *
      * 余った要素は捨てられるので、戻り値の要素はすべて同じ長さ({@code chunkSize})を持つことになる。
      */
-    private static <T> List<List<T>> chunk(@NotNull List<T> inputList, int chunkSize) {
+    private static <T> ArrayList<ArrayList<T>> chunk(@NotNull ArrayList<T> inputList, int chunkSize) {
         final int inputListSize = inputList.size();
         final int outputListSize = inputListSize / chunkSize;
 
@@ -66,8 +67,8 @@ import java.util.stream.IntStream;
 
     private List<Optional<SubHomeDTO>> parseRawData(@NotNull String homePointRawData,
                                                     @Nullable String parsedSubHomeNameData) {
-        final List<String> homePointSplitData = ImmutableListFactory.of(homePointRawData.split(","));
-        final List<List<String>> rawHomePoints = chunk(homePointSplitData, 4);
+        final ArrayList<String> homePointSplitData = new ArrayList<>(Arrays.asList(homePointRawData.split(",")));
+        final ArrayList<ArrayList<String>> rawHomePoints = chunk(homePointSplitData, 4);
         final int subHomeCount = rawHomePoints.size();
 
         final List<@NotNull String> rawSubHomesNames = parsedSubHomeNameData == null
