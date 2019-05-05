@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.data.slot.handler;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import javax.annotation.Nonnull;
@@ -21,10 +22,11 @@ public class SlotActionHandler {
     private Function<InventoryClickEvent, Boolean> trigger;
 
     /**
-     * InventoryClickEventを与えて,何かしらの動作を行わせるFunction
-     * {@link #trigger} がtrueを返した際に動作します.
+     * InventoryClickEventを与えて,何かしらの動作を行わせるFunction <br>
+     * {@link #trigger} がtrueを返した際に動作します. <br>
      * この時点で {@link InventoryClickEvent} の {@link InventoryClickEvent#setCancelled(boolean)} でキャンセルを行うと,
-     * 動作がなかったことになります.
+     * 動作がなかったことになります. <br>
+     * なおこの時点で, {@link InventoryClickEvent#getWhoClicked()} は {@link Player} であることが保証されています.
      */
     @Nonnull
     private Consumer<InventoryClickEvent> action;

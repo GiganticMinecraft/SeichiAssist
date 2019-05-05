@@ -12,6 +12,6 @@ public class SlotActionHandlers {
      */
     public static SlotActionHandler READ_ONLY = new SlotActionHandler(
             event -> true,
-            event -> {}
+            event -> event.setCancelled(true)
     );
 }

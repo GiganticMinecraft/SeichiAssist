@@ -487,14 +487,7 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(isSkull && itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ")){
 				// 整地量表示トグル
-				playerdata.expbar.setVisible(!playerdata.expbar.isVisible());
-				if(playerdata.expbar.isVisible()){
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					player.sendMessage(ChatColor.GREEN + "整地量バー表示");
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					player.sendMessage(ChatColor.RED + "整地量バー非表示");
-				}
+				playerdata.toggleExpBarVisibility();
 				SkullMeta skullmeta = (SkullMeta)itemstackcurrent.getItemMeta();
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispExpBarToggleMeta(playerdata,skullmeta));
 			}

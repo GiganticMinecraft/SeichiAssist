@@ -36,7 +36,8 @@ public class Text {
      * {@link Text} を生成するstaticファクトリーメソッド
      *
      * @param string     ラップする {@link String}
-     * @param chatColors 文字に色をつけたい時の {@link ChatColor}
+     * @param chatColors 文字に色をつけたい時の {@link ChatColor} <br>
+     *                   Minecraftの仕様上, {@link ChatColor#UNDERLINE} 等の文字修飾コードは初めに指定してください.
      * @return {@link Text}
      */
     @Nonnull

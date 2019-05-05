@@ -48,7 +48,7 @@ public class MenuHandler implements Listener {
     }
 
     /**
-     * 各 {@link Menu#invokeAndReopen(InventoryClickEvent)} を呼び出します.
+     * 各 {@link Menu#invokeAndReloadSlot(InventoryClickEvent)} を呼び出します.
      * titleにて判断し, {@link InventoryClickEvent} を与えます.
      *
      * @param event {@link InventoryClickEvent}
@@ -59,6 +59,6 @@ public class MenuHandler implements Listener {
 
         menus.stream()
              .filter(menu -> menu.getTitle().equals(title))
-             .forEach(menu -> menu.invokeAndReopen(event));
+             .forEach(menu -> menu.invokeAndReloadSlot(event));
     }
 }

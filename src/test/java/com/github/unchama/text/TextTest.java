@@ -11,12 +11,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class TextTest {
     @Test
-    public void textTest() {
-        Text text = Text.of("test", ChatColor.YELLOW);
-        assertEquals(ChatColor.RESET + "" + ChatColor.YELLOW + "test", text.stringValue());
-    }
-
-    @Test
     public void addbeforeTest() {
         String base = "hoge";
         String before = "test";
@@ -25,5 +19,11 @@ public class TextTest {
         text.addBefore(before);
 
         assertEquals(before + base, text.stringValue());
+    }
+
+    @Test
+    public void textTest() {
+        Text text = Text.of("hoge", ChatColor.YELLOW, ChatColor.BOLD, ChatColor.UNDERLINE);
+        assertEquals(ChatColor.RESET + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "" + ChatColor.YELLOW + "hoge", text.stringValue());
     }
 }

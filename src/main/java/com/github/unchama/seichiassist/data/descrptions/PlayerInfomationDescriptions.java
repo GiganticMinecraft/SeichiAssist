@@ -43,8 +43,8 @@ public class PlayerInfomationDescriptions {
         lore.add(totalChainLoginDaysDescription(playerData));
         lore.add(totalChainVoteDaysDescription(playerData));
         addAll(lore, Templates.playerInfoDescrpition);
+        addAll(lore, expBarDescription(playerData));
 
-        //TODO: WIP
         return lore;
     };
 
@@ -157,6 +157,24 @@ public class PlayerInfomationDescriptions {
             return Text.of("連続投票日数：" + playerData.ChainVote + "日", ChatColor.GRAY);
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Expバーの説明文.
+     */
+    @Nonnull
+    private static List<Text> expBarDescription(@Nonnull PlayerData playerData) {
+        if (playerData.expbar.isVisible()) {
+            return Arrays.asList(
+                Text.of("整地量バーを表示", ChatColor.GREEN),
+                Text.of("クリックで非表示", ChatColor.UNDERLINE, ChatColor.DARK_RED)
+            );
+        } else {
+            return Arrays.asList(
+                Text.of("整地量バーを非表示", ChatColor.RED),
+                Text.of("クリックで表示", ChatColor.UNDERLINE, ChatColor.DARK_GREEN)
+            );
         }
     }
 }

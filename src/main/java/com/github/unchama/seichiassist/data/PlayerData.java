@@ -1008,4 +1008,18 @@ public class PlayerData {
 
         mana.calcMaxMana(p, this.level);
     }
+
+    /**
+     * 整地量を表すEXPパーを表示なら非表示に,非表示なら表示に切り替えます.
+     */
+    public void toggleExpBarVisibility() {
+        this.expbar.setVisible(!this.expbar.isVisible());
+        if (this.expbar.isVisible()) {
+            this.player.playSound(this.player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+            this.player.sendMessage(ChatColor.GREEN + "整地量バー表示");
+        } else {
+            this.player.playSound(this.player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+            this.player.sendMessage(ChatColor.RED + "整地量バー非表示");
+        }
+    }
 }

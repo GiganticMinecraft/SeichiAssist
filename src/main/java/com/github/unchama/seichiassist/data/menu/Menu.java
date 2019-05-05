@@ -3,7 +3,9 @@ package com.github.unchama.seichiassist.data.menu;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.slot.Slot;
+import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -103,20 +105,36 @@ public class Menu {
 
     /**
      * {@link InventoryClickEvent} を渡して該当 {@link Slot} に動作を行わせます.
-     * その後,メニューを開きなおします.
+     * その後, {@link Slot} を読み込みなおします.
+     * ただし,枠外のクリック, {@link InventoryType#PLAYER} のクリックには反応しません.
+     * よって, {@link InventoryClickEvent#getWhoClicked()} は {@link Player} であることが保証されます.
      *
      * @param event {@link InventoryClickEvent} ({@code null} は許容されません)
+     * @see SlotActionHandler#action
      */
-    void invokeAndReopen(@Nonnull InventoryClickEvent event) {
+    void invokeAndReloadSlot(@Nonnull InventoryClickEvent event) {
         requireNonNull(event);
+        if (event.getWhoClicked().getType() != EntityType.PLAYER) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if (event.getClickedInventory() == null || event.getClickedInventory().getType() == InventoryType.PLAYER) {
+            event.setCancelled(true);
+            return;
+        }
+
         final int position = event.getSlot();
-        final HumanEntity humanEntity = event.getWhoClicked();
+        final Player player = (Player) event.getWhoClicked();
+        final PlayerData data = SeichiAssist.playermap.get(player.getUniqueId());
+
         slots.forEach(slot -> {
             if (slot.getPosition() == position) {
                 slot.invoke(event);
+                //非同期処理を行うとバグの原因となる
+                event.getClickedInventory().setItem(slot.getPosition(), slot.getItemStack(data));
             }
         });
-        open((Player) humanEntity);
     }
 
     /**
