@@ -1,13 +1,13 @@
 package com.github.unchama.seichiassist.database.migration.V1_1_0;
 
+import com.github.unchama.util.collection.SetFactory;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
 
@@ -23,7 +23,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
             playerDataColumnNames.add(columnNamesResult.getString("Field"));
         }
 
-        final List<Migration> migrations = Arrays.asList(
+        final Set<Migration> migrations = SetFactory.of(
                 new MineStackMigration(),
                 new GridTemplateMigration(),
                 new SubHomeMigration(),
