@@ -180,7 +180,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 				+ " name = '" + playerdata.name + "'"
 
 				//各種数値更新処理
-				+ ",effectflag = " + playerdata.effectflag
+				+ ",effectflag = " + playerdata.miningSpeedData.miningSpeed.getSqlIdentifier()
 				+ ",minestackflag = " + playerdata.minestackflag
 				+ ",messageflag = " + playerdata.messageflag
 				+ ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum

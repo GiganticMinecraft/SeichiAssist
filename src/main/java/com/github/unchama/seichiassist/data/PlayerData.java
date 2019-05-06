@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.data;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.Worlds;
+import com.github.unchama.seichiassist.data.player.MiningSpeedData;
 import com.github.unchama.seichiassist.data.subhome.SubHome;
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent;
 import com.github.unchama.seichiassist.minestack.MineStackHistoryData;
@@ -51,7 +52,7 @@ public class PlayerData {
     //Player
     public Player player;
     //エフェクトのフラグ
-    public int effectflag;
+    public MiningSpeedData miningSpeedData;
     //内訳メッセージを出すフラグ
     public boolean messageflag;
     //1分間のデータを保存するincrease:１分間の採掘量
@@ -245,10 +246,10 @@ public class PlayerData {
     public PlayerData(Player player) {
         //初期値を設定
         this.loaded = false;
+        this.player = player;
         this.name = Util.getName(player);
         this.uuid = player.getUniqueId();
-        this.player = player;
-        this.effectflag = 0;
+        this.miningSpeedData = new MiningSpeedData(player);
         this.messageflag = false;
         //this.minuteblock = new MineBlock();
         this.halfhourblock = new MineBlock();
