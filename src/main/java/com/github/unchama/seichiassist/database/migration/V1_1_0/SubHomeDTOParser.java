@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.database.migration.V1_1_0;
 
-import com.github.unchama.util.collection.ImmutableListFactory;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.jetbrains.annotations.NotNull;
@@ -72,9 +71,10 @@ import java.util.stream.IntStream;
         final ArrayList<ArrayList<String>> rawHomePoints = chunk(homePointSplitData, 4);
         final int subHomeCount = rawHomePoints.size();
 
-        final List<@NotNull String> rawSubHomesNames = parsedSubHomeNameData == null
-                ? Collections.nCopies(subHomeCount, "")
-                : ImmutableListFactory.of(parsedSubHomeNameData.split(","));
+        // NOTE: https://github.com/GiganticMinecraft/SeichiAssist/pull/110#discussion_r281027497
+        final ArrayList<@NotNull String> rawSubHomesNames = parsedSubHomeNameData == null
+                ? new ArrayList<>(Collections.nCopies(subHomeCount, ""))
+                : new ArrayList<>(Arrays.asList(parsedSubHomeNameData.split(",")));
 
         return IntStream
                 .range(0, subHomeCount)
