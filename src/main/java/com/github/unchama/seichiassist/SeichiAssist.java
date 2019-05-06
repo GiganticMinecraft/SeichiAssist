@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
-import com.github.unchama.seichiassist.data.menu.MenuHandler;
+import com.github.unchama.seichiassist.data.inventory.menu.MenuHandler;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.listener.*;
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent;

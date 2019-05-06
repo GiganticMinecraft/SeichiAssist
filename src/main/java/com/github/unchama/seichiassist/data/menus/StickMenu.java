@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.data.menus;
 
 import com.github.unchama.seichiassist.data.button.PlayerDataButtons;
-import com.github.unchama.seichiassist.data.menu.Menu;
-import com.github.unchama.seichiassist.data.menu.chest.ChestMenuBuilder;
+import com.github.unchama.seichiassist.data.inventory.menu.Menu;
+import com.github.unchama.seichiassist.data.inventory.menu.chest.ChestMenuBuilder;
 import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.ChatColor;
 

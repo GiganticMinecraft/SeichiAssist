@@ -43,6 +43,7 @@ public class PlayerInfomationDescriptions {
         lore.add(totalChainLoginDaysDescription(playerData));
         lore.add(totalChainVoteDaysDescription(playerData));
         addAll(lore, Templates.playerInfoDescrpition);
+        lore.add(Text.of());
         addAll(lore, expBarDescription(playerData));
 
         return lore;
