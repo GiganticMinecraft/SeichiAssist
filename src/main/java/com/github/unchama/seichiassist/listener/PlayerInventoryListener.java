@@ -1,8 +1,19 @@
 package com.github.unchama.seichiassist.listener;
 
 import com.github.unchama.seasonalevents.events.valentine.Valentine;
-import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.data.*;
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Skulls;
+import com.github.unchama.seichiassist.data.ActiveSkillInventoryData;
+import com.github.unchama.seichiassist.data.EffectData;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.ItemData;
+import com.github.unchama.seichiassist.data.MenuInventoryData;
+import com.github.unchama.seichiassist.data.MineStackGachaData;
+import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
@@ -11,6 +22,7 @@ import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ChatColor;
@@ -38,7 +50,10 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -339,7 +354,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "毎分のガチャ券受け取り:ON");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "毎分受け取ります"
+					List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "毎分受け取ります"
 							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変更"
 							);
 					itemmeta.setLore(lore);
@@ -349,7 +364,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.GREEN + "ガチャ券受け取りボタンを押すともらえます");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1, 1);
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-					List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "後でまとめて受け取ります"
+					List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.RED + "後でまとめて受け取ります"
 							, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変更"
 							);
 					itemmeta.setLore(lore);

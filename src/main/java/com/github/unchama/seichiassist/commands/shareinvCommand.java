@@ -1,10 +1,12 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.util.SerializeItemList;
+import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.util.collection.ImmutableListFactory;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -14,12 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.SerializeItemList;
-import com.github.unchama.seichiassist.util.Util;
-
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.List;
 
 public class shareinvCommand implements TabExecutor {
 	public shareinvCommand(SeichiAssist plugin) {
@@ -105,9 +103,9 @@ public class shareinvCommand implements TabExecutor {
 			ItemStack offhand = pi.getItemInOffHand();
 			items.add(offhand);
 			ItemStack[] armor = pi.getArmorContents();
-			items.addAll(Arrays.asList(armor));
+			items.addAll(ImmutableListFactory.of(armor));
 			ItemStack[] contents = pi.getStorageContents();
-			items.addAll(Arrays.asList(contents));
+			items.addAll(ImmutableListFactory.of(contents));
 
 			// アイテム一覧をシリアル化する
 			String serial = SerializeItemList.toBase64(items);
