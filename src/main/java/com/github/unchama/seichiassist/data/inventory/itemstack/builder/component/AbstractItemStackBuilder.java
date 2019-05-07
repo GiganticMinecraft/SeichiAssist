@@ -4,10 +4,12 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.inventory.itemstack.component.BaseIconComponent;
 import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 
@@ -78,7 +80,14 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
     @Override
     @Nonnull
     public T enchanted() {
-        this.component.setEnchanted(true);
+        this.component.setEnchantPredicate(playerData -> true);
+        return (T) this;
+    }
+
+    @Override
+    @NotNull
+    public T enchantedIf(@NotNull Predicate<PlayerData> predicate) {
+        this.component.setEnchantPredicate(predicate);
         return (T) this;
     }
 

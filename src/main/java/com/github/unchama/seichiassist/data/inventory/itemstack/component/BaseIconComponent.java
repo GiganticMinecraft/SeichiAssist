@@ -8,12 +8,14 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.github.unchama.seichiassist.text.Text.toStringList;
@@ -31,9 +33,10 @@ public class BaseIconComponent {
     private Function<PlayerData, Text> title;
     @Nonnull
     private Function<PlayerData, List<Text>> lore;
-    private Boolean isEnchanted = false;
+    @NotNull
+    private Predicate<PlayerData> enchantPredicate;
     private int number = 1;
-    private short durability = 0;
+    private short durability;
 
     public BaseIconComponent(@Nonnull Material material) {
         this(material, (short) 0);
@@ -44,6 +47,7 @@ public class BaseIconComponent {
         this.material = material;
         this.title = playerData -> Text.of(Bukkit.getItemFactory().getItemMeta(material).getDisplayName());
         this.lore = playerData -> Collections.emptyList();
+        this.enchantPredicate = playerData -> false;
         this.durability = durability;
     }
 
@@ -83,8 +87,8 @@ public class BaseIconComponent {
         setLore(playerData -> lore);
     }
 
-    public void setEnchanted(Boolean enchanted) {
-        isEnchanted = enchanted;
+    public void setEnchantPredicate(Predicate<PlayerData> predicate) {
+        this.enchantPredicate = predicate;
     }
 
     public void setNumber(int number) {
@@ -109,7 +113,7 @@ public class BaseIconComponent {
         List<Text> collectLore = lore.apply(playerData).stream().filter(Objects::nonNull).collect(Collectors.toList());
         meta.setLore(toStringList(collectLore));
 
-        if (isEnchanted) {
+        if (enchantPredicate.test(playerData)) {
             meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }

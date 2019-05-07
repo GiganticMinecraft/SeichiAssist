@@ -3,8 +3,11 @@ package com.github.unchama.seichiassist.data.button;
 import com.github.unchama.seichiassist.data.inventory.itemstack.builder.ItemStackBuilder;
 import com.github.unchama.seichiassist.data.inventory.slot.button.Button;
 import com.github.unchama.seichiassist.data.inventory.slot.button.ButtonBuilder;
+import com.github.unchama.seichiassist.data.inventory.slot.handler.SlotActionHandler;
+import com.github.unchama.seichiassist.data.inventory.slot.handler.Triggers;
 import com.github.unchama.seichiassist.text.Templates;
 import com.github.unchama.seichiassist.text.Text;
+import com.github.unchama.seichiassist.util.PlayerdataUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
@@ -31,4 +34,10 @@ public class StickMenuButtons {
                                 return textList;
                             })
         )
+        .at(1)
+        .handler(new SlotActionHandler(
+            Triggers.LEFT_CLICK,
+            event -> PlayerdataUtil.playerData(event).miningSpeedData.toNextAndNotifyPlayer()
+        ))
+        .build();
 }
