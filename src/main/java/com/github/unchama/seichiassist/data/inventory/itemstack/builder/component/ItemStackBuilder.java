@@ -3,10 +3,12 @@ package com.github.unchama.seichiassist.data.inventory.itemstack.builder.compone
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * プレイヤーデータを用いてItemStackをBuildするBuilderを表すインターフェース.
@@ -39,6 +41,14 @@ public interface ItemStackBuilder {
     @Nonnull
     ItemStackBuilder enchanted();
 
+    /**
+     * ItemStackにエンチャントを付与します.
+     * {@link Predicate} が {@code true} を返した時のみ付与されます.
+     *
+     * @return このBuilder
+     */
+    @NotNull
+    ItemStackBuilder enchantedIf(@NotNull Predicate<PlayerData> condition);
     /**
      * ItemStackの個数を指定します.
      *
