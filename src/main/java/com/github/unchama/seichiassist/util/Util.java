@@ -471,8 +471,8 @@ public final class Util {
 		if(!skullmeta.hasOwner()){
 			return false;
 		}
-		//ownerがうんちゃまじゃない時の処理
-		return skullmeta.getOwner().equals("unchama");
+		// オーナーがunchamaか？
+		return skullmeta.getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.UNCHAMA.getUuid()));
 	}
 	public static boolean removeItemfromPlayerInventory(PlayerInventory inventory,
 			ItemStack itemstack, int count) {
