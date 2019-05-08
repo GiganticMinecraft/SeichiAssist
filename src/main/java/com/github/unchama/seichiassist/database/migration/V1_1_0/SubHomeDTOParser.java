@@ -6,7 +6,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -62,9 +67,11 @@ import java.util.stream.IntStream;
     private List<Optional<SubHomeDTO>> parseRawData(@NotNull String homePointRawData,
                                                     @Nullable String parsedSubHomeNameData) {
         final ArrayList<String> homePointSplitData = new ArrayList<>(Arrays.asList(homePointRawData.split(",")));
+        // NOTE: https://github.com/GiganticMinecraft/SeichiAssist/pull/110#discussion_r281012395 (変えると不整合が生じる)
         final ArrayList<ArrayList<String>> rawHomePoints = chunk(homePointSplitData, 4);
         final int subHomeCount = rawHomePoints.size();
 
+        // NOTE: https://github.com/GiganticMinecraft/SeichiAssist/pull/110#discussion_r281027497
         final ArrayList<@NotNull String> rawSubHomesNames = parsedSubHomeNameData == null
                 ? new ArrayList<>(Collections.nCopies(subHomeCount, ""))
                 : new ArrayList<>(Arrays.asList(parsedSubHomeNameData.split(",")));

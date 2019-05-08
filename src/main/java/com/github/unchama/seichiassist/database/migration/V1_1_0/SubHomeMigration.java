@@ -3,7 +3,11 @@ package com.github.unchama.seichiassist.database.migration.V1_1_0;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,6 +46,7 @@ import java.util.stream.Collectors;
     }
 
     private static void deleteSubHomeColumns(final Statement statement, final String serverId) throws SQLException {
+        // NOTE: https://github.com/GiganticMinecraft/SeichiAssist/pull/110#discussion_r281027504
         for (String baseTableName : Arrays.asList("homepoint", "subhome_name")) {
             statement.executeUpdate("alter table playerdata drop column " + baseTableName + "_" + serverId);
         }
