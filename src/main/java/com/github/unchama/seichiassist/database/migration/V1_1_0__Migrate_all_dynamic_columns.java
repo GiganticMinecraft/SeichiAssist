@@ -42,8 +42,19 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
         migrations.forEach(migration -> migration.migrate(connection, playerDataColumnNames));
     }
 
-    /* package-private */ static class GridTemplateMigration implements Migration {
-        /* package-private */ GridTemplateMigration() {}
+    /**
+     * 1.1.0におけるマイグレーションタスクの抽象インターフェース
+     */
+    private interface Migration {
+        /**
+         * マイグレーションを行う。
+         * @param connection 使用するConnectionオブジェクト
+         * @param playerDataColumnNames seichiassist.playerdataのカラム名すべてを含むSet
+         */
+        void migrate(final Connection connection, final Set<String> playerDataColumnNames);
+    }
+
+    private static class GridTemplateMigration implements Migration {
 
         private static void migrateGridTemplateColumn(final Connection connection, final int gridTemplateColumnCount) {
             IntStream.range(0, gridTemplateColumnCount).forEach(templateId -> {
@@ -94,22 +105,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
         }
     }
 
-    /**
-     * 1.1.0におけるマイグレーションタスクの抽象インターフェース
-     */
-    /* package-private */ static interface Migration {
-
-        /**
-         * マイグレーションを行う。
-         * @param connection 使用するConnectionオブジェクト
-         * @param playerDataColumnNames seichiassist.playerdataのカラム名すべてを含むSet
-         */
-        /* package-private */ void migrate(final Connection connection, final Set<String> playerDataColumnNames);
-    }
-
-    /* package-private */ static class MineStackMigration implements Migration {
-        /* package-private */ MineStackMigration() {}
-
+    private static class MineStackMigration implements Migration {
         private static void migrateMineStackColumns(final Connection connection, final Set<String> targetObjectNames) {
             targetObjectNames.forEach(mineStackObjectName -> {
                 try (Statement statement = connection.createStatement()) {
@@ -138,9 +134,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
         }
     }
 
-    /* package-private */ static class SkillEffectUnlockStateMigration implements Migration {
-        /* package-private */ SkillEffectUnlockStateMigration() {}
-
+    private static class SkillEffectUnlockStateMigration implements Migration {
         private static void migrateEffectUnlockStateColumn(final Connection connection,
                                                            final String newTableName,
                                                            final Set<String> effectColumnNames) {
@@ -197,7 +191,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
     /**
      * サブホームの情報を含むData Transfer Objectのクラス
      */
-    /* package-private */ static class SubHomeDTO {
+    private static class SubHomeDTO {
         private final @NotNull String id;
         private final @NotNull String playerUuid;
         private final @NotNull String serverId;
@@ -234,7 +228,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
 
     }
 
-    /* package-private */ static class SubHomeDTOParser {
+    private static class SubHomeDTOParser {
         private final @NotNull String uuid;
         private final @NotNull String serverId;
 
@@ -321,9 +315,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
         }
     }
 
-    /* package-private */ static class SubHomeMigration implements Migration {
-        /* package-private */ SubHomeMigration() {}
-
+    private static class SubHomeMigration implements Migration {
         private static void copySubHomeColumns(final Connection connection, final String serverId) throws SQLException {
             final String homePointColumnName = "homepoint_" + serverId;
             final String subHomeNameColumnName = "subhome_name_" + serverId;
