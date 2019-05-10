@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import static com.github.unchama.seichiassist.util.TypeConverter.isParsableToInteger;
 
+@SuppressWarnings("unused")
 public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
 
     @Override
