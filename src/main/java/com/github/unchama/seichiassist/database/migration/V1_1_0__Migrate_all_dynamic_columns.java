@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.database.migration.V1_1_0;
+package com.github.unchama.seichiassist.database.migration;
 
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
