@@ -267,7 +267,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
          *
          * 余った要素は捨てられるので、戻り値の要素はすべて同じ長さ({@code chunkSize})を持つことになる。
          */
-        private static <T> List<List<T>> chunk(@NotNull List<T> inputList, int chunkSize) {
+        private static <T> List<List<T>> chunk(@NotNull List<T> inputList, @SuppressWarnings("SameParameterValue") int chunkSize) {
             final int inputListSize = inputList.size();
             final int outputListSize = inputListSize / chunkSize;
 
