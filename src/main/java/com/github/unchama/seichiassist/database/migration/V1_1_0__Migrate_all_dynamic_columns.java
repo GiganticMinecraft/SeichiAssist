@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.database.migration;
 
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
@@ -32,7 +33,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
             playerDataColumnNames.add(columnNamesResult.getString("Field"));
         }
 
-        final List<Migration> migrations = Arrays.asList(
+        final List<Migration> migrations = ImmutableListFactory.of(
                 new MineStackMigration(),
                 new GridTemplateMigration(),
                 new SubHomeMigration(),
@@ -265,29 +266,31 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
          *
          * 余った要素は捨てられるので、戻り値の要素はすべて同じ長さ({@code chunkSize})を持つことになる。
          */
-        private static <T> ArrayList<ArrayList<T>> chunk(@NotNull ArrayList<T> inputList, int chunkSize) {
+        private static <T> List<List<T>> chunk(@NotNull List<T> inputList, int chunkSize) {
             final int inputListSize = inputList.size();
             final int outputListSize = inputListSize / chunkSize;
 
             return IntStream
                     .range(0, outputListSize)
-                    .mapToObj(outputIndex ->
-                            new ArrayList<>(inputList.subList(outputIndex * chunkSize, (outputIndex + 1) * chunkSize))
-                    )
+                    .mapToObj(outputIndex -> {
+                        final int chunkStartIndex = outputIndex * chunkSize;
+                        final int chunkEndIndex = chunkStartIndex + chunkSize;
+
+                        return inputList.subList(chunkStartIndex, chunkEndIndex);
+                    })
                     .collect(Collectors.toCollection(ArrayList::new));
         }
 
         private List<Optional<SubHomeDTO>> parseRawData(@NotNull String homePointRawData,
                                                         @Nullable String parsedSubHomeNameData) {
-            final ArrayList<String> homePointSplitData = new ArrayList<>(Arrays.asList(homePointRawData.split(",")));
-            // NOTE: https://github.com/GiganticMinecraft/SeichiAssist/pull/110#discussion_r281012395 (変えると不整合が生じる)
-            final ArrayList<ArrayList<String>> rawHomePoints = chunk(homePointSplitData, 4);
+            final List<String> homePointSplitData = ImmutableListFactory.of(homePointRawData.split(","));
+            final List<List<String>> rawHomePoints = chunk(homePointSplitData, 4);
+
             final int subHomeCount = rawHomePoints.size();
 
-            // NOTE: https://github.com/GiganticMinecraft/SeichiAssist/pull/110#discussion_r281027497
-            final ArrayList<@NotNull String> rawSubHomesNames = parsedSubHomeNameData == null
-                    ? new ArrayList<>(Collections.nCopies(subHomeCount, ""))
-                    : new ArrayList<>(Arrays.asList(parsedSubHomeNameData.split(",")));
+            final List<@NotNull String> rawSubHomesNames = parsedSubHomeNameData == null
+                    ? Collections.nCopies(subHomeCount, "")
+                    : ImmutableListFactory.of(parsedSubHomeNameData.split(","));
 
             return IntStream
                     .range(0, subHomeCount)
@@ -346,8 +349,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
         }
 
         private static void deleteSubHomeColumns(final Statement statement, final String serverId) throws SQLException {
-            // NOTE: https://github.com/GiganticMinecraft/SeichiAssist/pull/110#discussion_r281027504
-            for (String baseTableName : Arrays.asList("homepoint", "subhome_name")) {
+            for (String baseTableName : ImmutableListFactory.of("homepoint", "subhome_name")) {
                 statement.executeUpdate("alter table playerdata drop column " + baseTableName + "_" + serverId);
             }
         }
