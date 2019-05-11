@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.util;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Skulls;
+import com.github.unchama.seichiassist.Worlds;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -30,11 +32,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 public final class Util {
@@ -101,7 +105,7 @@ public final class Util {
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者:" + name);
 		skullmeta.setLore(lore);
-		skullmeta.setOwner("unchama");
+		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.UNCHAMA.getUuid()));
 		skull.setItemMeta(skullmeta);
 		return skull;
 	}
@@ -468,8 +472,8 @@ public final class Util {
 		if(!skullmeta.hasOwner()){
 			return false;
 		}
-		//ownerがうんちゃまじゃない時の処理
-		return skullmeta.getOwner().equals("unchama");
+		// オーナーがunchamaか？
+		return skullmeta.getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.UNCHAMA.getUuid()));
 	}
 	public static boolean removeItemfromPlayerInventory(PlayerInventory inventory,
 			ItemStack itemstack, int count) {
@@ -511,7 +515,7 @@ public final class Util {
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name
 				,ChatColor.RESET + "" +  ChatColor.LIGHT_PURPLE + "投票ありがとナス♡");
 		skullmeta.setLore(lore);
-		skullmeta.setOwner("unchama");
+		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.UNCHAMA.getUuid()));
 		skull.setItemMeta(skullmeta);
 		return skull;
 	}
