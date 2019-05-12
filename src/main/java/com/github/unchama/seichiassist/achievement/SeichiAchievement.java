@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
- * 二つ名の列挙.
+ * 実績の列挙.
  *
  * @author unicroak
  */
