@@ -1,12 +1,8 @@
 package com.github.unchama.seichiassist.listener;
 
 import com.github.unchama.seasonalevents.events.valentine.Valentine;
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Skulls;
+import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.achievement.SeichiAchievement;
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.GachaData;
@@ -18,7 +14,6 @@ import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
 import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
@@ -2753,8 +2748,6 @@ public class PlayerInventoryListener implements Listener {
 		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績・二つ名システム")){
 			event.setCancelled(true);
 
-			//実績解除処理部分の読みこみ
-			TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -2776,7 +2769,7 @@ public class PlayerInventoryListener implements Listener {
 
 			//予約付与システム受け取り処理
 			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.PRESENT2.getUuid()))){
-				TUTR.TryTitle(player,playerdata.giveachvNo);
+				SeichiAchievement.tryAchieve(player,playerdata.giveachvNo);
 				playerdata.giveachvNo = 0 ;
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(MenuInventoryData.getTitleMenuData(player));
@@ -3849,8 +3842,6 @@ public class PlayerInventoryListener implements Listener {
 		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「通算ログイン」")){
 			event.setCancelled(true);
 
-			//実績解除処理部分の読みこみ
-			TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -4036,8 +4027,6 @@ public class PlayerInventoryListener implements Listener {
 		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「連続ログイン」")){
 			event.setCancelled(true);
 
-			//実績解除処理部分の読みこみ
-			TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -4517,8 +4506,6 @@ public class PlayerInventoryListener implements Listener {
 		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「記念日」")){
 			event.setCancelled(true);
 
-			//実績解除処理部分の読みこみ
-			TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -4531,77 +4518,77 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(itemmeta.getDisplayName().contains("No9001「???」")){
-					TUTR.TryTitle(player,9001);
+					SeichiAchievement.tryAchieve(player,9001);
 				}else if(itemmeta.getDisplayName().contains("No9002「???」")){
-					TUTR.TryTitle(player,9002);
+					SeichiAchievement.tryAchieve(player,9002);
 				}else if(itemmeta.getDisplayName().contains("No9003「???」")){
-					TUTR.TryTitle(player,9003);
+					SeichiAchievement.tryAchieve(player,9003);
 				}else if(itemmeta.getDisplayName().contains("No9004「???」")){
-					TUTR.TryTitle(player,9004);
+					SeichiAchievement.tryAchieve(player,9004);
 				}else if(itemmeta.getDisplayName().contains("No9005「???」")){
-					TUTR.TryTitle(player,9005);
+					SeichiAchievement.tryAchieve(player,9005);
 				}else if(itemmeta.getDisplayName().contains("No9006「???」")){
-					TUTR.TryTitle(player,9006);
+					SeichiAchievement.tryAchieve(player,9006);
 				}else if(itemmeta.getDisplayName().contains("No9007「???」")){
-					TUTR.TryTitle(player,9007);
+					SeichiAchievement.tryAchieve(player,9007);
 				}else if(itemmeta.getDisplayName().contains("No9008「???」")){
-					TUTR.TryTitle(player,9008);
+					SeichiAchievement.tryAchieve(player,9008);
 				}else if(itemmeta.getDisplayName().contains("No9009「???」")){
-					TUTR.TryTitle(player,9009);
+					SeichiAchievement.tryAchieve(player,9009);
 				}else if(itemmeta.getDisplayName().contains("No9010「???」")){
-					TUTR.TryTitle(player,9010);
+					SeichiAchievement.tryAchieve(player,9010);
 				}else if(itemmeta.getDisplayName().contains("No9011「???」")){
-					TUTR.TryTitle(player,9011);
+					SeichiAchievement.tryAchieve(player,9011);
 				}else if(itemmeta.getDisplayName().contains("No9012「???」")){
-					TUTR.TryTitle(player,9012);
+					SeichiAchievement.tryAchieve(player,9012);
 				}else if(itemmeta.getDisplayName().contains("No9013「???」")){
-					TUTR.TryTitle(player,9013);
+					SeichiAchievement.tryAchieve(player,9013);
 				}else if(itemmeta.getDisplayName().contains("No9014「???」")){
-					TUTR.TryTitle(player,9014);
+					SeichiAchievement.tryAchieve(player,9014);
 				}else if(itemmeta.getDisplayName().contains("No9015「???」")){
-					TUTR.TryTitle(player,9015);
+					SeichiAchievement.tryAchieve(player,9015);
 				}else if(itemmeta.getDisplayName().contains("No9016「???」")){
-					TUTR.TryTitle(player,9016);
+					SeichiAchievement.tryAchieve(player,9016);
 				}else if(itemmeta.getDisplayName().contains("No9017「???」")){
-					TUTR.TryTitle(player,9017);
+					SeichiAchievement.tryAchieve(player,9017);
 				}else if(itemmeta.getDisplayName().contains("No9018「???」")){
-					TUTR.TryTitle(player,9018);
+					SeichiAchievement.tryAchieve(player,9018);
 				}else if(itemmeta.getDisplayName().contains("No9019「???」")){
-					TUTR.TryTitle(player,9019);
+					SeichiAchievement.tryAchieve(player,9019);
 				}else if(itemmeta.getDisplayName().contains("No9020「???」")){
-					TUTR.TryTitle(player,9020);
+					SeichiAchievement.tryAchieve(player,9020);
 				}else if(itemmeta.getDisplayName().contains("No9021「???」")){
-					TUTR.TryTitle(player,9021);
+					SeichiAchievement.tryAchieve(player,9021);
 				}else if(itemmeta.getDisplayName().contains("No9022「???」")){
-					TUTR.TryTitle(player,9022);
+					SeichiAchievement.tryAchieve(player,9022);
 				}else if(itemmeta.getDisplayName().contains("No9023「???」")){
-					TUTR.TryTitle(player,9023);
+					SeichiAchievement.tryAchieve(player,9023);
 				}else if(itemmeta.getDisplayName().contains("No9024「???」")){
-					TUTR.TryTitle(player,9024);
+					SeichiAchievement.tryAchieve(player,9024);
 				}else if(itemmeta.getDisplayName().contains("No9025「???」")){
-					TUTR.TryTitle(player,9025);
+					SeichiAchievement.tryAchieve(player,9025);
 				}else if(itemmeta.getDisplayName().contains("No9026「???」")){
-					TUTR.TryTitle(player,9026);
+					SeichiAchievement.tryAchieve(player,9026);
 				}else if(itemmeta.getDisplayName().contains("No9027「???」")){
-					TUTR.TryTitle(player,9027);
+					SeichiAchievement.tryAchieve(player,9027);
 				}else if(itemmeta.getDisplayName().contains("No9028「???」")){
-					TUTR.TryTitle(player,9028);
+					SeichiAchievement.tryAchieve(player,9028);
 				}else if(itemmeta.getDisplayName().contains("No9029「???」")){
-					TUTR.TryTitle(player,9029);
+					SeichiAchievement.tryAchieve(player,9029);
 				}else if(itemmeta.getDisplayName().contains("No9030「???」")){
-					TUTR.TryTitle(player,9030);
+					SeichiAchievement.tryAchieve(player,9030);
 				}else if(itemmeta.getDisplayName().contains("No9031「???」")){
-					TUTR.TryTitle(player,9031);
+					SeichiAchievement.tryAchieve(player,9031);
 				}else if(itemmeta.getDisplayName().contains("No9032「???」")){
-					TUTR.TryTitle(player,9032);
+					SeichiAchievement.tryAchieve(player,9032);
 				}else if(itemmeta.getDisplayName().contains("No9033「???」")){
-					TUTR.TryTitle(player,9033);
+					SeichiAchievement.tryAchieve(player,9033);
 				}else if(itemmeta.getDisplayName().contains("No9034「???」")){
-					TUTR.TryTitle(player,9034);
+					SeichiAchievement.tryAchieve(player,9034);
 				}else if(itemmeta.getDisplayName().contains("No9035「???」")){
-					TUTR.TryTitle(player,9035);
+					SeichiAchievement.tryAchieve(player,9035);
 				}else if(itemmeta.getDisplayName().contains("No9036「???」")){
-					TUTR.TryTitle(player,9036);
+					SeichiAchievement.tryAchieve(player,9036);
 				}
 
 				player.openInventory(MenuInventoryData.getTitleExtraData(player));
