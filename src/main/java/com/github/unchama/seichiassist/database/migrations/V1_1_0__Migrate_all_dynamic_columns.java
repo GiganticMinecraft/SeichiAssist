@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.database.migration;
+package com.github.unchama.seichiassist.database.migrations;
 
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.github.unchama.util.collection.SetFactory;
