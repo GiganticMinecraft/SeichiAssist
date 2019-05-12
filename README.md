@@ -27,15 +27,16 @@
 
 前提プラグインのjarを`${プロジェクトディレクトリ}/localDependencies`にコピーしてください。
 
-Mavenがコマンドラインで使える状態で`mvn install`を実行すると、`target`フォルダにjarが出力されます。
+Gradleがコマンドラインで使える状態で`gradle build`を実行すると、`target`フォルダにjarが出力されます。
 
-Eclipseを開発に使用している場合、プロジェクトをmavenプロジェクトとして読み込み、
+// TODO Eclipse
+Eclipseを開発に使用している場合、プロジェクトをgradleプロジェクトとして読み込み、
 実行(R) -> 実行(S) -> Maven Clean を実行
 そのあと、実行(R) -> 実行(S) -> Maven Install を実行
 すれば`target`フォルダにjarが出力されます。
 
-IntelliJ IDEAを開発に使用している場合、プロジェクトをmavenプロジェクトとして読み込み、
-MavenタブからLifecycle -> installを実行すれば`target`フォルダにjarが出力されます。
+IntelliJ IDEAを開発に使用している場合、プロジェクトをgradleプロジェクトとして読み込み、
+GradleタブからTasks -> build -> jarを実行すれば`target`フォルダにjarが出力されます。
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
