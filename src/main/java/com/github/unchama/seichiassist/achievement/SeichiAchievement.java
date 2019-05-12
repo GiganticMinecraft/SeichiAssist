@@ -190,7 +190,12 @@ public enum SeichiAchievement {
 
     public void achieve(Player player) {
         PlayerData playerData = getPlayerData(player);
-        if (!playerData.TitleFlags.get(id) && condition.test(player)) {
+        if (playerData.TitleFlags.get(id)) return;
+
+        if (!condition.test(player)) {
+            // TODO: this shouldn't be here
+            if (9000 < id && id < 10000) player.sendMessage("実績No" + id + "は条件を満たしていません。");
+        } else {
             playerData.TitleFlags.set(id);
             player.sendMessage("実績No" + id + "解除！おめでとうございます！");
         }
