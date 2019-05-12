@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.database.migration;
 
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.util.collection.ImmutableListFactory;
+import com.github.unchama.util.collection.SetFactory;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
@@ -171,22 +170,23 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
         public void migrate(Connection connection, Set<String> playerDataColumnNames) {
             /*
              * マイグレーションが実行される環境において、
-             * ActiveSkillEffect及びActiveSkillPremiumEffectのenumに入っている値に対応するカラムのみが
+             * https://github.com/GiganticMinecraft/SeichiAssist/commit/e1c69b76e5dc92db0133544342d424b7be9cd0ea
+             * の時点でActiveSkillEffect及びActiveSkillPremiumEffectのenumに入っている値に対応するカラムのみが
              * DBに格納されているという仮定に基づいたロジックである。
-             *
-             * カラム名がそもそもenumのパラメータにより指定されているためこうする他無い。
              */
-            final Set<String> activeSkillEffectNames = playerDataColumnNames
+            final Set<String> activeSkillEffectNames = SetFactory.of("ef_explosion", "ef_blizzard", "ef_meteo");
+            final Set<String> activeSkillEffectTableNames = playerDataColumnNames
                     .stream()
-                    .filter(columnName -> ActiveSkillEffect.fromSqlName(columnName) != null)
+                    .filter(activeSkillEffectNames::contains)
                     .collect(Collectors.toSet());
-            migrateActiveSkillEffect(connection, activeSkillEffectNames);
+            migrateActiveSkillEffect(connection, activeSkillEffectTableNames);
 
-            final Set<String> activeSkillPremiumEffectNames = playerDataColumnNames
+            final Set<String> activeSkillPremiumEffectNames = SetFactory.of("ef_magic");
+            final Set<String> activeSkillPremiumEffectTableNames = playerDataColumnNames
                     .stream()
-                    .filter(columnName -> ActiveSkillPremiumEffect.fromSqlName(columnName) != null)
+                    .filter(activeSkillPremiumEffectNames::contains)
                     .collect(Collectors.toSet());
-            migrateActiveSkillPremiumEffect(connection, activeSkillPremiumEffectNames);
+            migrateActiveSkillPremiumEffect(connection, activeSkillPremiumEffectTableNames);
         }
     }
 
