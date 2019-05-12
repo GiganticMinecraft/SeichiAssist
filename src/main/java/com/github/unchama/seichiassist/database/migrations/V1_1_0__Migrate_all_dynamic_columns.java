@@ -189,41 +189,61 @@ public class V1_1_0__Migrate_all_dynamic_columns extends ChecksumProvidingMigrat
         }
     }
 
+    private static class SubHomeMetaLocation {
+        private final @NotNull String serverId;
+        private final @NotNull SubHomeWorldLocation worldLocation;
+
+        private SubHomeMetaLocation(@NotNull String serverId, @NotNull SubHomeWorldLocation worldLocation) {
+            this.serverId = serverId;
+            this.worldLocation = worldLocation;
+        }
+    }
+
+    private static class SubHomeWorldLocation {
+        private final @NotNull String x;
+        private final @NotNull String y;
+        private final @NotNull String z;
+        private final @NotNull String worldName;
+
+        private SubHomeWorldLocation(@NotNull String x, @NotNull String y, @NotNull String z, @NotNull String worldName) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.worldName = worldName;
+        }
+    }
+
     /**
      * サブホームの情報を含むData Transfer Objectのクラス
      */
     private static class SubHomeDTO {
         private final @NotNull String id;
-        private final @NotNull String playerUuid;
-        private final @NotNull String serverId;
+        private final @NotNull String ownerUuid;
         public final @Nullable String name;
-        private final @NotNull String xCoordinate;
-        private final @NotNull String yCoordinate;
-        private final @NotNull String zCoordinate;
-        private final @NotNull String worldName;
+        private final @NotNull SubHomeMetaLocation metaLocation;
 
         SubHomeDTO(@NotNull String id,
                    @NotNull String playerUuid,
-                   @NotNull String serverId,
                    @Nullable String name,
-                   @NotNull String xCoordinate,
-                   @NotNull String yCoordinate,
-                   @NotNull String zCoordinate,
-                   @NotNull String worldName) {
+                   @NotNull SubHomeMetaLocation metaLocation) {
             this.id = id;
-            this.playerUuid = playerUuid;
-            this.serverId = serverId;
+            this.ownerUuid = playerUuid;
             this.name = name;
-            this.xCoordinate = xCoordinate;
-            this.yCoordinate = yCoordinate;
-            this.zCoordinate = zCoordinate;
-            this.worldName = worldName;
+            this.metaLocation = metaLocation;
         }
 
         /* package-private */ String generateTemplateForInsertionCommand() {
+            final String serverId = metaLocation.serverId;
+
+            final SubHomeWorldLocation worldLocation = metaLocation.worldLocation;
+            final String xCoordinate = worldLocation.x;
+            final String yCoordinate = worldLocation.y;
+            final String zCoordinate = worldLocation.z;
+            final String worldName = worldLocation.worldName;
+
             return "insert into sub_home " +
                     "(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name) " +
-                    "values ('" + playerUuid + "', " + serverId + ", " + id + ", " +
+                    "values ('" + ownerUuid + "', " + serverId + ", " + id + ", " +
                     "?, " + xCoordinate + ", " + yCoordinate + ", " + zCoordinate + ", '" + worldName + "')";
         }
 
@@ -238,24 +258,23 @@ public class V1_1_0__Migrate_all_dynamic_columns extends ChecksumProvidingMigrat
             this.serverId = serverId;
         }
 
-        private Optional<SubHomeDTO> parseIndividualRawData(int index,
+        private Optional<SubHomeDTO> parseIndividualRawData(@NotNull String subHomeId,
                                                             @NotNull List<@NotNull String> homePointData,
                                                             @NotNull String subHomeName) {
-            final @NotNull String xCoordinate = homePointData.get(0);
-            final @NotNull String yCoordinate = homePointData.get(1);
-            final @NotNull String zCoordinate = homePointData.get(2);
+            final @NotNull String x = homePointData.get(0);
+            final @NotNull String y = homePointData.get(1);
+            final @NotNull String z = homePointData.get(2);
             final @NotNull String worldName = homePointData.get(3);
 
-            // セットされていないかどうかはx座標データについて空文字テストをすれば十分である
-            if (xCoordinate.equals("")) return Optional.empty();
+            final @Nullable String nonEmptyName = subHomeName.equals("") ? null : subHomeName;
 
-            final SubHomeDTO dto =
-                    new SubHomeDTO(
-                            String.valueOf(index),
-                            uuid, serverId,
-                            subHomeName.equals("") ? null : subHomeName,
-                            xCoordinate, yCoordinate, zCoordinate, worldName
-                    );
+            // セットされていないかどうかはx座標データについて空文字テストをすれば十分である
+            if (x.equals("")) return Optional.empty();
+
+            final SubHomeWorldLocation worldLocation = new SubHomeWorldLocation(x, y, z, worldName);
+            final SubHomeMetaLocation metaLocation = new SubHomeMetaLocation(serverId, worldLocation);
+
+            final SubHomeDTO dto = new SubHomeDTO(subHomeId, uuid, nonEmptyName, metaLocation);
 
             return Optional.of(dto);
         }
@@ -295,7 +314,10 @@ public class V1_1_0__Migrate_all_dynamic_columns extends ChecksumProvidingMigrat
             return IntStream
                     .range(0, subHomeCount)
                     .mapToObj(index ->
-                            parseIndividualRawData(index, rawHomePoints.get(index), rawSubHomesNames.get(index)))
+                            parseIndividualRawData(
+                                    String.valueOf(index), rawHomePoints.get(index), rawSubHomesNames.get(index)
+                            )
+                    )
                     .collect(Collectors.toList());
         }
 
