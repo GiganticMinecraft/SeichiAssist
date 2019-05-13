@@ -35,7 +35,7 @@ Eclipseを開発に使用している場合、プロジェクトをgradleプロ�
 すれば`target`フォルダにjarが出力されます。
 
 IntelliJ IDEAを開発に使用している場合、プロジェクトをgradleプロジェクトとして読み込み、
-GradleタブからTasks -> build -> jarを実行すれば`target`フォルダにjarが出力されます。
+GradleタブからTasks -> build -> jarを実行すれば`build/lib`フォルダにjarが出力されます。
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
