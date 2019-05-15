@@ -1,5 +1,6 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 import java.net.URI
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
@@ -14,6 +15,7 @@ description = """ギガンティック☆整地鯖の独自要素を司るプラ
 
 project.sourceSets {
     getByName("main") { java.srcDir("src/main/java") }
+    getByName("main") { java.srcDir("src/main/kotlin") }
     getByName("test") { java.srcDir("src/test/java") }
 }
 
@@ -48,6 +50,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 
     embed("org.flywaydb:flyway-core:5.2.4")
+    embed(kotlin("stdlib-jdk8"))
 }
 
 tasks.processResources {
