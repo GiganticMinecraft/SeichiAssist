@@ -6,7 +6,6 @@ import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Skulls;
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.GachaData;
@@ -195,13 +194,13 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RESET + "" +  ChatColor.GRAY + "/hubと入力してEnterを押してください");
 				}
 
-			}else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()))){
+			}else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData2(player));
 			}
 
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
@@ -318,7 +317,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//経験値を消費してプレイヤーの頭を召喚
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.VILLAGER.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_Villager")){
 				//経験値変更用のクラスを設定
 				//経験値が足りなかったら処理を終了
 				if(!expman.hasExp(10000)){
@@ -740,7 +739,7 @@ public class PlayerInventoryListener implements Listener {
 
 			//ページ変更処理
 			// ->
-			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
@@ -975,7 +974,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//ページ変更処理
-			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
@@ -1065,7 +1064,7 @@ public class PlayerInventoryListener implements Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 			//ページ変更処理
-			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 0.1);
 				player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
@@ -1739,7 +1738,7 @@ public class PlayerInventoryListener implements Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 			//ページ変更処理
-			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
@@ -1747,7 +1746,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//ページ変更処理
-			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
@@ -2220,12 +2219,12 @@ public class PlayerInventoryListener implements Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 			//ページ変更処理
-			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 			}
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_DOWN.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				if(itemmeta.getDisplayName().contains("整地神ランキング") &&
 						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
@@ -2236,7 +2235,7 @@ public class PlayerInventoryListener implements Listener {
 					player.openInventory(MenuInventoryData.getRankingList(player, page_display-1));
 				}
 			}
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_UP.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				if(itemmeta.getDisplayName().contains("整地神ランキング") &&
 						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
@@ -2291,12 +2290,12 @@ public class PlayerInventoryListener implements Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 			//ページ変更処理
-			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 			}
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_DOWN.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				if(itemmeta.getDisplayName().contains("ログイン神ランキング") &&
 						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
@@ -2307,7 +2306,7 @@ public class PlayerInventoryListener implements Listener {
 					player.openInventory(MenuInventoryData.getRankingList_playtick(player, page_display-1));
 				}
 			}
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_UP.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				if(itemmeta.getDisplayName().contains("ログイン神ランキング") &&
 						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
@@ -2362,12 +2361,12 @@ public class PlayerInventoryListener implements Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 			//ページ変更処理
-			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 			}
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_DOWN.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				if(itemmeta.getDisplayName().contains("投票神ランキング") &&
 						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
@@ -2378,7 +2377,7 @@ public class PlayerInventoryListener implements Listener {
 					player.openInventory(MenuInventoryData.getRankingList_p_vote(player, page_display-1));
 				}
 			}
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_UP.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				if(itemmeta.getDisplayName().contains("投票神ランキング") &&
 						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
@@ -2433,12 +2432,12 @@ public class PlayerInventoryListener implements Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 			//ページ変更処理
-			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 			}
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_DOWN.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				if(itemmeta.getDisplayName().contains("寄付神ランキング") &&
 						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
@@ -2449,7 +2448,7 @@ public class PlayerInventoryListener implements Listener {
 					player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(player, page_display-1));
 				}
 			}
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_UP.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp")){
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				if(itemmeta.getDisplayName().contains("寄付神ランキング") &&
 						itemmeta.getDisplayName().contains("ページ目") ){//移動するページの種類を判定
@@ -2505,7 +2504,7 @@ public class PlayerInventoryListener implements Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 			//ページ変更処理
-			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
@@ -2775,7 +2774,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//予約付与システム受け取り処理
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.PRESENT2.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_Present2")){
 				TUTR.TryTitle(player,playerdata.giveachvNo);
 				playerdata.giveachvNo = 0 ;
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
@@ -2826,7 +2825,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//ホームメニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 				return;
@@ -2862,7 +2861,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleMenuData(player));
 				return;
@@ -2886,7 +2885,7 @@ public class PlayerInventoryListener implements Listener {
 			//実績未実装のカテゴリです。
 
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleMenuData(player));
 				return;
@@ -2936,7 +2935,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleMenuData(player));
 				return;
@@ -2960,7 +2959,7 @@ public class PlayerInventoryListener implements Listener {
 			//実績未実装のカテゴリです。
 
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleMenuData(player));
 				return;
@@ -3003,7 +3002,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleMenuData(player));
 				return;
@@ -3094,7 +3093,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleMenuData(player));
 				return;
@@ -3145,7 +3144,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//次ページ
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.setFreeTitle1Data(player));
 				return;
@@ -3197,7 +3196,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//次ページ
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.setFreeTitle2Data(player));
 				return;
@@ -3249,7 +3248,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//次ページ
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.setFreeTitle3Data(player));
 				return;
@@ -3329,7 +3328,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//次ページ
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.setTitleShopData(player));
 				return;
@@ -3450,7 +3449,7 @@ public class PlayerInventoryListener implements Listener {
 
 			}
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleSeichi(player));
 				return;
@@ -3616,7 +3615,7 @@ public class PlayerInventoryListener implements Listener {
 
 			}
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleSeichi(player));
 				return;
@@ -3837,7 +3836,7 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getTitleTimeData(player));
 			}
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleLogin(player));
 				return;
@@ -4024,7 +4023,7 @@ public class PlayerInventoryListener implements Listener {
 
 			}
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleLogin(player));
 				return;
@@ -4121,7 +4120,7 @@ public class PlayerInventoryListener implements Listener {
 
 			}
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleLogin(player));
 				return;
@@ -4213,7 +4212,7 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getTitleSupportData(player));
 			}
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleSpecial(player));
 				return;
@@ -4505,7 +4504,7 @@ public class PlayerInventoryListener implements Listener {
 
 			}
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleSpecial(player));
 				return;
@@ -4884,14 +4883,14 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getTitleExtraData(player));
 			}
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleLogin(player));
 				return;
 			}
 
 			//次ページ
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				playerdata.titlepage ++ ;
 				player.openInventory(MenuInventoryData.getTitleExtraData(player));
@@ -4951,7 +4950,7 @@ public class PlayerInventoryListener implements Listener {
 
 			}
 			//実績メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getTitleSpecial(player));
 			}
@@ -5448,7 +5447,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//棒メニューに戻る
-			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()))){
+			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 			}
