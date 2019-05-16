@@ -4,6 +4,7 @@ import com.github.unchama.util.collection.ImmutableListFactory;
 import com.github.unchama.util.collection.SetFactory;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
 import static com.github.unchama.seichiassist.util.TypeConverter.isParsableToInteger;
 
 @SuppressWarnings("unused")
-public class V1_1_0__Migrate_all_dynamic_columns extends ChecksumProvidingMigration {
+public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
 
     @Override
     public void migrate(Context context) throws Exception {
