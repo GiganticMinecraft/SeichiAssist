@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.ExternalPlugins;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.sk89q.worldguard.bukkit.WorldConfiguration;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -35,8 +36,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-
-import com.github.unchama.seichiassist.extension.InventoryKt;
 
 public class MenuInventoryData {
 	private static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
@@ -124,7 +123,7 @@ public class MenuInventoryData {
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerdata.uuid));
 		//ExpBarトグル追加
 		itemstack.setItemMeta(dispExpBarToggleMeta(playerdata,skullmeta));
-		InventoryKt.setItemAsync(inventory,0,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,0,itemstack.clone());
 
 		//採掘速度上昇効果のトグルボタン
 		itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
@@ -218,7 +217,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowRight");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,35,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,35,itemstack.clone());
 
 		// 整地神番付を開く
 		itemstack = new ItemStack(Material.COOKIE,1);
@@ -283,7 +282,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(SorryGachaGetButtonLore(playerdata));
 		skullmeta.setOwner("whitecat_haru");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,29,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,29,itemstack.clone());
 
 		// 不要ガチャ景品交換システムを開く
 		itemstack = new ItemStack(Material.NOTE_BLOCK,1);
@@ -418,7 +417,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(GachaGetButtonLore(playerdata));
 		skullmeta.setOwner("unchama");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		//ガチャ券受け取り方法選択ボタン
 		itemstack = new ItemStack(Material.STONE_BUTTON,1);
@@ -536,7 +535,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_Villager");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,12,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,12,itemstack.clone());
 
 		//全体通知のトグルボタン
 		itemstack = new ItemStack(Material.JUKEBOX,1);
@@ -586,7 +585,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		// ver0.3.2 wikiページ表示
 		itemstack = new ItemStack(Material.BOOK,1);
@@ -733,7 +732,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		//複数種類同時破壊スキルのトグルボタン
 		itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
@@ -973,7 +972,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 
 		List<HistoryData> history = pd.hisotryData.getHistoryList();
 		int slot = 18;
@@ -1113,7 +1112,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_ArrowLeft");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		} else if(page>=1){
 			// MineStackの前のページを開く
 			itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1124,7 +1123,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_ArrowUp");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		}
 
 		if(maxpage>=1 && page!=maxpage){ //3ページ以降があって現在は最大ページ目でない
@@ -1137,7 +1136,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_ArrowDown");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,53,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,53,itemstack.clone());
 		}
 
 		return inventory;
@@ -1466,7 +1465,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner(rankdata.name);
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,count2,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,count2,itemstack.clone());
 		}
 
 		if(page!=maxpage){
@@ -1478,7 +1477,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowDown");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,52,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,52,itemstack.clone());
 		}
 
 		// 1ページ目を開く
@@ -1489,7 +1488,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_ArrowLeft");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		} else {
 			// 整地神ランキング前ページ目を開く;
 			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング"+page+"ページ目へ");
@@ -1498,7 +1497,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_ArrowUp");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		}
 
 		// 総整地量の表記
@@ -1510,7 +1509,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("unchama");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,53,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,53,itemstack.clone());
 
 		return inventory;
 	}
@@ -1546,7 +1545,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner(rankdata.name);
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,count2,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,count2,itemstack.clone());
 		}
 
 		if(page!=maxpage){
@@ -1558,7 +1557,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowDown");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,52,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,52,itemstack.clone());
 		}
 
 		// 1ページ目を開く
@@ -1569,7 +1568,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_ArrowLeft");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		} else {
 			// 整地神ランキング前ページ目を開く;
 			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ログイン神ランキング"+page+"ページ目へ");
@@ -1578,7 +1577,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_ArrowUp");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		}
 
 		// 総整地量の表記
@@ -1629,7 +1628,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner(rankdata.name);
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,count2,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,count2,itemstack.clone());
 		}
 
 		if(page!=maxpage){
@@ -1641,7 +1640,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowDown");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,52,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,52,itemstack.clone());
 		}
 
 		// 1ページ目を開く
@@ -1652,7 +1651,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_ArrowLeft");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		} else {
 			// 整地神ランキング前ページ目を開く;
 			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票神ランキング"+page+"ページ目へ");
@@ -1661,7 +1660,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_ArrowUp");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		}
 
 		// 総整地量の表記
@@ -1710,7 +1709,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner(rankdata.name);
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,count2,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,count2,itemstack.clone());
 		}
 
 		if(page!=maxpage){
@@ -1722,7 +1721,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowDown");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,52,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,52,itemstack.clone());
 		}
 
 		// 1ページ目を開く
@@ -1733,7 +1732,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_ArrowLeft");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		} else {
 			// 整地神ランキング前ページ目を開く;
 			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付神ランキング"+page+"ページ目へ");
@@ -1742,7 +1741,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_ArrowUp");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		}
 
 		// 総整地量の表記
@@ -1792,7 +1791,7 @@ public class MenuInventoryData {
 				skullmeta.setLore(lore);
 				skullmeta.setOwner("MHF_ArrowLeft");
 				itemstack.setItemMeta(skullmeta);
-				InventoryKt.setItemAsync(inventory,45,itemstack.clone());
+				AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 
 				//1行目
 
@@ -1812,7 +1811,7 @@ public class MenuInventoryData {
 				// この操作は安全; メニューを開けているのにUUIDがないなんてことがないから
 				skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerdata.uuid)); //.setOwner(playerdata.name);
 				itemstack.setItemMeta(skullmeta);
-				InventoryKt.setItemAsync(inventory,0,itemstack.clone());
+				AsyncInventorySetter.setItemAsync(inventory,0,itemstack.clone());
 
 
 				itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
@@ -1907,7 +1906,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		databaseGateway.donateDataManipulator.loadDonateData(playerdata,inventory);
 
@@ -1959,7 +1958,7 @@ public class MenuInventoryData {
 			skullmeta.setLore(lore);
 			skullmeta.setOwner("MHF_Present2");
 			itemstack.setItemMeta(skullmeta);
-			InventoryKt.setItemAsync(inventory,1,itemstack.clone());
+			AsyncInventorySetter.setItemAsync(inventory,1,itemstack.clone());
 		}
 
 		//二つ名組合せシステム画面へ移動
@@ -2039,7 +2038,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -2172,7 +2171,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -2237,7 +2236,7 @@ public class MenuInventoryData {
 				skullmeta.setLore(lore);
 				skullmeta.setOwner("MHF_ArrowRight");
 				itemstack.setItemMeta(skullmeta);
-				InventoryKt.setItemAsync(inventory,35,itemstack.clone());
+				AsyncInventorySetter.setItemAsync(inventory,35,itemstack.clone());
 
 				nextpageflag1 = true ;
 
@@ -2346,7 +2345,7 @@ public class MenuInventoryData {
 				skullmeta.setLore(lore);
 				skullmeta.setOwner("MHF_ArrowRight");
 				itemstack.setItemMeta(skullmeta);
-				InventoryKt.setItemAsync(inventory,35,itemstack.clone());
+				AsyncInventorySetter.setItemAsync(inventory,35,itemstack.clone());
 
 				break;
 			}
@@ -2435,7 +2434,7 @@ public class MenuInventoryData {
 				skullmeta.setLore(lore);
 				skullmeta.setOwner("MHF_ArrowRight");
 				itemstack.setItemMeta(skullmeta);
-				InventoryKt.setItemAsync(inventory,35,itemstack.clone());
+				AsyncInventorySetter.setItemAsync(inventory,35,itemstack.clone());
 
 				nextpageflag3 = true ;
 
@@ -2539,7 +2538,7 @@ public class MenuInventoryData {
 				skullmeta.setLore(lore);
 				skullmeta.setOwner("MHF_ArrowRight");
 				itemstack.setItemMeta(skullmeta);
-				InventoryKt.setItemAsync(inventory,35,itemstack.clone());
+				AsyncInventorySetter.setItemAsync(inventory,35,itemstack.clone());
 
 				nextpageflagS = true ;
 
@@ -2576,7 +2575,7 @@ public class MenuInventoryData {
 				skullmeta.setLore(lore);
 				skullmeta.setOwner("MHF_ArrowRight");
 				itemstack.setItemMeta(skullmeta);
-				InventoryKt.setItemAsync(inventory,35,itemstack.clone());
+				AsyncInventorySetter.setItemAsync(inventory,35,itemstack.clone());
 
 				nextpageflagS = true ;
 
@@ -2652,7 +2651,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -2692,7 +2691,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -2762,7 +2761,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -2816,7 +2815,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -2879,7 +2878,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -3190,7 +3189,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -3704,7 +3703,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -4341,7 +4340,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -4870,7 +4869,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -5083,7 +5082,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -5305,7 +5304,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -6113,7 +6112,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -6905,7 +6904,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		//次ページへのボタンを配置
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -6916,7 +6915,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowRight");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,35,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,35,itemstack.clone());
 
 
 		return inventory;
@@ -7036,7 +7035,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		return inventory;
 	}
@@ -7154,7 +7153,7 @@ public class MenuInventoryData {
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		InventoryKt.setItemAsync(inventory,27,itemstack.clone());
+		AsyncInventorySetter.setItemAsync(inventory,27,itemstack.clone());
 
 		//妖精召喚時間設定トグルボタン
 		itemstack = new ItemStack(Material.WATCH);
