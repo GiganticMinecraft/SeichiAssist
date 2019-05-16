@@ -1,10 +1,22 @@
 package com.github.unchama.seichiassist.util;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.Skulls;
+import com.github.unchama.seichiassist.Worlds;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Difficulty;
+import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Builder;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.SkullType;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.entity.EntityType;
@@ -19,7 +31,14 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 public final class Util {
@@ -83,10 +102,10 @@ public final class Util {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
-		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者:" + name);
 		skullmeta.setLore(lore);
-		skullmeta.setOwner("unchama");
+		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.UNCHAMA.getUuid()));
 		skull.setItemMeta(skullmeta);
 		return skull;
 	}
@@ -110,7 +129,7 @@ public final class Util {
 	}
 	//がちゃりんごの説明を取得
 	public static List<String> getGachaRingoLore(){
-		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "序盤に重宝します。"
+		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GRAY + "序盤に重宝します。"
 				, ChatColor.RESET + "" +  ChatColor.AQUA + "マナ回復（小）");
 		return lore;
 	}
@@ -130,7 +149,7 @@ public final class Util {
 	}
 	//椎名林檎の説明を取得
 	public static List<String> getMaxRingoLore(String name){
-		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "使用するとマナが全回復します"
+		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GRAY + "使用するとマナが全回復します"
 				, ChatColor.RESET + "" +  ChatColor.AQUA + "マナ完全回復"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者:" + name
 				, ChatColor.RESET + "" +  ChatColor.GRAY + "ガチャ景品と交換しました。");
@@ -453,8 +472,8 @@ public final class Util {
 		if(!skullmeta.hasOwner()){
 			return false;
 		}
-		//ownerがうんちゃまじゃない時の処理
-		return skullmeta.getOwner().equals("unchama");
+		// オーナーがunchamaか？
+		return skullmeta.getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.UNCHAMA.getUuid()));
 	}
 	public static boolean removeItemfromPlayerInventory(PlayerInventory inventory,
 			ItemStack itemstack, int count) {
@@ -477,7 +496,7 @@ public final class Util {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
-		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "運営から不具合のお詫びです");
 		skullmeta.setLore(lore);
@@ -492,11 +511,11 @@ public final class Util {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
-		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name
 				,ChatColor.RESET + "" +  ChatColor.LIGHT_PURPLE + "投票ありがとナス♡");
 		skullmeta.setLore(lore);
-		skullmeta.setOwner("unchama");
+		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.UNCHAMA.getUuid()));
 		skull.setItemMeta(skullmeta);
 		return skull;
 	}
@@ -507,7 +526,7 @@ public final class Util {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
-		List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name
 				,ChatColor.RESET + "" +  ChatColor.GRAY + "ガチャ景品と交換しました。");
 		skullmeta.setLore(lore);
@@ -823,7 +842,7 @@ public final class Util {
 		return (ChatColor.DARK_RED + "死神の鎌");
 	}
 	private static List<String> getMineHeadItemLore() {
-		return Arrays.asList(
+		return ImmutableListFactory.of(
 				ChatColor.RED + "頭を狩り取る形をしている..."
 				,""
 				,ChatColor.GRAY + "設置してある頭が"

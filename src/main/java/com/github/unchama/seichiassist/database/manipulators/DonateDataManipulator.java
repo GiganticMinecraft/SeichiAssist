@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseConstants;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.util.ActionStatus;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -14,7 +15,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 
 public class DonateDataManipulator {
@@ -71,7 +71,7 @@ public class DonateDataManipulator {
                     itemstack = new ItemStack(Material.DIAMOND);
                     itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND);
                     itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付");
-                    lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "" + "金額：" + lrs.getInt("getpoint")*100,
+                    lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "" + "金額：" + lrs.getInt("getpoint")*100,
                             ChatColor.RESET + "" +  ChatColor.GREEN + "" + "プレミアムエフェクトポイント：+" + lrs.getInt("getpoint"),
                             ChatColor.RESET + "" +  ChatColor.GREEN + "" + "日時：" + lrs.getString("date")
                     );
@@ -84,7 +84,7 @@ public class DonateDataManipulator {
                     itemstack = new ItemStack(material);
                     itemmeta = Bukkit.getItemFactory().getItemMeta(material);
                     itemmeta.setDisplayName(ChatColor.RESET + "" +  ChatColor.YELLOW + "購入エフェクト：" + effect[num].getName());
-                    lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GOLD + "" + "プレミアムエフェクトポイント： -" + lrs.getInt("usepoint"),
+                    lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GOLD + "" + "プレミアムエフェクトポイント： -" + lrs.getInt("usepoint"),
                             ChatColor.RESET + "" +  ChatColor.GOLD + "" + "日時：" + lrs.getString("date")
                     );
                     itemmeta.setLore(lore);

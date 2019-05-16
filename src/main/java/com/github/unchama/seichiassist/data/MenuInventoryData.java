@@ -14,6 +14,7 @@ import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.ExternalPlugins;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import com.sk89q.worldguard.bukkit.WorldConfiguration;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -29,7 +30,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class MenuInventoryData {
 	private static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
@@ -207,7 +213,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "2ページ目へ");
-		lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -233,8 +239,7 @@ public class MenuInventoryData {
 				,ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
 				);
 		*/
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(33,itemstack);
@@ -247,8 +252,7 @@ public class MenuInventoryData {
 				,ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
 				);
 		/*
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く");
 		*/
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -468,7 +472,7 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND);
 		itemmeta.addEnchant(Enchantment.DURABILITY, 100, false);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票ptメニュー");
-		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "投票ptに関することはこちらから！");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GREEN + "投票ptに関することはこちらから！");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -578,8 +582,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "1ページ目へ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -726,7 +729,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ");
-		lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -1106,8 +1109,7 @@ public class MenuInventoryData {
 			SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 			itemstack.setDurability((short) 3);
 			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStackメインメニューへ");
-			List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-					);
+			List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 			skullmeta.setLore(lore);
 			skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 			itemstack.setItemMeta(skullmeta);
@@ -1118,8 +1120,7 @@ public class MenuInventoryData {
 			SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 			itemstack.setDurability((short) 3);
 			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack" + page + "ページ目へ");
-			List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+			List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 			skullmeta.setLore(lore);
 			skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_UP.getUuid()));
 			itemstack.setItemMeta(skullmeta);
@@ -1132,8 +1133,7 @@ public class MenuInventoryData {
 			SkullMeta skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 			itemstack.setDurability((short) 3);
 			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack" + (page+2) + "ページ目へ");
-			List<String> lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+			List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 			skullmeta.setLore(lore);
 			skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_DOWN.getUuid()));
 			itemstack.setItemMeta(skullmeta);
@@ -1788,8 +1788,7 @@ public class MenuInventoryData {
 				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 				itemstack.setDurability((short) 3);
 				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スキルメニューへ");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-						);
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 				skullmeta.setLore(lore);
 				skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 				itemstack.setItemMeta(skullmeta);
@@ -1819,7 +1818,7 @@ public class MenuInventoryData {
 				itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
 				itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで閲覧");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで閲覧");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(2,itemstack);
@@ -1828,7 +1827,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
 				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エフェクトを使用しない");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
 				inventory.setItem(1,itemstack);
@@ -1904,8 +1903,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エフェクト選択メニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -1968,7 +1966,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.ANVIL,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ANVIL);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「二つ名組合せシステム」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "設定画面を表示します。");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "設定画面を表示します。");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -1989,7 +1987,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.GLASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「建築」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.YELLOW + "今後実装予定のカテゴリです。");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.YELLOW + "今後実装予定のカテゴリです。");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2037,8 +2035,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -2097,7 +2094,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.ITEM_FRAME,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ITEM_FRAME);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイントショップ" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "クリックで開きます");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GREEN + "クリックで開きます");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2122,8 +2119,8 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BOOK,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "「" + SeichiAssist.config.getTitle1(playerdata.displayTitle1No)
-				+ SeichiAssist.config.getTitle2(playerdata.displayTitle2No) + SeichiAssist.config.getTitle3(playerdata.displayTitle3No) +"」");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.config.getTitle1(playerdata.displayTitle1No)
+				+ SeichiAssist.config.getTitle2(playerdata.displayTitle2No) + SeichiAssist.config.getTitle3(playerdata.displayTitle3No) + "」");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2132,7 +2129,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.WATER_BUCKET,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATER_BUCKET);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツ選択画面" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "クリックで移動します");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2141,7 +2138,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.MILK_BUCKET,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MILK_BUCKET);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "中パーツ選択画面" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "クリックで移動します");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2150,7 +2147,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.LAVA_BUCKET,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAVA_BUCKET);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツ選択画面" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "クリックで移動します");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2159,7 +2156,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.WATER_BUCKET,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATER_BUCKET);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツ選択画面" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "クリックで移動します");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2171,8 +2168,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -2221,7 +2217,7 @@ public class MenuInventoryData {
 						itemstack = new ItemStack(Material.WATER_BUCKET,1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATER_BUCKET);
 						itemmeta.setDisplayName(String.valueOf(checkTitle1));
-						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "前パーツ「"+ SeichiAssist.config.getTitle1(checkTitle1) +"」");
+						lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "前パーツ「" + SeichiAssist.config.getTitle1(checkTitle1) + "」");
 						itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 						itemmeta.setLore(lore);
 						itemstack.setItemMeta(itemmeta);
@@ -2237,8 +2233,7 @@ public class MenuInventoryData {
 				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 				itemstack.setDurability((short) 3);
 				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-						);
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 				skullmeta.setLore(lore);
 				skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()));
 				itemstack.setItemMeta(skullmeta);
@@ -2256,8 +2251,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.GRASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツを未選択状態にする");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2267,8 +2261,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BARRIER,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BARRIER);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2319,7 +2312,7 @@ public class MenuInventoryData {
 							itemstack = new ItemStack(Material.MILK_BUCKET,1);
 							itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MILK_BUCKET);
 							itemmeta.setDisplayName(String.valueOf(checkTitle2));
-							lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "中パーツ「"+ SeichiAssist.config.getTitle2(checkTitle2) +"」");
+							lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "中パーツ「" + SeichiAssist.config.getTitle2(checkTitle2) + "」");
 							itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 							itemmeta.setLore(lore);
 							itemstack.setItemMeta(itemmeta);
@@ -2333,7 +2326,7 @@ public class MenuInventoryData {
 					itemstack = new ItemStack(Material.MILK_BUCKET,1);
 					itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MILK_BUCKET);
 					itemmeta.setDisplayName(String.valueOf(checkTitle2));
-					lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "中パーツ「"+ SeichiAssist.config.getTitle2(checkTitle2) +"」");
+					lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "中パーツ「" + SeichiAssist.config.getTitle2(checkTitle2) + "」");
 					itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 					itemmeta.setLore(lore);
 					itemstack.setItemMeta(itemmeta);
@@ -2349,8 +2342,7 @@ public class MenuInventoryData {
 				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 				itemstack.setDurability((short) 3);
 				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-						);
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 				skullmeta.setLore(lore);
 				skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()));
 				itemstack.setItemMeta(skullmeta);
@@ -2366,8 +2358,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.GRASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "中パーツを未選択状態にする");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2377,8 +2368,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BARRIER,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BARRIER);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2425,7 +2415,7 @@ public class MenuInventoryData {
 						itemstack = new ItemStack(Material.LAVA_BUCKET,1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAVA_BUCKET);
 						itemmeta.setDisplayName(String.valueOf(checkTitle3));
-						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "後パーツ「"+ SeichiAssist.config.getTitle3(checkTitle3) +"」");
+						lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "後パーツ「" + SeichiAssist.config.getTitle3(checkTitle3) + "」");
 						itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 						itemmeta.setLore(lore);
 						itemstack.setItemMeta(itemmeta);
@@ -2441,8 +2431,7 @@ public class MenuInventoryData {
 				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 				itemstack.setDurability((short) 3);
 				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-						);
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 				skullmeta.setLore(lore);
 				skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()));
 				itemstack.setItemMeta(skullmeta);
@@ -2459,8 +2448,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.GRASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツを未選択状態にする");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2471,8 +2459,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BARRIER,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BARRIER);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2548,8 +2535,7 @@ public class MenuInventoryData {
 				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 				itemstack.setDurability((short) 3);
 				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-						);
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 				skullmeta.setLore(lore);
 				skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()));
 				itemstack.setItemMeta(skullmeta);
@@ -2586,8 +2572,7 @@ public class MenuInventoryData {
 				skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 				itemstack.setDurability((short) 3);
 				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ");
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-						);
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 				skullmeta.setLore(lore);
 				skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()));
 				itemstack.setItemMeta(skullmeta);
@@ -2607,8 +2592,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BARRIER,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BARRIER);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2644,7 +2628,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.IRON_PICKAXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_PICKAXE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「整地量」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "獲得状況を表示します。");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2653,7 +2637,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.DIAMOND_PICKAXE,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「整地神ランキング」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "獲得状況を表示します。");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -2664,8 +2648,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -2705,8 +2688,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -2742,7 +2724,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.COMPASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「参加時間」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "獲得状況を表示します。");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(10,itemstack);
@@ -2750,7 +2732,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BOOK,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「通算ログイン」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "獲得状況を表示します。");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(12,itemstack);
@@ -2758,7 +2740,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BOOK_AND_QUILL,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「連続ログイン」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "獲得状況を表示します。");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(14,itemstack);
@@ -2766,7 +2748,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.NETHER_STAR,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「記念日」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "獲得状況を表示します。");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(16,itemstack);
@@ -2776,8 +2758,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -2813,7 +2794,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.DIAMOND_HELMET,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_HELMET);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「MEBIUSブリーダー」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。※未実装");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "獲得状況を表示します。※未実装");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(12,itemstack);
@@ -2821,7 +2802,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.GOLD_INGOT,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_INGOT);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「スターレベル」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。※未実装");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "獲得状況を表示します。※未実装");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(14,itemstack);
@@ -2831,8 +2812,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -2868,7 +2848,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BLAZE_POWDER,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BLAZE_POWDER);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「公式イベント」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "獲得状況を表示します。");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(11,itemstack);
@@ -2876,7 +2856,7 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.YELLOW_FLOWER,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.YELLOW_FLOWER);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「JMS投票数」" );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "獲得状況を表示します。");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "獲得状況を表示します。");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(13,itemstack);
@@ -2895,8 +2875,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -3207,8 +3186,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「整地」カテゴリメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -3722,8 +3700,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「整地」カテゴリメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -4347,7 +4324,7 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.EMERALD_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "タイムカード、切りましょ？" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "※何かが起こります※");
+			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "※何かが起こります※");
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
@@ -4360,8 +4337,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「ログイン」カテゴリメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -4890,8 +4866,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「ログイン」カテゴリメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -5104,8 +5079,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「ログイン」カテゴリメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -5327,8 +5301,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「特殊」カテゴリメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -6136,8 +6109,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「特殊」カテゴリメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -6176,7 +6148,7 @@ public class MenuInventoryData {
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9001「"+ SeichiAssist.config.getTitle1(9001) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある始まりの日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある始まりの日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6197,7 +6169,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9002「"+ SeichiAssist.config.getTitle1(9002)
 						+ SeichiAssist.config.getTitle3(9002) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある聖夜の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある聖夜の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6217,7 +6189,7 @@ public class MenuInventoryData {
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9003「"+ SeichiAssist.config.getTitle1(9003) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある終わりの日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある終わりの日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6238,7 +6210,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9004「"+ SeichiAssist.config.getTitle1(9004)
 						+ SeichiAssist.config.getTitle2(9004) + SeichiAssist.config.getTitle3(9004) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：1月にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：1月にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6259,7 +6231,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9005「"+ SeichiAssist.config.getTitle1(9005)
 						+ SeichiAssist.config.getTitle3(9005) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：2月にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：2月にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6279,7 +6251,7 @@ public class MenuInventoryData {
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9006「"+ SeichiAssist.config.getTitle1(9006) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とあるお豆の絨毯爆撃の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とあるお豆の絨毯爆撃の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6299,7 +6271,7 @@ public class MenuInventoryData {
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9007「"+ SeichiAssist.config.getTitle1(9007) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建国記念日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：建国記念日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6320,7 +6292,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9008「"+ SeichiAssist.config.getTitle1(9008)
 						+ SeichiAssist.config.getTitle3(9008) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とあるカカオまみれの日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とあるカカオまみれの日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6340,7 +6312,7 @@ public class MenuInventoryData {
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9009「"+ SeichiAssist.config.getTitle1(9009) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：3月にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：3月にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6361,7 +6333,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9010「"+ SeichiAssist.config.getTitle1(9010)
 						+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(9010) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある女の子の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある女の子の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6382,7 +6354,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9011「"+ SeichiAssist.config.getTitle1(9011)
 						+ SeichiAssist.config.getTitle3(9011) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：燃え尽きたカカオだらけの日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：燃え尽きたカカオだらけの日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6403,7 +6375,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9012「"+ SeichiAssist.config.getTitle1(9012)
 						+ SeichiAssist.config.getTitle3(9012) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：春分の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：春分の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6423,7 +6395,7 @@ public class MenuInventoryData {
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9013「"+ SeichiAssist.config.getTitle1(9013) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：4月にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：4月にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6443,7 +6415,7 @@ public class MenuInventoryData {
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9014「"+ SeichiAssist.config.getTitle2(9014) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある嘘の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある嘘の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6464,7 +6436,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9015「"+ SeichiAssist.config.getTitle1(9015)
 						+ SeichiAssist.config.getTitle3(9015) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある良い子の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある良い子の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6485,7 +6457,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9016「"+ SeichiAssist.config.getTitle1(9016)
 						+ SeichiAssist.config.getTitle2(9016) + SeichiAssist.config.getTitle3(9016) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある掃除デーにプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある掃除デーにプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6506,7 +6478,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9017「"+ SeichiAssist.config.getTitle1(9017)
 						+ SeichiAssist.config.getTitle3(9017) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：5月にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：5月にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6526,7 +6498,7 @@ public class MenuInventoryData {
 				itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9018「"+ SeichiAssist.config.getTitle1(9018) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある子供の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある子供の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6547,7 +6519,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9019「"+ SeichiAssist.config.getTitle1(9019)
 						+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(9019) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：端午の節句にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：端午の節句にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6568,7 +6540,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9020「"+ SeichiAssist.config.getTitle1(9020)
 						+ SeichiAssist.config.getTitle3(9020) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：母の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：母の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6589,7 +6561,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9021「"+ SeichiAssist.config.getTitle1(9021)
 						+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(9021) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：6月にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：6月にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6610,7 +6582,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9022「"+ SeichiAssist.config.getTitle1(9022)
 						+ SeichiAssist.config.getTitle3(9022) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある日記の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある日記の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6631,7 +6603,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9023「"+ SeichiAssist.config.getTitle1(9023)
 						+ SeichiAssist.config.getTitle3(9023) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：父の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：父の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6652,7 +6624,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9024「"+ SeichiAssist.config.getTitle1(9024)
 						+ SeichiAssist.config.getTitle3(9024) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある生誕の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある生誕の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6673,7 +6645,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9025「"+ SeichiAssist.config.getTitle1(9025)
 						+ SeichiAssist.config.getTitle2(9025) + SeichiAssist.config.getTitle3(9025) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：7月にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：7月にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6694,7 +6666,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9026「"+ SeichiAssist.config.getTitle1(9026)
 						+ SeichiAssist.config.getTitle3(9026) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：七夕にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：七夕にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6715,7 +6687,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9027「"+ SeichiAssist.config.getTitle1(9027)
 						+ SeichiAssist.config.getTitle3(9027) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある東京の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある東京の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6736,7 +6708,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9028「"+ SeichiAssist.config.getTitle1(9028)
 						+ SeichiAssist.config.getTitle2(9028) + SeichiAssist.config.getTitle3(9028) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある肉の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある肉の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6757,7 +6729,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9029「"+ SeichiAssist.config.getTitle1(9029)
 						+ SeichiAssist.config.getTitle2(9029) + SeichiAssist.config.getTitle3(9029) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：8月にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：8月にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6778,7 +6750,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9030「"+ SeichiAssist.config.getTitle1(9030)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(9030) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とあるバナナの日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とあるバナナの日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6799,7 +6771,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9031「"+ SeichiAssist.config.getTitle1(9031)
 						+ SeichiAssist.config.getTitle2(9908) + SeichiAssist.config.getTitle3(9031) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とあるJDの日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とあるJDの日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6820,7 +6792,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9032「"+ SeichiAssist.config.getTitle1(9032)
 						+ SeichiAssist.config.getTitle3(9032) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とある焼肉の日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とある焼肉の日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6842,7 +6814,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9033「"+ SeichiAssist.config.getTitle1(9033)
 						+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(9033) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：9月にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：9月にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6863,7 +6835,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9034「"+ SeichiAssist.config.getTitle1(9034)
 						+ SeichiAssist.config.getTitle3(9034) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とあるくじの日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とあるくじの日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6884,7 +6856,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9035「"+ SeichiAssist.config.getTitle1(9035)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(9035) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とあるマラソンの日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とあるマラソンの日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6905,7 +6877,7 @@ public class MenuInventoryData {
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
 				itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9036「"+ SeichiAssist.config.getTitle1(9036)
 						+ SeichiAssist.config.getTitle3(9036) +"」" );
-				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：とあるふぐの日にプレイ");
+				lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "条件：とあるふぐの日にプレイ");
 				itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 				itemmeta.setLore(lore);
 				itemstack.setItemMeta(itemmeta);
@@ -6929,8 +6901,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「ログイン」カテゴリメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -6941,8 +6912,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_RIGHT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -7062,8 +7032,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「特殊」カテゴリメニューへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
@@ -7181,8 +7150,7 @@ public class MenuInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
 		itemstack.setItemMeta(skullmeta);
