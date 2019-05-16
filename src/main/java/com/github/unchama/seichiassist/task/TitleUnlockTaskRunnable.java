@@ -1,19 +1,16 @@
 package com.github.unchama.seichiassist.task;
 
-import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.UUID;
-
-import com.github.unchama.seichiassist.Skulls;
-import org.bukkit.Bukkit;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.UUID;
 //import org.bukkit.metadata.FixedMetadataValue;
 //import org.bukkit.instance.java.JavaPlugin;
 
@@ -883,7 +880,7 @@ public class TitleUnlockTaskRunnable {
 							if(!skullmeta.hasOwner()){
 								flag8001 = 40;
 							}
-							else if(!skullmeta.getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.UNCHAMA.getUuid()))){
+							else if(!skullmeta.getOwner().equals("unchama")){
 								flag8001 = 40 ;
 							}
 							else {
