@@ -8,7 +8,6 @@
 - [mysql-connecter-java-5.1.35](https://downloads.mysql.com/archives/c-j/)
 
 ## 前提プラグイン
-- [spigot-1.12.2](https://cdn.getbukkit.org/spigot/spigot-1.12.2.jar)
 - [CoreProtect-2.14.4](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)
 - [item-nbt-api-plugin-1.8.2-SNAPSHOT](https://www.spigotmc.org/resources/item-entity-tile-nbt-api.7939/download?version=241690)
 - [Multiverse-Core-2.5.0](https://dev.bukkit.org/projects/multiverse-core/files/2428161/download)
@@ -23,17 +22,40 @@
 - SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) | [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
 
 ## ビルド
+//TODO maven -> gradle へ移行済みの為、書き変えが必要。
+
 前提プラグインのjarを`${プロジェクトディレクトリ}/localDependencies`にコピーしてください。
 
-Mavenがコマンドラインで使える状態で`mvn install`を実行すると、`target`フォルダにjarが出力されます。
+Gradleがコマンドラインで使える状態で`gradle build`を実行すると、`target`フォルダにjarが出力されます。
 
-IntelliJ IDEAを開発に使用している場合、プロジェクトをmavenプロジェクトとして読み込み、
-MavenタブからLifecycle -> installを実行すれば`target`フォルダにjarが出力されます。
+// TODO Eclipse
+Eclipseを開発に使用している場合、プロジェクトをgradleプロジェクトとして読み込み、
+実行(R) -> 実行(S) -> Maven Clean を実行
+そのあと、実行(R) -> 実行(S) -> Maven Install を実行
+すれば`target`フォルダにjarが出力されます。
+
+IntelliJ IDEAを開発に使用している場合、プロジェクトをgradleプロジェクトとして読み込み、
+GradleタブからTasks -> build -> jarを実行すれば`build/lib`フォルダにjarが出力されます。
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
 - [gachadata.spl](https://red.minecraftserver.jp/attachments/download/895/gachadata.sql) -> import to "gachadata" table.
 - [msgachadata.spl](https://red.minecraftserver.jp/attachments/download/894/msgachadata.sql) -> import to "msgachadata" table.
+
+## JavaDocs
+publicなメソッドについては、JavaDocsを記載するよう心がけてください。
+その他は各自が必要だと判断した場合のみ記載してください。
+
+## Commit Style
+1コミットあたりの情報は最小限としてください。
+コミットメッセージは英語の動詞から始めることを推奨しています。
+
+## Branch Model
+[Git-flow](https://qiita.com/KosukeSone/items/514dd24828b485c69a05)を簡略化したものを使用します。
+新規に機能を開発する際は develop ブランチから feature-<任意の文字列> ブランチを作り、そこで作業してください。
+開発が終了したらdevelopブランチにマージします。
+masterブランチは本番環境に反映されます。
+本番環境を更新するタイミングでdevelopブランチをmasterブランチにマージします。
 
 ## 利用条件
 - GPLv3ライセンスでの公開です。ソースコードの使用規約等はGPLv3ライセンスに従います。

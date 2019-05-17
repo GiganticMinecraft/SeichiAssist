@@ -1,13 +1,19 @@
 /bin/
 
-#Eclipse
+# Eclipse
 .classpath
 *.prefs
 
-#IntelliJ IDEA
+# IntelliJ IDEA
 .idea/
 *.iml
 /bins/
 /test/
-/target/
+
+# Gradle
+.gradle
+build
+
+# Local files
+deployLocal.sh
 /localDependencies/
