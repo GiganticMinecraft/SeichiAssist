@@ -5,8 +5,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.Skulls;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -883,7 +881,7 @@ public class TitleUnlockTaskRunnable {
 							if(!skullmeta.hasOwner()){
 								flag8001 = 40;
 							}
-							else if(!skullmeta.getOwningPlayer().equals(Bukkit.getOfflinePlayer(Skulls.UNCHAMA.getUuid()))){
+							else if(!skullmeta.getOwner().equals("unchama")){
 								flag8001 = 40 ;
 							}
 							else {

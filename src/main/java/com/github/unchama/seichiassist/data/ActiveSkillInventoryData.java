@@ -1,12 +1,10 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
-import com.github.unchama.seichiassist.Skulls;
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.util.AsyncInventorySetter;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,8 +19,10 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.SeichiAssist;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class ActiveSkillInventoryData {
 	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
@@ -57,12 +57,11 @@ public class ActiveSkillInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
-		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(Skulls.ARROW_LEFT.getUuid()));
+		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(36,itemstack);
+		AsyncInventorySetter.setItemAsync(inventory,36,itemstack);
 
 		//1行目
 
@@ -82,7 +81,7 @@ public class ActiveSkillInventoryData {
 		itemstack = new ItemStack(Material.GLASS,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スキルを使用しない");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(1,itemstack);

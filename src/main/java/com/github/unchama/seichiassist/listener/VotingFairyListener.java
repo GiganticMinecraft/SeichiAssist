@@ -6,11 +6,17 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public class VotingFairyListener implements Listener {
 
@@ -60,19 +66,19 @@ public class VotingFairyListener implements Listener {
 		p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "回復させる力を持っているようです。");
 
 		//メッセージ
-		final List<String> morning = Arrays.asList(
+		final List<String> morning = ImmutableListFactory.of(
 				"おはよ！[str1]","ヤッホー[str1]！"
 				,"ふわぁ。。。[str1]の朝は早いね。"
 				,"うーん、今日も一日頑張ろ！"
 				,"今日は整地日和だね！[str1]！"
 				);
-		final List<String> day = Arrays.asList(
+		final List<String> day = ImmutableListFactory.of(
 				"やあ！[str1]","ヤッホー[str1]！"
 				,"あっ、[str1]じゃん。丁度お腹空いてたんだ！"
 				,"この匂い…[str1]ってがちゃりんごいっぱい持ってる…?"
 				,"今日のおやつはがちゃりんごいっぱいだ！"
 				);
-		final List<String> night = Arrays.asList(
+		final List<String> night = ImmutableListFactory.of(
 				"やあ！[str1]","ヤッホー[str1]！"
 				,"ふわぁ。。。[str1]は夜も元気だね。"
 				,"もう寝ようと思ってたのにー。[str1]はしょうがないなぁ"
@@ -94,7 +100,7 @@ public class VotingFairyListener implements Listener {
 		Mana mana = playerdata.activeskilldata.mana;
 
 		if (mana.getMana() == mana.getMax()) {		//マナが最大だった場合はメッセージを送信して終わり
-			final List<String> msg = Arrays.asList(
+			final List<String> msg = ImmutableListFactory.of(
 					"整地しないのー？"
 					,"たくさん働いて、たくさんりんごを食べようね！"
 					,"僕はいつか大きながちゃりんごを食べ尽して見せるっ！"
@@ -163,14 +169,14 @@ public class VotingFairyListener implements Listener {
 			playerdata.p_apple += m;
 
 			//メッセージ
-			final List<String> yes = Arrays.asList(
+			final List<String> yes = ImmutableListFactory.of(
 					"(´～｀)ﾓｸﾞﾓｸﾞ…"
 					,"がちゃりんごって美味しいよね！"
 					,"あぁ！幸せ！"
 					,"[str1]のりんごはおいしいなぁ"
 					,"いつもりんごをありがとう！"
 					);
-			final List<String> no = Arrays.asList(
+			final List<String> no = ImmutableListFactory.of(
 					"お腹空いたなぁー。"
 					,"がちゃりんごがっ！食べたいっ！"
 					,"(´；ω；`)ｳｩｩ ﾋﾓｼﾞｲ..."
