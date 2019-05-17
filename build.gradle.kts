@@ -8,8 +8,8 @@ plugins {
     id("nebula.dependency-lock").version("2.2.4")
 }
 
-group = "SeichiAssist"
-version = "1.0.0-SNAPSHOT"
+group = "click.seichi"
+version = "1.1.0"
 description = """ギガンティック☆整地鯖の独自要素を司るプラグイン"""
 
 project.sourceSets {
