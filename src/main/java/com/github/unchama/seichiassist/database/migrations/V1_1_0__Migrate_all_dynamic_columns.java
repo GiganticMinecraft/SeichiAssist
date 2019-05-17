@@ -20,6 +20,11 @@ import static com.github.unchama.seichiassist.util.TypeConverter.isParsableToInt
 
 /**
  * V1.1.0のマイグレーションを担当するオブジェクトのクラス。
+ *
+ * このマイグレーションは1.1.0リリースにより本番環境に適用済みである。
+ *
+ * クラスの変更は整合性を崩しかねないため、行ってはならない。
+ * DBスキーマの変更やレコードへの干渉はマイグレーションを追加することで行うこと。
  */
 @SuppressWarnings("unused")
 public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
