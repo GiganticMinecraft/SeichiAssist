@@ -8,7 +8,6 @@
 - [mysql-connecter-java-5.1.35](https://downloads.mysql.com/archives/c-j/)
 
 ## 前提プラグイン
-- [spigot-1.12.2](https://www.google.com/search?q=spigot+%E3%83%93%E3%83%AB%E3%83%89&oq=spigot+%E3%83%93%E3%83%AB%E3%83%89&aqs=chrome..69i57j0l2j69i61j0.6971j0j8&sourceid=chrome&ie=UTF-8)
 - [CoreProtect-2.14.4](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)
 - [item-nbt-api-plugin-1.8.2-SNAPSHOT](https://www.spigotmc.org/resources/item-entity-tile-nbt-api.7939/download?version=241690)
 - [Multiverse-Core-2.5.0](https://dev.bukkit.org/projects/multiverse-core/files/2428161/download)
@@ -27,15 +26,16 @@
 
 前提プラグインのjarを`${プロジェクトディレクトリ}/localDependencies`にコピーしてください。
 
-Mavenがコマンドラインで使える状態で`mvn install`を実行すると、`target`フォルダにjarが出力されます。
+Gradleがコマンドラインで使える状態で`gradle build`を実行すると、`target`フォルダにjarが出力されます。
 
-Eclipseを開発に使用している場合、プロジェクトをmavenプロジェクトとして読み込み、
+// TODO Eclipse
+Eclipseを開発に使用している場合、プロジェクトをgradleプロジェクトとして読み込み、
 実行(R) -> 実行(S) -> Maven Clean を実行
 そのあと、実行(R) -> 実行(S) -> Maven Install を実行
 すれば`target`フォルダにjarが出力されます。
 
-IntelliJ IDEAを開発に使用している場合、プロジェクトをmavenプロジェクトとして読み込み、
-MavenタブからLifecycle -> installを実行すれば`target`フォルダにjarが出力されます。
+IntelliJ IDEAを開発に使用している場合、プロジェクトをgradleプロジェクトとして読み込み、
+GradleタブからTasks -> build -> jarを実行すれば`build/lib`フォルダにjarが出力されます。
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。

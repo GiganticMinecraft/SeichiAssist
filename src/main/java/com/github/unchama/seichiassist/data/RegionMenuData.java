@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -21,7 +22,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 保護関連メニュー
@@ -43,7 +47,7 @@ public class RegionMenuData {
 		Inventory inventory = Bukkit.createInventory(null, InventoryType.HOPPER, ChatColor.BLACK + "保護メニュー");
 
 		//0マス目
-		List<String> lore0 = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで召喚"
+		List<String> lore0 = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで召喚"
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※インベントリを空けておこう"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "保護のかけ方"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "①召喚された斧を手に持ちます"
@@ -66,27 +70,27 @@ public class RegionMenuData {
 		Selection selection = ExternalPlugins.getWorldEdit().getSelection(player);
 
 		if(!player.hasPermission("worldguard.region.claim")){
-			lore1.addAll(Arrays.asList(ChatColor.RED + "このワールドでは"
+			lore1.addAll(ImmutableListFactory.of(ChatColor.RED + "このワールドでは"
 					, ChatColor.RED + "保護を申請出来ません"
 			));
 		}else if (selection == null) {
-			lore1.addAll(Arrays.asList(ChatColor.RED + "範囲指定されてません"
+			lore1.addAll(ImmutableListFactory.of(ChatColor.RED + "範囲指定されてません"
 					, ChatColor.RED + "先に木の斧で2か所クリックしてネ"
 			));
 		}else if(selection.getLength() < 10||selection.getWidth() < 10){
-			lore1.addAll(Arrays.asList(ChatColor.RED + "選択された範囲が狭すぎます"
+			lore1.addAll(ImmutableListFactory.of(ChatColor.RED + "選択された範囲が狭すぎます"
 					, ChatColor.RED + "1辺当たり最低10ブロック以上にしてネ"
 			));
 		}else{
 			itemmeta1.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			lore1.addAll(Arrays.asList(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "範囲指定されています"
+			lore1.addAll(ImmutableListFactory.of(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "範囲指定されています"
 					, ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックすると保護を申請します"
 			));
 		}
 
 		if(player.hasPermission("worldguard.region.claim")){
 			PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
-			lore1.addAll(Arrays.asList(ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
+			lore1.addAll(ImmutableListFactory.of(ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
 					, ChatColor.RESET + "" + ChatColor.YELLOW + "" + "A new region has been claimed"
 					, ChatColor.RESET + "" + ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
 					, ChatColor.RESET + "" + ChatColor.GRAY + "と出れば保護設定完了です"
@@ -102,7 +106,7 @@ public class RegionMenuData {
 		inventory.setItem(1,itemstack1);
 
 		//2マス目
-		List<String> lore2 =  Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで表示"
+		List<String> lore2 =  ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで表示"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "今いるワールドで"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "あなたが保護している"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "土地の一覧を表示します"
@@ -122,7 +126,7 @@ public class RegionMenuData {
 		inventory.setItem(2, menuicon2);
 
 		//3マス目
-		List<String> lore3 = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+		List<String> lore3 = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
 				, ChatColor.RESET + "" + ChatColor.RED + "保護の管理が超簡単に！"
 				, ChatColor.RESET + "" + ChatColor.YELLOW + "自分の所有する保護内でクリックすると"
 				, ChatColor.RESET + "" + ChatColor.YELLOW + "保護の各種設定や削除が行えます"
@@ -133,7 +137,7 @@ public class RegionMenuData {
 		inventory.setItem(3, menuicon3);
 
 		//4マス目
-		List<String> lore4 = Arrays.asList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
+		List<String> lore4 = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
 				, ChatColor.RESET + "" + ChatColor.RED + "グリッド式保護の作成ができます"
 				, ChatColor.RESET + "" + ChatColor.YELLOW + "グリッド式保護とは…"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "保護をユニット単位で管理するシステムのこと"

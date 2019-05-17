@@ -1,22 +1,56 @@
 package com.github.unchama.seichiassist;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
-import com.github.unchama.seichiassist.commands.*;
+import com.github.unchama.seichiassist.commands.AchieveCommand;
+import com.github.unchama.seichiassist.commands.EventCommand;
+import com.github.unchama.seichiassist.commands.GiganticFeverCommand;
+import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
+import com.github.unchama.seichiassist.commands.MineHeadCommand;
+import com.github.unchama.seichiassist.commands.RegionOwnerTransferCommand;
+import com.github.unchama.seichiassist.commands.contributeCommand;
+import com.github.unchama.seichiassist.commands.effectCommand;
+import com.github.unchama.seichiassist.commands.gachaCommand;
+import com.github.unchama.seichiassist.commands.lastquitCommand;
+import com.github.unchama.seichiassist.commands.levelCommand;
+import com.github.unchama.seichiassist.commands.mebiusCommand;
+import com.github.unchama.seichiassist.commands.rmpCommand;
+import com.github.unchama.seichiassist.commands.seichiCommand;
+import com.github.unchama.seichiassist.commands.shareinvCommand;
+import com.github.unchama.seichiassist.commands.stickCommand;
+import com.github.unchama.seichiassist.commands.subHomeCommand;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.data.inventory.menu.MenuHandler;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.listener.*;
+import com.github.unchama.seichiassist.listener.EntityListener;
+import com.github.unchama.seichiassist.listener.GachaItemListener;
+import com.github.unchama.seichiassist.listener.MebiusListener;
+import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
+import com.github.unchama.seichiassist.listener.PlayerChatEventListener;
+import com.github.unchama.seichiassist.listener.PlayerClickListener;
+import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
+import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
+import com.github.unchama.seichiassist.listener.PlayerJoinListener;
+import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
+import com.github.unchama.seichiassist.listener.PlayerQuitListener;
+import com.github.unchama.seichiassist.listener.RegionInventoryListener;
+import com.github.unchama.seichiassist.listener.WorldRegenListener;
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.minestack.objects.*;
+import com.github.unchama.seichiassist.minestack.objects.MineStackBuildObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackDropObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackFarmObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackGachaObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackMineObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackRsObj;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -29,7 +63,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 
@@ -97,7 +136,7 @@ public class SeichiAssist extends JavaPlugin{
 
 
 	//lvの閾値
-	public static final List<Integer> levellist = Arrays.asList(
+	public static final List<Integer> levellist = ImmutableListFactory.of(
 			0,15,49,106,198,//5
 			333,705,1265,2105,3347,//10
 			4589,5831,7073,8315,9557,//15
@@ -167,7 +206,7 @@ public class SeichiAssist extends JavaPlugin{
 			82165000,83315000,84465000,85615000,87115000//200
 			);
 
-	public static final List<Integer> GBlevellist = Arrays.asList(
+	public static final List<Integer> GBlevellist = ImmutableListFactory.of(
 			20,30,40,40,50,50,60,70,80,100,
 			100,110,120,130,140,150,160,170,180,200,
 			250,270,300,320,350,370,400,420,450,500,
@@ -177,7 +216,7 @@ public class SeichiAssist extends JavaPlugin{
 
 
 	//2019.18 MineStack順序大幅いれかえのため、追加分の履歴が一部消えています by kaworuko
-	private static final List<MineStackObj> minestacklistmine = Arrays.asList(
+	private static final List<MineStackObj> minestacklistmine = ImmutableListFactory.of(
 
 
 			new MineStackMineObj("coal_ore","石炭鉱石",1,Material.COAL_ORE,0)
@@ -216,7 +255,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	);
 
-	private static final List<MineStackObj> minestacklistdrop = Arrays.asList(
+	private static final List<MineStackObj> minestacklistdrop = ImmutableListFactory.of(
 			//以下モンスター+動物ドロップ
 			new MineStackDropObj("ender_pearl","エンダーパール",1,Material.ENDER_PEARL,0)
 			,new MineStackDropObj("ender_eye","エンダーアイ",1,Material.EYE_OF_ENDER,0)
@@ -255,7 +294,7 @@ public class SeichiAssist extends JavaPlugin{
             ,new MineStackDropObj("wither_skeleton_skull", "ウィザースケルトンの頭", 1, Material.SKULL_ITEM,1)
 	);
 
-	private static final List<MineStackObj> minestacklistfarm = Arrays.asList(
+	private static final List<MineStackObj> minestacklistfarm = ImmutableListFactory.of(
 			//以下採掘で入手可能な農業系ブロック
 			new MineStackFarmObj("seeds","種",1,Material.SEEDS,0)
 			,new MineStackFarmObj("apple","リンゴ",1,Material.APPLE,0)
@@ -359,7 +398,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	);
 
-	private static final List<MineStackObj> minestacklistbuild = Arrays.asList(
+	private static final List<MineStackObj> minestacklistbuild = ImmutableListFactory.of(
 
 			//以下建築系ブロック
 			new MineStackBuildObj("log","オークの原木",1,Material.LOG,0)
@@ -691,7 +730,7 @@ public class SeichiAssist extends JavaPlugin{
 
 	);
 
-	private static final List<MineStackObj> minestacklistrs = Arrays.asList(
+	private static final List<MineStackObj> minestacklistrs = ImmutableListFactory.of(
 
 			//以下レッドストーン系ブロック
 			new MineStackRsObj("redstone","レッドストーン",1,Material.REDSTONE,0)
@@ -768,8 +807,8 @@ public class SeichiAssist extends JavaPlugin{
 	);
 
 	// ガチャ系アイテム
-	// これは後に変更されるのでArrayListでないといけない
-	private static ArrayList<MineStackObj> minestacklistgacha = new ArrayList<>(Arrays.asList(
+	// これは後に変更されるのでミュータブルでないといけない
+	private static List<MineStackObj> minestacklistgacha = new ArrayList<>(ImmutableListFactory.of(
 			new MineStackGachaObj("gachaimo",Util.getGachaRingoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaRingoLore()),
 			new MineStackGachaObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0)
 	));
@@ -827,17 +866,17 @@ public class SeichiAssist extends JavaPlugin{
 			);
 	//スキル破壊ブロック分のcoreprotectログ保存処理を除外するワールドリスト(coreprotectログデータ肥大化の軽減が目的)
 	//スキル自体はメインワールドと各整地ワールドのみ(world_SWで始まるワールドのみ)で発動する(ここの設定は無視する)
-	public static final List<String> ignoreWorldlist = Arrays.asList(
+	public static final List<String> ignoreWorldlist = ImmutableListFactory.of(
 			"world_SW","world_SW_2","world_SW_3","world_SW_nether","world_SW_the_end"
 			);
 
 	//保護を掛けて整地するワールドのリスト
-	public static final List<String> rgSeichiWorldlist = Arrays.asList(
+	public static final List<String> rgSeichiWorldlist = ImmutableListFactory.of(
 			"world_SW_2"
 			);
 
 	//整地ワールドのリスト(保護の有無は問わない)
-	public static final List<String> seichiWorldList = Arrays.asList(
+	public static final List<String> seichiWorldList = ImmutableListFactory.of(
 			"world_SW", "world_SW_2", "world_SW_3", "world_SW_nether", "world_SW_the_end"
 	);
 
