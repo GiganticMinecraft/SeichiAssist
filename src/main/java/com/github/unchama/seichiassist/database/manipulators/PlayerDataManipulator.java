@@ -556,8 +556,12 @@ public class PlayerDataManipulator {
 
     /**
      * 全ランキングリストの更新処理
+     * メインスレッド上での直接呼び出しはonEnable時のみを想定
+     *
+     * 稼働中に呼び出すとサーバがプチフリーズする為
+     * 非同期であるupdateAllRankingListAsync()を使用すること
+     *
      * @return 成否…true: 成功、false: 失敗
-     * TODO この処理はDB上と通信を行う為非同期にすべき
      */
     public boolean updateAllRankingList() {
         if(!updateBlockRankingList())return false;
@@ -567,6 +571,15 @@ public class PlayerDataManipulator {
         if(!updateAppleNumberRankingList())return false;
 
         return true;
+    }
+
+    /**
+     * 全ランキングリストの更新処理(非同期)
+     */
+    public void updateAllRankingListAsync() {
+        Bukkit.getServer().getScheduler().runTaskAsynchronously(SeichiAssist.instance,
+                this::updateAllRankingList
+        );
     }
 
     //プレイヤーレベル全リセット

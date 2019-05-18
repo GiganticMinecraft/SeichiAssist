@@ -48,9 +48,8 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "プレイヤーデータセーブ完了");
 
 		//ランキングリストを最新情報に更新する
-		if(!databaseGateway.playerDataManipulator.updateAllRankingList()){
-			plugin.getLogger().info("ランキングデータの作成に失敗しました");
-		}
+		databaseGateway.playerDataManipulator.updateAllRankingListAsync();
+
 	}
 
 }
