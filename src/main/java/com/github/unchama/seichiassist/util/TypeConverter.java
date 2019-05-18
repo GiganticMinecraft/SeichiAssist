@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.util;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.math.BigDecimal;
-import java.util.Optional;
 
 public final class TypeConverter {
 	// 不必要なインスタンス化を防ぐため封印
@@ -65,9 +66,9 @@ public final class TypeConverter {
 		}
 	}
 
-	public static Optional<Integer> toIntSafe(final String string) {
-		if (isParsableToInteger(string)) return Optional.of(toInt(string));
+	public @Nullable static Integer toIntSafe(final String string) {
+		if (isParsableToInteger(string)) return toInt(string);
 
-		return Optional.empty();
+		return null;
 	}
 }

@@ -252,7 +252,8 @@ public class PlayerDataManipulator {
         return true;
     }
 
-    public boolean setContribute(CommandSender sender, String targetName, int p) {
+    // TODO senderに依存するのはおかしい
+    public boolean addContributionPoint(CommandSender sender, String targetName, int p) {
         int point;
 
         String select = "SELECT contribute_point FROM " + getTableReference() + " " + "WHERE name LIKE '" + targetName + "'";
