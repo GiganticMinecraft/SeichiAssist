@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.util.TypeConverter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -14,37 +15,26 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class AchieveCommand implements CommandExecutor {
-	private boolean isInt(String num) {
-		try {
-			Integer.parseInt(num);
-			return true;
-		} catch (NumberFormatException e) {
-		}
-		return false;
-	}
+public class UnlockAchievementCommand implements CommandExecutor {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd,
-	String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 		DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 		//コマンドを実行者の取得
-		Player sendplayer = null ;
-		boolean ByConsole = false ;
+		Player senderPlayer = null;
+		boolean ByConsole = false;
 		//コンソール実行の際にエラーが発生するため回避処理
-		try{
-			sendplayer = (Player)sender;
-		}catch(CommandException | ClassCastException e ){
+		try {
+			senderPlayer = (Player)sender;
+		} catch (CommandException | ClassCastException e) {
 			ByConsole = true;
 		}
 
 		if (ByConsole){
 			sender.sendMessage("コンソールからのunlockachv処理実行を検知しました。");
 			sender.sendMessage("コンソール実行の場合はオフラインユーザーへの配布、「world」処理は実行できません。");
-		}else{
-			sendplayer = (Player)sender;
 		}
 
 		//不正な数の引数を指定した場合(2より小さい場合 or 3より大きい場合 →lengthが2～3以外の場合)
@@ -54,7 +44,7 @@ public class AchieveCommand implements CommandExecutor {
 			sender.sendMessage("実行者が参加しているサーバー/ワールド内の全員に対して実績解除処理を実行します。");
 			return true;
 		//<実績No>が数字でない場合スキップ
-		}else if(isInt(args[0])){
+		} else if(TypeConverter.isParsableToInteger(args[0])) {
 			if(999 < Integer.parseInt(args[0]) && Integer.parseInt(args[0]) < 10000){
 				//指定した実績Noの二つ名データがconfigにない場合
 				if((SeichiAssist.config.getTitle1(Integer.parseInt(args[0])) == null|| SeichiAssist.config.getTitle1(Integer.parseInt(args[0])).equals(""))&&
@@ -98,7 +88,7 @@ public class AchieveCommand implements CommandExecutor {
 											playerdata = playermap.get(uuid);
 
 											//送信者と同じワールドにいれば配布
-											if(p.getWorld().getName().equals(sendplayer.getWorld().getName())){
+											if(p.getWorld().getName().equals(senderPlayer.getWorld().getName())){
 												//該当実績を既に取得している場合処理をスキップ
 												if(!playerdata.TitleFlags.get(Integer.parseInt(args[0]))){
 													playerdata.TitleFlags.set(Integer.parseInt(args[0]));
@@ -196,17 +186,17 @@ public class AchieveCommand implements CommandExecutor {
 							}
 						}
 
-					}else {
+					} else {
 						sender.sendMessage("【実行エラー】プレイヤー名が未入力です");
 						return true;
 					}
 				}
-			}else{
+			} else {
 				sender.sendMessage("【実行エラー】解禁コマンドが使用できるのはNo1000～9999の実績です。");
 				sender.sendMessage(ChatColor.RED + "/unlockachv <実績No> <プレイヤー名> <give/deprive>");
 				return true;
 			}
-		}else{
+		} else {
 			sender.sendMessage("【実行エラー】実績Noの項目は半角数字で入力してください");
 			sender.sendMessage(ChatColor.RED + "/unlockachv <実績No> <プレイヤー名> <give/deprive>");
 			return true;

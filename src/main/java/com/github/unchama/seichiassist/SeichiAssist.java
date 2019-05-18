@@ -905,7 +905,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("rmp",new RmpCommand()),
 					Pair.of("shareinv",new ShareInvCommand()),
 					Pair.of("mebius",new MebiusCommand()),
-					Pair.of("unlockachv", new AchieveCommand()),
+					Pair.of("unlockachv", new UnlockAchievementCommand()),
 					Pair.of("halfguard", new HalfBlockProtectCommand()),
 					Pair.of("event", new EventCommand()),
 					Pair.of("contribute", new ContributeCommand()),
