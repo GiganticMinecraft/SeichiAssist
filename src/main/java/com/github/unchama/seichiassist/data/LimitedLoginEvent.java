@@ -88,7 +88,7 @@ public class LimitedLoginEvent {
 									message = "限定ログボ" + loginDays + "日目記念！";
 								}
 								p.sendMessage("【"+ message +"】"+ amount +"個のガチャ券をプレゼント！");
-								for (int i = 0; i <= amount; i++) {
+								for (int i = 1; i <= amount; i++) {
 									if(player.getInventory().contains(skull) || !Util.isPlayerInventoryFull(player)){
 										Util.addItem(player,skull);
 									}else{
