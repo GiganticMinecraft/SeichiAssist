@@ -3,7 +3,12 @@ package com.github.unchama.seichiassist;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -79,7 +84,7 @@ import java.util.UUID;
 	   }
 
 	   private static String getUUIDJSON(String name) throws IOException {
-		  String re = "";
+		  StringBuilder re = new StringBuilder(100);
 
 		  URL url = new URL("https://api.mojang.com/profiles/page/1");
 		  HttpURLConnection huc = (HttpURLConnection)url.openConnection();
@@ -98,11 +103,10 @@ import java.util.UUID;
 		  BufferedReader br = new BufferedReader(new InputStreamReader(huc.getInputStream(), StandardCharsets.UTF_8));
 		  String line;
 		  while ((line = br.readLine()) != null) {
-			 re += line + "\n";
+			 re.append(line).append("\n");
 		  }
-		  re = re;
 		  br.close();
 		  huc.disconnect();
-		  return re;
+		  return re.toString();
 	   }
 	}
