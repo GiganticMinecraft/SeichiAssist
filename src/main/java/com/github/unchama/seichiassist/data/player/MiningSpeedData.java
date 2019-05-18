@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.data.player;
 
 import com.github.unchama.seichiassist.data.inventory.slot.button.Button;
+import com.github.unchama.seichiassist.text.Templates;
 import com.github.unchama.seichiassist.text.Text;
 import com.github.unchama.seichiassist.util.list.CircularList;
 import org.bukkit.ChatColor;
@@ -48,18 +49,19 @@ public class MiningSpeedData {
      */
     @NotNull
     public List<Text> menuDescrpition() {
-        List<Text> descrpition = new ArrayList<>();
+        List<Text> descriptions = new ArrayList<>();
         if (miningSpeed == MiningSpeed.OFF) {
-            descrpition.add(Text.of("現在OFFです", ChatColor.RED));
-            descrpition.add(Text.of("クリックで" + this.miningSpeed.getNext().description,
+            descriptions.add(Text.of("現在OFFです", ChatColor.RED));
+            descriptions.add(Text.of("クリックで" + this.miningSpeed.getNext().description,
                 ChatColor.UNDERLINE, ChatColor.DARK_GREEN));
         } else {
-            descrpition.add(Text.of("現在有効です", ChatColor.GREEN)
+            descriptions.add(Text.of("現在有効です", ChatColor.GREEN)
                                 .also(Text.of(this.miningSpeed.description, ChatColor.GREEN)));
-            descrpition.add(Text.of("クリックで" + this.miningSpeed.getNext().description,
+            descriptions.add(Text.of("クリックで" + this.miningSpeed.getNext().description,
                 ChatColor.UNDERLINE, ChatColor.DARK_RED));
         }
-        return descrpition;
+        descriptions.addAll(Templates.miningSpeedDescription);
+        return descriptions;
     }
 
     /**

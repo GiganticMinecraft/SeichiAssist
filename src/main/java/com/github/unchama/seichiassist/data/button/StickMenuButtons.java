@@ -23,16 +23,15 @@ public class StickMenuButtons {
      */
     public static Button miningSpeedButton = ButtonBuilder
         .from(
-            ItemStackBuilder.of(Material.DIAMOND_PICKAXE)
-                            .title(Text.of("採掘速度上昇効果", ChatColor.UNDERLINE, ChatColor.BOLD))
-                            .lore(playerData -> {
-                                final List<Text> textList = new ArrayList<>();
-                                textList.addAll(playerData.miningSpeedData.menuDescrpition());
-                                textList.addAll(Templates.miningSpeedDescription);
+            ItemStackBuilder
+                .of(Material.DIAMOND_PICKAXE)
+                .title(Text.of("採掘速度上昇効果", ChatColor.UNDERLINE, ChatColor.BOLD))
+                .lore(playerData -> {
+                    final List<Text> textList = new ArrayList<>();
+                    textList.addAll(playerData.miningSpeedData.menuDescrpition());
 
-
-                                return textList;
-                            })
+                    return textList;
+                })
         )
         .at(1)
         .handler(new SlotActionHandler(
