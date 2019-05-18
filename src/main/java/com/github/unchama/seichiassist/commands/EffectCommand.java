@@ -14,8 +14,7 @@ import java.util.UUID;
 public class EffectCommand implements CommandExecutor {
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label,
-			String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		//プレイヤーを取得
 		Player player = (Player)sender;
 		//プレイヤーネーム

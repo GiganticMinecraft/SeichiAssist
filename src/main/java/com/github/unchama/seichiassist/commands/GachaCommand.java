@@ -613,31 +613,5 @@ public class GachaCommand implements CommandExecutor {
 		}
 		return 1.0;
 	}
-	/*
-	private void addSorryForBug(CommandSender sender,int num) {
-		for(PlayerData playerdata : SeichiAssist.playermap.values()){
-			//オンラインプレイヤーに対しての追加処理
-			//プレイヤーがオフラインの時処理を終了、次のプレイヤーへ
-			if(playerdata.isOffline()){
-				if(SeichiAssist.DEBUG){
-					Util.sendEveryMessage(playerdata.name + "は不在により処理中止");
-				}
-				continue;
-			}
-			//プレイヤー型を取得
-			Player player = instance.getServer().getPlayer(playerdata.uuid);
-			playerdata.numofsorryforbug += num;
-			//プレイヤーにお知らせしちゃう
-			playerdata.NotifySorryForBug(player);
-			sender.sendMessage(ChatColor.LIGHT_PURPLE + "" + num +"個のガチャ券をお詫びとして" + playerdata.name + "のデータに更新しました");
-		}
-		//MySqlの値も処理
-		if(!databaseGateway.addAllPlayerBug(num)){
-			sender.sendMessage("mysqlへのガチャの加算に失敗しました");
-		}else{
-			sender.sendMessage("mysqlに保存されている全プレイヤーへガチャ券" + num +"枚を加算しました");
-		}
-	}
-	*/
 
 }
