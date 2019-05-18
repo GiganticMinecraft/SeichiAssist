@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.util.List;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.Bukkit;
@@ -12,13 +11,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.util.List;
+import java.util.UUID;
 
-public class contributeCommand implements TabExecutor {
+public class ContributeCommand implements TabExecutor {
 	SeichiAssist plugin;
 
-	public contributeCommand(SeichiAssist _plugin){
+	public ContributeCommand(SeichiAssist _plugin){
 		plugin = _plugin;
 	}
 	@Override

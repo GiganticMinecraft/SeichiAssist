@@ -1,28 +1,26 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.util.List;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.EffectData;
+import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.TypeConverter;
+import com.github.unchama.seichiassist.util.Util;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.EffectData;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.List;
+import java.util.UUID;
 
-import net.md_5.bungee.api.ChatColor;
-
-public class seichiCommand implements TabExecutor {
+public class SeichiCommand implements TabExecutor {
 	SeichiAssist plugin;
 	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
-	public seichiCommand(SeichiAssist _plugin){
+	public SeichiCommand(SeichiAssist _plugin){
 		plugin = _plugin;
 	}
 	@Override

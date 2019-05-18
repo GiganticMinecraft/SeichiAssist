@@ -19,8 +19,8 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class shareinvCommand implements TabExecutor {
-	public shareinvCommand(SeichiAssist plugin) {
+public class ShareInvCommand implements TabExecutor {
+	public ShareInvCommand(SeichiAssist plugin) {
 	}
 
 	@Override

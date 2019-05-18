@@ -1,22 +1,21 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.util.List;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.util.List;
+import java.util.UUID;
 
-public class effectCommand implements TabExecutor {
+public class EffectCommand implements TabExecutor {
 	SeichiAssist plugin;
 
-	public effectCommand(SeichiAssist _plugin){
+	public EffectCommand(SeichiAssist _plugin){
 		plugin = _plugin;
 	}
 	@Override

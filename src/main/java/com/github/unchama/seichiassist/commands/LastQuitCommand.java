@@ -4,19 +4,18 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 
 import java.util.List;
 
-public class lastquitCommand implements TabExecutor{
+public class LastQuitCommand implements TabExecutor{
 	public SeichiAssist plugin;
 	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 
-	public lastquitCommand(SeichiAssist plugin){
+	public LastQuitCommand(SeichiAssist plugin){
 		this.plugin = plugin;
 	}
 	@Override

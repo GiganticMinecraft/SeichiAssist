@@ -1,31 +1,29 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.ExternalPlugins;
 import com.sk89q.worldguard.bukkit.RegionContainer;
+import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-public class rmpCommand implements TabExecutor {
+public class RmpCommand implements TabExecutor {
 	static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	private Map<UUID, String> leavers;
 
-	public rmpCommand(SeichiAssist plugin){
+	public RmpCommand(SeichiAssist plugin){
 	}
 
 	@Override

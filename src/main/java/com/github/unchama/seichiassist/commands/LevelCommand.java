@@ -1,13 +1,11 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.util.List;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.OfflineUUID;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -15,18 +13,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.OfflineUUID;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.util.List;
+import java.util.UUID;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 
-public class levelCommand implements TabExecutor{
+public class LevelCommand implements TabExecutor{
 	public SeichiAssist plugin;
 	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
-	public levelCommand(SeichiAssist plugin){
+	public LevelCommand(SeichiAssist plugin){
 		this.plugin = plugin;
 	}
 	@Override

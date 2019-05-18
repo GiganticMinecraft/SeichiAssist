@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.util.List;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -11,13 +11,12 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.List;
 
-public class stickCommand implements TabExecutor {
+public class StickCommand implements TabExecutor {
 	SeichiAssist plugin;
 
-	public stickCommand(SeichiAssist _plugin){
+	public StickCommand(SeichiAssist _plugin){
 		plugin = _plugin;
 	}
 	@Override
