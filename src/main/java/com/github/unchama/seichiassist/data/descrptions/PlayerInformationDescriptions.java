@@ -22,7 +22,7 @@ import static com.github.unchama.seichiassist.util.ListUtil.addAll;
 /**
  * Created by karayuu on 2019/05/05
  */
-public class PlayerInfomationDescriptions {
+public class PlayerInformationDescriptions {
     /**
      * Player統計のLoreを返すFunction.
      */
