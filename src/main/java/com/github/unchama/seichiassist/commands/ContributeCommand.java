@@ -12,8 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
-
 public class ContributeCommand implements CommandExecutor {
 
 	// TODO 各ブランチに分けられるべき
@@ -44,12 +42,11 @@ public class ContributeCommand implements CommandExecutor {
 
 			//指定プレイヤーがオンラインの場合即時反映
 			if (targetPlayer != null) {
-				UUID givenuuid = targetPlayer.getUniqueId();
-				PlayerData givenplayerdata = SeichiAssist.playermap.get(givenuuid);
+				PlayerData targetPlayerData = SeichiAssist.playermap.get(targetPlayer.getUniqueId());
 
 				// DBのデータを直接書き換えているのでplayerdataを同じ数値だけ変化させてから計算させる
-				givenplayerdata.contribute_point += point;
-				givenplayerdata.isContribute(targetPlayer, point);
+				targetPlayerData.contribute_point += point;
+				targetPlayerData.isContribute(targetPlayer, point);
 			}
 		}
 	}
