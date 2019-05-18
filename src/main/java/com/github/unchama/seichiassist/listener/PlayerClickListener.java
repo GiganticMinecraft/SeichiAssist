@@ -37,8 +37,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
+import com.github.unchama.seichiassist.task.CoolDownTask;
+import com.github.unchama.seichiassist.task.EntityRemoveTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -108,9 +108,9 @@ public class PlayerClickListener implements Listener {
 					//クールダウン処理
 					long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
 					if(cooldown > 5){
-						new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+						new CoolDownTask(player,false,true,false).runTaskLater(plugin,cooldown);
 					}else{
-						new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
+						new CoolDownTask(player,false,false,false).runTaskLater(plugin,cooldown);
 					}
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){
@@ -145,9 +145,9 @@ public class PlayerClickListener implements Listener {
 					//クールダウン処理
 					long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
 					if(cooldown > 5){
-						new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+						new CoolDownTask(player,false,true,false).runTaskLater(plugin,cooldown);
 					}else{
-						new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
+						new CoolDownTask(player,false,false,false).runTaskLater(plugin,cooldown);
 					}
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){
@@ -197,7 +197,7 @@ public class PlayerClickListener implements Listener {
 		proj.setVelocity(vec);
 
 		//矢を消去する処理
-		new EntityRemoveTaskRunnable(proj).runTaskLater(plugin,100);
+		new EntityRemoveTask(proj).runTaskLater(plugin,100);
 	}
 
 
@@ -242,7 +242,7 @@ public class PlayerClickListener implements Listener {
 			return;
 		}else{
 			//連打による負荷防止の為クールダウン処理
-			new CoolDownTaskRunnable(player,false,false,true).runTaskLater(plugin,4);
+			new CoolDownTask(player,false,false,true).runTaskLater(plugin,4);
 		}
 
 		//オフハンドから実行された時処理を終了

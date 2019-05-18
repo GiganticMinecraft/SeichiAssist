@@ -21,7 +21,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
+import com.github.unchama.seichiassist.task.EntityRemoveTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class MagicTaskRunnable extends BukkitRunnable {
@@ -97,7 +97,7 @@ public class MagicTaskRunnable extends BukkitRunnable {
 				SeichiAssist.entitylist.add(e);
 				e.playEffect(EntityEffect.WITCH_MAGIC);
 				e.setInvulnerable(true);
-				new EntityRemoveTaskRunnable(e).runTaskLater(plugin, 100);
+				new EntityRemoveTask(e).runTaskLater(plugin, 100);
 				player.getWorld().playSound(effectloc, Sound.ENTITY_WITCH_AMBIENT, 1, 1.5F);
 			}
 

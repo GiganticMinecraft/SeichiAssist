@@ -7,8 +7,8 @@ import com.github.unchama.seichiassist.data.subhome.SubHome;
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent;
 import com.github.unchama.seichiassist.minestack.MineStackHistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
-import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
+import com.github.unchama.seichiassist.task.MebiusTask;
+import com.github.unchama.seichiassist.task.VotedFairyTask;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
@@ -129,7 +129,7 @@ public class PlayerData {
 	public ActiveSkillData activeskilldata;
 
 	//MebiusTask
-	public MebiusTaskRunnable mebius;
+	public MebiusTask mebius;
 
 	//ガチャボタン連打防止用
 	public boolean gachacooldownflag;
@@ -239,7 +239,7 @@ public class PlayerData {
 		this.lastminespeedlv = 0;
 		this.effectdatalist = new ArrayList<>();
 		this.level = 1;
-		this.mebius = new MebiusTaskRunnable(this);
+		this.mebius = new MebiusTask(this);
 		this.numofsorryforbug = 0;
 		this.inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 		this.rgnum = 0;
@@ -964,7 +964,7 @@ public class PlayerData {
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
 			}
 			else if(this.usingVotingFairy){
-				VotingFairyTaskRunnable.speak(p, "おかえり！" + p.getName(), true);
+				VotedFairyTask.speak(p, "おかえり！" + p.getName(), true);
 			}
 	}
 

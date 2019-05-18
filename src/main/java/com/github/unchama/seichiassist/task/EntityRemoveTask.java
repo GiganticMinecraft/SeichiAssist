@@ -5,10 +5,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 
-public class EntityRemoveTaskRunnable extends BukkitRunnable{
+public class EntityRemoveTask extends BukkitRunnable{
 	Entity e;
 
-	public EntityRemoveTaskRunnable(Entity e) {
+	public EntityRemoveTask(Entity e) {
 		this.e = e;
 	}
 

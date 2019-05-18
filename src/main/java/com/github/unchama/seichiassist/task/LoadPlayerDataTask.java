@@ -31,7 +31,7 @@ import java.util.*;
  * @author unchama
  *
  */
-public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
+public class LoadPlayerDataTask extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.instance;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -49,7 +49,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	private String db;
 	private MillisecondTimer timer;
 
-	public LoadPlayerDataTaskRunnable(PlayerData playerData) {
+	public LoadPlayerDataTask(PlayerData playerData) {
 		timer = MillisecondTimer.getInitializedTimerInstance();
 		db = SeichiAssist.config.getDB();
 		p = Bukkit.getPlayer(playerData.uuid);

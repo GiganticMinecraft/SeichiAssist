@@ -17,7 +17,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 //import org.bukkit.metadata.FixedMetadataValue;
 //import org.bukkit.instance.java.JavaPlugin;
 
-public class TitleUnlockTaskRunnable {
+public class TitleUnlockTask {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
 	PlayerData playerdata;

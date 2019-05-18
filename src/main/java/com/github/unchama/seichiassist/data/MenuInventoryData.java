@@ -8,8 +8,8 @@ import com.github.unchama.seichiassist.Skulls;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
-import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
+import com.github.unchama.seichiassist.task.GiganticBerserkTask;
+import com.github.unchama.seichiassist.task.VotedFairyTask;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.ExternalPlugins;
 import com.github.unchama.seichiassist.util.TypeConverter;
@@ -1332,7 +1332,7 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<>();
 
 		int n = (playerdata.GBstage * 10) + playerdata.GBlevel;
-		GiganticBerserkTaskRunnable GBTR = new GiganticBerserkTaskRunnable();
+		GiganticBerserkTask GBTR = new GiganticBerserkTask();
 
 		if(playerdata.level < 10){
 			lore.add(ChatColor.WHITE + "このパッシブスキルは");
@@ -7161,7 +7161,7 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATCH);
 		itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 時間設定");
 		lore = Arrays.asList(
-				ChatColor.RESET + "" +  ChatColor.GREEN + "" +  ChatColor.BOLD + "" + VotingFairyTaskRunnable.dispToggleVFTime(playerdata.toggleVotingFairy),
+				ChatColor.RESET + "" +  ChatColor.GREEN + "" +  ChatColor.BOLD + "" + VotedFairyTask.dispToggleVFTime(playerdata.toggleVotingFairy),
 				"",
 				ChatColor.RESET + "" +  ChatColor.GRAY + "コスト",
 				ChatColor.RESET + "" +  ChatColor.RED + "" +  ChatColor.BOLD + "" + (playerdata.toggleVotingFairy * 2) + "投票pt",
@@ -7189,7 +7189,7 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 召喚" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "" + (playerdata.toggleVotingFairy * 2) + "投票ptを消費して"
 				,ChatColor.RESET + "" +  ChatColor.GRAY + "マナ妖精を呼びます"
-				,ChatColor.RESET + "" +  ChatColor.GRAY + "時間 : " + VotingFairyTaskRunnable.dispToggleVFTime(playerdata.toggleVotingFairy)
+				,ChatColor.RESET + "" +  ChatColor.GRAY + "時間 : " + VotedFairyTask.dispToggleVFTime(playerdata.toggleVotingFairy)
 				,ChatColor.RESET + "" +  ChatColor.DARK_RED + "Lv.10以上で解放");
 		itemmeta.setLore(lore);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);

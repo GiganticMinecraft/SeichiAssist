@@ -18,7 +18,7 @@ public class GiganticFeverCommand implements TabExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-		int now = MinuteTaskRunnable.time;
+		int now = MinuteGeneralTask.time;
 		end = now + config.getGiganticFeverMinutes();
 		isInTime = true;
 
@@ -34,7 +34,7 @@ public class GiganticFeverCommand implements TabExecutor {
 		if (!isInTime) {
 			return;
 		}
-		if (MinuteTaskRunnable.time == end) {
+		if (MinuteGeneralTask.time == end) {
 			Util.setDifficulty(SeichiAssist.seichiWorldList, Difficulty.HARD);
 			Util.sendEveryMessage(ChatColor.AQUA + "フィーバー終了！MOBたちは戻ってきたぞ！");
 			isInTime = false;

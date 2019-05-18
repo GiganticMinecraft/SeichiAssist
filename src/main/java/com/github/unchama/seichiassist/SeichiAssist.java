@@ -44,10 +44,10 @@ import com.github.unchama.seichiassist.minestack.objects.MineStackFarmObj;
 import com.github.unchama.seichiassist.minestack.objects.MineStackGachaObj;
 import com.github.unchama.seichiassist.minestack.objects.MineStackMineObj;
 import com.github.unchama.seichiassist.minestack.objects.MineStackRsObj;
-import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
-import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
-import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
-import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
+import com.github.unchama.seichiassist.task.PlayerDataBackupTask;
+import com.github.unchama.seichiassist.task.SeichiAmountDurationRankTask;
+import com.github.unchama.seichiassist.task.MinuteGeneralTask;
+import com.github.unchama.seichiassist.task.PlayerDataSaveTask;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.Bukkit;
@@ -1029,7 +1029,7 @@ public class SeichiAssist extends JavaPlugin{
 			//quit時とondisable時、プレイヤーデータを最新の状態に更新
 			playerdata.updateonQuit(p);
 
-			new PlayerDataSaveTaskRunnable(playerdata,true,true).run();
+			new PlayerDataSaveTask(playerdata,true,true).run();
 		}
 
 		if(databaseGateway.disconnect() == Fail){
@@ -1042,22 +1042,22 @@ public class SeichiAssist extends JavaPlugin{
 	public void startTaskRunnable(){
 		//一定時間おきに処理を実行するタスク
 		if(DEBUG){
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,440,400));
+			tasklist.add(new SeichiAmountDurationRankTask().runTaskTimer(this,440,400));
 		}else{
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,36400,36000));
+			tasklist.add(new SeichiAmountDurationRankTask().runTaskTimer(this,36400,36000));
 		}
 
 		if(DEBUG){
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,200));
+			tasklist.add(new MinuteGeneralTask().runTaskTimer(this,0,200));
 		}else{
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
+			tasklist.add(new MinuteGeneralTask().runTaskTimer(this,0,1200));
 		}
 
 		//非同期処理にしたいけど別ステートメントでsql文処理させるようにしてからじゃないとだめぽ
 		if(DEBUG){
-			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,480,400));
+			tasklist.add(new PlayerDataBackupTask().runTaskTimer(this,480,400));
 		}else{
-			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,12800,12000));
+			tasklist.add(new PlayerDataBackupTask().runTaskTimer(this,12800,12000));
 		}
 	}
 

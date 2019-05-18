@@ -21,7 +21,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
  * @author unchama coolpoco
  *
  */
-public class CheckAlreadyExistPlayerDataTaskRunnable extends BukkitRunnable{
+public class CheckAlreadyExistPlayerDataTask extends BukkitRunnable{
 
 	private SeichiAssist plugin = SeichiAssist.instance;
 	private Config config = SeichiAssist.config;
@@ -41,7 +41,7 @@ public class CheckAlreadyExistPlayerDataTaskRunnable extends BukkitRunnable{
 	private Statement stmt = null;
 	private ResultSet rs = null;
 
-	public CheckAlreadyExistPlayerDataTaskRunnable(PlayerData playerData) {
+	public CheckAlreadyExistPlayerDataTask(PlayerData playerData) {
 		this.playerData = playerData;
 		name = playerData.name;
 		uuid = playerData.uuid;
@@ -105,13 +105,13 @@ public class CheckAlreadyExistPlayerDataTaskRunnable extends BukkitRunnable{
 			playermap.put(uuid, playerData);
 
 			//ログイン時init処理
-			new PlayerDataUpdateOnJoinRunnable(playerData).runTaskTimer(plugin, 0, 20);
+			new PlayerDataUpdateOnJoinTask(playerData).runTaskTimer(plugin, 0, 20);
 
 		}else if(count == 1){
 			//uuidが存在するときの処理
 			//非同期でPlayerDataの読み込みを行う
-			new LoadPlayerDataTaskRunnable(playerData).runTaskTimerAsynchronously(plugin, 0, 20);
-			new PlayerDataUpdateOnJoinRunnable(playerData).runTaskTimer(plugin, 0, 20);
+			new LoadPlayerDataTask(playerData).runTaskTimerAsynchronously(plugin, 0, 20);
+			new PlayerDataUpdateOnJoinTask(playerData).runTaskTimer(plugin, 0, 20);
 
 		}else{
 			//mysqlに該当するplayerdataが2個以上ある時エラーを吐く

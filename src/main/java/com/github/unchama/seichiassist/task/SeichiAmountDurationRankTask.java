@@ -21,12 +21,12 @@ import com.github.unchama.seichiassist.util.Util;
  * @author unchama
  *
  */
-public class HalfHourTaskRunnable extends BukkitRunnable{
+public class SeichiAmountDurationRankTask extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.instance;
 	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 
-	public HalfHourTaskRunnable() {
+	public SeichiAmountDurationRankTask() {
 	}
 
 

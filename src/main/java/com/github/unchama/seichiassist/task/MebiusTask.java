@@ -19,12 +19,12 @@ import com.github.unchama.seichiassist.listener.MebiusListener;
  * @author CrossHearts
  *
  */
-public class MebiusTaskRunnable extends BukkitRunnable {
+public class MebiusTask extends BukkitRunnable {
 	private Player p;
 	private boolean silence = false;
 
 	// プレイヤー接続時に呼び出される
-	public MebiusTaskRunnable(PlayerData parent) {
+	public MebiusTask(PlayerData parent) {
 		p = Bukkit.getPlayer(parent.uuid);
 		if (MebiusListener.isEquip(p)) {
 			speak("おかえり" +Objects.requireNonNull(MebiusListener.getNickname(p))  + "！待ってたよ！");

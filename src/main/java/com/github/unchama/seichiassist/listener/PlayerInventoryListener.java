@@ -17,9 +17,9 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.TitleUnlockTaskRunnable;
-import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
+import com.github.unchama.seichiassist.task.CoolDownTask;
+import com.github.unchama.seichiassist.task.TitleUnlockTask;
+import com.github.unchama.seichiassist.task.VotedFairyTask;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
@@ -256,7 +256,7 @@ public class PlayerInventoryListener implements Listener {
 				//連打防止クールダウン処理
 				if (playerdata.gachacooldownflag) {
 					//連打による負荷防止の為クールダウン処理
-					new CoolDownTaskRunnable(player,false,false,true).runTaskLater(plugin,20);
+					new CoolDownTask(player,false,false,true).runTaskLater(plugin,20);
 				} else {
 					return;
 				}
@@ -2754,7 +2754,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -2839,7 +2839,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -2875,7 +2875,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -2899,7 +2899,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -2949,7 +2949,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -2973,7 +2973,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -3016,7 +3016,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -3107,7 +3107,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -3159,7 +3159,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -3211,7 +3211,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -3263,7 +3263,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -3343,7 +3343,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -3462,7 +3462,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -3628,7 +3628,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -3850,7 +3850,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -4037,7 +4037,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -4133,7 +4133,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -4224,7 +4224,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -4518,7 +4518,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -4904,7 +4904,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//実績解除処理部分の読みこみ
-			//TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+			//TitleUnlockTask TUTR = new TitleUnlockTask() ;
 			//プレイヤーインベントリのクリックの場合終了
 			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
 				return;
@@ -5502,7 +5502,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			else if (itemstackcurrent.getType().equals(Material.COMPASS)) {
-				VotingFairyTaskRunnable.speak(player, "僕は" + Util.showHour(playerdata.VotingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound);
+				VotedFairyTask.speak(player, "僕は" + Util.showHour(playerdata.VotingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound);
 				player.closeInventory();
 			}
 

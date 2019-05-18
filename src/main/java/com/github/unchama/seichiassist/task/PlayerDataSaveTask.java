@@ -30,7 +30,7 @@ import static com.github.unchama.util.ActionStatus.Ok;
  * @author unchama
  *
  */
-public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
+public class PlayerDataSaveTask extends BukkitRunnable{
 	final private SeichiAssist plugin = SeichiAssist.instance;
 	final private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	final private int serverId = SeichiAssist.config.getServerNum();
@@ -43,7 +43,7 @@ public class PlayerDataSaveTaskRunnable extends BukkitRunnable{
 	 * @param _isondisable ondisableからの呼び出し時のみtrueにしておくフラグ
 	 * @param _logoutflag loginflag折る時にtrueにしておくフラグ
 	 */
-	public PlayerDataSaveTaskRunnable(PlayerData _playerdata,boolean _isondisable,boolean _logoutflag) {
+	public PlayerDataSaveTask(PlayerData _playerdata, boolean _isondisable, boolean _logoutflag) {
 		playerdata = _playerdata;
 		isOnDisable = _isondisable;
 		logoutflag = _logoutflag;
