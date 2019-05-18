@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.ExternalPlugins;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -617,6 +619,7 @@ public class PlayerClickListener implements Listener {
 		p.getInventory().addItem(Util.getSkullDataFromBlock(targetBlock));
 		//ブロックを空気で置き換える
 		targetBlock.setType(Material.AIR);
+		Objects.requireNonNull(ExternalPlugins.getCoreProtect()).logRemoval(p.getName(), targetBlock.getLocation(), targetBlock.getType(), targetBlock.getData());
 		//音を鳴らしておく
 		p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 2.0f, 1.0f);
 	}
