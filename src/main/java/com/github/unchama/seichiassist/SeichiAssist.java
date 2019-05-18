@@ -896,22 +896,22 @@ public class SeichiAssist extends JavaPlugin{
 		{
 			// コマンドの登録
 			MapFactory.of(
-					Pair.of("gacha", new GachaCommand(instance)),
+					Pair.of("gacha", new GachaCommand()),
 					Pair.of("seichi",new SeichiCommand(instance)),
-					Pair.of("ef",new EffectCommand(instance)),
-					Pair.of("level",new LevelCommand(instance)),
+					Pair.of("ef",new EffectCommand()),
+					Pair.of("level",new LevelCommand()),
 					Pair.of("lastquit",new LastQuitCommand()),
-					Pair.of("stick",new StickCommand(instance)),
-					Pair.of("rmp",new RmpCommand(instance)),
-					Pair.of("shareinv",new ShareInvCommand(instance)),
-					Pair.of("mebius",new MebiusCommand(instance)),
-					Pair.of("unlockachv", new AchieveCommand(instance)),
-					Pair.of("halfguard", new HalfBlockProtectCommand(instance)),
-					Pair.of("event", new EventCommand(instance)),
-					Pair.of("contribute", new ContributeCommand(instance)),
-					Pair.of("subhome", new SubHomeCommand(instance)),
+					Pair.of("stick",new StickCommand()),
+					Pair.of("rmp",new RmpCommand()),
+					Pair.of("shareinv",new ShareInvCommand()),
+					Pair.of("mebius",new MebiusCommand()),
+					Pair.of("unlockachv", new AchieveCommand()),
+					Pair.of("halfguard", new HalfBlockProtectCommand()),
+					Pair.of("event", new EventCommand()),
+					Pair.of("contribute", new ContributeCommand()),
+					Pair.of("subhome", new SubHomeCommand()),
 					Pair.of("gtfever", new GiganticFeverCommand()),
-					Pair.of("minehead", new MineHeadCommand(instance)),
+					Pair.of("minehead", new MineHeadCommand()),
 					Pair.of("x-transfer", new RegionOwnerTransferCommand())
 			).forEach((commandName, executor) -> getCommand(commandName).setExecutor(executor));
 		}

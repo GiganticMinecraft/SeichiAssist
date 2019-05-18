@@ -11,11 +11,6 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public class HalfBlockProtectCommand implements CommandExecutor {
-	SeichiAssist plugin;
-
-	public HalfBlockProtectCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
 
 	@Override
 	public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {

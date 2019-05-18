@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.commands;
 
-import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearBagListener;
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearItemListener;
 import com.github.unchama.seichiassist.util.Util;
@@ -15,12 +14,6 @@ import org.bukkit.entity.Player;
  * Support at dev-basic or dev-extreme channel of Discord
  */
 public class EventCommand implements CommandExecutor {
-
-	SeichiAssist plugin;
-
-	public EventCommand(SeichiAssist plugin) {
-		this.plugin = plugin;
-	}
 
 	@Override
 	public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {

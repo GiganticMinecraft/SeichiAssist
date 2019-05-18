@@ -20,12 +20,7 @@ import java.util.UUID;
 import static com.github.unchama.util.ActionStatus.Fail;
 
 public class LevelCommand implements CommandExecutor {
-	public SeichiAssist plugin;
 	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-
-	public LevelCommand(SeichiAssist plugin){
-		this.plugin = plugin;
-	}
 
 	// /gacha set 0.01 (現在手にもってるアイテムが確率0.01でガチャに出現するように設定）
 	@Override

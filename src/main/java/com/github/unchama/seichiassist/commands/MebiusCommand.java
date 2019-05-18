@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.commands;
 
-import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.listener.MebiusListener;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -9,9 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class MebiusCommand implements CommandExecutor {
-
-	public MebiusCommand(SeichiAssist plugin) {
-	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

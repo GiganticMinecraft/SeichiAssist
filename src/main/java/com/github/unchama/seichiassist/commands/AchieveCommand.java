@@ -15,18 +15,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class AchieveCommand implements CommandExecutor {
-	public SeichiAssist plugin;
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	Player player;
-	PlayerData playerdata;
-
-
-
-	public AchieveCommand(SeichiAssist plugin){
-		this.plugin = plugin;
-	}
-
-	public boolean isInt(String num) {
+	private boolean isInt(String num) {
 		try {
 			Integer.parseInt(num);
 			return true;
@@ -38,29 +27,8 @@ public class AchieveCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 	String label, String[] args) {
-
+		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 		DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-
-		//final String table = SeichiAssist.PLAYERDATA_TABLENAME;
-
-		//String sqlname;
-		//Player sqlp;
-		//final UUID sqluuid;
-		//String sqlcommand;
-		//int sqlresult;
-		//String sqlexc;
-		//Boolean sqlflag;
-		//int sqli;
-		//Statement sqlstmt = null;
-		//ResultSet sqlrs = null;
-		//String db;
-
-		//db = SeichiAssist.config.getDB();
-		//sqlcommand = "";
-		//sqlresult = 0 ;
-		//sqlflag = true;
-		//sqli = 0;
-
 
 		//コマンドを実行者の取得
 		Player sendplayer = null ;
@@ -68,9 +36,7 @@ public class AchieveCommand implements CommandExecutor {
 		//コンソール実行の際にエラーが発生するため回避処理
 		try{
 			sendplayer = (Player)sender;
-		}catch(CommandException e ){
-			ByConsole = true;
-		}catch(ClassCastException e){
+		}catch(CommandException | ClassCastException e ){
 			ByConsole = true;
 		}
 
@@ -81,13 +47,6 @@ public class AchieveCommand implements CommandExecutor {
 			sendplayer = (Player)sender;
 		}
 
-		/*
-		//プレイヤーからの送信でない時処理終了
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.GREEN + "このコマンドはゲーム内から実行してください。");
-			return true;
-		}
-		*/
 		//不正な数の引数を指定した場合(2より小さい場合 or 3より大きい場合 →lengthが2～3以外の場合)
 		if(2 > args.length ||args.length > 3){
 			sender.sendMessage(ChatColor.RED + "/unlockachv <実績No> <プレイヤー名> <give/deprive>");
@@ -110,6 +69,8 @@ public class AchieveCommand implements CommandExecutor {
 						//<プレイヤー名>が"ALL"の場合
 							//「server」全体配布処理
 							try{
+								Player player;
+								PlayerData playerdata;
 								if(args[2].equals("server")){
 									for(Player p :Bukkit.getServer().getOnlinePlayers()){
 										player = p;

@@ -14,29 +14,19 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public class ContributeCommand implements CommandExecutor {
-	SeichiAssist plugin;
 
-	public ContributeCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
+	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label,
-			String[] args) {
-
-
-		DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-
-
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		//受け取るプレイヤーの情報を取得
 		Player givenplayer = Bukkit.getServer().getPlayer(args[1]);
 
-		if(args.length == 0){
+		if(args.length == 0) {
 			//コマンド長が0の時の処理
 			sender.sendMessage(ChatColor.GREEN + "/contribute <add/remove> <playername> <point>");
 			return true;
-
-		}else if(args[0].equalsIgnoreCase("add") && args.length == 3){
+		} else if(args[0].equalsIgnoreCase("add") && args.length == 3) {
 
 			//sqlをusernameで操作
 			if (databaseGateway.playerDataManipulator.setContribute(sender, args[1], TypeConverter.toInt(args[2]))) {

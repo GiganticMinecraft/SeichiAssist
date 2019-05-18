@@ -12,11 +12,6 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public class EffectCommand implements CommandExecutor {
-	SeichiAssist plugin;
-
-	public EffectCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,

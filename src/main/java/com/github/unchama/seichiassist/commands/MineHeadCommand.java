@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.commands;
 
-import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -9,11 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class MineHeadCommand implements CommandExecutor {
-	SeichiAssist plugin;
-
-	public MineHeadCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,

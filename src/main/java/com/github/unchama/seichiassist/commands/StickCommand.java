@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.commands;
 
-import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -12,9 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class StickCommand implements CommandExecutor {
-
-	public StickCommand(SeichiAssist _plugin){
-	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,

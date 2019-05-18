@@ -17,9 +17,6 @@ import java.util.UUID;
 
 public class SubHomeCommand implements CommandExecutor {
 
-	public SubHomeCommand(SeichiAssist plugin){
-	}
-
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {

@@ -20,9 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShareInvCommand implements CommandExecutor {
-	public ShareInvCommand(SeichiAssist plugin) {
-	}
-
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!(sender instanceof Player)) {
@@ -34,7 +31,7 @@ public class ShareInvCommand implements CommandExecutor {
 		return true;
 	}
 
-	public void shareInv(Player player) {
+	private void shareInv(Player player) {
 		PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
 		DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 

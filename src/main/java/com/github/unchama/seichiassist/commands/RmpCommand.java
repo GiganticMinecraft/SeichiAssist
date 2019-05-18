@@ -23,9 +23,6 @@ public class RmpCommand implements CommandExecutor {
 	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	private Map<UUID, String> leavers;
 
-	public RmpCommand(SeichiAssist plugin){
-	}
-
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 	String label, String[] args) {
