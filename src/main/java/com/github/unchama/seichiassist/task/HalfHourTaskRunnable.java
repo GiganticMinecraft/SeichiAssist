@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.task;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -33,7 +32,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 	@Override
 	public void run() {
 		//カウント値を０に設定
-		int count = 0;
+		int diggedPlayerCount = 0;
 		//30分間の全プレイヤーの採掘量をallに格納
 		int all = 0;
 
@@ -73,41 +72,32 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			all += playerdata.halfhourblock.increase;
 			//プレイヤーの30分の採掘量が1以上の時countを加算
 			if(playerdata.halfhourblock.increase >= 1){
-				count++;
+				diggedPlayerCount++;
 			}
 		}
 
-
-		//Map.Entry のリストを作る
 		List<Entry<UUID,PlayerData>> entries = new ArrayList<>(SeichiAssist.playermap.entrySet());
 
-		//Comparator で Map.Entry の値を比較
-		//比較関数
-		Collections.sort(entries, (o1, o2) -> {
+		// ここで、0 -> 第一位、 1 -> 第二位、・・・n -> 第(n+1)位にする
+		entries.sort((o1, o2) -> {
 			Long i1 = o1.getValue().halfhourblock.increase;
 			Long i2 = o2.getValue().halfhourblock.increase;
 			return i2.compareTo(i1);//降順
 		});
 
 		Util.sendEveryMessage("全体の整地量は " + ChatColor.AQUA + all + ChatColor.WHITE + " でした");
-		int countn = 1;
-		for(Entry<UUID,PlayerData> e : entries){
-			if (count <= 0 || countn >= 4) break;
-			count --;
-
-			if(countn == 1){
-				Util.sendEveryMessage("整地量第1位は" + ChatColor.DARK_PURPLE + "[ Lv" + e.getValue().level +" ]" + e.getValue().name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
-			}else if(countn == 2){
-				Util.sendEveryMessage("整地量第2位は" + ChatColor.BLUE + "[ Lv" + e.getValue().level +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
-			}else if(countn == 3){
-				Util.sendEveryMessage("整地量第3位は" + ChatColor.DARK_AQUA + "[ Lv" + e.getValue().level +" ]" + e.getValue().name+ ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
+		// * プレイヤーの数が負の数になることは絶対にない
+		if (diggedPlayerCount != 0) {
+			Entry<UUID, PlayerData> e;
+			final int size = entries.size();
+			for (int i = 0; i <= 2; i++) { // 1から3位まで
+				if (size == i) break;
+				e = entries.get(i);
+				Util.sendEveryMessage("整地量第" + (i + 1) + "位は" + ChatColor.DARK_PURPLE + "[ Lv" + e.getValue().level +" ]" + e.getValue().name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
 			}
-			countn++;
 		}
 
-
 		Util.sendEveryMessage("--------------------------------------------------");
-
 	}
 	public int getSendMessageAmount(){
 		return SeichiAssist.config.getDefaultMineAmount()*30;
