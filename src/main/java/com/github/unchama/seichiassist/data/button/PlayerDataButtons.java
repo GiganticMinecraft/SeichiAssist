@@ -11,7 +11,6 @@ import com.github.unchama.seichiassist.data.slot.handler.Triggers;
 import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
  * @author karayuu

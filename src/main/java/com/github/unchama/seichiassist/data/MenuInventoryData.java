@@ -16,7 +16,6 @@ import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.external.WorldGuard;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.util.collection.ImmutableListFactory;
-import com.sk89q.worldguard.bukkit.WorldConfiguration;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Bukkit;
