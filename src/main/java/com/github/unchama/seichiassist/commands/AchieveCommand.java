@@ -1,23 +1,20 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.util.HashMap;
+import java.util.UUID;
 
-public class AchieveCommand implements TabExecutor{
+public class AchieveCommand implements CommandExecutor {
 	public SeichiAssist plugin;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
@@ -27,11 +24,6 @@ public class AchieveCommand implements TabExecutor{
 
 	public AchieveCommand(SeichiAssist plugin){
 		this.plugin = plugin;
-	}
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command,
-			String label, String[] args) {
-		return null;
 	}
 
 	public boolean isInt(String num) {

@@ -9,25 +9,17 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.List;
 import java.util.UUID;
 
-public class SubHomeCommand implements TabExecutor {
-	SeichiAssist plugin;
+public class SubHomeCommand implements CommandExecutor {
 
-	public SubHomeCommand(SeichiAssist _plugin){
-		plugin = _plugin;
+	public SubHomeCommand(SeichiAssist plugin){
 	}
-	@Override
-	public List<String> onTabComplete(CommandSender arg0, Command arg1,
-			String arg2, String[] arg3) {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
-	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {

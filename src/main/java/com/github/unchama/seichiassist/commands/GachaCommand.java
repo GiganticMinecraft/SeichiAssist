@@ -1,38 +1,32 @@
 package com.github.unchama.seichiassist.commands;
 
-import java.util.List;
-import java.util.UUID;
-
-import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.util.TypeConverter;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.PlayerInventory;
-
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
+
+import java.util.UUID;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 
-public class gachaCommand implements TabExecutor{
+public class GachaCommand implements CommandExecutor {
 	public SeichiAssist plugin;
 	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 
-	public gachaCommand(SeichiAssist plugin){
+	public GachaCommand(SeichiAssist plugin){
 		this.plugin = plugin;
 	}
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command,
-			String label, String[] args) {
-		return null;
-	}
+
 	// /gacha set 0.01 (現在手にもってるアイテムが確率0.01でガチャに出現するように設定）
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,

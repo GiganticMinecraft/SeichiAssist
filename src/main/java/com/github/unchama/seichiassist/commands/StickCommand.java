@@ -6,24 +6,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-
-public class StickCommand implements TabExecutor {
-	SeichiAssist plugin;
+public class StickCommand implements CommandExecutor {
 
 	public StickCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
-	@Override
-	public List<String> onTabComplete(CommandSender arg0, Command arg1,
-			String arg2, String[] arg3) {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
 	}
 
 	@Override

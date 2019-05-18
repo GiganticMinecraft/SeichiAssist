@@ -1,17 +1,19 @@
 package com.github.unchama.seichiassist.commands;
 
-import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.task.*;
-import com.github.unchama.seichiassist.util.*;
-import org.bukkit.*;
-import org.bukkit.command.*;
-
-import java.util.*;
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
+import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.ChatColor;
+import org.bukkit.Difficulty;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 
 /**
  * Created by karayuu on 2018/07/25
  */
-public class GiganticFeverCommand implements TabExecutor {
+public class GiganticFeverCommand implements CommandExecutor {
 	private Config config = SeichiAssist.config;
 	private static int end = 0;
 	private static boolean isInTime = false;
@@ -41,8 +43,4 @@ public class GiganticFeverCommand implements TabExecutor {
 		}
 	}
 
-	@Override
-	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-		return null;
-	}
 }

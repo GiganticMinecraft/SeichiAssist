@@ -6,16 +6,14 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-
-import java.util.List;
 
 /**
  * 保護のオーナー権限を引き渡すコマンド。
  */
-public class RegionOwnerTransferCommand implements TabExecutor {
+public class RegionOwnerTransferCommand implements CommandExecutor {
 	@Override
 	// /x-transfer [name] [to Player]
 	public boolean onCommand(CommandSender sender, Command command, String actualCommand, String[] args) {
@@ -73,8 +71,4 @@ public class RegionOwnerTransferCommand implements TabExecutor {
 		return true;
 	}
 
-	@Override
-	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] string) {
-		return null;
-	}
 }

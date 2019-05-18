@@ -7,24 +7,17 @@ import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.List;
 import java.util.UUID;
 
-public class ContributeCommand implements TabExecutor {
+public class ContributeCommand implements CommandExecutor {
 	SeichiAssist plugin;
 
 	public ContributeCommand(SeichiAssist _plugin){
 		plugin = _plugin;
-	}
-	@Override
-	public List<String> onTabComplete(CommandSender arg0, Command arg1,
-			String arg2, String[] arg3) {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
 	}
 
 	@Override

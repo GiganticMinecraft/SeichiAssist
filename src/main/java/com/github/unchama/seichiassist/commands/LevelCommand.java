@@ -9,29 +9,24 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.List;
 import java.util.UUID;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 
-public class LevelCommand implements TabExecutor{
+public class LevelCommand implements CommandExecutor {
 	public SeichiAssist plugin;
 	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 	public LevelCommand(SeichiAssist plugin){
 		this.plugin = plugin;
 	}
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command,
-			String label, String[] args) {
-		return null;
-	}
+
 	// /gacha set 0.01 (現在手にもってるアイテムが確率0.01でガチャに出現するように設定）
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,

@@ -17,13 +17,12 @@ import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
+import com.github.unchama.util.collection.MapFactory;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -49,7 +48,6 @@ public class SeichiAssist extends JavaPlugin{
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
 
-	private HashMap<String, TabExecutor> commandlist;
 	public static DatabaseGateway databaseGateway;
 	public static Config config;
 
@@ -895,25 +893,28 @@ public class SeichiAssist extends JavaPlugin{
 			Bukkit.shutdown();
 		}
 
-		//コマンドの登録
-		commandlist = new HashMap<>();
-		commandlist.put("gacha",new gachaCommand(instance));
-		commandlist.put("seichi",new SeichiCommand(instance));
-		commandlist.put("ef",new EffectCommand(instance));
-		commandlist.put("level",new LevelCommand(instance));
-		commandlist.put("lastquit",new LastQuitCommand(instance));
-		commandlist.put("stick",new StickCommand(instance));
-		commandlist.put("rmp",new RmpCommand(instance));
-		commandlist.put("shareinv",new ShareInvCommand(instance));
-		commandlist.put("mebius",new MebiusCommand(instance));
-		commandlist.put("unlockachv", new AchieveCommand(instance));
-		commandlist.put("halfguard", new HalfBlockProtectCommand(instance));
-		commandlist.put("event", new EventCommand(instance));
-		commandlist.put("contribute", new ContributeCommand(instance));
-		commandlist.put("subhome", new SubHomeCommand(instance));
-		commandlist.put("gtfever", new GiganticFeverCommand());
-		commandlist.put("minehead", new MineHeadCommand(instance));
-		commandlist.put("x-transfer", new RegionOwnerTransferCommand());
+		{
+			// コマンドの登録
+			MapFactory.of(
+					Pair.of("gacha", new GachaCommand(instance)),
+					Pair.of("seichi",new SeichiCommand(instance)),
+					Pair.of("ef",new EffectCommand(instance)),
+					Pair.of("level",new LevelCommand(instance)),
+					Pair.of("lastquit",new LastQuitCommand()),
+					Pair.of("stick",new StickCommand(instance)),
+					Pair.of("rmp",new RmpCommand(instance)),
+					Pair.of("shareinv",new ShareInvCommand(instance)),
+					Pair.of("mebius",new MebiusCommand(instance)),
+					Pair.of("unlockachv", new AchieveCommand(instance)),
+					Pair.of("halfguard", new HalfBlockProtectCommand(instance)),
+					Pair.of("event", new EventCommand(instance)),
+					Pair.of("contribute", new ContributeCommand(instance)),
+					Pair.of("subhome", new SubHomeCommand(instance)),
+					Pair.of("gtfever", new GiganticFeverCommand()),
+					Pair.of("minehead", new MineHeadCommand(instance)),
+					Pair.of("x-transfer", new RegionOwnerTransferCommand())
+			).forEach((commandName, executor) -> getCommand(commandName).setExecutor(executor));
+		}
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -952,11 +953,6 @@ public class SeichiAssist extends JavaPlugin{
 		startTaskRunnable();
 
 		getLogger().info("SeichiAssist is Enabled!");
-	}
-
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-		return commandlist.get(cmd.getName()).onCommand(sender, cmd, label, args);
 	}
 
 	@Override
