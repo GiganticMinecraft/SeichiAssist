@@ -27,11 +27,11 @@ public class MineHeadCommand implements TabExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-		Player p = (Player) sender;
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.GREEN + "このコマンドはゲーム内から実行してください。");
 			return true;
 		}else if(args.length == 0){
+			Player p = (Player) sender;
 			Util.addItemToPlayerSafely(p, Util.getMineHeadItem());
 			p.sendMessage(ChatColor.GREEN + "専用アイテムを付与しました．");
 			return true;

@@ -30,18 +30,22 @@ public class effectCommand implements TabExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
 		//プレイヤーを取得
-		Player player = (Player)sender;
+		Player player;
+		UUID uuid;
+		PlayerData playerdata;
 		//プレイヤーネーム
 		//String name = Util.getName(player);
 		//UUIDを取得
-		UUID uuid = player.getUniqueId();
 		//playerdataを取得
-		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 		//プレイヤーからの送信でない時処理終了
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.GREEN + "このコマンドはゲーム内から実行してください。");
 			return true;
 		}else if(args.length == 0){
+			player = (Player)sender;
+			uuid = player.getUniqueId();
+			playerdata = SeichiAssist.playermap.get(uuid);
+
 			//エフェクトフラグを切り替え
 			int effectflag = (playerdata.effectflag + 1) % 6;
 			if (effectflag == 0) {
@@ -65,7 +69,9 @@ public class effectCommand implements TabExecutor {
 			//コマンド長が１の時
 			if(args[0].equalsIgnoreCase("smart")){
 				//コマンドがef smartの時の処理
-
+				player = (Player)sender;
+				uuid = player.getUniqueId();
+				playerdata = SeichiAssist.playermap.get(uuid);
 				//メッセージフラグを反転
 				boolean messageflag = !playerdata.messageflag;
 				if (messageflag){
