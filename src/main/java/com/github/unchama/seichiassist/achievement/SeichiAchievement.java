@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.achievement;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.Skulls;
 import com.github.unchama.seichiassist.data.PlayerData;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -9,10 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -133,7 +129,7 @@ public enum SeichiAchievement {
 
             SkullMeta meta = (SkullMeta) head.getItemMeta();
             if (!meta.hasOwner()
-                    || !Objects.equals(meta.getOwningPlayer().getUniqueId(), Skulls.UNCHAMA.getUuid())) {
+                    || !Objects.equals(meta.getOwningPlayer().getUniqueId(), UUID.fromString("b66cc3f6-a045-42ad-b4b8-320f20caf140"))) {
                 return false;
             }
         }
