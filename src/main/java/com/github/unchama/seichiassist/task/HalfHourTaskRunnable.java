@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist.task;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.UUID;
 
+import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,6 +25,7 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.instance;
 	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+    static final List<ChatColor> color = ImmutableListFactory.of(ChatColor.DARK_PURPLE, ChatColor.BLUE, ChatColor.DARK_AQUA);
 
 	public HalfHourTaskRunnable() {
 	}
@@ -76,24 +78,24 @@ public class HalfHourTaskRunnable extends BukkitRunnable{
 			}
 		}
 
-		List<Entry<UUID,PlayerData>> entries = new ArrayList<>(SeichiAssist.playermap.entrySet());
+		final List<PlayerData> entries = new ArrayList<>(SeichiAssist.playermap.values());
 
-		// ここで、0 -> 第一位、 1 -> 第二位、・・・n -> 第(n+1)位にする
+		// ここで、0 -> 第一位、 1 -> 第二位、・・・n -> 第(n+1)位にする (つまり降順)
 		entries.sort((o1, o2) -> {
-			Long i1 = o1.getValue().halfhourblock.increase;
-			Long i2 = o2.getValue().halfhourblock.increase;
-			return i2.compareTo(i1);//降順
+			Long i1 = o1.halfhourblock.increase;
+			Long i2 = o2.halfhourblock.increase;
+			return Comparator.<Long>reverseOrder().compare(i1, i2);
 		});
 
 		Util.sendEveryMessage("全体の整地量は " + ChatColor.AQUA + all + ChatColor.WHITE + " でした");
 		// * プレイヤーの数が負の数になることは絶対にない
 		if (diggedPlayerCount != 0) {
-			Entry<UUID, PlayerData> e;
+			PlayerData e;
 			final int size = entries.size();
 			for (int i = 0; i <= 2; i++) { // 1から3位まで
 				if (size == i) break;
 				e = entries.get(i);
-				Util.sendEveryMessage("整地量第" + (i + 1) + "位は" + ChatColor.DARK_PURPLE + "[ Lv" + e.getValue().level +" ]" + e.getValue().name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getValue().halfhourblock.increase + ChatColor.WHITE + "でした");
+				Util.sendEveryMessage("整地量第" + (i + 1) + "位は" + color.get(i) + "[ Lv" + e.level +" ]" + e.name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.halfhourblock.increase + ChatColor.WHITE + "でした");
 			}
 		}
 
