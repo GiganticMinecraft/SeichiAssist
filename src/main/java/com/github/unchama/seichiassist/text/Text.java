@@ -1,13 +1,11 @@
 package com.github.unchama.seichiassist.text;
 
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * Stringのラッパー
@@ -15,11 +13,11 @@ import static java.util.Objects.requireNonNull;
  * @author karayuu
  */
 public class Text {
-    @Nonnull
+    @NotNull
     private String string;
 
-    private Text(@Nonnull final String string) {
-        this.string = requireNonNull(string);
+    private Text(@NotNull final String string) {
+        this.string = string;
     }
 
     /**
@@ -28,7 +26,8 @@ public class Text {
      * @param string ラップする {@link String}
      * @return {@link Text}
      */
-    public static Text of(@Nonnull final String string) {
+    @NotNull
+    public static Text of(@NotNull final String string) {
         return new Text(string);
     }
 
@@ -40,8 +39,8 @@ public class Text {
      *                   Minecraftの仕様上, {@link ChatColor#UNDERLINE} 等の文字修飾コードは初めに指定してください.
      * @return {@link Text}
      */
-    @Nonnull
-    public static Text of(@Nonnull final String string, @Nonnull final ChatColor... chatColors) {
+    @NotNull
+    public static Text of(@NotNull final String string, @NotNull final ChatColor... chatColors) {
         Text text = Text.of(string);
         List<ChatColor> colors = Arrays.asList(chatColors);
         colors.forEach(color -> text.addBefore(color + ""));
@@ -49,7 +48,7 @@ public class Text {
         return text;
     }
 
-    @Nonnull
+    @NotNull
     public static Text of() {
         return Text.of("");
     }
@@ -57,21 +56,20 @@ public class Text {
     /**
      * {@link Text} を連結させて新しい {@link Text} を作成します.
      *
-     * @param another_text 連結させる {@link Text}
+     * @param another_text 連結させる {@link Text} ({@code null} は許容されません.)
      * @return 新しい {@link Text}
      */
-    @Nonnull
-    public Text also(@Nonnull Text another_text) {
-        requireNonNull(another_text);
+    @NotNull
+    public Text also(@NotNull Text another_text) {
         return Text.of(this.string + another_text.stringValue());
     }
 
     /**
      * {@link StringBuilder} において,先頭に文字列を追加します.
      *
-     * @param string 先頭に追加する文字列 ({@code null} は許容されない)
+     * @param string 先頭に追加する文字列 ({@code null} は許容されません.)
      */
-    public void addBefore(@Nonnull final String string) {
+    public void addBefore(@NotNull final String string) {
         this.string = string + this.string;
     }
 
@@ -79,14 +77,13 @@ public class Text {
      * 元の {@link String} を取り出し(アンラップ)します.
      * @return アンラップした {@link String}
      */
-    @Nonnull
+    @NotNull
     public String stringValue() {
         return this.string;
     }
 
-    @Nonnull
-    public static List<String> toStringList(@Nonnull List<Text> texts) {
-        requireNonNull(texts);
+    @NotNull
+    public static List<String> toStringList(@NotNull List<Text> texts) {
         List<String> strings = new ArrayList<>();
         texts.forEach(text -> strings.add(text.stringValue()));
         return strings;

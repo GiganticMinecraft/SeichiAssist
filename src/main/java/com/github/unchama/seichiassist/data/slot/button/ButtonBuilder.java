@@ -5,12 +5,10 @@ import com.github.unchama.seichiassist.data.slot.AbstractSlotBuilder;
 import com.github.unchama.seichiassist.data.slot.Slot;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * {@link Button} を構成する {@link Slot.Builder} です.
@@ -19,35 +17,41 @@ import static java.util.Objects.requireNonNull;
  * @see Button
  */
 public class ButtonBuilder extends AbstractSlotBuilder<ButtonBuilder> {
-    private List<SlotActionHandler> handlers = new ArrayList<>();
+    private List<@NotNull SlotActionHandler> handlers = new ArrayList<>();
 
-    private ButtonBuilder(@Nonnull ItemStackBuilder builder) {
+    private ButtonBuilder(@NotNull ItemStackBuilder builder) {
         super(builder);
     }
 
     /**
      * 与えられた {@link ItemStack} から {@link ButtonBuilder} を生成します.
      *
-     * @param builder {@link Slot} の生成に用いられる {@link ItemStackBuilder}
+     * @param builder {@link Slot} の生成に用いられる {@link ItemStackBuilder} ({@code null} は許容されません.)
      * @return {@link ButtonBuilder}
      */
-    public static ButtonBuilder from(@Nonnull ItemStackBuilder builder) {
-        return new ButtonBuilder(requireNonNull(builder));
+    @NotNull
+    public static ButtonBuilder from(@NotNull ItemStackBuilder builder) {
+        return new ButtonBuilder(builder);
     }
 
     /**
      * 与えられた {@link SlotActionHandler} を {@link Button} に付与します.
      *
-     * @param handler {@link Button} に付与する {@link SlotActionHandler}
+     * @param handler {@link Button} に付与する {@link SlotActionHandler} ({@code null} は許容されません.)
      * @return {@link ButtonBuilder}
      */
-    public ButtonBuilder handler(@Nonnull SlotActionHandler handler) {
-        this.handlers.add(requireNonNull(handler));
+    public ButtonBuilder handler(@NotNull SlotActionHandler handler) {
+        this.handlers.add(handler);
         return this;
     }
 
-    public ButtonBuilder handler(@Nonnull List<SlotActionHandler> handlers) {
-        requireNonNull(handlers);
+    /**
+     * 与えられた {@link SlotActionHandler} を {@link Button} に付与します.
+     *
+     * @param handlers {@link Button} に付与する {@link SlotActionHandler} の {@link List} ({@code null} は許容されません.)
+     * @return {@link ButtonBuilder}
+     */
+    public ButtonBuilder handlers(@NotNull List<@NotNull SlotActionHandler> handlers) {
         this.handlers.addAll(handlers);
         return this;
     }
@@ -57,7 +61,7 @@ public class ButtonBuilder extends AbstractSlotBuilder<ButtonBuilder> {
      *
      * @return 生成された {@link Button}
      */
-    @Nonnull
+    @NotNull
     public Button build() {
         if (this.position == -1) {
             throw new IllegalArgumentException("Slot.Builderにおいては,Slotの設置位置をpositionにて設定する必要があります.");

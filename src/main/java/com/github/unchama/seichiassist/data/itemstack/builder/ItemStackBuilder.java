@@ -6,10 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import javax.annotation.Nonnull;
-
-import static java.util.Objects.requireNonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * ItemStack,特にメニューに使用するスロットのIconを生成するBuilderです.
@@ -19,11 +16,11 @@ import static java.util.Objects.requireNonNull;
 public class ItemStackBuilder extends AbstractItemStackBuilder<ItemStackBuilder> {
     private Boolean showAttribute = false;
 
-    private ItemStackBuilder(@Nonnull Material material) {
+    private ItemStackBuilder(@NotNull Material material) {
         super(material);
     }
 
-    private ItemStackBuilder(@Nonnull Material material, short durability) {
+    private ItemStackBuilder(@NotNull Material material, short durability) {
         super(material, durability);
     }
 
@@ -32,9 +29,8 @@ public class ItemStackBuilder extends AbstractItemStackBuilder<ItemStackBuilder>
      *
      * @param material ItemStackに設定するMaterial ({@code null} は許容されません)
      */
-    @Nonnull
-    public static ItemStackBuilder of(@Nonnull Material material) {
-        requireNonNull(material);
+    @NotNull
+    public static ItemStackBuilder of(@NotNull Material material) {
         return new ItemStackBuilder(material);
     }
 
@@ -44,9 +40,8 @@ public class ItemStackBuilder extends AbstractItemStackBuilder<ItemStackBuilder>
      * @param material ItemStackに設定するMaterial ({@code null} は許容されません)
      * @param durability ダメージ値
      */
-    @Nonnull
-    public static ItemStackBuilder of(@Nonnull Material material, short durability) {
-        requireNonNull(material);
+    @NotNull
+    public static ItemStackBuilder of(@NotNull Material material, short durability) {
         return new ItemStackBuilder(material, durability);
     }
 
@@ -55,17 +50,15 @@ public class ItemStackBuilder extends AbstractItemStackBuilder<ItemStackBuilder>
      *
      * @return このBuilder
      */
-    @Nonnull
+    @NotNull
     public ItemStackBuilder showAttribute() {
         this.showAttribute = true;
         return this;
     }
 
     @Override
-    @Nonnull
-    public ItemStack build(@Nonnull PlayerData playerData) {
-        requireNonNull(playerData);
-
+    @NotNull
+    public ItemStack build(@NotNull PlayerData playerData) {
         ItemStack itemStack = super.component.getItemStack();
         ItemMeta meta = super.component.getItemMeta(playerData);
 

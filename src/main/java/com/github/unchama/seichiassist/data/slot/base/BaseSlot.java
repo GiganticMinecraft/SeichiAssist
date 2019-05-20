@@ -6,10 +6,7 @@ import com.github.unchama.seichiassist.data.slot.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import javax.annotation.Nonnull;
-
-import static java.util.Objects.requireNonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * {@link Slot} の基礎クラスです.
@@ -20,7 +17,7 @@ import static java.util.Objects.requireNonNull;
 public class BaseSlot implements Slot {
     private int position;
 
-    @Nonnull
+    @NotNull
     private ItemStackBuilder builder;
 
     /**
@@ -31,9 +28,9 @@ public class BaseSlot implements Slot {
      *
      * @see Slot#getPosition()
      */
-    public BaseSlot(int position, ItemStackBuilder builder) {
+    public BaseSlot(int position, @NotNull ItemStackBuilder builder) {
         this.position = position;
-        this.builder = requireNonNull(builder);
+        this.builder = builder;
     }
 
     @Override
@@ -41,15 +38,14 @@ public class BaseSlot implements Slot {
         return this.position;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ItemStack getItemStack(@Nonnull PlayerData playerData) {
-        requireNonNull(playerData);
+    public ItemStack getItemStack(@NotNull PlayerData playerData) {
         return this.builder.build(playerData);
     }
 
     @Override
-    public void invoke(@Nonnull InventoryClickEvent event) {
+    public void invoke(@NotNull InventoryClickEvent event) {
         //何もしない.
     }
 }

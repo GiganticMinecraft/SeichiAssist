@@ -2,12 +2,10 @@ package com.github.unchama.seichiassist.data.slot.handler;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * SLotのActionを管理するクラスです.
@@ -18,7 +16,7 @@ public class SlotActionHandler {
     /**
      * InventoryClickEventを受け取って,動作を行わせるかを返すFunction
      */
-    @Nonnull
+    @NotNull
     private Function<InventoryClickEvent, Boolean> trigger;
 
     /**
@@ -28,13 +26,13 @@ public class SlotActionHandler {
      * 動作がなかったことになります. <br>
      * なおこの時点で, {@link InventoryClickEvent#getWhoClicked()} は {@link Player} であることが保証されています.
      */
-    @Nonnull
+    @NotNull
     private Consumer<InventoryClickEvent> action;
 
-    public SlotActionHandler(@Nonnull Function<InventoryClickEvent, Boolean> trigger,
-                             Consumer<InventoryClickEvent> action) {
-        this.trigger = requireNonNull(trigger);
-        this.action = requireNonNull(action);
+    public SlotActionHandler(@NotNull Function<@NotNull InventoryClickEvent, @NotNull Boolean> trigger,
+                             @NotNull Consumer<@NotNull InventoryClickEvent> action) {
+        this.trigger = trigger;
+        this.action = action;
     }
 
     /**
@@ -42,7 +40,7 @@ public class SlotActionHandler {
      *
      * @param event InventoryClickEvent
      */
-    public void invoke(@Nonnull InventoryClickEvent event) {
+    public void invoke(@NotNull InventoryClickEvent event) {
         if (trigger.apply(event)) {
             action.accept(event);
         }

@@ -8,8 +8,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * {@link Menu} を管理するクラス.
  * Singleton で設計されています.
@@ -40,10 +38,10 @@ public final class MenuHandler implements Listener {
     /**
      * {@link Menu} 管理 {@link List} に {@link Menu} を追加します.
      *
-     * @param menu 追加する {@link Menu}
+     * @param menu 追加する {@link Menu} ({@code null} は許容されません.)
      */
     public void addMenu(@Nonnull Menu menu) {
-        menus.add(requireNonNull(menu));
+        menus.add(menu);
     }
 
     /**

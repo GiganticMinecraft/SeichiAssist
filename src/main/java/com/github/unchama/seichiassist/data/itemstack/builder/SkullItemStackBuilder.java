@@ -9,16 +9,13 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-
-import javax.annotation.Nonnull;
-
-import static java.util.Objects.requireNonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by karayuu on 2019/04/09
  */
 public class SkullItemStackBuilder extends AbstractItemStackBuilder<SkullItemStackBuilder> {
-    @Nonnull
+    @NotNull
     private String ownerName = "";
 
     private boolean isPlayerSkull = false;
@@ -27,6 +24,7 @@ public class SkullItemStackBuilder extends AbstractItemStackBuilder<SkullItemSta
         super(Material.SKULL_ITEM, (short) 3);
     }
 
+    @NotNull
     public static SkullItemStackBuilder of() {
         return new SkullItemStackBuilder();
     }
@@ -39,9 +37,8 @@ public class SkullItemStackBuilder extends AbstractItemStackBuilder<SkullItemSta
      * @return {@link SkullItemStackBuilder}
      * @see #playerSkull()
      */
-    @Nonnull
-    public SkullItemStackBuilder owner(@Nonnull String ownerName) {
-        requireNonNull(ownerName);
+    @NotNull
+    public SkullItemStackBuilder owner(@NotNull String ownerName) {
         this.ownerName = ownerName;
         return this;
     }
@@ -53,17 +50,15 @@ public class SkullItemStackBuilder extends AbstractItemStackBuilder<SkullItemSta
      * @return {@link SkullItemStackBuilder}
      * @see #owner(String)
      */
-    @Nonnull
+    @NotNull
     public SkullItemStackBuilder playerSkull() {
         this.isPlayerSkull = true;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ItemStack build(@Nonnull PlayerData playerData) {
-        requireNonNull(playerData);
-
+    public ItemStack build(@NotNull PlayerData playerData) {
         ItemStack skull = component.getItemStack();
         SkullMeta meta = (SkullMeta) component.getItemMeta(playerData);
 

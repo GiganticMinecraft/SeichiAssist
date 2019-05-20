@@ -10,12 +10,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * @author karayuu
@@ -44,7 +42,7 @@ public class Menu {
      *
      * @param slots 追加する {@link Slot} の {@link List}
      */
-    public void addSlots(List<Slot> slots) {
+    public void addSlots(@NotNull List<@NotNull Slot> slots) {
         this.slots.addAll(slots);
     }
 
@@ -53,8 +51,8 @@ public class Menu {
      *
      * @param title このMenuのtitle ({@code null} は許容されません.)
      */
-    public void setTitle(@Nonnull String title) {
-        this.title = requireNonNull(title);
+    public void setTitle(@NotNull String title) {
+        this.title = title;
     }
 
     /**
@@ -62,7 +60,7 @@ public class Menu {
      *
      * @return Menuのtitle
      */
-    @Nonnull
+    @NotNull
     public String getTitle() {
         return this.title;
     }
@@ -72,7 +70,7 @@ public class Menu {
      *
      * @param player Menuを開く {@link Player}
      */
-    public void openBy(@Nonnull Player player) {
+    public void openBy(@NotNull Player player) {
         final int slotsInOneRow = 9;
         final PlayerData data = SeichiAssist.playermap.get(player.getUniqueId());
         final Inventory inventory;
@@ -93,8 +91,7 @@ public class Menu {
      * @param event {@link InventoryClickEvent} ({@code null} は許容されません)
      * @see SlotActionHandler#action
      */
-    void invokeAndReloadSlot(@Nonnull InventoryClickEvent event) {
-        requireNonNull(event);
+    void invokeAndReloadSlot(@NotNull InventoryClickEvent event) {
         if (event.getWhoClicked().getType() != EntityType.PLAYER) {
             event.setCancelled(true);
             return;
@@ -121,14 +118,11 @@ public class Menu {
     /**
      * 非同期で {@link Inventory} に {@link Slot} をセットします.
      *
-     * @param slot       {@link Slot}
-     * @param inventory  {@link Inventory}
-     * @param playerData {@link PlayerData}
+     * @param slot       {@link Slot} ({@code null} は許容されません.)
+     * @param inventory  {@link Inventory} ({@code null} は許容されません.)
+     * @param playerData {@link PlayerData} ({@code null} は許容されません.)
      */
-    private void setSlot(@Nonnull Slot slot, @Nonnull Inventory inventory, @Nonnull PlayerData playerData) {
-        requireNonNull(slot);
-        requireNonNull(inventory);
-        requireNonNull(playerData);
+    private void setSlot(@NotNull Slot slot, @NotNull Inventory inventory, @NotNull PlayerData playerData) {
         Bukkit.getScheduler().runTaskAsynchronously(SeichiAssist.instance,
                 () -> inventory.setItem(slot.getPosition(), slot.getItemStack(playerData)));
     }

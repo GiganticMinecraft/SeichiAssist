@@ -4,10 +4,7 @@ import com.github.unchama.seichiassist.data.itemstack.builder.component.ItemStac
 import com.github.unchama.seichiassist.data.slot.AbstractSlotBuilder;
 import com.github.unchama.seichiassist.data.slot.Slot;
 import org.bukkit.inventory.ItemStack;
-
-import javax.annotation.Nonnull;
-
-import static java.util.Objects.requireNonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * {@link BaseSlot} を構成する {@link Slot.Builder} です.
@@ -16,8 +13,8 @@ import static java.util.Objects.requireNonNull;
  * @see BaseSlot
  */
 public class BaseSlotBuilder extends AbstractSlotBuilder<BaseSlotBuilder> {
-    private BaseSlotBuilder(@Nonnull ItemStackBuilder builder) {
-        super(requireNonNull(builder));
+    private BaseSlotBuilder(@NotNull ItemStackBuilder builder) {
+        super(builder);
     }
 
     /**
@@ -26,12 +23,12 @@ public class BaseSlotBuilder extends AbstractSlotBuilder<BaseSlotBuilder> {
      * @param builder {@link Slot} の生成に用いられる {@link ItemStackBuilder}
      * @return {@link BaseSlotBuilder}
      */
-    @Nonnull
-    public static BaseSlotBuilder from(@Nonnull ItemStackBuilder builder) {
-        return new BaseSlotBuilder(requireNonNull(builder));
+    @NotNull
+    public static BaseSlotBuilder from(@NotNull ItemStackBuilder builder) {
+        return new BaseSlotBuilder(builder);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public BaseSlotBuilder at(int position) {
         this.position = position;
@@ -43,7 +40,7 @@ public class BaseSlotBuilder extends AbstractSlotBuilder<BaseSlotBuilder> {
      *
      * @return 生成された {@link BaseSlot}
      */
-    @Nonnull
+    @NotNull
     public BaseSlot build() {
         if (this.position == -1) {
             throw new IllegalArgumentException("Slot.Builderにおいては,Slotの設置位置をpositionにて設定する必要があります.");

@@ -3,14 +3,11 @@ package com.github.unchama.seichiassist.data.menu;
 import com.github.unchama.seichiassist.data.slot.Slot;
 import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.event.inventory.InventoryType;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * Menuを作成する抽象Builderクラスです.
@@ -18,19 +15,19 @@ import static java.util.Objects.requireNonNull;
  */
 @SuppressWarnings("unchecked")
 public abstract class MenuBuilder<T extends MenuBuilder<T>> {
-    @Nonnull
+    @NotNull
     private InventoryType type;
 
-    @Nonnull
-    private List<Slot> slots = new ArrayList<>();
+    @NotNull
+    private List<@NotNull Slot> slots = new ArrayList<>();
 
     private int column;
 
-    @Nonnull
+    @NotNull
     private Text title = Text.of();
 
-    protected MenuBuilder(@Nonnull InventoryType type, int column) {
-        this.type = requireNonNull(type);
+    protected MenuBuilder(@NotNull InventoryType type, int column) {
+        this.type = type;
         this.column = column;
     }
 
@@ -40,26 +37,31 @@ public abstract class MenuBuilder<T extends MenuBuilder<T>> {
      * @param slots {@link List<Slot>}
      * @return Builder
      */
-    public T slots(@Nonnull List<Slot> slots) {
-        this.slots.addAll(requireNonNull(slots));
+    @NotNull
+    public T slots(@NotNull List<@NotNull Slot> slots) {
+        this.slots.addAll(slots);
         return (T) this;
     }
 
+    @NotNull
     public T slots(Slot... slots) {
         slots(Arrays.asList(slots));
         return (T) this;
     }
 
+    @NotNull
     public T slots(Slot slot) {
         this.slots.add(slot);
         return (T) this;
     }
 
-    public T title(@Nonnull Text title) {
-        this.title = requireNonNull(title);
+    @NotNull
+    public T title(@NotNull Text title) {
+        this.title = title;
         return (T) this;
     }
 
+    @NotNull
     public Menu build() {
         Menu menu = new Menu(type, column);
         menu.addSlots(slots);

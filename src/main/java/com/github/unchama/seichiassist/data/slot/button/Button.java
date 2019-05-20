@@ -8,12 +8,10 @@ import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandlers;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * 基本的な {@link Button} を表すクラス.
@@ -24,9 +22,8 @@ public class Button extends BaseSlot {
     /**
      * この {@link Button} に付与されている {@link SlotActionHandler} の {@link List} です.
      */
-    @Nonnull
-    private
-    List<SlotActionHandler> handlers = new ArrayList<>();
+    @NotNull
+    private List<SlotActionHandler> handlers = new ArrayList<>();
 
     /**
      * 基本的な {@link Button} を生成します. <br>
@@ -38,8 +35,8 @@ public class Button extends BaseSlot {
      *                 ({@code null} は許容されません.)
      * @see Slot#getPosition()
      */
-    public Button(int position, @Nonnull ItemStackBuilder builder) {
-        super(position, requireNonNull(builder));
+    public Button(int position, @NotNull ItemStackBuilder builder) {
+        super(position, builder);
         addHandler(SlotActionHandlers.READ_ONLY);
     }
 
@@ -48,22 +45,21 @@ public class Button extends BaseSlot {
      *
      * @param handler 付与する {@link SlotActionHandler} ({@code null} は許容されません.)
      */
-    public void addHandler(@Nonnull SlotActionHandler handler) {
+    public void addHandler(@NotNull SlotActionHandler handler) {
         this.handlers.add(handler);
     }
 
     /**
      * {@link Button} に {@link SlotActionHandler} を付与します.
      *
-     * @param handlers 付与する {@link SlotActionHandler} の {@link List} (全ての要素は {@code null} であってはなりません.)
+     * @param handlers 付与する {@link SlotActionHandler} の {@link List} (全ての要素は {@code null} は許容されません.)
      */
-    public void addHandler(@Nonnull List<SlotActionHandler> handlers) {
-        this.handlers.addAll(requireNonNull(handlers));
+    public void addHandler(@NotNull List<SlotActionHandler> handlers) {
+        this.handlers.addAll(handlers);
     }
 
     @Override
-    public void invoke(@Nonnull InventoryClickEvent event) {
-        requireNonNull(event);
+    public void invoke(@NotNull InventoryClickEvent event) {
         this.handlers.forEach(handler -> handler.invoke(event));
     }
 }

@@ -4,10 +4,7 @@ import com.sk89q.worldguard.bukkit.WorldConfiguration;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-
-import javax.annotation.Nonnull;
-
-import static java.util.Objects.requireNonNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * WorldGuardの各種関数を集めたクラスです.
@@ -27,8 +24,8 @@ public class WorldGuard {
      * @param world  最大保護可能数を取得したい {@link World} ({@code null} は許容されない)
      * @return {@link Player} の {@link World} における最大保護可能数
      */
-    public static int getMaxRegionCount(@Nonnull Player player, @Nonnull World world) {
-        final WorldConfiguration worldConfiguration = plugin.getGlobalStateManager().get(requireNonNull(world));
-        return worldConfiguration.getMaxRegionCount(requireNonNull(player));
+    public static int getMaxRegionCount(@NotNull Player player, @NotNull World world) {
+        final WorldConfiguration worldConfiguration = plugin.getGlobalStateManager().get(world);
+        return worldConfiguration.getMaxRegionCount(player);
     }
 }

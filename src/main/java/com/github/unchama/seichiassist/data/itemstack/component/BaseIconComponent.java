@@ -17,7 +17,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.github.unchama.seichiassist.text.Text.toStringList;
-import static java.util.Objects.requireNonNull;
 
 /**
  * Iconの要素をまとめたクラス.
@@ -40,7 +39,6 @@ public class BaseIconComponent {
     }
 
     public BaseIconComponent(@Nonnull Material material, short durability) {
-        requireNonNull(material);
         this.material = material;
         this.title = playerData -> Text.of(Bukkit.getItemFactory().getItemMeta(material).getDisplayName());
         this.lore = playerData -> Collections.emptyList();
@@ -53,12 +51,10 @@ public class BaseIconComponent {
     }
 
     public void setTitle(@Nonnull Function<PlayerData, Text> title) {
-        requireNonNull(title);
         this.title = title;
     }
 
     public void setTitle(@Nonnull Text title) {
-        requireNonNull(title);
         setTitle(playerData -> title);
     }
 
@@ -71,7 +67,6 @@ public class BaseIconComponent {
      * @param lore {@link List} として渡された要素に {@code null} が含まれていた場合,無視されます.
      */
     public void setLore(@Nonnull Function<PlayerData, List<Text>> lore) {
-        requireNonNull(lore);
         this.lore = lore;
     }
 
@@ -79,7 +74,6 @@ public class BaseIconComponent {
      * @param lore {@link List} として渡された要素に {@code null} が含まれていた場合,無視されます.
      */
     public void setLore(@Nonnull List<Text> lore) {
-        requireNonNull(lore);
         setLore(playerData -> lore);
     }
 
@@ -103,7 +97,6 @@ public class BaseIconComponent {
      * @return ItemMeta
      */
     public ItemMeta getItemMeta(@Nonnull PlayerData playerData) {
-        requireNonNull(playerData);
         ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
         meta.setDisplayName(title.apply(playerData).stringValue());
         List<Text> collectLore = lore.apply(playerData).stream().filter(Objects::nonNull).collect(Collectors.toList());
