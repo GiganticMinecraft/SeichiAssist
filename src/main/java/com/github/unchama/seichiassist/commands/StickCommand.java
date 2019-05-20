@@ -16,7 +16,6 @@ public class StickCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
 		//プレイヤーを取得
-		Player player = (Player)sender;
 		//プレイヤーネーム
 		//String name = Util.getName(player);
 		//UUIDを取得
@@ -29,6 +28,7 @@ public class StickCommand implements CommandExecutor {
 			return true;
 		}else if(args.length == 0){
 			//コマンド長が０の時の処理
+			Player player = (Player)sender;
 			ItemStack itemstack = new ItemStack(Material.STICK,1);
 			itemstack.setAmount(1); //念のため追加
 			if(!Util.isPlayerInventoryFull(player)){
