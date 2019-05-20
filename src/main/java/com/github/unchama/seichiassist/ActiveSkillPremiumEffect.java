@@ -102,6 +102,7 @@ public enum ActiveSkillPremiumEffect {
         return Arrays
             .stream(ActiveSkillPremiumEffect.values())
             .filter((effect) -> sqlName.equals(effect.sql_name))
-            .findFirst().orElse(null);
+            .findFirst()
+            .orElse(null);
     }
 }
