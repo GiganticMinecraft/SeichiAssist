@@ -4,9 +4,9 @@ import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,10 +18,10 @@ public final class Warnings {
      * 整地ワールドの建築量・ガチャ券の警告.
      * @param player 判断したい {@link Player} ({@code null} は許容されません.
      */
-    @Nullable
+    @NotNull
     public static List<Text> seichiWorldWarning(@NotNull Player player) {
         if (Util.isSeichiWorld(player)) {
-            return null;
+            return Collections.emptyList();
         } else {
             return Arrays.asList(
                 Text.of("整地ワールド以外では", ChatColor.RED),

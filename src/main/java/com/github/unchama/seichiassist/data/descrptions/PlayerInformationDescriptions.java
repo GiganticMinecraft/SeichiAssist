@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.github.unchama.seichiassist.util.ListUtil.addAll;
-
 /**
  * Created by karayuu on 2019/05/05
  */
@@ -36,8 +34,8 @@ public final class PlayerInformationDescriptions {
             //TODO: 値とともに説明文を持つようにしたい...playerDataを引数にいちいち与えるのはめんどくさい
             lore.add(seichiLevelDescription(playerData));
             lore.add(remainLevelDescription(playerData));
-            addAll(lore, Warnings.seichiWorldWarning(playerData.player));
-            addAll(lore, passiveSkillDescription(playerData));
+            lore.addAll(Warnings.seichiWorldWarning(playerData.player));
+            lore.addAll(passiveSkillDescription(playerData));
             lore.add(totalBreakAmountDescription(playerData));
             lore.add(rankingDescription(playerData));
             lore.add(rankingDiffDescription(playerData));
@@ -45,8 +43,8 @@ public final class PlayerInformationDescriptions {
             lore.add(totalLoginDaysDescrption(playerData));
             lore.add(totalChainLoginDaysDescription(playerData));
             lore.add(totalChainVoteDaysDescription(playerData));
-            addAll(lore, Templates.playerInfoDescrpition);
-            addAll(lore, expBarDescription(playerData));
+            lore.addAll(Templates.playerInfoDescrpition);
+            lore.addAll(expBarDescription(playerData));
 
             return lore;
     }
