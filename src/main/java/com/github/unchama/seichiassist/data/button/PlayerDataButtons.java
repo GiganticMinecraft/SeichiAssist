@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.data.itemstack.builder.SkullItemStackBuil
 import com.github.unchama.seichiassist.data.slot.button.Button;
 import com.github.unchama.seichiassist.data.slot.button.ButtonBuilder;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
-import com.github.unchama.seichiassist.data.slot.handler.Triggers;
+import com.github.unchama.seichiassist.data.slot.handler.Trigger;
 import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -28,7 +28,7 @@ public final class PlayerDataButtons {
         )
         .at(0)
         .handler(new SlotActionHandler(
-            Triggers.LEFT_CLICK,
+            Trigger.LEFT_CLICK,
             event -> {
                 final Player player = (Player) event.getWhoClicked();
                 final PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());

@@ -16,8 +16,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.github.unchama.seichiassist.text.Text.toStringList;
-
 /**
  * Iconの要素をまとめたクラス.
  * <p>
@@ -99,8 +97,12 @@ public class BaseIconComponent {
     public ItemMeta getItemMeta(@Nonnull PlayerData playerData) {
         ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
         meta.setDisplayName(title.apply(playerData).stringValue());
-        List<Text> collectLore = lore.apply(playerData).stream().filter(Objects::nonNull).collect(Collectors.toList());
-        meta.setLore(toStringList(collectLore));
+        List<String> collectLore = lore.apply(playerData)
+                                     .stream()
+                                     .filter(Objects::nonNull)
+                                     .map(Text::stringValue)
+                                     .collect(Collectors.toList());
+        meta.setLore(collectLore);
 
         if (isEnchanted) {
             meta.addEnchant(Enchantment.DIG_SPEED, 100, false);

@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.text;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -42,9 +43,10 @@ public class Text {
     @NotNull
     public static Text of(@NotNull final String string, @NotNull final ChatColor... chatColors) {
         Text text = Text.of(string);
-        List<ChatColor> colors = Arrays.asList(chatColors);
-        colors.forEach(color -> text.addBefore(color + ""));
-        text.addBefore(ChatColor.RESET + "");
+        for (ChatColor color : chatColors) {
+            text = text.addBefore(color + "");
+        }
+        text = text.addBefore(ChatColor.RESET + "");
         return text;
     }
 
@@ -65,12 +67,14 @@ public class Text {
     }
 
     /**
-     * {@link StringBuilder} において,先頭に文字列を追加します.
+     * {@link StringBuilder} において,先頭に文字列を追加した新しい {@link Text} を返します.
      *
      * @param string 先頭に追加する文字列 ({@code null} は許容されません.)
+     * @return 先頭に文字列を追加した新しい {@link Text}
      */
-    public void addBefore(@NotNull final String string) {
-        this.string = string + this.string;
+    @NotNull
+    public Text addBefore(@NotNull final String string) {
+        return Text.of(string + this.string);
     }
 
     /**
@@ -80,13 +84,6 @@ public class Text {
     @NotNull
     public String stringValue() {
         return this.string;
-    }
-
-    @NotNull
-    public static List<String> toStringList(@NotNull List<Text> texts) {
-        List<String> strings = new ArrayList<>();
-        texts.forEach(text -> strings.add(text.stringValue()));
-        return strings;
     }
 
     @Override

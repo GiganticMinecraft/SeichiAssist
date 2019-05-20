@@ -16,9 +16,9 @@ public class TextTest {
         String before = "test";
 
         Text text = Text.of(base);
-        text.addBefore(before);
+        Text addedText = text.addBefore(before);
 
-        assertEquals(before + base, text.stringValue());
+        assertEquals(before + base, addedText.stringValue());
     }
 
     @Test

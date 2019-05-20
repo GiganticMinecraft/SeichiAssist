@@ -13,13 +13,16 @@ import java.util.List;
  * Created by karayuu on 2019/04/30
  */
 public final class Warnings {
-    private Warnings() {}
+    private Warnings() {
+    }
+
     /**
-     * 整地ワールドの建築量・ガチャ券の警告.
+     * 整地ワールド以外では建築量・ガチャ券が増加しないという警告.
+     *
      * @param player 判断したい {@link Player} ({@code null} は許容されません.
      */
     @NotNull
-    public static List<Text> seichiWorldWarning(@NotNull Player player) {
+    public static List<Text> noRewardsOutsideSeichiWorld(@NotNull Player player) {
         if (Util.isSeichiWorld(player)) {
             return Collections.emptyList();
         } else {

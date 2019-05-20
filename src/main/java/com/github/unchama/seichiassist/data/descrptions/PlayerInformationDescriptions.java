@@ -34,7 +34,7 @@ public final class PlayerInformationDescriptions {
             //TODO: 値とともに説明文を持つようにしたい...playerDataを引数にいちいち与えるのはめんどくさい
             lore.add(seichiLevelDescription(playerData));
             lore.add(remainLevelDescription(playerData));
-            lore.addAll(Warnings.seichiWorldWarning(playerData.player));
+            lore.addAll(Warnings.noRewardsOutsideSeichiWorld(playerData.player));
             lore.addAll(passiveSkillDescription(playerData));
             lore.add(totalBreakAmountDescription(playerData));
             lore.add(rankingDescription(playerData));

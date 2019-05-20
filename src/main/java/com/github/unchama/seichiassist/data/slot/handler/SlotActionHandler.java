@@ -14,10 +14,10 @@ import java.util.function.Function;
  */
 public class SlotActionHandler {
     /**
-     * InventoryClickEventを受け取って,動作を行わせるかを返すFunction
+     * InventoryClickEventを受け取って,動作を行わせるかを決定する {@link Trigger}
      */
     @NotNull
-    private Function<InventoryClickEvent, Boolean> trigger;
+    private Trigger trigger;
 
     /**
      * InventoryClickEventを与えて,何かしらの動作を行わせるFunction <br>
@@ -29,19 +29,20 @@ public class SlotActionHandler {
     @NotNull
     private Consumer<InventoryClickEvent> action;
 
-    public SlotActionHandler(@NotNull Function<@NotNull InventoryClickEvent, @NotNull Boolean> trigger,
+    public SlotActionHandler(@NotNull Trigger trigger,
                              @NotNull Consumer<@NotNull InventoryClickEvent> action) {
         this.trigger = trigger;
         this.action = action;
     }
 
     /**
-     * InventoryClickEventを受け取り,動作条件を満たすか判断し,満たす場合には指定された動作を行います.
+     * InventoryClickEventを受け取り, {@link #trigger} で指定された条件を満たすか判断し,
+     * 満たす場合には {@link #action} で指定された動作を行います.
      *
      * @param event InventoryClickEvent
      */
     public void invoke(@NotNull InventoryClickEvent event) {
-        if (trigger.apply(event)) {
+        if (trigger.shouldReactTo(event)) {
             action.accept(event);
         }
     }

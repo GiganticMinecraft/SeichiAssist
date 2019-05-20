@@ -530,7 +530,6 @@ public class PlayerClickListener implements Listener {
 					return;
 				}
 				player.openInventory(inv);
-				//StickMenu.stickMenu.open(player);
 			}
 		}
 	}
