@@ -13,7 +13,7 @@ import java.util.function.Function;
  */
 public interface ItemStackBuilder {
     /**
-     * ItemStack(ItemStackBuilder)の表示名を設定します.
+     * ItemStack(IconItemStackBuilder)の表示名を設定します.
      *
      * @param title PlayerDataを受け取り,表示名を返すFunction
      * @return このBuilder
@@ -22,7 +22,7 @@ public interface ItemStackBuilder {
     ItemStackBuilder title(@Nonnull Function<PlayerData, Text> title);
 
     /**
-     * ItemStack(ItemStackBuilder)のloreを設定します.
+     * ItemStack(IconItemStackBuilder)のloreを設定します.
      *
      * @param lore PlayerDataを受け取り,loreを返すFunction
      *             {@link List} に {@code null} が含まれていた場合,その行は無視されます.
@@ -32,7 +32,7 @@ public interface ItemStackBuilder {
     ItemStackBuilder lore(@Nonnull Function<PlayerData, List<Text>> lore);
 
     /**
-     * ItemStack(ItemStackBuilder)にエンチャントを付与します.
+     * ItemStack(IconItemStackBuilder)にエンチャントを付与します.
      *
      * @return このBuilder
      */

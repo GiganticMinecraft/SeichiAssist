@@ -4,7 +4,6 @@ import com.github.unchama.seichiassist.data.itemstack.builder.component.ItemStac
 import com.github.unchama.seichiassist.data.slot.AbstractSlotBuilder;
 import com.github.unchama.seichiassist.data.slot.Slot;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class ButtonBuilder extends AbstractSlotBuilder<ButtonBuilder> {
     }
 
     /**
-     * 与えられた {@link ItemStack} から {@link ButtonBuilder} を生成します.
+     * 与えられた {@link ItemStackBuilder} から {@link ButtonBuilder} を生成します.
      *
      * @param builder {@link Slot} の生成に用いられる {@link ItemStackBuilder} ({@code null} は許容されません.)
      * @return {@link ButtonBuilder}
@@ -40,7 +39,7 @@ public class ButtonBuilder extends AbstractSlotBuilder<ButtonBuilder> {
      * @param handler {@link Button} に付与する {@link SlotActionHandler} ({@code null} は許容されません.)
      * @return {@link ButtonBuilder}
      */
-    public ButtonBuilder handler(@NotNull SlotActionHandler handler) {
+    public ButtonBuilder appendHandler(@NotNull SlotActionHandler handler) {
         this.handlers.add(handler);
         return this;
     }
@@ -51,7 +50,7 @@ public class ButtonBuilder extends AbstractSlotBuilder<ButtonBuilder> {
      * @param handlers {@link Button} に付与する {@link SlotActionHandler} の {@link List} ({@code null} は許容されません.)
      * @return {@link ButtonBuilder}
      */
-    public ButtonBuilder handlers(@NotNull List<@NotNull SlotActionHandler> handlers) {
+    public ButtonBuilder appendHandlers(@NotNull List<@NotNull SlotActionHandler> handlers) {
         this.handlers.addAll(handlers);
         return this;
     }
@@ -63,11 +62,11 @@ public class ButtonBuilder extends AbstractSlotBuilder<ButtonBuilder> {
      */
     @NotNull
     public Button build() {
-        if (this.position == -1) {
+        if (this.position == null) {
             throw new IllegalArgumentException("Slot.Builderにおいては,Slotの設置位置をpositionにて設定する必要があります.");
         }
         Button button = new Button(this.position, this.builder);
-        button.addHandler(handlers);
+        button.addHandlers(handlers);
         return button;
     }
 }

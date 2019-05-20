@@ -36,7 +36,7 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
     }
 
     /**
-     * ItemStack(ItemStackBuilder)の表示名を設定します.
+     * ItemStack(IconItemStackBuilder)の表示名を設定します.
      *
      * @param title PlayerDataを受け取り,表示名を返すFunction
      * @return このBuilder
@@ -55,7 +55,7 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
     }
 
     /**
-     * ItemStack(ItemStackBuilder)のloreを設定します.
+     * ItemStack(IconItemStackBuilder)のloreを設定します.
      *
      * @param lore loreの {@link List}
      *             {@link List} に {@code null} が含まれていた場合,その行は無視されます.

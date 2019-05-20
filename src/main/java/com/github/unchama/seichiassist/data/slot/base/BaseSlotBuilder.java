@@ -41,7 +41,7 @@ public class BaseSlotBuilder extends AbstractSlotBuilder<BaseSlotBuilder> {
      */
     @NotNull
     public BaseSlot build() {
-        if (this.position == -1) {
+        if (this.position == null) {
             throw new IllegalArgumentException("Slot.Builderにおいては,Slotの設置位置をpositionにて設定する必要があります.");
         }
         return new BaseSlot(position, builder);

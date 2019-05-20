@@ -27,7 +27,7 @@ public final class PlayerDataButtons {
                 .lore(PlayerInformationDescriptions::playerInfoLore)
         )
         .at(0)
-        .handler(new SlotActionHandler(
+        .appendHandler(new SlotActionHandler(
             Trigger.LEFT_CLICK,
             event -> {
                 final Player player = (Player) event.getWhoClicked();

@@ -20,15 +20,19 @@ public class SlotActionHandler {
     private Trigger trigger;
 
     /**
-     * InventoryClickEventを与えて,何かしらの動作を行わせるFunction <br>
-     * {@link #trigger} がtrueを返した際に動作します. <br>
-     * この時点で {@link InventoryClickEvent} の {@link InventoryClickEvent#setCancelled(boolean)} でキャンセルを行うと,
-     * 動作がなかったことになります. <br>
-     * なおこの時点で, {@link InventoryClickEvent#getWhoClicked()} は {@link Player} であることが保証されています.
+     * InventoryClickEventを与えて,何かしらの動作を行わせるFunction
      */
     @NotNull
     private Consumer<InventoryClickEvent> action;
 
+    /**
+     * Slotの動作を決定する {@link SlotActionHandler} を生成します.
+     *
+     * @param trigger InventoryClickEventを受け取って,動作を行わせるかを決定する {@link Trigger}
+     * @param action  InventoryClickEventを与えて,何かしらの動作を行わせるFunction <br>
+     *                {@link #trigger} がtrueを返した際に動作します. <br>
+     *                なお {@link #action} 呼び出し時点で, {@link InventoryClickEvent#getWhoClicked()} は {@link Player} であることが保証されています.
+     */
     public SlotActionHandler(@NotNull Trigger trigger,
                              @NotNull Consumer<@NotNull InventoryClickEvent> action) {
         this.trigger = trigger;

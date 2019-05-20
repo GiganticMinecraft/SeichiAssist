@@ -13,14 +13,14 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * Created by karayuu on 2019/03/30
  */
-public class ItemStackBuilder extends AbstractItemStackBuilder<ItemStackBuilder> {
+public class IconItemStackBuilder extends AbstractItemStackBuilder<IconItemStackBuilder> {
     private Boolean showAttribute = false;
 
-    private ItemStackBuilder(@NotNull Material material) {
+    private IconItemStackBuilder(@NotNull Material material) {
         super(material);
     }
 
-    private ItemStackBuilder(@NotNull Material material, short durability) {
+    private IconItemStackBuilder(@NotNull Material material, short durability) {
         super(material, durability);
     }
 
@@ -30,8 +30,8 @@ public class ItemStackBuilder extends AbstractItemStackBuilder<ItemStackBuilder>
      * @param material ItemStackに設定するMaterial ({@code null} は許容されません)
      */
     @NotNull
-    public static ItemStackBuilder of(@NotNull Material material) {
-        return new ItemStackBuilder(material);
+    public static IconItemStackBuilder of(@NotNull Material material) {
+        return new IconItemStackBuilder(material);
     }
 
     /**
@@ -41,17 +41,17 @@ public class ItemStackBuilder extends AbstractItemStackBuilder<ItemStackBuilder>
      * @param durability ダメージ値
      */
     @NotNull
-    public static ItemStackBuilder of(@NotNull Material material, short durability) {
-        return new ItemStackBuilder(material, durability);
+    public static IconItemStackBuilder of(@NotNull Material material, short durability) {
+        return new IconItemStackBuilder(material, durability);
     }
 
     /**
-     * ItemStack(ItemStackBuilder)の各種情報を表示させます.(シャベルの採掘速度等)
+     * ItemStack(IconItemStackBuilder)の各種情報を表示させます.(シャベルの採掘速度等)
      *
      * @return このBuilder
      */
     @NotNull
-    public ItemStackBuilder showAttribute() {
+    public IconItemStackBuilder showAttribute() {
         this.showAttribute = true;
         return this;
     }

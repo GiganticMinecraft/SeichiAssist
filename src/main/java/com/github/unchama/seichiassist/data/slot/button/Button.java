@@ -54,7 +54,7 @@ public class Button extends BaseSlot {
      *
      * @param handlers 付与する {@link SlotActionHandler} の {@link List} (全ての要素は {@code null} は許容されません.)
      */
-    public void addHandler(@NotNull List<SlotActionHandler> handlers) {
+    public void addHandlers(@NotNull List<SlotActionHandler> handlers) {
         this.handlers.addAll(handlers);
     }
 
