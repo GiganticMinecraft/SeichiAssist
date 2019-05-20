@@ -29,7 +29,6 @@ public class BaseSlotBuilder extends AbstractSlotBuilder<BaseSlotBuilder> {
     }
 
     @NotNull
-    @Override
     public BaseSlotBuilder at(int position) {
         this.position = position;
         return this;
