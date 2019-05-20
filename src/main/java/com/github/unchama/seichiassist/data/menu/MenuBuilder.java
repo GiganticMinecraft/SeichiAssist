@@ -24,13 +24,14 @@ public abstract class MenuBuilder<T extends MenuBuilder<T>> {
     @Nonnull
     private List<Slot> slots = new ArrayList<>();
 
-    private int size;
+    private int column;
 
     @Nonnull
     private Text title = Text.of();
 
-    protected MenuBuilder(@Nonnull InventoryType type) {
+    protected MenuBuilder(@Nonnull InventoryType type, int column) {
         this.type = requireNonNull(type);
+        this.column = column;
     }
 
     /**
@@ -54,20 +55,14 @@ public abstract class MenuBuilder<T extends MenuBuilder<T>> {
         return (T) this;
     }
 
-    public T size(int size) {
-        this.size = size;
-        return (T) this;
-    }
-
     public T title(@Nonnull Text title) {
         this.title = requireNonNull(title);
         return (T) this;
     }
 
     public Menu build() {
-        Menu menu = new Menu(type);
+        Menu menu = new Menu(type, column);
         menu.addSlots(slots);
-        menu.setSize(size);
         menu.setTitle(title.stringValue());
 
         return menu;

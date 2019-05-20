@@ -14,6 +14,8 @@ import javax.annotation.Nonnull;
  * @author karayuu
  */
 public class StickMenu {
+    private static final int MenuColumnNumber = 4;
+
     @Nonnull
     public static Menu stickMenu;
 
@@ -21,8 +23,7 @@ public class StickMenu {
     }
 
     static {
-        stickMenu = ChestMenuBuilder.of()
-                                    .size(4 * 9)
+        stickMenu = ChestMenuBuilder.of(MenuColumnNumber)
                                     .title(Text.of("木の棒メニュー", ChatColor.DARK_PURPLE, ChatColor.BOLD))
                                     .slots(
                                         PlayerDataButtons.playerInfo

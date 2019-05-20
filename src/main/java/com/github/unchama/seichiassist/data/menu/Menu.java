@@ -18,25 +18,24 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Menuのベースとなるクラスです.<br>
- * メニューはこのクラスを継承して作成するのをお勧めします.
- *
  * @author karayuu
  */
 public class Menu {
     private final List<Slot> slots = new ArrayList<>();
     private final InventoryType type;
-    private int size;
+    private int column;
     private String title;
 
     /**
      * Menuを作成します.
      * 同時に {@link MenuHandler} に,この {@link Menu} を追加します.
      *
-     * @param type このMenuの {@link InventoryType}
+     * @param type この {@link Menu} の {@link InventoryType}
+     * @param column この {@link Menu} の {@link Inventory} の縦列の数
      */
-    public Menu(InventoryType type) {
+    public Menu(InventoryType type, int column) {
         this.type = type;
+        this.column = column;
         MenuHandler.getInstance().addMenu(this);
     }
 
@@ -47,23 +46,6 @@ public class Menu {
      */
     public void addSlots(List<Slot> slots) {
         this.slots.addAll(slots);
-    }
-
-    /**
-     * {@link Inventory} の {@link InventoryType} が {@link InventoryType#CHEST} の場合のみ使用可能です.
-     * {@link Inventory} の大きさを指定します.
-     * 必ず9の倍数である必要があります.
-     *
-     * @param size
-     */
-    public void setSize(int size) {
-        if (size % 9 != 0) {
-            throw new IllegalArgumentException("Menu#setSizeは9の倍数である必要があります.");
-        }
-        if (type != InventoryType.CHEST) {
-            throw new IllegalArgumentException("InventoryTypeがChestではないため,sizeをセットすることはできません.");
-        }
-        this.size = size;
     }
 
     /**
@@ -90,11 +72,12 @@ public class Menu {
      *
      * @param player Menuを開く {@link Player}
      */
-    public void open(@Nonnull Player player) {
+    public void openBy(@Nonnull Player player) {
+        final int slotsInOneRow = 9;
         final PlayerData data = SeichiAssist.playermap.get(player.getUniqueId());
         final Inventory inventory;
         if (type == InventoryType.CHEST) {
-            inventory = Bukkit.createInventory(null, size, title);
+            inventory = Bukkit.createInventory(null, column * slotsInOneRow, title);
         } else {
             inventory = Bukkit.createInventory(null, type, title);
         }
@@ -106,7 +89,6 @@ public class Menu {
      * {@link InventoryClickEvent} を渡して該当 {@link Slot} に動作を行わせます.
      * その後, {@link Slot} を読み込みなおします.
      * ただし,枠外のクリック, {@link InventoryType#PLAYER} のクリックには反応しません.
-     * よって, {@link InventoryClickEvent#getWhoClicked()} は {@link Player} であることが保証されます.
      *
      * @param event {@link InventoryClickEvent} ({@code null} は許容されません)
      * @see SlotActionHandler#action

@@ -5,9 +5,10 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.text.Templates;
 import com.github.unchama.seichiassist.text.Text;
-import com.github.unchama.seichiassist.text.Warns;
+import com.github.unchama.seichiassist.text.Warnings;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,38 +16,40 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 import static com.github.unchama.seichiassist.util.ListUtil.addAll;
 
 /**
  * Created by karayuu on 2019/05/05
  */
-public class PlayerInformationDescriptions {
+public final class PlayerInformationDescriptions {
+    private PlayerInformationDescriptions() {}
+
     /**
-     * Player統計のLoreを返すFunction.
+     * Player統計のLoreを返します.
+     * @param playerData {@link Player} の {@link PlayerData} ({@code null} は許容されません)
      */
     @Nonnull
-    public static Function<PlayerData, List<Text>> playerInfoLore = playerData -> {
-        List<Text> lore = new ArrayList<>();
+    public static List<Text> playerInfoLore(@NotNull PlayerData playerData) {
+            List<Text> lore = new ArrayList<>();
 
-        //TODO: 値とともに説明文を持つようにしたい...playerDataを引数にいちいち与えるのはめんどくさい
-        lore.add(seichiLevelDescription(playerData));
-        lore.add(remainLevelDescription(playerData));
-        addAll(lore, Warns.seichiWorldWarning(playerData.player));
-        addAll(lore, passiveSkillDescription(playerData));
-        lore.add(totalBreakAmountDescription(playerData));
-        lore.add(rankingDescription(playerData));
-        lore.add(rankingDiffDescription(playerData));
-        lore.add(totalLoginTimeDescrpition(playerData));
-        lore.add(totalLoginDaysDescrption(playerData));
-        lore.add(totalChainLoginDaysDescription(playerData));
-        lore.add(totalChainVoteDaysDescription(playerData));
-        addAll(lore, Templates.playerInfoDescrpition);
-        addAll(lore, expBarDescription(playerData));
+            //TODO: 値とともに説明文を持つようにしたい...playerDataを引数にいちいち与えるのはめんどくさい
+            lore.add(seichiLevelDescription(playerData));
+            lore.add(remainLevelDescription(playerData));
+            addAll(lore, Warnings.seichiWorldWarning(playerData.player));
+            addAll(lore, passiveSkillDescription(playerData));
+            lore.add(totalBreakAmountDescription(playerData));
+            lore.add(rankingDescription(playerData));
+            lore.add(rankingDiffDescription(playerData));
+            lore.add(totalLoginTimeDescrpition(playerData));
+            lore.add(totalLoginDaysDescrption(playerData));
+            lore.add(totalChainLoginDaysDescription(playerData));
+            lore.add(totalChainVoteDaysDescription(playerData));
+            addAll(lore, Templates.playerInfoDescrpition);
+            addAll(lore, expBarDescription(playerData));
 
-        return lore;
-    };
+            return lore;
+    }
 
     /**
      * 木の棒メニュー等で用いられる整地レベルの説明文

@@ -15,14 +15,16 @@ import org.bukkit.entity.Player;
 /**
  * @author karayuu
  */
-public class PlayerDataButtons {
+public final class PlayerDataButtons {
+    private PlayerDataButtons() {}
+
     public static Button playerInfo = ButtonBuilder
         .from(
             SkullItemStackBuilder
                 .of()
                 .playerSkull()
                 .title(data -> Text.of(data.name + "の統計データ", ChatColor.UNDERLINE, ChatColor.BOLD, ChatColor.YELLOW))
-                .lore(PlayerInformationDescriptions.playerInfoLore)
+                .lore(PlayerInformationDescriptions::playerInfoLore)
         )
         .at(0)
         .handler(new SlotActionHandler(

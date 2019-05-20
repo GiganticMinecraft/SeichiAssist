@@ -16,7 +16,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author karayuu
  */
-public class MenuHandler implements Listener {
+public final class MenuHandler implements Listener {
     private static MenuHandler singleton = new MenuHandler();
 
     /**
@@ -25,8 +25,7 @@ public class MenuHandler implements Listener {
     @Nonnull
     private List<Menu> menus = new ArrayList<>();
 
-    private MenuHandler() {
-    }
+    private MenuHandler() {}
 
     /**
      * {@link MenuHandler} のインスタンスを返します.
@@ -49,7 +48,7 @@ public class MenuHandler implements Listener {
 
     /**
      * 各 {@link Menu#invokeAndReloadSlot(InventoryClickEvent)} を呼び出します.
-     * titleにて判断し, {@link InventoryClickEvent} を与えます.
+     * title にて判断し, {@link InventoryClickEvent} を与えます.
      *
      * @param event {@link InventoryClickEvent}
      */
