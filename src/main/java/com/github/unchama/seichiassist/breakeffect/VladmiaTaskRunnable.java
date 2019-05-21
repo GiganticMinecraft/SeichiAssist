@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.moveParticleTaskRunnable;
+import com.github.unchama.seichiassist.task.ParticleMoveTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class VladmiaTaskRunnable extends BukkitRunnable{
@@ -64,7 +64,7 @@ public class VladmiaTaskRunnable extends BukkitRunnable{
 
 		for(Block b : breaklist){
 			BreakUtil.breakBlock(player, b, droploc, tool, false);
-			new moveParticleTaskRunnable(player,b,Color.RED).runTaskTimer(plugin, 0, 3);
+			new ParticleMoveTask(player,b,Color.RED).runTaskTimer(plugin, 0, 3);
 		}
 	}
 	@Override

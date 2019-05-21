@@ -25,7 +25,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
 
-public class AssaultTaskRunnable extends BukkitRunnable{
+public class AssaultTask extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
@@ -58,7 +58,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	,Material.WOOD_STAIRS,Material.COBBLESTONE_STAIRS));
 	*/
 
-	public AssaultTaskRunnable(Player player) {
+	public AssaultTask(Player player) {
 		this.player = player;
 		this.uuid = player.getUniqueId();
 		this.playerdata = playermap.get(uuid);

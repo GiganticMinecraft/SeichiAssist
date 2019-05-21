@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
-public class AreaControlTaskRunnable extends BukkitRunnable{
+public class AreaControlTask extends BukkitRunnable{
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
 	PlayerData playerdata;
@@ -35,7 +35,7 @@ public class AreaControlTaskRunnable extends BukkitRunnable{
 	int tick;
 
 
-	public AreaControlTaskRunnable(Player player, BreakArea area,boolean assaultflag) {
+	public AreaControlTask(Player player, BreakArea area, boolean assaultflag) {
 		this.player = player;
 		UUID uuid = player.getUniqueId();
 		this.playerdata = playermap.get(uuid);
