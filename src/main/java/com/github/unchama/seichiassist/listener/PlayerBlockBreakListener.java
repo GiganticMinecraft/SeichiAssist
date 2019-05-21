@@ -138,7 +138,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//もしサバイバルでなければ処理を終了
 		//もしフライ中なら終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
+		if(player.getGameMode() != GameMode.SURVIVAL || player.isFlying()){
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "fly中の破壊");
 			return;
 		}
@@ -242,11 +242,11 @@ public class PlayerBlockBreakListener implements Listener {
 						if(x == 0 && y == 0 && z == 0)continue;
 
 						if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && playerdata.multipleidbreakflag) { //追加テスト(複数種類一括破壊スキル)
-							if(!breakblock.getType().equals(Material.AIR) && !breakblock.getType().equals(Material.BEDROCK)) {
-								if(breakblock.getType().equals(Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(breakblock)){
+							if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
+								if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 									if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
 										if(BreakUtil.canBreak(player, breakblock)){
-											if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+											if(breakblock.getType() == Material.STATIONARY_LAVA){
 												lavalist.add(breakblock);
 											}else{
 												breaklist.add(breakblock);
@@ -258,16 +258,16 @@ public class PlayerBlockBreakListener implements Listener {
 							}
 						} else { //条件を満たしていない
 							//もし壊されるブロックがもともとのブロックと同じ種類だった場合
-							if(breakblock.getType().equals(material)
-									|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
-									|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
-									|| (block.getType().equals(Material.GLOWING_REDSTONE_ORE)&&breakblock.getType().equals(Material.REDSTONE_ORE))
-									|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
-									|| breakblock.getType().equals(Material.STATIONARY_LAVA)
+							if(breakblock.getType() == material
+									|| (block.getType() == Material.DIRT && breakblock.getType() == Material.GRASS)
+									|| (block.getType() == Material.GRASS && breakblock.getType() == Material.DIRT)
+									|| (block.getType() == Material.GLOWING_REDSTONE_ORE && breakblock.getType() == Material.REDSTONE_ORE)
+									|| (block.getType() == Material.REDSTONE_ORE && breakblock.getType() == Material.GLOWING_REDSTONE_ORE)
+									|| breakblock.getType() == Material.STATIONARY_LAVA
 									){
 								if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
 									if(BreakUtil.canBreak(player, breakblock)){
-										if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+										if(breakblock.getType() == Material.STATIONARY_LAVA){
 											lavalist.add(breakblock);
 										}else{
 											breaklist.add(breakblock);
@@ -408,11 +408,11 @@ public class PlayerBlockBreakListener implements Listener {
 					if(x == 0 && y == 0 && z == 0)continue;
 
 					if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && (Util.isSeichiWorld(player) || playerdata.multipleidbreakflag)) { //追加テスト(複数種類一括破壊スキル)
-						if(!breakblock.getType().equals(Material.AIR) && !breakblock.getType().equals(Material.BEDROCK)) {
-							if(breakblock.getType().equals(Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(breakblock)){
+						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
+							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 								if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
 									if(BreakUtil.canBreak(player, breakblock)){
-										if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+										if(breakblock.getType() == Material.STATIONARY_LAVA){
 											lavalist.add(breakblock);
 										}else{
 											breaklist.add(breakblock);
@@ -424,16 +424,16 @@ public class PlayerBlockBreakListener implements Listener {
 						}
 					} else { //条件を満たしていない
 						//もし壊されるブロックがもともとのブロックと同じ種類だった場合
-						if(breakblock.getType().equals(material)
-								|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
-								|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
-								|| (block.getType().equals(Material.GLOWING_REDSTONE_ORE)&&breakblock.getType().equals(Material.REDSTONE_ORE))
-								|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
-								|| breakblock.getType().equals(Material.STATIONARY_LAVA)
+						if(breakblock.getType() == material
+								|| (block.getType() == Material.DIRT && breakblock.getType() == Material.GRASS)
+								|| (block.getType() == Material.GRASS && breakblock.getType() == Material.DIRT)
+								|| (block.getType() == Material.GLOWING_REDSTONE_ORE && breakblock.getType() == Material.REDSTONE_ORE)
+								|| (block.getType() == Material.REDSTONE_ORE && breakblock.getType() == Material.GLOWING_REDSTONE_ORE)
+								|| breakblock.getType() == Material.STATIONARY_LAVA
 								){
 							if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
 								if(BreakUtil.canBreak(player, breakblock)){
-									if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+									if(breakblock.getType() == Material.STATIONARY_LAVA){
 										lavalist.add(breakblock);
 									}else{
 										breaklist.add(breakblock);
@@ -575,7 +575,7 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-		if (b.getType().equals(Material.DOUBLE_STEP) && b.getData() == 0) {
+		if (b.getType() == Material.DOUBLE_STEP && b.getData() == 0) {
 			b.setType(Material.STEP);
 			b.setData((byte) 0);
 
@@ -583,7 +583,7 @@ public class PlayerBlockBreakListener implements Listener {
 			world.dropItemNaturally(location, new ItemStack(Material.STEP));
 		}
 
-		if (!b.getType().equals(Material.STEP)) {
+		if (b.getType() != Material.STEP) {
 			return;
 		}
 

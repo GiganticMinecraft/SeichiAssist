@@ -30,7 +30,7 @@ public class PlayerPickupItemListener implements Listener {
 		//実行したプレイヤーを取得
 		Player player = event.getPlayer();
 		//もしサバイバルでなければ処理を終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+		if(player.getGameMode() != GameMode.SURVIVAL){
 			return;
 		}
 		UUID uuid = player.getUniqueId();
@@ -60,7 +60,7 @@ public class PlayerPickupItemListener implements Listener {
 		int i;
 		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
 			final MineStackObj mineStackObj = SeichiAssist.minestacklist.get(i);
-			if(material.equals(mineStackObj.getMaterial()) &&
+			if(material == mineStackObj.getMaterial() &&
 				itemstack.getDurability() == mineStackObj.getDurability()){
 				//この時点でIDとサブIDが一致している
 				if(!mineStackObj.getNameloreflag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム

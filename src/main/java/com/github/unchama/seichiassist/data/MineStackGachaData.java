@@ -70,7 +70,7 @@ public class MineStackGachaData {
 				m.getItemMeta().getDisplayName().contains(this.itemstack.getItemMeta().getDisplayName()) ) ){
 			//この時点で名前と内容が一致
 			//盾、バナー用の模様判定
-			if( ( m.getType().equals(Material.SHIELD) || (m.getType().equals(Material.BANNER)) ) && this.itemstack.getType().equals(m.getType())){
+			if( (m.getType() == Material.SHIELD || (m.getType() == Material.BANNER) ) && this.itemstack.getType() == m.getType()){
 				BlockStateMeta bs0 = (BlockStateMeta) m.getItemMeta();
 				Banner b0 = (Banner) bs0.getBlockState();
 				List<Pattern> p0 = b0.getPatterns();

@@ -81,7 +81,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		this.mana = playerdata.activeskilldata.mana;
 
 		//もしサバイバルでなければ処理を終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
+		if(player.getGameMode() != GameMode.SURVIVAL){// || player.isFlying()){
 			player.sendMessage(ChatColor.GREEN + "ゲームモードをサバイバルに変更してください。");
 			errorflag = true;
 			return;
@@ -158,7 +158,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		}
 		//もしサバイバルでなければ処理を終了
 		//もしフライ中なら終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
+		if(player.getGameMode() != GameMode.SURVIVAL){// || player.isFlying()){
 			player.sendMessage(ChatColor.GREEN + "ゲームモードをサバイバルに変更してください。");
 			setCancel();
 			return;
@@ -232,10 +232,10 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			for(int x = start.x ; x <= end.x ; x++){
 				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
-					boolean lava_materialflag = breakblock.getType().equals(Material.STATIONARY_LAVA)
-												|| breakblock.getType().equals(Material.LAVA);
-					boolean water_materialflag = breakblock.getType().equals(Material.STATIONARY_WATER)
-												|| breakblock.getType().equals(Material.WATER);
+					boolean lava_materialflag = breakblock.getType() == Material.STATIONARY_LAVA
+												|| breakblock.getType() == Material.LAVA;
+					boolean water_materialflag = breakblock.getType() == Material.STATIONARY_WATER
+												|| breakblock.getType() == Material.WATER;
 					if(SeichiAssist.materiallist.contains(breakblock.getType())
 							|| lava_materialflag || water_materialflag
 							){
