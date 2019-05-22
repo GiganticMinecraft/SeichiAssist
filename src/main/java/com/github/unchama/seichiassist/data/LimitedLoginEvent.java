@@ -46,54 +46,54 @@ public class LimitedLoginEvent {
 
 		if (!(lastcheckdate == null || lastcheckdate.equals(""))){
 			try{
-				Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
-				Date LastDate = sdf.parse(lastcheckdate);
-				Date LLEStart = sdf.parse(config.getLimitedLoginEventStart());
-				Date LLEEnd = sdf.parse(config.getLimitedLoginEventEnd());
+				final Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
+				final Date LastDate = sdf.parse(lastcheckdate);
+				final Date LLEStart = sdf.parse(config.getLimitedLoginEventStart());
+				final Date LLEEnd = sdf.parse(config.getLimitedLoginEventEnd());
 
-				long TodayLong = TodayDate.getTime();
-				long LastLong = LastDate.getTime();
-				long LLEStartLong = LLEStart.getTime();
-				long LLEEndLong = LLEEnd.getTime();
+				final long TodayLong = TodayDate.getTime();
+				final long LastLong = LastDate.getTime();
+				final long LLEStartLong = LLEStart.getTime();
+				final long LLEEndLong = LLEEnd.getTime();
 
-				int eventlogin = playerdata.LimitedLoginCount ;
-				int checknum;
-				int ItemNo;
-				int Amount;
+				int loginDays = playerdata.LimitedLoginCount ;
+				int configDays;
+				int internalItemId;
+				int amount;
 
 				//開催期間内かどうか
-				if((((TodayLong - LLEStartLong)/(1000 * 60 * 60 * 24 )) >= 0) &&
-						(((TodayLong - LLEEndLong)/(1000 * 60 * 60 * 24 )) <= 0)) {
+				final long today2start = ((TodayLong - LLEStartLong)/(1000 * 60 * 60 * 24));
+				final long today2end = ((TodayLong - LLEEndLong)/(1000 * 60 * 60 * 24));
+				final long last2start = ((LastLong - LLEStartLong)/(1000 * 60 * 60 * 24));
+				final long last2end = ((LastLong - LLEEndLong)/(1000 * 60 * 60 * 24));
+				if((today2start >= 0) && (today2end <= 0)) {
 					//最終ログインが開催期間内だったか
-					if(!((((LastLong - LLEStartLong)/(1000 * 60 * 60 * 24 )) >= 0) &&
-							(((LastLong - LLEEndLong)/(1000 * 60 * 60 * 24 )) <= 0))) {
+					if(!((last2start >= 0) && (last2end <= 0))) {
 						//開催期間内初のログイン時、開催終了後初のログイン時にここを処理
 						//期間限定の累計ログイン数のデータをリセットする。
-						eventlogin = 0 ;
+						loginDays = 0 ;
 					}
 
-					eventlogin = eventlogin + 1 ;
-					checknum = 0;
+					loginDays++;
+					configDays = 0;
 					do{
-						ItemNo = Integer.parseInt(config.getLimitedLoginEventItem(checknum));
-						Amount = Integer.parseInt(config.getLimitedLoginEventAmount(checknum));
-						switch(ItemNo){
+						internalItemId = Integer.parseInt(config.getLimitedLoginEventItem(configDays));
+						amount = Integer.parseInt(config.getLimitedLoginEventAmount(configDays));
+						switch(internalItemId){
 							case 1://配布対象「ガチャ券」
-								String MessageT;
-								if (checknum ==0){
-									MessageT = "限定ログボ！";
+								final String message;
+								if (configDays == 0) {
+									message = "限定ログボ！";
 								}else{
-									MessageT = "限定ログボ" + eventlogin + "日目記念！";
+									message = "限定ログボ" + loginDays + "日目記念！";
 								}
-								p.sendMessage("【"+ MessageT +"】"+ Amount +"個のガチャ券をプレゼント！");
-								int count = 1;
-								while(count <= Amount ){
+								p.sendMessage("【"+ message +"】"+ amount +"個のガチャ券をプレゼント！");
+								for (int i = 1; i <= amount; i++) {
 									if(player.getInventory().contains(skull) || !Util.isPlayerInventoryFull(player)){
 										Util.addItem(player,skull);
 									}else{
 										Util.dropItem(player,skull);
 									}
-									count++;
 								}
 								break;
 
@@ -103,11 +103,11 @@ public class LimitedLoginEvent {
 								break;
 						}
 
-						checknum = checknum + eventlogin ;
-					}while(checknum == eventlogin);
+						configDays += loginDays;
+					}while(configDays == loginDays);
 				}
 
-				playerdata.LimitedLoginCount = eventlogin ;
+				playerdata.LimitedLoginCount = loginDays ;
 
 			} catch (ParseException e) {
 				e.printStackTrace();
