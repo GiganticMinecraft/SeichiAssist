@@ -6,12 +6,6 @@ import com.github.unchama.seichiassist.event.SeichiLevelUpEvent;
 import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import com.github.unchama.seichiassist.commands.gachaCommand;
-import com.github.unchama.seichiassist.data.ItemData;
-import com.github.unchama.seichiassist.event.SeichiLevelUpEvent;
-import com.github.unchama.seichiassist.util.Util;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 
 
 /**
