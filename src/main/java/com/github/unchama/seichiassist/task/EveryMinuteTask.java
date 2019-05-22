@@ -26,7 +26,7 @@ import com.github.unchama.seichiassist.util.Util;
  * @author unchama
  *
  */
-public class MinuteTaskRunnable extends BukkitRunnable{
+public class EveryMinuteTask extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.instance;
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	private Config config = SeichiAssist.config;
@@ -34,7 +34,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	public static int time = 0;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
-	public MinuteTaskRunnable() {
+	public EveryMinuteTask() {
 
 	}
 
@@ -268,7 +268,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 
 			//投票妖精関連
 			if (playerdata.usingVotingFairy) {
-				VotingFairyTaskRunnable.run(player);
+				VotingFairyTask.run(player);
 			}
 
 			//GiganticBerserk

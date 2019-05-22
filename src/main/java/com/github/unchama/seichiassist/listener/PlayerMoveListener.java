@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.ManaRegeneTaskRunnable;
+import com.github.unchama.seichiassist.task.ManaRegeneTask;
 
 // マナ自動回復用リスナー
 // 現在リスナー停止により無効化中
@@ -31,6 +31,6 @@ public class PlayerMoveListener implements Listener {
 		// 移動により回復カウントをキャンセルする
 		try { pd.activeskilldata.manaregenetask.cancel(); } catch (NullPointerException e) {}
 		// 5秒後から5秒間隔でマナ回復タスクを呼び出す
-		pd.activeskilldata.manaregenetask = new ManaRegeneTaskRunnable(player).runTaskTimer(SeichiAssist.instance, 100, 100);
+		pd.activeskilldata.manaregenetask = new ManaRegeneTask(player).runTaskTimer(SeichiAssist.instance, 100, 100);
 	}
 }

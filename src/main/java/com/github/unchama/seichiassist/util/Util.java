@@ -4,17 +4,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Difficulty;
-import org.bukkit.FireworkEffect;
+import org.bukkit.*;
 import org.bukkit.FireworkEffect.Builder;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.SkullType;
-import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.entity.EntityType;
@@ -29,12 +20,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public final class Util {
@@ -434,7 +420,7 @@ public final class Util {
 		SkullMeta skullmeta;
 		for (final ItemStack itemStack : inventory) {
 			material = itemStack.getType();
-			if (material.equals(Material.SKULL_ITEM)) {
+			if (material == Material.SKULL_ITEM) {
 				skullmeta = (SkullMeta) itemStack.getItemMeta();
 				if (skullmeta.hasOwner()) {
 					if (skullmeta.getOwner().equals("unchama")) {
@@ -459,7 +445,7 @@ public final class Util {
 				.orElse(-1);
 	}
 	public static boolean isGachaTicket(ItemStack itemstack) {
-		if(!itemstack.getType().equals(Material.SKULL_ITEM)){
+		if(itemstack.getType() != Material.SKULL_ITEM){
 			return false;
 		}
 		SkullMeta skullmeta = (SkullMeta) itemstack.getItemMeta();
@@ -819,7 +805,7 @@ public final class Util {
 	}
 
 	public static boolean isMineHeadItem(ItemStack itemstack) {
-		return itemstack.getType().equals(Material.CARROT_STICK) &&
+		return itemstack.getType() == Material.CARROT_STICK &&
 				loreIndexOf(itemstack.getItemMeta().getLore(), "頭を狩り取る形をしている...") >= 0;
 	}
 
@@ -849,7 +835,7 @@ public final class Util {
 
 	public static ItemStack getSkullDataFromBlock(Block block) {
 		//ブロックがskullじゃない場合石でも返しとく
-		if(!block.getType().equals(Material.SKULL)) {return new ItemStack(Material.STONE);}
+		if(block.getType() != Material.SKULL) {return new ItemStack(Material.STONE);}
 
 		Skull skull = (Skull) block.getState();
 		ItemStack itemStack = new ItemStack(Material.SKULL_ITEM);
@@ -889,7 +875,7 @@ public final class Util {
 	}
 
 	public static boolean isLimitedTitanItem(ItemStack itemstack) {
-		return itemstack.getType().equals(Material.DIAMOND_AXE) &&
+		return itemstack.getType() == Material.DIAMOND_AXE &&
 				loreIndexOf(itemstack.getItemMeta().getLore(), "特別なタイタンをあなたに♡") >= 0;
 	}
 

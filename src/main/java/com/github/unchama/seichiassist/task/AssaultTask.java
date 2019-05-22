@@ -1,10 +1,13 @@
 package com.github.unchama.seichiassist.task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.BreakArea;
+import com.github.unchama.seichiassist.data.Coordinate;
+import com.github.unchama.seichiassist.data.Mana;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.BreakUtil;
+import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -16,16 +19,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.BreakArea;
-import com.github.unchama.seichiassist.data.Coordinate;
-import com.github.unchama.seichiassist.data.Mana;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.BreakUtil;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
-public class AssaultTaskRunnable extends BukkitRunnable{
+public class AssaultTask extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
@@ -58,7 +57,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 	,Material.WOOD_STAIRS,Material.COBBLESTONE_STAIRS));
 	*/
 
-	public AssaultTaskRunnable(Player player) {
+	public AssaultTask(Player player) {
 		this.player = player;
 		this.uuid = player.getUniqueId();
 		this.playerdata = playermap.get(uuid);
@@ -81,7 +80,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		this.mana = playerdata.activeskilldata.mana;
 
 		//もしサバイバルでなければ処理を終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
+		if(player.getGameMode() != GameMode.SURVIVAL){// || player.isFlying()){
 			player.sendMessage(ChatColor.GREEN + "ゲームモードをサバイバルに変更してください。");
 			errorflag = true;
 			return;
@@ -158,7 +157,7 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 		}
 		//もしサバイバルでなければ処理を終了
 		//もしフライ中なら終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)){// || player.isFlying()){
+		if(player.getGameMode() != GameMode.SURVIVAL){// || player.isFlying()){
 			player.sendMessage(ChatColor.GREEN + "ゲームモードをサバイバルに変更してください。");
 			setCancel();
 			return;
@@ -232,10 +231,10 @@ public class AssaultTaskRunnable extends BukkitRunnable{
 			for(int x = start.x ; x <= end.x ; x++){
 				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
-					boolean lava_materialflag = breakblock.getType().equals(Material.STATIONARY_LAVA)
-												|| breakblock.getType().equals(Material.LAVA);
-					boolean water_materialflag = breakblock.getType().equals(Material.STATIONARY_WATER)
-												|| breakblock.getType().equals(Material.WATER);
+					boolean lava_materialflag = breakblock.getType() == Material.STATIONARY_LAVA
+												|| breakblock.getType() == Material.LAVA;
+					boolean water_materialflag = breakblock.getType() == Material.STATIONARY_WATER
+												|| breakblock.getType() == Material.WATER;
 					if(SeichiAssist.materiallist.contains(breakblock.getType())
 							|| lava_materialflag || water_materialflag
 							){

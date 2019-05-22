@@ -5,9 +5,9 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.database.DatabaseConstants;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTaskRunnable;
-import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
+import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTask;
+import com.github.unchama.seichiassist.task.CoolDownTask;
+import com.github.unchama.seichiassist.task.PlayerDataSaveTask;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.ActionStatus;
@@ -47,7 +47,7 @@ public class PlayerDataManipulator {
             player.sendMessage(ChatColor.RED + "しばらく待ってからやり直してください");
             return 0;
         }
-        new CoolDownTaskRunnable(player,true,false,false).runTaskLater(plugin,1200);
+        new CoolDownTask(player,true,false,false).runTaskLater(plugin,1200);
 
         return supplier.get();
     }
@@ -348,7 +348,7 @@ public class PlayerDataManipulator {
             return false;
         }
         //連打による負荷防止の為クールダウン処理
-        new CoolDownTaskRunnable(player, CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin, 200);
+        new CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200);
         String struuid = playerdata.uuid.toString();
         String command = "SELECT shareinv FROM " + getTableReference() + " " +
                 "WHERE uuid = '" + struuid + "'";
@@ -383,7 +383,7 @@ public class PlayerDataManipulator {
             return null;
         }
         //連打による負荷防止の為クールダウン処理
-        new CoolDownTaskRunnable(player,CoolDownTaskRunnable.SHAREINV).runTaskLater(plugin,200);
+        new CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin,200);
         String struuid = playerdata.uuid.toString();
         String command = "SELECT shareinv FROM " + getTableReference() + " " +
                 "WHERE uuid = '" + struuid + "'";
@@ -650,17 +650,17 @@ public class PlayerDataManipulator {
     public void loadPlayerData(PlayerData playerdata) {
         Player player = Bukkit.getPlayer(playerdata.uuid);
         player.sendMessage(ChatColor.YELLOW + "プレイヤーデータ取得中。完了まで動かずお待ち下さい…");
-        new CheckAlreadyExistPlayerDataTaskRunnable(playerdata).runTaskAsynchronously(plugin);
+        new CheckAlreadyExistPlayerDataTask(playerdata).runTaskAsynchronously(plugin);
     }
 
     //ondisable"以外"の時のプレイヤーデータセーブ処理(loginflag折りません)
     public void savePlayerData(PlayerData playerdata){
-        new PlayerDataSaveTaskRunnable(playerdata,false,false).runTaskAsynchronously(plugin);
+        new PlayerDataSaveTask(playerdata,false,false).runTaskAsynchronously(plugin);
     }
 
     //ondisable"以外"の時のプレイヤーデータセーブ処理(ログアウト時に使用、loginflag折ります)
     public void saveQuitPlayerData(PlayerData playerdata) {
-        new PlayerDataSaveTaskRunnable(playerdata,false,true).runTaskAsynchronously(plugin);
+        new PlayerDataSaveTask(playerdata,false,true).runTaskAsynchronously(plugin);
     }
 
 }

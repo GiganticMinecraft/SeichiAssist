@@ -10,7 +10,12 @@ import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.listener.*;
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.minestack.objects.*;
+import com.github.unchama.seichiassist.minestack.objects.MineStackBuildObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackDropObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackFarmObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackGachaObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackMineObj;
+import com.github.unchama.seichiassist.minestack.objects.MineStackRsObj;
 import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
 import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
@@ -987,7 +992,7 @@ public class SeichiAssist extends JavaPlugin{
 			//quit時とondisable時、プレイヤーデータを最新の状態に更新
 			playerdata.updateonQuit(p);
 
-			new PlayerDataSaveTaskRunnable(playerdata,true,true).run();
+			new PlayerDataSaveTask(playerdata,true,true).run();
 		}
 
 		if(databaseGateway.disconnect() == Fail){
@@ -1000,22 +1005,22 @@ public class SeichiAssist extends JavaPlugin{
 	public void startTaskRunnable(){
 		//一定時間おきに処理を実行するタスク
 		if(DEBUG){
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,440,400));
+			tasklist.add(new EveryHalfHourTask().runTaskTimer(this,440,400));
 		}else{
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,36400,36000));
+			tasklist.add(new EveryHalfHourTask().runTaskTimer(this,36400,36000));
 		}
 
 		if(DEBUG){
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,200));
+			tasklist.add(new EveryMinuteTask().runTaskTimer(this,0,200));
 		}else{
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
+			tasklist.add(new EveryMinuteTask().runTaskTimer(this,0,1200));
 		}
 
 		//非同期処理にしたいけど別ステートメントでsql文処理させるようにしてからじゃないとだめぽ
 		if(DEBUG){
-			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,480,400));
+			tasklist.add(new PlayerDataBackupTask().runTaskTimer(this,480,400));
 		}else{
-			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,12800,12000));
+			tasklist.add(new PlayerDataBackupTask().runTaskTimer(this,12800,12000));
 		}
 	}
 
@@ -1029,7 +1034,7 @@ public class SeichiAssist extends JavaPlugin{
 		List<MineStackObj> minestacklist = new ArrayList<>();
 		for(int i=0; i<SeichiAssist.msgachadatalist.size(); i++){
 			MineStackGachaData g = SeichiAssist.msgachadatalist.get(i);
-			if(!g.itemstack.getType().equals(Material.EXP_BOTTLE)){ //経験値瓶だけはすでにリストにあるので除外
+			if(g.itemstack.getType() != Material.EXP_BOTTLE){ //経験値瓶だけはすでにリストにあるので除外
 				minestacklist.add(new MineStackObj(g.obj_name,g.level,g.itemstack,true,i,5));
 			}
 		}

@@ -1,20 +1,20 @@
 package com.github.unchama.seichiassist.listener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.MenuInventoryData;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.task.AsyncEntityRemover;
+import com.github.unchama.seichiassist.task.CoolDownTask;
+import com.github.unchama.seichiassist.util.BreakUtil;
+import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
@@ -30,17 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.GachaData;
-import com.github.unchama.seichiassist.data.MenuInventoryData;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.EntityRemoveTaskRunnable;
-import com.github.unchama.seichiassist.util.BreakUtil;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.*;
 
 public class PlayerClickListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.instance;
@@ -68,7 +58,7 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 		//オフハンドから実行された時処理を終了
-		if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+		if(equipmentslot == EquipmentSlot.OFF_HAND){
 			return;
 		}
 
@@ -76,7 +66,7 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 		//サバイバルでない時　または　フライ中の時終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
+		if(player.getGameMode() != GameMode.SURVIVAL || player.isFlying()){
 			return;
 		}
 		//アクティブスキルフラグがオフの時処理を終了
@@ -90,7 +80,7 @@ public class PlayerClickListener implements Listener {
 		}
 
 
-		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+		if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK){
 			//アサルトアーマー使用中の時は終了左クリックで判定
 			if(playerdata.activeskilldata.assaulttype!=0){
 				return;
@@ -108,9 +98,9 @@ public class PlayerClickListener implements Listener {
 					//クールダウン処理
 					long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
 					if(cooldown > 5){
-						new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+						new CoolDownTask(player,false,true,false).runTaskLater(plugin,cooldown);
 					}else{
-						new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
+						new CoolDownTask(player,false,false,false).runTaskLater(plugin,cooldown);
 					}
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){
@@ -126,7 +116,7 @@ public class PlayerClickListener implements Listener {
 					}
 				}
 			}
-		}else if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
+		}else if(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK){
 			//アサルトアーマーをどっちも使用していない時終了
 			if(playerdata.activeskilldata.assaulttype == 0){
 				return;
@@ -145,9 +135,9 @@ public class PlayerClickListener implements Listener {
 					//クールダウン処理
 					long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum);
 					if(cooldown > 5){
-						new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+						new CoolDownTask(player,false,true,false).runTaskLater(plugin,cooldown);
 					}else{
-						new CoolDownTaskRunnable(player,false,false,false).runTaskLater(plugin,cooldown);
+						new CoolDownTask(player,false,false,false).runTaskLater(plugin,cooldown);
 					}
 					//エフェクトが指定されていないときの処理
 					if(playerdata.activeskilldata.effectnum == 0){
@@ -197,7 +187,7 @@ public class PlayerClickListener implements Listener {
 		proj.setVelocity(vec);
 
 		//矢を消去する処理
-		new EntityRemoveTaskRunnable(proj).runTaskLater(plugin,100);
+		new AsyncEntityRemover(proj).runTaskLater(plugin,100);
 	}
 
 
@@ -221,7 +211,7 @@ public class PlayerClickListener implements Listener {
 		//使った手を取得
 		EquipmentSlot equipmentslot = event.getHand();
 		//もしサバイバルでなければ処理を終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+		if(player.getGameMode() != GameMode.SURVIVAL){
 			return;
 		}
 		//使ったアイテムを取得
@@ -242,11 +232,11 @@ public class PlayerClickListener implements Listener {
 			return;
 		}else{
 			//連打による負荷防止の為クールダウン処理
-			new CoolDownTaskRunnable(player,false,false,true).runTaskLater(plugin,4);
+			new CoolDownTask(player,false,false,true).runTaskLater(plugin,4);
 		}
 
 		//オフハンドから実行された時処理を終了
-		if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+		if(equipmentslot == EquipmentSlot.OFF_HAND){
 			return;
 		}
 		//ガチャシステムメンテナンス中は処理を終了
@@ -260,7 +250,7 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 
-		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+		if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK){
 			int count = 1;
 			if(player.isSneaking()){
 				count = itemstack.getAmount();
@@ -343,8 +333,8 @@ public class PlayerClickListener implements Listener {
 		Action action = event.getAction();
 		//アクションを起こした手を取得
 		EquipmentSlot equipmentslot = event.getHand();
-		if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)
-			|| player.getInventory().getItemInMainHand().getType().equals(Material.SKULL_ITEM)
+		if(player.getInventory().getItemInMainHand().getType() == Material.STICK
+			|| player.getInventory().getItemInMainHand().getType() == Material.SKULL_ITEM
 			){
 			return;
 		}
@@ -375,7 +365,7 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 
-		if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+		if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK){
 
 			boolean mainhandflag = SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInMainHand().getType());
 			boolean offhandflag = SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInOffHand().getType());
@@ -386,7 +376,7 @@ public class PlayerClickListener implements Listener {
 				return;
 			}
 			//アクション実行されたブロックがある場合の処理
-			if(action.equals(Action.RIGHT_CLICK_BLOCK)){
+			if(action == Action.RIGHT_CLICK_BLOCK){
 				//クリックされたブロックの種類を取得
 				Material cmaterial = event.getClickedBlock().getType();
 				//cancelledmateriallistに存在すれば処理終了
@@ -395,7 +385,7 @@ public class PlayerClickListener implements Listener {
 				}
 			}
 
-			if(mainhandflag && equipmentslot.equals(EquipmentSlot.HAND)){
+			if(mainhandflag && equipmentslot == EquipmentSlot.HAND){
 				//メインハンドで指定ツールを持っていた時の処理
 				//スニークしていないかつアサルトタイプが選択されていない時処理を終了
 				if(!player.isSneaking() && playerdata.activeskilldata.assaulttype == 0){
@@ -440,7 +430,7 @@ public class PlayerClickListener implements Listener {
 			}
 
 			if(SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInOffHand().getType())
-					&& equipmentslot.equals(EquipmentSlot.OFF_HAND)
+					&& equipmentslot == EquipmentSlot.OFF_HAND
 					){
 				//オフハンドで指定ツールを持っていた時の処理
 
@@ -513,14 +503,14 @@ public class PlayerClickListener implements Listener {
 		//アクションを起こした手を取得
 		EquipmentSlot equipmentslot = event.getHand();
 
-		if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)){
+		if(player.getInventory().getItemInMainHand().getType() == Material.STICK){
 			//メインハンドに棒を持っているときの処理
 			//アクションキャンセル
 			event.setCancelled(true);
-			if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+			if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK){
 				//右クリックの処理
 				//オフハンドのアクション実行時処理を終了
-				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+				if(equipmentslot == EquipmentSlot.OFF_HAND){
 					return;
 				}
 				//開く音を再生
@@ -543,7 +533,7 @@ public class PlayerClickListener implements Listener {
 		//使った手を取得
 		EquipmentSlot equipmentslot = event.getHand();
 
-		if(event.getMaterial().equals(Material.ENDER_PORTAL_FRAME)){
+		if(event.getMaterial() == Material.ENDER_PORTAL_FRAME){
 			//設置をキャンセル
 			event.setCancelled(true);
 			//UUIDを取得
@@ -562,9 +552,9 @@ public class PlayerClickListener implements Listener {
 				player.sendMessage(ChatColor.GREEN + "4次元ポケットを入手するには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です。");
 				return;
 			}
-			if(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)){
+			if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK){
 					//オフハンドから実行された時処理を終了
-					if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+					if(equipmentslot == EquipmentSlot.OFF_HAND){
 						return;
 					}
 					//開く音を再生
@@ -579,8 +569,8 @@ public class PlayerClickListener implements Listener {
 	@EventHandler
 	public void onPlayerRightClickExpBottleEvent(PlayerInteractEvent event){
 		// 経験値瓶を持った状態でShift右クリックをした場合
-		if (event.getPlayer().isSneaking() && event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
-				&& (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
+		if (event.getPlayer().isSneaking() && event.getPlayer().getInventory().getItemInMainHand().getType() == Material.EXP_BOTTLE
+				&& (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			event.setCancelled(true);
 			int num = event.getItem().getAmount();
 			for(int cnt = 0; cnt < num; cnt++) {
@@ -601,10 +591,10 @@ public class PlayerClickListener implements Listener {
 		if(Util.isPlayerInventoryFull(p)) {return;}
 
 		Action action = e.getAction();
-		if(!action.equals(Action.LEFT_CLICK_BLOCK)) {return;}				//ブロックの左クリックじゃない場合無視
+		if(action != Action.LEFT_CLICK_BLOCK) {return;}				//ブロックの左クリックじゃない場合無視
 
 		Block targetBlock = e.getClickedBlock();
-		if(!targetBlock.getType().equals(Material.SKULL)) {return;}			//頭じゃない場合無視
+		if(targetBlock.getType() != Material.SKULL) {return;}			//頭じゃない場合無視
 
 		if(!BreakUtil.canBreak(p, targetBlock)) {return;}					//壊せない場合無視
 
