@@ -67,7 +67,7 @@ public class RegionInventoryListener implements Listener {
 		InventoryView view = event.getView();
 		HumanEntity he = view.getPlayer();
 		//インベントリを開けたのがプレイヤーではない時終了
-		if(!he.getType().equals(EntityType.PLAYER)){
+		if(he.getType() != EntityType.PLAYER){
 			return;
 		}
 		Inventory topinventory = view.getTopInventory();
@@ -86,7 +86,7 @@ public class RegionInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
-			if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+			if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
 				return;
 			}
 			/*
@@ -94,7 +94,7 @@ public class RegionInventoryListener implements Listener {
 			 */
 
 			//土地保護メニュー
-			if (itemstackcurrent.getType().equals(Material.DIAMOND_AXE) && itemstackcurrent.getItemMeta().getDisplayName().contains("土地保護メニュー")) {
+			if (itemstackcurrent.getType() == Material.DIAMOND_AXE && itemstackcurrent.getItemMeta().getDisplayName().contains("土地保護メニュー")) {
 				player.openInventory(RegionMenuData.getRegionMenuData(player));
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.5);
 			}
@@ -116,7 +116,7 @@ public class RegionInventoryListener implements Listener {
 		InventoryView view = event.getView();
 		HumanEntity he = view.getPlayer();
 		//インベントリを開けたのがプレイヤーではない時終了
-		if(!he.getType().equals(EntityType.PLAYER)){
+		if(he.getType() != EntityType.PLAYER){
 			return;
 		}
 		Inventory topinventory = view.getTopInventory();
@@ -125,7 +125,7 @@ public class RegionInventoryListener implements Listener {
 			return;
 		}
 		//インベントリタイプがホッパーでない時終了
-		if(!topinventory.getType().equals(InventoryType.HOPPER)){
+		if(topinventory.getType() != InventoryType.HOPPER){
 			return;
 		}
 		Player player = (Player)he;
@@ -135,7 +135,7 @@ public class RegionInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
-			if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+			if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
 				return;
 			}
 			/*
@@ -145,7 +145,7 @@ public class RegionInventoryListener implements Listener {
 			UUID uuid = player.getUniqueId();
 			PlayerData playerdata = playermap.get(uuid);
 
-			if(itemstackcurrent.getType().equals(Material.WOOD_AXE)){
+			if(itemstackcurrent.getType() == Material.WOOD_AXE){
 				// wand召喚
 				player.closeInventory();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
@@ -158,7 +158,7 @@ public class RegionInventoryListener implements Listener {
 				);
 			}
 
-			else if(itemstackcurrent.getType().equals(Material.GOLD_AXE)){
+			else if(itemstackcurrent.getType() == Material.GOLD_AXE){
 				// 保護の設定
 				player.closeInventory();
 				Selection selection = ExternalPlugins.getWorldEdit().getSelection(player);
@@ -182,7 +182,7 @@ public class RegionInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 			}
 
-			else if(itemstackcurrent.getType().equals(Material.STONE_AXE)){
+			else if(itemstackcurrent.getType() == Material.STONE_AXE){
 				// 保護リストの表示
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
@@ -193,14 +193,14 @@ public class RegionInventoryListener implements Listener {
 				player.chat("/rg list -p " + player.getName());
 			}
 
-			else if(itemstackcurrent.getType().equals(Material.DIAMOND_AXE)){
+			else if(itemstackcurrent.getType() == Material.DIAMOND_AXE){
 				// ReguionGUI表示
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
 				player.chat("/land");
 			}
 
-			else if(itemstackcurrent.getType().equals(Material.IRON_AXE)) {
+			else if(itemstackcurrent.getType() == Material.IRON_AXE) {
 				gridResetFunction(player);
 				//グリッド式保護設定画面表示
 				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
@@ -228,7 +228,7 @@ public class RegionInventoryListener implements Listener {
 		InventoryView view = event.getView();
 		HumanEntity he = view.getPlayer();
 		//インベントリを開けたのがプレイヤーではない時終了
-		if(!he.getType().equals(EntityType.PLAYER)){
+		if(he.getType() != EntityType.PLAYER){
 			return;
 		}
 		Inventory topinventory = view.getTopInventory();
@@ -237,7 +237,7 @@ public class RegionInventoryListener implements Listener {
 			return;
 		}
 		//インベントリタイプがディスペンサーでない時終了
-		if(!topinventory.getType().equals(InventoryType.DISPENSER)){
+		if(topinventory.getType() != InventoryType.DISPENSER){
 			return;
 		}
 
@@ -246,7 +246,7 @@ public class RegionInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
-			if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+			if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
 				return;
 			}
 
@@ -258,29 +258,29 @@ public class RegionInventoryListener implements Listener {
 			PlayerData playerData = playermap.get(uuid);
 
 			//チャンク延長
-			if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 14) {
+			if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 14) {
 				gridChangeFunction(player, DirectionType.AHEAD, event);
-			} else if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 10) {
+			} else if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 10) {
 				gridChangeFunction(player, DirectionType.LEFT, event);
-			} else if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 5) {
+			} else if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 5) {
 				gridChangeFunction(player, DirectionType.RIGHT, event);
-			} else if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 13) {
+			} else if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 13) {
 				gridChangeFunction(player, DirectionType.BEHIND, event);
-			} else if (itemstackcurrent.getType().equals(Material.WOOL) && itemstackcurrent.getDurability() == 11) {
+			} else if (itemstackcurrent.getType() == Material.WOOL && itemstackcurrent.getDurability() == 11) {
 				player.chat("//expand vert");
 				createRegion(player);
 				playerData.rgnum += 1;
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.closeInventory();
-			} else if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 4) {
+			} else if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 4) {
 				gridResetFunction(player);
 				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_DESTROY, (float) 0.5, 1);
 				player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
-			} else if (itemstackcurrent.getType().equals(Material.STAINED_GLASS_PANE) && itemstackcurrent.getDurability() == 0) {
+			} else if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 0) {
 				playerData.toggleUnitPerGrid();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
-			} else if (itemstackcurrent.getType().equals(Material.CHEST)) {
+			} else if (itemstackcurrent.getType() == Material.CHEST) {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(RegionMenuData.getGridTemplateInventory(player));
 			}
@@ -437,7 +437,7 @@ public class RegionInventoryListener implements Listener {
 		InventoryView view = event.getView();
 		HumanEntity he = view.getPlayer();
 		//インベントリを開けたのがプレイヤーではない時終了
-		if (!he.getType().equals(EntityType.PLAYER)) {
+		if (he.getType() != EntityType.PLAYER) {
 			return;
 		}
 		Inventory topinventory = view.getTopInventory();
@@ -451,7 +451,7 @@ public class RegionInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
-			if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+			if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
 				return;
 			}
 
@@ -463,7 +463,7 @@ public class RegionInventoryListener implements Listener {
 			PlayerData playerData = playermap.get(uuid);
 
 			//戻るボタン
-			if (itemstackcurrent.getType().equals(Material.BARRIER)) {
+			if (itemstackcurrent.getType() == Material.BARRIER) {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
 			} else {
