@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.minestack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by karayuu on 2018/06/13
