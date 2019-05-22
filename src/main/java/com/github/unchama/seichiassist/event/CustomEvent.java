@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.event;
 
-import org.bukkit.event.*;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 /**
  * Created by karayuu on 2018/04/18

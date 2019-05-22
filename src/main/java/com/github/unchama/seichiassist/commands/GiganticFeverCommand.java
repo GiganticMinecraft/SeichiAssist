@@ -1,12 +1,16 @@
 package com.github.unchama.seichiassist.commands;
 
-import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.task.*;
-import com.github.unchama.seichiassist.util.*;
-import org.bukkit.*;
-import org.bukkit.command.*;
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.task.EveryMinuteTask;
+import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.ChatColor;
+import org.bukkit.Difficulty;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Created by karayuu on 2018/07/25

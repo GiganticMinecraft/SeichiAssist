@@ -1,16 +1,16 @@
 package com.github.unchama.seichiassist.task;
 
-import java.util.*;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.listener.MebiusListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.listener.MebiusListener;
+import java.util.Objects;
+import java.util.Random;
 
 /**
  * 2分に1回呼び出される
