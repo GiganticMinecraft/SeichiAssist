@@ -1,9 +1,6 @@
 package com.github.unchama.seichiassist.listener;
 
 import com.github.unchama.seasonalevents.events.valentine.Valentine;
-import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.achievement.SeichiAchievement;
-import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.achievement.SeichiAchievement;
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
@@ -20,8 +17,8 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
+import com.github.unchama.seichiassist.task.CoolDownTask;
+import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
@@ -258,7 +255,7 @@ public class PlayerInventoryListener implements Listener {
 				//連打防止クールダウン処理
 				if (playerdata.gachacooldownflag) {
 					//連打による負荷防止の為クールダウン処理
-					new CoolDownTaskRunnable(player,false,false,true).runTaskLater(plugin,20);
+					new CoolDownTask(player,false,false,true).runTaskLater(plugin,20);
 				} else {
 					return;
 				}
@@ -5496,7 +5493,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			else if (itemstackcurrent.getType().equals(Material.COMPASS)) {
-				VotingFairyTaskRunnable.speak(player, "僕は" + Util.showHour(playerdata.VotingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound);
+				VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.VotingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound);
 				player.closeInventory();
 			}
 

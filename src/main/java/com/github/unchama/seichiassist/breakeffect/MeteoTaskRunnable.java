@@ -20,7 +20,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.ArrowControlTaskRunnable;
+import com.github.unchama.seichiassist.task.ArrowControlTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class MeteoTaskRunnable extends BukkitRunnable{
@@ -100,7 +100,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 		proj.setShooter(player);
 		proj.setMetadata("Effect", new FixedMetadataValue(plugin, true));
 		proj.setVelocity(vec);
-		new ArrowControlTaskRunnable(proj,centerbreakloc).runTaskTimer(plugin, 0, 1);
+		new ArrowControlTask(proj,centerbreakloc).runTaskTimer(plugin, 0, 1);
 	}
 
 	@Override

@@ -30,8 +30,8 @@ import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.MultiBreakTaskRunnable;
+import com.github.unchama.seichiassist.task.CoolDownTask;
+import com.github.unchama.seichiassist.task.MultiBreakTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
 
@@ -344,7 +344,7 @@ public class PlayerBlockBreakListener implements Listener {
 		else{
 			multibreaklist.get(0).add(block);
 			SeichiAssist.allblocklist.add(block);
-			new MultiBreakTaskRunnable(player,block,tool,multibreaklist,multilavalist,startlist,endlist).runTaskTimer(plugin,0,4);
+			new MultiBreakTask(player,block,tool,multibreaklist,multilavalist,startlist,endlist).runTaskTimer(plugin,0,4);
 		}
 
 
@@ -359,7 +359,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
 		if(cooldown >= 5){
-			new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+			new CoolDownTask(player,false,true,false).runTaskLater(plugin,cooldown);
 		}
 	}
 
@@ -553,7 +553,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
 		if(cooldown >= 5){
-			new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+			new CoolDownTask(player,false,true,false).runTaskLater(plugin,cooldown);
 		}
 	}
 

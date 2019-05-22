@@ -7,14 +7,14 @@ import org.bukkit.util.Vector;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 
-public class ArrowControlTaskRunnable extends BukkitRunnable{
+public class ArrowControlTask extends BukkitRunnable{
 
 	Projectile proj;
 	Location standard;
 	Location projloc;
 	long tick;
 	double speed;
-	public ArrowControlTaskRunnable(Projectile proj, Location standard) {
+	public ArrowControlTask(Projectile proj, Location standard) {
 		this.proj = proj;
 		this.standard = standard;
 		this.tick = 0;

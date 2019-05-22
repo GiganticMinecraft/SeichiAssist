@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.task.AssaultTaskRunnable;
+import com.github.unchama.seichiassist.task.AssaultTask;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -188,7 +188,7 @@ public class ActiveSkillData {
 		if(mineflagnum != 0){
 			this.assaultarea = new BreakArea(player,type,skilllevel,mineflagnum,true);
 			this.assaultflag = true;
-			this.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,10,10);
+			this.assaulttask = new AssaultTask(player).runTaskTimer(plugin,10,10);
 		}//オフの時の処理
 		else{
 			this.assaultflag = false;

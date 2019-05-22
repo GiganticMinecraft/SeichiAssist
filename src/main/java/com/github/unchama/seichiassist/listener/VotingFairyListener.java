@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
+import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.ChatColor;
@@ -86,11 +86,11 @@ public class VotingFairyListener implements Listener {
 				);
 
 		if (Util.getTimeZone(playerdata.VotingFairyStartTime).equals("morning"))
-			VotingFairyTaskRunnable.speak(p, getMessage(morning, p.getName()), playerdata.toggleVFSound);
+			VotingFairyTask.speak(p, getMessage(morning, p.getName()), playerdata.toggleVFSound);
 		else if (Util.getTimeZone(playerdata.VotingFairyStartTime).equals("day"))
-			VotingFairyTaskRunnable.speak(p, getMessage(day, p.getName()), playerdata.toggleVFSound);
+			VotingFairyTask.speak(p, getMessage(day, p.getName()), playerdata.toggleVFSound);
 		else
-			VotingFairyTaskRunnable.speak(p, getMessage(night, p.getName()), playerdata.toggleVFSound);
+			VotingFairyTask.speak(p, getMessage(night, p.getName()), playerdata.toggleVFSound);
 	}
 
 	public static void regeneMana(Player p) {
@@ -108,7 +108,7 @@ public class VotingFairyListener implements Listener {
 					,"[str1]はどのりんごが好き？僕はがちゃりんご！"
 					,"動いてお腹を空かしていっぱい食べるぞー！"
 					);
-			VotingFairyTaskRunnable.speak(p, getMessage(msg, p.getName()), playerdata.toggleVFSound);
+			VotingFairyTask.speak(p, getMessage(msg, p.getName()), playerdata.toggleVFSound);
 
 		}else {
 
@@ -187,11 +187,11 @@ public class VotingFairyListener implements Listener {
 			p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "マナ妖精が" + (int) n + "マナを回復してくれました");
 			if (m != 0) {
 				p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あっ！" + m + "個のがちゃりんごが食べられてる！");
-				VotingFairyTaskRunnable.speak(p, getMessage(yes, p.getName()), playerdata.toggleVFSound);
+				VotingFairyTask.speak(p, getMessage(yes, p.getName()), playerdata.toggleVFSound);
 			}else {
 
 				p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなたは妖精にりんごを渡しませんでした。");
-				VotingFairyTaskRunnable.speak(p, getMessage(no, p.getName()), playerdata.toggleVFSound);
+				VotingFairyTask.speak(p, getMessage(no, p.getName()), playerdata.toggleVFSound);
 			}
 		}
 
