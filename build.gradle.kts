@@ -89,3 +89,10 @@ tasks.jar {
 
     from(embedConfiguration.map { if (it.isDirectory) it else zipTree(it) })
 }
+
+tasks.compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "1.8"
+    }
+}
