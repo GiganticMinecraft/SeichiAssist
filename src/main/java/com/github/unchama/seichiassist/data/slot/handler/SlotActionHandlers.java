@@ -11,7 +11,7 @@ public class SlotActionHandlers {
      * {@link Button} には常に付与されます.
      */
     public static SlotActionHandler READ_ONLY = new SlotActionHandler(
-            event -> true,
+            Trigger.ALWAYS_TRUE,
             event -> event.setCancelled(true)
     );
 }

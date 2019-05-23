@@ -10,15 +10,19 @@ import java.util.function.Function;
  */
 public enum Trigger {
     /**
-     * 左クリックを表す Trigger です.
+     * 左クリックを表す {@link Trigger} です.
      */
     LEFT_CLICK(InventoryClickEvent::isLeftClick),
 
     /**
-     * 右クリックを表す Trigger です.
+     * 右クリックを表す {@link Trigger} です.
      */
     RIGHT_CLICK(InventoryClickEvent::isRightClick),
 
+    /**
+     * 常に {@code true} を返す {@link Trigger} です
+     */
+    ALWAYS_TRUE(event -> true)
     ;
 
     @NotNull
