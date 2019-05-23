@@ -1,5 +1,6 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 
 plugins {
@@ -61,6 +62,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 
     embed("org.flywaydb:flyway-core:5.2.4")
+    embed(kotlin("stdlib-jdk8"))
 }
 
 tasks.processResources {
@@ -90,9 +92,14 @@ tasks.jar {
     from(embedConfiguration.map { if (it.isDirectory) it else zipTree(it) })
 }
 
-tasks.compileKotlin {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "1.8"
-    }
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+    freeCompilerArgs = listOf("-Xjsr305=strict")
+}
+
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+    freeCompilerArgs = listOf("-Xjsr305=strict")
 }
