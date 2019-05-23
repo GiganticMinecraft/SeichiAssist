@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.data.itemstack.builder;
 
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.itemstack.builder.component.AbstractItemStackBuilder;
-import com.github.unchama.seichiassist.data.menu.Menu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -44,7 +43,7 @@ public class SkullItemStackBuilder extends AbstractItemStackBuilder<SkullItemSta
     }
 
     /**
-     * {@link Menu} を開いた {@link Player} の頭にします.
+     * Menu を開いた {@link Player} の頭にします.
      * {@link #owner(String)} と同時に指定された場合は,こちらが優先されます.
      *
      * @return {@link SkullItemStackBuilder}

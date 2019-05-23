@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author karayuu
  */
-public abstract class AbstractSlotBuilder<T extends AbstractSlotBuilder<T>> implements Slot.Builder {
+public abstract class AbstractSlotBuilder {
     @Nullable
     protected Integer position = null;
 
@@ -16,13 +16,5 @@ public abstract class AbstractSlotBuilder<T extends AbstractSlotBuilder<T>> impl
 
     protected AbstractSlotBuilder(@NotNull ItemStackBuilder builder) {
         this.builder = builder;
-    }
-
-    @NotNull
-    @Override
-    @SuppressWarnings("unchecked")
-    public T at(int position) {
-        this.position = position;
-        return (T) this;
     }
 }

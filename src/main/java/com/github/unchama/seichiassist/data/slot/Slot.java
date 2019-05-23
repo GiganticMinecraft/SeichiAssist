@@ -16,22 +16,11 @@ import javax.annotation.Nonnull;
  * @author karayuu
  */
 public interface Slot {
-    ItemStack NOTHING = new ItemStack(Material.AIR);
-
-    /**
-     * この {@link Slot} が配置されている位置を返します.<br>
-     * 形式は {@link Inventory#setItem(int, ItemStack)} 等で指定する {@link Bukkit} の配置数字です.
-     *
-     * @return {@link Bukkit} の配置番号
-     */
-    int getPosition();
-
     /**
      * この {@link Slot} にセットされている {@link ItemStack} を返します.<br>
-     * もし,何もセットされていなかったら, {@link #NOTHING} を返します.
      *
      * @param playerData {@link Player} の {@link PlayerData} ({@code null} は許容されません.)
-     * @return セットされている場合 {@link ItemStack}. もしセットされていなかったら {@link Slot#NOTHING}
+     * @return セットされている場合 {@link ItemStack}.
      */
     @Nonnull
     ItemStack getItemStack(@Nonnull PlayerData playerData);
@@ -42,19 +31,4 @@ public interface Slot {
      * @param event {@link InventoryClickEvent}
      */
     void invoke(@Nonnull InventoryClickEvent event);
-
-    /**
-     * {@link Slot} を構成するための {@link Builder} です.
-     */
-    interface Builder {
-        /**
-         * {@link Slot} の設置位置を指定します.
-         *
-         * @param position {@link Slot} の設置位置
-         * @return {@link Slot.Builder}
-         * @see Slot#getPosition()
-         */
-        @Nonnull
-        Slot.Builder at(int position);
-    }
 }

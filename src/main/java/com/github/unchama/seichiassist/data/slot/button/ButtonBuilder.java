@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link Button} を構成する {@link Slot.Builder} です.
+ * {@link Button} を構成する Builder です.
  *
  * @author karayuu
  * @see Button
  */
-public class ButtonBuilder extends AbstractSlotBuilder<ButtonBuilder> {
+public class ButtonBuilder extends AbstractSlotBuilder {
     private List<@NotNull SlotActionHandler> handlers = new ArrayList<>();
 
     private ButtonBuilder(@NotNull ItemStackBuilder builder) {
@@ -62,10 +62,7 @@ public class ButtonBuilder extends AbstractSlotBuilder<ButtonBuilder> {
      */
     @NotNull
     public Button build() {
-        if (this.position == null) {
-            throw new IllegalArgumentException("Slot.Builderにおいては,Slotの設置位置をpositionにて設定する必要があります.");
-        }
-        Button button = new Button(this.position, this.builder);
+        Button button = new Button(this.builder);
         button.addHandlers(handlers);
         return button;
     }

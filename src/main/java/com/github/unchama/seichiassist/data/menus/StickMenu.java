@@ -1,11 +1,8 @@
 package com.github.unchama.seichiassist.data.menus;
 
 import com.github.unchama.seichiassist.data.button.PlayerDataButtons;
-import com.github.unchama.seichiassist.data.menu.Menu;
-import com.github.unchama.seichiassist.data.menu.chest.ChestMenuBuilder;
-import com.github.unchama.seichiassist.text.Text;
-import org.bukkit.ChatColor;
-
+import com.github.unchama.seichiassist.data.menu.InventoryHolder;
+import org.bukkit.Bukkit;
 import javax.annotation.Nonnull;
 
 /**
@@ -13,21 +10,15 @@ import javax.annotation.Nonnull;
  *
  * @author karayuu
  */
-public class StickMenu {
-    private static final int MenuColumnNumber = 4;
-
+public final class StickMenu {
     @Nonnull
-    public static Menu stickMenu;
+    public static final InventoryHolder stickMenu;
 
     private StickMenu() {
     }
 
     static {
-        stickMenu = ChestMenuBuilder.of(MenuColumnNumber)
-                                    .title(Text.of("木の棒メニュー", ChatColor.DARK_PURPLE, ChatColor.BOLD))
-                                    .slots(
-                                        PlayerDataButtons.playerInfo
-                                    )
-                                    .build();
+        stickMenu = InventoryHolder.from(Bukkit.createInventory(null, 4 * 9));
+        stickMenu.setSlot(0, PlayerDataButtons.playerInfo);
     }
 }

@@ -26,7 +26,6 @@ public final class PlayerDataButtons {
                 .title(data -> Text.of(data.name + "の統計データ", ChatColor.UNDERLINE, ChatColor.BOLD, ChatColor.YELLOW))
                 .lore(PlayerInformationDescriptions::playerInfoLore)
         )
-        .at(0)
         .appendHandler(new SlotActionHandler(
             Trigger.LEFT_CLICK,
             event -> {

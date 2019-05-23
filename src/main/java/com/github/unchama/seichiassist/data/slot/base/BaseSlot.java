@@ -15,27 +15,20 @@ import org.jetbrains.annotations.NotNull;
  * @author karayuu
  */
 public class BaseSlot implements Slot {
-    private int position;
-
     @NotNull
     private ItemStackBuilder builder;
+
+    protected BaseSlot(@NotNull ItemStackBuilder builder) {
+        this.builder = builder;
+    }
 
     /**
      * 基本的な無機能の {@link Slot} を生成します.
      *
-     * @param position {@link Inventory} への設置位置
      * @param builder {@link Inventory} へセットする {@link ItemStack} のBuilderである {@link ItemStackBuilder}
-     *
-     * @see Slot#getPosition()
      */
-    public BaseSlot(int position, @NotNull ItemStackBuilder builder) {
-        this.position = position;
-        this.builder = builder;
-    }
-
-    @Override
-    public int getPosition() {
-        return this.position;
+    public static BaseSlot from(@NotNull ItemStackBuilder builder) {
+        return new BaseSlot(builder);
     }
 
     @NotNull

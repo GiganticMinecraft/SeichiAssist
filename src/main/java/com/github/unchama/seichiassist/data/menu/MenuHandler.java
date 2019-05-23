@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link Menu} を管理するクラス.
+ * {@link InventoryHolder} を管理するクラス.
  * Singleton で設計されています.
  *
  * @author karayuu
@@ -18,10 +18,10 @@ public final class MenuHandler implements Listener {
     private static MenuHandler singleton = new MenuHandler();
 
     /**
-     * 登録された {@link Menu} の {@link List}
+     * 登録された {@link InventoryHolder} の {@link List}
      */
     @Nonnull
-    private List<Menu> menus = new ArrayList<>();
+    private List<InventoryHolder> inventoryHolders = new ArrayList<>();
 
     private MenuHandler() {}
 
@@ -36,16 +36,16 @@ public final class MenuHandler implements Listener {
 
 
     /**
-     * {@link Menu} 管理 {@link List} に {@link Menu} を追加します.
+     * {@link #inventoryHolders} に {@link InventoryHolder} を追加します.
      *
-     * @param menu 追加する {@link Menu} ({@code null} は許容されません.)
+     * @param inventoryHolder 追加する {@link InventoryHolder} ({@code null} は許容されません.)
      */
-    public void addMenu(@Nonnull Menu menu) {
-        menus.add(menu);
+    public void addInventoryHolder(@Nonnull InventoryHolder inventoryHolder) {
+        inventoryHolders.add(inventoryHolder);
     }
 
     /**
-     * 各 {@link Menu#invokeAndReloadSlot(InventoryClickEvent)} を呼び出します.
+     * 各 {@link InventoryHolder#invokeAndReload(int, InventoryClickEvent)} を呼び出します.
      * title にて判断し, {@link InventoryClickEvent} を与えます.
      *
      * @param event {@link InventoryClickEvent}
@@ -54,8 +54,8 @@ public final class MenuHandler implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         final String title = event.getInventory().getTitle();
 
-        menus.stream()
-             .filter(menu -> menu.getTitle().equals(title))
-             .forEach(menu -> menu.invokeAndReloadSlot(event));
+        inventoryHolders.stream()
+                        .filter(holder -> holder.getTitle().equals(title))
+                        .forEach(holder -> holder.invokeAndReload(event.getSlot(), event));
     }
 }
