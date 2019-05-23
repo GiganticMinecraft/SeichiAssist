@@ -1,4 +1,5 @@
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.net.URI
 
 plugins {
@@ -13,8 +14,20 @@ version = "1.1.1"
 description = """ギガンティック☆整地鯖の独自要素を司るプラグイン"""
 
 project.sourceSets {
-    getByName("main") { java.srcDir("src/main/java") }
-    getByName("test") { java.srcDir("src/test/java") }
+    getByName("main") {
+        java.srcDir("src/main/java")
+
+        withConvention(KotlinSourceSet::class) {
+            kotlin.srcDir("src/main/java")
+        }
+    }
+    getByName("test") {
+        java.srcDir("src/test/java")
+
+        withConvention(KotlinSourceSet::class) {
+            kotlin.srcDir("src/test/java")
+        }
+    }
 }
 
 repositories {
