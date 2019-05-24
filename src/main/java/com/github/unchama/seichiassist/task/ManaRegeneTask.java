@@ -13,9 +13,9 @@ import com.github.unchama.seichiassist.data.PlayerData;
  * @author たぶんtar0ss
  *
  */
-public class ManaRegeneTaskRunnable extends BukkitRunnable {
+public class ManaRegeneTask extends BukkitRunnable {
 	private Player p;
-	public ManaRegeneTaskRunnable(Player player) {
+	public ManaRegeneTask(Player player) {
 		p = player;
 	}
 

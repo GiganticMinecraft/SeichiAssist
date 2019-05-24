@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.listener.VotingFairyListener;
 import com.github.unchama.seichiassist.util.Util;
 
 
-public class VotingFairyTaskRunnable {
+public class VotingFairyTask {
 
 	//MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
 	public static void run(Player p) {

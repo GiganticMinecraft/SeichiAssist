@@ -4,13 +4,14 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.task.AssaultTaskRunnable;
+import com.github.unchama.seichiassist.task.AssaultTask;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashSet;
+import java.util.stream.IntStream;
 
 public class ActiveSkillData {
 	SeichiAssist plugin = SeichiAssist.instance;
@@ -90,37 +91,40 @@ public class ActiveSkillData {
 
 		mana = new Mana();
 	}
+
+	private static int decreasePoint(int level) {
+		return level * 10;
+	}
+
 	//activeskillpointをレベルに従って更新
 	public void updateActiveSkillPoint(Player player,int level) {
-		int point = 0;
+		int point = IntStream.rangeClosed(1, level).map(i -> i / 10 + 1).sum();
 		//レベルに応じたスキルポイント量を取得
-		for(int i = 1;i <= level;i++){
-			point += i / 10 + 1;
-		}
 		if(SeichiAssist.DEBUG){
 			player.sendMessage("あなたのレベルでの獲得アクティブスキルポイント：" + point);
 		}
 		//取得しているスキルを確認してその分のスキルポイントを引く
 		//遠距離スキル
-		for(int i = arrowskill; i >= 4 ; i--){
-			point -= i * 10;
-		}
+		// arrowskill -> 4は(arrowskill-4).repeatと同じ
+		point -= IntStream.rangeClosed(4, arrowskill)
+				.map(ActiveSkillData::decreasePoint)
+				.sum();
 		//マルチ破壊スキル
-		for(int i = multiskill; i >= 4 ; i--){
-			point -= i * 10;
-		}
+		point -= IntStream.rangeClosed(4, multiskill)
+				.map(ActiveSkillData::decreasePoint)
+				.sum();
 		//破壊スキル
-		for(int i = breakskill; i >= 1 ; i--){
-			point -= i * 10;
-		}
+		point -= IntStream.rangeClosed(1, breakskill)
+				.map(ActiveSkillData::decreasePoint)
+				.sum();
 		//水凝固スキル
-		for(int i = watercondenskill; i >= 7 ; i--){
-			point -= i * 10;
-		}
+		point -= IntStream.rangeClosed(7, watercondenskill)
+				.map(ActiveSkillData::decreasePoint)
+				.sum();
 		//熔岩凝固スキル
-		for(int i = lavacondenskill; i >= 7 ; i--){
-			point -= i * 10;
-		}
+		point -= IntStream.rangeClosed(7, watercondenskill)
+				.map(ActiveSkillData::decreasePoint)
+				.sum();
 		if (fluidcondenskill == 10){
 			point -= 110;
 		}
@@ -188,7 +192,7 @@ public class ActiveSkillData {
 		if(mineflagnum != 0){
 			this.assaultarea = new BreakArea(player,type,skilllevel,mineflagnum,true);
 			this.assaultflag = true;
-			this.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,10,10);
+			this.assaulttask = new AssaultTask(player).runTaskTimer(plugin,10,10);
 		}//オフの時の処理
 		else{
 			this.assaultflag = false;

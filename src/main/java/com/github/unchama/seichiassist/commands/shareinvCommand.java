@@ -55,14 +55,14 @@ public class shareinvCommand implements TabExecutor {
 
 				// 取得完了見込みにより現所持アイテムをドロップ＆クリア
 				ItemStack offhand = pi.getItemInOffHand();
-				if (offhand != null && !offhand.getType().equals(Material.AIR)) {
+				if (offhand != null && offhand.getType() != Material.AIR) {
 					Util.dropItem(player, offhand);
 				}
 				pi.setItemInOffHand(air);
 
 				ItemStack[] armor = pi.getArmorContents();
 				for (int cnt = 0; cnt < armor.length; cnt++) {
-					if (armor[cnt] != null && !armor[cnt].getType().equals(Material.AIR)) {
+					if (armor[cnt] != null && armor[cnt].getType() != Material.AIR) {
 						Util.dropItem(player, armor[cnt]);
 					}
 					armor[cnt] = air;
@@ -71,7 +71,7 @@ public class shareinvCommand implements TabExecutor {
 
 				ItemStack[] contents = pi.getStorageContents();
 				for (int cnt = 0; cnt < contents.length; cnt++) {
-					if (contents[cnt] != null && !contents[cnt].getType().equals(Material.AIR)) {
+					if (contents[cnt] != null && contents[cnt].getType() != Material.AIR) {
 						Util.dropItem(player, contents[cnt]);
 					}
 					contents[cnt] = air;

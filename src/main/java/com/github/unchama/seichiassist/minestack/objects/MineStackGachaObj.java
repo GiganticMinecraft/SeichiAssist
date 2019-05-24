@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.minestack.objects;
 
-import com.github.unchama.seichiassist.minestack.*;
-import org.bukkit.*;
-import org.bukkit.enchantments.*;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Created by karayuu on 2018/06/04
