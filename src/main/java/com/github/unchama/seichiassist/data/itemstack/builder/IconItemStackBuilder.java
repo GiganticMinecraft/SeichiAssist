@@ -14,7 +14,16 @@ import org.jetbrains.annotations.NotNull;
  * Created by karayuu on 2019/03/30
  */
 public class IconItemStackBuilder extends AbstractItemStackBuilder<IconItemStackBuilder> {
+    /**
+     * {@code null} オブジェクトである {@link Material#AIR} がセットされた {@link IconItemStackBuilder}
+     */
+    public static final IconItemStackBuilder EMPTY_BUILDER = IconItemStackBuilder.of();
+
     private Boolean showAttribute = false;
+
+    private IconItemStackBuilder() {
+        super(Material.AIR);
+    }
 
     private IconItemStackBuilder(@NotNull Material material) {
         super(material);
@@ -22,6 +31,14 @@ public class IconItemStackBuilder extends AbstractItemStackBuilder<IconItemStack
 
     private IconItemStackBuilder(@NotNull Material material, short durability) {
         super(material, durability);
+    }
+
+    /**
+     * {@link Material#AIR} がセットされたBuilderを生成します.
+     */
+    @NotNull
+    public static IconItemStackBuilder of() {
+        return new IconItemStackBuilder();
     }
 
     /**

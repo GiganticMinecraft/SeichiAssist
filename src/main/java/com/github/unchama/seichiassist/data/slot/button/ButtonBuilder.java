@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data.slot.button;
 
+import com.github.unchama.seichiassist.data.itemstack.builder.IconItemStackBuilder;
 import com.github.unchama.seichiassist.data.itemstack.builder.component.ItemStackBuilder;
-import com.github.unchama.seichiassist.data.slot.AbstractSlotBuilder;
 import com.github.unchama.seichiassist.data.slot.Slot;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
 import org.jetbrains.annotations.NotNull;
@@ -15,11 +15,19 @@ import java.util.List;
  * @author karayuu
  * @see Button
  */
-public class ButtonBuilder extends AbstractSlotBuilder {
+public class ButtonBuilder {
+    @NotNull
+    private ItemStackBuilder builder = IconItemStackBuilder.EMPTY_BUILDER;
+
+    @NotNull
     private List<@NotNull SlotActionHandler> handlers = new ArrayList<>();
 
+    private ButtonBuilder() {
+
+    }
+
     private ButtonBuilder(@NotNull ItemStackBuilder builder) {
-        super(builder);
+        this.builder = builder;
     }
 
     /**
@@ -31,6 +39,16 @@ public class ButtonBuilder extends AbstractSlotBuilder {
     @NotNull
     public static ButtonBuilder from(@NotNull ItemStackBuilder builder) {
         return new ButtonBuilder(builder);
+    }
+
+    /**
+     * {@link IconItemStackBuilder#EMPTY_BUILDER} がセットされた {@link ButtonBuilder} を生成します.
+     *
+     * @return {@link ButtonBuilder}
+     */
+    @NotNull
+    public static ButtonBuilder of() {
+        return new ButtonBuilder();
     }
 
     /**
@@ -62,7 +80,7 @@ public class ButtonBuilder extends AbstractSlotBuilder {
      */
     @NotNull
     public Button build() {
-        Button button = new Button(this.builder);
+        final Button button = new Button(this.builder);
         button.addHandlers(handlers);
         return button;
     }
