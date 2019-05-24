@@ -52,14 +52,6 @@ data class PartiallyParsedArgs(val parsed: List<Any?>, val yetToBeParsed: List<S
  * @param command 実行コマンドに関する情報
  * @param args 引数情報
  */
-data class ParsedArgCommandContext<CS: CommandSender>(val sender: CS,
-                                                      val command: ExecutedCommand,
-                                                      val args: PartiallyParsedArgs) {
-
-    /**
-     * [sender]が[CS1]のインスタンスである場合, その情報を内包した[ParsedArgCommandContext]を, そうでなければnullを返す.
-     */
-    inline fun <reified CS1: CS> refineSender(): Option<ParsedArgCommandContext<CS1>> =
-            (sender as? CS1).toOption().map { ParsedArgCommandContext(it, command, args) }
-
-}
+data class ParsedArgCommandContext<out CS: CommandSender>(val sender: CS,
+                                                          val command: ExecutedCommand,
+                                                          val args: PartiallyParsedArgs)
