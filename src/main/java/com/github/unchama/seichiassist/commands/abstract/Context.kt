@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.commands.abstract
 
-import arrow.core.None
-import arrow.core.Option
+import arrow.core.*
 import arrow.core.extensions.option.monad.binding
-import arrow.core.toOption
 import arrow.syntax.collections.firstOption
+import com.github.unchama.seichiassist.commands.abstract.ArgTransFailureCause.NOT_ENOUGH_ARG
+import com.github.unchama.seichiassist.commands.abstract.ArgTransFailureCause.TRANSFORM_FAILED
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 
@@ -29,20 +29,24 @@ data class RawCommandContext(val sender: CommandSender,
 data class PartiallyParsedArgs(val parsedArgs: List<Any?>, val argsYetToBeParsed: List<String>) {
     /**
      * [argsYetToBeParsed]の先頭にある文字列を[parser]で変換した値を[parsedArgs]に取る新しい[ParsedArgCommandContext]を計算する.
-     * 引数が不足していたり, 変換に失敗していた場合[None]を返す.
+     * 引数が不足していたり, 変換に失敗していた場合[ArgTransFailureCause]を[Either.left]経由で返す.
      *
      * @param parser 変換に失敗したとき[None]を, そうでなければ成功値を含んだ[Option]を返す関数
      */
-    fun <R> parseArgHead(parser: (String) -> Option<R>): Option<PartiallyParsedArgs> =
-            binding {
-                val (firstNonParsedArg) = argsYetToBeParsed.firstOption()
-                val (parsedArg) = parser(firstNonParsedArg)
+    fun <R> parseArgHead(parser: (String) -> Option<R>): Either<ArgTransFailureCause, PartiallyParsedArgs> {
+        val nonParsedArgHead = argsYetToBeParsed.firstOrNull() ?: return Left(NOT_ENOUGH_ARG)
 
-                this@PartiallyParsedArgs.copy(
-                        parsedArgs = parsedArgs.plusElement(parsedArg),
+        return when (val transformedArgHead = parser(nonParsedArgHead)) {
+            is Some -> {
+                val newContext = this.copy(
+                        parsedArgs = parsedArgs.plusElement(transformedArgHead),
                         argsYetToBeParsed = argsYetToBeParsed.drop(1)
                 )
+                Right(newContext)
             }
+            is None -> Left(TRANSFORM_FAILED)
+        }
+    }
 }
 
 /**
