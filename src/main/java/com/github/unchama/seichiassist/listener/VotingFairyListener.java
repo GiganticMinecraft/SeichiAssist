@@ -162,7 +162,7 @@ public class VotingFairyListener implements Listener {
 
 
 			//マナ回復
-			mana.increaseMana(n, p, playerdata.level);
+			mana.increase(n, p, playerdata.level);
 			//りんごを減らす
 			playerdata.minestack.subtractStackedAmountOf(Util.findMineStackObjectByName("gachaimo"), m);
 			//減ったりんごの数をplayerdataに加算
