@@ -234,9 +234,9 @@ public class ActiveSkillData {
 	public void updateonJoin(Player player, int level) {
 		updateActiveSkillPoint(player, level);
 		runTask(player);
-		mana.update(player,level);
+		mana.initialize(player,level);
 	}
 	public void updateonQuit(Player player) {
-		mana.removeBar();
+		mana.hide();
 	}
 }
