@@ -8,6 +8,7 @@ plugins {
     maven
     kotlin("jvm").version("1.3.30")
     id("nebula.dependency-lock").version("2.2.4")
+    id("org.jetbrains.kotlin.kapt").version("1.3.30")
 }
 
 group = "click.seichi"
@@ -39,6 +40,7 @@ repositories {
     maven { url = URI("https://repo.maven.apache.org/maven2") }
     maven { url = URI("https://hub.spigotmc.org/nexus/content/repositories/snapshots")}
     maven { url = URI("https://oss.sonatype.org/content/repositories/snapshots")}
+    jcenter()
     mavenCentral()
 }
 
@@ -63,6 +65,16 @@ dependencies {
 
     embed("org.flywaydb:flyway-core:5.2.4")
     embed(kotlin("stdlib-jdk8"))
+
+    // arrow依存
+    val arrowVersion = "0.8.2"
+    compile("io.arrow-kt:arrow-core:$arrowVersion")
+    compile("io.arrow-kt:arrow-syntax:$arrowVersion")
+    compile("io.arrow-kt:arrow-typeclasses:$arrowVersion")
+    compile("io.arrow-kt:arrow-data:$arrowVersion")
+    compile("io.arrow-kt:arrow-instances-core:$arrowVersion")
+    compile("io.arrow-kt:arrow-instances-data:$arrowVersion")
+    kapt("io.arrow-kt:arrow-annotations-processor:$arrowVersion")
 }
 
 tasks.processResources {
