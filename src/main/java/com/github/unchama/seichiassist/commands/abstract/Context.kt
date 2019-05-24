@@ -23,24 +23,24 @@ data class RawCommandContext(val sender: CommandSender,
 /**
  * 変換されたコマンド引数の情報
  *
- * @param parsedArgs コマンド引数のうち, [Any?]を型上限とするオブジェクトに変換されたもの.
- * @param argsYetToBeParsed コマンド引数のうち, [parsedArgs]へと変換されていない文字列.
+ * @param parsed コマンド引数のうち, [Any?]を型上限とするオブジェクトに変換されたもの.
+ * @param yetToBeParsed コマンド引数のうち, [parsed]へと変換されていない文字列.
  */
-data class PartiallyParsedArgs(val parsedArgs: List<Any?>, val argsYetToBeParsed: List<String>) {
+data class PartiallyParsedArgs(val parsed: List<Any?>, val yetToBeParsed: List<String>) {
     /**
-     * [argsYetToBeParsed]の先頭にある文字列を[parser]で変換した値を[parsedArgs]に取る新しい[ParsedArgCommandContext]を計算する.
+     * [yetToBeParsed]の先頭にある文字列を[parser]で変換した値を[parsed]に取る新しい[ParsedArgCommandContext]を計算する.
      * 引数が不足していたり, 変換に失敗していた場合[ArgTransFailureCause]を[Either.left]経由で返す.
      *
      * @param parser 変換に失敗したとき[None]を, そうでなければ成功値を含んだ[Option]を返す関数
      */
     fun <R> parseArgHead(parser: (String) -> Option<R>): Either<ArgTransFailureCause, PartiallyParsedArgs> =
             binding {
-                val (nonParsedArgHead) = argsYetToBeParsed.firstOption().toEither { NOT_ENOUGH_ARG }
+                val (nonParsedArgHead) = yetToBeParsed.firstOption().toEither { NOT_ENOUGH_ARG }
                 val (transformedArgHead) = parser(nonParsedArgHead).toEither { TRANSFORM_FAILED }
 
                 this@PartiallyParsedArgs.copy(
-                        parsedArgs = parsedArgs.plusElement(transformedArgHead),
-                        argsYetToBeParsed = argsYetToBeParsed.drop(1)
+                        parsed = parsed.plusElement(transformedArgHead),
+                        yetToBeParsed = yetToBeParsed.drop(1)
                 )
             }
 }
@@ -61,12 +61,5 @@ data class ParsedArgCommandContext<CS: CommandSender>(val sender: CS,
      */
     inline fun <reified CS1: CS> refineSender(): Option<ParsedArgCommandContext<CS1>> =
             (sender as? CS1).toOption().map { ParsedArgCommandContext(it, command, args) }
-
-    /**
-     * 失敗する可能性のある[transformation]を用いて[args]を変換し,
-     * 成功値が[args]になった新しい[ParsedArgCommandContext]を返す.
-     */
-    inline fun transformArgs(transformation: (PartiallyParsedArgs) -> Option<PartiallyParsedArgs>) =
-            transformation(args).map { this.copy(args = it) }
 
 }
