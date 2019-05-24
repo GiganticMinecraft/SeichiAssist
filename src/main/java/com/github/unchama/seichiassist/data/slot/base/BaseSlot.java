@@ -1,10 +1,7 @@
 package com.github.unchama.seichiassist.data.slot.base;
 
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.data.itemstack.builder.component.ItemStackBuilder;
 import com.github.unchama.seichiassist.data.slot.Slot;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,25 +13,23 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BaseSlot implements Slot {
     @NotNull
-    private ItemStackBuilder builder;
+    private ItemStack itemStack;
 
-    protected BaseSlot(@NotNull ItemStackBuilder builder) {
-        this.builder = builder;
+    protected BaseSlot(@NotNull ItemStack itemStack) {
+        this.itemStack = itemStack;
     }
 
     /**
      * 基本的な無機能の {@link Slot} を生成します.
-     *
-     * @param builder {@link Inventory} へセットする {@link ItemStack} のBuilderである {@link ItemStackBuilder}
      */
-    public static BaseSlot from(@NotNull ItemStackBuilder builder) {
-        return new BaseSlot(builder);
+    public static BaseSlot from(@NotNull ItemStack itemStack) {
+        return new BaseSlot(itemStack);
     }
 
     @NotNull
     @Override
-    public ItemStack getItemStack(@NotNull PlayerData playerData) {
-        return this.builder.build(playerData);
+    public ItemStack getItemStack() {
+        return this.itemStack;
     }
 
     @Override

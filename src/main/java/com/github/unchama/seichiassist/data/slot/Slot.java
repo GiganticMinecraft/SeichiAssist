@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.data.slot;
 
-import com.github.unchama.seichiassist.data.PlayerData;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,11 +14,10 @@ public interface Slot {
     /**
      * この {@link Slot} にセットされている {@link ItemStack} を返します.<br>
      *
-     * @param playerData {@link Player} の {@link PlayerData} ({@code null} は許容されません.)
      * @return セットされている場合 {@link ItemStack}.
      */
     @Nonnull
-    ItemStack getItemStack(@Nonnull PlayerData playerData);
+    ItemStack getItemStack();
 
     /**
      * {@link InventoryClickEvent} を与えて {@link Slot} の動作を行わせます.

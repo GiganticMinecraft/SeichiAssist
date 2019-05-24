@@ -1,58 +1,56 @@
 package com.github.unchama.seichiassist.data.itemstack.builder.component;
 
-import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.function.Function;
 
 /**
- * プレイヤーデータを用いてItemStackをBuildするBuilderを表すインターフェース.
+ * {@link ItemStack} をBuildするBuilderを表すインターフェース.
  */
 public interface ItemStackBuilder {
     /**
-     * ItemStack(IconItemStackBuilder)の表示名を設定します.
+     * {@link ItemStack} の表示名を設定します.
      *
-     * @param title PlayerDataを受け取り,表示名を返すFunction
+     * @param title {@link ItemStack} の表示名の {@link Text}
      * @return このBuilder
      */
-    @Nonnull
-    ItemStackBuilder title(@Nonnull Function<PlayerData, Text> title);
+    @NotNull
+    ItemStackBuilder title(@NotNull Text title);
 
     /**
-     * ItemStack(IconItemStackBuilder)のloreを設定します.
+     * {@link ItemStack} のLoreを設定します.
      *
-     * @param lore PlayerDataを受け取り,loreを返すFunction
+     * @param lore {@link ItemStack} のLoreとして設定する {@link Text} の {@link List}
      *             {@link List} に {@code null} が含まれていた場合,その行は無視されます.
      * @return このBuilder
      */
-    @Nonnull
-    ItemStackBuilder lore(@Nonnull Function<PlayerData, List<Text>> lore);
+    @NotNull
+    ItemStackBuilder lore(@NotNull List<Text> lore);
 
     /**
-     * ItemStack(IconItemStackBuilder)にエンチャントを付与します.
+     * {@link ItemStack} にエンチャントを付与します.
      *
      * @return このBuilder
      */
-    @Nonnull
+    @NotNull
     ItemStackBuilder enchanted();
 
     /**
-     * ItemStackの個数を指定します.
+     * {@link ItemStack} の個数を指定します.
      *
-     * @param number ItemStackの個数
+     * @param number {@link ItemStack} の個数
      * @return このBuilder
      */
-    @Nonnull
+    @NotNull
     ItemStackBuilder number(int number);
 
     /**
-     * Builderによって指定された各引数を用いてインスタンスを生成します
+     * Builderによって指定された各引数を用いて {@link ItemStack} を生成します
      *
-     * @return 生成されたインスタンス. ({@code null} は許容されません)
+     * @return 生成された {@link ItemStack}
      */
-    @Nonnull
-    ItemStack build(@Nonnull PlayerData playerData);
+    @NotNull
+    ItemStack build();
 }

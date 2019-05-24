@@ -12,19 +12,22 @@ import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.function.Function;
+
 /**
  * @author karayuu
  */
 public final class PlayerDataButtons {
     private PlayerDataButtons() {}
 
-    public static Button playerInfo = ButtonBuilder
+    public static Function<PlayerData, Button> playerInfo = data -> ButtonBuilder
         .from(
             SkullItemStackBuilder
                 .of()
-                .playerSkull()
-                .title(data -> Text.of(data.name + "の統計データ", ChatColor.UNDERLINE, ChatColor.BOLD, ChatColor.YELLOW))
-                .lore(PlayerInformationDescriptions::playerInfoLore)
+                .owner(data.uuid)
+                .title(Text.of(data.name + "の統計データ", ChatColor.UNDERLINE, ChatColor.BOLD, ChatColor.YELLOW))
+                .lore(PlayerInformationDescriptions.playerInfoLore(data))
+                .build()
         )
         .appendHandler(new SlotActionHandler(
             Trigger.LEFT_CLICK,

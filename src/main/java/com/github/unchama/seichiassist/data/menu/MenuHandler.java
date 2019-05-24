@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link InventoryHolder} を管理するクラス.
+ * {@link InventoryKeeper} を管理するクラス.
  * Singleton で設計されています.
  *
  * @author karayuu
@@ -18,10 +18,10 @@ public final class MenuHandler implements Listener {
     private static MenuHandler singleton = new MenuHandler();
 
     /**
-     * 登録された {@link InventoryHolder} の {@link List}
+     * 登録された {@link InventoryKeeper} の {@link List}
      */
     @Nonnull
-    private List<InventoryHolder> inventoryHolders = new ArrayList<>();
+    private List<InventoryKeeper> inventoryKeepers = new ArrayList<>();
 
     private MenuHandler() {}
 
@@ -36,16 +36,16 @@ public final class MenuHandler implements Listener {
 
 
     /**
-     * {@link #inventoryHolders} に {@link InventoryHolder} を追加します.
+     * {@link #inventoryKeepers} に {@link InventoryKeeper} を追加します.
      *
-     * @param inventoryHolder 追加する {@link InventoryHolder} ({@code null} は許容されません.)
+     * @param inventoryKeeper 追加する {@link InventoryKeeper} ({@code null} は許容されません.)
      */
-    public void addInventoryHolder(@Nonnull InventoryHolder inventoryHolder) {
-        inventoryHolders.add(inventoryHolder);
+    public void addInventoryHolder(@Nonnull InventoryKeeper inventoryKeeper) {
+        inventoryKeepers.add(inventoryKeeper);
     }
 
     /**
-     * 各 {@link InventoryHolder#invokeAndReload(int, InventoryClickEvent)} を呼び出します.
+     * 各 {@link InventoryKeeper#invokeAndReload(int, InventoryClickEvent)} を呼び出します.
      * title にて判断し, {@link InventoryClickEvent} を与えます.
      *
      * @param event {@link InventoryClickEvent}
@@ -54,7 +54,7 @@ public final class MenuHandler implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         final String title = event.getInventory().getTitle();
 
-        inventoryHolders.stream()
+        inventoryKeepers.stream()
                         .filter(holder -> holder.getTitle().equals(title))
                         .forEach(holder -> holder.invokeAndReload(event.getSlot(), event));
     }

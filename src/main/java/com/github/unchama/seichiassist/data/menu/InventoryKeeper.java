@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.data.menu;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.data.button.PlayerDataButtons;
 import com.github.unchama.seichiassist.data.slot.Slot;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
@@ -15,24 +14,25 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Created by karayuu on 2019/05/23
  */
-public class InventoryHolder {
+public class InventoryKeeper {
     @NotNull
     private final Inventory inventory;
     @NotNull
-    private final Map<Integer, Slot> slotMap;
+    private final Map<@NotNull Integer, @NotNull Function<@NotNull PlayerData, @NotNull ? extends Slot>> slotMap;
 
-    private InventoryHolder(@NotNull Inventory inventory) {
+    private InventoryKeeper(@NotNull Inventory inventory) {
         this.inventory = inventory;
         this.slotMap = new HashMap<>();
         MenuHandler.getInstance().addInventoryHolder(this);
     }
 
-    public static InventoryHolder from(@NotNull Inventory inventory) {
-        return new InventoryHolder(inventory);
+    public static InventoryKeeper from(@NotNull Inventory inventory) {
+        return new InventoryKeeper(inventory);
     }
 
     @NotNull
@@ -40,16 +40,15 @@ public class InventoryHolder {
         return inventory.getTitle();
     }
 
-    public void setSlot(int position, Slot slot) {
-        slotMap.put(position, slot);
+    public void setSlot(int position, Function<PlayerData, ? extends Slot> slotFunction) {
+        slotMap.put(position, slotFunction);
     }
 
     public void openBy(@NotNull Player player) {
         final PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
-
         for (int i = 0; i < inventory.getSize(); i++) {
             if (slotMap.get(i) != null) {
-                setSlot(i, slotMap.get(i).getItemStack(playerData));
+                setSlot(i, slotMap.get(i).apply(playerData).getItemStack());
             }
         }
 
@@ -69,10 +68,10 @@ public class InventoryHolder {
 
         final Player player = (Player) event.getWhoClicked();
         final PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
-        final Slot slot = slotMap.get(position);
 
+        final Slot slot = slotMap.get(position).apply(playerData);
         slot.invoke(event);
-        inventory.setItem(position, slot.getItemStack(playerData));
+        inventory.setItem(position, slot.getItemStack());
     }
 
     @NotNull

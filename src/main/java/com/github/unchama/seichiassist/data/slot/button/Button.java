@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.data.slot.button;
 
-import com.github.unchama.seichiassist.data.itemstack.builder.component.ItemStackBuilder;
 import com.github.unchama.seichiassist.data.slot.base.BaseSlot;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandlers;
@@ -29,11 +28,10 @@ public class Button extends BaseSlot {
      * {@link Inventory} において,
      * {@link SlotActionHandlers#READ_ONLY} が付与されるためReadOnlyなButtonとして働きます.
      *
-     * @param builder  {@link Inventory} へセットする {@link ItemStack} を構成する {@link ItemStackBuilder}
-     *                 ({@code null} は許容されません.)
+     * @param itemStack  {@link Inventory} へセットする {@link ItemStack} ({@code null} は許容されません.)
      */
-    public Button(@NotNull ItemStackBuilder builder) {
-        super(builder);
+    public Button(@NotNull ItemStack itemStack) {
+        super(itemStack);
         addHandler(SlotActionHandlers.READ_ONLY);
     }
 

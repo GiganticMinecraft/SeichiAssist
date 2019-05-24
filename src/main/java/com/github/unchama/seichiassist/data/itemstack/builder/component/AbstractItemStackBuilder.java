@@ -1,13 +1,11 @@
 package com.github.unchama.seichiassist.data.itemstack.builder.component;
 
-import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.itemstack.component.BaseIconComponent;
 import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.Material;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * ItemStackBuilderのベースとなる抽象クラスです.
@@ -30,40 +28,15 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
 
     @Override
     @Nonnull
-    public T title(@Nonnull Function<PlayerData, Text> title) {
-        this.component.setTitle(title);
-        return (T) this;
-    }
-
-    /**
-     * ItemStack(IconItemStackBuilder)の表示名を設定します.
-     *
-     * @param title PlayerDataを受け取り,表示名を返すFunction
-     * @return このBuilder
-     */
-    @Nonnull
     public T title(@Nonnull Text title) {
-        this.component.setTitle(playerData -> title);
+        this.component.setTitle(title);
         return (T) this;
     }
 
     @Override
     @Nonnull
-    public T lore(@Nonnull Function<PlayerData, List<Text>> lore) {
-        this.component.setLore(lore);
-        return (T) this;
-    }
-
-    /**
-     * ItemStack(IconItemStackBuilder)のloreを設定します.
-     *
-     * @param lore loreの {@link List}
-     *             {@link List} に {@code null} が含まれていた場合,その行は無視されます.
-     * @return このBuilder
-     */
-    @Nonnull
     public T lore(@Nonnull List<Text> lore) {
-        this.component.setLore(playerData -> lore);
+        this.component.setLore(lore);
         return (T) this;
     }
 

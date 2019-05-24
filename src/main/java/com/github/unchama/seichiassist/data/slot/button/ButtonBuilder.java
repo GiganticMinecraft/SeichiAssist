@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.data.itemstack.builder.IconItemStackBuild
 import com.github.unchama.seichiassist.data.itemstack.builder.component.ItemStackBuilder;
 import com.github.unchama.seichiassist.data.slot.Slot;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -17,38 +18,24 @@ import java.util.List;
  */
 public class ButtonBuilder {
     @NotNull
-    private ItemStackBuilder builder = IconItemStackBuilder.EMPTY_BUILDER;
+    private final ItemStack itemStack;
 
     @NotNull
-    private List<@NotNull SlotActionHandler> handlers = new ArrayList<>();
+    private final List<@NotNull SlotActionHandler> handlers = new ArrayList<>();
 
-    private ButtonBuilder() {
-
-    }
-
-    private ButtonBuilder(@NotNull ItemStackBuilder builder) {
-        this.builder = builder;
+    private ButtonBuilder(@NotNull ItemStack itemStack) {
+        this.itemStack = itemStack;
     }
 
     /**
      * 与えられた {@link ItemStackBuilder} から {@link ButtonBuilder} を生成します.
      *
-     * @param builder {@link Slot} の生成に用いられる {@link ItemStackBuilder} ({@code null} は許容されません.)
+     * @param itemStack {@link Slot} の生成に用いられる {@link ItemStack} ({@code null} は許容されません.)
      * @return {@link ButtonBuilder}
      */
     @NotNull
-    public static ButtonBuilder from(@NotNull ItemStackBuilder builder) {
-        return new ButtonBuilder(builder);
-    }
-
-    /**
-     * {@link IconItemStackBuilder#EMPTY_BUILDER} がセットされた {@link ButtonBuilder} を生成します.
-     *
-     * @return {@link ButtonBuilder}
-     */
-    @NotNull
-    public static ButtonBuilder of() {
-        return new ButtonBuilder();
+    public static ButtonBuilder from(@NotNull ItemStack itemStack) {
+        return new ButtonBuilder(itemStack);
     }
 
     /**
@@ -80,7 +67,7 @@ public class ButtonBuilder {
      */
     @NotNull
     public Button build() {
-        final Button button = new Button(this.builder);
+        final Button button = new Button(this.itemStack);
         button.addHandlers(handlers);
         return button;
     }
