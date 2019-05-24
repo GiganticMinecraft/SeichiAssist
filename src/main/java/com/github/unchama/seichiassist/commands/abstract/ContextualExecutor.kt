@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
 
 /**
- * コマンド実行時に[TabExecutor]へ渡される情報をラップした[CommandExecutionContext]を用いて処理を行うオブジェクトへのinterface.
+ * コマンド実行時に[TabExecutor]へ渡される情報をラップした[RawCommandContext]を用いて処理を行うオブジェクトへのinterface.
  */
 interface ContextualExecutor {
 
@@ -17,12 +17,12 @@ interface ContextualExecutor {
      *
      * @return 処理が「成功」扱いなら[Ok], そうでなければ[Fail].
      */
-    fun executeWith(context: CommandExecutionContext): ActionStatus
+    fun executeWith(context: RawCommandContext): ActionStatus
 
     /**
      * [context] に基づいてTab補完の候補をListで返却する.
      */
-    fun tabCandidatesFor(context: CommandExecutionContext): List<String>? = null
+    fun tabCandidatesFor(context: RawCommandContext): List<String>? = null
 
 }
 
@@ -32,12 +32,12 @@ interface ContextualExecutor {
 fun ContextualExecutor.asTabExecutor(): TabExecutor {
     return object: TabExecutor {
         override fun onCommand(sender: CommandSender, command: Command, alias: String, args: Array<out String>): Boolean {
-            val context = CommandExecutionContext(sender, ExecutedCommand(command, alias), args.toList())
+            val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
             return executeWith(context) == Ok
         }
 
         override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): List<String>? {
-            val context = CommandExecutionContext(sender, ExecutedCommand(command, alias), args.toList())
+            val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
 
             return tabCandidatesFor(context)
         }
@@ -49,7 +49,7 @@ fun ContextualExecutor.asTabExecutor(): TabExecutor {
  */
 data class BranchedExecutor(val branches: Map<String, ContextualExecutor>, val default: ContextualExecutor? = null): ContextualExecutor {
 
-    override fun executeWith(context: CommandExecutionContext): ActionStatus {
+    override fun executeWith(context: RawCommandContext): ActionStatus {
         val firstArg = context.args.firstOrNull() ?: return Fail
         val branch = (branches[firstArg] ?: default) ?: return Fail
 
@@ -58,7 +58,7 @@ data class BranchedExecutor(val branches: Map<String, ContextualExecutor>, val d
         return branch.executeWith(argShiftedContext)
     }
 
-    override fun tabCandidatesFor(context: CommandExecutionContext): List<String>? {
+    override fun tabCandidatesFor(context: RawCommandContext): List<String>? {
         val args = context.args
 
         if (args.size <= 1) return branches.keys.sorted()
