@@ -67,13 +67,11 @@ dependencies {
     embed(kotlin("stdlib-jdk8"))
 
     // arrow依存
-    val arrowVersion = "0.8.2"
-    compile("io.arrow-kt:arrow-core:$arrowVersion")
+    val arrowVersion = "0.9.0"
+    compile("io.arrow-kt:arrow-core-data:$arrowVersion")
+    compile("io.arrow-kt:arrow-core-extensions:$arrowVersion")
     compile("io.arrow-kt:arrow-syntax:$arrowVersion")
     compile("io.arrow-kt:arrow-typeclasses:$arrowVersion")
-    compile("io.arrow-kt:arrow-data:$arrowVersion")
-    compile("io.arrow-kt:arrow-instances-core:$arrowVersion")
-    compile("io.arrow-kt:arrow-instances-data:$arrowVersion")
     kapt("io.arrow-kt:arrow-annotations-processor:$arrowVersion")
 }
 
