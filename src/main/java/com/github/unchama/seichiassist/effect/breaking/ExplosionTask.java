@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.breakeffect;
+package com.github.unchama.seichiassist.effect.breaking;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
-public class ExplosionTaskRunnable extends BukkitRunnable{
+public class ExplosionTask extends BukkitRunnable{
 	Player player;
 	PlayerData playerdata;
 	ItemStack tool;
@@ -30,8 +30,8 @@ public class ExplosionTaskRunnable extends BukkitRunnable{
 	Location explosionloc;
 
 
-	public ExplosionTaskRunnable(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist, Coordinate start,
-			Coordinate end, Location droploc) {
+	public ExplosionTask(Player player, PlayerData playerdata, ItemStack tool, List<Block> breaklist, Coordinate start,
+						 Coordinate end, Location droploc) {
 		this.player = player;
 		this.playerdata = playerdata;
 		this.tool = tool;

@@ -474,7 +474,7 @@ public class PlayerData {
 				p.sendMessage(ChatColor.AQUA+lvmessage);
 			}
 			i++;
-			if(activeskilldata.mana.isloaded()){
+			if(activeskilldata.mana.isLoaded()){
 				//マナ最大値の更新
 				activeskilldata.mana.LevelUp(p, i);
 			}
@@ -981,6 +981,6 @@ public class PlayerData {
 		}
 		this.added_mana += addMana;
 
-		mana.calcMaxMana(p, this.level);
+		mana.calcAndSetMax(p, this.level);
 	}
 }

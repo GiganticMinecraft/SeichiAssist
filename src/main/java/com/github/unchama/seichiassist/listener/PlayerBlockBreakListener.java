@@ -147,7 +147,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//これ以前の終了処理はマナは回復しません
 		//追加マナ獲得
-		playerdata.activeskilldata.mana.increaseMana(BreakUtil.calcManaDrop(playerdata),player,playerdata.level);
+		playerdata.activeskilldata.mana.increase(BreakUtil.calcManaDrop(playerdata),player,playerdata.level);
 		//これ以降の終了処理はマナが回復します
 
 		//アクティブスキルフラグがオフの時処理を終了
@@ -300,7 +300,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 			}
 			//実際に経験値を減らせるか判定
-			if(!mana.hasMana(useAllMana)){
+			if(!mana.has(useAllMana)){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
@@ -343,7 +343,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//経験値を減らす
-		mana.decreaseMana(useAllMana,player,playerdata.level);
+		mana.decrease(useAllMana,player,playerdata.level);
 
 		//耐久値を減らす
 		if(!tool.getItemMeta().spigot().isUnbreakable()){
@@ -476,7 +476,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//実際に経験値を減らせるか判定
-		if(!mana.hasMana(useMana)){
+		if(!mana.has(useMana)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
@@ -537,7 +537,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		//経験値を減らす
-		mana.decreaseMana(useMana,player,playerdata.level);
+		mana.decrease(useMana,player,playerdata.level);
 
 		//耐久値を減らす
 		if(!tool.getItemMeta().spigot().isUnbreakable()){

@@ -265,7 +265,7 @@ public class EntityListener implements Listener {
 		}
 
 		//実際に経験値を減らせるか判定
-		if(!mana.hasMana(useMana)){
+		if(!mana.has(useMana)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
@@ -288,7 +288,7 @@ public class EntityListener implements Listener {
 
 
 		//経験値を減らす
-		mana.decreaseMana(useMana,player,playerdata.level);
+		mana.decrease(useMana,player,playerdata.level);
 
 		//耐久値を減らす
 		if(!tool.getItemMeta().spigot().isUnbreakable()){

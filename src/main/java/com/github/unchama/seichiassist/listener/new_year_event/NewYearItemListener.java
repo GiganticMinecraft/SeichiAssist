@@ -82,7 +82,7 @@ public class NewYearItemListener implements Listener {
 		Mana mana = playerData.activeskilldata.mana;
 
 		double max = mana.calcMaxManaOnly(player, playerData.level);
-		mana.increaseMana(max * 0.1, player, playerData.level);
+		mana.increase(max * 0.1, player, playerData.level);
 		player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f);
 	}
 }

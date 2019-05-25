@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.breakeffect;
+package com.github.unchama.seichiassist.effect.breaking;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.ParticleMoveTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
-public class VladmiaTaskRunnable extends BukkitRunnable{
+public class VladmiaTask extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.instance;
 	//プレイヤー情報
 	Player player;
@@ -47,8 +47,8 @@ public class VladmiaTaskRunnable extends BukkitRunnable{
 	Material m;
 
 
-	public VladmiaTaskRunnable(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist, Coordinate start,
-			Coordinate end, Location droploc) {
+	public VladmiaTask(Player player, PlayerData playerdata, ItemStack tool, List<Block> breaklist, Coordinate start,
+					   Coordinate end, Location droploc) {
 		this.player = player;
 		this.playerdata = playerdata;
 		this.tool = tool;
