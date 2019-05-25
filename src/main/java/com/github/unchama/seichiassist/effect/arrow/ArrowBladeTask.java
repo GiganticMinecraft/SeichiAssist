@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.arroweffect;
+package com.github.unchama.seichiassist.effect.arrow;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -14,7 +14,7 @@ import org.bukkit.util.Vector;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 
-public class ArrowVladmiaTaskRunnable extends BukkitRunnable{
+public class ArrowBladeTask extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
@@ -24,7 +24,7 @@ public class ArrowVladmiaTaskRunnable extends BukkitRunnable{
 	long tick;
 	SmallFireball proj;
 
-	public ArrowVladmiaTaskRunnable(Player player) {
+	public ArrowBladeTask(Player player) {
 		this.tick = 0;
 		this.player = player;
 		//プレイヤーの位置を取得

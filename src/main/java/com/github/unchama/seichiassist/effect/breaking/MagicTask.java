@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.breakeffect;
+package com.github.unchama.seichiassist.effect.breaking;
 
 import java.util.List;
 import java.util.Random;
@@ -24,7 +24,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.AsyncEntityRemover;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
-public class MagicTaskRunnable extends BukkitRunnable {
+public class MagicTask extends BukkitRunnable {
 	SeichiAssist plugin = SeichiAssist.instance;
 	// プレイヤー情報
 	Player player;
@@ -54,8 +54,8 @@ public class MagicTaskRunnable extends BukkitRunnable {
 	// タスク分岐用int
 	int round;
 
-	public MagicTaskRunnable(Player player, PlayerData playerdata, ItemStack tool, List<Block> breaklist, Coordinate start,
-			Coordinate end, Location droploc) {
+	public MagicTask(Player player, PlayerData playerdata, ItemStack tool, List<Block> breaklist, Coordinate start,
+					 Coordinate end, Location droploc) {
 		this.player = player;
 		this.playerdata = playerdata;
 		this.tool = tool;
