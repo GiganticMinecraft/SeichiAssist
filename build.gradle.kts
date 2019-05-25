@@ -72,7 +72,13 @@ dependencies {
     compile("io.arrow-kt:arrow-core-extensions:$arrowVersion")
     compile("io.arrow-kt:arrow-syntax:$arrowVersion")
     compile("io.arrow-kt:arrow-typeclasses:$arrowVersion")
-    kapt("io.arrow-kt:arrow-annotations-processor:$arrowVersion")
+    compile("io.arrow-kt:arrow-extras-data:$arrowVersion")
+    compile("io.arrow-kt:arrow-extras-extensions:$arrowVersion")
+    kapt("io.arrow-kt:arrow-meta:$arrowVersion")
+
+    compile("io.arrow-kt:arrow-effects-data:$arrowVersion")
+    compile("io.arrow-kt:arrow-effects-extensions:$arrowVersion")
+    compile("io.arrow-kt:arrow-effects-io-extensions:$arrowVersion")
 }
 
 tasks.processResources {
