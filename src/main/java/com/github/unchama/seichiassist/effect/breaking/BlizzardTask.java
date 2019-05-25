@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.breakeffect;
+package com.github.unchama.seichiassist.effect.breaking;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
-public class BlizzardTaskRunnable extends BukkitRunnable{
+public class BlizzardTask extends BukkitRunnable{
 	Player player;
 	PlayerData playerdata;
 	ItemStack tool;
@@ -36,8 +36,8 @@ public class BlizzardTaskRunnable extends BukkitRunnable{
 	// タスク分岐用int
 	int round;
 
-	public BlizzardTaskRunnable(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist, Coordinate start,
-			Coordinate end, Location droploc) {
+	public BlizzardTask(Player player, PlayerData playerdata, ItemStack tool, List<Block> breaklist, Coordinate start,
+						Coordinate end, Location droploc) {
 		this.player = player;
 		this.playerdata = playerdata;
 		this.tool = tool;
