@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist;
 
-import com.github.unchama.seichiassist.arroweffect.ArrowBlizzardTaskRunnable;
-import com.github.unchama.seichiassist.arroweffect.ArrowExplosionTaskRunnable;
-import com.github.unchama.seichiassist.arroweffect.ArrowMeteoTaskRunnable;
-import com.github.unchama.seichiassist.breakeffect.BlizzardTaskRunnable;
-import com.github.unchama.seichiassist.breakeffect.ExplosionTaskRunnable;
-import com.github.unchama.seichiassist.breakeffect.MeteoTaskRunnable;
+import com.github.unchama.seichiassist.effect.arrow.ArrowBlizzardTask;
+import com.github.unchama.seichiassist.effect.arrow.ArrowExplosionTask;
+import com.github.unchama.seichiassist.effect.arrow.ArrowMeteoTask;
+import com.github.unchama.seichiassist.effect.breaking.BlizzardTask;
+import com.github.unchama.seichiassist.effect.breaking.ExplosionTask;
+import com.github.unchama.seichiassist.effect.breaking.MeteoTask;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import org.bukkit.ChatColor;
@@ -70,16 +70,16 @@ public enum ActiveSkillEffect {
 	public void runBreakEffect(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist,Coordinate start,Coordinate end,Location standard){
 		switch(this) {
 		case EXPLOSION:
-			new ExplosionTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 0);
+			new ExplosionTask(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 0);
 			break;
 		case BLIZZARD:
 			if(playerdata.activeskilldata.skillnum < 3){
-				new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
+				new BlizzardTask(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			}else{
 				if(SeichiAssist.DEBUG){
-					new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskTimer(plugin, 0, 100);
+					new BlizzardTask(player,playerdata,tool,breaklist,start,end,standard).runTaskTimer(plugin, 0, 100);
 				}else{
-					new BlizzardTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskTimer(plugin, 0, 10);
+					new BlizzardTask(player,playerdata,tool,breaklist,start,end,standard).runTaskTimer(plugin, 0, 10);
 				}
 
 			}
@@ -87,9 +87,9 @@ public enum ActiveSkillEffect {
 			break;
 		case METEO:
 			if(playerdata.activeskilldata.skillnum < 3){
-				new MeteoTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
+				new MeteoTask(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			}else{
-				new MeteoTaskRunnable(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
+				new MeteoTask(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);
 			}
 			break;
 		default :
@@ -101,13 +101,13 @@ public enum ActiveSkillEffect {
 	public void runArrowEffect(Player player){
 		switch(this){
 		case EXPLOSION:
-			new ArrowExplosionTaskRunnable(player).runTaskTimer(plugin,0,1);
+			new ArrowExplosionTask(player).runTaskTimer(plugin,0,1);
 			break;
 		case BLIZZARD:
-			new ArrowBlizzardTaskRunnable(player).runTaskTimer(plugin,0,1);
+			new ArrowBlizzardTask(player).runTaskTimer(plugin,0,1);
 			break;
 		case METEO:
-			new ArrowMeteoTaskRunnable(player).runTaskTimer(plugin,0,1);
+			new ArrowMeteoTask(player).runTaskTimer(plugin,0,1);
 			break;
 		default :
 			break;

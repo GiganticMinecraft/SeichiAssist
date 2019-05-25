@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.breakeffect;
+package com.github.unchama.seichiassist.effect.breaking;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 
-public class TiamatTaskRunnable extends BukkitRunnable{
+public class TiamatTask extends BukkitRunnable{
 	Player player;
 	PlayerData playerdata;
 	ItemStack tool;
@@ -28,8 +28,8 @@ public class TiamatTaskRunnable extends BukkitRunnable{
 	Location explosionloc;
 
 
-	public TiamatTaskRunnable(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist, Coordinate start,
-			Coordinate end, Location droploc) {
+	public TiamatTask(Player player, PlayerData playerdata, ItemStack tool, List<Block> breaklist, Coordinate start,
+					  Coordinate end, Location droploc) {
 		this.player = player;
 		this.playerdata = playerdata;
 		this.tool = tool;
