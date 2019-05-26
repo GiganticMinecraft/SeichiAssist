@@ -1,18 +1,15 @@
 package com.github.unchama.seichiassist.commands.abstract
 
-import arrow.core.Either
-import arrow.core.Left
-import arrow.core.None
-import arrow.core.Option
+import arrow.effects.IO
+import arrow.effects.extensions.io.applicative.just
+import arrow.effects.extensions.io.fx.fx
+import arrow.effects.extensions.io.unsafeRun.runBlocking
+import arrow.unsafe
 import com.github.unchama.util.ActionStatus.Fail
 import com.github.unchama.util.ActionStatus.Ok
-import com.github.unchama.util.merge
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
-
-typealias ResponseToSender = String
-typealias ExecutionResult = Either<Option<ResponseToSender>, Option<ResponseToSender>>
 
 /**
  * コマンド実行時に[TabExecutor]へ渡される情報をラップした[RawCommandContext]を用いて処理を行うオブジェクトへのinterface.
@@ -20,11 +17,11 @@ typealias ExecutionResult = Either<Option<ResponseToSender>, Option<ResponseToSe
 interface ContextualExecutor {
 
     /**
-     * [rawContext] に基づいてコマンドが行うべき処理を発火する.
+     * [rawContext] に基づいて, コマンドが行うべき処理を発火する
      *
      * @return 処理が「成功」扱いなら[Ok], そうでなければ[Fail].
      */
-    fun executeWith(rawContext: RawCommandContext): ExecutionResult
+    fun executionFor(rawContext: RawCommandContext): IO<Unit>
 
     /**
      * [context] に基づいてTab補完の候補をListで返却する.
@@ -40,12 +37,18 @@ fun ContextualExecutor.asTabExecutor(): TabExecutor {
     return object: TabExecutor {
         override fun onCommand(sender: CommandSender, command: Command, alias: String, args: Array<out String>): Boolean {
             val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
-            val result = executeWith(context)
+            val program =
+                    fx {
+                        continueOn(NonBlocking)
+                        !effect {
+                            executionFor(context)
+                        }
+                    }
 
-            result.merge().map { response -> sender.sendMessage(response) }
+            unsafe { runBlocking { program } }
 
-            // 成功もせずエラーメッセージも得られなかった場合、コマンドそのものを失敗扱いとする(Bukkitの仕様によりusageが表示される)
-            return result != Left(None)
+            // コマンドは非同期の操作を含むことを前提とするため, Bukkitへのコマンドの成否を必ず成功扱いにする
+            return true
         }
 
         override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): List<String>? {
@@ -59,16 +62,20 @@ fun ContextualExecutor.asTabExecutor(): TabExecutor {
 /**
  * コマンドの枝分かれでのルーティングを静的に行う[ContextualExecutor]
  */
-data class BranchedExecutor(val branches: Map<String, ContextualExecutor>, val default: ContextualExecutor? = null): ContextualExecutor {
+data class BranchedExecutor(val branches: Map<String, ContextualExecutor>,
+                            val whenArgInsufficient: ContextualExecutor? = PrintUsageExecutor,
+                            val whenBranchNotFound: ContextualExecutor? = PrintUsageExecutor): ContextualExecutor {
 
-    override fun executeWith(rawContext: RawCommandContext): ExecutionResult {
-        // TODO look for default branch if first argument is not found
-        val firstArg = rawContext.args.firstOrNull() ?: return Left(None)
-        val branch = (branches[firstArg] ?: default) ?: return Left(None)
+    override fun executionFor(rawContext: RawCommandContext): IO<Unit> {
+        val firstArg = rawContext.args.firstOrNull()
+                ?: return whenArgInsufficient?.executionFor(rawContext) ?: Unit.just()
+
+        val branch = branches[firstArg]
+                ?: return whenBranchNotFound?.executionFor(rawContext) ?: Unit.just()
 
         val argShiftedContext = rawContext.copy(args = rawContext.args.drop(1))
 
-        return branch.executeWith(argShiftedContext)
+        return branch.executionFor(argShiftedContext)
     }
 
     override fun tabCandidatesFor(context: RawCommandContext): List<String>? {
@@ -76,7 +83,7 @@ data class BranchedExecutor(val branches: Map<String, ContextualExecutor>, val d
 
         if (args.size <= 1) return branches.keys.sorted()
 
-        val childExecutor = (branches[args.first()] ?: default) ?: return null
+        val childExecutor = branches[args.first()] ?: whenBranchNotFound ?: return null
 
         return childExecutor.tabCandidatesFor(context.copy(args = args.drop(1)))
     }
