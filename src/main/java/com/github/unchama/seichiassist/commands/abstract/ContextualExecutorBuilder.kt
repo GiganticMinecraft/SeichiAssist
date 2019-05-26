@@ -14,10 +14,11 @@ import org.bukkit.command.CommandSender
 import arrow.core.extensions.either.monad.binding as bindEither
 import arrow.effects.extensions.io.monadThrow.binding as bindIO
 
-typealias Result<Error, Success> = Either<Error, Success>
-
 typealias CommandResponse = Option<ResponseToSender>
+
+typealias Result<Error, Success> = Either<Error, Success>
 typealias ResponseOrResult<T> = Result<CommandResponse, T>
+
 typealias CommandArgumentParser = (List<String>) -> IO<ResponseOrResult<PartiallyParsedArgs>>
 
 typealias ScopedContextualExecution<CS> = CommandExecutionScope.(ParsedArgCommandContext<CS>) -> IO<CommandResponse>
@@ -39,19 +40,14 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
         val argumentParser: CommandArgumentParser,
         val contextualExecution: CommandExecutionScope.(ParsedArgCommandContext<CS>) -> IO<CommandResponse>) {
 
-    class ArgumentParserConfiguration {
-        // TODO implement transformation-appending functions
-        fun buildParser(): CommandArgumentParser = TODO()
-    }
-
-    fun argumentsParsing(configure: ArgumentParserConfiguration.() -> Unit): ContextualExecutorBuilder<CS> =
-            this.copy(argumentParser = ArgumentParserConfiguration().apply { configure() }.buildParser())
+    fun argumentsParsing(configure: ArgumentParserConfigurationScope.() -> Unit): ContextualExecutorBuilder<CS> =
+            this.copy(argumentParser = ArgumentParserConfigurationScope().apply { configure() }.buildParser())
 
     fun execution(execution: ScopedContextualExecution<CS>): ContextualExecutorBuilder<CS> =
             this.copy(contextualExecution = execution)
 
     inline fun <reified CS1: CS> refineSender(errorMessageOnFail: CommandResponse): ContextualExecutorBuilder<CS1> {
-        val newSenderTypeValidation: (CommandSender) -> Result<CommandResponse, CS1> = { sender ->
+        val newSenderTypeValidation: (CommandSender) -> ResponseOrResult<CS1> = { sender ->
             bindEither {
                 val (refined1: CS) = senderTypeValidation(sender)
                 val (refined2: CS1) = (refined1 as? CS1).toOption().toEither { errorMessageOnFail }
