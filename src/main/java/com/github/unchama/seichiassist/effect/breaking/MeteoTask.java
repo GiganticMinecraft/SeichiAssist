@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.breakeffect;
+package com.github.unchama.seichiassist.effect.breaking;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +20,10 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.ArrowControlTaskRunnable;
+import com.github.unchama.seichiassist.task.ArrowControlTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
-public class MeteoTaskRunnable extends BukkitRunnable{
+public class MeteoTask extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	//プレイヤー情報
@@ -55,8 +55,8 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 	//隕石
 	LargeFireball proj;
 
-	public MeteoTaskRunnable(Player player,PlayerData playerdata,ItemStack tool,List<Block> breaklist, Coordinate start,
-			Coordinate end, Location droploc) {
+	public MeteoTask(Player player, PlayerData playerdata, ItemStack tool, List<Block> breaklist, Coordinate start,
+					 Coordinate end, Location droploc) {
 		this.player = player;
 		this.playerdata = playerdata;
 		this.tool = tool;
@@ -100,7 +100,7 @@ public class MeteoTaskRunnable extends BukkitRunnable{
 		proj.setShooter(player);
 		proj.setMetadata("Effect", new FixedMetadataValue(plugin, true));
 		proj.setVelocity(vec);
-		new ArrowControlTaskRunnable(proj,centerbreakloc).runTaskTimer(plugin, 0, 1);
+		new ArrowControlTask(proj,centerbreakloc).runTaskTimer(plugin, 0, 1);
 	}
 
 	@Override

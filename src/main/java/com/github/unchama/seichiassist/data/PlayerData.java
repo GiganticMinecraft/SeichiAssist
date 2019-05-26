@@ -7,8 +7,8 @@ import com.github.unchama.seichiassist.data.subhome.SubHome;
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent;
 import com.github.unchama.seichiassist.minestack.MineStackHistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.task.MebiusTaskRunnable;
-import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
+import com.github.unchama.seichiassist.task.MebiusTask;
+import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
@@ -148,7 +148,7 @@ public class PlayerData {
     public ActiveSkillData activeskilldata;
 
     //MebiusTask
-    public MebiusTaskRunnable mebius;
+    public MebiusTask mebius;
 
     //ガチャボタン連打防止用
     public boolean gachacooldownflag;
@@ -259,7 +259,7 @@ public class PlayerData {
         this.lastminespeedlv = 0;
         this.effectdatalist = new ArrayList<>();
         this.level = 1;
-        this.mebius = new MebiusTaskRunnable(this);
+        this.mebius = new MebiusTask(this);
         this.numofsorryforbug = 0;
         this.inventory = SeichiAssist.instance.getServer().createInventory(null, 9 * 1, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
         this.rgnum = 0;
@@ -493,9 +493,9 @@ public class PlayerData {
                 p.sendMessage(ChatColor.AQUA + lvmessage);
             }
             i++;
-            if (activeskilldata.mana.isloaded()) {
+            if (activeskilldata.mana.isLoaded()) {
                 //マナ最大値の更新
-                activeskilldata.mana.LevelUp(p, i);
+                activeskilldata.mana.onLevelUp(p, i);
             }
             //レベル上限に達したら終了
             if (i >= SeichiAssist.levellist.size()) {
@@ -634,7 +634,7 @@ public class PlayerData {
     }
 
     //現在の採掘量順位を表示する
-    public int playerRankingPosition() {
+    public int calcPlayerRank(Player p) {
         //ランク用関数
         int i = 0;
         long t = totalbreaknum;
@@ -989,7 +989,7 @@ public class PlayerData {
             this.usingVotingFairy = false;
             p.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...");
         } else if (this.usingVotingFairy) {
-            VotingFairyTaskRunnable.speak(p, "おかえり！" + p.getName(), true);
+            VotingFairyTask.speak(p, "おかえり！" + p.getName(), true);
         }
     }
 
@@ -1006,7 +1006,7 @@ public class PlayerData {
         }
         this.added_mana += addMana;
 
-        mana.calcMaxMana(p, this.level);
+        mana.calcAndSetMax(p, this.level);
     }
 
     /**
@@ -1018,7 +1018,7 @@ public class PlayerData {
             this.player.playSound(this.player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
             this.player.sendMessage(ChatColor.GREEN + "整地量バー表示");
         } else {
-            this.player.playSound(this.player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+            this.player.playSound(this.player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.5);
             this.player.sendMessage(ChatColor.RED + "整地量バー非表示");
         }
     }

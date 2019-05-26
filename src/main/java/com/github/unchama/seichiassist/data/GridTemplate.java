@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.seichiassist.util.Util.*;
+import com.github.unchama.seichiassist.util.Util.DirectionType;
 
 import java.util.Map;
 

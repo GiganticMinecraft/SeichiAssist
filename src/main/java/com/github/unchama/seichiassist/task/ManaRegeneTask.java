@@ -13,9 +13,9 @@ import com.github.unchama.seichiassist.data.PlayerData;
  * @author たぶんtar0ss
  *
  */
-public class ManaRegeneTaskRunnable extends BukkitRunnable {
+public class ManaRegeneTask extends BukkitRunnable {
 	private Player p;
-	public ManaRegeneTaskRunnable(Player player) {
+	public ManaRegeneTask(Player player) {
 		p = player;
 	}
 
@@ -27,6 +27,6 @@ public class ManaRegeneTaskRunnable extends BukkitRunnable {
 		// 最大マナを取得する
 		double max = mana.calcMaxManaOnly(p, pd.level);
 		// マナを1%回復する
-		mana.increaseMana(max * 0.01, p, lv);
+		mana.increase(max * 0.01, p, lv);
 	}
 }

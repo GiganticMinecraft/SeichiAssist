@@ -1,32 +1,5 @@
 package com.github.unchama.seichiassist.listener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.projectiles.ProjectileSource;
-
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
@@ -35,9 +8,27 @@ import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
+import com.github.unchama.seichiassist.task.GiganticBerserkTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.*;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.projectiles.ProjectileSource;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class EntityListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.instance;
@@ -67,7 +58,7 @@ public class EntityListener implements Listener {
 
 		//もしサバイバルでなければ処理を終了
 		//もしフライ中なら終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
+		if(player.getGameMode() != GameMode.SURVIVAL || player.isFlying()){
 			return;
 		}
 
@@ -207,10 +198,10 @@ public class EntityListener implements Listener {
 					breakblock = block.getRelative(x, y, z);
 
 					if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && playerdata.multipleidbreakflag) { //追加テスト(複数種類一括破壊スキル)
-						if(!breakblock.getType().equals(Material.AIR) && !breakblock.getType().equals(Material.BEDROCK)) {
-							if(breakblock.getType().equals(Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(breakblock)){
+						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
+							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 								if(BreakUtil.canBreak(player, breakblock)){
-									if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+									if(breakblock.getType() == Material.STATIONARY_LAVA){
 										lavalist.add(breakblock);
 									}else{
 										breaklist.add(breakblock);
@@ -222,15 +213,15 @@ public class EntityListener implements Listener {
 					} else { //条件を満たしていない
 						//player.sendMessage("x:" + x + "y:" + y + "z:" + z + "Type:"+ breakblock.getType().name());
 						//もし壊されるブロックがもともとのブロックと同じ種類だった場合
-						if(breakblock.getType().equals(material)
-								|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
-								|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
-								|| (block.getType().equals(Material.GLOWING_REDSTONE_ORE)&&breakblock.getType().equals(Material.REDSTONE_ORE))
-								|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
-								|| breakblock.getType().equals(Material.STATIONARY_LAVA)
+						if(breakblock.getType() == material
+								|| (block.getType() == Material.DIRT && breakblock.getType() == Material.GRASS)
+								|| (block.getType() == Material.GRASS && breakblock.getType() == Material.DIRT)
+								|| (block.getType() == Material.GLOWING_REDSTONE_ORE && breakblock.getType() == Material.REDSTONE_ORE)
+								|| (block.getType() == Material.REDSTONE_ORE && breakblock.getType() == Material.GLOWING_REDSTONE_ORE)
+								|| breakblock.getType() == Material.STATIONARY_LAVA
 								){
 							if(BreakUtil.canBreak(player, breakblock)){
-								if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+								if(breakblock.getType() == Material.STATIONARY_LAVA){
 									lavalist.add(breakblock);
 								}else{
 									breaklist.add(breakblock);
@@ -274,7 +265,7 @@ public class EntityListener implements Listener {
 		}
 
 		//実際に経験値を減らせるか判定
-		if(!mana.hasMana(useMana)){
+		if(!mana.has(useMana)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
@@ -297,7 +288,7 @@ public class EntityListener implements Listener {
 
 
 		//経験値を減らす
-		mana.decreaseMana(useMana,player,playerdata.level);
+		mana.decrease(useMana,player,playerdata.level);
 
 		//耐久値を減らす
 		if(!tool.getItemMeta().spigot().isUnbreakable()){
@@ -423,7 +414,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 
-		GiganticBerserkTaskRunnable GBTR = new GiganticBerserkTaskRunnable();
+		GiganticBerserkTask GBTR = new GiganticBerserkTask();
 
 		GBTR.PlayerKillEnemy(player);
 

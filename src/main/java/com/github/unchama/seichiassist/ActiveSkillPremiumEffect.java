@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist;
 
-import com.github.unchama.seichiassist.arroweffect.ArrowMagicTaskRunnable;
-import com.github.unchama.seichiassist.breakeffect.MagicTaskRunnable;
+import com.github.unchama.seichiassist.effect.arrow.ArrowMagicTask;
+import com.github.unchama.seichiassist.effect.breaking.MagicTask;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
 import org.bukkit.ChatColor;
@@ -77,9 +77,9 @@ public enum ActiveSkillPremiumEffect {
         switch (this.toString()) {
             case "MAGIC":
                 if (SeichiAssist.DEBUG) {
-                    new MagicTaskRunnable(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 100);
+                    new MagicTask(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 100);
                 } else {
-                    new MagicTaskRunnable(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 10);
+                    new MagicTask(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 10);
                 }
                 break;
             default:
@@ -91,7 +91,7 @@ public enum ActiveSkillPremiumEffect {
     public void runArrowEffect(Player player) {
         switch (this.toString()) {
             case "MAGIC":
-                new ArrowMagicTaskRunnable(player).runTaskTimer(plugin, 0, 1);
+                new ArrowMagicTask(player).runTaskTimer(plugin, 0, 1);
                 break;
             default:
                 break;

@@ -1,6 +1,6 @@
-package com.github.unchama.seichiassist.arroweffect;
+package com.github.unchama.seichiassist.effect.arrow;
 
-import com.github.unchama.seichiassist.breakeffect.BlizzardTaskRunnable;
+import com.github.unchama.seichiassist.effect.breaking.BlizzardTask;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -13,13 +13,13 @@ import com.github.unchama.seichiassist.SeichiAssist;
 
 /**
  * 遠距離スキルのブリザードエフェクトを表現するエンティティを管理するのクラスです.
- * @see BlizzardTaskRunnable 
+ * @see BlizzardTask
  */
-public class ArrowBlizzardTaskRunnable extends BukkitRunnable {
+public class ArrowBlizzardTask extends BukkitRunnable {
     private long tick;
     private Snowball entity;
 
-    public ArrowBlizzardTaskRunnable(Player player) {
+    public ArrowBlizzardTask(Player player) {
         this.tick = 0;
         //プレイヤーの位置を取得
         Location ploc = player.getLocation();

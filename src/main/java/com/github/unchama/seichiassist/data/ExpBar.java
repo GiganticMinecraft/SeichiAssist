@@ -57,7 +57,7 @@ public class ExpBar {
 			}
 			// 描画処理
 			expbar.addPlayer(p);
-			pd.activeskilldata.mana.displayMana(p, pd.level);
+			pd.activeskilldata.mana.display(p, pd.level);
 		}
 	}
 

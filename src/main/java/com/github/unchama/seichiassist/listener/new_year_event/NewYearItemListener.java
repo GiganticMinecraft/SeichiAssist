@@ -1,18 +1,28 @@
 package com.github.unchama.seichiassist.listener.new_year_event;
 
-import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.data.*;
-import org.bukkit.*;
-import org.bukkit.enchantments.*;
-import org.bukkit.entity.*;
-import org.bukkit.event.*;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.*;
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.Mana;
+import com.github.unchama.seichiassist.data.PlayerData;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-/**
+/*
  * Created by karayuu on 2017/12/10
  * Developer of Gigantic☆Seichi Server
  * Support at dev-basic or dev-extreme channel of Discord
@@ -72,7 +82,7 @@ public class NewYearItemListener implements Listener {
 		Mana mana = playerData.activeskilldata.mana;
 
 		double max = mana.calcMaxManaOnly(player, playerData.level);
-		mana.increaseMana(max * 0.1, player, playerData.level);
+		mana.increase(max * 0.1, player, playerData.level);
 		player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f);
 	}
 }

@@ -4,6 +4,7 @@ package com.github.unchama.seichiassist.task;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.achievement.SeichiAchievement;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -25,7 +26,7 @@ import com.github.unchama.seichiassist.util.Util;
  * @author unchama
  *
  */
-public class MinuteTaskRunnable extends BukkitRunnable{
+public class EveryMinuteTask extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.instance;
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	private Config config = SeichiAssist.config;
@@ -33,7 +34,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 	public static int time = 0;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
-	public MinuteTaskRunnable() {
+	public EveryMinuteTask() {
 
 	}
 
@@ -208,13 +209,11 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			/*
 			 * 実績解除判定
 			 */
-			//実績解除処理部分の読みこみ
-			TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
 			//No1000系統の解禁チェック
 			int checkNo = 1001 ;
 			for(;checkNo < 1013 ;){
 				if(!playerdata.TitleFlags.get(checkNo)){
-					TUTR.TryTitle(player,checkNo);
+					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
 			}
@@ -222,7 +221,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			checkNo = 3001 ;
 			for(;checkNo < 3020 ;){
 				if(!playerdata.TitleFlags.get(checkNo)){
-					TUTR.TryTitle(player,checkNo);
+					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
 			}
@@ -230,7 +229,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			checkNo = 4001 ;
 			for(;checkNo < 4024 ;){
 				if(!playerdata.TitleFlags.get(checkNo)){
-					TUTR.TryTitle(player,checkNo);
+					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
 			}
@@ -238,7 +237,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			checkNo = 5001 ;
 			for(;checkNo < 5009 ;){
 				if(!playerdata.TitleFlags.get(checkNo)){
-					TUTR.TryTitle(player,checkNo);
+					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
 			}
@@ -246,7 +245,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			checkNo = 5101 ;
 			for(;checkNo < 5121 ;){
 				if(!playerdata.TitleFlags.get(checkNo)){
-					TUTR.TryTitle(player,checkNo);
+					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
 			}
@@ -254,7 +253,7 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			checkNo = 6001 ;
 			for(;checkNo < 6009 ;){
 				if(!playerdata.TitleFlags.get(checkNo)){
-					TUTR.TryTitle(player,checkNo);
+					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
 			}
@@ -262,14 +261,14 @@ public class MinuteTaskRunnable extends BukkitRunnable{
 			checkNo = 8001 ;
 			for(;checkNo < 8003 ;){
 				if(!playerdata.TitleFlags.get(checkNo)){
-					TUTR.TryTitle(player,checkNo);
+					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
 			}
 
 			//投票妖精関連
 			if (playerdata.usingVotingFairy) {
-				VotingFairyTaskRunnable.run(player);
+				VotingFairyTask.run(player);
 			}
 
 			//GiganticBerserk

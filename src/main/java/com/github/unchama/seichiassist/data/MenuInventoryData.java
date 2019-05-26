@@ -7,14 +7,14 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.task.GiganticBerserkTaskRunnable;
-import com.github.unchama.seichiassist.task.VotingFairyTaskRunnable;
 import com.github.unchama.seichiassist.util.ExperienceManager;
 import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.external.WorldGuard;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
+import com.github.unchama.seichiassist.task.GiganticBerserkTask;
+import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -30,12 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class MenuInventoryData {
 	private static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
@@ -72,7 +67,7 @@ public class MenuInventoryData {
 
 
 
-		int prank = playerdata.playerRankingPosition();
+		int prank = playerdata.calcPlayerRank(player);
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
@@ -1330,7 +1325,7 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<>();
 
 		int n = (playerdata.GBstage * 10) + playerdata.GBlevel;
-		GiganticBerserkTaskRunnable GBTR = new GiganticBerserkTaskRunnable();
+		GiganticBerserkTask GBTR = new GiganticBerserkTask();
 
 		if(playerdata.level < 10){
 			lore.add(ChatColor.WHITE + "このパッシブスキルは");
@@ -1862,7 +1857,7 @@ public class MenuInventoryData {
 
 				for(int i = 0; i < premiumeffect.length;i++){
 					//プレイヤーがそのスキルを取得している場合の処理
-					if (playerdata.activeskilldata.obtainedSkillEffects.contains(premiumeffect[i])) {
+					if (playerdata.activeskilldata.obtainedSkillPremiumEffects.contains(premiumeffect[i])) {
 						itemstack = new ItemStack(premiumeffect[i].getMaterial(),1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(premiumeffect[i].getMaterial());
 						itemmeta.setDisplayName(ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(premiumeffect[i].getName()));
@@ -7159,7 +7154,7 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATCH);
 		itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 時間設定");
 		lore = Arrays.asList(
-				ChatColor.RESET + "" +  ChatColor.GREEN + "" +  ChatColor.BOLD + "" + VotingFairyTaskRunnable.dispToggleVFTime(playerdata.toggleVotingFairy),
+				ChatColor.RESET + "" +  ChatColor.GREEN + "" +  ChatColor.BOLD + "" + VotingFairyTask.dispToggleVFTime(playerdata.toggleVotingFairy),
 				"",
 				ChatColor.RESET + "" +  ChatColor.GRAY + "コスト",
 				ChatColor.RESET + "" +  ChatColor.RED + "" +  ChatColor.BOLD + "" + (playerdata.toggleVotingFairy * 2) + "投票pt",
@@ -7187,7 +7182,7 @@ public class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 召喚" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "" + (playerdata.toggleVotingFairy * 2) + "投票ptを消費して"
 				,ChatColor.RESET + "" +  ChatColor.GRAY + "マナ妖精を呼びます"
-				,ChatColor.RESET + "" +  ChatColor.GRAY + "時間 : " + VotingFairyTaskRunnable.dispToggleVFTime(playerdata.toggleVotingFairy)
+				,ChatColor.RESET + "" +  ChatColor.GRAY + "時間 : " + VotingFairyTask.dispToggleVFTime(playerdata.toggleVotingFairy)
 				,ChatColor.RESET + "" +  ChatColor.DARK_RED + "Lv.10以上で解放");
 		itemmeta.setLore(lore);
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);

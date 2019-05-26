@@ -1,54 +1,21 @@
 package com.github.unchama.seichiassist;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
-import com.github.unchama.seichiassist.commands.AchieveCommand;
-import com.github.unchama.seichiassist.commands.EventCommand;
-import com.github.unchama.seichiassist.commands.GiganticFeverCommand;
-import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
-import com.github.unchama.seichiassist.commands.MineHeadCommand;
-import com.github.unchama.seichiassist.commands.RegionOwnerTransferCommand;
-import com.github.unchama.seichiassist.commands.contributeCommand;
-import com.github.unchama.seichiassist.commands.effectCommand;
-import com.github.unchama.seichiassist.commands.gachaCommand;
-import com.github.unchama.seichiassist.commands.lastquitCommand;
-import com.github.unchama.seichiassist.commands.levelCommand;
-import com.github.unchama.seichiassist.commands.mebiusCommand;
-import com.github.unchama.seichiassist.commands.rmpCommand;
-import com.github.unchama.seichiassist.commands.seichiCommand;
-import com.github.unchama.seichiassist.commands.shareinvCommand;
-import com.github.unchama.seichiassist.commands.stickCommand;
-import com.github.unchama.seichiassist.commands.subHomeCommand;
+import com.github.unchama.seichiassist.commands.*;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
 import com.github.unchama.seichiassist.data.menu.MenuHandler;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.listener.EntityListener;
-import com.github.unchama.seichiassist.listener.GachaItemListener;
-import com.github.unchama.seichiassist.listener.MebiusListener;
-import com.github.unchama.seichiassist.listener.PlayerBlockBreakListener;
-import com.github.unchama.seichiassist.listener.PlayerChatEventListener;
-import com.github.unchama.seichiassist.listener.PlayerClickListener;
-import com.github.unchama.seichiassist.listener.PlayerDeathEventListener;
-import com.github.unchama.seichiassist.listener.PlayerInventoryListener;
-import com.github.unchama.seichiassist.listener.PlayerJoinListener;
-import com.github.unchama.seichiassist.listener.PlayerPickupItemListener;
-import com.github.unchama.seichiassist.listener.PlayerQuitListener;
-import com.github.unchama.seichiassist.listener.RegionInventoryListener;
-import com.github.unchama.seichiassist.listener.WorldRegenListener;
+import com.github.unchama.seichiassist.listener.*;
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.minestack.objects.MineStackBuildObj;
-import com.github.unchama.seichiassist.minestack.objects.MineStackDropObj;
-import com.github.unchama.seichiassist.minestack.objects.MineStackFarmObj;
-import com.github.unchama.seichiassist.minestack.objects.MineStackGachaObj;
-import com.github.unchama.seichiassist.minestack.objects.MineStackMineObj;
-import com.github.unchama.seichiassist.minestack.objects.MineStackRsObj;
-import com.github.unchama.seichiassist.task.HalfHourTaskRunnable;
-import com.github.unchama.seichiassist.task.MinuteTaskRunnable;
-import com.github.unchama.seichiassist.task.PlayerDataBackupTaskRunnable;
-import com.github.unchama.seichiassist.task.PlayerDataSaveTaskRunnable;
+import com.github.unchama.seichiassist.minestack.objects.*;
+import com.github.unchama.seichiassist.task.EveryHalfHourTask;
+import com.github.unchama.seichiassist.task.EveryMinuteTask;
+import com.github.unchama.seichiassist.task.PlayerDataBackupTask;
+import com.github.unchama.seichiassist.task.PlayerDataSaveTask;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.Bukkit;
@@ -63,12 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 
@@ -1032,7 +994,7 @@ public class SeichiAssist extends JavaPlugin{
 			//quit時とondisable時、プレイヤーデータを最新の状態に更新
 			playerdata.updateonQuit(p);
 
-			new PlayerDataSaveTaskRunnable(playerdata,true,true).run();
+			new PlayerDataSaveTask(playerdata,true,true).run();
 		}
 
 		if(databaseGateway.disconnect() == Fail){
@@ -1045,22 +1007,22 @@ public class SeichiAssist extends JavaPlugin{
 	public void startTaskRunnable(){
 		//一定時間おきに処理を実行するタスク
 		if(DEBUG){
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,440,400));
+			tasklist.add(new EveryHalfHourTask().runTaskTimer(this,440,400));
 		}else{
-			tasklist.add(new HalfHourTaskRunnable().runTaskTimer(this,36400,36000));
+			tasklist.add(new EveryHalfHourTask().runTaskTimer(this,36400,36000));
 		}
 
 		if(DEBUG){
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,200));
+			tasklist.add(new EveryMinuteTask().runTaskTimer(this,0,200));
 		}else{
-			tasklist.add(new MinuteTaskRunnable().runTaskTimer(this,0,1200));
+			tasklist.add(new EveryMinuteTask().runTaskTimer(this,0,1200));
 		}
 
 		//非同期処理にしたいけど別ステートメントでsql文処理させるようにしてからじゃないとだめぽ
 		if(DEBUG){
-			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,480,400));
+			tasklist.add(new PlayerDataBackupTask().runTaskTimer(this,480,400));
 		}else{
-			tasklist.add(new PlayerDataBackupTaskRunnable().runTaskTimer(this,12800,12000));
+			tasklist.add(new PlayerDataBackupTask().runTaskTimer(this,12800,12000));
 		}
 	}
 
@@ -1074,7 +1036,7 @@ public class SeichiAssist extends JavaPlugin{
 		List<MineStackObj> minestacklist = new ArrayList<>();
 		for(int i=0; i<SeichiAssist.msgachadatalist.size(); i++){
 			MineStackGachaData g = SeichiAssist.msgachadatalist.get(i);
-			if(!g.itemstack.getType().equals(Material.EXP_BOTTLE)){ //経験値瓶だけはすでにリストにあるので除外
+			if(g.itemstack.getType() != Material.EXP_BOTTLE){ //経験値瓶だけはすでにリストにあるので除外
 				minestacklist.add(new MineStackObj(g.obj_name,g.level,g.itemstack,true,i,5));
 			}
 		}

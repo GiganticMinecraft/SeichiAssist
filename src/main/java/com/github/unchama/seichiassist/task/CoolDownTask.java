@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 
-public class CoolDownTaskRunnable  extends BukkitRunnable{
+public class CoolDownTask extends BukkitRunnable{
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	private Player player;
 	UUID uuid;
@@ -25,7 +25,7 @@ public class CoolDownTaskRunnable  extends BukkitRunnable{
 	public static final String SHAREINV = "SHAREINV";
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
-	public CoolDownTaskRunnable(Player player,boolean voteflag,boolean soundflag,boolean gachaflag) {
+	public CoolDownTask(Player player, boolean voteflag, boolean soundflag, boolean gachaflag) {
 		this.player = player;
 		this.voteflag = voteflag;
 		this.soundflag = soundflag;
@@ -44,7 +44,7 @@ public class CoolDownTaskRunnable  extends BukkitRunnable{
 	}
 
 	// 拡張版
-	public CoolDownTaskRunnable(Player player, String tag) {
+	public CoolDownTask(Player player, String tag) {
 		this.player = player;
 		//UUIDを取得
 		uuid = player.getUniqueId();

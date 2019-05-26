@@ -13,12 +13,12 @@ import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
-public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
+public class PlayerDataBackupTask extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.instance;
 	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 
-	public PlayerDataBackupTaskRunnable(){
+	public PlayerDataBackupTask(){
 
 	}
 
@@ -38,7 +38,7 @@ public class PlayerDataBackupTaskRunnable extends BukkitRunnable{
 			//念のためエラー分岐
 			if(playerdata == null){
 				Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
-				Bukkit.getLogger().warning("PlayerDataBackupTaskRunnable");
+				Bukkit.getLogger().warning("PlayerDataBackupTask");
 				continue;
 			}
 			databaseGateway.playerDataManipulator.savePlayerData(playerdata);

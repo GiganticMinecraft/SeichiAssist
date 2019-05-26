@@ -107,15 +107,15 @@ public final class BreakUtil {
 			itemstack = new ItemStack(Material.DIRT);
 		}
 
-		if(material.equals(Material.MOB_SPAWNER)) {
+		if(material == Material.MOB_SPAWNER) {
 			itemstack = null;
 		}
 
-		if(material.equals(Material.GLOWING_REDSTONE_ORE)) {
+		if(material == Material.GLOWING_REDSTONE_ORE) {
 			material = Material.REDSTONE_ORE;
 		}
 
-		if(material.equals(Material.AIR)) {
+		if(material == Material.AIR) {
 			return;
 		}
 
@@ -146,7 +146,7 @@ public final class BreakUtil {
 		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 		Config config = SeichiAssist.config;
 		//もしサバイバルでなければ処理を終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)){
+		if(player.getGameMode() != GameMode.SURVIVAL){
 			return false;
 		}
 		if(SeichiAssist.DEBUG){
@@ -187,7 +187,7 @@ public final class BreakUtil {
 		int i;
 		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
 			final MineStackObj mineStackObj = SeichiAssist.minestacklist.get(i);
-			if(material.equals(mineStackObj.getMaterial()) &&
+			if(material == mineStackObj.getMaterial() &&
 				itemstack.getDurability() == mineStackObj.getDurability()){
 				//この時点でIDとサブIDが一致している
 				if(!mineStackObj.getNameloreflag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
@@ -500,7 +500,7 @@ public final class BreakUtil {
 	public static boolean BlockEqualsMaterialList(Block b){
 		Set<Material> m = SeichiAssist.materiallist;
 		for (Material material : m) {
-			if (b.getType().equals(material)) {
+			if (b.getType() == material) {
 				return true;
 			}
 		}
@@ -622,7 +622,7 @@ public final class BreakUtil {
 				// カウンタをクリア
 				openCount = 0;
 				// 重力値を加算(水をは2倍にする)
-				if (target.getType().equals(Material.WATER)) {
+				if (target.getType() == Material.WATER) {
 					gravity += 2;
 				} else {
 					gravity++;

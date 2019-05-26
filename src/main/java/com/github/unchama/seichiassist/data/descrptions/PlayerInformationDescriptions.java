@@ -103,7 +103,7 @@ public final class PlayerInformationDescriptions {
      */
     @Nonnull
     private static Text rankingDescription(@Nonnull PlayerData playerData) {
-        return Text.of("ランキング：" + playerData.playerRankingPosition() + "位", ChatColor.GOLD)
+        return Text.of("ランキング：" + playerData.calcPlayerRank(playerData.player) + "位", ChatColor.GOLD)
                    .also(Text.of("(" + SeichiAssist.ranklist.size() + "人中)", ChatColor.GRAY));
     }
 
@@ -115,8 +115,9 @@ public final class PlayerInformationDescriptions {
      */
     @Nullable
     private static Text rankingDiffDescription(@NotNull PlayerData playerData) {
-        if (playerData.playerRankingPosition() > 1) {
-            final int playerRanking = playerData.playerRankingPosition();
+        final Player player = playerData.player;
+        if (playerData.calcPlayerRank(player) > 1) {
+            final int playerRanking = playerData.calcPlayerRank(player);
             final RankData rankData = SeichiAssist.ranklist.get(playerRanking - 2);
             return Text.of((playerRanking - 1) + "位(" + rankData.name + ")との差：" + (rankData.totalbreaknum - playerData.totalbreaknum), ChatColor.AQUA);
             //TODO: この計算はここにあるべきではない.

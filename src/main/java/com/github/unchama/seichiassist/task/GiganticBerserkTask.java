@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
-public class GiganticBerserkTaskRunnable {
+public class GiganticBerserkTask {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
 	PlayerData playerdata;
@@ -42,7 +42,7 @@ public class GiganticBerserkTaskRunnable {
 
 			double i = getRecoveryValue(playerdata);
 
-			mana.increaseMana(i,p,playerdata.level);
+			mana.increase(i,p,playerdata.level);
 			player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.WHITE + "の効果でマナが" + i +"回復しました");
 			player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1, (float)0.5) ;
 		}

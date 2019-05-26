@@ -1,8 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Banner;
@@ -11,7 +9,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.github.unchama.seichiassist.util.Util;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MineStackGachaData {
 	public String obj_name;
@@ -70,7 +69,7 @@ public class MineStackGachaData {
 				m.getItemMeta().getDisplayName().contains(this.itemstack.getItemMeta().getDisplayName()) ) ){
 			//この時点で名前と内容が一致
 			//盾、バナー用の模様判定
-			if( ( m.getType().equals(Material.SHIELD) || (m.getType().equals(Material.BANNER)) ) && this.itemstack.getType().equals(m.getType())){
+			if( (m.getType() == Material.SHIELD || (m.getType() == Material.BANNER) ) && this.itemstack.getType() == m.getType()){
 				BlockStateMeta bs0 = (BlockStateMeta) m.getItemMeta();
 				Banner b0 = (Banner) bs0.getBlockState();
 				List<Pattern> p0 = b0.getPatterns();

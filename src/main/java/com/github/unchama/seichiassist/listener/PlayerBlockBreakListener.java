@@ -1,17 +1,19 @@
 package com.github.unchama.seichiassist.listener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.BreakArea;
+import com.github.unchama.seichiassist.data.Coordinate;
+import com.github.unchama.seichiassist.data.Mana;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.task.CoolDownTask;
+import com.github.unchama.seichiassist.task.MultiBreakTask;
+import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.external.ExternalPlugins;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -22,18 +24,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.BreakArea;
-import com.github.unchama.seichiassist.data.Coordinate;
-import com.github.unchama.seichiassist.data.Mana;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.CoolDownTaskRunnable;
-import com.github.unchama.seichiassist.task.MultiBreakTaskRunnable;
-import com.github.unchama.seichiassist.util.BreakUtil;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
@@ -138,7 +132,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//もしサバイバルでなければ処理を終了
 		//もしフライ中なら終了
-		if(!player.getGameMode().equals(GameMode.SURVIVAL) || player.isFlying()){
+		if(player.getGameMode() != GameMode.SURVIVAL || player.isFlying()){
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "fly中の破壊");
 			return;
 		}
@@ -153,7 +147,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//これ以前の終了処理はマナは回復しません
 		//追加マナ獲得
-		playerdata.activeskilldata.mana.increaseMana(BreakUtil.calcManaDrop(playerdata),player,playerdata.level);
+		playerdata.activeskilldata.mana.increase(BreakUtil.calcManaDrop(playerdata),player,playerdata.level);
 		//これ以降の終了処理はマナが回復します
 
 		//アクティブスキルフラグがオフの時処理を終了
@@ -242,11 +236,11 @@ public class PlayerBlockBreakListener implements Listener {
 						if(x == 0 && y == 0 && z == 0)continue;
 
 						if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && playerdata.multipleidbreakflag) { //追加テスト(複数種類一括破壊スキル)
-							if(!breakblock.getType().equals(Material.AIR) && !breakblock.getType().equals(Material.BEDROCK)) {
-								if(breakblock.getType().equals(Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(breakblock)){
+							if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
+								if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 									if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
 										if(BreakUtil.canBreak(player, breakblock)){
-											if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+											if(breakblock.getType() == Material.STATIONARY_LAVA){
 												lavalist.add(breakblock);
 											}else{
 												breaklist.add(breakblock);
@@ -258,16 +252,16 @@ public class PlayerBlockBreakListener implements Listener {
 							}
 						} else { //条件を満たしていない
 							//もし壊されるブロックがもともとのブロックと同じ種類だった場合
-							if(breakblock.getType().equals(material)
-									|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
-									|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
-									|| (block.getType().equals(Material.GLOWING_REDSTONE_ORE)&&breakblock.getType().equals(Material.REDSTONE_ORE))
-									|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
-									|| breakblock.getType().equals(Material.STATIONARY_LAVA)
+							if(breakblock.getType() == material
+									|| (block.getType() == Material.DIRT && breakblock.getType() == Material.GRASS)
+									|| (block.getType() == Material.GRASS && breakblock.getType() == Material.DIRT)
+									|| (block.getType() == Material.GLOWING_REDSTONE_ORE && breakblock.getType() == Material.REDSTONE_ORE)
+									|| (block.getType() == Material.REDSTONE_ORE && breakblock.getType() == Material.GLOWING_REDSTONE_ORE)
+									|| breakblock.getType() == Material.STATIONARY_LAVA
 									){
 								if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
 									if(BreakUtil.canBreak(player, breakblock)){
-										if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+										if(breakblock.getType() == Material.STATIONARY_LAVA){
 											lavalist.add(breakblock);
 										}else{
 											breaklist.add(breakblock);
@@ -306,7 +300,7 @@ public class PlayerBlockBreakListener implements Listener {
 				break;
 			}
 			//実際に経験値を減らせるか判定
-			if(!mana.hasMana(useAllMana)){
+			if(!mana.has(useAllMana)){
 				//デバッグ用
 				if(SeichiAssist.DEBUG){
 					player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
@@ -344,12 +338,12 @@ public class PlayerBlockBreakListener implements Listener {
 		else{
 			multibreaklist.get(0).add(block);
 			SeichiAssist.allblocklist.add(block);
-			new MultiBreakTaskRunnable(player,block,tool,multibreaklist,multilavalist,startlist,endlist).runTaskTimer(plugin,0,4);
+			new MultiBreakTask(player,block,tool,multibreaklist,multilavalist,startlist,endlist).runTaskTimer(plugin,0,4);
 		}
 
 
 		//経験値を減らす
-		mana.decreaseMana(useAllMana,player,playerdata.level);
+		mana.decrease(useAllMana,player,playerdata.level);
 
 		//耐久値を減らす
 		if(!tool.getItemMeta().spigot().isUnbreakable()){
@@ -359,7 +353,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
 		if(cooldown >= 5){
-			new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+			new CoolDownTask(player,false,true,false).runTaskLater(plugin,cooldown);
 		}
 	}
 
@@ -408,11 +402,11 @@ public class PlayerBlockBreakListener implements Listener {
 					if(x == 0 && y == 0 && z == 0)continue;
 
 					if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && (Util.isSeichiWorld(player) || playerdata.multipleidbreakflag)) { //追加テスト(複数種類一括破壊スキル)
-						if(!breakblock.getType().equals(Material.AIR) && !breakblock.getType().equals(Material.BEDROCK)) {
-							if(breakblock.getType().equals(Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(breakblock)){
+						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
+							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 								if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
 									if(BreakUtil.canBreak(player, breakblock)){
-										if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+										if(breakblock.getType() == Material.STATIONARY_LAVA){
 											lavalist.add(breakblock);
 										}else{
 											breaklist.add(breakblock);
@@ -424,16 +418,16 @@ public class PlayerBlockBreakListener implements Listener {
 						}
 					} else { //条件を満たしていない
 						//もし壊されるブロックがもともとのブロックと同じ種類だった場合
-						if(breakblock.getType().equals(material)
-								|| (block.getType().equals(Material.DIRT)&&breakblock.getType().equals(Material.GRASS))
-								|| (block.getType().equals(Material.GRASS)&&breakblock.getType().equals(Material.DIRT))
-								|| (block.getType().equals(Material.GLOWING_REDSTONE_ORE)&&breakblock.getType().equals(Material.REDSTONE_ORE))
-								|| (block.getType().equals(Material.REDSTONE_ORE)&&breakblock.getType().equals(Material.GLOWING_REDSTONE_ORE))
-								|| breakblock.getType().equals(Material.STATIONARY_LAVA)
+						if(breakblock.getType() == material
+								|| (block.getType() == Material.DIRT && breakblock.getType() == Material.GRASS)
+								|| (block.getType() == Material.GRASS && breakblock.getType() == Material.DIRT)
+								|| (block.getType() == Material.GLOWING_REDSTONE_ORE && breakblock.getType() == Material.REDSTONE_ORE)
+								|| (block.getType() == Material.REDSTONE_ORE && breakblock.getType() == Material.GLOWING_REDSTONE_ORE)
+								|| breakblock.getType() == Material.STATIONARY_LAVA
 								){
 							if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
 								if(BreakUtil.canBreak(player, breakblock)){
-									if(breakblock.getType().equals(Material.STATIONARY_LAVA)){
+									if(breakblock.getType() == Material.STATIONARY_LAVA){
 										lavalist.add(breakblock);
 									}else{
 										breaklist.add(breakblock);
@@ -482,7 +476,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//実際に経験値を減らせるか判定
-		if(!mana.hasMana(useMana)){
+		if(!mana.has(useMana)){
 			//デバッグ用
 			if(SeichiAssist.DEBUG){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
@@ -543,7 +537,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		//経験値を減らす
-		mana.decreaseMana(useMana,player,playerdata.level);
+		mana.decrease(useMana,player,playerdata.level);
 
 		//耐久値を減らす
 		if(!tool.getItemMeta().spigot().isUnbreakable()){
@@ -553,7 +547,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//壊したブロック数に応じてクールダウンを発生させる
 		long cooldown = ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
 		if(cooldown >= 5){
-			new CoolDownTaskRunnable(player,false,true,false).runTaskLater(plugin,cooldown);
+			new CoolDownTask(player,false,true,false).runTaskLater(plugin,cooldown);
 		}
 	}
 
@@ -575,7 +569,7 @@ public class PlayerBlockBreakListener implements Listener {
 			return;
 		}
 
-		if (b.getType().equals(Material.DOUBLE_STEP) && b.getData() == 0) {
+		if (b.getType() == Material.DOUBLE_STEP && b.getData() == 0) {
 			b.setType(Material.STEP);
 			b.setData((byte) 0);
 
@@ -583,7 +577,7 @@ public class PlayerBlockBreakListener implements Listener {
 			world.dropItemNaturally(location, new ItemStack(Material.STEP));
 		}
 
-		if (!b.getType().equals(Material.STEP)) {
+		if (b.getType() != Material.STEP) {
 			return;
 		}
 
