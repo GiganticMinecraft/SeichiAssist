@@ -37,15 +37,16 @@ fun ContextualExecutor.asNonBlockingTabExecutor(): TabExecutor {
     return object: TabExecutor {
         override fun onCommand(sender: CommandSender, command: Command, alias: String, args: Array<out String>): Boolean {
             val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
-            val program =
+            val commandProgram = executionFor(context)
+
+            unsafe {
+                runBlocking {
                     fx {
                         continueOn(NonBlocking)
-                        !effect {
-                            executionFor(context)
-                        }
+                        commandProgram.bind()
                     }
-
-            unsafe { runBlocking { program } }
+                }
+            }
 
             // 非同期の操作を含むことを前提とするため, Bukkitへのコマンドの成否を必ず成功扱いにする
             return true
