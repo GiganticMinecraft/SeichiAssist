@@ -1,11 +1,9 @@
-package com.github.unchama.seichiassist.commands.contextual
+package com.github.unchama.contextualexecutor
 
 import arrow.effects.IO
 import arrow.effects.extensions.io.fx.fx
 import arrow.effects.extensions.io.unsafeRun.runBlocking
 import arrow.unsafe
-import com.github.unchama.util.ActionStatus.Fail
-import com.github.unchama.util.ActionStatus.Ok
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor

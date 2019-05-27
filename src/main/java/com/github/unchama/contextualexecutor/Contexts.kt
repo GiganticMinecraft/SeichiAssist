@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.commands.contextual
+package com.github.unchama.contextualexecutor
 
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender

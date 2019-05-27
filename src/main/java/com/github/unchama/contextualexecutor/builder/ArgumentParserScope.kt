@@ -1,10 +1,10 @@
-package com.github.unchama.seichiassist.commands.contextual.builder
+package com.github.unchama.contextualexecutor.builder
 
 import arrow.core.Left
 import arrow.core.None
 import arrow.core.Right
 import arrow.core.Some
-import com.github.unchama.seichiassist.commands.contextual.builder.response.asResponseToSender
+import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
 
 object ArgumentParserScope {
 

@@ -1,12 +1,12 @@
-package com.github.unchama.seichiassist.commands.contextual.builder
+package com.github.unchama.contextualexecutor.builder
 
 import arrow.core.*
 import arrow.effects.IO
-import com.github.unchama.seichiassist.commands.contextual.ContextualExecutor
-import com.github.unchama.seichiassist.commands.contextual.ParsedArgCommandContext
-import com.github.unchama.seichiassist.commands.contextual.PartiallyParsedArgs
-import com.github.unchama.seichiassist.commands.contextual.RawCommandContext
-import com.github.unchama.seichiassist.commands.contextual.builder.response.asResponseToSender
+import com.github.unchama.contextualexecutor.ContextualExecutor
+import com.github.unchama.contextualexecutor.ParsedArgCommandContext
+import com.github.unchama.contextualexecutor.PartiallyParsedArgs
+import com.github.unchama.contextualexecutor.RawCommandContext
+import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
 import org.bukkit.command.CommandSender
 import arrow.core.extensions.either.fx.fx as fxEither
 import arrow.effects.extensions.io.fx.fx as fxIO

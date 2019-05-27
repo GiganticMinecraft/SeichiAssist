@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.commands.contextual.builder.response
+package com.github.unchama.contextualexecutor.builder.response
 
 import org.bukkit.command.CommandSender
 

@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist.commands.contextual.executors
+package com.github.unchama.contextualexecutor.executors
 
 import arrow.effects.IO
 import arrow.effects.extensions.io.fx.fx
-import com.github.unchama.seichiassist.commands.contextual.ContextualExecutor
-import com.github.unchama.seichiassist.commands.contextual.RawCommandContext
+import com.github.unchama.contextualexecutor.ContextualExecutor
+import com.github.unchama.contextualexecutor.RawCommandContext
 
 object PrintUsageExecutor: ContextualExecutor {
     override fun executionFor(rawContext: RawCommandContext): IO<Unit> =

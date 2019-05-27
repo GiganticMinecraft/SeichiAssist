@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist.commands.contextual.builder
+package com.github.unchama.contextualexecutor.builder
 
 import arrow.core.None
 import arrow.core.Option
 import arrow.effects.IO
-import com.github.unchama.seichiassist.commands.contextual.builder.response.asResponseToSender
+import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
 
 object CommandExecutionScope {
     fun returnNone(): IO<CommandResponse> = IO.just(None)
