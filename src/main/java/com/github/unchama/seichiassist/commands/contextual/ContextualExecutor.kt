@@ -16,9 +16,7 @@ import org.bukkit.command.TabExecutor
 interface ContextualExecutor {
 
     /**
-     * [rawContext] に基づいて, コマンドが行うべき処理を発火する
-     *
-     * @return 処理が「成功」扱いなら[Ok], そうでなければ[Fail].
+     * [rawContext] に基づいて, コマンドが行うべき処理を表す[IO]を計算する.
      */
     fun executionFor(rawContext: RawCommandContext): IO<Unit>
 
@@ -31,6 +29,9 @@ interface ContextualExecutor {
 
 /**
  * この[ContextualExecutor]を[TabExecutor]オブジェクトへ変換する.
+ *
+ * この関数から得られる[TabExecutor]は[ContextualExecutor.executionFor]を非同期スレッドから発火するため,
+ * 同期的な実行を期待する場合には[ContextualExecutor.executionFor]側で実行するコンテキストを指定せよ.
  */
 fun ContextualExecutor.asTabExecutor(): TabExecutor {
     return object: TabExecutor {
@@ -46,7 +47,7 @@ fun ContextualExecutor.asTabExecutor(): TabExecutor {
 
             unsafe { runBlocking { program } }
 
-            // コマンドは非同期の操作を含むことを前提とするため, Bukkitへのコマンドの成否を必ず成功扱いにする
+            // 非同期の操作を含むことを前提とするため, Bukkitへのコマンドの成否を必ず成功扱いにする
             return true
         }
 
