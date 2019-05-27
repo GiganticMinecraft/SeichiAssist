@@ -2,34 +2,10 @@ package com.github.unchama.seichiassist.commands.abstract
 
 import arrow.core.*
 import arrow.effects.IO
-import com.github.unchama.seichiassist.commands.abstract.response.ResponseToSender
 import com.github.unchama.seichiassist.commands.abstract.response.asResponseToSender
 import org.bukkit.command.CommandSender
 import arrow.core.extensions.either.fx.fx as fxEither
 import arrow.effects.extensions.io.fx.fx as fxIO
-
-typealias CommandResponse = Option<ResponseToSender>
-
-typealias Result<Error, Success> = Either<Error, Success>
-typealias ResponseOrResult<T> = Result<CommandResponse, T>
-
-typealias CommandArgumentsParser = (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs>
-
-typealias ScopedContextualExecution<CS> = CommandExecutionScope.(ParsedArgCommandContext<CS>) -> IO<CommandResponse>
-
-private fun sendResponse(sender: CommandSender, response: CommandResponse): IO<Unit> =
-        when (response) {
-            is Some -> {
-                fxIO {
-                    !effect {
-                        response.t.transmitTo(sender)
-                    }
-                }
-            }
-            else -> { IO.unit }
-        }
-
-private val commandUsage: (RawCommandContext) -> CommandResponse = { Some(it.command.command.usage.asResponseToSender()) }
 
 data class ContextualExecutorBuilder<CS: CommandSender>(
         val senderTypeValidation: (CommandSender) -> ResponseOrResult<CS>,
@@ -53,7 +29,7 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
     }
 
     fun argumentsParsers(parsers: List<(String) -> ResponseOrResult<Any>>,
-                         onMissingArguments: (RawCommandContext) -> CommandResponse = commandUsage): ContextualExecutorBuilder<CS> {
+                         onMissingArguments: (RawCommandContext) -> CommandResponse = commandUsageResponse): ContextualExecutorBuilder<CS> {
         val combinedParser: (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs> = { context: RawCommandContext ->
             parse(parsers, onMissingArguments(context), context.args).map { parseResult ->
                 PartiallyParsedArgs(parseResult.first, parseResult.second)
@@ -113,5 +89,21 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
         private val defaultSenderValidation = { sender: CommandSender -> Right(sender) }
 
         fun beginConfiguration() = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
+
+        private fun sendResponse(sender: CommandSender, response: CommandResponse): IO<Unit> =
+                when (response) {
+                    is Some -> {
+                        fxIO {
+                            !effect {
+                                response.t.transmitTo(sender)
+                            }
+                        }
+                    }
+                    else -> { IO.unit }
+                }
+
+        private val commandUsageResponse: (RawCommandContext) -> CommandResponse = {
+            Some(it.command.command.usage.asResponseToSender())
+        }
     }
 }
