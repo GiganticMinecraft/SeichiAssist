@@ -33,7 +33,7 @@ interface ContextualExecutor {
  * この関数から得られる[TabExecutor]は[ContextualExecutor.executionFor]を非同期スレッドから発火するため,
  * 同期的な実行を期待する場合には[ContextualExecutor.executionFor]側で実行するコンテキストを指定せよ.
  */
-fun ContextualExecutor.asTabExecutor(): TabExecutor {
+fun ContextualExecutor.asNonBlockingTabExecutor(): TabExecutor {
     return object: TabExecutor {
         override fun onCommand(sender: CommandSender, command: Command, alias: String, args: Array<out String>): Boolean {
             val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
