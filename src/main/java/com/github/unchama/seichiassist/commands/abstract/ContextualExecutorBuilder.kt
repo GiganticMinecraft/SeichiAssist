@@ -1,32 +1,24 @@
 package com.github.unchama.seichiassist.commands.abstract
 
 import arrow.core.*
-import arrow.data.EitherT
-import arrow.data.extensions.eithert.monad.monad
-import arrow.data.value
-import arrow.effects.ForIO
 import arrow.effects.IO
-import arrow.effects.extensions.io.fx.fx
-import arrow.effects.extensions.io.monadThrow.monadThrow
-import arrow.effects.fix
 import org.bukkit.command.CommandSender
-
-import arrow.core.extensions.either.monad.binding as bindEither
-import arrow.effects.extensions.io.monadThrow.binding as bindIO
+import arrow.core.extensions.either.fx.fx as fxEither
+import arrow.effects.extensions.io.fx.fx as fxIO
 
 typealias CommandResponse = Option<ResponseToSender>
 
 typealias Result<Error, Success> = Either<Error, Success>
 typealias ResponseOrResult<T> = Result<CommandResponse, T>
 
-typealias CommandArgumentParser = (List<String>) -> IO<ResponseOrResult<PartiallyParsedArgs>>
+typealias CommandArgumentsParser = (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs>
 
 typealias ScopedContextualExecution<CS> = CommandExecutionScope.(ParsedArgCommandContext<CS>) -> IO<CommandResponse>
 
 private fun sendResponse(sender: CommandSender, response: CommandResponse): IO<Unit> =
         when (response) {
             is Some -> {
-                fx {
+                fxIO {
                     !effect {
                         sender.sendMessage(response.t)
                     }
@@ -35,20 +27,46 @@ private fun sendResponse(sender: CommandSender, response: CommandResponse): IO<U
             else -> { IO.unit }
         }
 
+private val commandUsage: (RawCommandContext) -> CommandResponse = { Some(it.command.command.usage.asResponseToSender()) }
+
 data class ContextualExecutorBuilder<CS: CommandSender>(
         val senderTypeValidation: (CommandSender) -> ResponseOrResult<CS>,
-        val argumentParser: CommandArgumentParser,
-        val contextualExecution: CommandExecutionScope.(ParsedArgCommandContext<CS>) -> IO<CommandResponse>) {
+        val argumentsParser: CommandArgumentsParser,
+        val contextualExecution: ScopedContextualExecution<CS>) {
 
-    fun argumentsParsing(configure: ArgumentParserConfigurationScope.() -> Unit): ContextualExecutorBuilder<CS> =
-            this.copy(argumentParser = ArgumentParserConfigurationScope().apply { configure() }.buildParser())
+    private tailrec fun parse(parsers: List<(String) -> ResponseOrResult<Any>>,
+                              onMissingArguments: CommandResponse,
+                              args: List<String>,
+                              reverseAccumulator: List<Any> = listOf()): ResponseOrResult<Pair<List<Any>, List<String>>> {
+        val firstParser = parsers.firstOrNull() ?: return Right(reverseAccumulator.reversed() to args)
+        val firstArg = args.firstOrNull() ?: return Left(onMissingArguments)
+
+        return when (val transformed = firstParser(firstArg)) {
+            is Either.Left -> transformed
+            is Either.Right -> {
+                val parsedArg = transformed.b
+                parse(parsers.drop(1), onMissingArguments, args.drop(1), reverseAccumulator.plus(parsedArg))
+            }
+        }
+    }
+
+    fun argumentsParsers(parsers: List<(String) -> ResponseOrResult<Any>>,
+                         onMissingArguments: (RawCommandContext) -> CommandResponse = commandUsage): ContextualExecutorBuilder<CS> {
+        val combinedParser: (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs> = { context: RawCommandContext ->
+            parse(parsers, onMissingArguments(context), context.args).map { parseResult ->
+                PartiallyParsedArgs(parseResult.first, parseResult.second)
+            }
+        }
+
+        return this.copy(argumentsParser = combinedParser)
+    }
 
     fun execution(execution: ScopedContextualExecution<CS>): ContextualExecutorBuilder<CS> =
             this.copy(contextualExecution = execution)
 
     inline fun <reified CS1: CS> refineSender(errorMessageOnFail: CommandResponse): ContextualExecutorBuilder<CS1> {
         val newSenderTypeValidation: (CommandSender) -> ResponseOrResult<CS1> = { sender ->
-            bindEither {
+            fxEither {
                 val (refined1: CS) = senderTypeValidation(sender)
                 val (refined2: CS1) = (refined1 as? CS1).toOption().toEither { errorMessageOnFail }
 
@@ -56,7 +74,7 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
             }
         }
 
-        return ContextualExecutorBuilder(newSenderTypeValidation, argumentParser, contextualExecution)
+        return ContextualExecutorBuilder(newSenderTypeValidation, argumentsParser, contextualExecution)
     }
 
     inline fun <reified CS1: CS> refineSenderWithoutError(): ContextualExecutorBuilder<CS1> =
@@ -70,16 +88,15 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
 
     fun build(): ContextualExecutor = object : ContextualExecutor {
         override fun executionFor(rawContext: RawCommandContext): IO<Unit> {
-            val createContext: IO<Either<CommandResponse, ParsedArgCommandContext<CS>>> =
-                    EitherT.monad<ForIO, CommandResponse>(IO.monadThrow()).binding {
-                        val (refinedSender) = EitherT(IO.just(senderTypeValidation(rawContext.sender)))
-                        val (parsedArgs) = EitherT(argumentParser(rawContext.args))
+            val errorOrContext: Either<CommandResponse, ParsedArgCommandContext<CS>> =
+                    fxEither {
+                        val (refinedSender) = senderTypeValidation(rawContext.sender)
+                        val (parsedArgs) = argumentsParser(rawContext)
 
                         ParsedArgCommandContext(refinedSender, rawContext.command, parsedArgs)
-                    }.value().fix()
+                    }
 
-            return bindIO {
-                val (errorOrContext) = createContext
+            return fxIO {
                 val (response) = errorOrContext.fold({ IO.just(it) }, { CommandExecutionScope.contextualExecution(it) })
                 val (_) = sendResponse(rawContext.sender, response)
             }
@@ -87,7 +104,9 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
     }
 
     companion object {
-        private val defaultArgumentParser: CommandArgumentParser = { IO.just(Right(PartiallyParsedArgs(listOf(), it))) }
+        private val defaultArgumentParser: CommandArgumentsParser = { context ->
+            Right(PartiallyParsedArgs(listOf(), context.args))
+        }
         private val defaultExecution: ScopedContextualExecution<CommandSender> = { returnNone() }
         private val defaultSenderValidation = { sender: CommandSender -> Right(sender) }
 
