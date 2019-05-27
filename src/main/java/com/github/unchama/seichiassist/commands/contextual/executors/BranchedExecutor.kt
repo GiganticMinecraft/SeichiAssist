@@ -1,7 +1,9 @@
-package com.github.unchama.seichiassist.commands.abstract
+package com.github.unchama.seichiassist.commands.contextual.executors
 
 import arrow.effects.IO
 import arrow.effects.extensions.io.applicative.just
+import com.github.unchama.seichiassist.commands.contextual.ContextualExecutor
+import com.github.unchama.seichiassist.commands.contextual.RawCommandContext
 
 /**
  * コマンドの枝分かれでのルーティングを静的に行う[ContextualExecutor]

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.commands.abstract
+package com.github.unchama.seichiassist.commands.contextual
 
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender

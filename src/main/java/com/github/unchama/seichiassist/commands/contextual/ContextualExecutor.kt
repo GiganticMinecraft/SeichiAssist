@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.commands.abstract
+package com.github.unchama.seichiassist.commands.contextual
 
 import arrow.effects.IO
 import arrow.effects.extensions.io.fx.fx
