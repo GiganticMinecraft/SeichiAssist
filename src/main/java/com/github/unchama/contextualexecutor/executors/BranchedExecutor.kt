@@ -6,7 +6,7 @@ import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.RawCommandContext
 
 /**
- * コマンドの枝分かれでのルーティングを静的に行う[ContextualExecutor]
+ * コマンドの枝分かれでのルーティングを静的に行うアクションを返す[ContextualExecutor]
  */
 data class BranchedExecutor(val branches: Map<String, ContextualExecutor>,
                             val whenArgInsufficient: ContextualExecutor? = PrintUsageExecutor,

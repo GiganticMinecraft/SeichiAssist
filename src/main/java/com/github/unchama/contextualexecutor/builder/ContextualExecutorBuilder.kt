@@ -11,6 +11,14 @@ import org.bukkit.command.CommandSender
 import arrow.core.extensions.either.fx.fx as fxEither
 import arrow.effects.extensions.io.fx.fx as fxIO
 
+/**
+ * [ContextualExecutor]を作成するためのビルダークラス.
+ *
+ * @param CS 生成するExecutorが受け付ける[CommandSender]のサブタイプの上限
+ * @param senderTypeValidation [CommandSender]
+ * @param argumentsParser [RawCommandContext]から[PartiallyParsedArgs]を作成する関数
+ * @param contextualExecution [ParsedArgCommandContext]からコマンドのアクションを表す[IO]を計算する関数
+ */
 data class ContextualExecutorBuilder<CS: CommandSender>(
         val senderTypeValidation: (CommandSender) -> ResponseOrResult<CS>,
         val argumentsParser: CommandArgumentsParser,
@@ -32,6 +40,12 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
         }
     }
 
+    /**
+     * @param parsers i番目にi番目の引数の変換を試みるような関数が入ったリスト
+     * @param onMissingArguments 引数がパーサに対して不足しているときに返却すべき[CommandResponse]を生成する関数
+     *
+     * @return [argumentsParser]に, [parsers]と[onMissingArguments]が組み合わされた関数が入った新しい[ContextualExecutorBuilder].
+     */
     fun argumentsParsers(parsers: List<(String) -> ResponseOrResult<Any>>,
                          onMissingArguments: (RawCommandContext) -> CommandResponse = commandUsageResponse): ContextualExecutorBuilder<CS> {
         val combinedParser: (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs> = { context: RawCommandContext ->
@@ -43,9 +57,17 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
         return this.copy(argumentsParser = combinedParser)
     }
 
+    /**
+     * @return [contextualExecution]に[execution]に相当する関数が入った新しい[ContextualExecutorBuilder]
+     */
     fun execution(execution: ScopedContextualExecution<CS>): ContextualExecutorBuilder<CS> =
             this.copy(contextualExecution = execution)
 
+    /**
+     * @return [CS]を[CS1]へ狭めるキャストを試み,
+     * 失敗したら[errorMessageOnFail]が返るような[senderTypeValidation]が入った
+     * 新しい[ContextualExecutorBuilder]
+     */
     inline fun <reified CS1: CS> refineSender(errorMessageOnFail: CommandResponse): ContextualExecutorBuilder<CS1> {
         val newSenderTypeValidation: (CommandSender) -> ResponseOrResult<CS1> = { sender ->
             fxEither {
@@ -59,15 +81,42 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
         return ContextualExecutorBuilder(newSenderTypeValidation, argumentsParser, contextualExecution)
     }
 
+    /**
+     * @return [CS]を[CS1]へ狭めるキャストを試み,
+     * 失敗してもエラーメッセージが返らない[senderTypeValidation]が入った
+     * 新しい[ContextualExecutorBuilder]
+     */
     inline fun <reified CS1: CS> refineSenderWithoutError(): ContextualExecutorBuilder<CS1> =
             refineSender(None)
 
+    /**
+     * @return [CS]を[CS1]へ狭めるキャストを試み,
+     * 失敗すると[message]がエラーメッセージとして返る[senderTypeValidation]が入った
+     * 新しい[ContextualExecutorBuilder]
+     */
     inline fun <reified CS1: CS> refineSenderWithError(message: String): ContextualExecutorBuilder<CS1> =
             refineSender(Some(message.asResponseToSender()))
 
+    /**
+     * @return [CS]を[CS1]へ狭めるキャストを試み,
+     * 失敗すると[messages]がエラーメッセージとして返る[senderTypeValidation]が入った
+     * 新しい[ContextualExecutorBuilder]
+     */
     inline fun <reified CS1: CS> refineSenderWithError(messages: List<String>): ContextualExecutorBuilder<CS1> =
             refineSender(Some(messages.asResponseToSender()))
 
+    /**
+     * ビルダーに入っている情報から[ContextualExecutor]を生成する.
+     *
+     * 生成された[ContextualExecutor]は,
+     *
+     *  - 先ず, 送信者が[CS]であるかを確認する
+     *  - 次に, 引数のパースを試みる
+     *  - 最後に, 変換された引数を用いて[ParsedArgCommandContext]を作成し,
+     *    それを用いて[contextualExecution]で指定される動作を行う
+     *
+     * ような[IO]を生成する.
+     */
     fun build(): ContextualExecutor = object : ContextualExecutor {
         override fun executionFor(rawContext: RawCommandContext): IO<Unit> {
             val errorOrContext: Either<CommandResponse, ParsedArgCommandContext<CS>> =
