@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist.commands.abstract
 
 import arrow.core.*
 import arrow.effects.IO
+import com.github.unchama.seichiassist.commands.abstract.response.ResponseToSender
+import com.github.unchama.seichiassist.commands.abstract.response.asResponseToSender
 import org.bukkit.command.CommandSender
 import arrow.core.extensions.either.fx.fx as fxEither
 import arrow.effects.extensions.io.fx.fx as fxIO
@@ -20,7 +22,7 @@ private fun sendResponse(sender: CommandSender, response: CommandResponse): IO<U
             is Some -> {
                 fxIO {
                     !effect {
-                        sender.sendMessage(response.t)
+                        response.t.transmitTo(sender)
                     }
                 }
             }
