@@ -33,30 +33,27 @@ interface ContextualExecutor {
  * この関数から得られる[TabExecutor]は[ContextualExecutor.executionFor]を非同期スレッドから発火するため,
  * 同期的な実行を期待する場合には[ContextualExecutor.executionFor]側で実行するコンテキストを指定せよ.
  */
-fun ContextualExecutor.asNonBlockingTabExecutor(): TabExecutor {
-    return object: TabExecutor {
-        override fun onCommand(sender: CommandSender, command: Command, alias: String, args: Array<out String>): Boolean {
-            val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
-            val commandProgram = executionFor(context)
+fun ContextualExecutor.asNonBlockingTabExecutor(): TabExecutor = object: TabExecutor {
+    override fun onCommand(sender: CommandSender, command: Command, alias: String, args: Array<out String>): Boolean {
+        val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
+        val commandProgram = executionFor(context)
 
-            unsafe {
-                runBlocking {
-                    fx {
-                        continueOn(NonBlocking)
-                        commandProgram.bind()
-                    }
+        unsafe {
+            runBlocking {
+                fx {
+                    continueOn(NonBlocking)
+                    commandProgram.bind()
                 }
             }
-
-            // 非同期の操作を含むことを前提とするため, Bukkitへのコマンドの成否を必ず成功扱いにする
-            return true
         }
 
-        override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): List<String>? {
-            val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
+        // 非同期の操作を含むことを前提とするため, Bukkitへのコマンドの成否を必ず成功扱いにする
+        return true
+    }
 
-            return tabCandidatesFor(context)
-        }
+    override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): List<String>? {
+        val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
+
+        return tabCandidatesFor(context)
     }
 }
-
