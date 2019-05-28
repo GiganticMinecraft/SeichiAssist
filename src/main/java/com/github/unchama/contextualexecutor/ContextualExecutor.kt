@@ -1,6 +1,5 @@
 package com.github.unchama.contextualexecutor
 
-import arrow.effects.IO
 import arrow.effects.extensions.io.fx.fx
 import arrow.effects.extensions.io.unsafeRun.runBlocking
 import arrow.unsafe
@@ -16,7 +15,7 @@ interface ContextualExecutor {
     /**
      * [rawContext] に基づいて, コマンドが行うべき処理を表す[IO]を計算する.
      */
-    fun executionFor(rawContext: RawCommandContext): IO<Unit>
+    suspend fun executeWith(rawContext: RawCommandContext)
 
     /**
      * [context] に基づいてTab補完の候補をListで返却する.
@@ -28,19 +27,18 @@ interface ContextualExecutor {
 /**
  * この[ContextualExecutor]を[TabExecutor]オブジェクトへ変換する.
  *
- * この関数から得られる[TabExecutor]は[ContextualExecutor.executionFor]を非同期スレッドから発火するため,
- * 同期的な実行を期待する場合には[ContextualExecutor.executionFor]側で実行するコンテキストを指定せよ.
+ * この関数から得られる[TabExecutor]は[ContextualExecutor.executeWith]を非同期スレッドから発火するため,
+ * 同期的な実行を期待する場合には[ContextualExecutor.executeWith]側で実行するコンテキストを指定せよ.
  */
 fun ContextualExecutor.asNonBlockingTabExecutor(): TabExecutor = object: TabExecutor {
     override fun onCommand(sender: CommandSender, command: Command, alias: String, args: Array<out String>): Boolean {
         val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
-        val commandProgram = executionFor(context)
 
         unsafe {
             runBlocking {
                 fx {
                     continueOn(NonBlocking)
-                    commandProgram.bind()
+                    !effect { executeWith(context) }
                 }
             }
         }

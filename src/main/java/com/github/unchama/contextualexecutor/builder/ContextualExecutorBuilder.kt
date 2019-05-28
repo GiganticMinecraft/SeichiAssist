@@ -1,7 +1,6 @@
 package com.github.unchama.contextualexecutor.builder
 
 import arrow.core.*
-import arrow.effects.IO
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.ParsedArgCommandContext
 import com.github.unchama.contextualexecutor.PartiallyParsedArgs
@@ -118,7 +117,7 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
      * ような[IO]を生成する.
      */
     fun build(): ContextualExecutor = object : ContextualExecutor {
-        override fun executionFor(rawContext: RawCommandContext): IO<Unit> {
+        override suspend fun executeWith(rawContext: RawCommandContext) {
             val errorOrContext: Either<CommandResponse, ParsedArgCommandContext<CS>> =
                     fxEither {
                         val (refinedSender) = senderTypeValidation(rawContext.sender)
@@ -127,10 +126,8 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
                         ParsedArgCommandContext(refinedSender, rawContext.command, parsedArgs)
                     }
 
-            return fxIO {
-                val (response) = errorOrContext.fold({ IO.just(it) }, { CommandExecutionScope.contextualExecution(it) })
-                val (_) = sendResponse(rawContext.sender, response)
-            }
+            val response = errorOrContext.fold({ it }, { CommandExecutionScope.contextualExecution(it) })
+            sendResponse(rawContext.sender, response)
         }
     }
 
@@ -138,22 +135,13 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
         private val defaultArgumentParser: CommandArgumentsParser = { context ->
             Right(PartiallyParsedArgs(listOf(), context.args))
         }
-        private val defaultExecution: ScopedContextualExecution<CommandSender> = { returnNone() }
+        private val defaultExecution: ScopedContextualExecution<CommandSender> = { None }
         private val defaultSenderValidation = { sender: CommandSender -> Right(sender) }
 
         fun beginConfiguration() = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
 
-        private fun sendResponse(sender: CommandSender, response: CommandResponse): IO<Unit> =
-                when (response) {
-                    is Some -> {
-                        fxIO {
-                            !effect {
-                                response.t.transmitTo(sender)
-                            }
-                        }
-                    }
-                    else -> { IO.unit }
-                }
+        private suspend fun sendResponse(sender: CommandSender, response: CommandResponse) =
+                if (response is Some) { response.t.transmitTo(sender) } else Unit
 
         private val commandUsageResponse: (RawCommandContext) -> CommandResponse = {
             Some(it.command.command.usage.asResponseToSender())
