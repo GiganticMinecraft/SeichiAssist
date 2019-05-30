@@ -16,3 +16,5 @@ typealias ResponseOrResult<T> = Result<CommandResponse, T>
 typealias CommandArgumentsParser = (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs>
 
 typealias ScopedContextualExecution<CS> = suspend CommandExecutionScope.(ParsedArgCommandContext<CS>) -> CommandResponse
+
+typealias SingleArgumentParser = (String) -> ResponseOrResult<Any>

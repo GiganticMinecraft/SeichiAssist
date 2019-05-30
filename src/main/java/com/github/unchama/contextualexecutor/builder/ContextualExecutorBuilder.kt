@@ -46,7 +46,7 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
      *
      * @return [argumentsParser]に, [parsers]と[onMissingArguments]が組み合わされた関数が入った新しい[ContextualExecutorBuilder].
      */
-    fun argumentsParsers(parsers: List<(String) -> ResponseOrResult<Any>>,
+    fun argumentsParsers(parsers: List<SingleArgumentParser>,
                          onMissingArguments: (RawCommandContext) -> CommandResponse = commandUsageResponse): ContextualExecutorBuilder<CS> {
         val combinedParser: (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs> = { context: RawCommandContext ->
             parse(parsers, onMissingArguments(context), context.args).map { parseResult ->
