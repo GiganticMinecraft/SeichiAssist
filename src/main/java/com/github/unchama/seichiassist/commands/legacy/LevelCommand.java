@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.commands;
+package com.github.unchama.seichiassist.commands.legacy;
 
 import com.github.unchama.seichiassist.OfflineUUID;
 import com.github.unchama.seichiassist.SeichiAssist;

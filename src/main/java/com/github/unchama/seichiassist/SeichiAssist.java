@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
-import com.github.unchama.seichiassist.commands.*;
+import com.github.unchama.seichiassist.commands.legacy.*;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;

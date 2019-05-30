@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.commands;
+package com.github.unchama.seichiassist.commands.legacy;
 
 import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;

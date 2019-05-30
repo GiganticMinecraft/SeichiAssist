@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener;
 
-import com.github.unchama.seichiassist.commands.GachaCommand;
+import com.github.unchama.seichiassist.commands.legacy.GachaCommand;
 import com.github.unchama.seichiassist.data.ItemData;
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent;
 import com.github.unchama.seichiassist.util.Util;

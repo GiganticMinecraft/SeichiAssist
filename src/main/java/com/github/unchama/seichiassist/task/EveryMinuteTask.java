@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.commands.GiganticFeverCommand;
+import com.github.unchama.seichiassist.commands.legacy.GiganticFeverCommand;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
