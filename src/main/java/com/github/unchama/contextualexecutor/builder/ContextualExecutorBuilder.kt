@@ -6,6 +6,7 @@ import com.github.unchama.contextualexecutor.ParsedArgCommandContext
 import com.github.unchama.contextualexecutor.PartiallyParsedArgs
 import com.github.unchama.contextualexecutor.RawCommandContext
 import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
+import com.github.unchama.util.data.merge
 import org.bukkit.command.CommandSender
 import arrow.core.extensions.either.fx.fx as fxEither
 import arrow.effects.extensions.io.fx.fx as fxIO
@@ -126,7 +127,7 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
                         ParsedArgCommandContext(refinedSender, rawContext.command, parsedArgs)
                     }
 
-            val response = errorOrContext.fold({ it }, { CommandExecutionScope.contextualExecution(it) })
+            val response = errorOrContext.map { CommandExecutionScope.contextualExecution(it) }.merge()
             sendResponse(rawContext.sender, response)
         }
     }
