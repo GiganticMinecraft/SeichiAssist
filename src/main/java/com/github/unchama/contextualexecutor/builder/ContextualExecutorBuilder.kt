@@ -17,7 +17,7 @@ import arrow.effects.extensions.io.fx.fx as fxIO
  * @param CS 生成するExecutorが受け付ける[CommandSender]のサブタイプの上限
  * @param senderTypeValidation [CommandSender]
  * @param argumentsParser [RawCommandContext]から[PartiallyParsedArgs]を作成する関数
- * @param contextualExecution [ParsedArgCommandContext]からコマンドのアクションを表す[IO]を計算する関数
+ * @param contextualExecution [ParsedArgCommandContext]に基づいてコマンドのアクションを実行するSuspending Function
  */
 data class ContextualExecutorBuilder<CS: CommandSender>(
         val senderTypeValidation: (CommandSender) -> ResponseOrResult<CS>,
@@ -58,7 +58,9 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
     }
 
     /**
-     * @return [contextualExecution]に[execution]に相当する関数が入った新しい[ContextualExecutorBuilder]
+     * [contextualExecution]に[execution]に相当する関数が入った新しい[ContextualExecutorBuilder]を作成する.
+     *
+     * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドからの呼び出しに対応しなければならない.
      */
     fun execution(execution: ScopedContextualExecution<CS>): ContextualExecutorBuilder<CS> =
             this.copy(contextualExecution = execution)
@@ -115,7 +117,7 @@ data class ContextualExecutorBuilder<CS: CommandSender>(
      *  - 最後に, 変換された引数を用いて[ParsedArgCommandContext]を作成し,
      *    それを用いて[contextualExecution]で指定される動作を行う
      *
-     * ような[IO]を生成する.
+     * 処理を[ContextualExecutor.executeWith]内で行う.
      */
     fun build(): ContextualExecutor = object : ContextualExecutor {
         override suspend fun executeWith(rawContext: RawCommandContext) {

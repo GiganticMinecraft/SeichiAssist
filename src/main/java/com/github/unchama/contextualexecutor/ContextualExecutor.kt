@@ -1,7 +1,7 @@
 package com.github.unchama.contextualexecutor
 
 import arrow.effects.extensions.io.fx.fx
-import arrow.effects.extensions.io.unsafeRun.runBlocking
+import arrow.effects.extensions.io.unsafeRun.runNonBlocking
 import arrow.unsafe
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -13,7 +13,10 @@ import org.bukkit.command.TabExecutor
 interface ContextualExecutor {
 
     /**
-     * [rawContext] に基づいて, コマンドが行うべき処理を表す[IO]を計算する.
+     * [rawContext] に基づいて, コマンドが行うべき処理を実行する.
+     *
+     * このメソッドは**サーバーメインスレッド上のコルーチンで実行する必要性はない**.
+     * また, 実行時例外が発生することはない.
      */
     suspend fun executeWith(rawContext: RawCommandContext)
 
@@ -35,12 +38,11 @@ fun ContextualExecutor.asNonBlockingTabExecutor(): TabExecutor = object: TabExec
         val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
 
         unsafe {
-            runBlocking {
+            runNonBlocking({
                 fx {
-                    continueOn(NonBlocking)
                     !effect { executeWith(context) }
                 }
-            }
+            }) { }
         }
 
         // 非同期の操作を含むことを前提とするため, Bukkitへのコマンドの成否を必ず成功扱いにする
