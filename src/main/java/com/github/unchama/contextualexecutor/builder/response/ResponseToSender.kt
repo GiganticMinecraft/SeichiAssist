@@ -9,6 +9,16 @@ interface ResponseToSender {
     suspend fun transmitTo(commandSender: CommandSender)
 }
 
+/**
+ * コマンド応答を結合する.
+ */
+operator fun ResponseToSender.plus(anotherResponse: ResponseToSender): ResponseToSender = object : ResponseToSender {
+    override suspend fun transmitTo(commandSender: CommandSender) {
+        this.transmitTo(commandSender)
+        anotherResponse.transmitTo(commandSender)
+    }
+}
+
 fun String.asResponseToSender() = object : ResponseToSender {
     override suspend fun transmitTo(commandSender: CommandSender) {
         commandSender.sendMessage(this@asResponseToSender)
