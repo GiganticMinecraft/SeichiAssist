@@ -1,7 +1,5 @@
 package com.github.unchama.contextualexecutor.executors
 
-import arrow.effects.IO
-import arrow.effects.extensions.io.applicative.just
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.RawCommandContext
 
@@ -12,16 +10,16 @@ data class BranchedExecutor(val branches: Map<String, ContextualExecutor>,
                             val whenArgInsufficient: ContextualExecutor? = PrintUsageExecutor,
                             val whenBranchNotFound: ContextualExecutor? = PrintUsageExecutor): ContextualExecutor {
 
-    override fun executionFor(rawContext: RawCommandContext): IO<Unit> {
+    override suspend fun executeWith(rawContext: RawCommandContext) {
         val firstArg = rawContext.args.firstOrNull()
-                ?: return whenArgInsufficient?.executionFor(rawContext) ?: Unit.just()
+                ?: return whenArgInsufficient?.executeWith(rawContext).let { Unit }
 
         val branch = branches[firstArg]
-                ?: return whenBranchNotFound?.executionFor(rawContext) ?: Unit.just()
+                ?: return whenBranchNotFound?.executeWith(rawContext).let { Unit }
 
         val argShiftedContext = rawContext.copy(args = rawContext.args.drop(1))
 
-        return branch.executionFor(argShiftedContext)
+        return branch.executeWith(argShiftedContext)
     }
 
     override fun tabCandidatesFor(context: RawCommandContext): List<String>? {
