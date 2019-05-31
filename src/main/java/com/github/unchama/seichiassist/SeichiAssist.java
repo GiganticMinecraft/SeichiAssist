@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.ContributeCommand;
 import com.github.unchama.seichiassist.commands.EffectCommand;
 import com.github.unchama.seichiassist.commands.EventCommand;
+import com.github.unchama.seichiassist.commands.MineHeadCommand;
 import com.github.unchama.seichiassist.commands.StickCommand;
 import com.github.unchama.seichiassist.commands.legacy.*;
 import com.github.unchama.seichiassist.data.GachaData;
@@ -916,7 +917,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("contribute", ContributeCommand.INSTANCE.getExecutor()),
 					Pair.of("subhome", new SubHomeCommand()),
 					Pair.of("gtfever", new GiganticFeverCommand()),
-					Pair.of("minehead", new MineHeadCommand()),
+					Pair.of("minehead", MineHeadCommand.INSTANCE.getExecutor()),
 					Pair.of("x-transfer", new RegionOwnerTransferCommand())
 			).forEach((commandName, executor) -> getCommand(commandName).setExecutor(executor));
 		}
