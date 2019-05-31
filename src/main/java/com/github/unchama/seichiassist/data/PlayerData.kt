@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.data
 
+import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
+import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.Worlds
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -927,6 +929,35 @@ class PlayerData(player: Player) {
         this.added_mana += addMana
 
         mana.calcAndSetMax(p, this.level)
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun toggleEffect(): ResponseToSender {
+        effectflag = (effectflag + 1) % 6
+
+        val responseMessage = when (effectflag) {
+            0 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(無制限)"
+            1 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(127制限)"
+            2 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(200制限)"
+            3 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(400制限)"
+            4 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(600制限)"
+            else -> "${ChatColor.GREEN}採掘速度上昇効果:OFF"
+        }
+
+        return responseMessage.asResponseToSender()
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun toggleMessageFlag(): ResponseToSender {
+        messageflag = !messageflag
+
+        val responseMessage = if (messageflag) {
+            "${ChatColor.GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
+        } else {
+            "${ChatColor.GREEN}内訳表示:OFF"
+        }
+
+        return responseMessage.asResponseToSender()
     }
 
     companion object {

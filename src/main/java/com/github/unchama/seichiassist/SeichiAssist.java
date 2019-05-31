@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.ContributeCommand;
+import com.github.unchama.seichiassist.commands.EffectCommand;
+import com.github.unchama.seichiassist.commands.EventCommand;
 import com.github.unchama.seichiassist.commands.legacy.*;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
@@ -900,7 +902,7 @@ public class SeichiAssist extends JavaPlugin{
 			MapFactory.of(
 					Pair.of("gacha", new GachaCommand()),
 					Pair.of("seichi",new SeichiCommand(instance)),
-					Pair.of("ef",new EffectCommand()),
+					Pair.of("ef", EffectCommand.INSTANCE.getExecutor()),
 					Pair.of("level",new LevelCommand()),
 					Pair.of("lastquit",new LastQuitCommand()),
 					Pair.of("stick",new StickCommand()),
@@ -909,7 +911,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("mebius",new MebiusCommand()),
 					Pair.of("unlockachv", new UnlockAchievementCommand()),
 					Pair.of("halfguard", new HalfBlockProtectCommand()),
-					Pair.of("event", new EventCommand()),
+					Pair.of("event", EventCommand.INSTANCE.getExecutor()),
 					Pair.of("contribute", ContributeCommand.INSTANCE.getExecutor()),
 					Pair.of("subhome", new SubHomeCommand()),
 					Pair.of("gtfever", new GiganticFeverCommand()),
