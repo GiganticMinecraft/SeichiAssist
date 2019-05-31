@@ -897,22 +897,22 @@ public class SeichiAssist extends JavaPlugin{
 
 		//コマンドの登録
 		commandlist = new HashMap<>();
-		commandlist.put("gacha",new gachaCommand(instance));
-		commandlist.put("seichi",new seichiCommand(instance));
-		commandlist.put("ef",new effectCommand(instance));
-		commandlist.put("level",new levelCommand(instance));
-		commandlist.put("lastquit",new lastquitCommand(instance));
-		commandlist.put("stick",new stickCommand(instance));
-		commandlist.put("rmp",new rmpCommand(instance));
-		commandlist.put("shareinv",new shareinvCommand(instance));
-		commandlist.put("mebius",new mebiusCommand(instance));
-		commandlist.put("unlockachv", new AchieveCommand(instance));
-		commandlist.put("halfguard", new HalfBlockProtectCommand(instance));
-		commandlist.put("event", new EventCommand(instance));
-		commandlist.put("contribute", new contributeCommand(instance));
-		commandlist.put("subhome", new subHomeCommand(instance));
+		commandlist.put("gacha",new gachaCommand());
+		commandlist.put("seichi",new seichiCommand());
+		commandlist.put("ef",new effectCommand());
+		commandlist.put("level",new levelCommand());
+		commandlist.put("lastquit",new lastquitCommand());
+		commandlist.put("stick",new stickCommand());
+		commandlist.put("rmp",new rmpCommand());
+		commandlist.put("shareinv",new shareinvCommand());
+		commandlist.put("mebius",new mebiusCommand());
+		commandlist.put("unlockachv", new AchieveCommand());
+		commandlist.put("halfguard", new HalfBlockProtectCommand());
+		commandlist.put("event", new EventCommand());
+		commandlist.put("contribute", new contributeCommand());
+		commandlist.put("subhome", new subHomeCommand());
 		commandlist.put("gtfever", new GiganticFeverCommand());
-		commandlist.put("minehead", new MineHeadCommand(instance));
+		commandlist.put("minehead", new MineHeadCommand());
 		commandlist.put("x-transfer", new RegionOwnerTransferCommand());
 
 		//リスナーの登録

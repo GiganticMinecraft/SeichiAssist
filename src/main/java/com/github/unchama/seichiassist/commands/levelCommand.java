@@ -23,12 +23,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import static com.github.unchama.util.ActionStatus.Fail;
 
 public class levelCommand implements TabExecutor{
-	public SeichiAssist plugin;
 	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-
-	public levelCommand(SeichiAssist plugin){
-		this.plugin = plugin;
-	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command,
 			String label, String[] args) {

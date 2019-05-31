@@ -24,10 +24,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class rmpCommand implements TabExecutor {
 	static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	private Map<UUID, String> leavers;
-
-	public rmpCommand(SeichiAssist plugin){
-	}
-
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command,
 			String label, String[] args) {

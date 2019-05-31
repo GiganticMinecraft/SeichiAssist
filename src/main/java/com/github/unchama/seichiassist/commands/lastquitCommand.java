@@ -12,13 +12,7 @@ import org.bukkit.command.TabExecutor;
 import java.util.List;
 
 public class lastquitCommand implements TabExecutor{
-	public SeichiAssist plugin;
 	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-
-
-	public lastquitCommand(SeichiAssist plugin){
-		this.plugin = plugin;
-	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command,
 			String label, String[] args) {
@@ -42,7 +36,7 @@ public class lastquitCommand implements TabExecutor{
 
 			//mysql
 			String lastquit = databaseGateway.playerDataManipulator.selectLastQuit(name);
-			if (lastquit.equals("")) {
+			if (lastquit.isEmpty()) {
 				sender.sendMessage(ChatColor.RED + "失敗");
 				sender.sendMessage(ChatColor.RED + "プレイヤー名やプレイヤー名が変更されていないか確認してください");
 				sender.sendMessage(ChatColor.RED + "プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります");

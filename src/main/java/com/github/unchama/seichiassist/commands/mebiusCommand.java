@@ -12,10 +12,6 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.listener.MebiusListener;
 
 public class mebiusCommand implements TabExecutor {
-
-	public mebiusCommand(SeichiAssist plugin) {
-	}
-
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 		return null;

@@ -21,13 +21,7 @@ import com.github.unchama.seichiassist.util.Util;
 import static com.github.unchama.util.ActionStatus.Fail;
 
 public class gachaCommand implements TabExecutor{
-	public SeichiAssist plugin;
 	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-
-
-	public gachaCommand(SeichiAssist plugin){
-		this.plugin = plugin;
-	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command,
 			String label, String[] args) {

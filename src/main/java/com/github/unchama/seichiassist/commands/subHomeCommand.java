@@ -17,11 +17,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class subHomeCommand implements TabExecutor {
-	SeichiAssist plugin;
-
-	public subHomeCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
 	@Override
 	public List<String> onTabComplete(CommandSender arg0, Command arg1,
 			String arg2, String[] arg3) {

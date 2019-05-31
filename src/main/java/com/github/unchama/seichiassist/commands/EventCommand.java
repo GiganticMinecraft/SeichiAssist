@@ -17,13 +17,6 @@ import java.util.List;
  * Support at dev-basic or dev-extreme channel of Discord
  */
 public class EventCommand implements TabExecutor {
-
-	SeichiAssist plugin;
-
-	public EventCommand(SeichiAssist plugin){
-		this.plugin = plugin;
-	}
-
 	@Override
 	public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
 		if (!(commandSender instanceof Player)) {

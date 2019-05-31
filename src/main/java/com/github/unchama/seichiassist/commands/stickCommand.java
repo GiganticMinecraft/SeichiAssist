@@ -15,11 +15,6 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
 
 public class stickCommand implements TabExecutor {
-	SeichiAssist plugin;
-
-	public stickCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
 	@Override
 	public List<String> onTabComplete(CommandSender arg0, Command arg1,
 			String arg2, String[] arg3) {

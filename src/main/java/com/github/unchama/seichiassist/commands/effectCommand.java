@@ -14,11 +14,6 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class effectCommand implements TabExecutor {
-	SeichiAssist plugin;
-
-	public effectCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
 	@Override
 	public List<String> onTabComplete(CommandSender arg0, Command arg1,
 			String arg2, String[] arg3) {

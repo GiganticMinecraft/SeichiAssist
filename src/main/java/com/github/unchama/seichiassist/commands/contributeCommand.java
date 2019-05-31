@@ -16,11 +16,6 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class contributeCommand implements TabExecutor {
-	SeichiAssist plugin;
-
-	public contributeCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
 	@Override
 	public List<String> onTabComplete(CommandSender arg0, Command arg1,
 			String arg2, String[] arg3) {

@@ -25,8 +25,8 @@ public class AchieveCommand implements TabExecutor{
 
 
 
-	public AchieveCommand(SeichiAssist plugin){
-		this.plugin = plugin;
+	public AchieveCommand(){
+
 	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command,

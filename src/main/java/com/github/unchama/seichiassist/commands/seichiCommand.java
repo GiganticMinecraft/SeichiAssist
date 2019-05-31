@@ -19,12 +19,8 @@ import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.ChatColor;
 
 public class seichiCommand implements TabExecutor {
-	SeichiAssist plugin;
+	SeichiAssist plugin = SeichiAssist.instance;
 	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-
-	public seichiCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
 	@Override
 	public List<String> onTabComplete(CommandSender arg0, Command arg1,
 			String arg2, String[] arg3) {
