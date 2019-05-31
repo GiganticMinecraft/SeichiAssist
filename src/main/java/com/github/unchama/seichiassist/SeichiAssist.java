@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
+import com.github.unchama.seichiassist.commands.ContributeCommand;
 import com.github.unchama.seichiassist.commands.legacy.*;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
@@ -909,7 +910,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("unlockachv", new UnlockAchievementCommand()),
 					Pair.of("halfguard", new HalfBlockProtectCommand()),
 					Pair.of("event", new EventCommand()),
-					Pair.of("contribute", new ContributeCommand()),
+					Pair.of("contribute", ContributeCommand.INSTANCE.getExecutor()),
 					Pair.of("subhome", new SubHomeCommand()),
 					Pair.of("gtfever", new GiganticFeverCommand()),
 					Pair.of("minehead", new MineHeadCommand()),
