@@ -30,6 +30,6 @@ data class PartiallyParsedArgs(val parsed: List<Any?>, val yetToBeParsed: List<S
  * @param command 実行コマンドに関する情報
  * @param args 引数情報
  */
-data class ParsedArgCommandContext<out CS: CommandSender>(val sender: CS,
-                                                          val command: ExecutedCommand,
-                                                          val args: PartiallyParsedArgs)
+data class ParsedArgCommandContext<out CS : CommandSender>(val sender: CS,
+                                                           val command: ExecutedCommand,
+                                                           val args: PartiallyParsedArgs)

@@ -8,7 +8,7 @@ import org.bukkit.command.Command
 /**
  * コマンドの[Command.getUsage]を送信者に送り返すだけのアクションを返すExecutor
  */
-object PrintUsageExecutor: ContextualExecutor {
-    override suspend fun executeWith(rawContext: RawCommandContext) =
-            rawContext.command.command.usage.asResponseToSender().transmitTo(rawContext.sender)
+object PrintUsageExecutor : ContextualExecutor {
+  override suspend fun executeWith(rawContext: RawCommandContext) =
+      rawContext.command.command.usage.asResponseToSender().transmitTo(rawContext.sender)
 }
