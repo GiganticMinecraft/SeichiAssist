@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.exp.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
+import com.github.unchama.seichiassist.util.exp.IExperienceManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -105,7 +106,7 @@ public class PlayerData {
 	//合計経験値
 	public int totalexp;
 	//経験値マネージャ
-	public ExperienceManager expmanager;
+	public IExperienceManager expmanager;
 	//合計経験値統合済みフラグ
 	public byte expmarge;
 	//各統計値差分計算用配列

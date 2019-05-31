@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.task.GiganticBerserkTask;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.*;
 import com.github.unchama.seichiassist.util.exp.ExperienceManager;
+import com.github.unchama.seichiassist.util.exp.IExperienceManager;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.sk89q.worldguard.bukkit.WorldConfiguration;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -501,7 +502,7 @@ public class MenuInventoryData {
 		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 
 		//経験値変更用のクラスを設定
-		ExperienceManager expman = new ExperienceManager(player);
+		IExperienceManager expman = new ExperienceManager(player);
 
 		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "木の棒メニュー");
 		ItemStack itemstack;

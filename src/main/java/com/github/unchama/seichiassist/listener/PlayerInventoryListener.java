@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.task.CoolDownTask;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.exp.ExperienceManager;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.exp.IExperienceManager;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -160,7 +161,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			//経験値変更用のクラスを設定
-			ExperienceManager expman = new ExperienceManager(player);
+			IExperienceManager expman = new ExperienceManager(player);
 
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
@@ -816,7 +817,7 @@ public class PlayerInventoryListener implements Listener {
 		PlayerData playerdata = playermap.get(uuid);
 
 		//経験値変更用のクラスを設定
-		ExperienceManager expman = new ExperienceManager(player);
+		IExperienceManager expman = new ExperienceManager(player);
 
 
 		//インベントリ名が以下の時処理
