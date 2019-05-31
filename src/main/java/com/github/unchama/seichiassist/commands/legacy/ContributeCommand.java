@@ -33,7 +33,7 @@ public class ContributeCommand implements CommandExecutor {
 		final DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 		//sqlをusernameで操作
-		if (databaseGateway.playerDataManipulator.addContributionPoint(sender, targetPlayerName, point)) {
+		if (databaseGateway.playerDataManipulator.addContributionPoint__legacy(sender, targetPlayerName, point)) {
 			sender.sendMessage(point >= 0
 					? ChatColor.GREEN + targetPlayerName + "に貢献度ポイント" + point + "を追加しました"
 					: ChatColor.GREEN + targetPlayerName + "の貢献度ポイントを" + point + "減少させました");

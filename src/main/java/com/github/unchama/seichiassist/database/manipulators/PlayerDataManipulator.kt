@@ -1,0 +1,718 @@
+package com.github.unchama.seichiassist.database.manipulators
+
+import arrow.core.Either
+import com.github.unchama.contextualexecutor.builder.CommandResponse
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.PlayerData
+import com.github.unchama.seichiassist.data.RankData
+import com.github.unchama.seichiassist.database.DatabaseConstants
+import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTask
+import com.github.unchama.seichiassist.task.CoolDownTask
+import com.github.unchama.seichiassist.task.PlayerDataSaveTask
+import com.github.unchama.seichiassist.util.BukkitSerialization
+import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.util.ActionStatus
+import org.bukkit.Bukkit
+import org.bukkit.ChatColor
+import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+
+import java.io.IOException
+import java.sql.ResultSet
+import java.sql.SQLException
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.function.Supplier
+
+import com.github.unchama.util.ActionStatus.Fail
+
+class PlayerDataManipulator(private val gateway: DatabaseGateway) {
+    private val plugin = SeichiAssist.instance
+
+    private val tableReference: String
+        get() = gateway.databaseName + "." + DatabaseConstants.PLAYERDATA_TABLENAME
+
+    private inline fun ifCoolDownDoneThenGet(player: Player,
+                                             playerdata: PlayerData,
+                                             supplier: () -> Int): Int {
+        //連打による負荷防止の為クールダウン処理
+        if (!playerdata.votecooldownflag) {
+            player.sendMessage(ChatColor.RED.toString() + "しばらく待ってからやり直してください")
+            return 0
+        }
+        CoolDownTask(player, true, false, false).runTaskLater(plugin, 1200)
+
+        return supplier()
+    }
+
+    //投票特典配布時の処理(p_givenvoteの値の更新もココ)
+    fun compareVotePoint(player: Player, playerdata: PlayerData): Int {
+        return ifCoolDownDoneThenGet(player, playerdata) {
+            val struuid = playerdata.uuid.toString()
+
+            var p_vote = 0
+            var p_givenvote = 0
+
+            var command = "select p_vote,p_givenvote from $tableReference where uuid = '$struuid'"
+            try {
+                gateway.executeQuery(command).use { lrs ->
+                    while (lrs.next()) {
+                        p_vote = lrs.getInt("p_vote")
+                        p_givenvote = lrs.getInt("p_givenvote")
+                    }
+                }
+            } catch (e: SQLException) {
+                println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+                e.printStackTrace()
+                player.sendMessage(ChatColor.RED.toString() + "投票特典の受け取りに失敗しました")
+                return@ifCoolDownDoneThenGet 0
+            }
+
+            //比較して差があればその差の値を返す(同時にp_givenvoteも更新しておく)
+            if (p_vote > p_givenvote) {
+                command = ("update " + tableReference
+                        + " set p_givenvote = " + p_vote
+                        + " where uuid like '" + struuid + "'")
+                if (gateway.executeUpdate(command) == Fail) {
+                    player.sendMessage(ChatColor.RED.toString() + "投票特典の受け取りに失敗しました")
+                    return@ifCoolDownDoneThenGet 0
+                }
+
+                return p_vote - p_givenvote
+            }
+            player.sendMessage(ChatColor.YELLOW.toString() + "投票特典は全て受け取り済みのようです")
+            0
+        }
+    }
+
+    //最新のnumofsorryforbug値を返してmysqlのnumofsorrybug値を初期化する処理
+    fun givePlayerBug(player: Player, playerdata: PlayerData): Int {
+        return ifCoolDownDoneThenGet(player, playerdata) {
+            val struuid = playerdata.uuid.toString()
+            var numofsorryforbug = 0
+
+            var command = "select numofsorryforbug from $tableReference where uuid = '$struuid'"
+            try {
+                gateway.executeQuery(command).use { lrs ->
+                    while (lrs.next()) {
+                        numofsorryforbug = lrs.getInt("numofsorryforbug")
+                    }
+                }
+            } catch (e: SQLException) {
+                println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+                e.printStackTrace()
+                player.sendMessage(ChatColor.RED.toString() + "ガチャ券の受け取りに失敗しました")
+                return@ifCoolDownDoneThenGet 0
+            }
+
+            if (numofsorryforbug > 576) {
+                // 576より多い場合はその値を返す(同時にnumofsorryforbugから-576)
+                command = ("update " + tableReference
+                        + " set numofsorryforbug = numofsorryforbug - 576"
+                        + " where uuid like '" + struuid + "'")
+                if (gateway.executeUpdate(command) == Fail) {
+                    player.sendMessage(ChatColor.RED.toString() + "ガチャ券の受け取りに失敗しました")
+                    return@ifCoolDownDoneThenGet 0
+                }
+
+                return@ifCoolDownDoneThenGet 576
+            } else if (numofsorryforbug > 0) {
+                // 0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
+                command = ("update " + tableReference
+                        + " set numofsorryforbug = 0"
+                        + " where uuid like '" + struuid + "'")
+                if (gateway.executeUpdate(command) == Fail) {
+                    player.sendMessage(ChatColor.RED.toString() + "ガチャ券の受け取りに失敗しました")
+                    return@ifCoolDownDoneThenGet 0
+                }
+
+                return@ifCoolDownDoneThenGet numofsorryforbug
+            }
+
+            player.sendMessage(ChatColor.YELLOW.toString() + "ガチャ券は全て受け取り済みのようです")
+            0
+        }
+    }
+
+    /**
+     * 投票ポイントをインクリメントするメソッド。
+     * @param playerName プレーヤー名
+     * @return 処理の成否
+     */
+    fun incrementVotePoint(playerName: String): ActionStatus {
+        val command = ("update " + tableReference
+                + " set p_vote = p_vote + 1" //1加算
+
+                + " where name like '" + playerName + "'")
+
+        return gateway.executeUpdate(command)
+    }
+
+    /**
+     * プレミアムエフェクトポイントを加算するメソッド。
+     * @param playerName プレーヤーネーム
+     * @param num 足す整数
+     * @return 処理の成否
+     */
+    fun addPremiumEffectPoint(playerName: String, num: Int): ActionStatus {
+        val command = ("update " + tableReference
+                + " set premiumeffectpoint = premiumeffectpoint + " + num //引数で来たポイント数分加算
+
+                + " where name like '" + playerName + "'")
+
+        return gateway.executeUpdate(command)
+    }
+
+
+    //指定されたプレイヤーにガチャ券を送信する
+    fun addPlayerBug(playerName: String, num: Int): ActionStatus {
+        val command = ("update " + tableReference
+                + " set numofsorryforbug = numofsorryforbug + " + num
+                + " where name like '" + playerName + "'")
+
+        return gateway.executeUpdate(command)
+    }
+
+    fun addChainVote(name: String): Boolean {
+        val cal = Calendar.getInstance()
+        val sdf = SimpleDateFormat("yyyy/MM/dd")
+        var lastvote: String? = null
+        var select = "SELECT lastvote FROM " + tableReference + " " +
+                "WHERE name LIKE '" + name + "'"
+        try {
+            gateway.executeQuery(select).use { lrs ->
+                // 初回のnextがnull→データが1件も無い場合
+                if (!lrs.next()) {
+                    return false
+                }
+
+                if (lrs.getString("lastvote") == null || lrs.getString("lastvote") == "") {
+                    lastvote = sdf.format(cal.time)
+                } else {
+                    lastvote = lrs.getString("lastvote")
+                }
+
+                lrs.close()
+
+                val update = "UPDATE " + tableReference + " " +
+                        " SET lastvote = '" + sdf.format(cal.time) + "'" +
+                        " WHERE name LIKE '" + name + "'"
+
+                gateway.executeUpdate(update)
+            }
+        } catch (e: SQLException) {
+            Bukkit.getLogger().warning(Util.getName(name) + " sql failed. -> lastvote")
+            e.printStackTrace()
+            return false
+        }
+
+        select = "SELECT chainvote FROM " + tableReference + " " +
+                "WHERE name LIKE '" + name + "'"
+        try {
+            gateway.executeQuery(select).use { lrs ->
+                // 初回のnextがnull→データが1件も無い場合
+                if (!lrs.next()) {
+                    return false
+                }
+                var count = lrs.getInt("chainvote")
+                try {
+                    val TodayDate = sdf.parse(sdf.format(cal.time))
+                    val LastDate = sdf.parse(lastvote)
+                    val TodayLong = TodayDate.time
+                    val LastLong = LastDate.time
+
+                    val datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
+                    if (datediff <= 1 || datediff >= 0) {
+                        count++
+                    } else {
+                        count = 1
+                    }
+                    //プレイヤーがオンラインの時即時反映させる
+                    val player = Bukkit.getServer().getPlayer(name)
+                    if (player != null) {
+                        //UUIDを取得
+                        val givenuuid = player.uniqueId
+                        //playerdataを取得
+                        val playerdata = SeichiAssist.playermap[givenuuid]!!
+
+                        playerdata.ChainVote++
+                    }
+                } catch (e: ParseException) {
+                    e.printStackTrace()
+                }
+
+                lrs.close()
+
+                val update = "UPDATE " + tableReference + " " +
+                        " SET chainvote = " + count +
+                        " WHERE name LIKE '" + name + "'"
+
+                gateway.executeUpdate(update)
+            }
+        } catch (e: SQLException) {
+            Bukkit.getLogger().warning(Util.getName(name) + " sql failed. -> chainvote")
+            e.printStackTrace()
+            return false
+        }
+
+        return true
+    }
+
+    @Deprecated("戻り値の情報が少ないためdeprecated.", replaceWith = ReplaceWith("addContributionPoint"))
+    fun addContributionPoint__legacy(sender: CommandSender, targetName: String, p: Int): Boolean {
+        var point: Int? = null
+
+        val select = "SELECT contribute_point FROM $tableReference WHERE name LIKE '$targetName'"
+
+        // selectで確認
+        try {
+            gateway.executeQuery(select).use { lrs ->
+                // 初回のnextがnull→データが1件も無い場合
+                if (!lrs.next()) {
+                    sender.sendMessage(ChatColor.RED.toString() + "" + targetName + " はデータベースに登録されていません")
+                    return false
+                }
+                //今までのポイントを加算して計算
+                point = p + lrs.getInt("contribute_point")
+            }
+        } catch (e: SQLException) {
+            sender.sendMessage(ChatColor.RED.toString() + "貢献度ptの取得に失敗しました")
+            Bukkit.getLogger().warning(Util.getName(targetName) + " sql failed. -> contribute_point")
+            e.printStackTrace()
+            return false
+        }
+
+        val update = "UPDATE " + tableReference + " " +
+                " SET contribute_point = " + point!! +
+                " WHERE name LIKE '" + targetName + "'"
+
+        if (gateway.executeUpdate(update) == Fail) {
+            sender.sendMessage(ChatColor.RED.toString() + "貢献度ptの変更に失敗しました")
+            Bukkit.getLogger().warning(Util.getName(targetName) + " sql failed. -> contribute_point")
+            return false
+        }
+        return true
+    }
+
+    suspend fun addContributionPoint(targetName: String, point: Int): Either<CommandResponse, Unit> {
+        TODO("implement")
+    }
+
+    // anniversary変更
+    fun setAnniversary(anniversary: Boolean, uuid: UUID?): Boolean {
+        var command = "UPDATE $tableReference SET anniversary = $anniversary"
+        if (uuid != null) {
+            command += " WHERE uuid = '$uuid'"
+        }
+        if (gateway.executeUpdate(command) == Fail) {
+            Bukkit.getLogger().warning("sql failed. -> setAnniversary")
+            return false
+        }
+        return true
+    }
+
+    /**
+     * 実績予約領域書き換え処理
+     *
+     * @param sender 発行Player
+     * @param targetName 対象Playerのname
+     * @param achvNo 対象実績No
+     * @return 成否…true: 成功、false: 失敗
+     */
+    fun writegiveachvNo(sender: Player, targetName: String, achvNo: String): Boolean {
+        val select = "SELECT giveachvNo FROM " + tableReference + " " +
+                "WHERE name LIKE '" + targetName + "'"
+        val update = "UPDATE " + tableReference + " " +
+                " SET giveachvNo = " + achvNo +
+                " WHERE name LIKE '" + targetName + "'"
+
+        // selectで確認
+        try {
+            gateway.executeQuery(select).use { lrs ->
+                // 初回のnextがnull→データが1件も無い場合
+                if (!lrs.next()) {
+                    sender.sendMessage(ChatColor.RED.toString() + "" + targetName + " はデータベースに登録されていません")
+                    return false
+                }
+                // 現在予約されている値を取得
+                val giveachvNo = lrs.getInt("giveachvNo")
+                // 既に予約がある場合
+                if (giveachvNo != 0) {
+                    sender.sendMessage(ChatColor.RED.toString() + "" + targetName + " には既に実績No " + giveachvNo + " が予約されています")
+                    return false
+                }
+                lrs.close()
+
+                // 実績を予約
+                gateway.executeUpdate(update)
+            }
+        } catch (e: SQLException) {
+            sender.sendMessage(ChatColor.RED.toString() + "実績の予約に失敗しました")
+            Bukkit.getLogger().warning(Util.getName(sender) + " sql failed. -> writegiveachvNo")
+            e.printStackTrace()
+            return false
+        }
+
+        return true
+    }
+
+
+    fun saveShareInv(player: Player, playerdata: PlayerData, data: String): Boolean {
+        if (!playerdata.shareinvcooldownflag) {
+            player.sendMessage(ChatColor.RED.toString() + "しばらく待ってからやり直してください")
+            return false
+        }
+        //連打による負荷防止の為クールダウン処理
+        CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
+        val struuid = playerdata.uuid.toString()
+        var command = "SELECT shareinv FROM " + tableReference + " " +
+                "WHERE uuid = '" + struuid + "'"
+        try {
+            gateway.executeQuery(command).use { lrs ->
+                lrs.next()
+                val shareinv = lrs.getString("shareinv")
+                lrs.close()
+                if (shareinv != null && shareinv != "") {
+                    player.sendMessage(ChatColor.RED.toString() + "既にアイテムが収納されています")
+                    return false
+                }
+                command = "UPDATE " + tableReference + " " +
+                        "SET shareinv = '" + data + "' " +
+                        "WHERE uuid = '" + struuid + "'"
+                if (gateway.executeUpdate(command) == Fail) {
+                    player.sendMessage(ChatColor.RED.toString() + "アイテムの収納に失敗しました")
+                    Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> saveShareInv(executeUpdate failed)")
+                    return false
+                }
+            }
+        } catch (e: SQLException) {
+            player.sendMessage(ChatColor.RED.toString() + "共有インベントリにアクセスできません")
+            Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> clearShareInv(SQLException)")
+            e.printStackTrace()
+            return false
+        }
+
+        return true
+    }
+
+    fun loadShareInv(player: Player, playerdata: PlayerData): String? {
+        if (!playerdata.shareinvcooldownflag) {
+            player.sendMessage(ChatColor.RED.toString() + "しばらく待ってからやり直してください")
+            return null
+        }
+        //連打による負荷防止の為クールダウン処理
+        CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
+        val struuid = playerdata.uuid.toString()
+        val command = "SELECT shareinv FROM " + tableReference + " " +
+                "WHERE uuid = '" + struuid + "'"
+        var shareinv: String? = null
+        try {
+            gateway.executeQuery(command).use { lrs ->
+                lrs.next()
+                shareinv = lrs.getString("shareinv")
+            }
+        } catch (e: SQLException) {
+            player.sendMessage(ChatColor.RED.toString() + "共有インベントリにアクセスできません")
+            Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> loadShareInv")
+            e.printStackTrace()
+        }
+
+        return shareinv
+    }
+
+    fun clearShareInv(player: Player, playerdata: PlayerData): Boolean {
+        val struuid = playerdata.uuid.toString()
+        val command = "UPDATE " + tableReference + " " +
+                "SET shareinv = '' " +
+                "WHERE uuid = '" + struuid + "'"
+        if (gateway.executeUpdate(command) == Fail) {
+            player.sendMessage(ChatColor.RED.toString() + "アイテムのクリアに失敗しました")
+            Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> clearShareInv")
+            return false
+        }
+        return true
+    }
+
+    //lastquitがdays日以上(または未登録)のプレイヤー名を配列で取得
+    fun selectLeavers(days: Int): Map<UUID, String>? {
+        val leavers = HashMap<UUID, String>()
+        val command = ("select name, uuid from " + tableReference
+                + " where ((lastquit <= date_sub(curdate(), interval " + days + " day))"
+                + " or (lastquit is null)) and (name != '') and (uuid != '')")
+        try {
+            gateway.executeQuery(command).use { lrs ->
+                while (lrs.next()) {
+                    try {
+                        //結果のStringをUUIDに変換
+                        val uuid = UUID.fromString(lrs.getString("uuid"))
+                        if (leavers.containsKey(uuid)) {
+                            println("playerdataにUUIDが重複しています: " + lrs.getString("uuid"))
+                        } else {
+                            //HashMapにUUIDとnameを登録
+                            leavers[uuid] = lrs.getString("name")
+                        }
+                    } catch (e: IllegalArgumentException) {
+                        println("不適切なUUID: " + lrs.getString("name") + ": " + lrs.getString("uuid"))
+                    }
+
+                }
+            }
+        } catch (e: SQLException) {
+            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+            e.printStackTrace()
+            return null
+        }
+
+        return leavers
+    }
+
+    //ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
+    private fun updateBlockRankingList(): Boolean {
+        val ranklist = ArrayList<RankData>()
+        SeichiAssist.allplayerbreakblockint = 0
+        val command = ("select name,level,totalbreaknum from " + tableReference
+                + " order by totalbreaknum desc")
+        try {
+            gateway.executeQuery(command).use { lrs ->
+                while (lrs.next()) {
+                    val rankdata = RankData()
+                    rankdata.name = lrs.getString("name")
+                    rankdata.level = lrs.getInt("level")
+                    rankdata.totalbreaknum = lrs.getLong("totalbreaknum")
+                    ranklist.add(rankdata)
+                    SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum
+                }
+            }
+        } catch (e: SQLException) {
+            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+            e.printStackTrace()
+            return false
+        }
+
+        SeichiAssist.ranklist.clear()
+        SeichiAssist.ranklist.addAll(ranklist)
+        return true
+    }
+
+    //ランキング表示用にプレイ時間のカラムだけ全員分引っ張る
+    private fun updatePlayTickRankingList(): Boolean {
+        val ranklist = ArrayList<RankData>()
+        val command = ("select name,playtick from " + tableReference
+                + " order by playtick desc")
+        try {
+            gateway.executeQuery(command).use { lrs ->
+                while (lrs.next()) {
+                    val rankdata = RankData()
+                    rankdata.name = lrs.getString("name")
+                    rankdata.playtick = lrs.getInt("playtick")
+                    ranklist.add(rankdata)
+                }
+            }
+        } catch (e: SQLException) {
+            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+            e.printStackTrace()
+            return false
+        }
+
+        SeichiAssist.ranklist_playtick.clear()
+        SeichiAssist.ranklist_playtick.addAll(ranklist)
+        return true
+    }
+
+    //ランキング表示用に投票数のカラムだけ全員分引っ張る
+    private fun updateVoteRankingList(): Boolean {
+        val ranklist = ArrayList<RankData>()
+        val command = ("select name,p_vote from " + tableReference
+                + " order by p_vote desc")
+        try {
+            gateway.executeQuery(command).use { lrs ->
+                while (lrs.next()) {
+                    val rankdata = RankData()
+                    rankdata.name = lrs.getString("name")
+                    rankdata.p_vote = lrs.getInt("p_vote")
+                    ranklist.add(rankdata)
+                }
+            }
+        } catch (e: SQLException) {
+            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+            e.printStackTrace()
+            return false
+        }
+
+        SeichiAssist.ranklist_p_vote.clear()
+        SeichiAssist.ranklist_p_vote.addAll(ranklist)
+        return true
+    }
+
+    //ランキング表示用にプレミアムエフェクトポイントのカラムだけ全員分引っ張る
+    private fun updatePremiumEffectPointRankingList(): Boolean {
+        val ranklist = ArrayList<RankData>()
+        val command = ("select name,premiumeffectpoint from " + tableReference
+                + " order by premiumeffectpoint desc")
+        try {
+            gateway.executeQuery(command).use { lrs ->
+                while (lrs.next()) {
+                    val rankdata = RankData()
+                    rankdata.name = lrs.getString("name")
+                    rankdata.premiumeffectpoint = lrs.getInt("premiumeffectpoint")
+                    ranklist.add(rankdata)
+                }
+            }
+        } catch (e: SQLException) {
+            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+            e.printStackTrace()
+            return false
+        }
+
+        SeichiAssist.ranklist_premiumeffectpoint.clear()
+        SeichiAssist.ranklist_premiumeffectpoint.addAll(ranklist)
+        return true
+    }
+
+    //ランキング表示用に上げたりんご数のカラムだけ全員分引っ張る
+    private fun updateAppleNumberRankingList(): Boolean {
+        val ranklist = ArrayList<RankData>()
+        SeichiAssist.allplayergiveapplelong = 0
+        val command = "select name,p_apple from $tableReference order by p_apple desc"
+        try {
+            gateway.executeQuery(command).use { lrs ->
+                while (lrs.next()) {
+                    val rankdata = RankData()
+                    rankdata.name = lrs.getString("name")
+                    rankdata.p_apple = lrs.getInt("p_apple")
+                    ranklist.add(rankdata)
+                    SeichiAssist.allplayergiveapplelong += rankdata.p_apple.toLong()
+                }
+            }
+        } catch (e: SQLException) {
+            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+            e.printStackTrace()
+            return false
+        }
+
+        SeichiAssist.ranklist_p_apple.clear()
+        SeichiAssist.ranklist_p_apple.addAll(ranklist)
+        return true
+    }
+
+    /**
+     * 全ランキングリストの更新処理
+     * @return 成否…true: 成功、false: 失敗
+     * TODO この処理はDB上と通信を行う為非同期にすべき
+     */
+    fun updateAllRankingList(): Boolean {
+        if (!updateBlockRankingList()) return false
+        if (!updatePlayTickRankingList()) return false
+        if (!updateVoteRankingList()) return false
+        if (!updatePremiumEffectPointRankingList()) return false
+        return if (!updateAppleNumberRankingList()) false else true
+
+    }
+
+    //プレイヤーレベル全リセット
+    fun resetAllPlayerLevel(): ActionStatus {
+        val command = ("update " + tableReference
+                + " set level = 1")
+        return gateway.executeUpdate(command)
+    }
+
+    //プレイヤーのレベルと整地量をセット
+    fun resetPlayerLevelandBreaknum(uuid: UUID): ActionStatus {
+        val struuid = uuid.toString()
+        val playerdata = SeichiAssist.playermap[uuid]!!
+        val level = playerdata.level
+        val totalbreaknum = playerdata.totalbreaknum
+
+        val command = ("update " + tableReference
+                + " set"
+                + " level = " + level
+                + ",totalbreaknum = " + totalbreaknum
+                + " where uuid like '" + struuid + "'")
+
+        return gateway.executeUpdate(command)
+    }
+
+    //プレイヤーのレベルと整地量をセット(プレイヤーデータが無い場合)
+    fun resetPlayerLevelandBreaknum(uuid: UUID, level: Int): ActionStatus {
+        val struuid = uuid.toString()
+        val totalbreaknum = SeichiAssist.levellist[level - 1]
+
+        val command = ("update " + tableReference
+                + " set"
+                + " level = " + level
+                + ",totalbreaknum = " + totalbreaknum
+                + " where uuid like '" + struuid + "'")
+
+        return gateway.executeUpdate(command)
+    }
+
+    //全員に詫びガチャの配布
+    fun addAllPlayerBug(amount: Int): ActionStatus {
+        val command = "update $tableReference set numofsorryforbug = numofsorryforbug + $amount"
+        return gateway.executeUpdate(command)
+    }
+
+    //指定プレイヤーの四次元ポケットの中身取得
+    fun selectInventory(uuid: UUID): Inventory? {
+        val struuid = uuid.toString()
+        var inventory: Inventory? = null
+        val command = ("select inventory from " + tableReference
+                + " where uuid like '" + struuid + "'")
+        try {
+            gateway.executeQuery(command).use { lrs ->
+                while (lrs.next()) {
+                    inventory = BukkitSerialization.fromBase64(lrs.getString("inventory"))
+                }
+            }
+        } catch (e: SQLException) {
+            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+            e.printStackTrace()
+            return null
+        } catch (e: IOException) {
+            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+            e.printStackTrace()
+            return null
+        }
+
+        return inventory
+    }
+
+    //指定プレイヤーのlastquitを取得
+    fun selectLastQuit(name: String): String? {
+        var lastquit = ""
+        val command = "select lastquit from $tableReference where name = '$name'"
+        try {
+            gateway.executeQuery(command).use { lrs ->
+                while (lrs.next()) {
+                    lastquit = lrs.getString("lastquit")
+                }
+            }
+        } catch (e: SQLException) {
+            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+            e.printStackTrace()
+            return null
+        }
+
+        return lastquit
+    }
+
+    fun loadPlayerData(playerdata: PlayerData) {
+        val player = Bukkit.getPlayer(playerdata.uuid)
+        player.sendMessage(ChatColor.YELLOW.toString() + "プレイヤーデータ取得中。完了まで動かずお待ち下さい…")
+        CheckAlreadyExistPlayerDataTask(playerdata).runTaskAsynchronously(plugin)
+    }
+
+    //ondisable"以外"の時のプレイヤーデータセーブ処理(loginflag折りません)
+    fun savePlayerData(playerdata: PlayerData) {
+        PlayerDataSaveTask(playerdata, false, false).runTaskAsynchronously(plugin)
+    }
+
+    //ondisable"以外"の時のプレイヤーデータセーブ処理(ログアウト時に使用、loginflag折ります)
+    fun saveQuitPlayerData(playerdata: PlayerData) {
+        PlayerDataSaveTask(playerdata, false, true).runTaskAsynchronously(plugin)
+    }
+
+}
