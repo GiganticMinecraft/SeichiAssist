@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.database.manipulators
 
-import arrow.core.Either
+import arrow.core.*
+import arrow.core.extensions.either.fx.fx as fxEither
 import com.github.unchama.contextualexecutor.builder.CommandResponse
+import com.github.unchama.contextualexecutor.builder.ResponseOrResult
+import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.RankData
@@ -20,12 +23,10 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
 import java.io.IOException
-import java.sql.ResultSet
 import java.sql.SQLException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.function.Supplier
 
 import com.github.unchama.util.ActionStatus.Fail
 
@@ -297,8 +298,49 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         return true
     }
 
-    suspend fun addContributionPoint(targetName: String, point: Int): Either<CommandResponse, Unit> {
-        TODO("implement")
+    @Suppress("RedundantSuspendModifier")
+    private suspend fun assertPlayerDataExistenceFor(playerName: String): Either<CommandResponse, Unit> =
+        try {
+            gateway.executeQuery("select * from $tableReference where name like $playerName").use { resultSet ->
+                if (!resultSet.next()) {
+                    "${ChatColor.RED}$playerName はデータベースに登録されていません。".asResponseToSender().some().left()
+                } else {
+                    Unit.right()
+                }
+            }
+        } catch (e: SQLException) {
+            Bukkit.getLogger().warning("sql failed on checking data existence of $playerName")
+            e.printStackTrace()
+
+            "${ChatColor.RED}プレーヤーデータへのアクセスに失敗しました。".asResponseToSender().some().left()
+        }
+
+    suspend fun addContributionPoint(targetPlayerName: String, point: Int): ResponseOrResult<Unit> {
+        @Suppress("RedundantSuspendModifier")
+        suspend fun executeUpdate(): ResponseOrResult<Unit> {
+            val updateCommand = "UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name LIKE '$targetPlayerName'"
+
+            return if (gateway.executeUpdate(updateCommand) == Fail) {
+                Bukkit.getLogger().warning("sql failed on updating $targetPlayerName's contribute_point")
+                "${ChatColor.RED}貢献度ptの変更に失敗しました。".asResponseToSender().some().left()
+            } else {
+                Unit.right()
+            }
+        }
+
+        @Suppress("RedundantSuspendModifier")
+        suspend fun updatePlayerDataMemoryCache() {
+            Bukkit.getServer().getPlayer(targetPlayerName)?.let { targetPlayer ->
+                val targetPlayerData = SeichiAssist.playermap[targetPlayer.uniqueId] ?: return@let
+
+                targetPlayerData.contribute_point += point
+                targetPlayerData.isContribute(targetPlayer, point)
+            }
+        }
+
+        return assertPlayerDataExistenceFor(targetPlayerName)
+                .flatMap { executeUpdate() }
+                .map { updatePlayerDataMemoryCache() }
     }
 
     // anniversary変更
