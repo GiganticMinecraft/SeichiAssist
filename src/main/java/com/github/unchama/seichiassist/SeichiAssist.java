@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.ContributeCommand;
 import com.github.unchama.seichiassist.commands.EffectCommand;
 import com.github.unchama.seichiassist.commands.EventCommand;
+import com.github.unchama.seichiassist.commands.StickCommand;
 import com.github.unchama.seichiassist.commands.legacy.*;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
@@ -905,7 +906,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("ef", EffectCommand.INSTANCE.getExecutor()),
 					Pair.of("level",new LevelCommand()),
 					Pair.of("lastquit",new LastQuitCommand()),
-					Pair.of("stick",new StickCommand()),
+					Pair.of("stick", StickCommand.INSTANCE.getExecutor()),
 					Pair.of("rmp",new RmpCommand()),
 					Pair.of("shareinv",new ShareInvCommand()),
 					Pair.of("mebius",new MebiusCommand()),
