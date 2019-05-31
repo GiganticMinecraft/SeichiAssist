@@ -3,19 +3,15 @@ package com.github.unchama.seichiassist.commands
 import arrow.core.None
 import arrow.core.Some
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
-import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
 import com.github.unchama.contextualexecutor.builder.response.plus
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.SeichiAssist
-import org.bukkit.ChatColor
-import org.bukkit.entity.Player
+import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 
 object EffectCommand {
 
-  private val toggleExecutor = ContextualExecutorBuilder
-      .beginConfiguration()
-      .refineSenderWithError<Player>("${ChatColor.GREEN}このコマンドはゲーム内から実行してください。")
+  private val toggleExecutor = playerCommandBuilder
       .execution { context ->
         val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution None
         val toggleResponse = playerData.toggleEffect()
@@ -25,9 +21,7 @@ object EffectCommand {
       }
       .build()
 
-  private val messageFlagToggleExecutor = ContextualExecutorBuilder
-      .beginConfiguration()
-      .refineSenderWithError<Player>("${ChatColor.GREEN}このコマンドはゲーム内から実行してください。")
+  private val messageFlagToggleExecutor = playerCommandBuilder
       .execution { context ->
         val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution None
         val toggleResponse = playerData.toggleMessageFlag()

@@ -2,16 +2,13 @@ package com.github.unchama.seichiassist.commands
 
 import arrow.core.None
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
-import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
+import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearBagListener
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearItemListener
 import com.github.unchama.seichiassist.util.Util
-import org.bukkit.ChatColor
-import org.bukkit.entity.Player
 
 object EventCommand {
-  val executor = ContextualExecutorBuilder.beginConfiguration()
-      .refineSenderWithError<Player>("${ChatColor.GREEN}このコマンドはゲーム内から実行してください。")
+  val executor = playerCommandBuilder
       .execution { context ->
         if (context.args.yetToBeParsed.firstOrNull() != "get") return@execution None
 
