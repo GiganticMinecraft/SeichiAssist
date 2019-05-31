@@ -15,10 +15,10 @@ import org.bukkit.entity.Player;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 
-public class contributeCommand implements TabExecutor {
+public class ContributeValueCommand implements TabExecutor {
 	SeichiAssist plugin;
 
-	public contributeCommand(SeichiAssist _plugin){
+	public ContributeValueCommand(SeichiAssist _plugin){
 		plugin = _plugin;
 	}
 	@Override

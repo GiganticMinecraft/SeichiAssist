@@ -11,12 +11,12 @@ import org.bukkit.command.TabExecutor;
 
 import java.util.List;
 
-public class lastquitCommand implements TabExecutor{
+public class LastQuitCommand implements TabExecutor{
 	public SeichiAssist plugin;
 	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 
-	public lastquitCommand(SeichiAssist plugin){
+	public LastQuitCommand(SeichiAssist plugin){
 		this.plugin = plugin;
 	}
 	@Override

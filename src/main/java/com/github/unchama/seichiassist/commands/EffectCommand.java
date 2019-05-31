@@ -13,10 +13,10 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 
-public class effectCommand implements TabExecutor {
+public class EffectCommand implements TabExecutor {
 	SeichiAssist plugin;
 
-	public effectCommand(SeichiAssist _plugin){
+	public EffectCommand(SeichiAssist _plugin){
 		plugin = _plugin;
 	}
 	@Override

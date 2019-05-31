@@ -18,11 +18,11 @@ import com.github.unchama.seichiassist.util.Util;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class seichiCommand implements TabExecutor {
+public class SeichiCommand implements TabExecutor {
 	SeichiAssist plugin;
 	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
-	public seichiCommand(SeichiAssist _plugin){
+	public SeichiCommand(SeichiAssist _plugin){
 		plugin = _plugin;
 	}
 	@Override

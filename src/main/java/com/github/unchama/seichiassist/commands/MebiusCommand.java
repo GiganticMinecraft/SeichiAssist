@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.listener.MebiusListener;
 
-public class mebiusCommand implements TabExecutor {
+public class MebiusCommand implements TabExecutor {
 
-	public mebiusCommand(SeichiAssist plugin) {
+	public MebiusCommand(SeichiAssist plugin) {
 	}
 
 	@Override

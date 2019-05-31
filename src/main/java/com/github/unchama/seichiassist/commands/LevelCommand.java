@@ -22,11 +22,11 @@ import com.github.unchama.seichiassist.data.PlayerData;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 
-public class levelCommand implements TabExecutor{
+public class LevelCommand implements TabExecutor{
 	public SeichiAssist plugin;
 	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
-	public levelCommand(SeichiAssist plugin){
+	public LevelCommand(SeichiAssist plugin){
 		this.plugin = plugin;
 	}
 	@Override

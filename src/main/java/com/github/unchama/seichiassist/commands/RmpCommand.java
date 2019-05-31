@@ -21,11 +21,11 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-public class rmpCommand implements TabExecutor {
+public class RmpCommand implements TabExecutor {
 	static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	private Map<UUID, String> leavers;
 
-	public rmpCommand(SeichiAssist plugin){
+	public RmpCommand(SeichiAssist plugin){
 	}
 
 	@Override

@@ -20,12 +20,12 @@ import com.github.unchama.seichiassist.util.Util;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 
-public class gachaCommand implements TabExecutor{
+public class GachaCommand implements TabExecutor{
 	public SeichiAssist plugin;
 	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 
-	public gachaCommand(SeichiAssist plugin){
+	public GachaCommand(SeichiAssist plugin){
 		this.plugin = plugin;
 	}
 	@Override

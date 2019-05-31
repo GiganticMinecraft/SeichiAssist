@@ -16,10 +16,10 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.UUID;
 
-public class subHomeCommand implements TabExecutor {
+public class SubHomeCommand implements TabExecutor {
 	SeichiAssist plugin;
 
-	public subHomeCommand(SeichiAssist _plugin){
+	public SubHomeCommand(SeichiAssist _plugin){
 		plugin = _plugin;
 	}
 	@Override

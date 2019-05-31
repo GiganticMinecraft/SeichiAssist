@@ -14,10 +14,10 @@ import org.bukkit.inventory.ItemStack;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
 
-public class stickCommand implements TabExecutor {
+public class StickCommand implements TabExecutor {
 	SeichiAssist plugin;
 
-	public stickCommand(SeichiAssist _plugin){
+	public StickCommand(SeichiAssist _plugin){
 		plugin = _plugin;
 	}
 	@Override
