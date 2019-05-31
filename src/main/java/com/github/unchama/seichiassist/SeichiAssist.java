@@ -48,6 +48,7 @@ public class SeichiAssist extends JavaPlugin{
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
 
+	// TODO staticであるべきではない
 	public static DatabaseGateway databaseGateway;
 	public static Config config;
 
