@@ -81,8 +81,7 @@ public class SubHomeCommand implements CommandExecutor {
 					else if(args[0].equalsIgnoreCase("name")){
 						player.sendMessage("サブホームポイント" + num + "に設定する名前をチャットで入力してください");
 						player.sendMessage(ChatColor.YELLOW + "※入力されたチャット内容は他のプレイヤーには見えません");
-						playerdata.setHomeNameNum = num-1;
-						playerdata.isSubHomeNameChange = true;
+						playerdata.setSetHomeNameNum(num - 1);
 						return true;
 					}
 				}

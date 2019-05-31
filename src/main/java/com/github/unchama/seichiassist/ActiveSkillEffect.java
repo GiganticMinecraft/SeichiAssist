@@ -73,7 +73,7 @@ public enum ActiveSkillEffect {
 			new ExplosionTask(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 0);
 			break;
 		case BLIZZARD:
-			if(playerdata.activeskilldata.skillnum < 3){
+			if(playerdata.getActiveskilldata().skillnum < 3){
 				new BlizzardTask(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			}else{
 				if(SeichiAssist.DEBUG){
@@ -86,7 +86,7 @@ public enum ActiveSkillEffect {
 
 			break;
 		case METEO:
-			if(playerdata.activeskilldata.skillnum < 3){
+			if(playerdata.getActiveskilldata().skillnum < 3){
 				new MeteoTask(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			}else{
 				new MeteoTask(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 10);

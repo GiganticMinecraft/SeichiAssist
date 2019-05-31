@@ -50,10 +50,10 @@ public class PlayerDataSaveTask extends BukkitRunnable{
 	}
 
 	private void updatePlayerMineStack(Statement stmt) throws SQLException {
-		final String playerUuid = playerdata.uuid.toString();
+		final String playerUuid = playerdata.getUuid().toString();
 		for (final MineStackObj mineStackObj : SeichiAssist.minestacklist) {
 			final String iThObjectName = mineStackObj.getMineStackObjName();
-			final long iThObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj);
+			final long iThObjectAmount = playerdata.getMinestack().getStackedAmountOf(mineStackObj);
 
 			final String updateCommand = "insert into seichiassist.mine_stack"
 					+ "(player_uuid, object_name, amount) values "
@@ -65,7 +65,7 @@ public class PlayerDataSaveTask extends BukkitRunnable{
 	}
 
 	private void updateSubHome() throws SQLException {
-		final String playerUuid = playerdata.uuid.toString();
+		final String playerUuid = playerdata.getUuid().toString();
 		for (Map.Entry<Integer, SubHome> subHomeEntry : playerdata.getSubHomeEntries()) {
 			final int subHomeId = subHomeEntry.getKey();
 			final SubHome subHome = subHomeEntry.getValue();
@@ -97,7 +97,7 @@ public class PlayerDataSaveTask extends BukkitRunnable{
 	}
 
 	private void updateGridTemplate(Statement stmt) throws SQLException {
-		final String playerUuid = playerdata.uuid.toString();
+		final String playerUuid = playerdata.getUuid().toString();
 
 		// 既存データをすべてクリアする
 		stmt.executeUpdate("delete from seichiassist.grid_template where designer_uuid = '" + playerUuid + "'");
@@ -120,9 +120,9 @@ public class PlayerDataSaveTask extends BukkitRunnable{
 	}
 
 	private void updateActiveSkillEffectUnlockState(Statement stmt) throws SQLException {
-		final String playerUuid = playerdata.uuid.toString();
+		final String playerUuid = playerdata.getUuid().toString();
 		ActiveSkillEffect[] activeSkillEffects = ActiveSkillEffect.values();
-		final Set<ActiveSkillEffect> obtainedEffects = playerdata.activeskilldata.obtainedSkillEffects;
+		final Set<ActiveSkillEffect> obtainedEffects = playerdata.getActiveskilldata().obtainedSkillEffects;
 
 		final String removeCommand = "delete from "
 				+ "seichiassist.unlocked_active_skill_effect "
@@ -144,9 +144,9 @@ public class PlayerDataSaveTask extends BukkitRunnable{
 	}
 
 	private void updateActiveSkillPremiumEffectUnlockState(Statement stmt) throws SQLException {
-		final String playerUuid = playerdata.uuid.toString();
+		final String playerUuid = playerdata.getUuid().toString();
 		ActiveSkillPremiumEffect[] activeSkillPremiumEffects = ActiveSkillPremiumEffect.values();
-		final Set<ActiveSkillPremiumEffect> obtainedEffects = playerdata.activeskilldata.obtainedSkillPremiumEffects;
+		final Set<ActiveSkillPremiumEffect> obtainedEffects = playerdata.getActiveskilldata().obtainedSkillPremiumEffects;
 
 		final String removeCommand = "delete from "
 				+ "seichiassist.unlocked_active_skill_premium_effect where "
@@ -168,73 +168,73 @@ public class PlayerDataSaveTask extends BukkitRunnable{
 	}
 
 	private void updatePlayerDataColumns(Statement stmt) throws SQLException {
-		final String playerUuid = playerdata.uuid.toString();
+		final String playerUuid = playerdata.getUuid().toString();
 
 		//実績のフラグ(BitSet)保存用変換処理
-		long[] titleArray = playerdata.TitleFlags.toLongArray();
+		long[] titleArray = playerdata.getTitleFlags().toLongArray();
 		String[] titleNums = Arrays.stream(titleArray).mapToObj(Long::toHexString).toArray(String[]::new);
 		String flagString = String.join(",", titleNums);
 
 		final String command = "update seichiassist.playerdata set"
 				//名前更新処理
-				+ " name = '" + playerdata.name + "'"
+				+ " name = '" + playerdata.getName() + "'"
 
 				//各種数値更新処理
-				+ ",effectflag = " + playerdata.effectflag
-				+ ",minestackflag = " + playerdata.minestackflag
-				+ ",messageflag = " + playerdata.messageflag
-				+ ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum
-				+ ",assaultflag = " + playerdata.activeskilldata.assaultflag
-				+ ",activeskilltype = " + playerdata.activeskilldata.skilltype
-				+ ",activeskillnum = " + playerdata.activeskilldata.skillnum
-				+ ",assaultskilltype = " + playerdata.activeskilldata.assaulttype
-				+ ",assaultskillnum = " + playerdata.activeskilldata.assaultnum
-				+ ",arrowskill = " + playerdata.activeskilldata.arrowskill
-				+ ",multiskill = " + playerdata.activeskilldata.multiskill
-				+ ",breakskill = " + playerdata.activeskilldata.breakskill
-				+ ",fluidcondenskill = " + playerdata.activeskilldata.fluidcondenskill
-				+ ",watercondenskill = " + playerdata.activeskilldata.watercondenskill
-				+ ",lavacondenskill = " + playerdata.activeskilldata.lavacondenskill
-				+ ",effectnum = " + playerdata.activeskilldata.effectnum
-				+ ",gachapoint = " + playerdata.gachapoint
-				+ ",gachaflag = " + playerdata.gachaflag
-				+ ",level = " + playerdata.level
-				+ ",rgnum = " + playerdata.rgnum
-				+ ",totalbreaknum = " + playerdata.totalbreaknum
-				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
-				+ ",playtick = " + playerdata.playtick
+				+ ",effectflag = " + playerdata.getEffectflag()
+				+ ",minestackflag = " + playerdata.getMinestackflag()
+				+ ",messageflag = " + playerdata.getMessageflag()
+				+ ",activemineflagnum = " + playerdata.getActiveskilldata().mineflagnum
+				+ ",assaultflag = " + playerdata.getActiveskilldata().assaultflag
+				+ ",activeskilltype = " + playerdata.getActiveskilldata().skilltype
+				+ ",activeskillnum = " + playerdata.getActiveskilldata().skillnum
+				+ ",assaultskilltype = " + playerdata.getActiveskilldata().assaulttype
+				+ ",assaultskillnum = " + playerdata.getActiveskilldata().assaultnum
+				+ ",arrowskill = " + playerdata.getActiveskilldata().arrowskill
+				+ ",multiskill = " + playerdata.getActiveskilldata().multiskill
+				+ ",breakskill = " + playerdata.getActiveskilldata().breakskill
+				+ ",fluidcondenskill = " + playerdata.getActiveskilldata().fluidcondenskill
+				+ ",watercondenskill = " + playerdata.getActiveskilldata().watercondenskill
+				+ ",lavacondenskill = " + playerdata.getActiveskilldata().lavacondenskill
+				+ ",effectnum = " + playerdata.getActiveskilldata().effectnum
+				+ ",gachapoint = " + playerdata.getGachapoint()
+				+ ",gachaflag = " + playerdata.getGachaflag()
+				+ ",level = " + playerdata.getLevel()
+				+ ",rgnum = " + playerdata.getRgnum()
+				+ ",totalbreaknum = " + playerdata.getTotalbreaknum()
+				+ ",inventory = '" + BukkitSerialization.toBase64(playerdata.getInventory()) + "'"
+				+ ",playtick = " + playerdata.getPlaytick()
 				+ ",lastquit = cast( now() as datetime )"
-				+ ",killlogflag = " + playerdata.dispkilllogflag
-				+ ",worldguardlogflag = " + playerdata.dispworldguardlogflag
+				+ ",killlogflag = " + playerdata.getDispkilllogflag()
+				+ ",worldguardlogflag = " + playerdata.getDispworldguardlogflag()
 
-				+ ",multipleidbreakflag = " + playerdata.multipleidbreakflag
+				+ ",multipleidbreakflag = " + playerdata.getMultipleidbreakflag()
 
-				+ ",pvpflag = " + playerdata.pvpflag
-				+ ",effectpoint = " + playerdata.activeskilldata.effectpoint
-				+ ",mana = " + playerdata.activeskilldata.mana.getMana()
-				+ ",expvisible = " + playerdata.expbar.isVisible()
-				+ ",totalexp = " + playerdata.totalexp
-				+ ",expmarge = " + playerdata.expmarge
-				+ ",everysound = " + playerdata.everysoundflag
-				+ ",everymessage = " + playerdata.everymessageflag
+				+ ",pvpflag = " + playerdata.getPvpflag()
+				+ ",effectpoint = " + playerdata.getActiveskilldata().effectpoint
+				+ ",mana = " + playerdata.getActiveskilldata().mana.getMana()
+				+ ",expvisible = " + playerdata.getExpbar().isVisible()
+				+ ",totalexp = " + playerdata.getTotalexp()
+				+ ",expmarge = " + playerdata.getExpmarge()
+				+ ",everysound = " + playerdata.getEverysoundflag()
+				+ ",everymessage = " + playerdata.getEverymessageflag()
 
-				+ ",displayTypeLv = " + playerdata.displayTypeLv
-				+ ",displayTitle1No = " + playerdata.displayTitle1No
-				+ ",displayTitle2No = " + playerdata.displayTitle2No
-				+ ",displayTitle3No = " + playerdata.displayTitle3No
-				+ ",giveachvNo = " + playerdata.giveachvNo
-				+ ",achvPointMAX = " + playerdata.achvPointMAX
-				+ ",achvPointUSE = " + playerdata.achvPointUSE
-				+ ",achvChangenum = " + playerdata.achvChangenum
-				+ ",starlevel = " + playerdata.starlevel
-				+ ",starlevel_Break = " + playerdata.starlevel_Break
-				+ ",starlevel_Time = " + playerdata.starlevel_Time
-				+ ",starlevel_Event = " + playerdata.starlevel_Event
+				+ ",displayTypeLv = " + playerdata.getDisplayTypeLv()
+				+ ",displayTitle1No = " + playerdata.getDisplayTitle1No()
+				+ ",displayTitle2No = " + playerdata.getDisplayTitle2No()
+				+ ",displayTitle3No = " + playerdata.getDisplayTitle3No()
+				+ ",giveachvNo = " + playerdata.getGiveachvNo()
+				+ ",achvPointMAX = " + playerdata.getAchvPointMAX()
+				+ ",achvPointUSE = " + playerdata.getAchvPointUSE()
+				+ ",achvChangenum = " + playerdata.getAchvChangenum()
+				+ ",starlevel = " + playerdata.getStarlevel()
+				+ ",starlevel_Break = " + playerdata.getStarlevel_Break()
+				+ ",starlevel_Time = " + playerdata.getStarlevel_Time()
+				+ ",starlevel_Event = " + playerdata.getStarlevel_Event()
 
-				+ ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
-				+ ",ChainJoin = " + playerdata.ChainJoin
-				+ ",TotalJoin = " + playerdata.TotalJoin
-				+ ",LimitedLoginCount = " + playerdata.LimitedLoginCount
+				+ ",lastcheckdate = '" + playerdata.getLastcheckdate() + "'"
+				+ ",ChainJoin = " + playerdata.getChainJoin()
+				+ ",TotalJoin = " + playerdata.getTotalJoin()
+				+ ",LimitedLoginCount = " + playerdata.getLimitedLoginCount()
 
 				//建築
 				+ ",build_lv = " + playerdata.build_lv_get()
@@ -242,29 +242,29 @@ public class PlayerDataSaveTask extends BukkitRunnable{
 				+ ",build_count_flg = " + playerdata.build_count_flg_get()
 
 				//投票
-				+ ",canVotingFairyUse = " + playerdata.usingVotingFairy
+				+ ",canVotingFairyUse = " + playerdata.getUsingVotingFairy()
 				+ ",newVotingFairyTime = '" + playerdata.VotingFairyTimeToString() + "'"
-				+ ",VotingFairyRecoveryValue = " + playerdata.VotingFairyRecoveryValue
-				+ ",hasVotingFairyMana = " + playerdata.hasVotingFairyMana
-				+ ",toggleGiveApple = " + playerdata.toggleGiveApple
-				+ ",toggleVotingFairy = " + playerdata.toggleVotingFairy
-				+ ",p_apple = " + playerdata.p_apple
+				+ ",VotingFairyRecoveryValue = " + playerdata.getVotingFairyRecoveryValue()
+				+ ",hasVotingFairyMana = " + playerdata.getHasVotingFairyMana()
+				+ ",toggleGiveApple = " + playerdata.getToggleGiveApple()
+				+ ",toggleVotingFairy = " + playerdata.getToggleVotingFairy()
+				+ ",p_apple = " + playerdata.getP_apple()
 
 				//貢献度pt
-				+ ",added_mana = " + playerdata.added_mana
+				+ ",added_mana = " + playerdata.getAdded_mana()
 
-				+ ",GBstage = " + playerdata.GBstage
-				+ ",GBexp = " + playerdata.GBexp
-				+ ",GBlevel = " + playerdata.GBlevel
-				+ ",isGBStageUp = " + playerdata.isGBStageUp
+				+ ",GBstage = " + playerdata.getGBstage()
+				+ ",GBexp = " + playerdata.getGBexp()
+				+ ",GBlevel = " + playerdata.getGBlevel()
+				+ ",isGBStageUp = " + playerdata.isGBStageUp()
 				+ ",TitleFlags = '" + flagString + "'"
 
 				//正月イベント
-				+ ",hasNewYearSobaGive = " + playerdata.hasNewYearSobaGive
-				+ ",newYearBagAmount = " + playerdata.newYearBagAmount
+				+ ",hasNewYearSobaGive = " + playerdata.getHasNewYearSobaGive()
+				+ ",newYearBagAmount = " + playerdata.getNewYearBagAmount()
 
 				//バレンタインイベント
-				+ ",hasChocoGave = " + playerdata.hasChocoGave
+				+ ",hasChocoGave = " + playerdata.getHasChocoGave()
 
 				//loginflagを折る
 				+ ", loginflag = " + !logoutflag
@@ -298,8 +298,8 @@ public class PlayerDataSaveTask extends BukkitRunnable{
 	@Override
 	public void run() {
 		final String resultMessage = executeUpdate() == Ok
-				? ChatColor.GREEN + playerdata.name + "のプレイヤーデータ保存完了"
-				: ChatColor.RED + playerdata.name + "のプレイヤーデータ保存失敗";
+				? ChatColor.GREEN + playerdata.getName() + "のプレイヤーデータ保存完了"
+				: ChatColor.RED + playerdata.getName() + "のプレイヤーデータ保存失敗";
 		plugin.getServer().getConsoleSender().sendMessage(resultMessage);
 		if (!isOnDisable) cancel();
 	}

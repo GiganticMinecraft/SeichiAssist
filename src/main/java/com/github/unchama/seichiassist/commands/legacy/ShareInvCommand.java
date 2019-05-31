@@ -37,7 +37,7 @@ public class ShareInvCommand implements CommandExecutor {
 
 		ItemStack air = new ItemStack(Material.AIR);
 		// 収納中なら取り出す
-		if (playerdata.shareinv) {
+		if (playerdata.getShareinv()) {
 			String serial = databaseGateway.playerDataManipulator.loadShareInv(player, playerdata);
 			if (serial.equals("")) {
 				player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "収納アイテムが存在しません。");
@@ -81,7 +81,7 @@ public class ShareInvCommand implements CommandExecutor {
 				pi.setStorageContents(contents);
 				// SQLデータをクリア
 				databaseGateway.playerDataManipulator.clearShareInv(player, playerdata);
-				playerdata.shareinv = false;
+				playerdata.setShareinv(false);
 				player.sendMessage(ChatColor.GREEN + "アイテムを取得しました。手持ちにあったアイテムはドロップしました。");
 				Bukkit.getLogger().info(Util.getName(player) + "がアイテム取り出しを実施(SQL送信成功)");
 			}
@@ -118,7 +118,7 @@ public class ShareInvCommand implements CommandExecutor {
 					pi.setStorageContents(contents);
 
 					// インベントリ共有ボタンをトグル
-					playerdata.shareinv = true;
+					playerdata.setShareinv(true);
 					player.sendMessage(ChatColor.GREEN + "アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。");
 					Bukkit.getLogger().info(Util.getName(player) + "がアイテム収納を実施(SQL送信成功)");
 					// 木の棒を取得

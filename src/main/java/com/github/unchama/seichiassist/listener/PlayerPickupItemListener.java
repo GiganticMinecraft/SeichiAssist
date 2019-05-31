@@ -40,11 +40,11 @@ public class PlayerPickupItemListener implements Listener {
 			return;
 		}
 		//レベルが足りない場合処理終了
-		if(playerdata.level < config.getMineStacklevel(1)){
+		if(playerdata.getLevel() < config.getMineStacklevel(1)){
 			return;
 		}
 		//minestackflagがfalseの時は処理を終了
-		if(!playerdata.minestackflag){
+		if(!playerdata.getMinestackflag()){
 			return;
 		}
 
@@ -64,11 +64,11 @@ public class PlayerPickupItemListener implements Listener {
 				itemstack.getDurability() == mineStackObj.getDurability()){
 				//この時点でIDとサブIDが一致している
 				if(!mineStackObj.getNameloreflag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
-					if (playerdata.level < config.getMineStacklevel(mineStackObj.getLevel())) {
+					if (playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())) {
 						//レベルを満たしていない
 						return;
 					} else {
-						playerdata.minestack.addStackedAmountOf(mineStackObj, amount);
+						playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
 						break;
 					}
 				} else if(mineStackObj.getNameloreflag()==true && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
@@ -80,17 +80,17 @@ public class PlayerPickupItemListener implements Listener {
 								|| !(meta.getLore().equals(Util.getGachaRingoLore())) ){
 								return;
 							}
-							if(playerdata.level < config.getMineStacklevel(mineStackObj.getLevel())){
+							if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 								//レベルを満たしていない
 								return;
 							} else {
-								playerdata.minestack.addStackedAmountOf(mineStackObj, amount);
+								playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
 								break;
 							}
 						} else {
 							//ガチャ品
 							MineStackGachaData g = SeichiAssist.msgachadatalist.get(mineStackObj.getGachatype());
-							String name = playerdata.name; //プレイヤーのネームを見る
+							String name = playerdata.getName(); //プレイヤーのネームを見る
 							if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
 								if(!Util.ItemStackContainsOwnerName(itemstack, name)){
 									//所有者の名前が無ければreturn
@@ -101,11 +101,11 @@ public class PlayerPickupItemListener implements Listener {
 							//GachaData.
 							if (g.compareonly(itemstack)) { //中身が同じ場合のみここに入る
 								//player.sendMessage("Debug D");
-								if(playerdata.level < config.getMineStacklevel(mineStackObj.getLevel())){
+								if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 									//レベルを満たしていない
 									return;
 								} else {
-									playerdata.minestack.addStackedAmountOf(mineStackObj, amount);
+									playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
 									break;
 								}
 							}

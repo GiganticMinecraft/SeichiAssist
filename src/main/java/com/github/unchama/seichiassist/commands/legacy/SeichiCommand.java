@@ -125,7 +125,7 @@ public class SeichiCommand implements CommandExecutor {
 						sender.sendMessage(name + "はオンラインですが、何故かplayerdataが見つかりませんでした(要報告)");
 						return true;
 					}
-					player.openInventory(targetplayerdata.inventory);
+					player.openInventory(targetplayerdata.getInventory());
 					return true;
 				}else{
 					//対象プレイヤーがオフラインの時の処理
@@ -206,7 +206,7 @@ public class SeichiCommand implements CommandExecutor {
 					return true;
 				}
 				//エフェクトデータリストにこの効果を追加
-				playerdata.effectdatalist.add(new EffectData(duration,amplifier,id));
+				playerdata.getEffectdatalist().add(new EffectData(duration,amplifier,id));
 				//メッセージ送信
 				sender.sendMessage(ChatColor.LIGHT_PURPLE + name + "に上昇値"+amplifier+"を" + TypeConverter.toTimeString(duration/20) + "追加しました");
 			}else{
@@ -215,7 +215,7 @@ public class SeichiCommand implements CommandExecutor {
 				//全てのプレイヤーデータについて処理
 				for(PlayerData playerdata: SeichiAssist.playermap.values()){
 					//エフェクトデータリストにこの効果を追加
-					playerdata.effectdatalist.add(new EffectData(duration,amplifier,id));
+					playerdata.getEffectdatalist().add(new EffectData(duration,amplifier,id));
 				}
 				//メッセージ送信
 				sender.sendMessage(ChatColor.LIGHT_PURPLE + "全てのプレイヤーに上昇値"+amplifier+"を" + TypeConverter.toTimeString(duration/20) + "追加しました");

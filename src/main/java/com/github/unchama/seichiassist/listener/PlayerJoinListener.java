@@ -85,13 +85,13 @@ public class PlayerJoinListener implements Listener {
 
 			// アサルトスキルを切る
 			// 現在アサルトスキルorアサルトアーマーを選択中
-			if (pd.activeskilldata.assaultnum >= 4 && pd.activeskilldata.assaulttype >= 4) {
+			if (pd.getActiveskilldata().assaultnum >= 4 && pd.getActiveskilldata().assaulttype >= 4) {
 				// アクティブスキルがONになっている
-				if (pd.activeskilldata.mineflagnum != 0) {
+				if (pd.getActiveskilldata().mineflagnum != 0) {
 					// メッセージを表示
-					p.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF");
+					p.sendMessage(ChatColor.GOLD + ActiveSkill.getActiveSkillName(pd.getActiveskilldata().assaulttype, pd.getActiveskilldata().assaultnum) + "：OFF");
 					// 内部状態をアサルトOFFに変更
-					pd.activeskilldata.updateAssaultSkill(p, pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum, 0);
+					pd.getActiveskilldata().updateAssaultSkill(p, pd.getActiveskilldata().assaulttype, pd.getActiveskilldata().assaultnum, 0);
 					// トグル音を鳴らす
 					p.playSound(p.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
 				}

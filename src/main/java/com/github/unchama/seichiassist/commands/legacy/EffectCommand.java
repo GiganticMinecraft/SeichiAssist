@@ -13,8 +13,8 @@ public class EffectCommand implements CommandExecutor {
 
 	// TODO これはここにあるべきではない
 	private static void toggleEffect(PlayerData playerData) {
-		int newEffectFlag = (playerData.effectflag + 1) % 6;
-		Player player = Bukkit.getPlayer(playerData.uuid);
+		int newEffectFlag = (playerData.getEffectflag() + 1) % 6;
+		Player player = Bukkit.getPlayer(playerData.getUuid());
 
 		if (newEffectFlag == 0) {
 			player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(無制限)");
@@ -33,13 +33,13 @@ public class EffectCommand implements CommandExecutor {
 		player.sendMessage(ChatColor.GREEN + "再度 /ef コマンドを実行することでトグルします。");
 
 		//切り替えたフラグを反映
-		playerData.effectflag = newEffectFlag;
+		playerData.setEffectflag(newEffectFlag);
 	}
 
 	// TODO これはここにあるべきではない
 	private static void toggleMessageFlag(PlayerData playerData) {
-		boolean newMessageFlag = !playerData.messageflag;
-		Player player = Bukkit.getPlayer(playerData.uuid);
+		boolean newMessageFlag = !playerData.getMessageflag();
+		Player player = Bukkit.getPlayer(playerData.getUuid());
 
 		if (newMessageFlag){
 			player.sendMessage(ChatColor.GREEN + "内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)");
@@ -47,7 +47,7 @@ public class EffectCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.GREEN + "内訳表示:OFF");
 		}
 
-		playerData.messageflag = newMessageFlag;
+		playerData.setMessageflag(newMessageFlag);
 	}
 
 	@Override

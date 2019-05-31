@@ -35,7 +35,7 @@ public class PlayerDeathEventListener implements Listener {
 				continue;
 			}
 			//キルログ表示フラグがONのプレイヤーにのみ死亡メッセージを送信
-			if(playerdata.dispkilllogflag){
+			if(playerdata.getDispkilllogflag()){
 				p.sendMessage(msg);
 			}
 		}
@@ -47,7 +47,7 @@ public class PlayerDeathEventListener implements Listener {
 	// 1周年記念
 	private void anniversary(Player p) {
 		PlayerData playerdata = playermap.get(p.getUniqueId());
-		if (playerdata.anniversary) {
+		if (playerdata.getAnniversary()) {
 			if (p.getInventory().firstEmpty() == -1) {
 				p.sendMessage("インベントリが一杯の為、アイテムを入手出来ませんでした。");
 				p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
@@ -56,7 +56,7 @@ public class PlayerDeathEventListener implements Listener {
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 				p.sendMessage("整地サーバー1周年の記念品を入手しました。");
 				p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
-				playerdata.anniversary = false;
+				playerdata.setAnniversary(false);
 				SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(false, p.getUniqueId());
 			}
 		}

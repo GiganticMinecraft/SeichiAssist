@@ -23,16 +23,16 @@ public class GiganticBerserkTask {
 		player = p;
 		UUID uuid = p.getUniqueId();
 		playerdata = playermap.get(uuid);
-		Mana mana = playerdata.activeskilldata.mana;
+		Mana mana = playerdata.getActiveskilldata().mana;
 
-		playerdata.GBcd ++;
-		if (playerdata.GBcd >= SeichiAssist.config.getGiganticBerserkLimit()){
+		playerdata.setGBcd(playerdata.getGBcd() + 1);
+		if (playerdata.getGBcd() >= SeichiAssist.config.getGiganticBerserkLimit()){
 			if(SeichiAssist.DEBUG){
 				player.sendMessage("上限到達");
 			}
 			return;
 		}
-		if(playerdata.idletime >= 3){
+		if(playerdata.getIdletime() >= 3){
 			return;
 		}
 
@@ -42,44 +42,44 @@ public class GiganticBerserkTask {
 
 			double i = getRecoveryValue(playerdata);
 
-			mana.increase(i,p,playerdata.level);
+			mana.increase(i,p, playerdata.getLevel());
 			player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.WHITE + "の効果でマナが" + i +"回復しました");
 			player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1, (float)0.5) ;
 		}
 
 		//最大レベルの場合終了
-		if(playerdata.GBstage == 4 && playerdata.GBlevel == 9){
+		if(playerdata.getGBstage() == 4 && playerdata.getGBlevel() == 9){
 			return;
 		}
 
 		//進化待機状態の場合終了
-		if(playerdata.isGBStageUp){
+		if(playerdata.isGBStageUp()){
 			return;
 		}
 
 
-		int n = (playerdata.GBstage * 10) + playerdata.GBlevel;
+		int n = (playerdata.getGBstage() * 10) + playerdata.getGBlevel();
 
-		playerdata.GBexp ++;
+		playerdata.setGBexp(playerdata.getGBexp() + 1);
 		//レベルアップするかどうか判定
-		if(SeichiAssist.GBlevellist.get(n) <= playerdata.GBexp){
-			if(playerdata.GBlevel <= 8){
-				playerdata.GBexp = 0;
-				playerdata.GBlevel ++ ;
+		if(SeichiAssist.GBlevellist.get(n) <= playerdata.getGBexp()){
+			if(playerdata.getGBlevel() <= 8){
+				playerdata.setGBexp(0);
+				playerdata.setGBlevel(playerdata.getGBlevel() + 1);
 				//プレイヤーにメッセージ
 				player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.WHITE + "のレベルがアップし、確率が上昇しました");
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)0.8) ;
 				//最大レベルになった時の処理
-				if(playerdata.GBstage == 4 && playerdata.GBlevel == 9){
+				if(playerdata.getGBstage() == 4 && playerdata.getGBlevel() == 9){
 					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
-					Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！");
+					Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.getName() + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！");
 				}
 			}
 			//レベルが10かつ段階がダイヤ未満の場合は進化待機状態へ
-			else if(playerdata.GBstage <= 3){
+			else if(playerdata.getGBstage() <= 3){
 				player.sendMessage(ChatColor.GREEN + "パッシブスキルメニューより" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GREEN + "スキルが進化可能です。");
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)0.8) ;
-				playerdata.isGBStageUp = true;
+				playerdata.setGBStageUp(true);
 			}
 		}
 	}
@@ -90,11 +90,11 @@ public class GiganticBerserkTask {
 	 * @param playerdata
 	 */
 	public double getProb(PlayerData pd){
-		if (pd.GBlevel < 2) return 0.05;
-		else if (pd.GBlevel < 4) return 0.06;
-		else if (pd.GBlevel < 6) return 0.07;
-		else if (pd.GBlevel < 8) return 0.08;
-		else if (pd.GBlevel < 9) return 0.09;
+		if (pd.getGBlevel() < 2) return 0.05;
+		else if (pd.getGBlevel() < 4) return 0.06;
+		else if (pd.getGBlevel() < 6) return 0.07;
+		else if (pd.getGBlevel() < 8) return 0.08;
+		else if (pd.getGBlevel() < 9) return 0.09;
 		else return 0.10;
 	}
 
@@ -102,10 +102,10 @@ public class GiganticBerserkTask {
 		double i,l;
 		Random rnd = new Random();
 
-		switch (playerdata.GBstage){
+		switch (playerdata.getGBstage()){
 		case 0:
 			i = 300;
-			switch (playerdata.GBlevel){
+			switch (playerdata.getGBlevel()){
 			case 0:
 				l = 30;
 				break;
@@ -142,7 +142,7 @@ public class GiganticBerserkTask {
 			break;
 		case 1:
 			i = 2000;
-			switch (playerdata.GBlevel){
+			switch (playerdata.getGBlevel()){
 			case 0:
 				l = 200;
 				break;
@@ -179,7 +179,7 @@ public class GiganticBerserkTask {
 			break;
 		case 2:
 			i = 15000;
-			switch (playerdata.GBlevel){
+			switch (playerdata.getGBlevel()){
 			case 0:
 				l = 1500;
 				break;
@@ -216,7 +216,7 @@ public class GiganticBerserkTask {
 			break;
 		case 3:
 			i = 40000;
-			switch (playerdata.GBlevel){
+			switch (playerdata.getGBlevel()){
 			case 0:
 				l = 4000;
 				break;
@@ -253,7 +253,7 @@ public class GiganticBerserkTask {
 			break;
 		case 4:
 			i = 100000;
-			switch (playerdata.GBlevel){
+			switch (playerdata.getGBlevel()){
 			case 0:
 				l = 10000;
 				break;

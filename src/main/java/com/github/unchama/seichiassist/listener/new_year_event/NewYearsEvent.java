@@ -82,7 +82,7 @@ public class NewYearsEvent implements Listener {
 
 	private void giveNewYearSobaToPlayer(Player player, String year) {
 		PlayerData playerData = playerMap.get(player.getUniqueId());
-		if (playerData.hasNewYearSobaGive) {
+		if (playerData.getHasNewYearSobaGive()) {
 			return;
 		}
 
@@ -95,7 +95,7 @@ public class NewYearsEvent implements Listener {
 					"Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY4MzRiNWIyNTQyNmRlNjM1MzhlYzgyY2E4ZmJlY2ZjYmIzZTY4MmQ4MDYzNjQzZDJlNjdhNzYyMWJkIn19fQ==\"}]}}}";
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
-			playerData.hasNewYearSobaGive = true;
+			playerData.setHasNewYearSobaGive(true);
 		}
 	}
 

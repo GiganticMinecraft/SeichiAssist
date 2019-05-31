@@ -52,10 +52,10 @@ public class LevelCommand implements CommandExecutor {
                 //整地レベルを1に設定
                 playerdata.setLevel(1);
                 //メッセージ送信
-                sender.sendMessage(playerdata.name + "のレベルを" + playerdata.level + "に設定しました");
+                sender.sendMessage(playerdata.getName() + "のレベルを" + playerdata.getLevel() + "に設定しました");
                 //プレイヤーがオンラインの時表示名を変更
                 if (!playerdata.isOffline()) {
-                    Player player = SeichiAssist.instance.getServer().getPlayer(playerdata.name);
+                    Player player = SeichiAssist.instance.getServer().getPlayer(playerdata.getName());
                     playerdata.setDisplayName(player);
                 }
             }
@@ -95,13 +95,13 @@ public class LevelCommand implements CommandExecutor {
                         if (num >= 1 && num <= 200) {
                             playerdata.setLevelandTotalbreaknum(num);
                             //アクティブスキルポイントのリセット処理
-                            playerdata.activeskilldata.reset();
+                            playerdata.getActiveskilldata().reset();
                             //メッセージ送信
-                            sender.sendMessage(playerdata.name + "のレベルを" + playerdata.level + "に設定しました");
-                            sender.sendMessage(playerdata.name + "の整地量を" + playerdata.totalbreaknum + "に設定しました");
+                            sender.sendMessage(playerdata.getName() + "のレベルを" + playerdata.getLevel() + "に設定しました");
+                            sender.sendMessage(playerdata.getName() + "の整地量を" + playerdata.getTotalbreaknum() + "に設定しました");
                             //プレイヤーがオンラインの時表示名を変更
                             if (!playerdata.isOffline()) {
-                                Player player = SeichiAssist.instance.getServer().getPlayer(playerdata.name);
+                                Player player = SeichiAssist.instance.getServer().getPlayer(playerdata.getName());
                                 playerdata.setDisplayName(player);
                             }
                             //}

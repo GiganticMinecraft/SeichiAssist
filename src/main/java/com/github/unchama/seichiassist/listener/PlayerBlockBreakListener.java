@@ -138,7 +138,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		//クールダウンタイム中は処理を終了
-		if(!playerdata.activeskilldata.skillcanbreakflag){
+		if(!playerdata.getActiveskilldata().skillcanbreakflag){
 			//SEを再生
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "クールタイムの破壊");
 			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
@@ -147,19 +147,19 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//これ以前の終了処理はマナは回復しません
 		//追加マナ獲得
-		playerdata.activeskilldata.mana.increase(BreakUtil.calcManaDrop(playerdata),player,playerdata.level);
+		playerdata.getActiveskilldata().mana.increase(BreakUtil.calcManaDrop(playerdata),player, playerdata.getLevel());
 		//これ以降の終了処理はマナが回復します
 
 		//アクティブスキルフラグがオフの時処理を終了
-		if(playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0 || playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()){
+		if(playerdata.getActiveskilldata().mineflagnum == 0 || playerdata.getActiveskilldata().skillnum == 0 || playerdata.getActiveskilldata().skilltype == 0 || playerdata.getActiveskilldata().skilltype == ActiveSkill.ARROW.gettypenum()){
 			if(SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "スキルオフ時の破壊");
 			return;
 		}
 
 
-		if(playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum()){
+		if(playerdata.getActiveskilldata().skilltype == ActiveSkill.MULTI.gettypenum()){
 			runMultiSkill(player, block, tool);
-		}else if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()){
+		}else if(playerdata.getActiveskilldata().skilltype == ActiveSkill.BREAK.gettypenum()){
 			runBreakSkill(player, block, tool);
 		}
 	}
@@ -173,7 +173,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//レベルを取得
 		//int skilllevel = playerdata.activeskilldata.skillnum;
 		//マナを取得
-		Mana mana = playerdata.activeskilldata.mana;
+		Mana mana = playerdata.getActiveskilldata().mana;
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
 		//元ブロックのマテリアルを取得
@@ -187,7 +187,7 @@ public class PlayerBlockBreakListener implements Listener {
 		Block breakblock;
 		//実際に破壊するブロック数
 		long breakblocknum = 0;
-		final BreakArea area = playerdata.activeskilldata.area;
+		final BreakArea area = playerdata.getActiveskilldata().area;
 		//現在のプレイヤーの向いている方向
 		String dir = BreakUtil.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
@@ -235,7 +235,7 @@ public class PlayerBlockBreakListener implements Listener {
 						breakblock = block.getRelative(x, y, z);
 						if(x == 0 && y == 0 && z == 0)continue;
 
-						if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && playerdata.multipleidbreakflag) { //追加テスト(複数種類一括破壊スキル)
+						if(playerdata.getLevel() >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && playerdata.getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
 							if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
 								if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 									if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
@@ -284,7 +284,7 @@ public class PlayerBlockBreakListener implements Listener {
 			//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
 			useAllMana += (double) (breaklist.size() + 1) * (double) (gravity + 1)
-					* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
+					* ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
 					/(ifallbreaknum * breaknum) ;
 
 
@@ -343,7 +343,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//経験値を減らす
-		mana.decrease(useAllMana,player,playerdata.level);
+		mana.decrease(useAllMana,player, playerdata.getLevel());
 
 		//耐久値を減らす
 		if(!tool.getItemMeta().spigot().isUnbreakable()){
@@ -351,7 +351,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		//壊したブロック数に応じてクールダウンを発生させる
-		long cooldown = ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakblocknum /(ifallbreaknum);
+		long cooldown = ActiveSkill.MULTI.getCoolDown(playerdata.getActiveskilldata().skillnum) * breakblocknum /(ifallbreaknum);
 		if(cooldown >= 5){
 			new CoolDownTask(player,false,true,false).runTaskLater(plugin,cooldown);
 		}
@@ -366,7 +366,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//レベルを取得
 		//int skilllevel = playerdata.activeskilldata.skillnum;
 		//マナを取得
-		Mana mana = playerdata.activeskilldata.mana;
+		Mana mana = playerdata.getActiveskilldata().mana;
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
 		//元ブロックのマテリアルを取得
@@ -377,7 +377,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//壊されるブロックの宣言
 		Block breakblock;
 		//壊される範囲を設定
-		BreakArea area = playerdata.activeskilldata.area;
+		BreakArea area = playerdata.getActiveskilldata().area;
 		//現在のプレイヤーの向いている方向
 		String dir = BreakUtil.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
@@ -401,7 +401,7 @@ public class PlayerBlockBreakListener implements Listener {
 					breakblock = block.getRelative(x, y, z);
 					if(x == 0 && y == 0 && z == 0)continue;
 
-					if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && (Util.isSeichiWorld(player) || playerdata.multipleidbreakflag)) { //追加テスト(複数種類一括破壊スキル)
+					if(playerdata.getLevel() >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && (Util.isSeichiWorld(player) || playerdata.getMultipleidbreakflag())) { //追加テスト(複数種類一括破壊スキル)
 						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
 							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 								if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
@@ -453,10 +453,10 @@ public class PlayerBlockBreakListener implements Listener {
 		Coordinate breaklength = area.getBreakLength();
 		int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
 		double useMana = (double) (breaklist.size()+1) * (double) (gravity + 1)
-				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
+				* ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
 				/ifallbreaknum ;
 		if(SeichiAssist.DEBUG){
-			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum));
+			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum));
 			player.sendMessage(ChatColor.RED + "全ての破壊数：" + ifallbreaknum);
 			player.sendMessage(ChatColor.RED + "実際の破壊数：" + breaklist.size());
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナ：" + useMana);
@@ -512,7 +512,7 @@ public class PlayerBlockBreakListener implements Listener {
 			BreakUtil.breakBlock(player, block, centerofblock, tool,true);
 			return;
 		}//エフェクトが指定されていないときの処理
-		else if(playerdata.activeskilldata.effectnum == 0){
+		else if(playerdata.getActiveskilldata().effectnum == 0){
 			breaklist.add(block);
 			SeichiAssist.allblocklist.add(block);
 			for(Block b:breaklist){
@@ -521,23 +521,23 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 		}
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-		else if(playerdata.activeskilldata.effectnum <= 100){
+		else if(playerdata.getActiveskilldata().effectnum <= 100){
 			breaklist.add(block);
 			SeichiAssist.allblocklist.add(block);
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
+			skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
 		}
 
 		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
-		else if(playerdata.activeskilldata.effectnum > 100){
+		else if(playerdata.getActiveskilldata().effectnum > 100){
 			breaklist.add(block);
 			SeichiAssist.allblocklist.add(block);
 			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-			premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
+			premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
 		}
 
 		//経験値を減らす
-		mana.decrease(useMana,player,playerdata.level);
+		mana.decrease(useMana,player, playerdata.getLevel());
 
 		//耐久値を減らす
 		if(!tool.getItemMeta().spigot().isUnbreakable()){
@@ -545,7 +545,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		//壊したブロック数に応じてクールダウンを発生させる
-		long cooldown = ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breaklist.size() /ifallbreaknum;
+		long cooldown = ActiveSkill.BREAK.getCoolDown(playerdata.getActiveskilldata().skillnum) * breaklist.size() /ifallbreaknum;
 		if(cooldown >= 5){
 			new CoolDownTask(player,false,true,false).runTaskLater(plugin,cooldown);
 		}

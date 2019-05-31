@@ -33,17 +33,17 @@ public class ExpBar {
 		if (expbar.isVisible()) {
 			remove();
 			// レベル上限の人
-			if (pd.level >= SeichiAssist.levellist.size()) {
+			if (pd.getLevel() >= SeichiAssist.levellist.size()) {
 				// BarをMAXにして総整地量を表示
-				String bartext = ChatColor.GOLD + "" + ChatColor.BOLD + "Lv " + pd.level + "(総整地量: " + String.format("%,d", pd.totalbreaknum) + ")";
+				String bartext = ChatColor.GOLD + "" + ChatColor.BOLD + "Lv " + pd.getLevel() + "(総整地量: " + String.format("%,d", pd.getTotalbreaknum()) + ")";
 				expbar = p.getServer().createBossBar(bartext, BarColor.YELLOW, BarStyle.SOLID);
 				expbar.setProgress(1.0);
 			} else {
 				// 現在のLvにおける割合をBarに配置
-				long exp = pd.totalbreaknum - SeichiAssist.levellist.get(pd.level - 1);
-				int expmax = SeichiAssist.levellist.get(pd.level) - SeichiAssist.levellist.get(pd.level - 1);
-				String bartext = ChatColor.GOLD + "" + ChatColor.BOLD + "Lv " + pd.level + "(" + String.format("%,d", pd.totalbreaknum) + "/"
-						+ String.format("%,d", SeichiAssist.levellist.get(pd.level)) + ")";
+				long exp = pd.getTotalbreaknum() - SeichiAssist.levellist.get(pd.getLevel() - 1);
+				int expmax = SeichiAssist.levellist.get(pd.getLevel()) - SeichiAssist.levellist.get(pd.getLevel() - 1);
+				String bartext = ChatColor.GOLD + "" + ChatColor.BOLD + "Lv " + pd.getLevel() + "(" + String.format("%,d", pd.getTotalbreaknum()) + "/"
+						+ String.format("%,d", SeichiAssist.levellist.get(pd.getLevel())) + ")";
 				expbar = p.getServer().createBossBar(bartext, BarColor.YELLOW, BarStyle.SOLID);
 				// 範囲チェック
 				if(exp >= expmax) {
@@ -57,7 +57,7 @@ public class ExpBar {
 			}
 			// 描画処理
 			expbar.addPlayer(p);
-			pd.activeskilldata.mana.display(p, pd.level);
+			pd.getActiveskilldata().mana.display(p, pd.getLevel());
 		}
 	}
 

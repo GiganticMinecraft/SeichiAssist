@@ -68,8 +68,8 @@ public class UnlockAchievementCommand implements CommandExecutor {
 										playerdata = playermap.get(uuid);
 
 										//該当実績を既に取得している場合処理をスキップ
-										if(!playerdata.TitleFlags.get(Integer.parseInt(args[0]))){
-											playerdata.TitleFlags.set(Integer.parseInt(args[0]));
+										if(!playerdata.getTitleFlags().get(Integer.parseInt(args[0]))){
+											playerdata.getTitleFlags().set(Integer.parseInt(args[0]));
 											player.sendMessage("運営チームよりNo" + args[0] + "の実績が配布されました。");
 										}
 									}
@@ -90,8 +90,8 @@ public class UnlockAchievementCommand implements CommandExecutor {
 											//送信者と同じワールドにいれば配布
 											if(p.getWorld().getName().equals(senderPlayer.getWorld().getName())){
 												//該当実績を既に取得している場合処理をスキップ
-												if(!playerdata.TitleFlags.get(Integer.parseInt(args[0]))){
-													playerdata.TitleFlags.set(Integer.parseInt(args[0]));
+												if(!playerdata.getTitleFlags().get(Integer.parseInt(args[0]))){
+													playerdata.getTitleFlags().set(Integer.parseInt(args[0]));
 													player.sendMessage("運営チームよりNo" + args[0] + "の実績が配布されました。");
 												}
 											}
@@ -111,8 +111,8 @@ public class UnlockAchievementCommand implements CommandExecutor {
 									UUID givenuuid = givenplayer.getUniqueId();
 									PlayerData givenplayerdata = playermap.get(givenuuid);
 									//該当実績を既に取得している場合処理をスキップ
-									if(!givenplayerdata.TitleFlags.get(Integer.parseInt(args[0]))){
-										givenplayerdata.TitleFlags.set(Integer.parseInt(args[0]));
+									if(!givenplayerdata.getTitleFlags().get(Integer.parseInt(args[0]))){
+										givenplayerdata.getTitleFlags().set(Integer.parseInt(args[0]));
 										givenplayer.sendMessage("運営チームよりNo" + args[0] + "の実績が配布されました。");
 										sender.sendMessage("【配布完了】No" + args[0] +"の実績を配布しました。");
 									}else {
@@ -157,8 +157,8 @@ public class UnlockAchievementCommand implements CommandExecutor {
 							try{
 								if(args[2].equals("give")){
 									//該当実績を既に取得している場合処理をスキップ
-									if(!givenplayerdata.TitleFlags.get(Integer.parseInt(args[0]))){
-										givenplayerdata.TitleFlags.set(Integer.parseInt(args[0]));
+									if(!givenplayerdata.getTitleFlags().get(Integer.parseInt(args[0]))){
+										givenplayerdata.getTitleFlags().set(Integer.parseInt(args[0]));
 										givenplayer.sendMessage("運営チームよりNo" + args[0] + "の実績が配布されました。");
 										sender.sendMessage("【配布完了】No" + args[0] +"の実績を配布しました。");
 									}else {
@@ -167,8 +167,8 @@ public class UnlockAchievementCommand implements CommandExecutor {
 									return true;
 								}else if(args[2].equals("deprive")){
 									//該当実績を既に取得していない場合処理をスキップ
-									if(givenplayerdata.TitleFlags.get(Integer.parseInt(args[0]))){
-										givenplayerdata.TitleFlags.set(Integer.parseInt(args[0]),false);
+									if(givenplayerdata.getTitleFlags().get(Integer.parseInt(args[0]))){
+										givenplayerdata.getTitleFlags().set(Integer.parseInt(args[0]),false);
 										sender.sendMessage("【剥奪完了】No" + args[0] +"の実績を剥奪しました。");
 									}else {
 										sender.sendMessage("該当実績を獲得していません。");

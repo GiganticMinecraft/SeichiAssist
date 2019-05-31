@@ -43,8 +43,8 @@ public class CheckAlreadyExistPlayerDataTask extends BukkitRunnable{
 
 	public CheckAlreadyExistPlayerDataTask(PlayerData playerData) {
 		this.playerData = playerData;
-		name = playerData.name;
-		uuid = playerData.uuid;
+		name = playerData.getName();
+		uuid = playerData.getUuid();
 		struuid = uuid.toString().toLowerCase();
 	}
 
