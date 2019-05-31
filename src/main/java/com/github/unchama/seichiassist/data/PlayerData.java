@@ -476,7 +476,7 @@ public class PlayerData {
 			i++;
 			if(activeskilldata.mana.isLoaded()){
 				//マナ最大値の更新
-				activeskilldata.mana.LevelUp(p, i);
+				activeskilldata.mana.onLevelUp(p, i);
 			}
 			//レベル上限に達したら終了
 			if(i >= SeichiAssist.levellist.size()){
