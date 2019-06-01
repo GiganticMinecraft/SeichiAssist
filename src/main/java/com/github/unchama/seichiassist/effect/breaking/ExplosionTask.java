@@ -39,7 +39,7 @@ public class ExplosionTask extends BukkitRunnable{
 		this.start = start;
 		this.end = end;
 		this.droploc = droploc;
-		breaklength = ActiveSkill.BREAK.getBreakLength(playerdata.activeskilldata.skillnum);
+		breaklength = ActiveSkill.BREAK.getBreakLength(playerdata.getActiveskilldata().skillnum);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class ExplosionTask extends BukkitRunnable{
 				}
 			}
 		}
-		if(playerdata.activeskilldata.skillnum > 2){
+		if(playerdata.getActiveskilldata().skillnum > 2){
 			for(Block b : breaklist){
 				BreakUtil.breakBlock(player, b, droploc, tool, false);
 				SeichiAssist.allblocklist.remove(b);

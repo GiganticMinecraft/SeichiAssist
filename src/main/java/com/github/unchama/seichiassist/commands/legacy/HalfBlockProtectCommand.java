@@ -1,22 +1,16 @@
-package com.github.unchama.seichiassist.commands;
+package com.github.unchama.seichiassist.commands.legacy;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.List;
 import java.util.UUID;
 
-public class HalfBlockProtectCommand implements TabExecutor {
-	SeichiAssist plugin;
-
-	public HalfBlockProtectCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
+public class HalfBlockProtectCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
@@ -45,8 +39,4 @@ public class HalfBlockProtectCommand implements TabExecutor {
 		}
 	}
 
-	@Override
-	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-		return null;
-	}
 }

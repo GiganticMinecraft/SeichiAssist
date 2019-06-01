@@ -198,7 +198,7 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType() == Material.CHEST){
 				//レベルが足りない場合処理終了
-				if( playerdata.level < SeichiAssist.config.getMineStacklevel(1)){
+				if( playerdata.getLevel() < SeichiAssist.config.getMineStacklevel(1)){
 					player.sendMessage(ChatColor.GREEN + "整地レベルが"+SeichiAssist.config.getMineStacklevel(1)+ "以上必要です");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					return;
@@ -243,7 +243,7 @@ public class PlayerInventoryListener implements Listener {
 			else if(isSkull
 					&& itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.DARK_AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地報酬ガチャ券を受け取る")){
 				//連打防止クールダウン処理
-				if (playerdata.gachacooldownflag) {
+				if (playerdata.getGachacooldownflag()) {
 					//連打による負荷防止の為クールダウン処理
 					new CoolDownTask(player,false,false,true).runTaskLater(plugin,20);
 				} else {
@@ -252,8 +252,8 @@ public class PlayerInventoryListener implements Listener {
 
 				ItemStack skull = Util.getskull(Util.getName(player));
 				int count = 0;
-				while(playerdata.gachapoint >= config.getGachaPresentInterval() && count < 576){
-					playerdata.gachapoint -= config.getGachaPresentInterval();
+				while(playerdata.getGachapoint() >= config.getGachaPresentInterval() && count < 576){
+					playerdata.setGachapoint(playerdata.getGachapoint() - config.getGachaPresentInterval());
 					if(player.getInventory().contains(skull) || !Util.isPlayerInventoryFull(player)){
 						Util.addItem(player,skull);
 					}else{
@@ -262,7 +262,7 @@ public class PlayerInventoryListener implements Listener {
 					count++;
 				}
 				//プレイヤーデータを更新
-				playerdata.lastgachapoint = playerdata.gachapoint;
+				playerdata.setLastgachapoint(playerdata.getGachapoint());
 
 				if(count > 0){
 					player.sendMessage(ChatColor.GOLD + "ガチャ券" + count + "枚" + ChatColor.WHITE + "プレゼントフォーユー");
@@ -288,7 +288,7 @@ public class PlayerInventoryListener implements Listener {
 				ItemStack skull = Util.getForBugskull(Util.getName(player));
 				int count = 0;
 				while(n > 0){
-					playerdata.numofsorryforbug--;
+					playerdata.setNumofsorryforbug(playerdata.getNumofsorryforbug() - 1);
 					if(player.getInventory().contains(skull) || !Util.isPlayerInventoryFull(player)){
 						Util.addItem(player,skull);
 					}else{
@@ -338,8 +338,8 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			else if(itemstackcurrent.getType() == Material.STONE_BUTTON){
-				playerdata.gachaflag = !playerdata.gachaflag;
-				if(playerdata.gachaflag){
+				playerdata.setGachaflag(!playerdata.getGachaflag());
+				if(playerdata.getGachaflag()){
 					player.sendMessage(ChatColor.GREEN + "毎分のガチャ券受け取り:ON");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					ItemMeta itemmeta = itemstackcurrent.getItemMeta();
@@ -366,7 +366,7 @@ public class PlayerInventoryListener implements Listener {
 				/* effectflagは0->無制限,1->200,2->400,3->600,4->off
 				 * これを0->無制限,1->127,2->200,3->400,4->600,5->offに変更する。
 				 */
-				playerdata.effectflag = (playerdata.effectflag + 1) % 6;
+				playerdata.setEffectflag((playerdata.getEffectflag() + 1) % 6);
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 
 				// 採掘速度上昇量計算
@@ -377,7 +377,7 @@ public class PlayerInventoryListener implements Listener {
 				//最大持続時間
 				int maxduration = 0;
 				//effectdatalistにある全てのeffectについて計算
-				for(EffectData ed :playerdata.effectdatalist){
+				for(EffectData ed : playerdata.getEffectdatalist()){
 					//effect量を加算
 					sum += ed.amplifier;
 					//持続時間の最大値を取得
@@ -389,19 +389,19 @@ public class PlayerInventoryListener implements Listener {
 				minespeedlv = (int) Math.floor(sum - 1);
 
 				int maxSpeed;
-				if (playerdata.effectflag == 0) {
+				if (playerdata.getEffectflag() == 0) {
 					maxSpeed = 25565;
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
-				} else if (playerdata.effectflag == 1) {
+				} else if (playerdata.getEffectflag() == 1) {
 					maxSpeed = 127;
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(127制限)");
-				} else if (playerdata.effectflag == 2) {
+				} else if (playerdata.getEffectflag() == 2) {
 					maxSpeed = 200;
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(200制限)");
-				} else if (playerdata.effectflag == 3) {
+				} else if (playerdata.getEffectflag() == 3) {
 					maxSpeed = 400;
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(400制限)");
-				} else if (playerdata.effectflag == 4) {
+				} else if (playerdata.getEffectflag() == 4) {
 					maxSpeed = 600;
 					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(600制限)");
 				} else {
@@ -426,8 +426,8 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType() == Material.FLINT_AND_STEEL){
 				// 死亡メッセージ表示トグル
-				playerdata.dispkilllogflag = !playerdata.dispkilllogflag;
-				if(playerdata.dispkilllogflag){
+				playerdata.setDispkilllogflag(!playerdata.getDispkilllogflag());
+				if(playerdata.getDispkilllogflag()){
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					player.sendMessage(ChatColor.GREEN + "死亡メッセージ:表示");
 				}else{
@@ -440,19 +440,19 @@ public class PlayerInventoryListener implements Listener {
 
 			//全体通知トグル
 			else if(itemstackcurrent.getType() == Material.JUKEBOX){
-				if(playerdata.everysoundflag && playerdata.everymessageflag){
-					playerdata.everysoundflag = !playerdata.everysoundflag;
+				if(playerdata.getEverysoundflag() && playerdata.getEverymessageflag()){
+					playerdata.setEverysoundflag(!playerdata.getEverysoundflag());
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					player.sendMessage(ChatColor.RED + "消音可能な全体通知音を消音します");
 				}
-				else if(!playerdata.everysoundflag && playerdata.everymessageflag){
-					playerdata.everymessageflag = !playerdata.everymessageflag;
+				else if(!playerdata.getEverysoundflag() && playerdata.getEverymessageflag()){
+					playerdata.setEverymessageflag(!playerdata.getEverymessageflag());
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					player.sendMessage(ChatColor.RED + "非表示可能な全体メッセージを非表示にします");
 				}
 				else {
-					playerdata.everysoundflag = !playerdata.everysoundflag;
-					playerdata.everymessageflag = !playerdata.everymessageflag;
+					playerdata.setEverysoundflag(!playerdata.getEverysoundflag());
+					playerdata.setEverymessageflag(!playerdata.getEverymessageflag());
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 					player.sendMessage(ChatColor.GREEN + "非表示/消音設定を解除しました");
 				}
@@ -463,8 +463,8 @@ public class PlayerInventoryListener implements Listener {
 			//追加
 			else if(itemstackcurrent.getType() == Material.BARRIER){
 				// ワールドガード保護表示トグル
-				playerdata.dispworldguardlogflag = !playerdata.dispworldguardlogflag;
-				if(playerdata.dispworldguardlogflag){
+				playerdata.setDispworldguardlogflag(!playerdata.getDispworldguardlogflag());
+				if(playerdata.getDispworldguardlogflag()){
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					player.sendMessage(ChatColor.GREEN + "ワールドガード保護メッセージ:表示");
 				}else{
@@ -477,8 +477,8 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(itemstackcurrent.getType() == Material.IRON_SWORD){
 				// 死亡メッセージ表示トグル
-				playerdata.pvpflag = !playerdata.pvpflag;
-				if(playerdata.pvpflag){
+				playerdata.setPvpflag(!playerdata.getPvpflag());
+				if(playerdata.getPvpflag()){
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					player.sendMessage(ChatColor.GREEN + "PvP:ON");
 				}else{
@@ -489,10 +489,10 @@ public class PlayerInventoryListener implements Listener {
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispPvPToggleMeta(playerdata,itemmeta));
 			}
 
-			else if(isSkull && itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ")){
+			else if(isSkull && itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.getName() + "の統計データ")){
 				// 整地量表示トグル
-				playerdata.expbar.setVisible(!playerdata.expbar.isVisible());
-				if(playerdata.expbar.isVisible()){
+				playerdata.getExpbar().setVisible(!playerdata.getExpbar().isVisible());
+				if(playerdata.getExpbar().isVisible()){
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					player.sendMessage(ChatColor.GREEN + "整地量バー表示");
 				}else{
@@ -561,7 +561,7 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType() == Material.ENDER_PORTAL_FRAME){
 				//ver0.3.2 四次元ポケットを開く
 				//レベルが足りない場合処理終了
-				if( playerdata.level < SeichiAssist.config.getPassivePortalInventorylevel()){
+				if( playerdata.getLevel() < SeichiAssist.config.getPassivePortalInventorylevel()){
 					player.sendMessage(ChatColor.GREEN + "4次元ポケットを開くには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					return;
@@ -571,9 +571,9 @@ public class PlayerInventoryListener implements Listener {
 
 				//レベルに応じたポケットサイズ変更処理
 				//アイテム消失を防ぐ為、現在のサイズよりも四次元ポケットサイズが大きくなる場合のみ拡張処理する
-				if(playerdata.inventory.getSize() < playerdata.getPocketSize()){
+				if(playerdata.getInventory().getSize() < playerdata.getPocketSize()){
 					//現在の四次元ポケットの中身を取得
-					ItemStack[] item = playerdata.inventory.getContents();
+					ItemStack[] item = playerdata.getInventory().getContents();
 					//新しいサイズの四次元ポケットを作成
 					Inventory newsizepocket = Bukkit.getServer().createInventory(null,playerdata.getPocketSize(),ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 					//for文で一個ずつ新しいサイズのポケットに入れてく
@@ -583,16 +583,16 @@ public class PlayerInventoryListener implements Listener {
 						i++;
 					}
 					//出来たら置き換える
-					playerdata.inventory = newsizepocket;
+					playerdata.setInventory(newsizepocket);
 				}
 				//インベントリを開く
-				player.openInventory(playerdata.inventory);
+				player.openInventory(playerdata.getInventory());
 			}
 
 
 			else if(itemstackcurrent.getType() == Material.ENDER_CHEST){
 				//レベルが足りない場合処理終了
-				if( playerdata.level < SeichiAssist.config.getDokodemoEnderlevel()){
+				if( playerdata.getLevel() < SeichiAssist.config.getDokodemoEnderlevel()){
 					player.sendMessage(ChatColor.GREEN + "整地レベルが"+SeichiAssist.config.getDokodemoEnderlevel()+ "以上必要です");
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					return;
@@ -672,7 +672,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, (float) 0.5);
 				Valentine.giveChoco(player);
-				playerdata.hasChocoGave = true;
+				playerdata.setHasChocoGave(true);
 				player.sendMessage(ChatColor.AQUA + "チョコチップクッキーを付与しました。");
 				player.openInventory(MenuInventoryData.getMenuData(player));
 			}
@@ -738,9 +738,9 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType() == Material.DIAMOND_PICKAXE){
 				// 複数破壊トグル
 
-				if(playerdata.level>=SeichiAssist.config.getMultipleIDBlockBreaklevel()){
-					playerdata.multipleidbreakflag = !playerdata.multipleidbreakflag;
-					if(playerdata.multipleidbreakflag){
+				if(playerdata.getLevel() >=SeichiAssist.config.getMultipleIDBlockBreaklevel()){
+					playerdata.setMultipleidbreakflag(!playerdata.getMultipleidbreakflag());
+					if(playerdata.getMultipleidbreakflag()){
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 						player.sendMessage(ChatColor.GREEN + "複数種類同時破壊:ON");
 					}else{
@@ -756,13 +756,13 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			else if(itemstackcurrent.getType() == Material.DIAMOND_AXE){
-				playerdata.chestflag = false;
+				playerdata.setChestflag(false);
 				player.sendMessage(ChatColor.GREEN + "スキルでのチェスト破壊を無効化しました。");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
 				player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player));
 			}
 			else if(itemstackcurrent.getType() == Material.CHEST){
-				playerdata.chestflag = true;
+				playerdata.setChestflag(true);
 				player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊を有効化しました。");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player));
@@ -775,7 +775,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			else if(itemstackcurrent.getType() == Material.WOOD_SWORD || itemstackcurrent.getType() == Material.STONE_SWORD || itemstackcurrent.getType() == Material.GOLD_SWORD || itemstackcurrent.getType() == Material.IRON_SWORD || itemstackcurrent.getType() == Material.DIAMOND_SWORD){
-				if(!playerdata.isGBStageUp){
+				if(!playerdata.isGBStageUp()){
 					player.sendMessage(ChatColor.RED + "進化条件を満たしていません");
 				}else {
 					player.openInventory(MenuInventoryData.getGiganticBerserkEvolutionMenu(player));
@@ -843,14 +843,14 @@ public class PlayerInventoryListener implements Listener {
 				if(itemstackcurrent.getType() == ActiveSkill.ARROW.getMaterial(skilllevel)){
 					PotionMeta potionmeta =(PotionMeta)itemstackcurrent.getItemMeta();
 					if(potionmeta.getBasePotionData().getType() == ActiveSkill.ARROW.getPotionType(skilllevel)){
-						if(playerdata.activeskilldata.skilltype == type
-								&& playerdata.activeskilldata.skillnum == skilllevel){
+						if(playerdata.getActiveskilldata().skilltype == type
+								&& playerdata.getActiveskilldata().skillnum == skilllevel){
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 							player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
-							playerdata.activeskilldata.skilltype = 0 ;
-							playerdata.activeskilldata.skillnum = 0 ;
+							playerdata.getActiveskilldata().skilltype = 0 ;
+							playerdata.getActiveskilldata().skillnum = 0 ;
 						}else{
-							playerdata.activeskilldata.updateSkill(player,type,skilllevel,1);
+							playerdata.getActiveskilldata().updateSkill(player,type,skilllevel,1);
 							player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  が選択されました");
 							player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 						}
@@ -862,14 +862,14 @@ public class PlayerInventoryListener implements Listener {
 			for(skilllevel = 4;skilllevel <= 9 ; skilllevel++){
 				name = ActiveSkill.MULTI.getName(skilllevel);
 				if(itemstackcurrent.getType() == ActiveSkill.MULTI.getMaterial(skilllevel)){
-					if(playerdata.activeskilldata.skilltype == type
-							&& playerdata.activeskilldata.skillnum == skilllevel){
+					if(playerdata.getActiveskilldata().skilltype == type
+							&& playerdata.getActiveskilldata().skillnum == skilllevel){
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 						player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
-						playerdata.activeskilldata.skilltype = 0 ;
-						playerdata.activeskilldata.skillnum = 0 ;
+						playerdata.getActiveskilldata().skilltype = 0 ;
+						playerdata.getActiveskilldata().skillnum = 0 ;
 					}else{
-						playerdata.activeskilldata.updateSkill(player,type,skilllevel,1);
+						playerdata.getActiveskilldata().updateSkill(player,type,skilllevel,1);
 						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  が選択されました");
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 					}
@@ -880,14 +880,14 @@ public class PlayerInventoryListener implements Listener {
 			for(skilllevel = 1;skilllevel <= 9 ; skilllevel++){
 				name = ActiveSkill.BREAK.getName(skilllevel);
 				if(itemstackcurrent.getType() == ActiveSkill.BREAK.getMaterial(skilllevel)){
-					if(playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()
-							&& playerdata.activeskilldata.skillnum == skilllevel){
+					if(playerdata.getActiveskilldata().skilltype == ActiveSkill.BREAK.gettypenum()
+							&& playerdata.getActiveskilldata().skillnum == skilllevel){
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 						player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
-						playerdata.activeskilldata.skilltype = 0 ;
-						playerdata.activeskilldata.skillnum = 0 ;
+						playerdata.getActiveskilldata().skilltype = 0 ;
+						playerdata.getActiveskilldata().skillnum = 0 ;
 					}else{
-						playerdata.activeskilldata.updateSkill(player,type,skilllevel,1);
+						playerdata.getActiveskilldata().updateSkill(player,type,skilllevel,1);
 						player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  が選択されました");
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 					}
@@ -899,14 +899,14 @@ public class PlayerInventoryListener implements Listener {
 			for(skilllevel = 7;skilllevel <= 9 ; skilllevel++){
 				name = ActiveSkill.WATERCONDENSE.getName(skilllevel);
 				if(itemstackcurrent.getType() == ActiveSkill.WATERCONDENSE.getMaterial(skilllevel)){
-					if(playerdata.activeskilldata.assaulttype == type
-							&& playerdata.activeskilldata.assaultnum == skilllevel){
+					if(playerdata.getActiveskilldata().assaulttype == type
+							&& playerdata.getActiveskilldata().assaultnum == skilllevel){
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 						player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
-						playerdata.activeskilldata.assaulttype = 0 ;
-						playerdata.activeskilldata.assaultnum = 0 ;
+						playerdata.getActiveskilldata().assaulttype = 0 ;
+						playerdata.getActiveskilldata().assaultnum = 0 ;
 					}else{
-						playerdata.activeskilldata.updateAssaultSkill(player,type,skilllevel,1);
+						playerdata.getActiveskilldata().updateAssaultSkill(player,type,skilllevel,1);
 						player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + name + "  が選択されました");
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 					}
@@ -918,14 +918,14 @@ public class PlayerInventoryListener implements Listener {
 			for(skilllevel = 7;skilllevel <= 9 ; skilllevel++){
 				name = ActiveSkill.LAVACONDENSE.getName(skilllevel);
 				if(itemstackcurrent.getType() == ActiveSkill.LAVACONDENSE.getMaterial(skilllevel)){
-					if(playerdata.activeskilldata.assaulttype == type
-							&& playerdata.activeskilldata.assaultnum == skilllevel){
+					if(playerdata.getActiveskilldata().assaulttype == type
+							&& playerdata.getActiveskilldata().assaultnum == skilllevel){
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 						player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
-						playerdata.activeskilldata.assaulttype = 0 ;
-						playerdata.activeskilldata.assaultnum = 0 ;
+						playerdata.getActiveskilldata().assaulttype = 0 ;
+						playerdata.getActiveskilldata().assaultnum = 0 ;
 					}else{
-						playerdata.activeskilldata.updateAssaultSkill(player,type,skilllevel,1);
+						playerdata.getActiveskilldata().updateAssaultSkill(player,type,skilllevel,1);
 						player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + name + "  が選択されました");
 						player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 					}
@@ -935,13 +935,13 @@ public class PlayerInventoryListener implements Listener {
 			type = ActiveSkill.FLUIDCONDENSE.gettypenum();
 			skilllevel = 10;
 			if(itemstackcurrent.getType() == ActiveSkill.FLUIDCONDENSE.getMaterial(skilllevel)){
-				if(playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type){
+				if(playerdata.getActiveskilldata().assaultnum == skilllevel && playerdata.getActiveskilldata().assaulttype == type){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
-					playerdata.activeskilldata.assaulttype = 0 ;
-					playerdata.activeskilldata.assaultnum = 0 ;
+					playerdata.getActiveskilldata().assaulttype = 0 ;
+					playerdata.getActiveskilldata().assaultnum = 0 ;
 				}else{
-					playerdata.activeskilldata.updateAssaultSkill(player,type,skilllevel,1);
+					playerdata.getActiveskilldata().updateAssaultSkill(player,type,skilllevel,1);
 					player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + "ヴェンダー・ブリザード" + " が選択されました");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}
@@ -951,13 +951,13 @@ public class PlayerInventoryListener implements Listener {
 			type = ActiveSkill.ARMOR.gettypenum();
 			skilllevel = 10;
 			if(itemstackcurrent.getType() == ActiveSkill.ARMOR.getMaterial(skilllevel)){
-				if(playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type){
+				if(playerdata.getActiveskilldata().assaultnum == skilllevel && playerdata.getActiveskilldata().assaulttype == type){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					player.sendMessage(ChatColor.YELLOW + "選択を解除しました");
-					playerdata.activeskilldata.assaulttype = 0 ;
-					playerdata.activeskilldata.assaultnum = 0 ;
+					playerdata.getActiveskilldata().assaulttype = 0 ;
+					playerdata.getActiveskilldata().assaultnum = 0 ;
 				}else{
-					playerdata.activeskilldata.updateAssaultSkill(player,type,skilllevel,1);
+					playerdata.getActiveskilldata().updateAssaultSkill(player,type,skilllevel,1);
 					player.sendMessage(ChatColor.DARK_GREEN + "アサルトスキル:" + "アサルト・アーマー" + " が選択されました");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}
@@ -982,9 +982,9 @@ public class PlayerInventoryListener implements Listener {
 					expman.changeExp(-10000);
 
 					//リセット処理
-					playerdata.activeskilldata.reset();
+					playerdata.getActiveskilldata().reset();
 					//スキルポイント更新
-					playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level);
+					playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 					//リセット音を流す
 					player.playSound(player.getLocation(), Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1, (float) 0.1);
 					//メッセージを流す
@@ -994,13 +994,13 @@ public class PlayerInventoryListener implements Listener {
 				}
 			}
 			else if(itemstackcurrent.getType() == Material.GLASS){
-				if(playerdata.activeskilldata.skilltype == 0 && playerdata.activeskilldata.skillnum == 0
-				&&playerdata.activeskilldata.assaulttype == 0 && playerdata.activeskilldata.assaultnum == 0
+				if(playerdata.getActiveskilldata().skilltype == 0 && playerdata.getActiveskilldata().skillnum == 0
+				&& playerdata.getActiveskilldata().assaulttype == 0 && playerdata.getActiveskilldata().assaultnum == 0
 						){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					player.sendMessage(ChatColor.YELLOW + "既に全ての選択は削除されています");
 				}else{
-					playerdata.activeskilldata.clearSellect(player);
+					playerdata.getActiveskilldata().clearSellect(player);
 
 				}
 			}
@@ -1060,11 +1060,11 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 				return;
 			}else if(itemstackcurrent.getType() == Material.GLASS){
-				if(playerdata.activeskilldata.effectnum == 0){
+				if(playerdata.getActiveskilldata().effectnum == 0){
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 				}else{
-					playerdata.activeskilldata.effectnum = 0;
+					playerdata.getActiveskilldata().effectnum = 0;
 					player.sendMessage(ChatColor.GREEN + "エフェクト:未設定  が選択されました");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 				}
@@ -1078,11 +1078,11 @@ public class PlayerInventoryListener implements Listener {
 				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 				for (final ActiveSkillEffect activeSkillEffect : skilleffect) {
 					if (itemstackcurrent.getType() == activeSkillEffect.getMaterial()) {
-						if (playerdata.activeskilldata.effectnum == activeSkillEffect.getNum()) {
+						if (playerdata.getActiveskilldata().effectnum == activeSkillEffect.getNum()) {
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 							player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 						} else {
-							playerdata.activeskilldata.effectnum = activeSkillEffect.getNum();
+							playerdata.getActiveskilldata().effectnum = activeSkillEffect.getNum();
 							player.sendMessage(ChatColor.GREEN + "エフェクト:" + activeSkillEffect.getName() + ChatColor.RESET + "" + ChatColor.GREEN + " が選択されました");
 							player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 						}
@@ -1091,11 +1091,11 @@ public class PlayerInventoryListener implements Listener {
 				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
 				for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : premiumeffect) {
 					if (itemstackcurrent.getType() == activeSkillPremiumEffect.getMaterial()) {
-						if (playerdata.activeskilldata.effectnum == activeSkillPremiumEffect.getNum()) {
+						if (playerdata.getActiveskilldata().effectnum == activeSkillPremiumEffect.getNum()) {
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 							player.sendMessage(ChatColor.YELLOW + "既に選択されています");
 						} else {
-							playerdata.activeskilldata.effectnum = activeSkillPremiumEffect.getNum() + 100;
+							playerdata.getActiveskilldata().effectnum = activeSkillPremiumEffect.getNum() + 100;
 							player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "プレミアムエフェクト:" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + " が選択されました");
 							player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
 						}
@@ -1110,14 +1110,14 @@ public class PlayerInventoryListener implements Listener {
 				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
 				for (final ActiveSkillEffect activeSkillEffect : skilleffect) {
 					if (itemmeta.getDisplayName().contains(activeSkillEffect.getName())) {
-						if (playerdata.activeskilldata.effectpoint < activeSkillEffect.getUsePoint()) {
+						if (playerdata.getActiveskilldata().effectpoint < activeSkillEffect.getUsePoint()) {
 							player.sendMessage(ChatColor.DARK_RED + "エフェクトポイントが足りません");
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.5);
 						} else {
-							playerdata.activeskilldata.obtainedSkillEffects.add(activeSkillEffect);
+							playerdata.getActiveskilldata().obtainedSkillEffects.add(activeSkillEffect);
 							player.sendMessage(ChatColor.LIGHT_PURPLE + "エフェクト：" + activeSkillEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました");
 							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 1.2);
-							playerdata.activeskilldata.effectpoint -= activeSkillEffect.getUsePoint();
+							playerdata.getActiveskilldata().effectpoint -= activeSkillEffect.getUsePoint();
 							player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
 						}
 					}
@@ -1129,17 +1129,17 @@ public class PlayerInventoryListener implements Listener {
 				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
 				for (final ActiveSkillPremiumEffect activeSkillPremiumEffect : premiumeffect) {
 					if (itemmeta.getDisplayName().contains(activeSkillPremiumEffect.getName())) {
-						if (playerdata.activeskilldata.premiumeffectpoint < activeSkillPremiumEffect.getUsePoint()) {
+						if (playerdata.getActiveskilldata().premiumeffectpoint < activeSkillPremiumEffect.getUsePoint()) {
 							player.sendMessage(ChatColor.DARK_RED + "プレミアムエフェクトポイントが足りません");
 							player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.5);
 						} else {
-							playerdata.activeskilldata.obtainedSkillPremiumEffects.add(activeSkillPremiumEffect);
+							playerdata.getActiveskilldata().obtainedSkillPremiumEffects.add(activeSkillPremiumEffect);
 							player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました");
 							if (databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
 								player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。");
 							}
 							player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float) 1.2);
-							playerdata.activeskilldata.premiumeffectpoint -= activeSkillPremiumEffect.getUsePoint();
+							playerdata.getActiveskilldata().premiumeffectpoint -= activeSkillPremiumEffect.getUsePoint();
 							player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player));
 						}
 					}
@@ -1194,408 +1194,408 @@ public class PlayerInventoryListener implements Listener {
 				if(itemmeta.getDisplayName().contains("エビフライ・ドライブ")){
 					skilllevel = 4;
 					skilltype = 1;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float)0.5);
-					}else if(playerdata.activeskilldata.breakskill < 3){
+					}else if(playerdata.getActiveskilldata().breakskill < 3){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(3,3) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float)0.5);
 					}else{
-						playerdata.activeskilldata.arrowskill = skilllevel;
+						playerdata.getActiveskilldata().arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ホーリー・ショット")){
 					skilllevel = 5;
 					skilltype = 1;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.arrowskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().arrowskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.arrowskill = skilllevel;
+						playerdata.getActiveskilldata().arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ツァーリ・ボンバ")){
 					skilllevel = 6;
 					skilltype = 1;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.arrowskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().arrowskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.arrowskill = skilllevel;
+						playerdata.getActiveskilldata().arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アーク・ブラスト")){
 					skilllevel = 7;
 					skilltype = 1;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.arrowskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().arrowskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.arrowskill = skilllevel;
+						playerdata.getActiveskilldata().arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ファンタズム・レイ")){
 					skilllevel = 8;
 					skilltype = 1;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.arrowskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().arrowskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.arrowskill = skilllevel;
+						playerdata.getActiveskilldata().arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("スーパー・ノヴァ")){
 					skilllevel = 9;
 					skilltype = 1;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.arrowskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().arrowskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.arrowskill = skilllevel;
+						playerdata.getActiveskilldata().arrowskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
-						if(playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9){
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
+						if(playerdata.getActiveskilldata().multiskill == 9 && playerdata.getActiveskilldata().breakskill == 9 && playerdata.getActiveskilldata().watercondenskill == 9 && playerdata.getActiveskilldata().lavacondenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
-							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
+							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.getName() + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
 						}
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("トム・ボウイ")){
 					skilllevel = 4;
 					skilltype = 2;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.breakskill < 3){
+					}else if(playerdata.getActiveskilldata().breakskill < 3){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(3,3) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.multiskill = skilllevel;
+						playerdata.getActiveskilldata().multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("サンダー・ストーム")){
 					skilllevel = 5;
 					skilltype = 2;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.multiskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().multiskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.multiskill = skilllevel;
+						playerdata.getActiveskilldata().multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("スターライト・ブレイカー")){
 					skilllevel = 6;
 					skilltype = 2;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.multiskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().multiskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.multiskill = skilllevel;
+						playerdata.getActiveskilldata().multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アース・ディバイド")){
 					skilllevel = 7;
 					skilltype = 2;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.multiskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().multiskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.multiskill = skilllevel;
+						playerdata.getActiveskilldata().multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ヘヴン・ゲイボルグ")){
 					skilllevel = 8;
 					skilltype = 2;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.multiskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().multiskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.multiskill = skilllevel;
+						playerdata.getActiveskilldata().multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ディシジョン")){
 					skilllevel = 9;
 					skilltype = 2;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.multiskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().multiskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.multiskill = skilllevel;
+						playerdata.getActiveskilldata().multiskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
-						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9){
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
+						if(playerdata.getActiveskilldata().arrowskill == 9 && playerdata.getActiveskilldata().breakskill == 9 && playerdata.getActiveskilldata().watercondenskill == 9 && playerdata.getActiveskilldata().lavacondenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
-							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
+							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.getName() + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
 						}
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("デュアル・ブレイク")){
 					skilllevel = 1;
 					skilltype = 3;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.breakskill = skilllevel;
+						playerdata.getActiveskilldata().breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("トリアル・ブレイク")){
 					skilllevel = 2;
 					skilltype = 3;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.breakskill = skilllevel;
+						playerdata.getActiveskilldata().breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("エクスプロージョン")){
 					skilllevel = 3;
 					skilltype = 3;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.breakskill = skilllevel;
+						playerdata.getActiveskilldata().breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ミラージュ・フレア")){
 					skilllevel = 4;
 					skilltype = 3;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.breakskill = skilllevel;
+						playerdata.getActiveskilldata().breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ドッ・カーン")){
 					skilllevel = 5;
 					skilltype = 3;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.breakskill = skilllevel;
+						playerdata.getActiveskilldata().breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ギガンティック・ボム")){
 					skilllevel = 6;
 					skilltype = 3;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.breakskill = skilllevel;
+						playerdata.getActiveskilldata().breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ブリリアント・デトネーション")){
 					skilllevel = 7;
 					skilltype = 3;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.breakskill = skilllevel;
+						playerdata.getActiveskilldata().breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("レムリア・インパクト")){
 					skilllevel = 8;
 					skilltype = 3;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.breakskill = skilllevel;
+						playerdata.getActiveskilldata().breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("エターナル・ヴァイス")){
 					skilllevel = 9;
 					skilltype = 3;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.breakskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().breakskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.breakskill = skilllevel;
+						playerdata.getActiveskilldata().breakskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
-						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9){
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
+						if(playerdata.getActiveskilldata().arrowskill == 9 && playerdata.getActiveskilldata().multiskill == 9 && playerdata.getActiveskilldata().watercondenskill == 9 && playerdata.getActiveskilldata().lavacondenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
-							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
+							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.getName() + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
 						}
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ホワイト・ブレス")){
 					skilllevel = 7;
 					skilltype = 4;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.breakskill < 3){
+					}else if(playerdata.getActiveskilldata().breakskill < 3){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(3,3) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.watercondenskill = skilllevel;
+						playerdata.getActiveskilldata().watercondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アブソリュート・ゼロ")){
 					skilllevel = 8;
 					skilltype = 4;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.watercondenskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().watercondenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.watercondenskill = skilllevel;
+						playerdata.getActiveskilldata().watercondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ダイアモンド・ダスト")){
 					skilllevel = 9;
 					skilltype = 4;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.watercondenskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().watercondenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.watercondenskill = skilllevel;
+						playerdata.getActiveskilldata().watercondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
-						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9){
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
+						if(playerdata.getActiveskilldata().arrowskill == 9 && playerdata.getActiveskilldata().multiskill == 9 && playerdata.getActiveskilldata().watercondenskill == 9 && playerdata.getActiveskilldata().lavacondenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
-							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
+							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.getName() + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
 						}
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("ラヴァ・コンデンセーション")){
 					skilllevel = 7;
 					skilltype = 5;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}
@@ -1603,64 +1603,64 @@ public class PlayerInventoryListener implements Listener {
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}*/
-					else if(playerdata.activeskilldata.breakskill < 3){
+					else if(playerdata.getActiveskilldata().breakskill < 3){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(3,3) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.lavacondenskill = skilllevel;
+						playerdata.getActiveskilldata().lavacondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("モエラキ・ボールダーズ")){
 					skilllevel = 8;
 					skilltype = 5;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.lavacondenskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().lavacondenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.lavacondenskill = skilllevel;
+						playerdata.getActiveskilldata().lavacondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("エルト・フェットル")){
 					skilllevel = 9;
 					skilltype = 5;
-					if(playerdata.activeskilldata.skillpoint < skilllevel * 10){
+					if(playerdata.getActiveskilldata().skillpoint < skilllevel * 10){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
-					}else if(playerdata.activeskilldata.lavacondenskill < skilllevel - 1){
+					}else if(playerdata.getActiveskilldata().lavacondenskill < skilllevel - 1){
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.lavacondenskill = skilllevel;
+						playerdata.getActiveskilldata().lavacondenskill = skilllevel;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype ,skilllevel) + "を解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
-						if(playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9){
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
+						if(playerdata.getActiveskilldata().arrowskill == 9 && playerdata.getActiveskilldata().multiskill == 9 && playerdata.getActiveskilldata().watercondenskill == 9 && playerdata.getActiveskilldata().lavacondenskill == 9){
 							player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました");
 							Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, (float)1.2);
-							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
+							Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.getName() + "が全てのスキルを習得し、アサルトアーマーを解除しました！");
 						}
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}else if(itemmeta.getDisplayName().contains("アサルト・アーマー")){
 
 				}else if(itemmeta.getDisplayName().contains("ヴェンダー・ブリザード")){
-					if(playerdata.activeskilldata.skillpoint < 110){
+					if(playerdata.getActiveskilldata().skillpoint < 110){
 						player.sendMessage(ChatColor.DARK_RED  + "アクティブスキルポイントが足りません");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}else{
-						playerdata.activeskilldata.fluidcondenskill = 10;
+						playerdata.getActiveskilldata().fluidcondenskill = 10;
 						player.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "" + "ヴェンダー・ブリザードを解除しました");
 						player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, (float)1.2);
-						playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+						playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 						player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player));
 					}
 				}
@@ -1798,8 +1798,8 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			if (itemstackcurrent.getType() == Material.IRON_PICKAXE) {
-				playerdata.minestackflag = !playerdata.minestackflag;
-				if (playerdata.minestackflag) {
+				playerdata.setMinestackflag(!playerdata.getMinestackflag());
+				if (playerdata.getMinestackflag()) {
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					player.sendMessage(ChatColor.GREEN + "対象ブロック自動スタック機能:ON");
 				} else {
@@ -1810,7 +1810,7 @@ public class PlayerInventoryListener implements Listener {
 				itemstackcurrent.setItemMeta(MenuInventoryData.MineStackToggleMeta(playerdata,itemmeta));
 			}
 
-			for (HistoryData data : playerdata.hisotryData.getHistoryList()) {
+			for (HistoryData data : playerdata.getHisotryData().getHistoryList()) {
 				if (itemstackcurrent.getType() == data.obj.getMaterial()
 						&& itemstackcurrent.getDurability() == data.obj.getDurability()) { //MaterialとサブIDが一致
 
@@ -1840,12 +1840,12 @@ public class PlayerInventoryListener implements Listener {
 							String minestack_name = data.obj.getJapaneseName();
 
 							final MineStackObj mineStackObj = data.obj;
-							final long mineStackObjAmount = playerdata.minestack.getStackedAmountOf(mineStackObj);
+							final long mineStackObjAmount = playerdata.getMinestack().getStackedAmountOf(mineStackObj);
 							itemstack_name = itemstack_name.replaceAll("§[0-9A-Za-z]","");
 							minestack_name = minestack_name.replaceAll("§[0-9A-Za-z]","");
 							if (itemstack_name.equals(minestack_name)) { //表記はアイテム名だけなのでアイテム名で判定
 								final long withdrawnAmount = giveItemStackAndPlayMineStackSound(player, mineStackObjAmount, new ItemStack(data.obj.getMaterial(), 1, (short)data.obj.getDurability()));
-								playerdata.minestack.subtractStackedAmountOf(mineStackObj, withdrawnAmount);
+								playerdata.getMinestack().subtractStackedAmountOf(mineStackObj, withdrawnAmount);
 							}
 						}
 					} else if (data.obj.getNameloreflag() && itemstackcurrent.getItemMeta().hasDisplayName()) { //名前と説明文がある
@@ -1876,9 +1876,9 @@ public class PlayerInventoryListener implements Listener {
 							if (data.obj.getGachatype() == -1) {//ガチャアイテムにはない（がちゃりんご）
 								if (itemstack_name.equals(minestack_name)) { //表記はアイテム名だけなのでアイテム名で判定
 									final ItemStack itemStackToGive = new ItemStack(data.obj.getMaterial(), 1, (short)data.obj.getDurability());
-									final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, playerdata.minestack.getStackedAmountOf(data.obj), itemStackToGive, -1);
+									final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, playerdata.getMinestack().getStackedAmountOf(data.obj), itemStackToGive, -1);
 
-									playerdata.minestack.subtractStackedAmountOf(data.obj, withdrawnAmount);
+									playerdata.getMinestack().subtractStackedAmountOf(data.obj, withdrawnAmount);
 								}
 							} else { //ガチャアイテム(処理は同じでも念のためデバッグ用に分離)
 								if (data.obj.getGachatype()>=0) {
@@ -1894,14 +1894,14 @@ public class PlayerInventoryListener implements Listener {
 											List<org.bukkit.block.banner.Pattern> p1 = b1.getPatterns();
 
 											if (p0.containsAll(p1)) {
-												final long currentObjectAmount = playerdata.minestack.getStackedAmountOf(data.obj);
+												final long currentObjectAmount = playerdata.getMinestack().getStackedAmountOf(data.obj);
 												final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(data.obj.getMaterial(), 1, (short)data.obj.getDurability()), data.obj.getGachatype());
-												playerdata.minestack.subtractStackedAmountOf(data.obj, withdrawnAmount);
+												playerdata.getMinestack().subtractStackedAmountOf(data.obj, withdrawnAmount);
 											}
 										} else {
-											final long currentObjectAmount = playerdata.minestack.getStackedAmountOf(data.obj);
+											final long currentObjectAmount = playerdata.getMinestack().getStackedAmountOf(data.obj);
 											final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(data.obj.getMaterial(), 1, (short)data.obj.getDurability()), data.obj.getGachatype());
-											playerdata.minestack.subtractStackedAmountOf(data.obj, withdrawnAmount);
+											playerdata.getMinestack().subtractStackedAmountOf(data.obj, withdrawnAmount);
 										}
 									}
 								}
@@ -2007,8 +2007,8 @@ public class PlayerInventoryListener implements Listener {
 
 			if (itemstackcurrent.getType() == Material.IRON_PICKAXE) {
 				// 対象ブロック自動スタック機能トグル(どのメニューでも)
-				playerdata.minestackflag = !playerdata.minestackflag;
-				if (playerdata.minestackflag) {
+				playerdata.setMinestackflag(!playerdata.getMinestackflag());
+				if (playerdata.getMinestackflag()) {
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					player.sendMessage(ChatColor.GREEN + "対象ブロック自動スタック機能:ON");
 				} else {
@@ -2052,9 +2052,9 @@ public class PlayerInventoryListener implements Listener {
 								if (itemstack_name.equals(minestack_name)) { //表記はアイテム名だけなのでアイテム名で判定
 									final ItemStack itemStackToGive = new ItemStack(mineStackObj.getMaterial(), 1, (short)mineStackObj.getDurability());
 									final int withdrawnAmount = giveItemStackAndPlayMineStackSound(
-											player, playerdata.minestack.getStackedAmountOf(mineStackObj), itemStackToGive);
+											player, playerdata.getMinestack().getStackedAmountOf(mineStackObj), itemStackToGive);
 
-									playerdata.minestack.subtractStackedAmountOf(mineStackObj, withdrawnAmount);
+									playerdata.getMinestack().subtractStackedAmountOf(mineStackObj, withdrawnAmount);
 
 									open_flag = (Util.getMineStackTypeindex(i) + 1) / 45;
 									open_flag_type = mineStackObj.getStacktype();
@@ -2087,9 +2087,9 @@ public class PlayerInventoryListener implements Listener {
 
 								if(mineStackObj.getGachatype()==-1){//ガチャアイテムにはない（がちゃりんご）
 									if(itemstack_name.equals(minestack_name)){ //表記はアイテム名だけなのでアイテム名で判定
-										final long currentObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj);
+										final long currentObjectAmount = playerdata.getMinestack().getStackedAmountOf(mineStackObj);
 										final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(mineStackObj.getMaterial(), 1, (short)mineStackObj.getDurability()),-1);
-										playerdata.minestack.subtractStackedAmountOf(mineStackObj, withdrawnAmount);
+										playerdata.getMinestack().subtractStackedAmountOf(mineStackObj, withdrawnAmount);
 										open_flag = (Util.getMineStackTypeindex(i)+1)/45;
 										open_flag_type = mineStackObj.getStacktype();
 									}
@@ -2107,16 +2107,16 @@ public class PlayerInventoryListener implements Listener {
 												List<org.bukkit.block.banner.Pattern> p1 = b1.getPatterns();
 
 												if(p0.containsAll(p1)){
-													final long currentObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj);
+													final long currentObjectAmount = playerdata.getMinestack().getStackedAmountOf(mineStackObj);
 													final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(mineStackObj.getMaterial(), 1, (short)mineStackObj.getDurability()),mineStackObj.getGachatype());
-													playerdata.minestack.subtractStackedAmountOf(mineStackObj,withdrawnAmount);
+													playerdata.getMinestack().subtractStackedAmountOf(mineStackObj,withdrawnAmount);
 													open_flag = (Util.getMineStackTypeindex(i)+1)/45;
 													open_flag_type=mineStackObj.getStacktype();
 												}
 											} else {
-												final long currentObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj);
+												final long currentObjectAmount = playerdata.getMinestack().getStackedAmountOf(mineStackObj);
 												final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(mineStackObj.getMaterial(), 1, (short)mineStackObj.getDurability()),mineStackObj.getGachatype());
-												playerdata.minestack.subtractStackedAmountOf(mineStackObj,withdrawnAmount);
+												playerdata.getMinestack().subtractStackedAmountOf(mineStackObj,withdrawnAmount);
 												open_flag = (Util.getMineStackTypeindex(i)+1)/45;
 												open_flag_type=mineStackObj.getStacktype();
 											}
@@ -2126,7 +2126,7 @@ public class PlayerInventoryListener implements Listener {
 							}
 						}
 						if (mineStackObj.getGachatype() == -1) {
-							playerdata.hisotryData.add(i, mineStackObj);
+							playerdata.getHisotryData().add(i, mineStackObj);
 						}
 					}
 
@@ -2553,7 +2553,7 @@ public class PlayerInventoryListener implements Listener {
 			MineStackGachaData g = new MineStackGachaData(SeichiAssist.msgachadatalist.get(num));
 			UUID uuid = player.getUniqueId();
 			PlayerData playerdata = playermap.get(uuid);
-			String name = playerdata.name;
+			String name = playerdata.getName();
 			if(g.probability < 0.1){ //ガチャアイテムに名前を付与
 				g.addname(name);
 			}
@@ -2574,7 +2574,7 @@ public class PlayerInventoryListener implements Listener {
 		if(playerdata == null){
 			return;
 		}
-		String name = playerdata.name;
+		String name = playerdata.getName();
 		Inventory inventory = event.getInventory();
 
 		//インベントリサイズが36でない時終了
@@ -2754,17 +2754,17 @@ public class PlayerInventoryListener implements Listener {
 
 			//表示内容をLVに変更
 			if(itemstackcurrent.getType() == Material.REDSTONE_TORCH_ON){
-				playerdata.displayTitle1No = 0 ;
-				playerdata.displayTitle2No = 0 ;
-				playerdata.displayTitle3No = 0 ;
+				playerdata.setDisplayTitle1No(0);
+				playerdata.setDisplayTitle2No(0);
+				playerdata.setDisplayTitle3No(0);
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(MenuInventoryData.getTitleMenuData(player));
 			}
 
 			//予約付与システム受け取り処理
 			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_Present2")){
-				SeichiAchievement.tryAchieve(player,playerdata.giveachvNo);
-				playerdata.giveachvNo = 0 ;
+				SeichiAchievement.tryAchieve(player, playerdata.getGiveachvNo());
+				playerdata.setGiveachvNo(0);
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(MenuInventoryData.getTitleMenuData(player));
 			}
@@ -2778,7 +2778,7 @@ public class PlayerInventoryListener implements Listener {
 			//カテゴリ「整地」を開く
 			else if(itemstackcurrent.getType() == Material.GOLD_PICKAXE){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
+				playerdata.setTitlepage(1);
 				player.openInventory(MenuInventoryData.getTitleSeichi(player));
 			}
 
@@ -2794,21 +2794,21 @@ public class PlayerInventoryListener implements Listener {
 			//カテゴリ「ログイン」を開く
 			else if(itemstackcurrent.getType() == Material.COMPASS){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
+				playerdata.setTitlepage(1);
 				player.openInventory(MenuInventoryData.getTitleLogin(player));
 			}
 
 			//カテゴリ「やりこみ」を開く
 			else if(itemstackcurrent.getType() == Material.BLAZE_POWDER){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
+				playerdata.setTitlepage(1);
 				player.openInventory(MenuInventoryData.getTitleSuperTry(player));
 			}
 
 			//カテゴリ「特殊」を開く
 			else if(itemstackcurrent.getType() == Material.EYE_OF_ENDER){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
+				playerdata.setTitlepage(1);
 				player.openInventory(MenuInventoryData.getTitleSpecial(player));
 			}
 
@@ -2897,28 +2897,28 @@ public class PlayerInventoryListener implements Listener {
 			//実績「参加時間」を開く
 			else if(itemstackcurrent.getType() == Material.COMPASS){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
+				playerdata.setTitlepage(1);
 				player.openInventory(MenuInventoryData.getTitleTimeData(player));
 			}
 
 			//実績「通算ログイン」を開く
 			else if(itemstackcurrent.getType() == Material.BOOK){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
+				playerdata.setTitlepage(1);
 				player.openInventory(MenuInventoryData.getTitleJoinAmountData(player));
 			}
 
 			//実績「連続ログイン」を開く
 			else if(itemstackcurrent.getType() == Material.BOOK_AND_QUILL){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
+				playerdata.setTitlepage(1);
 				player.openInventory(MenuInventoryData.getTitleJoinChainData(player));
 			}
 
 			//実績「記念日」を開く
 			else if(itemstackcurrent.getType() == Material.NETHER_STAR){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
+				playerdata.setTitlepage(1);
 				player.openInventory(MenuInventoryData.getTitleExtraData(player));
 			}
 
@@ -2971,21 +2971,21 @@ public class PlayerInventoryListener implements Listener {
 			//実績「公式イベント」を開く
 			else if(itemstackcurrent.getType() == Material.BLAZE_POWDER){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
+				playerdata.setTitlepage(1);
 				player.openInventory(MenuInventoryData.getTitleEventData(player));
 			}
 
 			//実績「JMS投票数」を開く
 			else if(itemstackcurrent.getType() == Material.YELLOW_FLOWER){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
+				playerdata.setTitlepage(1);
 				player.openInventory(MenuInventoryData.getTitleSupportData(player));
 			}
 
 			//実績「極秘任務」を開く
 			else if(itemstackcurrent.getType() == Material.DIAMOND_BARDING){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage = 1 ;
+				playerdata.setTitlepage(1);
 				player.openInventory(MenuInventoryData.getTitleSecretData(player));
 			}
 
@@ -3017,13 +3017,13 @@ public class PlayerInventoryListener implements Listener {
 			if(itemstackcurrent.getType() == Material.EMERALD_ORE){
 				//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				playerdata.achvPointMAX = 0;
+				playerdata.setAchvPointMAX(0);
 				for(int i=1000 ; i < 9800; i ++ ){
-					if(playerdata.TitleFlags.get(i)){
-						playerdata.achvPointMAX += 10 ;
+					if(playerdata.getTitleFlags().get(i)){
+						playerdata.setAchvPointMAX(playerdata.getAchvPointMAX() + 10);
 					}
 				}
-				playerdata.achvPoint = (playerdata.achvPointMAX + (playerdata.achvChangenum * 3 )) - playerdata.achvPointUSE ;
+				playerdata.setAchvPoint((playerdata.getAchvPointMAX() + (playerdata.getAchvChangenum() * 3)) - playerdata.getAchvPointUSE());
 				player.openInventory(MenuInventoryData.setFreeTitleMainData(player));
 			}
 
@@ -3032,20 +3032,20 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				//不足してたらスルー
-				if(playerdata.activeskilldata.effectpoint < 10){
+				if(playerdata.getActiveskilldata().effectpoint < 10){
 					player.sendMessage("エフェクトポイントが不足しています。");
 				}else {
-					playerdata.achvChangenum ++ ;
-					playerdata.activeskilldata.effectpoint -= 10 ;
+					playerdata.setAchvChangenum(playerdata.getAchvChangenum() + 1);
+					playerdata.getActiveskilldata().effectpoint -= 10 ;
 				}
 				//データ最新化
-				playerdata.achvPointMAX = 0;
+				playerdata.setAchvPointMAX(0);
 				for(int i=1000 ; i < 9800; i ++ ){
-					if(playerdata.TitleFlags.get(i)){
-						playerdata.achvPointMAX += 10 ;
+					if(playerdata.getTitleFlags().get(i)){
+						playerdata.setAchvPointMAX(playerdata.getAchvPointMAX() + 10);
 					}
 				}
-				playerdata.achvPoint = (playerdata.achvPointMAX + (playerdata.achvChangenum * 3 )) - playerdata.achvPointUSE ;
+				playerdata.setAchvPoint((playerdata.getAchvPointMAX() + (playerdata.getAchvChangenum() * 3)) - playerdata.getAchvPointUSE());
 
 				player.openInventory(MenuInventoryData.setFreeTitleMainData(player));
 
@@ -3106,11 +3106,11 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 
 				String forcheck = SeichiAssist.config.getTitle1(Integer.parseInt(itemmeta.getDisplayName()))
-									+ SeichiAssist.config.getTitle2(playerdata.displayTitle2No)
-									+ SeichiAssist.config.getTitle3(playerdata.displayTitle3No);
+									+ SeichiAssist.config.getTitle2(playerdata.getDisplayTitle2No())
+									+ SeichiAssist.config.getTitle3(playerdata.getDisplayTitle3No());
 				if(forcheck.length() < 9){
-					playerdata.displayTitle1No = Integer.parseInt(itemmeta.getDisplayName());
-					player.sendMessage("前パーツ「"+ SeichiAssist.config.getTitle1(playerdata.displayTitle1No) +"」をセットしました。");
+					playerdata.setDisplayTitle1No(Integer.parseInt(itemmeta.getDisplayName()));
+					player.sendMessage("前パーツ「"+ SeichiAssist.config.getTitle1(playerdata.getDisplayTitle1No()) +"」をセットしました。");
 				}else {
 					player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。");
 				}
@@ -3119,7 +3119,7 @@ public class PlayerInventoryListener implements Listener {
 			//パーツ未選択に
 			else if(itemstackcurrent.getType() == Material.GRASS){
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				playerdata.displayTitle1No = 0 ;
+				playerdata.setDisplayTitle1No(0);
 				player.sendMessage("前パーツの選択を解除しました。");
 				return;
 			}
@@ -3157,12 +3157,12 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 
-				String forcheck = SeichiAssist.config.getTitle1(playerdata.displayTitle1No)
+				String forcheck = SeichiAssist.config.getTitle1(playerdata.getDisplayTitle1No())
 									+ SeichiAssist.config.getTitle2(Integer.parseInt(itemmeta.getDisplayName()))
-									+ SeichiAssist.config.getTitle3(playerdata.displayTitle3No);
+									+ SeichiAssist.config.getTitle3(playerdata.getDisplayTitle3No());
 				if(forcheck.length() < 9){
-					playerdata.displayTitle2No = Integer.parseInt(itemmeta.getDisplayName());
-					player.sendMessage("中パーツ「"+ SeichiAssist.config.getTitle2(playerdata.displayTitle2No) +"」をセットしました。");
+					playerdata.setDisplayTitle2No(Integer.parseInt(itemmeta.getDisplayName()));
+					player.sendMessage("中パーツ「"+ SeichiAssist.config.getTitle2(playerdata.getDisplayTitle2No()) +"」をセットしました。");
 				}else {
 					player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。");
 				}
@@ -3171,7 +3171,7 @@ public class PlayerInventoryListener implements Listener {
 			//パーツ未選択に
 			else if(itemstackcurrent.getType() == Material.GRASS){
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				playerdata.displayTitle2No = 0 ;
+				playerdata.setDisplayTitle2No(0);
 				player.sendMessage("中パーツの選択を解除しました。");
 				return;
 			}
@@ -3209,12 +3209,12 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 
-				String forcheck = SeichiAssist.config.getTitle1(playerdata.displayTitle1No)
-									+ SeichiAssist.config.getTitle2(playerdata.displayTitle2No)
+				String forcheck = SeichiAssist.config.getTitle1(playerdata.getDisplayTitle1No())
+									+ SeichiAssist.config.getTitle2(playerdata.getDisplayTitle2No())
 									+ SeichiAssist.config.getTitle3(Integer.parseInt(itemmeta.getDisplayName()));
 				if(forcheck.length() < 9){
-					playerdata.displayTitle3No = Integer.parseInt(itemmeta.getDisplayName());
-					player.sendMessage("後パーツ「"+ SeichiAssist.config.getTitle3(playerdata.displayTitle3No) +"」をセットしました。");
+					playerdata.setDisplayTitle3No(Integer.parseInt(itemmeta.getDisplayName()));
+					player.sendMessage("後パーツ「"+ SeichiAssist.config.getTitle3(playerdata.getDisplayTitle3No()) +"」をセットしました。");
 				}else {
 					player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。");
 				}
@@ -3223,7 +3223,7 @@ public class PlayerInventoryListener implements Listener {
 			//パーツ未選択に
 			else if(itemstackcurrent.getType() == Material.GRASS){
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				playerdata.displayTitle3No = 0 ;
+				playerdata.setDisplayTitle3No(0);
 				player.sendMessage("後パーツの選択を解除しました。");
 				return;
 			}
@@ -3264,14 +3264,14 @@ public class PlayerInventoryListener implements Listener {
 			if(itemstackcurrent.getType() == Material.EMERALD_ORE){
 				//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				playerdata.achvPointMAX = 0;
+				playerdata.setAchvPointMAX(0);
 				for(int i=1000 ; i < 9800; i ++ ){
-					if(playerdata.TitleFlags.get(i)){
-						playerdata.achvPointMAX += 10 ;
+					if(playerdata.getTitleFlags().get(i)){
+						playerdata.setAchvPointMAX(playerdata.getAchvPointMAX() + 10);
 					}
 				}
-				playerdata.achvPoint = (playerdata.achvPointMAX + (playerdata.achvChangenum * 3 )) - playerdata.achvPointUSE ;
-				playerdata.samepageflag = true;
+				playerdata.setAchvPoint((playerdata.getAchvPointMAX() + (playerdata.getAchvChangenum() * 3)) - playerdata.getAchvPointUSE());
+				playerdata.setSamepageflag(true);
 				player.openInventory(MenuInventoryData.setTitleShopData(player));
 			}
 
@@ -3281,25 +3281,25 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 
 				if(Integer.parseInt(itemmeta.getDisplayName()) < 9900 ){
-					if(playerdata.achvPoint < 20){
+					if(playerdata.getAchvPoint() < 20){
 						player.sendMessage("実績ポイントが不足しています。");
 					}else {
-						playerdata.TitleFlags.set(Integer.parseInt(itemmeta.getDisplayName()));
-						playerdata.achvPoint -= 20 ;
-						playerdata.achvPointUSE += 20 ;
+						playerdata.getTitleFlags().set(Integer.parseInt(itemmeta.getDisplayName()));
+						playerdata.setAchvPoint(playerdata.getAchvPoint() - 20);
+						playerdata.setAchvPointUSE(playerdata.getAchvPointUSE() + 20);
 						player.sendMessage("パーツ「"+ SeichiAssist.config.getTitle1(Integer.parseInt(itemmeta.getDisplayName())) + "」を購入しました。");
-						playerdata.samepageflag = true;
+						playerdata.setSamepageflag(true);
 						player.openInventory(MenuInventoryData.setTitleShopData(player));
 					}
 				}else {
-					if(playerdata.achvPoint < 35){
+					if(playerdata.getAchvPoint() < 35){
 						player.sendMessage("実績ポイントが不足しています。");
 					}else {
-						playerdata.TitleFlags.set(Integer.parseInt(itemmeta.getDisplayName()));
-						playerdata.achvPoint -= 35 ;
-						playerdata.achvPointUSE += 35 ;
+						playerdata.getTitleFlags().set(Integer.parseInt(itemmeta.getDisplayName()));
+						playerdata.setAchvPoint(playerdata.getAchvPoint() - 35);
+						playerdata.setAchvPointUSE(playerdata.getAchvPointUSE() + 35);
 						player.sendMessage("パーツ「"+ SeichiAssist.config.getTitle2(Integer.parseInt(itemmeta.getDisplayName())) + "」を購入しました。");
-						playerdata.samepageflag = true;
+						playerdata.setSamepageflag(true);
 						player.openInventory(MenuInventoryData.setTitleShopData(player));
 					}
 				}
@@ -3350,86 +3350,86 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(itemmeta.getDisplayName().contains("No1001「"+ SeichiAssist.config.getTitle1(1001) +"」")){
-					playerdata.displayTitle1No = 1001 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(1001);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1001) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No1002「"+ SeichiAssist.config.getTitle1(1002) +"」")){
-					playerdata.displayTitle1No = 1002 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(1002);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1002) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No1003「"+ SeichiAssist.config.getTitle1(1003) +"」")){
-					playerdata.displayTitle1No = 1003 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(1003);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1003) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No1004「"+ SeichiAssist.config.getTitle1(1004) +"」")){
-					playerdata.displayTitle1No = 1004 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(1004);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1004) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No1010「"+ SeichiAssist.config.getTitle1(1010) +"」")){
-					playerdata.displayTitle1No = 1010 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(1010);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1010) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No1011「"+ SeichiAssist.config.getTitle1(1011)
 						+ SeichiAssist.config.getTitle2(9904) + SeichiAssist.config.getTitle3(1011) +"」")){
-					playerdata.displayTitle1No = 1011 ;
-					playerdata.displayTitle2No = 9904 ;
-					playerdata.displayTitle3No = 1011 ;
+					playerdata.setDisplayTitle1No(1011);
+					playerdata.setDisplayTitle2No(9904);
+					playerdata.setDisplayTitle3No(1011);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1011)
 							+ SeichiAssist.config.getTitle2(9904) + SeichiAssist.config.getTitle3(1011) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No1012「"+ SeichiAssist.config.getTitle1(1012)
 						+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(1012) +"」")){
-					playerdata.displayTitle1No = 1012 ;
-					playerdata.displayTitle2No = 9901 ;
-					playerdata.displayTitle3No = 1012 ;
+					playerdata.setDisplayTitle1No(1012);
+					playerdata.setDisplayTitle2No(9901);
+					playerdata.setDisplayTitle3No(1012);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1012)
 							+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(1012) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No1005「"+ SeichiAssist.config.getTitle1(1005)
 						+ SeichiAssist.config.getTitle3(1005) + "」")){
-					playerdata.displayTitle1No = 1005 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 1005 ;
+					playerdata.setDisplayTitle1No(1005);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(1005);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1005)
 							+ SeichiAssist.config.getTitle3(1005) + "」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No1006「"+ SeichiAssist.config.getTitle1(1006) +"」")){
-					playerdata.displayTitle1No = 1006 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(1006);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1006) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No1007「"+ SeichiAssist.config.getTitle1(1007)
 						+ SeichiAssist.config.getTitle2(9904) + SeichiAssist.config.getTitle3(1007) +"」")){
-					playerdata.displayTitle1No = 1007 ;
-					playerdata.displayTitle2No = 9904 ;
-					playerdata.displayTitle3No = 1007 ;
+					playerdata.setDisplayTitle1No(1007);
+					playerdata.setDisplayTitle2No(9904);
+					playerdata.setDisplayTitle3No(1007);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1007)
 							+ SeichiAssist.config.getTitle2(9904) + SeichiAssist.config.getTitle3(1007) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No1008「"+ SeichiAssist.config.getTitle1(1008)
 						+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(1008) +"」")){
-					playerdata.displayTitle1No = 1008 ;
-					playerdata.displayTitle2No = 9901 ;
-					playerdata.displayTitle3No = 1008 ;
+					playerdata.setDisplayTitle1No(1008);
+					playerdata.setDisplayTitle2No(9901);
+					playerdata.setDisplayTitle3No(1008);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1008)
 							+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(1008) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No1009「"+ SeichiAssist.config.getTitle1(1009)
 						+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(1009) +"」")){
-					playerdata.displayTitle1No = 1009 ;
-					playerdata.displayTitle2No = 9909 ;
-					playerdata.displayTitle3No = 1009 ;
+					playerdata.setDisplayTitle1No(1009);
+					playerdata.setDisplayTitle2No(9909);
+					playerdata.setDisplayTitle3No(1009);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(1009)
 							+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(1009) +"」が設定されました。");
 				}
@@ -3469,134 +3469,134 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(itemmeta.getDisplayName().contains("No3001「"+ SeichiAssist.config.getTitle1(3001) +"」")){
-					playerdata.displayTitle1No = 3001 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3001);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3001) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3002「"+ SeichiAssist.config.getTitle1(3002)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(3002) +"」")){
-					playerdata.displayTitle1No = 3002 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 3002 ;
+					playerdata.setDisplayTitle1No(3002);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(3002);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3002)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(3002) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3003「"+ SeichiAssist.config.getTitle1(3003) +"」")){
-					playerdata.displayTitle1No = 3003 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3003);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3003) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3004「"+ SeichiAssist.config.getTitle1(3004)
 						+ SeichiAssist.config.getTitle2(9902) + "」")){
-					playerdata.displayTitle1No = 3004 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3004);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3004) +
 							SeichiAssist.config.getTitle2(9902) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3005「"+ SeichiAssist.config.getTitle1(3005)
 						+ SeichiAssist.config.getTitle3(3005) + "」")){
-					playerdata.displayTitle1No = 3005 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 3005 ;
+					playerdata.setDisplayTitle1No(3005);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(3005);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3005)
 							+ SeichiAssist.config.getTitle3(3005) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3006「"+ SeichiAssist.config.getTitle1(3006) +"」")){
-					playerdata.displayTitle1No = 3006 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3006);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3006) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3007「"+ SeichiAssist.config.getTitle1(3007)
 						+ SeichiAssist.config.getTitle2(9905) + "」")){
-					playerdata.displayTitle1No = 3007 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3007);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3007) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3008「"+ SeichiAssist.config.getTitle1(3008) +"」")){
-					playerdata.displayTitle1No = 3008 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3008);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3008) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3009「"+ SeichiAssist.config.getTitle1(3009)
 						+ SeichiAssist.config.getTitle3(3009) + "」")){
-					playerdata.displayTitle1No = 3009 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 3009 ;
+					playerdata.setDisplayTitle1No(3009);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(3009);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3009)
 							+  SeichiAssist.config.getTitle3(3009) + "」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3010「"+ SeichiAssist.config.getTitle1(3010)
 						+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(3010) + "」")){
-					playerdata.displayTitle1No = 3010 ;
-					playerdata.displayTitle2No = 9909 ;
-					playerdata.displayTitle3No = 3010 ;
+					playerdata.setDisplayTitle1No(3010);
+					playerdata.setDisplayTitle2No(9909);
+					playerdata.setDisplayTitle3No(3010);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3010)
 							+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(3010) + "」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3011「"+ SeichiAssist.config.getTitle1(3011) +"」")){
-					playerdata.displayTitle1No = 3011 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3011);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3011) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3012「"+ SeichiAssist.config.getTitle1(3012)
 						+ SeichiAssist.config.getTitle3(3012) + "」")){
-					playerdata.displayTitle1No = 3012 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 3012 ;
+					playerdata.setDisplayTitle1No(3012);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(3012);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3012)
 							+ SeichiAssist.config.getTitle3(3012) + "」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3013「"+ SeichiAssist.config.getTitle1(3013)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(3013) + "」")){
-					playerdata.displayTitle1No = 3013 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 3013 ;
+					playerdata.setDisplayTitle1No(3013);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(3013);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3013)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(3013) + "」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3014「"+ SeichiAssist.config.getTitle1(3014)
 						+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(3014) + "」")){
-					playerdata.displayTitle1No = 3014 ;
-					playerdata.displayTitle2No = 9909 ;
-					playerdata.displayTitle3No = 3014 ;
+					playerdata.setDisplayTitle1No(3014);
+					playerdata.setDisplayTitle2No(9909);
+					playerdata.setDisplayTitle3No(3014);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3014)
 							+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(3014) + "」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3015「"+ SeichiAssist.config.getTitle1(3015) +"」")){
-					playerdata.displayTitle1No = 3015 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3015);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3015) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3016「"+ SeichiAssist.config.getTitle1(3016) +"」")){
-					playerdata.displayTitle1No = 3016 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3016);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3016) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3017「"+ SeichiAssist.config.getTitle1(3017) +"」")){
-					playerdata.displayTitle1No = 3017 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3017);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3017) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3018「"+ SeichiAssist.config.getTitle1(3018) +"」")){
-					playerdata.displayTitle1No = 3018 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3018);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3018) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No3019「"+ SeichiAssist.config.getTitle1(3019) +"」")){
-					playerdata.displayTitle1No = 3019 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(3019);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(3019) +"」が設定されました。");
 				}
 				player.openInventory(MenuInventoryData.getTitleAmountData(player));
@@ -3636,181 +3636,181 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(itemmeta.getDisplayName().contains("No4001「"+ SeichiAssist.config.getTitle1(4001)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4001) +"」")){
-					playerdata.displayTitle1No = 4001 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 4001 ;
+					playerdata.setDisplayTitle1No(4001);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(4001);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4001)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4001) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4002「"+ SeichiAssist.config.getTitle1(4002)
 						+ SeichiAssist.config.getTitle3(4002) +"」")){
-					playerdata.displayTitle1No = 4002 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4002 ;
+					playerdata.setDisplayTitle1No(4002);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4002);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4002)
 							+ SeichiAssist.config.getTitle3(4002) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4003「"+ SeichiAssist.config.getTitle1(4003)
 						+ SeichiAssist.config.getTitle3(4003) +"」")){
-					playerdata.displayTitle1No = 4003 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4003 ;
+					playerdata.setDisplayTitle1No(4003);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4003);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4003)
 							+ SeichiAssist.config.getTitle3(4003) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4004「"+ SeichiAssist.config.getTitle1(4004)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4004) +"」")){
-					playerdata.displayTitle1No = 4004 ;
-					playerdata.displayTitle2No = 9005 ;
-					playerdata.displayTitle3No = 4004 ;
+					playerdata.setDisplayTitle1No(4004);
+					playerdata.setDisplayTitle2No(9005);
+					playerdata.setDisplayTitle3No(4004);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4004)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4004) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4005「"+ SeichiAssist.config.getTitle1(4005)
 						+ SeichiAssist.config.getTitle3(4005) +"」")){
-					playerdata.displayTitle1No = 4005 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4005 ;
+					playerdata.setDisplayTitle1No(4005);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4005);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4005)
 							+ SeichiAssist.config.getTitle3(4005) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4006「"+ SeichiAssist.config.getTitle1(4006)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4006) +"」")){
-					playerdata.displayTitle1No = 4006 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 4006 ;
+					playerdata.setDisplayTitle1No(4006);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(4006);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4006)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4006) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4007「"+ SeichiAssist.config.getTitle1(4007)
 						+ SeichiAssist.config.getTitle3(4007) +"」")){
-					playerdata.displayTitle1No = 4007 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4007 ;
+					playerdata.setDisplayTitle1No(4007);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4007);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4007)
 							+ SeichiAssist.config.getTitle3(4007) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4008「"+ SeichiAssist.config.getTitle1(4008)
 						+ SeichiAssist.config.getTitle3(4008) +"」")){
-					playerdata.displayTitle1No = 4008 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4008 ;
+					playerdata.setDisplayTitle1No(4008);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4008);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4008)
 							+ SeichiAssist.config.getTitle3(4008) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4009「"+ SeichiAssist.config.getTitle1(4009)
 						+ SeichiAssist.config.getTitle3(4009) +"」")){
-					playerdata.displayTitle1No = 4009 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4009 ;
+					playerdata.setDisplayTitle1No(4009);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4009);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4009)
 							+ SeichiAssist.config.getTitle3(4009) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4010「"+ SeichiAssist.config.getTitle1(4010)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4010) +"」")){
-					playerdata.displayTitle1No = 4010 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 4010 ;
+					playerdata.setDisplayTitle1No(4010);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(4010);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4010)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4010) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4011「"+ SeichiAssist.config.getTitle1(4011)
 						+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(4011) +"」")){
-					playerdata.displayTitle1No = 4011 ;
-					playerdata.displayTitle2No = 9901 ;
-					playerdata.displayTitle3No = 4011 ;
+					playerdata.setDisplayTitle1No(4011);
+					playerdata.setDisplayTitle2No(9901);
+					playerdata.setDisplayTitle3No(4011);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4011)
 							+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(4011) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4012「"+ SeichiAssist.config.getTitle1(4012)
 						+ SeichiAssist.config.getTitle3(4012) +"」")){
-					playerdata.displayTitle1No = 4012 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4012 ;
+					playerdata.setDisplayTitle1No(4012);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4012);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4012)
 							+ SeichiAssist.config.getTitle3(4012) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4013「"+ SeichiAssist.config.getTitle1(4013)
 						+ SeichiAssist.config.getTitle3(4013) +"」")){
-					playerdata.displayTitle1No = 4013 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4013 ;
+					playerdata.setDisplayTitle1No(4013);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4013);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4013)
 							+ SeichiAssist.config.getTitle3(4013) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4014「"+ SeichiAssist.config.getTitle1(4014)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4014) +"」")){
-					playerdata.displayTitle1No = 4014 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 4014 ;
+					playerdata.setDisplayTitle1No(4014);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(4014);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4014)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(4014) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4015「"+ SeichiAssist.config.getTitle1(4015) +"」")){
-					playerdata.displayTitle1No = 4015 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(4015);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4015) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4016「"+ SeichiAssist.config.getTitle1(4016)
 						+ SeichiAssist.config.getTitle3(4016) +"」")){
-					playerdata.displayTitle1No = 4016 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4016 ;
+					playerdata.setDisplayTitle1No(4016);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4016);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4016)
 							+ SeichiAssist.config.getTitle3(4016) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4017「"+ SeichiAssist.config.getTitle1(4017) +"」")){
-					playerdata.displayTitle1No = 4017 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(4017);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4017) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4018「"+ SeichiAssist.config.getTitle1(4018)
 						+ SeichiAssist.config.getTitle3(4018) +"」")){
-					playerdata.displayTitle1No = 4018 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4018 ;
+					playerdata.setDisplayTitle1No(4018);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4018);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4018)
 							+ SeichiAssist.config.getTitle3(4018) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4019「"+ SeichiAssist.config.getTitle1(4019)
 						+ SeichiAssist.config.getTitle3(4019) +"」")){
-					playerdata.displayTitle1No = 4019 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4019 ;
+					playerdata.setDisplayTitle1No(4019);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4019);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4019)
 							+ SeichiAssist.config.getTitle3(4019) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4020「"+ SeichiAssist.config.getTitle1(4020)
 						+ SeichiAssist.config.getTitle3(4020) +"」")){
-					playerdata.displayTitle1No = 4020 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4020 ;
+					playerdata.setDisplayTitle1No(4020);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4020);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4020)
 							+ SeichiAssist.config.getTitle3(4020) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4021「"+ SeichiAssist.config.getTitle1(4021)
 						+ SeichiAssist.config.getTitle3(4021) +"」")){
-					playerdata.displayTitle1No = 4021 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4021 ;
+					playerdata.setDisplayTitle1No(4021);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4021);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4021)
 							+ SeichiAssist.config.getTitle3(4021) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4022「"+ SeichiAssist.config.getTitle1(4022)
 						+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(4022) +"」")){
-					playerdata.displayTitle1No = 4022 ;
-					playerdata.displayTitle2No = 9903 ;
-					playerdata.displayTitle3No = 4022 ;
+					playerdata.setDisplayTitle1No(4022);
+					playerdata.setDisplayTitle2No(9903);
+					playerdata.setDisplayTitle3No(4022);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4022)
 							+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(4022) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No4023「"+ SeichiAssist.config.getTitle1(4023)
 						+ SeichiAssist.config.getTitle3(4023) +"」")){
-					playerdata.displayTitle1No = 4023 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 4023 ;
+					playerdata.setDisplayTitle1No(4023);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(4023);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(4023)
 							+ SeichiAssist.config.getTitle3(4023) +"」が設定されました。");
 				}
@@ -3819,7 +3819,7 @@ public class PlayerInventoryListener implements Listener {
 			else if(itemstackcurrent.getType() == Material.EMERALD_BLOCK){
 				//ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				playerdata.TitleFlags.set(8003);
+				playerdata.getTitleFlags().set(8003);
 				player.sendMessage("お疲れ様でした！今日のお給料の代わりに二つ名をどうぞ！");
 				player.openInventory(MenuInventoryData.getTitleTimeData(player));
 			}
@@ -3856,151 +3856,151 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(itemmeta.getDisplayName().contains("No5101「"+ SeichiAssist.config.getTitle1(5101)
 						+  SeichiAssist.config.getTitle3(5101) + "」")){
-					playerdata.displayTitle1No = 5101 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 5101 ;
+					playerdata.setDisplayTitle1No(5101);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(5101);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5101)
 							+  SeichiAssist.config.getTitle3(5101)+"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5102「"+ SeichiAssist.config.getTitle1(5102)
 						+ SeichiAssist.config.getTitle2(9907) + SeichiAssist.config.getTitle3(5102) + "」")){
-					playerdata.displayTitle1No = 5102 ;
-					playerdata.displayTitle2No = 9907 ;
-					playerdata.displayTitle3No = 5102 ;
+					playerdata.setDisplayTitle1No(5102);
+					playerdata.setDisplayTitle2No(9907);
+					playerdata.setDisplayTitle3No(5102);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5102)
 							+ SeichiAssist.config.getTitle2(9907) + SeichiAssist.config.getTitle3(5102)+"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5103「"+ SeichiAssist.config.getTitle1(5103)
 						+ SeichiAssist.config.getTitle2(9905) + "」")){
-					playerdata.displayTitle1No = 5103 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(5103);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5103)
 							+ SeichiAssist.config.getTitle2(9905) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5104「"+ SeichiAssist.config.getTitle1(5104)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5104) +"」")){
-					playerdata.displayTitle1No = 5104 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 5104 ;
+					playerdata.setDisplayTitle1No(5104);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(5104);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5104)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5104) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5105「"+ SeichiAssist.config.getTitle1(5105)
 						+ SeichiAssist.config.getTitle2(9907) + SeichiAssist.config.getTitle3(5105) +"」")){
-					playerdata.displayTitle1No = 5105 ;
-					playerdata.displayTitle2No = 9907 ;
-					playerdata.displayTitle3No = 5105 ;
+					playerdata.setDisplayTitle1No(5105);
+					playerdata.setDisplayTitle2No(9907);
+					playerdata.setDisplayTitle3No(5105);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5105)
 							+ SeichiAssist.config.getTitle2(9907) + SeichiAssist.config.getTitle3(5105) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5106「"+ SeichiAssist.config.getTitle1(5106)+"」")){
-					playerdata.displayTitle1No = 5106 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(5106);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5106)+"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5107「"+ SeichiAssist.config.getTitle1(5107)
 						+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(5107) +"」")){
-					playerdata.displayTitle1No = 5107 ;
-					playerdata.displayTitle2No = 9909 ;
-					playerdata.displayTitle3No = 5107 ;
+					playerdata.setDisplayTitle1No(5107);
+					playerdata.setDisplayTitle2No(9909);
+					playerdata.setDisplayTitle3No(5107);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5107)
 							+ SeichiAssist.config.getTitle2(9909) + SeichiAssist.config.getTitle3(5107) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5108「"+ SeichiAssist.config.getTitle1(5108)
 						+ SeichiAssist.config.getTitle3(5108) +"」")){
-					playerdata.displayTitle1No = 5108 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 5108 ;
+					playerdata.setDisplayTitle1No(5108);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(5108);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5108)
 							+ SeichiAssist.config.getTitle3(5108) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5109「"+ SeichiAssist.config.getTitle1(5109)+"」")){
-					playerdata.displayTitle1No = 5109 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(5109);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5109)+"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5110「"+ SeichiAssist.config.getTitle1(5110)+"」")){
-					playerdata.displayTitle1No = 5110 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(5110);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5110)+"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5111「"+ SeichiAssist.config.getTitle1(5111)+"」")){
-					playerdata.displayTitle1No = 5111 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(5111);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5111)+"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5112「"+ SeichiAssist.config.getTitle1(5112)
 						+ SeichiAssist.config.getTitle3(5112) +"」")){
-					playerdata.displayTitle1No = 5112 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 5112 ;
+					playerdata.setDisplayTitle1No(5112);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(5112);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5112)
 							+ SeichiAssist.config.getTitle3(5112) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5113「"+ SeichiAssist.config.getTitle1(5113)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5113) +"」")){
-					playerdata.displayTitle1No = 5113 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 5113 ;
+					playerdata.setDisplayTitle1No(5113);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(5113);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5113)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5113) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5114「"+ SeichiAssist.config.getTitle1(5114)
 						+ SeichiAssist.config.getTitle3(5114) +"」")){
-					playerdata.displayTitle1No = 5114 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 5114 ;
+					playerdata.setDisplayTitle1No(5114);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(5114);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5114)
 							+ SeichiAssist.config.getTitle3(5114) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5115「"+ SeichiAssist.config.getTitle1(5115)+"」")){
-					playerdata.displayTitle1No = 5115 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(5115);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5115)+"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5116「"+ SeichiAssist.config.getTitle1(5116)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5116) +"」")){
-					playerdata.displayTitle1No = 5116 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 5116 ;
+					playerdata.setDisplayTitle1No(5116);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(5116);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5116)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5116) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5117「"+ SeichiAssist.config.getTitle1(5117)
 						+ SeichiAssist.config.getTitle3(5117) +"」")){
-					playerdata.displayTitle1No = 5117 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 5117 ;
+					playerdata.setDisplayTitle1No(5117);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(5117);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5117)
 							+ SeichiAssist.config.getTitle3(5117) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5118「"+ SeichiAssist.config.getTitle1(5118)
 						+ SeichiAssist.config.getTitle3(5118) +"」")){
-					playerdata.displayTitle1No = 5118 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 5118 ;
+					playerdata.setDisplayTitle1No(5118);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(5118);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5118)
 							+ SeichiAssist.config.getTitle3(5118) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5119「"+ SeichiAssist.config.getTitle1(5119)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5119) +"」")){
-					playerdata.displayTitle1No = 5119 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 5119 ;
+					playerdata.setDisplayTitle1No(5119);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(5119);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5119)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(5119) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5120「"+ SeichiAssist.config.getTitle1(5120)
 						+ SeichiAssist.config.getTitle2(5120) + SeichiAssist.config.getTitle3(5120) +"」")){
-					playerdata.displayTitle1No = 5120 ;
-					playerdata.displayTitle2No = 5120 ;
-					playerdata.displayTitle3No = 5120 ;
+					playerdata.setDisplayTitle1No(5120);
+					playerdata.setDisplayTitle2No(5120);
+					playerdata.setDisplayTitle3No(5120);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5120)
 							+ SeichiAssist.config.getTitle2(5120) + SeichiAssist.config.getTitle3(5120) +"」が設定されました。");
 				}
@@ -4041,61 +4041,61 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(itemmeta.getDisplayName().contains("No5001「"+ SeichiAssist.config.getTitle1(5001)
 						+ SeichiAssist.config.getTitle2(5001) + "」")){
-					playerdata.displayTitle1No = 5001 ;
-					playerdata.displayTitle2No = 5001 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(5001);
+					playerdata.setDisplayTitle2No(5001);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5001)
 							+ SeichiAssist.config.getTitle2(5001) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5002「"+ SeichiAssist.config.getTitle1(5002)
 						+ SeichiAssist.config.getTitle3(5002) +"」")){
-					playerdata.displayTitle1No = 5002 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 5002 ;
+					playerdata.setDisplayTitle1No(5002);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(5002);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5002)
 							+ SeichiAssist.config.getTitle3(5002) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5003「"+ SeichiAssist.config.getTitle1(5003)+"」")){
-					playerdata.displayTitle1No = 5003 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(5003);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5003)+"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5004「"+ SeichiAssist.config.getTitle1(5004)
 						+ SeichiAssist.config.getTitle3(5004) +"」")){
-					playerdata.displayTitle1No = 5004 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 5004 ;
+					playerdata.setDisplayTitle1No(5004);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(5004);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5004)
 							+ SeichiAssist.config.getTitle3(5004) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5005「"+ SeichiAssist.config.getTitle1(5005)
 						+ SeichiAssist.config.getTitle3(5005) +"」")){
-					playerdata.displayTitle1No = 5005 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 5005 ;
+					playerdata.setDisplayTitle1No(5005);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(5005);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5005)
 							+ SeichiAssist.config.getTitle3(5005) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5006「"+ SeichiAssist.config.getTitle1(5006)
 						+ SeichiAssist.config.getTitle3(5006) +"」")){
-					playerdata.displayTitle1No = 5006 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 5006 ;
+					playerdata.setDisplayTitle1No(5006);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(5006);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5006)
 							+ SeichiAssist.config.getTitle3(5006) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5007「"+ SeichiAssist.config.getTitle1(5007)+"」")){
-					playerdata.displayTitle1No = 5007 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(5007);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5007)+"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No5008「"+ SeichiAssist.config.getTitle1(5008)
 						+  SeichiAssist.config.getTitle2(9905) + "」")){
-					playerdata.displayTitle1No = 5008 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(5008);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(5008)
 							+  SeichiAssist.config.getTitle2(9905)+"」が設定されました。");
 				}
@@ -4136,61 +4136,61 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(itemmeta.getDisplayName().contains("No6001「"+ SeichiAssist.config.getTitle1(6001) +"」")){
-					playerdata.displayTitle1No = 6001 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(6001);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(6001) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No6002「"+ SeichiAssist.config.getTitle1(6002)
 						+ SeichiAssist.config.getTitle3(6002) +"」")){
-					playerdata.displayTitle1No = 6002 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 6002 ;
+					playerdata.setDisplayTitle1No(6002);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(6002);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(6002)
 							+ SeichiAssist.config.getTitle3(6002) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No6003「"+ SeichiAssist.config.getTitle1(6003) +"」")){
-					playerdata.displayTitle1No = 6003 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(6003);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(6003) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No6004「"+ SeichiAssist.config.getTitle1(6004)
 						+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(6004) +"」")){
-					playerdata.displayTitle1No = 6004 ;
-					playerdata.displayTitle2No = 9903 ;
-					playerdata.displayTitle3No = 6004 ;
+					playerdata.setDisplayTitle1No(6004);
+					playerdata.setDisplayTitle2No(9903);
+					playerdata.setDisplayTitle3No(6004);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(6004)
 							+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(6004) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No6005「"+ SeichiAssist.config.getTitle1(6005)
 						+ SeichiAssist.config.getTitle2(9905) + "」")){
-					playerdata.displayTitle1No = 6005 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(6005);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(6005)
 							+ SeichiAssist.config.getTitle2(9905) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No6006「"+ SeichiAssist.config.getTitle1(6006)
 						+ SeichiAssist.config.getTitle3(6006) +"」")){
-					playerdata.displayTitle1No = 6006 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 6006 ;
+					playerdata.setDisplayTitle1No(6006);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(6006);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(6006)
 							+ SeichiAssist.config.getTitle3(6006) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No6007「"+ SeichiAssist.config.getTitle1(6007)
 						+ SeichiAssist.config.getTitle2(9902) +"」")){
-					playerdata.displayTitle1No = 6007 ;
-					playerdata.displayTitle2No = 9902 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(6007);
+					playerdata.setDisplayTitle2No(9902);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(6007)
 							+ SeichiAssist.config.getTitle2(9902) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No6008「"+ SeichiAssist.config.getTitle1(6008) +"」")){
-					playerdata.displayTitle1No = 6008 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(6008);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(6008) +"」が設定されました。");
 				}
 				player.openInventory(MenuInventoryData.getTitleSupportData(player));
@@ -4228,259 +4228,259 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(itemmeta.getDisplayName().contains("No7001「"+ SeichiAssist.config.getTitle1(7001)
 						+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(7001) +"」")){
-					playerdata.displayTitle1No = 7001 ;
-					playerdata.displayTitle2No = 9901 ;
-					playerdata.displayTitle3No = 7001 ;
+					playerdata.setDisplayTitle1No(7001);
+					playerdata.setDisplayTitle2No(9901);
+					playerdata.setDisplayTitle3No(7001);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7001)
 							+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(7001) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7002「"+ SeichiAssist.config.getTitle1(7002)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7002) +"」")){
-					playerdata.displayTitle1No = 7002 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7002 ;
+					playerdata.setDisplayTitle1No(7002);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7002);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7002)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7002) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7003「"+ SeichiAssist.config.getTitle1(7003)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7003) +"」")){
-					playerdata.displayTitle1No = 7003 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7003 ;
+					playerdata.setDisplayTitle1No(7003);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7003);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7003)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7003) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7004「"+ SeichiAssist.config.getTitle2(7004) +"」")){
-					playerdata.displayTitle1No = 0 ;
-					playerdata.displayTitle2No = 7004 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(0);
+					playerdata.setDisplayTitle2No(7004);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle2(7004) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7005「"+ SeichiAssist.config.getTitle1(7005)
 						+ SeichiAssist.config.getTitle2(9902) + SeichiAssist.config.getTitle3(7005) +"」")){
-					playerdata.displayTitle1No = 7005 ;
-					playerdata.displayTitle2No = 9902 ;
-					playerdata.displayTitle3No = 7005 ;
+					playerdata.setDisplayTitle1No(7005);
+					playerdata.setDisplayTitle2No(9902);
+					playerdata.setDisplayTitle3No(7005);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7005)
 							+ SeichiAssist.config.getTitle2(9902) + SeichiAssist.config.getTitle3(7005) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7006「"+ SeichiAssist.config.getTitle1(7006)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7006) +"」")){
-					playerdata.displayTitle1No = 7006 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7006 ;
+					playerdata.setDisplayTitle1No(7006);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7006);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7006)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7006) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7007「"+ SeichiAssist.config.getTitle1(7007)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7007) +"」")){
-					playerdata.displayTitle1No = 7007 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7007 ;
+					playerdata.setDisplayTitle1No(7007);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7007);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7007)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7007) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7008「"+ SeichiAssist.config.getTitle1(7008)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7008) +"」")){
-					playerdata.displayTitle1No = 7008 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7008 ;
+					playerdata.setDisplayTitle1No(7008);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7008);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7008)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7008) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7009「"+ SeichiAssist.config.getTitle1(7009)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7009) +"」")){
-					playerdata.displayTitle1No = 7009 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7009 ;
+					playerdata.setDisplayTitle1No(7009);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7009);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7009)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7009) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7010「"+ SeichiAssist.config.getTitle1(7010)
 						+ SeichiAssist.config.getTitle3(7010) +"」")){
-					playerdata.displayTitle1No = 7010 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 7010 ;
+					playerdata.setDisplayTitle1No(7010);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(7010);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7010)
 							+ SeichiAssist.config.getTitle3(7010) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7011「"+ SeichiAssist.config.getTitle1(7011)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7011) +"」")){
-					playerdata.displayTitle1No = 7011 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7011 ;
+					playerdata.setDisplayTitle1No(7011);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7011);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7011)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7011) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7012「"+ SeichiAssist.config.getTitle1(7012)
 						+ SeichiAssist.config.getTitle3(7012) +"」")){
-					playerdata.displayTitle1No = 7012 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 7012 ;
+					playerdata.setDisplayTitle1No(7012);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(7012);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7012)
 							+ SeichiAssist.config.getTitle3(7012) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7013「"+ SeichiAssist.config.getTitle1(7013) + "」")){
-					playerdata.displayTitle1No = 7013 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(7013);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7013) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7014「"+ SeichiAssist.config.getTitle1(7014) + "」")){
-					playerdata.displayTitle1No = 7014 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(7014);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7014) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7015「"+ SeichiAssist.config.getTitle1(7015)
 						+ SeichiAssist.config.getTitle3(9904) + SeichiAssist.config.getTitle3(7015) +"」")){
-					playerdata.displayTitle1No = 7015 ;
-					playerdata.displayTitle2No = 9904 ;
-					playerdata.displayTitle3No = 7015 ;
+					playerdata.setDisplayTitle1No(7015);
+					playerdata.setDisplayTitle2No(9904);
+					playerdata.setDisplayTitle3No(7015);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7015)
 							+ SeichiAssist.config.getTitle3(9904) + SeichiAssist.config.getTitle3(7015) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7016「"+ SeichiAssist.config.getTitle1(7016)
 						+ SeichiAssist.config.getTitle3(7016) +"」")){
-					playerdata.displayTitle1No = 7016 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 7016 ;
+					playerdata.setDisplayTitle1No(7016);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(7016);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7016)
 							+ SeichiAssist.config.getTitle3(7016) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7017「"+ SeichiAssist.config.getTitle1(7017)
 						+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(7017) +"」")){
-					playerdata.displayTitle1No = 7017 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7017 ;
+					playerdata.setDisplayTitle1No(7017);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7017);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7017)
 							+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(7017) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7018「"+ SeichiAssist.config.getTitle1(7018)
 						+ SeichiAssist.config.getTitle3(9904) + SeichiAssist.config.getTitle3(7018) +"」")){
-					playerdata.displayTitle1No = 7018 ;
-					playerdata.displayTitle2No = 9904 ;
-					playerdata.displayTitle3No = 7018 ;
+					playerdata.setDisplayTitle1No(7018);
+					playerdata.setDisplayTitle2No(9904);
+					playerdata.setDisplayTitle3No(7018);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7018)
 							+ SeichiAssist.config.getTitle3(9904) + SeichiAssist.config.getTitle3(7018) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7019「"+ SeichiAssist.config.getTitle1(7019)
 						+ SeichiAssist.config.getTitle3(7019) + "」")){
-					playerdata.displayTitle1No = 7019 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 7019 ;
+					playerdata.setDisplayTitle1No(7019);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(7019);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7019)
 							+ SeichiAssist.config.getTitle3(7019) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7020「"+ SeichiAssist.config.getTitle1(7020)
 						+ SeichiAssist.config.getTitle3(7020) +"」")){
-					playerdata.displayTitle1No = 7020 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 7020 ;
+					playerdata.setDisplayTitle1No(7020);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(7020);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7020)
 							+ SeichiAssist.config.getTitle3(7020) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7021「"+ SeichiAssist.config.getTitle1(7021)
 						+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(7021) +"」")){
-					playerdata.displayTitle1No = 7021 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7021 ;
+					playerdata.setDisplayTitle1No(7021);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7021);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7021)
 							+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(7021) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7022「"+ SeichiAssist.config.getTitle1(7022)
 						+ SeichiAssist.config.getTitle3(7022) +"」")){
-					playerdata.displayTitle1No = 7022 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 7022 ;
+					playerdata.setDisplayTitle1No(7022);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(7022);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7022)
 							+ SeichiAssist.config.getTitle3(7022) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7023「"+ SeichiAssist.config.getTitle1(7023)
 						+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(7023) +"」")){
-					playerdata.displayTitle1No = 7023 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7023 ;
+					playerdata.setDisplayTitle1No(7023);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7023);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7023)
 							+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(7023) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7024「"+ SeichiAssist.config.getTitle1(7024)
 						+ SeichiAssist.config.getTitle3(7024) +"」")){
-					playerdata.displayTitle1No = 7024 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 7024 ;
+					playerdata.setDisplayTitle1No(7024);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(7024);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7024)
 							+ SeichiAssist.config.getTitle3(7024) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7025「"+ SeichiAssist.config.getTitle1(7025)
 						+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(7025) +"」")){
-					playerdata.displayTitle1No = 7025 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7025 ;
+					playerdata.setDisplayTitle1No(7025);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7025);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7025)
 							+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(7025) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7026「"+ SeichiAssist.config.getTitle1(7026)
 						+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(7026) +"」")){
-					playerdata.displayTitle1No = 7026 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7026 ;
+					playerdata.setDisplayTitle1No(7026);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7026);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7026)
 							+ SeichiAssist.config.getTitle3(9905) + SeichiAssist.config.getTitle3(7026) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7027「"+ SeichiAssist.config.getTitle1(7027)
 						+ SeichiAssist.config.getTitle3(7027) +"」")){
-					playerdata.displayTitle1No = 7027 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 7027 ;
+					playerdata.setDisplayTitle1No(7027);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(7027);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7027)
 							+ SeichiAssist.config.getTitle3(7027) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7901「"+ SeichiAssist.config.getTitle1(7901)
 						+ SeichiAssist.config.getTitle2(7901) + SeichiAssist.config.getTitle3(7901) +"」")){
-					playerdata.displayTitle1No = 7901 ;
-					playerdata.displayTitle2No = 7901 ;
-					playerdata.displayTitle3No = 7901 ;
+					playerdata.setDisplayTitle1No(7901);
+					playerdata.setDisplayTitle2No(7901);
+					playerdata.setDisplayTitle3No(7901);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7901)
 							+ SeichiAssist.config.getTitle2(7901) + SeichiAssist.config.getTitle3(7901) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7902「"+ SeichiAssist.config.getTitle1(7902)
 						+ SeichiAssist.config.getTitle3(7902) +"」")){
-					playerdata.displayTitle1No = 7902 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 7902 ;
+					playerdata.setDisplayTitle1No(7902);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(7902);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7902)
 							+ SeichiAssist.config.getTitle3(7902) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7903「"+ SeichiAssist.config.getTitle1(7903)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7903) +"」")){
-					playerdata.displayTitle1No = 7903 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 7903 ;
+					playerdata.setDisplayTitle1No(7903);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(7903);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7903)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(7903) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7904「"+ SeichiAssist.config.getTitle1(7904)
 						+ SeichiAssist.config.getTitle2(9907) + SeichiAssist.config.getTitle3(7904) +"」")){
-					playerdata.displayTitle1No = 7904 ;
-					playerdata.displayTitle2No = 9907 ;
-					playerdata.displayTitle3No = 7904 ;
+					playerdata.setDisplayTitle1No(7904);
+					playerdata.setDisplayTitle2No(9907);
+					playerdata.setDisplayTitle3No(7904);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7904)
 							+ SeichiAssist.config.getTitle2(9907) + SeichiAssist.config.getTitle3(7904) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7905「"+ SeichiAssist.config.getTitle1(7905)
 						+ SeichiAssist.config.getTitle3(7905) +"」")){
-					playerdata.displayTitle1No = 7905 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 7905 ;
+					playerdata.setDisplayTitle1No(7905);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(7905);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7905)
 							+ SeichiAssist.config.getTitle3(7905) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No7906「"+ SeichiAssist.config.getTitle1(7906)
 						+ SeichiAssist.config.getTitle3(7906) +"」")){
-					playerdata.displayTitle1No = 7906 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 7906 ;
+					playerdata.setDisplayTitle1No(7906);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(7906);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(7906)
 							+ SeichiAssist.config.getTitle3(7906) +"」が設定されました。");
 				}
@@ -4591,274 +4591,274 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(itemmeta.getDisplayName().contains("No9001「"+ SeichiAssist.config.getTitle1(9001) +"」")){
-					playerdata.displayTitle1No = 9001 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(9001);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9001) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9002「"+ SeichiAssist.config.getTitle1(9002)
 						+ SeichiAssist.config.getTitle3(9002) +"」")){
-					playerdata.displayTitle1No = 9002 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9002 ;
+					playerdata.setDisplayTitle1No(9002);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9002);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9002)
 							+ SeichiAssist.config.getTitle3(9002) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9003「"+ SeichiAssist.config.getTitle1(9003) +"」")){
-					playerdata.displayTitle1No = 9003 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(9003);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9003) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9004「"+ SeichiAssist.config.getTitle1(9004)
 						+ SeichiAssist.config.getTitle2(9004) + SeichiAssist.config.getTitle3(9004) +"」")){
-					playerdata.displayTitle1No = 9004 ;
-					playerdata.displayTitle2No = 9004 ;
-					playerdata.displayTitle3No = 9004 ;
+					playerdata.setDisplayTitle1No(9004);
+					playerdata.setDisplayTitle2No(9004);
+					playerdata.setDisplayTitle3No(9004);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9004)
 							+ SeichiAssist.config.getTitle2(9004) + SeichiAssist.config.getTitle3(9004) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9005「"+ SeichiAssist.config.getTitle1(9005)
 						+ SeichiAssist.config.getTitle3(9005) +"」")){
-					playerdata.displayTitle1No = 9005 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9005 ;
+					playerdata.setDisplayTitle1No(9005);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9005);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9005)
 							+ SeichiAssist.config.getTitle3(9005) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9006「"+ SeichiAssist.config.getTitle1(9006) +"」")){
-					playerdata.displayTitle1No = 9006 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(9006);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9006) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9007「"+ SeichiAssist.config.getTitle1(9007) +"」")){
-					playerdata.displayTitle1No = 9007 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(9007);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9007) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9008「"+ SeichiAssist.config.getTitle1(9008)
 						+ SeichiAssist.config.getTitle3(9008) +"」")){
-					playerdata.displayTitle1No = 9008 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9008 ;
+					playerdata.setDisplayTitle1No(9008);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9008);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9008)
 							+ SeichiAssist.config.getTitle3(9008) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9009「"+ SeichiAssist.config.getTitle1(9009) +"」")){
-					playerdata.displayTitle1No = 9009 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(9009);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9009) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9010「"+ SeichiAssist.config.getTitle1(9010)
 						+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(9010) +"」")){
-					playerdata.displayTitle1No = 9010 ;
-					playerdata.displayTitle2No = 9903 ;
-					playerdata.displayTitle3No = 9010 ;
+					playerdata.setDisplayTitle1No(9010);
+					playerdata.setDisplayTitle2No(9903);
+					playerdata.setDisplayTitle3No(9010);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9010)
 							+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(9010) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9011「"+ SeichiAssist.config.getTitle1(9011)
 						+ SeichiAssist.config.getTitle3(9011) +"」")){
-					playerdata.displayTitle1No = 9011 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9011 ;
+					playerdata.setDisplayTitle1No(9011);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9011);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9011)
 							+ SeichiAssist.config.getTitle3(9011) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9012「"+ SeichiAssist.config.getTitle1(9012)
 						+ SeichiAssist.config.getTitle3(9012) +"」")){
-					playerdata.displayTitle1No = 9012 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9012 ;
+					playerdata.setDisplayTitle1No(9012);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9012);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9012)
 							+ SeichiAssist.config.getTitle3(9012) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9013「"+ SeichiAssist.config.getTitle1(9013) +"」")){
-					playerdata.displayTitle1No = 9013 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(9013);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9013) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9014「"+ SeichiAssist.config.getTitle2(9014) +"」")){
-					playerdata.displayTitle1No = 0 ;
-					playerdata.displayTitle2No = 9014 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(0);
+					playerdata.setDisplayTitle2No(9014);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle2(9014) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9015「"+ SeichiAssist.config.getTitle1(9015)
 						+ SeichiAssist.config.getTitle3(9015) +"」")){
-					playerdata.displayTitle1No = 9015 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9015 ;
+					playerdata.setDisplayTitle1No(9015);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9015);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9015)
 							+ SeichiAssist.config.getTitle3(9015) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9016「"+ SeichiAssist.config.getTitle1(9016)
 						+ SeichiAssist.config.getTitle2(9016) + SeichiAssist.config.getTitle3(9016) +"」")){
-					playerdata.displayTitle1No = 9016 ;
-					playerdata.displayTitle2No = 9016 ;
-					playerdata.displayTitle3No = 9016 ;
+					playerdata.setDisplayTitle1No(9016);
+					playerdata.setDisplayTitle2No(9016);
+					playerdata.setDisplayTitle3No(9016);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9016)
 							+ SeichiAssist.config.getTitle2(9016) + SeichiAssist.config.getTitle3(9016) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9017「"+ SeichiAssist.config.getTitle1(9017)
 						+ SeichiAssist.config.getTitle3(9017) +"」")){
-					playerdata.displayTitle1No = 9017 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9017 ;
+					playerdata.setDisplayTitle1No(9017);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9017);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9017)
 							+ SeichiAssist.config.getTitle3(9017) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9018「"+ SeichiAssist.config.getTitle1(9018) +"」")){
-					playerdata.displayTitle1No = 9018 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 0 ;
+					playerdata.setDisplayTitle1No(9018);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(0);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9018) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9019「"+ SeichiAssist.config.getTitle1(9019)
 						+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(9019) + "」")){
-					playerdata.displayTitle1No = 9019 ;
-					playerdata.displayTitle2No = 9901 ;
-					playerdata.displayTitle3No = 9019 ;
+					playerdata.setDisplayTitle1No(9019);
+					playerdata.setDisplayTitle2No(9901);
+					playerdata.setDisplayTitle3No(9019);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9019)
 							+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(9019) + "」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9020「"+ SeichiAssist.config.getTitle1(9020)
 						+ SeichiAssist.config.getTitle3(9020) +"」")){
-					playerdata.displayTitle1No = 9020 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9020 ;
+					playerdata.setDisplayTitle1No(9020);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9020);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9020)
 							+ SeichiAssist.config.getTitle3(9020) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9021「"+ SeichiAssist.config.getTitle1(9021)
 						+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(9021) +"」")){
-					playerdata.displayTitle1No = 9021 ;
-					playerdata.displayTitle2No = 9901 ;
-					playerdata.displayTitle3No = 9021 ;
+					playerdata.setDisplayTitle1No(9021);
+					playerdata.setDisplayTitle2No(9901);
+					playerdata.setDisplayTitle3No(9021);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9021)
 							+ SeichiAssist.config.getTitle2(9901) + SeichiAssist.config.getTitle3(9021) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9022「"+ SeichiAssist.config.getTitle1(9022)
 						+ SeichiAssist.config.getTitle3(9022) +"」")){
-					playerdata.displayTitle1No = 9022 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9022 ;
+					playerdata.setDisplayTitle1No(9022);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9022);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9022)
 							+ SeichiAssist.config.getTitle3(9022) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9023「"+ SeichiAssist.config.getTitle1(9023)
 						+ SeichiAssist.config.getTitle3(9023) +"」")){
-					playerdata.displayTitle1No = 9023 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9023 ;
+					playerdata.setDisplayTitle1No(9023);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9023);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9023)
 							+ SeichiAssist.config.getTitle3(9023) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9024「"+ SeichiAssist.config.getTitle1(9024)
 						+ SeichiAssist.config.getTitle3(9024) +"」")){
-					playerdata.displayTitle1No = 9024 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9024 ;
+					playerdata.setDisplayTitle1No(9024);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9024);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9024)
 							+ SeichiAssist.config.getTitle3(9024) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9025「"+ SeichiAssist.config.getTitle1(9025)
 						+ SeichiAssist.config.getTitle2(9025) + SeichiAssist.config.getTitle3(9025) +"」")){
-					playerdata.displayTitle1No = 9025 ;
-					playerdata.displayTitle2No = 9025 ;
-					playerdata.displayTitle3No = 9025 ;
+					playerdata.setDisplayTitle1No(9025);
+					playerdata.setDisplayTitle2No(9025);
+					playerdata.setDisplayTitle3No(9025);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9025)
 							+ SeichiAssist.config.getTitle2(9025) + SeichiAssist.config.getTitle3(9025) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9026「"+ SeichiAssist.config.getTitle1(9026)
 						+ SeichiAssist.config.getTitle3(9026) +"」")){
-					playerdata.displayTitle1No = 9026 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9026 ;
+					playerdata.setDisplayTitle1No(9026);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9026);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9026)
 							+ SeichiAssist.config.getTitle3(9026) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9027「"+ SeichiAssist.config.getTitle1(9027)
 						+ SeichiAssist.config.getTitle3(9027) +"」")){
-					playerdata.displayTitle1No = 9027 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9027 ;
+					playerdata.setDisplayTitle1No(9027);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9027);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9027)
 							+ SeichiAssist.config.getTitle3(9027) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9028「"+ SeichiAssist.config.getTitle1(9028)
 						+ SeichiAssist.config.getTitle2(9028) + SeichiAssist.config.getTitle3(9028) +"」")){
-					playerdata.displayTitle1No = 9028 ;
-					playerdata.displayTitle2No = 9028 ;
-					playerdata.displayTitle3No = 9028 ;
+					playerdata.setDisplayTitle1No(9028);
+					playerdata.setDisplayTitle2No(9028);
+					playerdata.setDisplayTitle3No(9028);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9028)
 							+ SeichiAssist.config.getTitle2(9028) + SeichiAssist.config.getTitle3(9028) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9029「"+ SeichiAssist.config.getTitle1(9029)
 						+ SeichiAssist.config.getTitle2(9029) + SeichiAssist.config.getTitle3(9029) +"」")){
-					playerdata.displayTitle1No = 9029 ;
-					playerdata.displayTitle2No = 9029 ;
-					playerdata.displayTitle3No = 9029 ;
+					playerdata.setDisplayTitle1No(9029);
+					playerdata.setDisplayTitle2No(9029);
+					playerdata.setDisplayTitle3No(9029);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9029)
 							+ SeichiAssist.config.getTitle2(9029) + SeichiAssist.config.getTitle3(9029) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9030「"+ SeichiAssist.config.getTitle1(9030)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(9030) +"」")){
-					playerdata.displayTitle1No = 9030 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 9030 ;
+					playerdata.setDisplayTitle1No(9030);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(9030);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9030)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(9030) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9031「"+ SeichiAssist.config.getTitle1(9031)
 						+ SeichiAssist.config.getTitle2(9908) + SeichiAssist.config.getTitle3(9031) +"」")){
-					playerdata.displayTitle1No = 9031 ;
-					playerdata.displayTitle2No = 9908 ;
-					playerdata.displayTitle3No = 9031 ;
+					playerdata.setDisplayTitle1No(9031);
+					playerdata.setDisplayTitle2No(9908);
+					playerdata.setDisplayTitle3No(9031);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9031)
 							+ SeichiAssist.config.getTitle2(9908) + SeichiAssist.config.getTitle3(9031) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9032「"+ SeichiAssist.config.getTitle1(9032)
 						+ SeichiAssist.config.getTitle3(9032) +"」")){
-					playerdata.displayTitle1No = 9032 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9032 ;
+					playerdata.setDisplayTitle1No(9032);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9032);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9032)
 							+ SeichiAssist.config.getTitle3(9032) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9033「"+ SeichiAssist.config.getTitle1(9033)
 						+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(9033) +"」")){
-					playerdata.displayTitle1No = 9033 ;
-					playerdata.displayTitle2No = 9903 ;
-					playerdata.displayTitle3No = 9033 ;
+					playerdata.setDisplayTitle1No(9033);
+					playerdata.setDisplayTitle2No(9903);
+					playerdata.setDisplayTitle3No(9033);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9033)
 							+ SeichiAssist.config.getTitle2(9903) + SeichiAssist.config.getTitle3(9033) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9034「"+ SeichiAssist.config.getTitle1(9034)
 						+ SeichiAssist.config.getTitle3(9034) +"」")){
-					playerdata.displayTitle1No = 9034 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9034 ;
+					playerdata.setDisplayTitle1No(9034);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9034);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9034)
 							+ SeichiAssist.config.getTitle3(9034) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9035「"+ SeichiAssist.config.getTitle1(9035)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(9035) +"」")){
-					playerdata.displayTitle1No = 9035 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 9035 ;
+					playerdata.setDisplayTitle1No(9035);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(9035);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9035)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(9035) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No9036「"+ SeichiAssist.config.getTitle1(9036)
 						+ SeichiAssist.config.getTitle3(9036) +"」")){
-					playerdata.displayTitle1No = 9036 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 9036 ;
+					playerdata.setDisplayTitle1No(9036);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(9036);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(9036)
 							+ SeichiAssist.config.getTitle3(9036) +"」が設定されました。");
 				}
@@ -4874,7 +4874,7 @@ public class PlayerInventoryListener implements Listener {
 			//次ページ
 			else if(isSkull && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowRight")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.titlepage ++ ;
+				playerdata.setTitlepage(playerdata.getTitlepage() + 1);
 				player.openInventory(MenuInventoryData.getTitleExtraData(player));
 				return;
 			}
@@ -4906,25 +4906,25 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(itemmeta.getDisplayName().contains("No8001「"+ SeichiAssist.config.getTitle1(8001)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(8001) +"」")){
-					playerdata.displayTitle1No = 8001 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 8001 ;
+					playerdata.setDisplayTitle1No(8001);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(8001);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(8001)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(8001) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No8002「"+ SeichiAssist.config.getTitle1(8002)
 						+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(8002) +"」")){
-					playerdata.displayTitle1No = 8002 ;
-					playerdata.displayTitle2No = 9905 ;
-					playerdata.displayTitle3No = 8002 ;
+					playerdata.setDisplayTitle1No(8002);
+					playerdata.setDisplayTitle2No(9905);
+					playerdata.setDisplayTitle3No(8002);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(8002)
 							+ SeichiAssist.config.getTitle2(9905) + SeichiAssist.config.getTitle3(8002) +"」が設定されました。");
 				}
 				else if(itemmeta.getDisplayName().contains("No8003「"+ SeichiAssist.config.getTitle1(8003)
 						+ SeichiAssist.config.getTitle3(8003) +"」")){
-					playerdata.displayTitle1No = 8003 ;
-					playerdata.displayTitle2No = 0 ;
-					playerdata.displayTitle3No = 8003 ;
+					playerdata.setDisplayTitle1No(8003);
+					playerdata.setDisplayTitle2No(0);
+					playerdata.setDisplayTitle3No(8003);
 					player.sendMessage("二つ名「"+ SeichiAssist.config.getTitle1(8003)
 							+ SeichiAssist.config.getTitle3(8003) +"」が設定されました。");
 				}
@@ -5147,7 +5147,7 @@ public class PlayerInventoryListener implements Listener {
 		if(playerdata == null){
 			return;
 		}
-		String name = playerdata.name;
+		String name = playerdata.getName();
 		Inventory inventory = event.getInventory();
 
 		//インベントリサイズが36でない時終了
@@ -5371,7 +5371,7 @@ public class PlayerInventoryListener implements Listener {
 					return;
 				}
 				//先にp_voteの値を更新しておく
-				playerdata.p_givenvote += n;
+				playerdata.setP_givenvote(playerdata.getP_givenvote() + n);
 
 				int count = 0;
 				while(n > 0){
@@ -5388,7 +5388,7 @@ public class PlayerInventoryListener implements Listener {
 					}
 
 					//ピッケルプレゼント処理(レベル50になるまで)
-					if(playerdata.level < 50){
+					if(playerdata.getLevel() < 50){
 						ItemStack pickaxe = ItemData.getSuperPickaxe(1);
 						if (Util.isPlayerInventoryFull(player)) {
 							Util.dropItem(player, pickaxe);
@@ -5398,7 +5398,7 @@ public class PlayerInventoryListener implements Listener {
 					}
 
 				  //投票ギフト処理(レベル50から)
-					if(playerdata.level >= 50){
+					if(playerdata.getLevel() >= 50){
 						ItemStack gift = ItemData.getVotingGift(1);
 						if (Util.isPlayerInventoryFull(player)) {
 							Util.dropItem(player, gift);
@@ -5407,7 +5407,7 @@ public class PlayerInventoryListener implements Listener {
 						}
 					}
 					//エフェクトポイント加算処理
-					playerdata.activeskilldata.effectpoint += 10;
+					playerdata.getActiveskilldata().effectpoint += 10;
 
 					n--;
 					count++;
@@ -5437,19 +5437,19 @@ public class PlayerInventoryListener implements Listener {
 			//妖精時間トグル
 			else if (itemstackcurrent.getType() == Material.WATCH){
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				playerdata.toggleVotingFairy = playerdata.toggleVotingFairy <= 3 ? playerdata.toggleVotingFairy += 1:1;
+				playerdata.setToggleVotingFairy(playerdata.getToggleVotingFairy() % 4 + 1);
 				player.openInventory(MenuInventoryData.getVotingMenuData(player));
 			}
 			//妖精リンゴトグル
 			else if (itemstackcurrent.getType() == Material.PAPER){
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				playerdata.toggleGiveApple = playerdata.toggleGiveApple <= 3 ? playerdata.toggleGiveApple += 1:1;
+				playerdata.setToggleGiveApple(playerdata.getToggleGiveApple() % 4 + 1);
 				player.openInventory(MenuInventoryData.getVotingMenuData(player));
 			}
 			//妖精音トグル
 			else if (itemstackcurrent.getType() == Material.JUKEBOX){
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				playerdata.toggleVFSound = !playerdata.toggleVFSound;
+				playerdata.setToggleVFSound(!playerdata.getToggleVFSound());
 				player.openInventory(MenuInventoryData.getVotingMenuData(player));
 			}
 
@@ -5458,21 +5458,21 @@ public class PlayerInventoryListener implements Listener {
 				player.closeInventory();
 
 				//プレイヤーレベルが10に達していないとき
-				if(playerdata.level < 10){
+				if(playerdata.getLevel() < 10){
 					player.sendMessage(ChatColor.GOLD + "プレイヤーレベルが足りません") ;
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
 					return;
 				}
 
 				//既に妖精召喚している場合終了
-				if( playerdata.usingVotingFairy ){
+				if(playerdata.getUsingVotingFairy()){
 					player.sendMessage(ChatColor.GOLD + "既に妖精を召喚しています") ;
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
 					return;
 				}
 
 				//投票ptが足りない場合終了
-				if( playerdata.activeskilldata.effectpoint < playerdata.toggleVotingFairy*2 ){
+				if( playerdata.getActiveskilldata().effectpoint < playerdata.getToggleVotingFairy() *2 ){
 					player.sendMessage(ChatColor.GOLD + "投票ptが足りません") ;
 					player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1) ;
 					return;
@@ -5483,7 +5483,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			else if (itemstackcurrent.getType() == Material.COMPASS) {
-				VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.VotingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound);
+				VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.getVotingFairyEndTime()) + "には帰るよー。", playerdata.getToggleVFSound());
 				player.closeInventory();
 			}
 
@@ -5536,7 +5536,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 			else if(itemmeta.getDisplayName().contains("ホームポイントを設定")){
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				playerdata.selectHomeNum = 0;
+				playerdata.setSelectHomeNum(0);
 				player.openInventory(MenuInventoryData.getCheckSetHomeMenuData(player));
 			}
 			for(int x = 1 ; x <= SeichiAssist.config.getSubHomeMax() ; x++){
@@ -5551,7 +5551,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 				else if(itemmeta.getDisplayName().contains("サブホームポイント"+ (x) + "を設定")){
 					player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-					playerdata.selectHomeNum = x;
+					playerdata.setSelectHomeNum(x);
 					player.openInventory(MenuInventoryData.getCheckSetHomeMenuData(player));
 				}
 			}
@@ -5566,8 +5566,8 @@ public class PlayerInventoryListener implements Listener {
 
 			if(itemmeta.getDisplayName().contains("変更する")){
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				if(playerdata.selectHomeNum == 0) player.chat("/sethome");
-				else player.chat("/subhome set " + playerdata.selectHomeNum);
+				if(playerdata.getSelectHomeNum() == 0) player.chat("/sethome");
+				else player.chat("/subhome set " + playerdata.getSelectHomeNum());
 				player.closeInventory();
 			}
 			else if(itemmeta.getDisplayName().contains("変更しない")){
@@ -5608,10 +5608,10 @@ public class PlayerInventoryListener implements Listener {
 		if(topinventory.getTitle().equals(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "スキルを進化させますか?")){
 			event.setCancelled(true);
 			if (itemstackcurrent.getType() == Material.NETHER_STAR){
-				playerdata.GBstage ++ ;
-				playerdata.GBlevel = 0;
-				playerdata.GBexp = 0;
-				playerdata.isGBStageUp = false;
+				playerdata.setGBstage(playerdata.getGBstage() + 1);
+				playerdata.setGBlevel(0);
+				playerdata.setGBexp(0);
+				playerdata.setGBStageUp(false);
 				player.playSound(player.getLocation(), Sound.BLOCK_END_GATEWAY_SPAWN, 1, (float) 0.5);
 				player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_AMBIENT, 1, (float) 0.8);
 				player.openInventory(MenuInventoryData.getGiganticBerserkEvolution2Menu(player));

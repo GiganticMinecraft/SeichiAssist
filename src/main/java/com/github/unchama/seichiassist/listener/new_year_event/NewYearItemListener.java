@@ -79,10 +79,10 @@ public class NewYearItemListener implements Listener {
 	private void useApple(Player player) {
 		UUID uuid = player.getUniqueId();
 		PlayerData playerData = playerMap.get(uuid);
-		Mana mana = playerData.activeskilldata.mana;
+		Mana mana = playerData.getActiveskilldata().mana;
 
-		double max = mana.calcMaxManaOnly(player, playerData.level);
-		mana.increase(max * 0.1, player, playerData.level);
+		double max = mana.calcMaxManaOnly(player, playerData.getLevel());
+		mana.increase(max * 0.1, player, playerData.getLevel());
 		player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f);
 	}
 }

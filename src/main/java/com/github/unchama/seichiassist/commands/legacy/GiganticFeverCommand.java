@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.commands;
+package com.github.unchama.seichiassist.commands.legacy;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
@@ -7,15 +7,13 @@ import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Difficulty;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
-
-import java.util.List;
 
 /**
  * Created by karayuu on 2018/07/25
  */
-public class GiganticFeverCommand implements TabExecutor {
+public class GiganticFeverCommand implements CommandExecutor {
 	private Config config = SeichiAssist.config;
 	private static int end = 0;
 	private static boolean isInTime = false;
@@ -45,8 +43,4 @@ public class GiganticFeverCommand implements TabExecutor {
 		}
 	}
 
-	@Override
-	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-		return null;
-	}
 }

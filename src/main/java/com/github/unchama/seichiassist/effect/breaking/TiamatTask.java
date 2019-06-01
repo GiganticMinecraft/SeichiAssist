@@ -37,7 +37,7 @@ public class TiamatTask extends BukkitRunnable{
 		this.start = start;
 		this.end = end;
 		this.droploc = droploc;
-		breaklength = ActiveSkill.BREAK.getBreakLength(playerdata.activeskilldata.skillnum);
+		breaklength = ActiveSkill.BREAK.getBreakLength(playerdata.getActiveskilldata().skillnum);
 	}
 	@Override
 	public void run() {

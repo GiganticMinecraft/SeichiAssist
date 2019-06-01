@@ -1,5 +1,6 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 
 plugins {
@@ -7,6 +8,7 @@ plugins {
     maven
     kotlin("jvm").version("1.3.30")
     id("nebula.dependency-lock").version("2.2.4")
+    id("org.jetbrains.kotlin.kapt").version("1.3.30")
 }
 
 group = "click.seichi"
@@ -38,6 +40,7 @@ repositories {
     maven { url = URI("https://repo.maven.apache.org/maven2") }
     maven { url = URI("https://hub.spigotmc.org/nexus/content/repositories/snapshots")}
     maven { url = URI("https://oss.sonatype.org/content/repositories/snapshots")}
+    jcenter()
     mavenCentral()
 }
 
@@ -61,6 +64,21 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 
     embed("org.flywaydb:flyway-core:5.2.4")
+    embed(kotlin("stdlib-jdk8"))
+
+    // arrow依存
+    val arrowVersion = "0.9.0"
+    compile("io.arrow-kt:arrow-core-data:$arrowVersion")
+    compile("io.arrow-kt:arrow-core-extensions:$arrowVersion")
+    compile("io.arrow-kt:arrow-syntax:$arrowVersion")
+    compile("io.arrow-kt:arrow-typeclasses:$arrowVersion")
+    compile("io.arrow-kt:arrow-extras-data:$arrowVersion")
+    compile("io.arrow-kt:arrow-extras-extensions:$arrowVersion")
+    kapt("io.arrow-kt:arrow-meta:$arrowVersion")
+
+    compile("io.arrow-kt:arrow-effects-data:$arrowVersion")
+    compile("io.arrow-kt:arrow-effects-extensions:$arrowVersion")
+    compile("io.arrow-kt:arrow-effects-io-extensions:$arrowVersion")
 }
 
 tasks.processResources {
@@ -88,4 +106,16 @@ tasks.jar {
     val embedConfiguration = embed.copy()
 
     from(embedConfiguration.map { if (it.isDirectory) it else zipTree(it) })
+}
+
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+    freeCompilerArgs = listOf("-Xjsr305=strict")
+}
+
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+    freeCompilerArgs = listOf("-Xjsr305=strict")
 }

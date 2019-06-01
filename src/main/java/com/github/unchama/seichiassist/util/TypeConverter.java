@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.util;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.math.BigDecimal;
 
 public final class TypeConverter {
@@ -50,15 +52,6 @@ public final class TypeConverter {
 		return time;
 	}
 
-	//boolean -> int
-	public static int toInt(boolean flag) {
-		if(flag){
-			return 1;
-		}else{
-			return 0;
-		}
-	}
-
 	/**
 	 * 与えられた文字列がintに変換できるかどうかを判定する
 	 * 実際の変換結果を捨て変換可能であるかのみを見たいときに有用
@@ -71,5 +64,11 @@ public final class TypeConverter {
 		} catch (NumberFormatException e) {
 			return false;
 		}
+	}
+
+	public @Nullable static Integer toIntSafe(final String string) {
+		if (isParsableToInteger(string)) return toInt(string);
+
+		return null;
 	}
 }

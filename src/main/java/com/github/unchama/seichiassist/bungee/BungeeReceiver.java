@@ -50,7 +50,7 @@ public class BungeeReceiver implements PluginMessageListener {
 			out.writeUTF("GetLocation");
 			out.writeUTF(wanter);
 			// プレイヤーの座標を返却
-			out.writeUTF(p.getName() + ": 整地Lv" + pd.level + " (総整地量: " + String.format("%,d", pd.totalbreaknum) + ")");
+			out.writeUTF(p.getName() + ": 整地Lv" + pd.getLevel() + " (総整地量: " + String.format("%,d", pd.getTotalbreaknum()) + ")");
 			out.writeUTF("Server: " + servername + ", " + "World: " + p.getWorld().getName() + " (" + p.getLocation().getBlockX() + ", " + p.getLocation().getBlockY() + ", " + p.getLocation().getBlockZ() + ")");
 		} catch (IOException e) {
 			e.printStackTrace();

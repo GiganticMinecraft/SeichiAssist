@@ -47,7 +47,7 @@ public final class BreakUtil {
 		//壊されるブロックがワールドガード範囲だった場合処理を終了
 		//ここをオンオフ可能にする
 		if(!ExternalPlugins.getWorldGuard().canBuild(player, breakblock.getLocation())){
-			if(playerdata.dispworldguardlogflag){
+			if(playerdata.getDispworldguardlogflag()){
 				player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
 			}
 			return false;
@@ -70,7 +70,7 @@ public final class BreakUtil {
 		}
 
 		if(material == Material.CHEST || material == Material.TRAPPED_CHEST){
-			if(!playerdata.chestflag){
+			if(!playerdata.getChestflag()){
 				player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は無効化されています");
 				return false;
 			}else if(!Util.isSeichiWorld(player)){
@@ -162,11 +162,11 @@ public final class BreakUtil {
 			return false;
 		}
 		//レベルが足りない場合処理終了
-		if(playerdata.level < config.getMineStacklevel(1)){
+		if(playerdata.getLevel() < config.getMineStacklevel(1)){
 			return false;
 		}
 		//minestackflagがfalseの時は処理を終了
-		if(!playerdata.minestackflag){
+		if(!playerdata.getMinestackflag()){
 			return false;
 		}
 
@@ -190,11 +190,11 @@ public final class BreakUtil {
 				itemstack.getDurability() == mineStackObj.getDurability()){
 				//この時点でIDとサブIDが一致している
 				if(!mineStackObj.getNameloreflag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
-					if(playerdata.level < config.getMineStacklevel(mineStackObj.getLevel())){
+					if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 						//レベルを満たしていない
 						return false;
 					} else {
-						playerdata.minestack.addStackedAmountOf(mineStackObj, amount);
+						playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
 						break;
 					}
 				} else if(mineStackObj.getNameloreflag() && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
@@ -206,17 +206,17 @@ public final class BreakUtil {
 								|| !(meta.getLore().equals(Util.getGachaRingoLore())) ){
 								return false;
 							}
-							if(playerdata.level < config.getMineStacklevel(mineStackObj.getLevel())){
+							if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 								//レベルを満たしていない
 								return false;
 							} else {
-								playerdata.minestack.addStackedAmountOf(mineStackObj, amount);
+								playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
 								break;
 							}
 						} else {
 							//ガチャ品
 							MineStackGachaData g = SeichiAssist.msgachadatalist.get(mineStackObj.getGachatype());
-							String name = playerdata.name; //プレイヤーのネームを見る
+							String name = playerdata.getName(); //プレイヤーのネームを見る
 							if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
 								if(!Util.ItemStackContainsOwnerName(itemstack, name)){
 									//所有者の名前が無ければreturn
@@ -230,11 +230,11 @@ public final class BreakUtil {
 								//gachadata.itemstack.isSimilar(itemstack)でスタックサイズ以外が一致しているか判定可能
 								//continue; //アイテムの中身が違う
 							} else { //中身が同じ場合のみここに入る
-								if(playerdata.level < config.getMineStacklevel(mineStackObj.getLevel())){
+								if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 									//レベルを満たしていない
 									return false;
 								} else {
-									playerdata.minestack.addStackedAmountOf(mineStackObj, amount);
+									playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
 									//delete_flag=true;
 									break;
 								}
@@ -428,25 +428,25 @@ public final class BreakUtil {
 		//10%の確率で経験値付与
 		if(rand < 0.1){
 			//Lv8未満は獲得経験値ゼロ、それ以上はレベルに応じて経験値付与
-			if(playerdata.level < 8 || playerdata.activeskilldata.skillcanbreakflag == false){
+			if(playerdata.getLevel() < 8 || playerdata.getActiveskilldata().skillcanbreakflag == false){
 				return 0;
-			}else if (playerdata.level < 18){
+			}else if (playerdata.getLevel() < 18){
 				return SeichiAssist.config.getDropExplevel(1);
-			}else if (playerdata.level < 28){
+			}else if (playerdata.getLevel() < 28){
 				return SeichiAssist.config.getDropExplevel(2);
-			}else if (playerdata.level < 38){
+			}else if (playerdata.getLevel() < 38){
 				return SeichiAssist.config.getDropExplevel(3);
-			}else if (playerdata.level < 48){
+			}else if (playerdata.getLevel() < 48){
 				return SeichiAssist.config.getDropExplevel(4);
-			}else if (playerdata.level < 58){
+			}else if (playerdata.getLevel() < 58){
 				return SeichiAssist.config.getDropExplevel(5);
-			}else if (playerdata.level < 68){
+			}else if (playerdata.getLevel() < 68){
 				return SeichiAssist.config.getDropExplevel(6);
-			}else if (playerdata.level < 78){
+			}else if (playerdata.getLevel() < 78){
 				return SeichiAssist.config.getDropExplevel(7);
-			}else if (playerdata.level < 88){
+			}else if (playerdata.getLevel() < 88){
 				return SeichiAssist.config.getDropExplevel(8);
-			}else if (playerdata.level < 98){
+			}else if (playerdata.getLevel() < 98){
 				return SeichiAssist.config.getDropExplevel(9);
 			}else{
 				return SeichiAssist.config.getDropExplevel(10);
@@ -533,11 +533,11 @@ public final class BreakUtil {
 		// Activeスキルの場合
 		if (!isAssault) {
 			/** 破壊要因スキルタイプ */
-			int breakSkillType = playerdata.activeskilldata.skilltype;
+			int breakSkillType = playerdata.getActiveskilldata().skilltype;
 			/** 破壊要因スキルレベル */
-			int breakSkillLevel = playerdata.activeskilldata.skillnum;
+			int breakSkillLevel = playerdata.getActiveskilldata().skillnum;
 			/** 破壊スキル使用判定 */
-			boolean isBreakSkill = (breakSkillType > 0) && (playerdata.activeskilldata.mineflagnum > 0);
+			boolean isBreakSkill = (breakSkillType > 0) && (playerdata.getActiveskilldata().mineflagnum > 0);
 			// 重力値を計算開始するBlockのために、startY(blockのY方向offset値)を計算
 			// 破壊スキルが選択されていなければ初期座標は破壊ブロックと同値
 			if (!isBreakSkill) {
@@ -567,7 +567,7 @@ public final class BreakUtil {
 					startY = skillBreakArea.y;
 				}
 				// 横向きによる発動のうち、デュアルorトリアルのmineflagnumが1(上破壊)
-				else if ((breakSkillLevel == 1 || breakSkillLevel == 2) && playerdata.activeskilldata.mineflagnum == 1) {
+				else if ((breakSkillLevel == 1 || breakSkillLevel == 2) && playerdata.getActiveskilldata().mineflagnum == 1) {
 					// 破壊ブロックの1マス上が破壊されるので、startは2段目から
 					startY = 1;
 				}
@@ -583,9 +583,9 @@ public final class BreakUtil {
 		// Assaultスキルの場合
 		else {
 			/** 破壊要因スキルタイプ */
-			int breakSkillType = playerdata.activeskilldata.assaulttype;
+			int breakSkillType = playerdata.getActiveskilldata().assaulttype;
 			/** 破壊要因スキルレベル */
-			int breakSkillLevel = playerdata.activeskilldata.assaultnum;
+			int breakSkillLevel = playerdata.getActiveskilldata().assaultnum;
 			/** 選択中のスキルの破壊範囲 */
 			Coordinate skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel);
 			// アサルトアーマーの場合
