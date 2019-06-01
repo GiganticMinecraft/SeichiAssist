@@ -135,7 +135,7 @@ public class Mana {
 			t_max += increase;
 		}
 		//貢献度ptの上昇値
-		t_max += playerdata.added_mana * SeichiAssist.config.getContributeAddedMana();
+		t_max += playerdata.getAdded_mana() * SeichiAssist.config.getContributeAddedMana();
 
 		setMax(t_max);
 	}
@@ -180,7 +180,7 @@ public class Mana {
 			t_max += increase;
 		}
 		//貢献度ptの上昇値
-		t_max += playerdata.added_mana * SeichiAssist.config.getContributeAddedMana();
+		t_max += playerdata.getAdded_mana() * SeichiAssist.config.getContributeAddedMana();
 
 		setMax(t_max);
 		return t_max;

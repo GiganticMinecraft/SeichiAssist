@@ -74,10 +74,10 @@ public class AssaultTask extends BukkitRunnable{
 			return;
 		}
 
-		this.level = playerdata.activeskilldata.assaultnum;
-		this.type = playerdata.activeskilldata.assaulttype;
-		this.assaultarea = playerdata.activeskilldata.assaultarea;
-		this.mana = playerdata.activeskilldata.mana;
+		this.level = playerdata.getActiveskilldata().assaultnum;
+		this.type = playerdata.getActiveskilldata().assaulttype;
+		this.assaultarea = playerdata.getActiveskilldata().assaultarea;
+		this.mana = playerdata.getActiveskilldata().mana;
 
 		//もしサバイバルでなければ処理を終了
 		if(player.getGameMode() != GameMode.SURVIVAL){// || player.isFlying()){
@@ -128,13 +128,13 @@ public class AssaultTask extends BukkitRunnable{
 		}
 		this.breaklength = assaultarea.getBreakLength();
 		//壊すフラグを指定
-		if(playerdata.activeskilldata.assaulttype == ActiveSkill.WATERCONDENSE.gettypenum()){
+		if(playerdata.getActiveskilldata().assaulttype == ActiveSkill.WATERCONDENSE.gettypenum()){
 			waterflag = true;
-		}else if(playerdata.activeskilldata.assaulttype == ActiveSkill.LAVACONDENSE.gettypenum()){
+		}else if(playerdata.getActiveskilldata().assaulttype == ActiveSkill.LAVACONDENSE.gettypenum()){
 			lavaflag = true;
-		}else if(playerdata.activeskilldata.assaulttype == ActiveSkill.FLUIDCONDENSE.gettypenum()){
+		}else if(playerdata.getActiveskilldata().assaulttype == ActiveSkill.FLUIDCONDENSE.gettypenum()){
 			fluidflag = true;
-		}else if(playerdata.activeskilldata.assaulttype == ActiveSkill.ARMOR.gettypenum()){
+		}else if(playerdata.getActiveskilldata().assaulttype == ActiveSkill.ARMOR.gettypenum()){
 			breakflag = true;
 		}
 		ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
@@ -143,8 +143,8 @@ public class AssaultTask extends BukkitRunnable{
 
 	}
 	private void setCancel() {
-		playerdata.activeskilldata.assaultflag = false;
-		playerdata.activeskilldata.mineflagnum = 0;
+		playerdata.getActiveskilldata().assaultflag = false;
+		playerdata.getActiveskilldata().mineflagnum = 0;
 		this.cancel();
 	}
 
@@ -273,7 +273,7 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に破壊するブロック数 * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
 		double useMana = (double)breaksum * (double) (gravity + 1)
-				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum)
+				* ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().assaulttype, playerdata.getActiveskilldata().assaultnum)
 				/(ifallbreaknum) ;
 
 
@@ -315,7 +315,7 @@ public class AssaultTask extends BukkitRunnable{
 
 
 		//経験値を減らす
-		mana.decrease(useMana,player,playerdata.level);
+		mana.decrease(useMana,player, playerdata.getLevel());
 
 		//耐久値を減らす
 		if(!tool.getItemMeta().spigot().isUnbreakable()){
@@ -360,6 +360,6 @@ public class AssaultTask extends BukkitRunnable{
 	}
 
 	private boolean isCanceled() {
-		return playerdata.activeskilldata.mineflagnum == 0 || errorflag || playerdata.activeskilldata.assaulttype == 0;
+		return playerdata.getActiveskilldata().mineflagnum == 0 || errorflag || playerdata.getActiveskilldata().assaulttype == 0;
 	}
 }

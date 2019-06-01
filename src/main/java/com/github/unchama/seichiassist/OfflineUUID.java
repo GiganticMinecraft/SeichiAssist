@@ -52,15 +52,15 @@ import java.util.UUID;
 				return null;
 		  }
 		  if(obj instanceof Map) {
-			 Map map = (Map)obj;
+			 Map<?, ?> map = (Map<?, ?>)obj;
 			 if(map.containsKey("profiles")) {
 				obj = map.get("profiles");
 				if(obj instanceof List) {
-				   List lst = (List)obj;
-				   if(lst.size() > 0) {
+				   List<?> lst = (List<?>)obj;
+				   if(!lst.isEmpty()) {
 					  obj = lst.get(0);
 					  if(obj instanceof Map) {
-						 Map profiles = (Map)obj;
+						 Map<?, ?> profiles = (Map<?, ?>)obj;
 						 if(profiles.containsKey("id")) {
 							String uuid = (String)profiles.get("id");
 							if(uuid.length() == 32) {

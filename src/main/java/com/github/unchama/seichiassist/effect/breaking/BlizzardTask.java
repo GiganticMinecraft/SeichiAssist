@@ -54,7 +54,7 @@ public class BlizzardTask extends BukkitRunnable{
 		switch(round){
 		case 1:
 			//1回目のrun
-			if(playerdata.activeskilldata.skillnum > 2){
+			if(playerdata.getActiveskilldata().skillnum > 2){
 				for(Block b : breaklist){
 					BreakUtil.breakBlock(player, b, droploc, tool, false);
 					b.setType(Material.PACKED_ICE);
@@ -67,7 +67,7 @@ public class BlizzardTask extends BukkitRunnable{
 				cancel();
 			}
 			soundradius = 5;
-			soundflag = playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum();
+			soundflag = playerdata.getActiveskilldata().skilltype == ActiveSkill.BREAK.gettypenum();
 			break;
 
 		case 2:
@@ -83,7 +83,7 @@ public class BlizzardTask extends BukkitRunnable{
 					}
 				}
 			}
-			if(playerdata.activeskilldata.skillnum>2){
+			if(playerdata.getActiveskilldata().skillnum>2){
 				for(Block b : breaklist){
 					b.setType(Material.AIR);
 					if(soundflag){

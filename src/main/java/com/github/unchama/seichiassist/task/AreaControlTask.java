@@ -39,7 +39,7 @@ public class AreaControlTask extends BukkitRunnable{
 		this.player = player;
 		UUID uuid = player.getUniqueId();
 		this.playerdata = playermap.get(uuid);
-		this.skillflagnum = playerdata.activeskilldata.mineflagnum;
+		this.skillflagnum = playerdata.getActiveskilldata().mineflagnum;
 		this.area = area;
 		this.assaultflag = assaultflag;
 		this.tick = 0;

@@ -1,29 +1,15 @@
-package com.github.unchama.seichiassist.commands;
+package com.github.unchama.seichiassist.commands.legacy;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 
-import java.util.List;
-
-public class lastquitCommand implements TabExecutor{
-	public SeichiAssist plugin;
-	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-
-
-	public lastquitCommand(SeichiAssist plugin){
-		this.plugin = plugin;
-	}
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command,
-			String label, String[] args) {
-		return null;
-	}
+public class LastQuitCommand implements CommandExecutor {
+	private final DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,

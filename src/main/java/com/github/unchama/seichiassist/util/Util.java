@@ -185,7 +185,7 @@ public final class Util {
 	public static void sendEveryMessageWithoutIgnore(String str){
 		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
-			if (SeichiAssist.playermap.get(player.getUniqueId()).everymessageflag) {
+			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverymessageflag()) {
 				player.sendMessage(str);
 			}
 		}
@@ -204,7 +204,7 @@ public final class Util {
 	public static void sendEveryMessageWithoutIgnore(BaseComponent base){
 		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
-			if (SeichiAssist.playermap.get(player.getUniqueId()).everymessageflag) {
+			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverymessageflag()) {
 				player.spigot().sendMessage(base);
 			}
 		}
@@ -350,7 +350,7 @@ public final class Util {
 	public static void sendEverySoundWithoutIgnore(Sound kind, float a, float b){
 		SeichiAssist plugin = SeichiAssist.instance;
 		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
-			if (SeichiAssist.playermap.get(player.getUniqueId()).everysoundflag) {
+			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverysoundflag()) {
 				player.playSound(player.getLocation(), kind, a, b);
 			}
 		}

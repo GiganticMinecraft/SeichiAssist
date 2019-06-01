@@ -20,18 +20,18 @@ public class PlayerChatEventListener implements Listener {
 		Player player = event.getPlayer();
 		PlayerData data = SeichiAssist.playermap.get(player.getUniqueId());
 
-		if (!data.isSubHomeNameChange) {
+		if (!data.isSubHomeNameChange()) {
 			return;
 		}
 
-		int n = data.setHomeNameNum;
+		int n = data.getSetHomeNameNum();
 
 		data.setSubHomeName(event.getMessage(), n);
 
 		player.sendMessage(ChatColor.GREEN + "サブホームポイント" + (n+1) + "の名前を");
 		player.sendMessage(ChatColor.GREEN + event.getMessage() + "に更新しました");
 
-		data.isSubHomeNameChange = false;
+		data.setSubHomeNameChange(false);
 		event.setCancelled(true);
 	}
 

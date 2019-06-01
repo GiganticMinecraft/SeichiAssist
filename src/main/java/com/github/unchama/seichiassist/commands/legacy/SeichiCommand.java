@@ -1,35 +1,26 @@
-package com.github.unchama.seichiassist.commands;
-
-import java.util.List;
-import java.util.UUID;
-
-import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.util.TypeConverter;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+package com.github.unchama.seichiassist.commands.legacy;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
-
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
-public class seichiCommand implements TabExecutor {
-	SeichiAssist plugin;
-	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
+import java.util.UUID;
 
-	public seichiCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
-	@Override
-	public List<String> onTabComplete(CommandSender arg0, Command arg1,
-			String arg2, String[] arg3) {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
+public class SeichiCommand implements CommandExecutor {
+	private SeichiAssist plugin;
+	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
+
+	public SeichiCommand(SeichiAssist plugin){
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -134,7 +125,7 @@ public class seichiCommand implements TabExecutor {
 						sender.sendMessage(name + "はオンラインですが、何故かplayerdataが見つかりませんでした(要報告)");
 						return true;
 					}
-					player.openInventory(targetplayerdata.inventory);
+					player.openInventory(targetplayerdata.getInventory());
 					return true;
 				}else{
 					//対象プレイヤーがオフラインの時の処理
@@ -215,7 +206,7 @@ public class seichiCommand implements TabExecutor {
 					return true;
 				}
 				//エフェクトデータリストにこの効果を追加
-				playerdata.effectdatalist.add(new EffectData(duration,amplifier,id));
+				playerdata.getEffectdatalist().add(new EffectData(duration,amplifier,id));
 				//メッセージ送信
 				sender.sendMessage(ChatColor.LIGHT_PURPLE + name + "に上昇値"+amplifier+"を" + TypeConverter.toTimeString(duration/20) + "追加しました");
 			}else{
@@ -224,7 +215,7 @@ public class seichiCommand implements TabExecutor {
 				//全てのプレイヤーデータについて処理
 				for(PlayerData playerdata: SeichiAssist.playermap.values()){
 					//エフェクトデータリストにこの効果を追加
-					playerdata.effectdatalist.add(new EffectData(duration,amplifier,id));
+					playerdata.getEffectdatalist().add(new EffectData(duration,amplifier,id));
 				}
 				//メッセージ送信
 				sender.sendMessage(ChatColor.LIGHT_PURPLE + "全てのプレイヤーに上昇値"+amplifier+"を" + TypeConverter.toTimeString(duration/20) + "追加しました");

@@ -32,8 +32,8 @@ public class GachaItemListener implements Listener {
 			Bukkit.getLogger().warning("GachaItemListener.onPlayerItemConsumeEvent");
 			return;
 		}
-		int level = playerdata.level;
-		Mana mana = playerdata.activeskilldata.mana;
+		int level = playerdata.getLevel();
+		Mana mana = playerdata.getActiveskilldata().mana;
 		ItemStack i = e.getItem();
 		//Material m = i.getType();
 		ItemMeta itemmeta = i.getItemMeta();

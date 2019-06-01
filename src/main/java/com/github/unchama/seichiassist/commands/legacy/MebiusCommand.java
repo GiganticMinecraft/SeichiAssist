@@ -1,25 +1,13 @@
-package com.github.unchama.seichiassist.commands;
+package com.github.unchama.seichiassist.commands.legacy;
 
-import java.util.List;
-
+import com.github.unchama.seichiassist.listener.MebiusListener;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.listener.MebiusListener;
-
-public class mebiusCommand implements TabExecutor {
-
-	public mebiusCommand(SeichiAssist plugin) {
-	}
-
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-		return null;
-	}
+public class MebiusCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

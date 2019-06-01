@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.commands.GiganticFeverCommand;
+import com.github.unchama.seichiassist.commands.legacy.GiganticFeverCommand;
 import com.github.unchama.seichiassist.data.EffectData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
@@ -62,17 +62,17 @@ public class EveryMinuteTask extends BukkitRunnable{
 			}
 			//プレイﾔｰが必ずオンラインと分かっている処理
 			//プレイヤーを取得
-			Player player = plugin.getServer().getPlayer(playerdata.uuid);
+			Player player = plugin.getServer().getPlayer(playerdata.getUuid());
 
 			//放置判定
-			if(player.getLocation().equals(playerdata.loc)){
+			if(player.getLocation().equals(playerdata.getLoc())){
 				// idletime加算
-				playerdata.idletime ++;
+				playerdata.setIdletime(playerdata.getIdletime() + 1);
 			}else{
 				// 現在地点再取得
-				playerdata.loc = player.getLocation();
+				playerdata.setLoc(player.getLocation());
 				// idletimeリセット
-				playerdata.idletime = 0;
+				playerdata.setIdletime(0);
 			}
 
 			//プレイヤー名を取得
@@ -82,7 +82,7 @@ public class EveryMinuteTask extends BukkitRunnable{
 			//Levelを設定(必ず総整地量更新後に実施！)
 			playerdata.updateLevel(player);
 			//activeskillpointを設定
-			playerdata.activeskilldata.updateActiveSkillPoint(player,playerdata.level);
+			playerdata.getActiveskilldata().updateActiveSkillPoint(player, playerdata.getLevel());
 			//総プレイ時間更新
 			playerdata.calcPlayTick(player);
 
@@ -103,11 +103,11 @@ public class EveryMinuteTask extends BukkitRunnable{
 			//effectのメッセージ
 			//１分間のブロック破壊量による上昇
 			amplifier = (double) increase * config.getMinuteMineSpeed();
-			playerdata.effectdatalist.add(new EffectData(amplifier,2));
+			playerdata.getEffectdatalist().add(new EffectData(amplifier,2));
 
 			//プレイヤー数による上昇
 			amplifier = (double) onlinenums * config.getLoginPlayerMineSpeed();
-			playerdata.effectdatalist.add(new EffectData(amplifier,1));
+			playerdata.getEffectdatalist().add(new EffectData(amplifier,1));
 
 
 			//effect追加の処理
@@ -115,13 +115,13 @@ public class EveryMinuteTask extends BukkitRunnable{
 			int minespeedlv = 0;
 
 			//effectflag ONの時のみ実行
-			if (playerdata.effectflag != 5) {
+			if (playerdata.getEffectflag() != 5) {
 				//合計effect量
 				double sum = 0;
 				//最大持続時間
 				int maxduration = 0;
 				//effectdatalistにある全てのeffectについて計算
-				for(EffectData ed :playerdata.effectdatalist){
+				for(EffectData ed : playerdata.getEffectdatalist()){
 					//effect量を加算
 					sum += ed.amplifier;
 					//持続時間の最大値を取得
@@ -134,15 +134,15 @@ public class EveryMinuteTask extends BukkitRunnable{
 
 				//effect上限値を判定
 				int maxSpeed = 0;
-				if (playerdata.effectflag == 0) {
+				if (playerdata.getEffectflag() == 0) {
 					maxSpeed = 25565;
-				} else if (playerdata.effectflag == 1) {
+				} else if (playerdata.getEffectflag() == 1) {
 					maxSpeed = 127;
-				} else if(playerdata.effectflag == 2) {
+				} else if(playerdata.getEffectflag() == 2) {
 					maxSpeed = 200;
-				} else if(playerdata.effectflag == 3) {
+				} else if(playerdata.getEffectflag() == 3) {
 					maxSpeed = 400;
-				} else if(playerdata.effectflag == 4) {
+				} else if(playerdata.getEffectflag() == 4) {
 					maxSpeed = 600;
 				}
 
@@ -159,15 +159,15 @@ public class EveryMinuteTask extends BukkitRunnable{
 				}
 
 				//プレイヤーデータを更新
-				playerdata.minespeedlv = minespeedlv;
+				playerdata.setMinespeedlv(minespeedlv);
 			}
 
 			//プレイヤーにメッセージ送信
-			if(playerdata.lastminespeedlv != minespeedlv || playerdata.messageflag){//前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
+			if(playerdata.getLastminespeedlv() != minespeedlv || playerdata.getMessageflag()){//前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
 				player.sendMessage(ChatColor.YELLOW + "★" + ChatColor.WHITE + "採掘速度上昇レベルが" + ChatColor.YELLOW + (minespeedlv+1) + ChatColor.WHITE +"になりました");
-				if(playerdata.messageflag){
+				if(playerdata.getMessageflag()){
 					player.sendMessage("----------------------------内訳-----------------------------");
-					for(EffectData ed : playerdata.effectdatalist){
+					for(EffectData ed : playerdata.getEffectdatalist()){
 						player.sendMessage(ChatColor.RESET + "" +  ChatColor.RED + "" + ed.EDtoString(ed.id,ed.duration,ed.amplifier));
 					}
 					player.sendMessage("-------------------------------------------------------------");
@@ -175,18 +175,18 @@ public class EveryMinuteTask extends BukkitRunnable{
 			}
 
 			//プレイヤーデータを更新
-			playerdata.lastminespeedlv = minespeedlv;
+			playerdata.setLastminespeedlv(minespeedlv);
 
 			/*
 			 * ガチャ券付与の処理
 			 */
 
 			//ガチャポイントに合算
-			playerdata.gachapoint += increase;
+			playerdata.setGachapoint(playerdata.getGachapoint() + increase);
 
-			if(playerdata.gachapoint >= config.getGachaPresentInterval() && playerdata.gachaflag){
+			if(playerdata.getGachapoint() >= config.getGachaPresentInterval() && playerdata.getGachaflag()){
 				ItemStack skull = Util.getskull(name);
-				playerdata.gachapoint -= config.getGachaPresentInterval();
+				playerdata.setGachapoint(playerdata.getGachapoint() - config.getGachaPresentInterval());
 				if(player.getInventory().contains(skull) || !Util.isPlayerInventoryFull(player)){
 					Util.addItem(player,skull);
 					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー。右クリックで使えるゾ");
@@ -196,12 +196,12 @@ public class EveryMinuteTask extends BukkitRunnable{
 					player.sendMessage(ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "がドロップしました。右クリックで使えるゾ");
 				}
 			}else{
-				if(increase != 0 && playerdata.gachaflag){
-					player.sendMessage("あと" + ChatColor.AQUA + (config.getGachaPresentInterval()-(playerdata.gachapoint % config.getGachaPresentInterval())) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
+				if(increase != 0 && playerdata.getGachaflag()){
+					player.sendMessage("あと" + ChatColor.AQUA + (config.getGachaPresentInterval()-(playerdata.getGachapoint() % config.getGachaPresentInterval())) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ");
 				}
 			}
 			//プレイヤーデータを更新
-			playerdata.lastgachapoint = playerdata.gachapoint;
+			playerdata.setLastgachapoint(playerdata.getGachapoint());
 
 
 
@@ -212,7 +212,7 @@ public class EveryMinuteTask extends BukkitRunnable{
 			//No1000系統の解禁チェック
 			int checkNo = 1001 ;
 			for(;checkNo < 1013 ;){
-				if(!playerdata.TitleFlags.get(checkNo)){
+				if(!playerdata.getTitleFlags().get(checkNo)){
 					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
@@ -220,7 +220,7 @@ public class EveryMinuteTask extends BukkitRunnable{
 			//No3000系統の解禁チェック
 			checkNo = 3001 ;
 			for(;checkNo < 3020 ;){
-				if(!playerdata.TitleFlags.get(checkNo)){
+				if(!playerdata.getTitleFlags().get(checkNo)){
 					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
@@ -228,7 +228,7 @@ public class EveryMinuteTask extends BukkitRunnable{
 			//No4000系統の解禁チェック
 			checkNo = 4001 ;
 			for(;checkNo < 4024 ;){
-				if(!playerdata.TitleFlags.get(checkNo)){
+				if(!playerdata.getTitleFlags().get(checkNo)){
 					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
@@ -236,7 +236,7 @@ public class EveryMinuteTask extends BukkitRunnable{
 			//No5000系統の解禁チェック
 			checkNo = 5001 ;
 			for(;checkNo < 5009 ;){
-				if(!playerdata.TitleFlags.get(checkNo)){
+				if(!playerdata.getTitleFlags().get(checkNo)){
 					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
@@ -244,7 +244,7 @@ public class EveryMinuteTask extends BukkitRunnable{
 			//No5100系統の解禁チェック
 			checkNo = 5101 ;
 			for(;checkNo < 5121 ;){
-				if(!playerdata.TitleFlags.get(checkNo)){
+				if(!playerdata.getTitleFlags().get(checkNo)){
 					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
@@ -252,7 +252,7 @@ public class EveryMinuteTask extends BukkitRunnable{
 			//No6000系統の解禁チェック
 			checkNo = 6001 ;
 			for(;checkNo < 6009 ;){
-				if(!playerdata.TitleFlags.get(checkNo)){
+				if(!playerdata.getTitleFlags().get(checkNo)){
 					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
@@ -260,19 +260,19 @@ public class EveryMinuteTask extends BukkitRunnable{
 			//No8000系統の解禁チェック
 			checkNo = 8001 ;
 			for(;checkNo < 8003 ;){
-				if(!playerdata.TitleFlags.get(checkNo)){
+				if(!playerdata.getTitleFlags().get(checkNo)){
 					SeichiAchievement.tryAchieve(player,checkNo);
 				}
 				checkNo ++ ;
 			}
 
 			//投票妖精関連
-			if (playerdata.usingVotingFairy) {
+			if (playerdata.getUsingVotingFairy()) {
 				VotingFairyTask.run(player);
 			}
 
 			//GiganticBerserk
-			playerdata.GBcd = 0;
+			playerdata.setGBcd(0);
 
 		}
 

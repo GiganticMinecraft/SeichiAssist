@@ -27,11 +27,11 @@ public class VotingFairyTask {
 		VotingFairyListener.regeneMana(p);
 
 		//効果時間中か
-		if(!Util.isVotingFairyPeriod(playerdata.VotingFairyStartTime, playerdata.VotingFairyEndTime)) {
+		if(!Util.isVotingFairyPeriod(playerdata.getVotingFairyStartTime(), playerdata.getVotingFairyEndTime())) {
 			speak(p, ("あっ、もうこんな時間だ！"), false);
 			speak(p, ("じゃーねー！" + p.getName()), true);
 			p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "妖精はどこかへ行ってしまった");
-			playerdata.usingVotingFairy = false ;
+			playerdata.setUsingVotingFairy(false);
 		}
 	}
 
