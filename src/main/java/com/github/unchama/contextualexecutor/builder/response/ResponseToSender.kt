@@ -10,6 +10,13 @@ interface ResponseToSender {
 }
 
 /**
+ * 何も送信しないような出力
+ */
+object EmptyResponse: ResponseToSender {
+  override suspend fun transmitTo(commandSender: CommandSender) = Unit
+}
+
+/**
  * コマンド応答を結合する.
  */
 operator fun ResponseToSender.plus(anotherResponse: ResponseToSender): ResponseToSender = object : ResponseToSender {
