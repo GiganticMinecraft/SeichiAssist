@@ -3,13 +3,14 @@ package com.github.unchama.seichiassist.data.menu;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link InventoryKeeper} を管理するクラス.
+ * {@link InventoryManipulator} を管理するクラス.
  * Singleton で設計されています.
  *
  * @author karayuu
@@ -18,10 +19,10 @@ public final class MenuHandler implements Listener {
     private static MenuHandler singleton = new MenuHandler();
 
     /**
-     * 登録された {@link InventoryKeeper} の {@link List}
+     * 登録された {@link InventoryManipulator} の {@link List}
      */
-    @Nonnull
-    private List<InventoryKeeper> inventoryKeepers = new ArrayList<>();
+    @NotNull
+    private List<@NotNull InventoryManipulator> inventoryManipulators = new ArrayList<>();
 
     private MenuHandler() {}
 
@@ -36,16 +37,16 @@ public final class MenuHandler implements Listener {
 
 
     /**
-     * {@link #inventoryKeepers} に {@link InventoryKeeper} を追加します.
+     * {@link #inventoryManipulators} に {@link InventoryManipulator} を追加します.
      *
-     * @param inventoryKeeper 追加する {@link InventoryKeeper} ({@code null} は許容されません.)
+     * @param inventoryManipulator 追加する {@link InventoryManipulator} ({@code null} は許容されません.)
      */
-    public void addInventoryHolder(@Nonnull InventoryKeeper inventoryKeeper) {
-        inventoryKeepers.add(inventoryKeeper);
+    public void addInventoryHolder(@Nonnull InventoryManipulator inventoryManipulator) {
+        inventoryManipulators.add(inventoryManipulator);
     }
 
     /**
-     * 各 {@link InventoryKeeper#invokeAndReload(int, InventoryClickEvent)} を呼び出します.
+     * 各 {@link InventoryManipulator#invokeAndReload(int, InventoryClickEvent)} を呼び出します.
      * title にて判断し, {@link InventoryClickEvent} を与えます.
      *
      * @param event {@link InventoryClickEvent}
@@ -54,7 +55,7 @@ public final class MenuHandler implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         final String title = event.getInventory().getTitle();
 
-        inventoryKeepers.stream()
+        inventoryManipulators.stream()
                         .filter(holder -> holder.getTitle().equals(title))
                         .forEach(holder -> holder.invokeAndReload(event.getSlot(), event));
     }

@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions;
 import com.github.unchama.seichiassist.data.itemstack.builder.SkullItemStackBuilder;
-import com.github.unchama.seichiassist.data.menu.InventoryKeeper;
+import com.github.unchama.seichiassist.data.menu.InventoryManipulator;
 import com.github.unchama.seichiassist.data.slot.button.ButtonBuilder;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
 import com.github.unchama.seichiassist.data.slot.handler.Trigger;
@@ -23,13 +23,13 @@ import javax.annotation.Nonnull;
  */
 public final class StickMenu {
     @Nonnull
-    private static final InventoryKeeper stickMenu;
+    private static final InventoryManipulator stickMenu;
 
     private StickMenu() {
     }
 
     static {
-        stickMenu = InventoryKeeper.from(Bukkit.createInventory(null, 4 * 9));
+        stickMenu = InventoryManipulator.from(Bukkit.createInventory(null, 4 * 9));
     }
 
     public void openBy(@NotNull Player player) {
