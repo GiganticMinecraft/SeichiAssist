@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.database.migrations;
 
+import com.github.unchama.seichiassist.PackagePrivate;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.github.unchama.util.collection.SetFactory;
 import org.apache.commons.codec.DecoderException;
@@ -241,7 +242,8 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
             this.metaLocation = metaLocation;
         }
 
-        /* package-private */ String generateTemplateForInsertionCommand() {
+        @PackagePrivate
+        String generateTemplateForInsertionCommand() {
             final String serverId = metaLocation.serverId;
 
             final SubHomeWorldLocation worldLocation = metaLocation.worldLocation;
@@ -262,7 +264,8 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
         private final @NotNull String uuid;
         private final @NotNull String serverId;
 
-        /* package-pribate */ SubHomeDTOParser(@NotNull String uuid, @NotNull String serverId) {
+        @PackagePrivate
+        SubHomeDTOParser(@NotNull String uuid, @NotNull String serverId) {
             this.uuid = uuid;
             this.serverId = serverId;
         }
@@ -340,7 +343,8 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
             }
         }
 
-        /* package-private */ List<SubHomeDTO> parseRawDataAndFilterUndefineds(@NotNull String homePointRawData,
+        @PackagePrivate
+        List<SubHomeDTO> parseRawDataAndFilterUndefineds(@NotNull String homePointRawData,
                                                                                @Nullable String subHomeNameRawData) {
             return parseRawData(homePointRawData, parseSubHomeNameData(subHomeNameRawData)).stream()
                     .map(optionalData -> optionalData.orElse(null))

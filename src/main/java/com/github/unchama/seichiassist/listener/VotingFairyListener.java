@@ -199,8 +199,9 @@ public class VotingFairyListener implements Listener {
 
 	private static int getGiveAppleValue(PlayerData playerdata) {
 		int i = playerdata.getLevel() /10;
-		//0になるなら1を返す
-		return i*i <= 0 ? 1 : i*i ;
+		final int s = i * i;
+		//0になるなら1を返す (2乗がマイナスになることはない)
+		return Math.max(s, 1);
 	}
 
 	private static String getMessage(List<String> messages, String str1) {

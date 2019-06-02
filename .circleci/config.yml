@@ -27,15 +27,15 @@ jobs:
           ls -al localDependencies
       - restore_cache:
           keys:
-            - gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lock" }}
-            - gradle-repo-v1-{{ .Branch }}-
-            - gradle-repo-v1-
+            - gradle-repo-v2-{{ .Branch }}-{{ checksum "dependencies.lock" }}
+            - gradle-repo-v2-{{ .Branch }}-
+            - gradle-repo-v2-
       - run: ./gradlew install
       - save_cache:
           paths:
             - ~/.gradle
             - ~/.m2 # Maven dependencies
-          key: gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lock" }}
+          key: gradle-repo-v2-{{ .Branch }}-{{ checksum "dependencies.lock" }}
       - run: mkdir -p workspace/builds && cp build/libs/**.jar workspace/builds
       - *save_workspace
   deploy_debug:
