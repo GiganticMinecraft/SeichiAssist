@@ -5,6 +5,8 @@ import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.ParsedArgCommandContext
 import com.github.unchama.contextualexecutor.PartiallyParsedArgs
 import com.github.unchama.contextualexecutor.RawCommandContext
+import com.github.unchama.contextualexecutor.builder.response.EmptyResponse
+import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
 import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
 import com.github.unchama.util.data.merge
 import org.bukkit.command.CommandSender
@@ -25,7 +27,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
     val contextualExecution: ScopedContextualExecution<CS>) {
 
   private tailrec fun parse(parsers: List<(String) -> ResponseOrResult<Any>>,
-                            onMissingArguments: CommandResponse,
+                            onMissingArguments: ResponseToSender,
                             args: List<String>,
                             reverseAccumulator: List<Any> = listOf()): ResponseOrResult<Pair<List<Any>, List<String>>> {
     val firstParser = parsers.firstOrNull() ?: return Right(reverseAccumulator.reversed() to args)
@@ -42,12 +44,12 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
 
   /**
    * @param parsers i番目にi番目の引数の変換を試みるような関数が入ったリスト
-   * @param onMissingArguments 引数がパーサに対して不足しているときに返却すべき[CommandResponse]を生成する関数
+   * @param onMissingArguments 引数がパーサに対して不足しているときに返却すべき[ResponseToSender]を生成する関数
    *
    * @return [argumentsParser]に, [parsers]と[onMissingArguments]が組み合わされた関数が入った新しい[ContextualExecutorBuilder].
    */
   fun argumentsParsers(parsers: List<SingleArgumentParser>,
-                       onMissingArguments: (RawCommandContext) -> CommandResponse = commandUsageResponse): ContextualExecutorBuilder<CS> {
+                       onMissingArguments: (RawCommandContext) -> ResponseToSender = commandUsageResponse): ContextualExecutorBuilder<CS> {
     val combinedParser: (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs> = { context: RawCommandContext ->
       parse(parsers, onMissingArguments(context), context.args).map { parseResult ->
         PartiallyParsedArgs(parseResult.first, parseResult.second)
@@ -70,7 +72,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
    * 失敗したら[errorMessageOnFail]が返るような[senderTypeValidation]が入った
    * 新しい[ContextualExecutorBuilder]
    */
-  inline fun <reified CS1 : CS> refineSender(errorMessageOnFail: CommandResponse): ContextualExecutorBuilder<CS1> {
+  inline fun <reified CS1 : CS> refineSender(errorMessageOnFail: ResponseToSender): ContextualExecutorBuilder<CS1> {
     val newSenderTypeValidation: (CommandSender) -> ResponseOrResult<CS1> = { sender ->
       fxEither {
         val (refined1: CS) = senderTypeValidation(sender)
@@ -89,7 +91,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
    * 新しい[ContextualExecutorBuilder]
    */
   inline fun <reified CS1 : CS> refineSenderWithoutError(): ContextualExecutorBuilder<CS1> =
-      refineSender(None)
+      refineSender(EmptyResponse)
 
   /**
    * @return [CS]を[CS1]へ狭めるキャストを試み,
@@ -97,7 +99,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
    * 新しい[ContextualExecutorBuilder]
    */
   inline fun <reified CS1 : CS> refineSenderWithError(message: String): ContextualExecutorBuilder<CS1> =
-      refineSender(Some(message.asResponseToSender()))
+      refineSender(message.asResponseToSender())
 
   /**
    * @return [CS]を[CS1]へ狭めるキャストを試み,
@@ -105,7 +107,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
    * 新しい[ContextualExecutorBuilder]
    */
   inline fun <reified CS1 : CS> refineSenderWithError(messages: List<String>): ContextualExecutorBuilder<CS1> =
-      refineSender(Some(messages.asResponseToSender()))
+      refineSender(messages.asResponseToSender())
 
   /**
    * ビルダーに入っている情報から[ContextualExecutor]を生成する.
@@ -121,7 +123,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
    */
   fun build(): ContextualExecutor = object : ContextualExecutor {
     override suspend fun executeWith(rawContext: RawCommandContext) {
-      val errorOrContext: Either<CommandResponse, ParsedArgCommandContext<CS>> =
+      val errorOrContext: Either<ResponseToSender, ParsedArgCommandContext<CS>> =
           fxEither {
             val (refinedSender) = senderTypeValidation(rawContext.sender)
             val (parsedArgs) = argumentsParser(rawContext)
@@ -130,7 +132,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
           }
 
       val response = errorOrContext.map { CommandExecutionScope.contextualExecution(it) }.merge()
-      sendResponse(rawContext.sender, response)
+      response.transmitTo(rawContext.sender)
     }
   }
 
@@ -138,18 +140,13 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
     private val defaultArgumentParser: CommandArgumentsParser = { context ->
       Right(PartiallyParsedArgs(listOf(), context.args))
     }
-    private val defaultExecution: ScopedContextualExecution<CommandSender> = { None }
+    private val defaultExecution: ScopedContextualExecution<CommandSender> = { EmptyResponse }
     private val defaultSenderValidation = { sender: CommandSender -> Right(sender) }
 
     fun beginConfiguration() = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
 
-    private suspend fun sendResponse(sender: CommandSender, response: CommandResponse) =
-        if (response is Some) {
-          response.t.transmitTo(sender)
-        } else Unit
-
-    private val commandUsageResponse: (RawCommandContext) -> CommandResponse = {
-      Some(it.command.command.usage.asResponseToSender())
+    private val commandUsageResponse: (RawCommandContext) -> ResponseToSender = {
+      it.command.command.usage.asResponseToSender()
     }
   }
 }

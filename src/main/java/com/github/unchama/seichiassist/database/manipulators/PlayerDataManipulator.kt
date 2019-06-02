@@ -2,9 +2,7 @@ package com.github.unchama.seichiassist.database.manipulators
 
 import arrow.core.*
 import arrow.core.extensions.either.fx.fx as fxEither
-import com.github.unchama.contextualexecutor.builder.CommandResponse
 import com.github.unchama.contextualexecutor.builder.ResponseOrResult
-import com.github.unchama.contextualexecutor.builder.response.EmptyResponse
 import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
 import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
@@ -301,11 +299,11 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     @Suppress("RedundantSuspendModifier")
-    private suspend fun assertPlayerDataExistenceFor(playerName: String): Either<CommandResponse, Unit> =
+    private suspend fun assertPlayerDataExistenceFor(playerName: String): ResponseOrResult<Unit> =
         try {
             gateway.executeQuery("select * from $tableReference where name like $playerName").use { resultSet ->
                 if (!resultSet.next()) {
-                    "${ChatColor.RED}$playerName はデータベースに登録されていません。".asResponseToSender().some().left()
+                    "${ChatColor.RED}$playerName はデータベースに登録されていません。".asResponseToSender().left()
                 } else {
                     Unit.right()
                 }
@@ -314,7 +312,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             Bukkit.getLogger().warning("sql failed on checking data existence of $playerName")
             e.printStackTrace()
 
-            "${ChatColor.RED}プレーヤーデータへのアクセスに失敗しました。".asResponseToSender().some().left()
+            "${ChatColor.RED}プレーヤーデータへのアクセスに失敗しました。".asResponseToSender().left()
         }
 
     suspend fun addContributionPoint(targetPlayerName: String, point: Int): ResponseOrResult<Unit> {
@@ -324,7 +322,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
             return if (gateway.executeUpdate(updateCommand) == Fail) {
                 Bukkit.getLogger().warning("sql failed on updating $targetPlayerName's contribute_point")
-                "${ChatColor.RED}貢献度ptの変更に失敗しました。".asResponseToSender().some().left()
+                "${ChatColor.RED}貢献度ptの変更に失敗しました。".asResponseToSender().left()
             } else {
                 Unit.right()
             }

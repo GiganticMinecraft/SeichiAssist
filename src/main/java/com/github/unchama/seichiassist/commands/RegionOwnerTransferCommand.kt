@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.commands
 
-import arrow.core.Some
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.ScopeProvider.parser
 import com.github.unchama.contextualexecutor.builder.Parsers
@@ -53,7 +52,7 @@ object RegionOwnerTransferCommand {
         val region = WorldGuardPlugin.inst().getRegionManager(sender.world).getRegion(regionName)
             ?: return@execution returnMessage("${regionName}という名前の保護は存在しません。")
 
-        Some(attemptRegionTransfer(sender, newOwner, region))
+        attemptRegionTransfer(sender, newOwner, region)
       }
       .build()
       .asNonBlockingTabExecutor()

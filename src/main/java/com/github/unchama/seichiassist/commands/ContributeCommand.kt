@@ -1,11 +1,8 @@
 package com.github.unchama.seichiassist.commands
 
-import arrow.core.Some
-import arrow.core.some
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.CommandExecutionScope
-import com.github.unchama.contextualexecutor.builder.CommandResponse
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers.identity
 import com.github.unchama.contextualexecutor.builder.Parsers.nonNegativeInteger
@@ -18,7 +15,7 @@ import org.bukkit.ChatColor
 import org.bukkit.command.CommandExecutor
 
 object ContributeCommand {
-  private suspend fun CommandExecutionScope.addContributionPoint(targetPlayerName: String, point: Int): CommandResponse =
+  private suspend fun CommandExecutionScope.addContributionPoint(targetPlayerName: String, point: Int): ResponseToSender =
       SeichiAssist.databaseGateway.playerDataManipulator
           .addContributionPoint(targetPlayerName, point)
           .map {
@@ -43,10 +40,8 @@ object ContributeCommand {
   private val parserConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
       .argumentsParsers(listOf(
           identity,
-          nonNegativeInteger(Some(
-              "${ChatColor.RED}増加分ポイントは0以上の整数を指定してください。".asResponseToSender()
-          ))
-      ), onMissingArguments = { helpMessageResponse.some() })
+          nonNegativeInteger("${ChatColor.RED}増加分ポイントは0以上の整数を指定してください。".asResponseToSender())
+      ), onMissingArguments = { helpMessageResponse })
 
   private val addPointExecutor: ContextualExecutor = parserConfiguredBuilder
       .execution { context ->
@@ -67,7 +62,7 @@ object ContributeCommand {
       .build()
 
   private val printHelpExecutor: ContextualExecutor = ContextualExecutorBuilder.beginConfiguration()
-      .execution { helpMessageResponse.some() }
+      .execution { helpMessageResponse }
       .build()
 
   val executor: CommandExecutor =

@@ -1,7 +1,7 @@
 package com.github.unchama.contextualexecutor.builder
 
-import arrow.core.None
-import arrow.core.Some
+import com.github.unchama.contextualexecutor.builder.response.EmptyResponse
+import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
 import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
 
 /**
@@ -11,15 +11,18 @@ object CommandExecutionScope {
   /**
    * 単一の[String]を含むコマンドの応答を作成する.
    */
-  fun returnMessage(message: String): CommandResponse = Some(message.asResponseToSender())
+  @Deprecated("", replaceWith = ReplaceWith("asResponseToSender"))
+  fun returnMessage(message: String): ResponseToSender = message.asResponseToSender()
 
   /**
    * メッセージを複数個含むコマンドの応答を作成する.
    */
-  fun returnMessages(messages: List<String>): CommandResponse = Some(messages.asResponseToSender())
+  @Deprecated("", replaceWith = ReplaceWith("asResponseToSender"))
+  fun returnMessages(messages: List<String>): ResponseToSender = messages.asResponseToSender()
 
   /**
    * メッセージを含まないコマンドの応答を作成する.
    */
-  fun returnNone(): CommandResponse = None
+  @Deprecated("", replaceWith = ReplaceWith("EmptyResponse"))
+  fun returnNone(): ResponseToSender = EmptyResponse
 }

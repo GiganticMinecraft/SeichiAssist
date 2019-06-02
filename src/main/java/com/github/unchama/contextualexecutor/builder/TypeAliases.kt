@@ -7,14 +7,12 @@ import com.github.unchama.contextualexecutor.PartiallyParsedArgs
 import com.github.unchama.contextualexecutor.RawCommandContext
 import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
 
-typealias CommandResponse = Option<ResponseToSender>
-
 typealias Result<Error, Success> = Either<Error, Success>
 
-typealias ResponseOrResult<T> = Result<CommandResponse, T>
+typealias ResponseOrResult<T> = Result<ResponseToSender, T>
 
 typealias CommandArgumentsParser = (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs>
 
-typealias ScopedContextualExecution<CS> = suspend CommandExecutionScope.(ParsedArgCommandContext<CS>) -> CommandResponse
+typealias ScopedContextualExecution<CS> = suspend CommandExecutionScope.(ParsedArgCommandContext<CS>) -> ResponseToSender
 
 typealias SingleArgumentParser = (String) -> ResponseOrResult<Any>

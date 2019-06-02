@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.commands
 
-import arrow.core.None
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
+import com.github.unchama.contextualexecutor.builder.response.EmptyResponse
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.Material
@@ -21,7 +21,7 @@ object StickCommand {
           Util.dropItem(sender, stickItemStack)
         }
 
-        None
+        EmptyResponse
       }
       .build()
       .asNonBlockingTabExecutor()

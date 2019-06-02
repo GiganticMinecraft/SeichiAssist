@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.commands
 
-import arrow.core.some
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers
@@ -12,7 +11,7 @@ object LastQuitCommand {
       .execution { context ->
         val playerName = context.args.parsed[0] as String
 
-        SeichiAssist.databaseGateway.playerDataManipulator.inquireLastQuitOf(playerName).some()
+        SeichiAssist.databaseGateway.playerDataManipulator.inquireLastQuitOf(playerName)
       }
       .build()
       .asNonBlockingTabExecutor()
