@@ -780,24 +780,6 @@ class PlayerData(player: Player) {
         halfBreakFlag = !halfBreakFlag
     }
 
-    /*
-	public void setAheadChunk(int amount) {
-		this.aheadChunk = amount;
-	}
-
-	public void setBehindChunk(int amount) {
-		this.behindChunk = amount;
-	}
-
-	public void setRightChunk(int amount) {
-		this.rightChunk = amount;
-	}
-
-	public void setLeftChunk(int amount) {
-		this.leftChunk = amount;
-	}
-	*/
-
     fun canGridExtend(directionType: DirectionType, world: String): Boolean {
         val LIMIT = config.getGridLimitPerWorld(world)
         val chunkMap = unitMap
