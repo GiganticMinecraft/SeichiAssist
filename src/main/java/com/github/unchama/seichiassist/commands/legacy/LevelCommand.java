@@ -21,7 +21,6 @@ import static com.github.unchama.util.ActionStatus.Fail;
 public class LevelCommand implements CommandExecutor {
     public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
-    // /gacha set 0.01 (現在手にもってるアイテムが確率0.01でガチャに出現するように設定）
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
@@ -40,8 +39,6 @@ public class LevelCommand implements CommandExecutor {
             return true;
 
         } else if (args[0].equalsIgnoreCase("reset")) {
-            //コマンドがlevel reset だった時の処理
-
             //level reset より多い引数を指定した場合
             if (args.length != 1) {
                 sender.sendMessage("/level resetで全員のレベル計算をリセットし、レベルアップを再度可能にします");
@@ -91,7 +88,6 @@ public class LevelCommand implements CommandExecutor {
                 if (playerdata != null) {
                     if (op.hasPlayedBefore()) {
                         //整地レベルを1に設定
-                        //playerdata.setLevel(num);
                         if (num >= 1 && num <= 200) {
                             playerdata.setLevelandTotalbreaknum(num);
                             //アクティブスキルポイントのリセット処理
@@ -104,7 +100,6 @@ public class LevelCommand implements CommandExecutor {
                                 Player player = SeichiAssist.instance.getServer().getPlayer(playerdata.getName());
                                 playerdata.setDisplayName(player);
                             }
-                            //}
                             //MySqlの値も処理
                             if (databaseGateway.playerDataManipulator.resetPlayerLevelandBreaknum(uuid) == Fail) {
                                 sender.sendMessage("mysqlのレベルと整地量の設定に失敗しました");
