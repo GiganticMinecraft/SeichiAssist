@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.commands.EffectCommand;
 import com.github.unchama.seichiassist.commands.EventCommand;
 import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
 import com.github.unchama.seichiassist.commands.MineHeadCommand;
+import com.github.unchama.seichiassist.commands.RegionOwnerTransferCommand;
 import com.github.unchama.seichiassist.commands.StickCommand;
 import com.github.unchama.seichiassist.commands.legacy.*;
 import com.github.unchama.seichiassist.data.GachaData;
@@ -919,7 +920,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("subhome", new SubHomeCommand()),
 					Pair.of("gtfever", new GiganticFeverCommand()),
 					Pair.of("minehead", MineHeadCommand.INSTANCE.getExecutor()),
-					Pair.of("x-transfer", new RegionOwnerTransferCommand())
+					Pair.of("x-transfer", RegionOwnerTransferCommand.INSTANCE.getExecutor())
 			).forEach((commandName, executor) -> getCommand(commandName).setExecutor(executor));
 		}
 
