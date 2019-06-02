@@ -776,10 +776,6 @@ class PlayerData(player: Player) {
         return this.halfBreakFlag
     }
 
-    fun toggleHalfBreakFlag() {
-        halfBreakFlag = !halfBreakFlag
-    }
-
     fun canGridExtend(directionType: DirectionType, world: String): Boolean {
         val LIMIT = config.getGridLimitPerWorld(world)
         val chunkMap = unitMap
@@ -938,6 +934,16 @@ class PlayerData(player: Player) {
         } else {
             "${ChatColor.GREEN}内訳表示:OFF"
         }
+
+        return responseMessage.asResponseToSender()
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun toggleHalfBreakFlag(): ResponseToSender {
+        halfBreakFlag = !halfBreakFlag
+
+        val newStatus = if (halfBreakFlag) "${ChatColor.GREEN}破壊可能" else "${ChatColor.RED}破壊不可能"
+        val responseMessage = "現在ハーフブロックは$newStatus${ChatColor.RESET}です."
 
         return responseMessage.asResponseToSender()
     }

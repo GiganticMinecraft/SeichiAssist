@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.ContributeCommand;
 import com.github.unchama.seichiassist.commands.EffectCommand;
 import com.github.unchama.seichiassist.commands.EventCommand;
+import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
 import com.github.unchama.seichiassist.commands.MineHeadCommand;
 import com.github.unchama.seichiassist.commands.StickCommand;
 import com.github.unchama.seichiassist.commands.legacy.*;
@@ -912,7 +913,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("shareinv",new ShareInvCommand()),
 					Pair.of("mebius",new MebiusCommand()),
 					Pair.of("unlockachv", new UnlockAchievementCommand()),
-					Pair.of("halfguard", new HalfBlockProtectCommand()),
+					Pair.of("halfguard", HalfBlockProtectCommand.INSTANCE.getExecutor()),
 					Pair.of("event", EventCommand.INSTANCE.getExecutor()),
 					Pair.of("contribute", ContributeCommand.INSTANCE.getExecutor()),
 					Pair.of("subhome", new SubHomeCommand()),
