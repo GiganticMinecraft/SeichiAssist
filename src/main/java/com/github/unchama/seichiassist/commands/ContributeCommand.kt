@@ -5,8 +5,8 @@ import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers.identity
 import com.github.unchama.contextualexecutor.builder.Parsers.nonNegativeInteger
-import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
-import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
+import com.github.unchama.messaging.MessageToSender
+import com.github.unchama.messaging.asResponseToSender
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.data.merge
@@ -14,7 +14,7 @@ import org.bukkit.ChatColor
 import org.bukkit.command.CommandExecutor
 
 object ContributeCommand {
-  private suspend fun addContributionPoint(targetPlayerName: String, point: Int): ResponseToSender =
+  private suspend fun addContributionPoint(targetPlayerName: String, point: Int): MessageToSender =
       SeichiAssist.databaseGateway.playerDataManipulator
           .addContributionPoint(targetPlayerName, point)
           .map {
@@ -28,7 +28,7 @@ object ContributeCommand {
             operationResponse.asResponseToSender()
           }.merge()
 
-  private val helpMessageResponse: ResponseToSender = listOf(
+  private val helpMessage: MessageToSender = listOf(
       "${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
       "${ChatColor.RED}/contribute add <プレイヤー名> <増加分ポイント>",
       "指定されたプレイヤーの貢献度ptを指定分増加させます",
@@ -40,7 +40,7 @@ object ContributeCommand {
       .argumentsParsers(listOf(
           identity,
           nonNegativeInteger("${ChatColor.RED}増加分ポイントは0以上の整数を指定してください。".asResponseToSender())
-      ), onMissingArguments = { helpMessageResponse })
+      ), onMissingArguments = { helpMessage })
 
   private val addPointExecutor: ContextualExecutor = parserConfiguredBuilder
       .execution { context ->
@@ -61,7 +61,7 @@ object ContributeCommand {
       .build()
 
   private val printHelpExecutor: ContextualExecutor = ContextualExecutorBuilder.beginConfiguration()
-      .execution { helpMessageResponse }
+      .execution { helpMessage }
       .build()
 
   val executor: CommandExecutor =

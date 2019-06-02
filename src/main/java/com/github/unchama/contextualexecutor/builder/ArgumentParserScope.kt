@@ -2,9 +2,9 @@ package com.github.unchama.contextualexecutor.builder
 
 import arrow.core.Left
 import arrow.core.Right
-import com.github.unchama.contextualexecutor.builder.response.EmptyResponse
-import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
-import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
+import com.github.unchama.messaging.EmptyMessage
+import com.github.unchama.messaging.MessageToSender
+import com.github.unchama.messaging.asResponseToSender
 
 /**
  * [ContextualExecutorBuilder.argumentsParser]が要求する,
@@ -13,12 +13,12 @@ import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
  * [ArgumentParserScope.ScopeProvider.parser]を通してスコープ付き関数をそのような関数に変換できる.
  */
 object ArgumentParserScope {
-  fun failWith(response: ResponseToSender): ResponseOrResult<Nothing> = Left(response)
+  fun failWith(message: MessageToSender): ResponseOrResult<Nothing> = Left(message)
 
   /**
    * メッセージなしで「失敗」を表す[ResponseOrResult]を作成する.
    */
-  fun failWithoutError(): ResponseOrResult<Nothing> = failWith(EmptyResponse)
+  fun failWithoutError(): ResponseOrResult<Nothing> = failWith(EmptyMessage)
 
   /**
    * メッセージ付きの「失敗」を表す[ResponseOrResult]を作成する.

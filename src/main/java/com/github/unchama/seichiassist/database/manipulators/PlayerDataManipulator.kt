@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.database.manipulators
 import arrow.core.*
 import arrow.core.extensions.either.fx.fx as fxEither
 import com.github.unchama.contextualexecutor.builder.ResponseOrResult
-import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
-import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
+import com.github.unchama.messaging.MessageToSender
+import com.github.unchama.messaging.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.RankData
@@ -723,7 +723,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun inquireLastQuitOf(playerName: String): ResponseToSender {
+    suspend fun inquireLastQuitOf(playerName: String): MessageToSender {
         suspend fun fetchLastQuitData(): String? {
             val command = "select lastquit from $tableReference where playerName = '$playerName'"
             try {

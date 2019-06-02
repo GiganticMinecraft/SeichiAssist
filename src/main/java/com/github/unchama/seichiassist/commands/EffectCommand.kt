@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
-import com.github.unchama.contextualexecutor.builder.response.EmptyResponse
-import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
-import com.github.unchama.contextualexecutor.builder.response.plus
+import com.github.unchama.messaging.EmptyMessage
+import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.messaging.plus
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
@@ -12,7 +12,7 @@ object EffectCommand {
 
   private val toggleExecutor = playerCommandBuilder
       .execution { context ->
-        val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution EmptyResponse
+        val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution EmptyMessage
         val toggleResponse = playerData.toggleEffect()
         val guidance = "再度 /ef コマンドを実行することでトグルします。".asResponseToSender()
 
@@ -22,7 +22,7 @@ object EffectCommand {
 
   private val messageFlagToggleExecutor = playerCommandBuilder
       .execution { context ->
-        val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution EmptyResponse
+        val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution EmptyMessage
 
         playerData.toggleMessageFlag()
       }

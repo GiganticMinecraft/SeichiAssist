@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data
 
-import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
-import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
+import com.github.unchama.messaging.MessageToSender
+import com.github.unchama.messaging.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.Worlds
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -910,7 +910,7 @@ class PlayerData(player: Player) {
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun toggleEffect(): ResponseToSender {
+    suspend fun toggleEffect(): MessageToSender {
         effectflag = (effectflag + 1) % 6
 
         val responseMessage = when (effectflag) {
@@ -926,7 +926,7 @@ class PlayerData(player: Player) {
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun toggleMessageFlag(): ResponseToSender {
+    suspend fun toggleMessageFlag(): MessageToSender {
         messageflag = !messageflag
 
         val responseMessage = if (messageflag) {
@@ -939,7 +939,7 @@ class PlayerData(player: Player) {
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun toggleHalfBreakFlag(): ResponseToSender {
+    suspend fun toggleHalfBreakFlag(): MessageToSender {
         halfBreakFlag = !halfBreakFlag
 
         val newStatus = if (halfBreakFlag) "${ChatColor.GREEN}破壊可能" else "${ChatColor.RED}破壊不可能"

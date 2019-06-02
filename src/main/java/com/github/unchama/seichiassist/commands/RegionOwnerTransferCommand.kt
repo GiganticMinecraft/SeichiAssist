@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.commands
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.ScopeProvider.parser
 import com.github.unchama.contextualexecutor.builder.Parsers
-import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
-import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
+import com.github.unchama.messaging.MessageToSender
+import com.github.unchama.messaging.asResponseToSender
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 
 object RegionOwnerTransferCommand {
   @Suppress("RedundantSuspendModifier")
-  private suspend fun attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): ResponseToSender {
+  private suspend fun attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): MessageToSender {
     val owners = region.owners
 
     if (!owners.contains(donner.uniqueId)) {

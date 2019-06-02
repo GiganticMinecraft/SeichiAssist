@@ -1,18 +1,17 @@
 package com.github.unchama.contextualexecutor.builder
 
 import arrow.core.Either
-import arrow.core.Option
 import com.github.unchama.contextualexecutor.ParsedArgCommandContext
 import com.github.unchama.contextualexecutor.PartiallyParsedArgs
 import com.github.unchama.contextualexecutor.RawCommandContext
-import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
+import com.github.unchama.messaging.MessageToSender
 
 typealias Result<Error, Success> = Either<Error, Success>
 
-typealias ResponseOrResult<T> = Result<ResponseToSender, T>
+typealias ResponseOrResult<T> = Result<MessageToSender, T>
 
 typealias CommandArgumentsParser = (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs>
 
-typealias ScopedContextualExecution<CS> = suspend (ParsedArgCommandContext<CS>) -> ResponseToSender
+typealias ScopedContextualExecution<CS> = suspend (ParsedArgCommandContext<CS>) -> MessageToSender
 
 typealias SingleArgumentParser = (String) -> ResponseOrResult<Any>
