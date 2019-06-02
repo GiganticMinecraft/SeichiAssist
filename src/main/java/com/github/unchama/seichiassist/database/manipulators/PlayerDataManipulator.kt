@@ -4,6 +4,8 @@ import arrow.core.*
 import arrow.core.extensions.either.fx.fx as fxEither
 import com.github.unchama.contextualexecutor.builder.CommandResponse
 import com.github.unchama.contextualexecutor.builder.ResponseOrResult
+import com.github.unchama.contextualexecutor.builder.response.EmptyResponse
+import com.github.unchama.contextualexecutor.builder.response.ResponseToSender
 import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.PlayerData
@@ -722,23 +724,32 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         return inventory
     }
 
-    //指定プレイヤーのlastquitを取得
-    fun selectLastQuit(name: String): String? {
-        var lastquit = ""
-        val command = "select lastquit from $tableReference where name = '$name'"
-        try {
-            gateway.executeQuery(command).use { lrs ->
-                while (lrs.next()) {
-                    lastquit = lrs.getString("lastquit")
+    @Suppress("RedundantSuspendModifier")
+    suspend fun inquireLastQuitOf(playerName: String): ResponseToSender {
+        suspend fun fetchLastQuitData(): String? {
+            val command = "select lastquit from $tableReference where playerName = '$playerName'"
+            try {
+                gateway.executeQuery(command).use { lrs ->
+                    return if (lrs.next()) lrs.getString("lastquit") else null
                 }
+            } catch (e: SQLException) {
+                println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+                e.printStackTrace()
+                return null
             }
-        } catch (e: SQLException) {
-            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-            e.printStackTrace()
-            return null
         }
 
-        return lastquit
+        return fetchLastQuitData()
+            ?.let { "${playerName}の最終ログアウト日時：$it".asResponseToSender() }
+            ?: run {
+                val messages = listOf(
+                    "${ChatColor.RED}最終ログアウト日時の照会に失敗しました。",
+                    "${ChatColor.RED}プレイヤー名やプレイヤー名が変更されていないか確認してください。",
+                    "${ChatColor.RED}プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります。"
+                )
+
+                messages.asResponseToSender()
+            }
     }
 
     fun loadPlayerData(playerdata: PlayerData) {

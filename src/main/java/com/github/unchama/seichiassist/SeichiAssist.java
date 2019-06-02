@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.commands.ContributeCommand;
 import com.github.unchama.seichiassist.commands.EffectCommand;
 import com.github.unchama.seichiassist.commands.EventCommand;
 import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
+import com.github.unchama.seichiassist.commands.LastQuitCommand;
 import com.github.unchama.seichiassist.commands.MineHeadCommand;
 import com.github.unchama.seichiassist.commands.RegionOwnerTransferCommand;
 import com.github.unchama.seichiassist.commands.StickCommand;
@@ -908,7 +909,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("seichi",new SeichiCommand(instance)),
 					Pair.of("ef", EffectCommand.INSTANCE.getExecutor()),
 					Pair.of("level",new LevelCommand()),
-					Pair.of("lastquit",new LastQuitCommand()),
+					Pair.of("lastquit", LastQuitCommand.INSTANCE.getExecutor()),
 					Pair.of("stick", StickCommand.INSTANCE.getExecutor()),
 					Pair.of("rmp",new RmpCommand()),
 					Pair.of("shareinv",new ShareInvCommand()),
