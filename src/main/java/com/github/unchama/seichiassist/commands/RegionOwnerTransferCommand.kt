@@ -50,7 +50,7 @@ object RegionOwnerTransferCommand {
         val sender = context.sender
 
         val region = WorldGuardPlugin.inst().getRegionManager(sender.world).getRegion(regionName)
-            ?: return@execution returnMessage("${regionName}という名前の保護は存在しません。")
+            ?: return@execution "${regionName}という名前の保護は存在しません。".asResponseToSender()
 
         attemptRegionTransfer(sender, newOwner, region)
       }

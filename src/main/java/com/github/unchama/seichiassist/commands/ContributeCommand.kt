@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
-import com.github.unchama.contextualexecutor.builder.CommandExecutionScope
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers.identity
 import com.github.unchama.contextualexecutor.builder.Parsers.nonNegativeInteger
@@ -15,7 +14,7 @@ import org.bukkit.ChatColor
 import org.bukkit.command.CommandExecutor
 
 object ContributeCommand {
-  private suspend fun CommandExecutionScope.addContributionPoint(targetPlayerName: String, point: Int): ResponseToSender =
+  private suspend fun addContributionPoint(targetPlayerName: String, point: Int): ResponseToSender =
       SeichiAssist.databaseGateway.playerDataManipulator
           .addContributionPoint(targetPlayerName, point)
           .map {
@@ -26,7 +25,7 @@ object ContributeCommand {
                   "${ChatColor.GREEN}${targetPlayerName}の貢献度ポイントを${point}減少させました"
                 }
 
-            returnMessage(operationResponse)
+            operationResponse.asResponseToSender()
           }.merge()
 
   private val helpMessageResponse: ResponseToSender = listOf(

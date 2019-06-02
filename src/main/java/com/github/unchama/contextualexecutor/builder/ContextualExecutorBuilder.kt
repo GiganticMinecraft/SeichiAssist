@@ -131,7 +131,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
             ParsedArgCommandContext(refinedSender, rawContext.command, parsedArgs)
           }
 
-      val response = errorOrContext.map { CommandExecutionScope.contextualExecution(it) }.merge()
+      val response = errorOrContext.map { contextualExecution(it) }.merge()
       response.transmitTo(rawContext.sender)
     }
   }
