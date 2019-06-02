@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.commands;
+package com.github.unchama.seichiassist.commands.legacy;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -10,8 +10,8 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -19,15 +19,7 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class shareinvCommand implements TabExecutor {
-	public shareinvCommand(SeichiAssist plugin) {
-	}
-
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-		return null;
-	}
-
+public class ShareInvCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!(sender instanceof Player)) {
@@ -39,13 +31,13 @@ public class shareinvCommand implements TabExecutor {
 		return true;
 	}
 
-	public void shareInv(Player player) {
+	private void shareInv(Player player) {
 		PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
 		DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 		ItemStack air = new ItemStack(Material.AIR);
 		// 収納中なら取り出す
-		if (playerdata.shareinv) {
+		if (playerdata.getShareinv()) {
 			String serial = databaseGateway.playerDataManipulator.loadShareInv(player, playerdata);
 			if (serial.equals("")) {
 				player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "収納アイテムが存在しません。");
@@ -89,7 +81,7 @@ public class shareinvCommand implements TabExecutor {
 				pi.setStorageContents(contents);
 				// SQLデータをクリア
 				databaseGateway.playerDataManipulator.clearShareInv(player, playerdata);
-				playerdata.shareinv = false;
+				playerdata.setShareinv(false);
 				player.sendMessage(ChatColor.GREEN + "アイテムを取得しました。手持ちにあったアイテムはドロップしました。");
 				Bukkit.getLogger().info(Util.getName(player) + "がアイテム取り出しを実施(SQL送信成功)");
 			}
@@ -126,7 +118,7 @@ public class shareinvCommand implements TabExecutor {
 					pi.setStorageContents(contents);
 
 					// インベントリ共有ボタンをトグル
-					playerdata.shareinv = true;
+					playerdata.setShareinv(true);
 					player.sendMessage(ChatColor.GREEN + "アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。");
 					Bukkit.getLogger().info(Util.getName(player) + "がアイテム収納を実施(SQL送信成功)");
 					// 木の棒を取得

@@ -69,7 +69,7 @@ public class NewYearBagListener implements Listener {
 				player.sendMessage(ChatColor.AQUA + "「お年玉袋」を見つけたよ！");
 				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 3f, 1f);
 			}
-			playerData.newYearBagAmount += 1;
+			playerData.setNewYearBagAmount(playerData.getNewYearBagAmount() + 1);
 		}
 	}
 

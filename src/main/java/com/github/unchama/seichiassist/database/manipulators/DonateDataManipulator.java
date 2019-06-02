@@ -33,8 +33,8 @@ public class DonateDataManipulator {
         String command = "insert into " + getTableReference()
                 + " (playername,playeruuid,effectnum,effectname,usepoint,date) "
                 + "value("
-                + "'" + playerdata.name + "',"
-                + "'" + playerdata.uuid.toString() + "',"
+                + "'" + playerdata.getName() + "',"
+                + "'" + playerdata.getUuid().toString() + "',"
                 + effect.getNum() + ","
                 + "'" + effect.getsqlName() + "',"
                 + effect.getUsePoint() + ","
@@ -63,7 +63,7 @@ public class DonateDataManipulator {
         int count = 0;
         ActiveSkillPremiumEffect[] effect = ActiveSkillPremiumEffect.values();
 
-        String command = "select * from " + getTableReference() + " where playername = '" + playerdata.name + "'";
+        String command = "select * from " + getTableReference() + " where playername = '" + playerdata.getName() + "'";
         try (ResultSet lrs = gateway.executeQuery(command)){
             while (lrs.next()) {
                 //ポイント購入の処理

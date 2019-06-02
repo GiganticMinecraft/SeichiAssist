@@ -1,40 +1,25 @@
-package com.github.unchama.seichiassist.commands;
+package com.github.unchama.seichiassist.commands.legacy;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.TypeConverter;
-import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.List;
 import java.util.UUID;
 
-public class subHomeCommand implements TabExecutor {
-	SeichiAssist plugin;
+public class SubHomeCommand implements CommandExecutor {
 
-	public subHomeCommand(SeichiAssist _plugin){
-		plugin = _plugin;
-	}
-	@Override
-	public List<String> onTabComplete(CommandSender arg0, Command arg1,
-			String arg2, String[] arg3) {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
-	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-		Player player = (Player)sender;
-		String name = Util.getName(player);
-		UUID uuid = player.getUniqueId();
-		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+
 		int maxsubhome = SeichiAssist.config.getSubHomeMax();
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.GREEN + "このコマンドはゲーム内から実行してください。");
@@ -50,7 +35,10 @@ public class subHomeCommand implements TabExecutor {
 			sender.sendMessage(ChatColor.GREEN + "/subHome name [移動したいサブホームの番号]");
 		}
 		else if(args.length == 1){
+			final Player player = (Player)sender;
 			try{
+				final UUID uuid = player.getUniqueId();
+				final PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 				int num = TypeConverter.toInt(args[0]);
 				if(num >= 1 && maxsubhome >= num){
 					Location l = playerdata.getSubHomeLocation(num-1);
@@ -79,9 +67,12 @@ public class subHomeCommand implements TabExecutor {
 			}
 		}
 		else if(args.length == 2){
+			final Player player = (Player)sender;
 			try{
 				int num = TypeConverter.toInt(args[1]);
 				if(num >= 1 && maxsubhome >= num){
+					final UUID uuid = player.getUniqueId();
+					final PlayerData playerdata = SeichiAssist.playermap.get(uuid);
 					if(args[0].equalsIgnoreCase("set")){
 						playerdata.setSubHomeLocation(player.getLocation(), num-1);
 						player.sendMessage("現在位置をサブホームポイント"+(num)+"に設定しました");
@@ -90,8 +81,7 @@ public class subHomeCommand implements TabExecutor {
 					else if(args[0].equalsIgnoreCase("name")){
 						player.sendMessage("サブホームポイント" + num + "に設定する名前をチャットで入力してください");
 						player.sendMessage(ChatColor.YELLOW + "※入力されたチャット内容は他のプレイヤーには見えません");
-						playerdata.setHomeNameNum = num-1;
-						playerdata.isSubHomeNameChange = true;
+						playerdata.setSetHomeNameNum(num - 1);
 						return true;
 					}
 				}

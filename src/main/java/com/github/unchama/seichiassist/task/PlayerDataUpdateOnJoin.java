@@ -31,8 +31,8 @@ public class PlayerDataUpdateOnJoin extends BukkitRunnable{
 	int i;
 
 	public PlayerDataUpdateOnJoin(PlayerData playerData) {
-		name = playerData.name;
-		uuid = playerData.uuid;
+		name = playerData.getName();
+		uuid = playerData.getUuid();
 		p = Bukkit.getPlayer(uuid);
 		struuid = uuid.toString().toLowerCase();
 		i = 0;

@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
-import com.github.unchama.seichiassist.commands.*;
+import com.github.unchama.seichiassist.commands.ContributeCommand;
+import com.github.unchama.seichiassist.commands.legacy.*;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -18,13 +19,12 @@ import com.github.unchama.seichiassist.task.PlayerDataBackupTask;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
+import com.github.unchama.util.collection.MapFactory;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -50,7 +50,7 @@ public class SeichiAssist extends JavaPlugin{
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
 
-	private HashMap<String, TabExecutor> commandlist;
+	// TODO staticであるべきではない
 	public static DatabaseGateway databaseGateway;
 	public static Config config;
 
@@ -896,25 +896,28 @@ public class SeichiAssist extends JavaPlugin{
 			Bukkit.shutdown();
 		}
 
-		//コマンドの登録
-		commandlist = new HashMap<>();
-		commandlist.put("gacha",new gachaCommand(instance));
-		commandlist.put("seichi",new seichiCommand(instance));
-		commandlist.put("ef",new effectCommand(instance));
-		commandlist.put("level",new levelCommand(instance));
-		commandlist.put("lastquit",new lastquitCommand(instance));
-		commandlist.put("stick",new stickCommand(instance));
-		commandlist.put("rmp",new rmpCommand(instance));
-		commandlist.put("shareinv",new shareinvCommand(instance));
-		commandlist.put("mebius",new mebiusCommand(instance));
-		commandlist.put("unlockachv", new AchieveCommand(instance));
-		commandlist.put("halfguard", new HalfBlockProtectCommand(instance));
-		commandlist.put("event", new EventCommand(instance));
-		commandlist.put("contribute", new contributeCommand(instance));
-		commandlist.put("subhome", new subHomeCommand(instance));
-		commandlist.put("gtfever", new GiganticFeverCommand());
-		commandlist.put("minehead", new MineHeadCommand(instance));
-		commandlist.put("x-transfer", new RegionOwnerTransferCommand());
+		{
+			// コマンドの登録
+			MapFactory.of(
+					Pair.of("gacha", new GachaCommand()),
+					Pair.of("seichi",new SeichiCommand(instance)),
+					Pair.of("ef",new EffectCommand()),
+					Pair.of("level",new LevelCommand()),
+					Pair.of("lastquit",new LastQuitCommand()),
+					Pair.of("stick",new StickCommand()),
+					Pair.of("rmp",new RmpCommand()),
+					Pair.of("shareinv",new ShareInvCommand()),
+					Pair.of("mebius",new MebiusCommand()),
+					Pair.of("unlockachv", new UnlockAchievementCommand()),
+					Pair.of("halfguard", new HalfBlockProtectCommand()),
+					Pair.of("event", new EventCommand()),
+					Pair.of("contribute", ContributeCommand.INSTANCE.getExecutor()),
+					Pair.of("subhome", new SubHomeCommand()),
+					Pair.of("gtfever", new GiganticFeverCommand()),
+					Pair.of("minehead", new MineHeadCommand()),
+					Pair.of("x-transfer", new RegionOwnerTransferCommand())
+			).forEach((commandName, executor) -> getCommand(commandName).setExecutor(executor));
+		}
 
 		//リスナーの登録
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
@@ -955,11 +958,6 @@ public class SeichiAssist extends JavaPlugin{
 		startTaskRunnable();
 
 		getLogger().info("SeichiAssist is Enabled!");
-	}
-
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-		return commandlist.get(cmd.getName()).onCommand(sender, cmd, label, args);
 	}
 
 	@Override

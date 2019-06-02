@@ -52,9 +52,9 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 	public PlayerDataLoadTask(PlayerData playerData) {
 		timer = MillisecondTimer.getInitializedTimerInstance();
 		db = SeichiAssist.config.getDB();
-		p = Bukkit.getPlayer(playerData.uuid);
+		p = Bukkit.getPlayer(playerData.getUuid());
 		playerdata = playerData;
-		uuid = playerData.uuid;
+		uuid = playerData.getUuid();
 		stringUuid = uuid.toString().toLowerCase();
 		flag = true;
 		i = 0;
@@ -122,7 +122,7 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 
 				final MineStackObj mineStackObj = nameObjectMappings.get(objectName);
 
-				playerdata.minestack.setStackedAmountOf(mineStackObj, objectAmount);
+				playerdata.getMinestack().setStackedAmountOf(mineStackObj, objectAmount);
 			}
 		}
 	}
@@ -158,7 +158,7 @@ public class PlayerDataLoadTask extends BukkitRunnable{
                 final String effectName = resultSet.getString("effect_name");
 
                 final ActiveSkillEffect effect = ActiveSkillEffect.fromSqlName(effectName);
-                playerdata.activeskilldata.obtainedSkillEffects.add(effect);
+                playerdata.getActiveskilldata().obtainedSkillEffects.add(effect);
             }
         }
     }
@@ -173,7 +173,7 @@ public class PlayerDataLoadTask extends BukkitRunnable{
                 final String effectName = resultSet.getString("effect_name");
 
                 final ActiveSkillPremiumEffect effect = ActiveSkillPremiumEffect.fromSqlName(effectName);
-                playerdata.activeskilldata.obtainedSkillPremiumEffects.add(effect);
+                playerdata.getActiveskilldata().obtainedSkillPremiumEffects.add(effect);
             }
         }
 	}
@@ -186,118 +186,118 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 		try (final ResultSet rs = stmt.executeQuery(command)) {
 			while (rs.next()) {
 				//各種数値
-				playerdata.loaded = true;
-				playerdata.effectflag = rs.getInt("effectflag");
-				playerdata.minestackflag = rs.getBoolean("minestackflag");
-				playerdata.messageflag = rs.getBoolean("messageflag");
-				playerdata.activeskilldata.mineflagnum = rs.getInt("activemineflagnum");
-				playerdata.activeskilldata.assaultflag = rs.getBoolean("assaultflag");
-				playerdata.activeskilldata.skilltype = rs.getInt("activeskilltype");
-				playerdata.activeskilldata.skillnum = rs.getInt("activeskillnum");
-				playerdata.activeskilldata.assaulttype = rs.getInt("assaultskilltype");
-				playerdata.activeskilldata.assaultnum = rs.getInt("assaultskillnum");
-				playerdata.activeskilldata.arrowskill = rs.getInt("arrowskill");
-				playerdata.activeskilldata.multiskill = rs.getInt("multiskill");
-				playerdata.activeskilldata.breakskill = rs.getInt("breakskill");
-				playerdata.activeskilldata.fluidcondenskill = rs.getInt("fluidcondenskill");
-				playerdata.activeskilldata.watercondenskill = rs.getInt("watercondenskill");
-				playerdata.activeskilldata.lavacondenskill = rs.getInt("lavacondenskill");
-				playerdata.activeskilldata.effectnum = rs.getInt("effectnum");
-				playerdata.gachapoint = rs.getInt("gachapoint");
-				playerdata.gachaflag = rs.getBoolean("gachaflag");
-				playerdata.level = rs.getInt("level");
-				playerdata.numofsorryforbug = rs.getInt("numofsorryforbug");
-				playerdata.rgnum = rs.getInt("rgnum");
-				playerdata.inventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"));
-				playerdata.dispkilllogflag = rs.getBoolean("killlogflag");
-				playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag");
+				playerdata.setLoaded(true);
+				playerdata.setEffectflag(rs.getInt("effectflag"));
+				playerdata.setMinestackflag(rs.getBoolean("minestackflag"));
+				playerdata.setMessageflag(rs.getBoolean("messageflag"));
+				playerdata.getActiveskilldata().mineflagnum = rs.getInt("activemineflagnum");
+				playerdata.getActiveskilldata().assaultflag = rs.getBoolean("assaultflag");
+				playerdata.getActiveskilldata().skilltype = rs.getInt("activeskilltype");
+				playerdata.getActiveskilldata().skillnum = rs.getInt("activeskillnum");
+				playerdata.getActiveskilldata().assaulttype = rs.getInt("assaultskilltype");
+				playerdata.getActiveskilldata().assaultnum = rs.getInt("assaultskillnum");
+				playerdata.getActiveskilldata().arrowskill = rs.getInt("arrowskill");
+				playerdata.getActiveskilldata().multiskill = rs.getInt("multiskill");
+				playerdata.getActiveskilldata().breakskill = rs.getInt("breakskill");
+				playerdata.getActiveskilldata().fluidcondenskill = rs.getInt("fluidcondenskill");
+				playerdata.getActiveskilldata().watercondenskill = rs.getInt("watercondenskill");
+				playerdata.getActiveskilldata().lavacondenskill = rs.getInt("lavacondenskill");
+				playerdata.getActiveskilldata().effectnum = rs.getInt("effectnum");
+				playerdata.setGachapoint(rs.getInt("gachapoint"));
+				playerdata.setGachaflag(rs.getBoolean("gachaflag"));
+				playerdata.setLevel(rs.getInt("level"));
+				playerdata.setNumofsorryforbug(rs.getInt("numofsorryforbug"));
+				playerdata.setRgnum(rs.getInt("rgnum"));
+				playerdata.setInventory(BukkitSerialization.fromBase64forPocket(rs.getString("inventory")));
+				playerdata.setDispkilllogflag(rs.getBoolean("killlogflag"));
+				playerdata.setDispworldguardlogflag(rs.getBoolean("worldguardlogflag"));
 
-				playerdata.multipleidbreakflag = rs.getBoolean("multipleidbreakflag");
+				playerdata.setMultipleidbreakflag(rs.getBoolean("multipleidbreakflag"));
 
-				playerdata.pvpflag = rs.getBoolean("pvpflag");
-				playerdata.totalbreaknum = rs.getLong("totalbreaknum");
-				playerdata.playtick = rs.getInt("playtick");
-				playerdata.p_givenvote = rs.getInt("p_givenvote");
-				playerdata.activeskilldata.effectpoint = rs.getInt("effectpoint");
-				playerdata.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint");
+				playerdata.setPvpflag(rs.getBoolean("pvpflag"));
+				playerdata.setTotalbreaknum(rs.getLong("totalbreaknum"));
+				playerdata.setPlaytick(rs.getInt("playtick"));
+				playerdata.setP_givenvote(rs.getInt("p_givenvote"));
+				playerdata.getActiveskilldata().effectpoint = rs.getInt("effectpoint");
+				playerdata.getActiveskilldata().premiumeffectpoint = rs.getInt("premiumeffectpoint");
 				//マナの情報
-				playerdata.activeskilldata.mana.setMana(rs.getDouble("mana"));
-				playerdata.expbar.setVisible(rs.getBoolean("expvisible"));
+				playerdata.getActiveskilldata().mana.setMana(rs.getDouble("mana"));
+				playerdata.getExpbar().setVisible(rs.getBoolean("expvisible"));
 
-				playerdata.totalexp = rs.getInt("totalexp");
+				playerdata.setTotalexp(rs.getInt("totalexp"));
 
-				playerdata.expmarge = rs.getByte("expmarge");
-				playerdata.shareinv = (!("".equals(rs.getString("shareinv"))) && rs.getString("shareinv") != null);
-				playerdata.everysoundflag = rs.getBoolean("everysound");
-				playerdata.everymessageflag = rs.getBoolean("everymessage");
+				playerdata.setExpmarge(rs.getByte("expmarge"));
+				playerdata.setShareinv((!("".equals(rs.getString("shareinv"))) && rs.getString("shareinv") != null));
+				playerdata.setEverysoundflag(rs.getBoolean("everysound"));
+				playerdata.setEverymessageflag(rs.getBoolean("everymessage"));
 
-				playerdata.selectHomeNum = 0;
-				playerdata.setHomeNameNum = 0;
-				playerdata.isSubHomeNameChange = false;
+				playerdata.setSelectHomeNum(0);
+				playerdata.setSetHomeNameNum(0);
+				playerdata.setSubHomeNameChange(false);
 
 				//実績、二つ名の情報
-				playerdata.displayTypeLv = rs.getBoolean("displayTypeLv");
-				playerdata.displayTitle1No = rs.getInt("displayTitle1No");
-				playerdata.displayTitle2No = rs.getInt("displayTitle2No");
-				playerdata.displayTitle3No = rs.getInt("displayTitle3No");
-				playerdata.p_vote_forT = rs.getInt("p_vote");
-				playerdata.giveachvNo = rs.getInt("giveachvNo");
-				playerdata.achvPointMAX = rs.getInt("achvPointMAX");
-				playerdata.achvPointUSE = rs.getInt("achvPointUSE");
-				playerdata.achvChangenum = rs.getInt("achvChangenum");
-				playerdata.achvPoint = (playerdata.achvPointMAX + (playerdata.achvChangenum * 3)) - playerdata.achvPointUSE;
+				playerdata.setDisplayTypeLv(rs.getBoolean("displayTypeLv"));
+				playerdata.setDisplayTitle1No(rs.getInt("displayTitle1No"));
+				playerdata.setDisplayTitle2No(rs.getInt("displayTitle2No"));
+				playerdata.setDisplayTitle3No(rs.getInt("displayTitle3No"));
+				playerdata.setP_vote_forT(rs.getInt("p_vote"));
+				playerdata.setGiveachvNo(rs.getInt("giveachvNo"));
+				playerdata.setAchvPointMAX(rs.getInt("achvPointMAX"));
+				playerdata.setAchvPointUSE(rs.getInt("achvPointUSE"));
+				playerdata.setAchvChangenum(rs.getInt("achvChangenum"));
+				playerdata.setAchvPoint((playerdata.getAchvPointMAX() + (playerdata.getAchvChangenum() * 3)) - playerdata.getAchvPointUSE());
 
 				//スターレベルの情報
-				playerdata.starlevel = rs.getInt("starlevel");
-				playerdata.starlevel_Break = rs.getInt("starlevel_Break");
-				playerdata.starlevel_Time = rs.getInt("starlevel_Time");
-				playerdata.starlevel_Event = rs.getInt("starlevel_Event");
+				playerdata.setStarlevel(rs.getInt("starlevel"));
+				playerdata.setStarlevel_Break(rs.getInt("starlevel_Break"));
+				playerdata.setStarlevel_Time(rs.getInt("starlevel_Time"));
+				playerdata.setStarlevel_Event(rs.getInt("starlevel_Event"));
 
 				//期間限定ログインイベント専用の累計ログイン日数
-				playerdata.LimitedLoginCount = rs.getInt("LimitedLoginCount");
+				playerdata.setLimitedLoginCount(rs.getInt("LimitedLoginCount"));
 
 				//連続・通算ログインの情報、およびその更新
 				Calendar cal = Calendar.getInstance();
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 				if (rs.getString("lastcheckdate").equals("") || rs.getString("lastcheckdate") == null) {
-					playerdata.lastcheckdate = sdf.format(cal.getTime());
+					playerdata.setLastcheckdate(sdf.format(cal.getTime()));
 				} else {
-					playerdata.lastcheckdate = rs.getString("lastcheckdate");
+					playerdata.setLastcheckdate(rs.getString("lastcheckdate"));
 				}
-				playerdata.ChainJoin = rs.getInt("ChainJoin");
-				playerdata.TotalJoin = rs.getInt("TotalJoin");
-				if (playerdata.ChainJoin == 0) {
-					playerdata.ChainJoin = 1;
+				playerdata.setChainJoin(rs.getInt("ChainJoin"));
+				playerdata.setTotalJoin(rs.getInt("TotalJoin"));
+				if (playerdata.getChainJoin() == 0) {
+					playerdata.setChainJoin(1);
 				}
-				if (playerdata.TotalJoin == 0) {
-					playerdata.TotalJoin = 1;
+				if (playerdata.getTotalJoin() == 0) {
+					playerdata.setTotalJoin(1);
 				}
 
 				try {
 					Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
-					Date LastDate = sdf.parse(playerdata.lastcheckdate);
+					Date LastDate = sdf.parse(playerdata.getLastcheckdate());
 					long TodayLong = TodayDate.getTime();
 					long LastLong = LastDate.getTime();
 
 					long datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24);
 					if (datediff > 0) {
-						LLE.getLastcheck(playerdata.lastcheckdate);
-						playerdata.TotalJoin++;
+						LLE.getLastcheck(playerdata.getLastcheckdate());
+						playerdata.setTotalJoin(playerdata.getTotalJoin() + 1);
 						if (datediff == 1) {
-							playerdata.ChainJoin++;
+							playerdata.setChainJoin(playerdata.getChainJoin() + 1);
 						} else {
-							playerdata.ChainJoin = 1;
+							playerdata.setChainJoin(1);
 						}
 					}
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-				playerdata.lastcheckdate = sdf.format(cal.getTime());
+				playerdata.setLastcheckdate(sdf.format(cal.getTime()));
 
 				//連続投票の更新
 				String lastvote = rs.getString("lastvote");
 				if ("".equals(lastvote) || lastvote == null) {
-					playerdata.ChainVote = 0;
+					playerdata.setChainVote(0);
 				} else {
 					try {
 						Date TodayDate = sdf.parse(sdf.format(cal.getTime()));
@@ -307,9 +307,9 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 
 						long datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24);
 						if (datediff <= 1 || datediff >= 0) {
-							playerdata.ChainVote = rs.getInt("chainvote");
+							playerdata.setChainVote(rs.getInt("chainvote"));
 						} else {
-							playerdata.ChainVote = 0;
+							playerdata.setChainVote(0);
 						}
 					} catch (ParseException e) {
 						e.printStackTrace();
@@ -322,10 +322,10 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 					String[] Titlenums = rs.getString("TitleFlags").split(",");
 					long[] Titlearray = Arrays.stream(Titlenums).mapToLong(x -> Long.parseUnsignedLong(x, 16)).toArray();
 					BitSet TitleFlags = BitSet.valueOf(Titlearray);
-					playerdata.TitleFlags = TitleFlags;
+					playerdata.setTitleFlags(TitleFlags);
 				} catch (NullPointerException e) {
-					playerdata.TitleFlags = new BitSet(10000);
-					playerdata.TitleFlags.set(1);
+					playerdata.setTitleFlags(new BitSet(10000));
+					playerdata.getTitleFlags().set(1);
 				}
 
 				//建築
@@ -334,35 +334,36 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 				playerdata.build_count_flg_set(rs.getByte("build_count_flg"));
 
 				//マナ妖精
-				playerdata.usingVotingFairy = rs.getBoolean("canVotingFairyUse");
-				playerdata.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue");
-				playerdata.hasVotingFairyMana = rs.getInt("hasVotingFairyMana");
-				playerdata.toggleGiveApple = rs.getInt("toggleGiveApple");
-				playerdata.toggleVotingFairy = rs.getInt("toggleVotingFairy");
+				playerdata.setUsingVotingFairy(rs.getBoolean("canVotingFairyUse"));
+				playerdata.setVotingFairyRecoveryValue(rs.getInt("VotingFairyRecoveryValue"));
+				playerdata.setHasVotingFairyMana(rs.getInt("hasVotingFairyMana"));
+				playerdata.setToggleGiveApple(rs.getInt("toggleGiveApple"));
+				playerdata.setToggleVotingFairy(rs.getInt("toggleVotingFairy"));
 				playerdata.SetVotingFairyTime(rs.getString("newVotingFairyTime"), p);
-				playerdata.p_apple = rs.getLong("p_apple");
+				playerdata.setP_apple(rs.getLong("p_apple"));
 
 
-				playerdata.contribute_point = rs.getInt("contribute_point");
-				playerdata.added_mana = rs.getInt("added_mana");
+				playerdata.setContribute_point(rs.getInt("contribute_point"));
+				playerdata.setAdded_mana(rs.getInt("added_mana"));
 
-				playerdata.GBstage = rs.getInt("GBstage");
-				playerdata.GBexp = rs.getInt("GBexp");
-				playerdata.GBlevel = rs.getInt("GBlevel");
-				playerdata.isGBStageUp = rs.getBoolean("isGBStageUp");
+				playerdata.setGBstage(rs.getInt("GBstage"));
+				playerdata.setGBexp(rs.getInt("GBexp"));
+				playerdata.setGBlevel(rs.getInt("GBlevel"));
+				playerdata.setGBStageUp(rs.getBoolean("isGBStageUp"));
+				playerdata.setAnniversary(rs.getBoolean("anniversary"));
 
 				// 1周年記念
-				if (playerdata.anniversary = rs.getBoolean("anniversary")) {
+				if (playerdata.getAnniversary()) {
 					p.sendMessage("整地サーバー1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。http://seichi.click/wiki/anniversary");
 					p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
 				}
 
 				//正月イベント用
-				playerdata.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive");
-				playerdata.newYearBagAmount = rs.getInt("newYearBagAmount");
+				playerdata.setHasNewYearSobaGive(rs.getBoolean("hasNewYearSobaGive"));
+				playerdata.setNewYearBagAmount(rs.getInt("newYearBagAmount"));
 
 				//バレンタインイベント用
-				playerdata.hasChocoGave = rs.getBoolean("hasChocoGave");
+				playerdata.setHasChocoGave(rs.getBoolean("hasChocoGave"));
 			}
 		}
 	}
@@ -451,9 +452,9 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 		LLE.TryGetItem(p);
 
 		//貢献度pt増加によるマナ増加があるかどうか
-		if(playerdata.added_mana < playerdata.contribute_point){
+		if(playerdata.getAdded_mana() < playerdata.getContribute_point()){
 			int addMana;
-			addMana = playerdata.contribute_point - playerdata.added_mana;
+			addMana = playerdata.getContribute_point() - playerdata.getAdded_mana();
 			playerdata.isContribute(p, addMana);
 		}
 		timer.sendLapTimeMessage(ChatColor.GREEN + p.getName() + "のプレイヤーデータ読込完了");

@@ -92,7 +92,7 @@ public class RegionMenuData {
 			PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
 			lore1.addAll(ImmutableListFactory.of(ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
 					, ChatColor.RESET + "" + ChatColor.YELLOW + "" + "A new region has been claimed"
-					, ChatColor.RESET + "" + ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.rgnum + "'."
+					, ChatColor.RESET + "" + ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.getRgnum() + "'."
 					, ChatColor.RESET + "" + ChatColor.GRAY + "と出れば保護設定完了です"
 					, ChatColor.RESET + "" + ChatColor.RED + "赤色で別の英文が出た場合"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "保護の設定に失敗しています"

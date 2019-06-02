@@ -44,36 +44,36 @@ public class EveryHalfHourTask extends BukkitRunnable{
 		//playermapに入っているすべてのプレイヤーデータについて処理
 		for(PlayerData playerdata:SeichiAssist.playermap.values()){
 			//プレイヤー型を取得
-			Player player = plugin.getServer().getPlayer(playerdata.uuid);
+			Player player = plugin.getServer().getPlayer(playerdata.getUuid());
 			//プレイヤーがオンラインの時の処理
-			if(player != null && playerdata.loaded){
+			if(player != null && playerdata.getLoaded()){
 				//現在の統計量を取得
-				long mines = playerdata.totalbreaknum;
+				long mines = playerdata.getTotalbreaknum();
 				//現在の統計量を設定(after)
-				playerdata.halfhourblock.after = mines;
+				playerdata.getHalfhourblock().after = mines;
 				//前回との差を計算し設定(increase)
-				playerdata.halfhourblock.setIncrease();
+				playerdata.getHalfhourblock().setIncrease();
 				//現在の統計量を設定（before)
-				playerdata.halfhourblock.before = mines;
+				playerdata.getHalfhourblock().before = mines;
 
 				//increaseが0超過の場合プレイヤー個人に個人整地量を通知
-				if(playerdata.halfhourblock.increase > 0){
-					player.sendMessage("あなたの整地量は " + ChatColor.AQUA + playerdata.halfhourblock.increase + ChatColor.WHITE + " でした");
+				if(playerdata.getHalfhourblock().increase > 0){
+					player.sendMessage("あなたの整地量は " + ChatColor.AQUA + playerdata.getHalfhourblock().increase + ChatColor.WHITE + " でした");
 				}
 
-			}else if(!playerdata.loaded){
+			}else if(!playerdata.getLoaded()){
 				//debug用…このメッセージ視認後に大量集計されないかを確認する
 				plugin.getServer().getConsoleSender().sendMessage("Apple Pen !");
-				playerdata.halfhourblock.increase = 0;
+				playerdata.getHalfhourblock().increase = 0;
 			}else{
 				//ﾌﾟﾚｲﾔｰがオフラインの時の処理
 				//前回との差を０に設定
-				playerdata.halfhourblock.increase = 0;
+				playerdata.getHalfhourblock().increase = 0;
 			}
 			//allに30分間の採掘量を加算
-			all += playerdata.halfhourblock.increase;
+			all += playerdata.getHalfhourblock().increase;
 			//プレイヤーの30分の採掘量が1以上の時countを加算
-			if(playerdata.halfhourblock.increase >= 1){
+			if(playerdata.getHalfhourblock().increase >= 1){
 				diggedPlayerCount++;
 			}
 		}
@@ -82,8 +82,8 @@ public class EveryHalfHourTask extends BukkitRunnable{
 
 		// ここで、0 -> 第一位、 1 -> 第二位、・・・n -> 第(n+1)位にする (つまり降順)
 		entries.sort((o1, o2) -> {
-			Long i1 = o1.halfhourblock.increase;
-			Long i2 = o2.halfhourblock.increase;
+			Long i1 = o1.getHalfhourblock().increase;
+			Long i2 = o2.getHalfhourblock().increase;
 			return Comparator.<Long>reverseOrder().compare(i1, i2);
 		});
 
@@ -95,7 +95,7 @@ public class EveryHalfHourTask extends BukkitRunnable{
 			for (int i = 0; i <= 2; i++) { // 1から3位まで
 				if (size == i) break;
 				e = entries.get(i);
-				Util.sendEveryMessage("整地量第" + (i + 1) + "位は" + color.get(i) + "[ Lv" + e.level +" ]" + e.name + ChatColor.WHITE + "で" + ChatColor.AQUA + e.halfhourblock.increase + ChatColor.WHITE + "でした");
+				Util.sendEveryMessage("整地量第" + (i + 1) + "位は" + color.get(i) + "[ Lv" + e.getLevel() +" ]" + e.getName() + ChatColor.WHITE + "で" + ChatColor.AQUA + e.getHalfhourblock().increase + ChatColor.WHITE + "でした");
 			}
 		}
 

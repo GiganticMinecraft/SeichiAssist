@@ -13,7 +13,7 @@ import java.util.Optional;
 public class TryTest {
     @Test
     public void testSuccessfulTry() {
-        Try result = Try.sequence(
+        Try<Unit> result = Try.sequence(
                 new FailableAction<>(
                         Unit.instance,
                         this::ok
@@ -26,7 +26,7 @@ public class TryTest {
 
     @Test
     public void testFailedTry() {
-        Try result = Try.sequence(
+        Try<Unit> result = Try.sequence(
                 new FailableAction<>(
                         Unit.instance,
                         this::fail

@@ -63,7 +63,7 @@ public class MultiBreakTask extends BukkitRunnable{
 			}
 
 			//エフェクトが選択されていない時の通常処理
-			if(playerdata.activeskilldata.effectnum == 0){
+			if(playerdata.getActiveskilldata().effectnum == 0){
 				//ブロックを破壊する処理
 				for(Block b:multibreaklist.get(count)){
 					BreakUtil.breakBlock(player, b, droploc, tool,false);
@@ -72,15 +72,15 @@ public class MultiBreakTask extends BukkitRunnable{
 			}
 
 			//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-			else if(playerdata.activeskilldata.effectnum <= 100){
+			else if(playerdata.getActiveskilldata().effectnum <= 100){
 				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-				skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool,multibreaklist.get(count), startlist.get(count), endlist.get(count),droploc);
+				skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player,playerdata,tool,multibreaklist.get(count), startlist.get(count), endlist.get(count),droploc);
 			}
 
 			//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
-			else if(playerdata.activeskilldata.effectnum > 100){
+			else if(playerdata.getActiveskilldata().effectnum > 100){
 				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-				premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runBreakEffect(player,playerdata,tool,multibreaklist.get(count), startlist.get(count), endlist.get(count),droploc);
+				premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player,playerdata,tool,multibreaklist.get(count), startlist.get(count), endlist.get(count),droploc);
 			}
 			count++;
 		}else{

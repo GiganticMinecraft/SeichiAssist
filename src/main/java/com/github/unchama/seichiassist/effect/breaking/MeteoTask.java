@@ -72,8 +72,8 @@ public class MeteoTask extends BukkitRunnable{
 		soundradius = 5;
 
 		//音を設定するか設定
-		soundflag = playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum();
-		if(playerdata.activeskilldata.skillnum > 2){
+		soundflag = playerdata.getActiveskilldata().skilltype == ActiveSkill.BREAK.gettypenum();
+		if(playerdata.getActiveskilldata().skillnum > 2){
 			launchFireball();
 		}
 
@@ -120,7 +120,7 @@ public class MeteoTask extends BukkitRunnable{
 			}
 		}
 		player.getWorld().playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, (float)1, (float)((Math.random()*0.4)+0.8));
-		if(playerdata.activeskilldata.skillnum > 2){
+		if(playerdata.getActiveskilldata().skillnum > 2){
 			for(Block b : breaklist){
 				BreakUtil.breakBlock(player, b, droploc, tool, false);
 				SeichiAssist.allblocklist.remove(b);

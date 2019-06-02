@@ -1,4 +1,17 @@
-package com.github.unchama.seichiassist.commands;
+package com.github.unchama.seichiassist.commands.legacy;
+
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
+import com.sk89q.worldguard.bukkit.RegionContainer;
+import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Map;
@@ -6,33 +19,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
-import com.sk89q.worldguard.bukkit.RegionContainer;
-import net.md_5.bungee.api.ChatColor;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
-
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
-public class rmpCommand implements TabExecutor {
-	static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
+public class RmpCommand implements CommandExecutor {
+	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 	private Map<UUID, String> leavers;
-
-	public rmpCommand(SeichiAssist plugin){
-	}
-
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command,
-			String label, String[] args) {
-		return null;
-	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,

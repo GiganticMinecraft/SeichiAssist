@@ -35,11 +35,11 @@ public class CoolDownTask extends BukkitRunnable{
 		//playerdataを取得
 		playerdata = playermap.get(uuid);
 		if(voteflag){
-			playerdata.votecooldownflag = false;
+			playerdata.setVotecooldownflag(false);
 		}else if(gachaflag){
-			playerdata.gachacooldownflag = false;
+			playerdata.setGachacooldownflag(false);
 		}else{
-			playerdata.activeskilldata.skillcanbreakflag = false;
+			playerdata.getActiveskilldata().skillcanbreakflag = false;
 		}
 	}
 
@@ -53,24 +53,24 @@ public class CoolDownTask extends BukkitRunnable{
 		switch (tag) {
 		case VOTE:
 			voteflag = true;
-			playerdata.votecooldownflag = false;
+			playerdata.setVotecooldownflag(false);
 			break;
 		case SOUND:
 			soundflag = true;
-			playerdata.activeskilldata.skillcanbreakflag = false;
+			playerdata.getActiveskilldata().skillcanbreakflag = false;
 			break;
 		case GACHA:
 			gachaflag = true;
-			playerdata.gachacooldownflag = false;
+			playerdata.setGachacooldownflag(false);
 			break;
 		case SHAREINV:
 			shareinvflag = true;
-			playerdata.shareinvcooldownflag = false;
+			playerdata.setShareinvcooldownflag(false);
 			break;
 		default:
 			// ベースに合わせて念のためdefaultはsoundに合わせておく
 			soundflag = true;
-			playerdata.activeskilldata.skillcanbreakflag = false;
+			playerdata.getActiveskilldata().skillcanbreakflag = false;
 			break;
 		}
 	}
@@ -78,13 +78,13 @@ public class CoolDownTask extends BukkitRunnable{
 	@Override
 	public void run() {
 		if(voteflag){
-			playerdata.votecooldownflag = true;
+			playerdata.setVotecooldownflag(true);
 		}else if(gachaflag){
-			playerdata.gachacooldownflag = true;
+			playerdata.setGachacooldownflag(true);
 		}else if(shareinvflag){
-			playerdata.shareinvcooldownflag = true;
+			playerdata.setShareinvcooldownflag(true);
 		}else{
-			playerdata.activeskilldata.skillcanbreakflag = true;
+			playerdata.getActiveskilldata().skillcanbreakflag = true;
 			if(soundflag){
 				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, (float)0.5, (float)0.1);
 			}

@@ -56,7 +56,7 @@ public class LimitedLoginEvent {
 				final long LLEStartLong = LLEStart.getTime();
 				final long LLEEndLong = LLEEnd.getTime();
 
-				int loginDays = playerdata.LimitedLoginCount ;
+				int loginDays = playerdata.getLimitedLoginCount();
 				int configDays;
 				int internalItemId;
 				int amount;
@@ -107,7 +107,7 @@ public class LimitedLoginEvent {
 					}while(configDays == loginDays);
 				}
 
-				playerdata.LimitedLoginCount = loginDays ;
+				playerdata.setLimitedLoginCount(loginDays);
 
 			} catch (ParseException e) {
 				e.printStackTrace();

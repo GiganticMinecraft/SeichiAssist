@@ -162,7 +162,7 @@ public class EntityListener implements Listener {
 		//レベルを取得
 		//int skilllevel = playerdata.activeskilldata.skillnum;
 		//マナを取得
-		Mana mana = playerdata.activeskilldata.mana;
+		Mana mana = playerdata.getActiveskilldata().mana;
 		//元ブロックのマテリアルを取得
 		Material material = block.getType();
 		//元ブロックの真ん中の位置を取得
@@ -170,7 +170,7 @@ public class EntityListener implements Listener {
 
 		//壊されるブロックの宣言
 		Block breakblock;
-		BreakArea area = playerdata.activeskilldata.area;
+		BreakArea area = playerdata.getActiveskilldata().area;
 		//現在のプレイヤーの向いている方向
 		String dir = BreakUtil.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
@@ -197,7 +197,7 @@ public class EntityListener implements Listener {
 				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
 
-					if(playerdata.level >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && playerdata.multipleidbreakflag) { //追加テスト(複数種類一括破壊スキル)
+					if(playerdata.getLevel() >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && playerdata.getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
 						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
 							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 								if(BreakUtil.canBreak(player, breakblock)){
@@ -243,10 +243,10 @@ public class EntityListener implements Listener {
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
 		double useMana = (double) (breaklist.size()) * (double) (gravity + 1)
-				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum)
+				* ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
 				/(ifallbreaknum) ;
 		if(SeichiAssist.DEBUG){
-			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum));
+			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum));
 			player.sendMessage(ChatColor.RED + "全ての破壊数：" + (ifallbreaknum));
 			player.sendMessage(ChatColor.RED + "実際の破壊数：" + breaklist.size());
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナ：" + useMana);
@@ -288,7 +288,7 @@ public class EntityListener implements Listener {
 
 
 		//経験値を減らす
-		mana.decrease(useMana,player,playerdata.level);
+		mana.decrease(useMana,player, playerdata.getLevel());
 
 		//耐久値を減らす
 		if(!tool.getItemMeta().spigot().isUnbreakable()){
@@ -306,22 +306,22 @@ public class EntityListener implements Listener {
 		//選択されたブロックを破壊する処理
 
 		//エフェクトが指定されていないときの処理
-		if(playerdata.activeskilldata.effectnum == 0){
+		if(playerdata.getActiveskilldata().effectnum == 0){
 			for(Block b:breaklist){
 				BreakUtil.breakBlock(player, b, player.getLocation(), tool,false);
 				SeichiAssist.allblocklist.remove(b);
 			}
 		}
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-		else if(playerdata.activeskilldata.effectnum <= 100){
+		else if(playerdata.getActiveskilldata().effectnum <= 100){
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.activeskilldata.effectnum - 1].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
+			skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
 		}
 
 		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
-		else if(playerdata.activeskilldata.effectnum > 100){
+		else if(playerdata.getActiveskilldata().effectnum > 100){
 			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-			premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
+			premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
 		}
 
 	}

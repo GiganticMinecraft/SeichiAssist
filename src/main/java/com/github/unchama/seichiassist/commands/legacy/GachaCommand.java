@@ -1,42 +1,29 @@
-package com.github.unchama.seichiassist.commands;
-
-import java.util.List;
-import java.util.UUID;
-
-import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.util.TypeConverter;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.PlayerInventory;
+package com.github.unchama.seichiassist.commands.legacy;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
+
+import java.util.UUID;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 
-public class gachaCommand implements TabExecutor{
-	public SeichiAssist plugin;
-	public DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-
-
-	public gachaCommand(SeichiAssist plugin){
-		this.plugin = plugin;
-	}
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command,
-			String label, String[] args) {
-		return null;
-	}
+public class GachaCommand implements CommandExecutor {
 	// /gacha set 0.01 (現在手にもってるアイテムが確率0.01でガチャに出現するように設定）
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd,
-			String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+
+		DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
 
 		if(args.length == 0){
 			return false;
@@ -626,31 +613,5 @@ public class gachaCommand implements TabExecutor{
 		}
 		return 1.0;
 	}
-	/*
-	private void addSorryForBug(CommandSender sender,int num) {
-		for(PlayerData playerdata : SeichiAssist.playermap.values()){
-			//オンラインプレイヤーに対しての追加処理
-			//プレイヤーがオフラインの時処理を終了、次のプレイヤーへ
-			if(playerdata.isOffline()){
-				if(SeichiAssist.DEBUG){
-					Util.sendEveryMessage(playerdata.name + "は不在により処理中止");
-				}
-				continue;
-			}
-			//プレイヤー型を取得
-			Player player = instance.getServer().getPlayer(playerdata.uuid);
-			playerdata.numofsorryforbug += num;
-			//プレイヤーにお知らせしちゃう
-			playerdata.NotifySorryForBug(player);
-			sender.sendMessage(ChatColor.LIGHT_PURPLE + "" + num +"個のガチャ券をお詫びとして" + playerdata.name + "のデータに更新しました");
-		}
-		//MySqlの値も処理
-		if(!databaseGateway.addAllPlayerBug(num)){
-			sender.sendMessage("mysqlへのガチャの加算に失敗しました");
-		}else{
-			sender.sendMessage("mysqlに保存されている全プレイヤーへガチャ券" + num +"枚を加算しました");
-		}
-	}
-	*/
 
 }
