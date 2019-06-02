@@ -17,20 +17,21 @@ import java.util.Map;
 /**
  * Created by karayuu on 2019/05/23
  */
-public class InventoryManipulator {
+public class InventoryView {
     @NotNull
-    final Inventory inventory;
+    private final Inventory inventory;
     @NotNull
     private final Map<@NotNull Integer, @NotNull Slot> slotMap;
 
-    private InventoryManipulator(@NotNull Inventory inventory) {
+    private InventoryView(@NotNull Inventory inventory) {
         this.inventory = inventory;
         this.slotMap = new HashMap<>();
         MenuHandler.getInstance().addInventoryHolder(this);
     }
 
-    public static InventoryManipulator from(@NotNull Inventory inventory) {
-        return new InventoryManipulator(inventory);
+    @NotNull
+    public static InventoryView from(@NotNull Inventory inventory) {
+        return new InventoryView(inventory);
     }
 
     @NotNull

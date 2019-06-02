@@ -58,12 +58,12 @@ public class Text {
     /**
      * {@link Text} を連結させて新しい {@link Text} を作成します.
      *
-     * @param another_text 連結させる {@link Text} ({@code null} は許容されません.)
+     * @param anotherText 連結させる {@link Text} ({@code null} は許容されません.)
      * @return 新しい {@link Text}
      */
     @NotNull
-    public Text also(@NotNull Text another_text) {
-        return Text.of(this.string + another_text.stringValue());
+    public Text also(@NotNull Text anotherText) {
+        return Text.of(this.string + anotherText.stringValue());
     }
 
     /**

@@ -492,6 +492,7 @@ public class PlayerInventoryListener implements Listener {
 			else if(isSkull && itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.getName() + "の統計データ")){
 				// 整地量表示トグル
 				playerdata.toggleExpBarVisibility();
+				playerdata.notifyExpBarVisibility();
 				SkullMeta skullmeta = (SkullMeta)itemstackcurrent.getItemMeta();
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispExpBarToggleMeta(playerdata,skullmeta));
 			}

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link InventoryManipulator} を管理するクラス.
+ * {@link InventoryView} を管理するクラス.
  * Singleton で設計されています.
  *
  * @author karayuu
@@ -19,10 +19,10 @@ public final class MenuHandler implements Listener {
     private static MenuHandler singleton = new MenuHandler();
 
     /**
-     * 登録された {@link InventoryManipulator} の {@link List}
+     * 登録された {@link InventoryView} の {@link List}
      */
     @NotNull
-    private List<@NotNull InventoryManipulator> inventoryManipulators = new ArrayList<>();
+    private List<@NotNull InventoryView> inventoryViews = new ArrayList<>();
 
     private MenuHandler() {}
 
@@ -37,16 +37,16 @@ public final class MenuHandler implements Listener {
 
 
     /**
-     * {@link #inventoryManipulators} に {@link InventoryManipulator} を追加します.
+     * {@link #inventoryViews} に {@link InventoryView} を追加します.
      *
-     * @param inventoryManipulator 追加する {@link InventoryManipulator} ({@code null} は許容されません.)
+     * @param inventoryView 追加する {@link InventoryView} ({@code null} は許容されません.)
      */
-    public void addInventoryHolder(@Nonnull InventoryManipulator inventoryManipulator) {
-        inventoryManipulators.add(inventoryManipulator);
+    public void addInventoryHolder(@Nonnull InventoryView inventoryView) {
+        inventoryViews.add(inventoryView);
     }
 
     /**
-     * 各 {@link InventoryManipulator#invokeAndReload(int, InventoryClickEvent)} を呼び出します.
+     * 各 {@link InventoryView#invokeAndReload(int, InventoryClickEvent)} を呼び出します.
      * title にて判断し, {@link InventoryClickEvent} を与えます.
      *
      * @param event {@link InventoryClickEvent}
@@ -55,7 +55,7 @@ public final class MenuHandler implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         final String title = event.getInventory().getTitle();
 
-        inventoryManipulators.stream()
+        inventoryViews.stream()
                         .filter(holder -> holder.getTitle().equals(title))
                         .forEach(holder -> holder.invokeAndReload(event.getSlot(), event));
     }

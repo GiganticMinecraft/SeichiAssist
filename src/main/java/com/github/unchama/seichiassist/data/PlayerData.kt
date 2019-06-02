@@ -935,6 +935,12 @@ class PlayerData(val player: Player) {
      */
     fun toggleExpBarVisibility() {
         this.expbar.isVisible = !this.expbar.isVisible
+    }
+
+    /**
+     * 整地量を表すExpバーの表示・非表示を [player] におしらせします.
+     */
+    fun notifyExpBarVisibility() {
         if (this.expbar.isVisible) {
             this.player.playSound(this.player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             this.player.sendMessage("${ChatColor.GREEN}整地量バー表示")

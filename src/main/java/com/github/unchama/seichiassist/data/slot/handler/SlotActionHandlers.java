@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.data.slot.button.Button;
  */
 public class SlotActionHandlers {
     /**
-     * {@link Button} をReadOnly(移動不可)に可能な {@link SlotActionHandler} です.
+     * {@link Button} に対する操作をキャンセルする {@link SlotActionHandler} です.
      * {@link Button} には常に付与されます.
      */
     public static SlotActionHandler READ_ONLY = new SlotActionHandler(
