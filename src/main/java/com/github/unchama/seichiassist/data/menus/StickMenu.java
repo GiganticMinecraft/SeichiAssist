@@ -38,7 +38,7 @@ public final class StickMenu {
             .from(
                 SkullItemStackBuilder
                     .of()
-                    .owner(data.uuid)
+                    .owner(data.getUuid())
                     .title(Text.of(data.name + "の統計データ", ChatColor.UNDERLINE, ChatColor.BOLD, ChatColor.YELLOW))
                     .lore(PlayerInformationDescriptions.playerInfoLore(data))
                     .build()
