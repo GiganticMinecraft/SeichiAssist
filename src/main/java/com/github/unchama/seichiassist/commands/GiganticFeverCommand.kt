@@ -11,7 +11,7 @@ import org.bukkit.Difficulty
 
 object GiganticFeverCommand {
   val executor = ContextualExecutorBuilder.beginConfiguration()
-      .execution { context ->
+      .execution {
         val config = SeichiAssist.config
 
         Util.sendEveryMessage("${ChatColor.AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！")
