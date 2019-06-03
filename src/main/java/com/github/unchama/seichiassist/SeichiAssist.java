@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.ContributeCommand;
 import com.github.unchama.seichiassist.commands.EffectCommand;
 import com.github.unchama.seichiassist.commands.EventCommand;
+import com.github.unchama.seichiassist.commands.GiganticFeverCommand;
 import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
 import com.github.unchama.seichiassist.commands.LastQuitCommand;
 import com.github.unchama.seichiassist.commands.MineHeadCommand;
@@ -919,7 +920,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("event", EventCommand.INSTANCE.getExecutor()),
 					Pair.of("contribute", ContributeCommand.INSTANCE.getExecutor()),
 					Pair.of("subhome", new SubHomeCommand()),
-					Pair.of("gtfever", new GiganticFeverCommand()),
+					Pair.of("gtfever", GiganticFeverCommand.INSTANCE.getExecutor()),
 					Pair.of("minehead", MineHeadCommand.INSTANCE.getExecutor()),
 					Pair.of("x-transfer", RegionOwnerTransferCommand.INSTANCE.getExecutor())
 			).forEach((commandName, executor) -> getCommand(commandName).setExecutor(executor));

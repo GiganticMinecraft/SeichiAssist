@@ -65,6 +65,7 @@ dependencies {
 
     embed("org.flywaydb:flyway-core:5.2.4")
     embed(kotlin("stdlib-jdk8"))
+    embed("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
 
     // arrow依存
     val arrowVersion = "0.9.0"
