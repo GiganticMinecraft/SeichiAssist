@@ -70,12 +70,14 @@ public class MebiusListener implements Listener {
 	}
 
 	// リロード
+	// TODO ここはListenerクラスですよ
 	public static void reload() {
 		tips.clear();
 		loadTips();
 	}
 
 	// デバッグ
+	// TODO ここはListenerクラスですよ
 	public static void debug(Player player) {
 		if (DEBUGENABLE) {
 			if (debugFlg) {
@@ -88,6 +90,7 @@ public class MebiusListener implements Listener {
 	}
 
 	// デバッグgive
+	// TODO ここはListenerクラスですよ
 	public static void debugGive(Player player) {
 		if (debugFlg) {
 			give(player);
@@ -376,6 +379,7 @@ public class MebiusListener implements Listener {
 		}
 	}
 
+	// TODO あの！ここはListenerクラスですよ！！
 	public static String getNickname(Player player) {
 		if (!isEquip(player)) {
 			return null;

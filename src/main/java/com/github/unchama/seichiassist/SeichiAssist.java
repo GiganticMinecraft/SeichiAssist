@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.commands.EventCommand;
 import com.github.unchama.seichiassist.commands.GiganticFeverCommand;
 import com.github.unchama.seichiassist.commands.HalfBlockProtectCommand;
 import com.github.unchama.seichiassist.commands.LastQuitCommand;
+import com.github.unchama.seichiassist.commands.MebiusCommand;
 import com.github.unchama.seichiassist.commands.MineHeadCommand;
 import com.github.unchama.seichiassist.commands.RegionOwnerTransferCommand;
 import com.github.unchama.seichiassist.commands.StickCommand;
@@ -914,7 +915,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("stick", StickCommand.INSTANCE.getExecutor()),
 					Pair.of("rmp",new RmpCommand()),
 					Pair.of("shareinv",new ShareInvCommand()),
-					Pair.of("mebius",new MebiusCommand()),
+					Pair.of("mebius", MebiusCommand.INSTANCE.getExecutor()),
 					Pair.of("unlockachv", new UnlockAchievementCommand()),
 					Pair.of("halfguard", HalfBlockProtectCommand.INSTANCE.getExecutor()),
 					Pair.of("event", EventCommand.INSTANCE.getExecutor()),
