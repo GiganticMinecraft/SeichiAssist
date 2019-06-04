@@ -36,11 +36,15 @@ object ContributeCommand {
       "指定されたプレイヤーの貢献度ptを指定分減少させます(入力ミス回避用)"
   ).asResponseToSender()
 
+  private val printHelpExecutor: ContextualExecutor = ContextualExecutorBuilder.beginConfiguration()
+      .execution { helpMessage }
+      .build()
+
   private val parserConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
       .argumentsParsers(listOf(
           identity,
           nonNegativeInteger("${ChatColor.RED}増加分ポイントは0以上の整数を指定してください。".asResponseToSender())
-      ), onMissingArguments = { helpMessage })
+      ), onMissingArguments = printHelpExecutor)
 
   private val addPointExecutor: ContextualExecutor = parserConfiguredBuilder
       .execution { context ->
@@ -58,10 +62,6 @@ object ContributeCommand {
 
         addContributionPoint(targetPlayerName, -point)
       }
-      .build()
-
-  private val printHelpExecutor: ContextualExecutor = ContextualExecutorBuilder.beginConfiguration()
-      .execution { helpMessage }
       .build()
 
   val executor: CommandExecutor =

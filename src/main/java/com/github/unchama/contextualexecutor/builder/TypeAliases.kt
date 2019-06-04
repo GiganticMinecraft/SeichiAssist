@@ -10,7 +10,7 @@ typealias Result<Error, Success> = Either<Error, Success>
 
 typealias ResponseOrResult<T> = Result<MessageToSender, T>
 
-typealias CommandArgumentsParser = (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs>
+typealias CommandArgumentsParser = suspend (RawCommandContext) -> ResponseOrResult<PartiallyParsedArgs>
 
 typealias ScopedContextualExecution<CS> = suspend (ParsedArgCommandContext<CS>) -> MessageToSender
 

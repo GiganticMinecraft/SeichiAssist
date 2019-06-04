@@ -32,6 +32,10 @@ object MebiusCommand {
   }
 
   private object ChildExecutors {
+    val printDescriptionExecutor = ContextualExecutorBuilder.beginConfiguration()
+        .execution { Messages.commandDescription }
+        .build()
+
     val getExecutor = playerCommandBuilder
         .execution { context ->
           if (!context.sender.isOp) Messages.permissionWarning else {
@@ -83,7 +87,7 @@ object MebiusCommand {
           .build()
 
       private val setNickNameExecutor = playerCommandBuilder
-          .argumentsParsers(listOf(Parsers.identity))
+          .argumentsParsers(listOf(Parsers.identity), onMissingArguments = printDescriptionExecutor)
           .execution { context ->
             val newName = "${context.args.parsed[0] as String} ${context.args.yetToBeParsed.joinToString(" ")}"
             val message = if (!MebiusListener.setNickname(context.sender, newName)) {
@@ -111,10 +115,6 @@ object MebiusCommand {
             "${ChatColor.RED}命名はMEBIUSを装着して行ってください.".asResponseToSender()
           } else EmptyMessage
         }
-        .build()
-
-    val printDescriptionExecutor = ContextualExecutorBuilder.beginConfiguration()
-        .execution { Messages.commandDescription }
         .build()
   }
 
