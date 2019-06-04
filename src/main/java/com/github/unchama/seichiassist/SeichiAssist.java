@@ -10,6 +10,7 @@ import com.github.unchama.seichiassist.commands.LastQuitCommand;
 import com.github.unchama.seichiassist.commands.MebiusCommand;
 import com.github.unchama.seichiassist.commands.MineHeadCommand;
 import com.github.unchama.seichiassist.commands.RegionOwnerTransferCommand;
+import com.github.unchama.seichiassist.commands.RmpCommand;
 import com.github.unchama.seichiassist.commands.StickCommand;
 import com.github.unchama.seichiassist.commands.legacy.*;
 import com.github.unchama.seichiassist.data.GachaData;
@@ -913,7 +914,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("level",new LevelCommand()),
 					Pair.of("lastquit", LastQuitCommand.INSTANCE.getExecutor()),
 					Pair.of("stick", StickCommand.INSTANCE.getExecutor()),
-					Pair.of("rmp",new RmpCommand()),
+					Pair.of("rmp", RmpCommand.INSTANCE.getExecutor()),
 					Pair.of("shareinv",new ShareInvCommand()),
 					Pair.of("mebius", MebiusCommand.INSTANCE.getExecutor()),
 					Pair.of("unlockachv", new UnlockAchievementCommand()),

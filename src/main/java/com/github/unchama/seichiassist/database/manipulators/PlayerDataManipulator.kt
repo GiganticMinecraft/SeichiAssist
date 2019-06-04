@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 import com.github.unchama.util.ActionStatus.Fail
+import kotlin.collections.ArrayList
 
 class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     private val plugin = SeichiAssist.instance
@@ -478,37 +479,30 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         return true
     }
 
-    //lastquitがdays日以上(または未登録)のプレイヤー名を配列で取得
-    fun selectLeavers(days: Int): Map<UUID, String>? {
-        val leavers = HashMap<UUID, String>()
-        val command = ("select name, uuid from " + tableReference
-                + " where ((lastquit <= date_sub(curdate(), interval " + days + " day))"
-                + " or (lastquit is null)) and (name != '') and (uuid != '')")
+    @Suppress("RedundantSuspendModifier")
+    suspend fun selectLeaversUUIDs(days: Int): List<UUID>? {
+        val command = "select name, uuid from $tableReference " +
+            "where ((lastquit <= date_sub(curdate(), interval $days day)) " +
+            "or (lastquit is null)) and (name != '') and (uuid != '')"
+
         try {
-            gateway.executeQuery(command).use { lrs ->
+            return gateway.executeQuery(command).use { lrs ->
+                val uuidList = ArrayList<UUID>()
                 while (lrs.next()) {
                     try {
-                        //結果のStringをUUIDに変換
-                        val uuid = UUID.fromString(lrs.getString("uuid"))
-                        if (leavers.containsKey(uuid)) {
-                            println("playerdataにUUIDが重複しています: " + lrs.getString("uuid"))
-                        } else {
-                            //HashMapにUUIDとnameを登録
-                            leavers[uuid] = lrs.getString("name")
-                        }
+                        uuidList.add(UUID.fromString(lrs.getString("uuid")))
                     } catch (e: IllegalArgumentException) {
                         println("不適切なUUID: " + lrs.getString("name") + ": " + lrs.getString("uuid"))
                     }
-
                 }
+
+                uuidList.toList()
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
             e.printStackTrace()
             return null
         }
-
-        return leavers
     }
 
     //ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
