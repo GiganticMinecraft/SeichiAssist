@@ -18,11 +18,17 @@ object Parsers {
 
   val boolean: SingleArgumentParser = { succeedWith(it.toBoolean()) }
 
-  fun nonNegativeInteger(failureMessage: MessageToSender = EmptyMessage): SingleArgumentParser = { arg ->
+  /**
+   * @return [smallEnd]より大きいか等しく[largeEnd]より小さいか等しい整数のパーサ
+   */
+  fun closedRangeInt(smallEnd: Int, largeEnd: Int, failureMessage: MessageToSender = EmptyMessage): SingleArgumentParser = { arg ->
     integer(failureMessage)(arg).flatMap {
       val parsed = it as Int
 
-      if (parsed > 0) succeedWith(it) else failWith(failureMessage)
+      if (parsed in smallEnd..largeEnd) succeedWith(it) else failWith(failureMessage)
     }
   }
+
+  fun nonNegativeInteger(failureMessage: MessageToSender = EmptyMessage): SingleArgumentParser =
+      closedRangeInt(0, Int.MAX_VALUE, failureMessage)
 }
