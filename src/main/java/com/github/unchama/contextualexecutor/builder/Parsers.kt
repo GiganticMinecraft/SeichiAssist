@@ -16,6 +16,8 @@ object Parsers {
     if (parseResult != null) succeedWith(parseResult) else failWith(failureMessage)
   }
 
+  val boolean: SingleArgumentParser = { succeedWith(it.toBoolean()) }
+
   fun nonNegativeInteger(failureMessage: MessageToSender = EmptyMessage): SingleArgumentParser = { arg ->
     integer(failureMessage)(arg).flatMap {
       val parsed = it as Int
