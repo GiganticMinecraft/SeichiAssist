@@ -1,5 +1,6 @@
 package com.github.unchama.messaging
 
+import arrow.typeclasses.Monoid
 import org.bukkit.command.CommandSender
 
 /**
@@ -7,6 +8,13 @@ import org.bukkit.command.CommandSender
  */
 interface MessageToSender {
   suspend fun transmitTo(commandSender: CommandSender)
+
+  companion object {
+    val monoid = object : Monoid<MessageToSender> {
+      override fun empty() = EmptyMessage
+      override fun MessageToSender.combine(b: MessageToSender) = this + b
+    }
+  }
 }
 
 /**
