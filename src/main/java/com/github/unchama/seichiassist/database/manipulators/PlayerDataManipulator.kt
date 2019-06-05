@@ -403,80 +403,74 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
 
-    fun saveShareInv(player: Player, playerdata: PlayerData, data: String): Boolean {
-        if (!playerdata.shareinvcooldownflag) {
-            player.sendMessage(ChatColor.RED.toString() + "しばらく待ってからやり直してください")
-            return false
-        }
+    @Suppress("RedundantSuspendModifier")
+    suspend fun saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): ResponseOrResult<Unit> {
         //連打による負荷防止の為クールダウン処理
+        if (!playerData.shareinvcooldownflag) {
+            return "${ChatColor.RED}しばらく待ってからやり直してください".asResponseToSender().left()
+        }
         CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
-        val struuid = playerdata.uuid.toString()
-        var command = "SELECT shareinv FROM " + tableReference + " " +
-                "WHERE uuid = '" + struuid + "'"
+
         try {
-            gateway.executeQuery(command).use { lrs ->
+            // 共有インベントリに既にアイテムが格納されていないことを確認する
+            val selectCommand = "SELECT contentsPresentInSharedInventory FROM $tableReference WHERE uuid = '${playerData.uuid}'"
+            gateway.executeQuery(selectCommand).use { lrs ->
                 lrs.next()
-                val shareinv = lrs.getString("shareinv")
-                lrs.close()
-                if (shareinv != null && shareinv != "") {
-                    player.sendMessage(ChatColor.RED.toString() + "既にアイテムが収納されています")
-                    return false
-                }
-                command = "UPDATE " + tableReference + " " +
-                        "SET shareinv = '" + data + "' " +
-                        "WHERE uuid = '" + struuid + "'"
-                if (gateway.executeUpdate(command) == Fail) {
-                    player.sendMessage(ChatColor.RED.toString() + "アイテムの収納に失敗しました")
-                    Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> saveShareInv(executeUpdate failed)")
-                    return false
+                val sharedInventorySerial = lrs.getString("contentsPresentInSharedInventory")
+                if (sharedInventorySerial != null && sharedInventorySerial != "") {
+                    return "${ChatColor.RED}既にアイテムが収納されています".asResponseToSender().left()
                 }
             }
-        } catch (e: SQLException) {
-            player.sendMessage(ChatColor.RED.toString() + "共有インベントリにアクセスできません")
-            Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> clearShareInv(SQLException)")
-            e.printStackTrace()
-            return false
-        }
 
-        return true
+            // シリアル化されたインベントリデータを書き込む
+            val updateCommand = "UPDATE $tableReference SET contentsPresentInSharedInventory = '$serializedInventory' WHERE uuid = '${playerData.uuid}'"
+            if (gateway.executeUpdate(updateCommand) == Fail) {
+                Bukkit.getLogger().warning("${player.name} sql failed. -> saveSharedInventory(executeUpdate failed)")
+
+                return "${ChatColor.RED}アイテムの収納に失敗しました".asResponseToSender().left()
+            }
+
+            return Unit.right()
+        } catch (e: SQLException) {
+            Bukkit.getLogger().warning("${player.name} sql failed. -> clearShareInv(SQLException)")
+            e.printStackTrace()
+
+            return "${ChatColor.RED}共有インベントリにアクセスできません".asResponseToSender().left()
+        }
     }
 
-    fun loadShareInv(player: Player, playerdata: PlayerData): String? {
-        if (!playerdata.shareinvcooldownflag) {
-            player.sendMessage(ChatColor.RED.toString() + "しばらく待ってからやり直してください")
-            return null
-        }
+    @Suppress("RedundantSuspendModifier")
+    suspend fun loadShareInv(player: Player, playerData: PlayerData): ResponseOrResult<String> {
         //連打による負荷防止の為クールダウン処理
+        if (!playerData.shareinvcooldownflag) {
+            return "${ChatColor.RED}しばらく待ってからやり直してください".asResponseToSender().left()
+        }
         CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
-        val struuid = playerdata.uuid.toString()
-        val command = "SELECT shareinv FROM " + tableReference + " " +
-                "WHERE uuid = '" + struuid + "'"
-        var shareinv: String? = null
+
+        val command = "SELECT contentsPresentInSharedInventory FROM $tableReference WHERE uuid = '${playerData.uuid}'"
         try {
             gateway.executeQuery(command).use { lrs ->
                 lrs.next()
-                shareinv = lrs.getString("shareinv")
+                return lrs.getString("contentsPresentInSharedInventory").right()
             }
         } catch (e: SQLException) {
-            player.sendMessage(ChatColor.RED.toString() + "共有インベントリにアクセスできません")
             Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> loadShareInv")
             e.printStackTrace()
-        }
 
-        return shareinv
+            return "${ChatColor.RED}共有インベントリにアクセスできません".asResponseToSender().left()
+        }
     }
 
-    fun clearShareInv(player: Player, playerdata: PlayerData): Boolean {
-        val struuid = playerdata.uuid.toString()
-        val command = "UPDATE " + tableReference + " " +
-                "SET shareinv = '' " +
-                "WHERE uuid = '" + struuid + "'"
+    @Suppress("RedundantSuspendModifier")
+    suspend fun clearShareInv(player: Player, playerdata: PlayerData): ResponseOrResult<Unit> {
+        val command = "UPDATE $tableReference SET contentsPresentInSharedInventory = '' WHERE uuid = '${playerdata.uuid}'"
+
         if (gateway.executeUpdate(command) == Fail) {
-            player.sendMessage(ChatColor.RED.toString() + "アイテムのクリアに失敗しました")
-            Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> clearShareInv")
-            return false
+            Bukkit.getLogger().warning("${player.name} sql failed. -> clearShareInv")
+            return "${ChatColor.RED}アイテムのクリアに失敗しました".asResponseToSender().left()
         }
-        return true
+
+        return Unit.right()
     }
 
     @Suppress("RedundantSuspendModifier")

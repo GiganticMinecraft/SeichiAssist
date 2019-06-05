@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.commands.MebiusCommand;
 import com.github.unchama.seichiassist.commands.MineHeadCommand;
 import com.github.unchama.seichiassist.commands.RegionOwnerTransferCommand;
 import com.github.unchama.seichiassist.commands.RmpCommand;
+import com.github.unchama.seichiassist.commands.ShareInvCommand;
 import com.github.unchama.seichiassist.commands.StickCommand;
 import com.github.unchama.seichiassist.commands.SubHomeCommand;
 import com.github.unchama.seichiassist.commands.legacy.*;
@@ -916,7 +917,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("lastquit", LastQuitCommand.INSTANCE.getExecutor()),
 					Pair.of("stick", StickCommand.INSTANCE.getExecutor()),
 					Pair.of("rmp", RmpCommand.INSTANCE.getExecutor()),
-					Pair.of("shareinv",new ShareInvCommand()),
+					Pair.of("contentsPresentInSharedInventory", ShareInvCommand.INSTANCE.getExecutor()),
 					Pair.of("mebius", MebiusCommand.INSTANCE.getExecutor()),
 					Pair.of("unlockachv", new UnlockAchievementCommand()),
 					Pair.of("halfguard", HalfBlockProtectCommand.INSTANCE.getExecutor()),

@@ -136,7 +136,7 @@ class PlayerData(player: Player) {
     var gachacooldownflag: Boolean = false
 
     //インベントリ共有トグル
-    var shareinv: Boolean = false
+    var contentsPresentInSharedInventory: Boolean = false
     //インベントリ共有ボタン連打防止用
     var shareinvcooldownflag: Boolean = false
 
