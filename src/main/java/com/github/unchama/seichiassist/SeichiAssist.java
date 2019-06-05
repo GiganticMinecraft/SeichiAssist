@@ -913,7 +913,6 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("gacha", new GachaCommand()),
 					Pair.of("seichi",new SeichiCommand(instance)),
 					Pair.of("ef", EffectCommand.INSTANCE.getExecutor()),
-					Pair.of("level",new LevelCommand()),
 					Pair.of("lastquit", LastQuitCommand.INSTANCE.getExecutor()),
 					Pair.of("stick", StickCommand.INSTANCE.getExecutor()),
 					Pair.of("rmp", RmpCommand.INSTANCE.getExecutor()),

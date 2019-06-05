@@ -18,11 +18,6 @@ commands:
       usage: /<command> <smart/demo>
       permission: multiseichiplugin.ef
       permission-message: You don't have <permission>
-  level:
-      description: This is a level command.
-      usage: /<command> <help>
-      permission: multiseichiplugin.level
-      permission-message: You don't have <permission>
   lastquit:
       description: This is a lastquit command.
       usage: /<command> <playername>
