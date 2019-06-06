@@ -9,7 +9,6 @@ import com.github.unchama.seichiassist.data.slot.button.ButtonBuilder;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
 import com.github.unchama.seichiassist.data.slot.handler.Trigger;
 import com.github.unchama.seichiassist.text.Text;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
