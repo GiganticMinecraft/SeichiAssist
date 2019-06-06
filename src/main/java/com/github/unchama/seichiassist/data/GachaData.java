@@ -1,14 +1,14 @@
 package com.github.unchama.seichiassist.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
+import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GachaData {
 	//アイテムデータ格納
@@ -43,7 +43,7 @@ public class GachaData {
 				return new GachaData(gachadata);
 			}
 		}
-		return new GachaData(Util.getGachaRingo(),1.0,1);
+		return new GachaData(StaticGachaPrizeFactory.getGachaRingo(),1.0,1);
 	}
 	public boolean compare(ItemStack m,String name) {
 		List<String> mlore,lore;
