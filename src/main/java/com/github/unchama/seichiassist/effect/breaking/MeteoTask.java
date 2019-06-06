@@ -1,10 +1,11 @@
 package com.github.unchama.seichiassist.effect.breaking;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.Coordinate;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.task.ArrowControlTask;
+import com.github.unchama.seichiassist.util.BreakUtil;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -16,16 +17,11 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.Coordinate;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.task.ArrowControlTask;
-import com.github.unchama.seichiassist.util.BreakUtil;
+import java.util.List;
+import java.util.Random;
 
 public class MeteoTask extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.instance;
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	//プレイヤー情報
 	Player player;
 	//プレイヤーデータ
@@ -119,7 +115,9 @@ public class MeteoTask extends BukkitRunnable{
 				}
 			}
 		}
-		player.getWorld().playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, (float)1, (float)((Math.random()*0.4)+0.8));
+		// 0..1 -> 0..0.4 -> 0.8..1.2
+        // (float)((Math.random()*0.4)+0.8)
+		player.getWorld().playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, 1.2f - (new Random().nextFloat() / 0.25f));
 		if(playerdata.getActiveskilldata().skillnum > 2){
 			for(Block b : breaklist){
 				BreakUtil.breakBlock(player, b, droploc, tool, false);
