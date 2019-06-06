@@ -2,11 +2,11 @@ package com.github.unchama.seichiassist.effect.arrow;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.effect.FixedMetadataValueHolder;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class ArrowExplosionTask extends AbstractEffectTask<SmallFireball> {
 			if ( proj instanceof Arrow && proj.hasMetadata("ArrowSkill") ) {
 			}
 		 */
-		projectile.setMetadata("ArrowSkill", new FixedMetadataValue(SeichiAssist.instance, true));
+		projectile.setMetadata("ArrowSkill", FixedMetadataValueHolder.TRUE);
 		projectile.setVelocity(vec);
 	}
 

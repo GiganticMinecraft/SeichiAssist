@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.effect.FixedMetadataValueHolder;
 import com.github.unchama.seichiassist.task.ArrowControlTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import org.bukkit.Effect;
@@ -13,7 +14,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.LargeFireball;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -88,13 +88,13 @@ public class MeteoTask extends BukkitRunnable{
 		vec.normalize();
 		proj = player.getWorld().spawn(launchloc,LargeFireball.class);
 		proj.setShooter(player);
-		proj.setMetadata("Effect", new FixedMetadataValue(plugin, true));
+		proj.setMetadata("Effect", FixedMetadataValueHolder.TRUE);
 		double k = 1.0;
 		vec.setX(vec.getX() * k);
 		vec.setY(vec.getY() * k);
 		vec.setZ(vec.getZ() * k);
 		proj.setShooter(player);
-		proj.setMetadata("Effect", new FixedMetadataValue(plugin, true));
+		proj.setMetadata("Effect", FixedMetadataValueHolder.TRUE);
 		proj.setVelocity(vec);
 		new ArrowControlTask(proj,centerbreakloc).runTaskTimer(plugin, 0, 1);
 	}
