@@ -2,14 +2,17 @@ package com.github.unchama.seichiassist.data.menu;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.slot.Slot;
+import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,21 +20,26 @@ import java.util.Map;
 /**
  * Created by karayuu on 2019/05/23
  */
-public class InventoryView {
+public class InventoryView implements InventoryHolder {
     @NotNull
     private final Inventory inventory;
     @NotNull
-    private final Map<@NotNull Integer, @NotNull Slot> slotMap;
+    private final Map<@NotNull Integer, @NotNull Slot> slotMap = new HashMap<>();
 
-    private InventoryView(@NotNull Inventory inventory) {
-        this.inventory = inventory;
-        this.slotMap = new HashMap<>();
-        MenuHandler.getInstance().addInventoryHolder(this);
+    /**
+     * {@link InventoryView} を作成します.
+     *
+     * @param type  作成したい {@link Inventory} の {@link InventoryType}
+     * @param title 作成したい {@link Inventory} の表示名
+     */
+    public InventoryView(@NotNull InventoryType type, @NotNull Text title) {
+        this.inventory = Bukkit.createInventory(this, type, title.stringValue());
+        MenuHandler.getInstance().addInventoryView(this);
     }
 
-    @NotNull
-    public static InventoryView from(@NotNull Inventory inventory) {
-        return new InventoryView(inventory);
+    public InventoryView(int size, @NotNull Text title) {
+        this.inventory = Bukkit.createInventory(this, size, title.stringValue());
+        MenuHandler.getInstance().addInventoryView(this);
     }
 
     @NotNull
@@ -70,18 +78,18 @@ public class InventoryView {
     }
 
     @NotNull
-    public Inventory rawValue() {
+    public Inventory getInventory() {
         return this.inventory;
     }
 
     /**
      * 非同期で {@link Inventory} に {@link ItemStack} をセットします.
      *
-     * @param position セットしたい位置
+     * @param position  セットしたい位置
      * @param itemStack セットしたい {@link ItemStack}
      */
     private void setSlot(int position, @NotNull ItemStack itemStack) {
         Bukkit.getScheduler().runTaskAsynchronously(SeichiAssist.instance,
-            () -> inventory.setItem(position, itemStack));
+                () -> inventory.setItem(position, itemStack));
     }
 }

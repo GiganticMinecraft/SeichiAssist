@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.data.menu;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -24,7 +25,8 @@ public final class MenuHandler implements Listener {
     @NotNull
     private List<@NotNull InventoryView> inventoryViews = new ArrayList<>();
 
-    private MenuHandler() {}
+    private MenuHandler() {
+    }
 
     /**
      * {@link MenuHandler} のインスタンスを返します.
@@ -41,7 +43,7 @@ public final class MenuHandler implements Listener {
      *
      * @param inventoryView 追加する {@link InventoryView} ({@code null} は許容されません.)
      */
-    public void addInventoryHolder(@Nonnull InventoryView inventoryView) {
+    public void addInventoryView(@Nonnull InventoryView inventoryView) {
         inventoryViews.add(inventoryView);
     }
 
@@ -53,10 +55,11 @@ public final class MenuHandler implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        final String title = event.getInventory().getTitle();
-
-        inventoryViews.stream()
-                        .filter(holder -> holder.getTitle().equals(title))
-                        .forEach(holder -> holder.invokeAndReload(event.getSlot(), event));
+        final InventoryHolder holder = event.getClickedInventory().getHolder();
+        if (holder instanceof InventoryView) {
+            inventoryViews.stream()
+                          .filter(view -> view.equals((InventoryView) holder))
+                          .forEach(view -> view.invokeAndReload(event.getSlot(), event));
+        }
     }
 }
