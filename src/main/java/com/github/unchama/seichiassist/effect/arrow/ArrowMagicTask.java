@@ -32,7 +32,7 @@ public class ArrowMagicTask extends AbstractEffectTask<ThrownPotion> {
 
 		//スキルを実行する処理
 		Location loc = player.getLocation().clone();
-		loc.add(loc.getDirection()).add(0,1.6,0);
+		loc.add(loc.getDirection()).add(getAddtionalVector());
 		Vector vec = loc.getDirection().multiply(getVectorMultipier());
 		projectile = player.getWorld().spawn(loc, ThrownPotion.class);
 		SeichiAssist.entitylist.add(projectile);
@@ -48,6 +48,7 @@ public class ArrowMagicTask extends AbstractEffectTask<ThrownPotion> {
 		projectile.setMetadata("ArrowSkill", FixedMetadataValueHolder.TRUE);
 		projectile.setVelocity(vec);
 	}
+
 	@Override
 	public void run() {
 		tick ++;
@@ -56,6 +57,10 @@ public class ArrowMagicTask extends AbstractEffectTask<ThrownPotion> {
 			SeichiAssist.entitylist.remove(projectile);
 			this.cancel();
 		}
+	}
+
+	public Vector getAddtionalVector() {
+		return new Vector(0, 1.6, 0);
 	}
 
 	public double getVectorMultipier() {
