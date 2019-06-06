@@ -1,18 +1,17 @@
 package com.github.unchama.seichiassist.effect.breaking;
 
-import java.util.List;
-
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.Coordinate;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.BreakUtil;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.Coordinate;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.BreakUtil;
+import java.util.List;
 
 public class ExplosionTask extends BukkitRunnable{
 	Player player;
@@ -47,6 +46,7 @@ public class ExplosionTask extends BukkitRunnable{
 		for(int x = start.x + 1 ; x < end.x ; x=x+2){
 			for(int z = start.z + 1 ; z < end.z ; z=z+2){
 				for(int y = start.y + 1; y < end.y ; y=y+2){
+					// ※ Locationはミュータブル！！！！！！！！！！
 					explosionloc = droploc.clone();
 					explosionloc.add(x, y, z);
 					if(isBreakBlock(explosionloc)){
