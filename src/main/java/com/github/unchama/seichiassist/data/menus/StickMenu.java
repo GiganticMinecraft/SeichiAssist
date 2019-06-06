@@ -31,7 +31,7 @@ public final class StickMenu {
         stickMenu = new InventoryView(4 * 9, Text.of("木の棒メニュー", ChatColor.LIGHT_PURPLE));
     }
 
-    public void openBy(@NotNull Player player) {
+    public static void openBy(@NotNull Player player) {
         final PlayerData data = SeichiAssist.playermap.get(player.getUniqueId());
         stickMenu.setSlot(0, ButtonBuilder
             .from(
