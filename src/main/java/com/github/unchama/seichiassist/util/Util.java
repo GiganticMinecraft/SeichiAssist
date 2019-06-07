@@ -292,7 +292,8 @@ public final class Util {
 
 	public static String getDescFormat(List<String> list)
 	{
-		return list.toString().replaceAll(",", "\n").replaceAll("\\[", " ").replaceAll("]", "\n");
+		return " " + String.join("\n", list) + "\n";
+		//return list.toString().replaceAll(",", "\n").replaceAll("\\[", " ").replaceAll("]", "\n");
 	}
 
 	public static void sendEverySound(Sound kind, float a, float b){
