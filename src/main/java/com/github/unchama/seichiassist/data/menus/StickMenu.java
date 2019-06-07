@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.data.menus;
 
+import arrow.core.Either;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions;
@@ -11,6 +12,7 @@ import com.github.unchama.seichiassist.data.slot.handler.Trigger;
 import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -28,7 +30,8 @@ public final class StickMenu {
     }
 
     static {
-        stickMenu = new InventoryView(4 * 9, Text.of("木の棒メニュー", ChatColor.LIGHT_PURPLE));
+        final Either<Integer, InventoryType> property = new Either.Left(4 * 9);
+        stickMenu = new InventoryView(property, Text.of("木の棒メニュー", ChatColor.LIGHT_PURPLE));
     }
 
     public static void openBy(@NotNull Player player) {
