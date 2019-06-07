@@ -19,12 +19,6 @@ import java.util.List;
 public final class MenuHandler implements Listener {
     private static MenuHandler singleton = new MenuHandler();
 
-    /**
-     * 登録された {@link InventoryView} の {@link List}
-     */
-    @NotNull
-    private List<@NotNull InventoryView> inventoryViews = new ArrayList<>();
-
     private MenuHandler() {
     }
 
@@ -37,19 +31,8 @@ public final class MenuHandler implements Listener {
         return singleton;
     }
 
-
-    /**
-     * {@link #inventoryViews} に {@link InventoryView} を追加します.
-     *
-     * @param inventoryView 追加する {@link InventoryView} ({@code null} は許容されません.)
-     */
-    public void addInventoryView(@Nonnull InventoryView inventoryView) {
-        inventoryViews.add(inventoryView);
-    }
-
     /**
      * 各 {@link InventoryView#invokeAndReload(int, InventoryClickEvent)} を呼び出します.
-     * title にて判断し, {@link InventoryClickEvent} を与えます.
      *
      * @param event {@link InventoryClickEvent}
      */
@@ -57,9 +40,7 @@ public final class MenuHandler implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         final InventoryHolder holder = event.getClickedInventory().getHolder();
         if (holder instanceof InventoryView) {
-            inventoryViews.stream()
-                          .filter(view -> view.equals((InventoryView) holder))
-                          .forEach(view -> view.invokeAndReload(event.getSlot(), event));
+            ((InventoryView) holder).invokeAndReload(event.getSlot(), event);
         }
     }
 }

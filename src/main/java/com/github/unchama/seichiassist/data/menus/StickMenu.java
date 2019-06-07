@@ -52,6 +52,6 @@ public final class StickMenu {
             .build()
         );
 
-        stickMenu.openBy(player);
+        player.openInventory(stickMenu.getInventory());
     }
 }

@@ -21,8 +21,15 @@ import java.util.Map;
  * Created by karayuu on 2019/05/23
  */
 public class InventoryView implements InventoryHolder {
+    @Nullable
+    private final InventoryType type;
+
+    @Nullable
+    private final Integer size;
+
     @NotNull
-    private final Inventory inventory;
+    private final Text title;
+
     @NotNull
     private final Map<@NotNull Integer, @NotNull Slot> slotMap = new HashMap<>();
 
@@ -33,35 +40,28 @@ public class InventoryView implements InventoryHolder {
      * @param title 作成したい {@link Inventory} の表示名
      */
     public InventoryView(@NotNull InventoryType type, @NotNull Text title) {
-        this.inventory = Bukkit.createInventory(this, type, title.stringValue());
-        MenuHandler.getInstance().addInventoryView(this);
+        this.type = type;
+        this.size = null;
+        this.title = title;
     }
 
-    public InventoryView(int size, @NotNull Text title) {
-        this.inventory = Bukkit.createInventory(this, size, title.stringValue());
-        MenuHandler.getInstance().addInventoryView(this);
+    public InventoryView(@NotNull Integer size, @NotNull Text title) {
+        this.type = null;
+        this.size = size;
+        this.title = title;
     }
 
     @NotNull
     public String getTitle() {
-        return inventory.getTitle();
+        return this.title.stringValue();
     }
 
     public void setSlot(int position, @NotNull Slot slot) {
         slotMap.put(position, slot);
     }
 
-    public void openBy(@NotNull Player player) {
-        for (int i = 0; i < inventory.getSize(); i++) {
-            if (slotMap.get(i) != null) {
-                setSlot(i, slotMap.get(i).getItemStack());
-            }
-        }
-
-        player.openInventory(inventory);
-    }
-
     void invokeAndReload(int position, @NotNull InventoryClickEvent event) {
+        final Inventory inventory = event.getClickedInventory();
         if (event.getWhoClicked().getType() != EntityType.PLAYER) {
             event.setCancelled(true);
             return;
@@ -79,16 +79,34 @@ public class InventoryView implements InventoryHolder {
 
     @NotNull
     public Inventory getInventory() {
-        return this.inventory;
+        final Inventory inventory = createInventory();
+        for (int i = 0; i < inventory.getSize(); i++) {
+            if (slotMap.get(i) != null) {
+                setSlotAsynchronously(inventory, i, slotMap.get(i).getItemStack());
+            }
+        }
+        return inventory;
+    }
+
+    private Inventory createInventory() {
+        if (type == null) {
+            assert size != null;
+            return Bukkit.createInventory(this, size, title.stringValue());
+        } else if (size == null) {
+            return Bukkit.createInventory(this, type, title.stringValue());
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     /**
      * 非同期で {@link Inventory} に {@link ItemStack} をセットします.
      *
+     * @param inventory {@link Slot} をセットする {@link Inventory}
      * @param position  セットしたい位置
      * @param itemStack セットしたい {@link ItemStack}
      */
-    private void setSlot(int position, @NotNull ItemStack itemStack) {
+    private void setSlotAsynchronously(@NotNull Inventory inventory, int position, @NotNull ItemStack itemStack) {
         Bukkit.getScheduler().runTaskAsynchronously(SeichiAssist.instance,
                 () -> inventory.setItem(position, itemStack));
     }
