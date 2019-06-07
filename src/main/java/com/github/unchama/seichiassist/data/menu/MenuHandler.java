@@ -38,6 +38,12 @@ public final class MenuHandler implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
+        //インベントリ外をクリックした際
+        if (event.getClickedInventory() == null) {
+            event.setCancelled(true);
+            return;
+        }
+
         final InventoryHolder holder = event.getClickedInventory().getHolder();
         if (holder instanceof InventoryView) {
             ((InventoryView) holder).invokeAndReload(event.getSlot(), event);
