@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.effect.arrow;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,13 +13,12 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.util.HashMap;
+import java.util.UUID;
 
-public class ArrowMagicTask extends BukkitRunnable{
+public class ArrowMagicTask extends SkeletonEffectTask<ThrownPotion> {
 	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
@@ -28,7 +26,6 @@ public class ArrowMagicTask extends BukkitRunnable{
 	UUID uuid;
 	PlayerData playerdata;
 	long tick;
-	ThrownPotion proj;
 	ItemStack i;
 	PotionMeta pm;
 
@@ -78,7 +75,7 @@ public class ArrowMagicTask extends BukkitRunnable{
 		if(tick > 100){
 			proj.remove();
 			SeichiAssist.entitylist.remove(proj);
-			this.cancel();
+			cancel();
 		}
 	}
 
