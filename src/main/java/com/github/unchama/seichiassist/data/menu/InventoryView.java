@@ -46,17 +46,11 @@ public class InventoryView implements InventoryHolder {
 
     void invokeAndReload(int position, @NotNull InventoryClickEvent event) {
         final Inventory inventory = event.getClickedInventory();
-        if (event.getWhoClicked().getType() != EntityType.PLAYER) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (event.getClickedInventory() == null || event.getClickedInventory().getType() == InventoryType.PLAYER) {
-            event.setCancelled(true);
-            return;
-        }
 
         final Slot slot = slotMap.get(position);
+        if (slot == null) {
+            return;
+        }
         slot.invoke(event);
         inventory.setItem(position, slot.getItemStack());
     }

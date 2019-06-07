@@ -1,8 +1,11 @@
 package com.github.unchama.seichiassist.data.menu;
 
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,8 +41,12 @@ public final class MenuHandler implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        //インベントリ外をクリックした際
-        if (event.getClickedInventory() == null) {
+        if (event.getWhoClicked().getType() != EntityType.PLAYER) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if (event.getClickedInventory() == null || event.getClickedInventory().getType() == InventoryType.PLAYER) {
             event.setCancelled(true);
             return;
         }
