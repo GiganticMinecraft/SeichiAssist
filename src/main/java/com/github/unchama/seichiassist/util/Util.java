@@ -120,8 +120,7 @@ public final class Util {
 	}
 
 	public static void sendAdminMessage(String str){
-		SeichiAssist plugin = SeichiAssist.instance;
-		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+		for ( Player player : Bukkit.getOnlinePlayers() ) {
 			if(player.hasPermission("SeichiAssist.admin")){
 				player.sendMessage(str);
 			}
@@ -130,15 +129,13 @@ public final class Util {
 
 
 	public static void sendEveryMessage(String str){
-		SeichiAssist plugin = SeichiAssist.instance;
-		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+		for ( Player player : Bukkit.getOnlinePlayers() ) {
 			player.sendMessage(str);
 		}
 	}
 
 	public static void sendEveryMessageWithoutIgnore(String str){
-		SeichiAssist plugin = SeichiAssist.instance;
-		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+		for ( Player player : Bukkit.getOnlinePlayers() ) {
 			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverymessageflag()) {
 				player.sendMessage(str);
 			}
@@ -149,15 +146,13 @@ public final class Util {
 	 * json形式のチャットを送信する際に使用
 	 */
 	public static void sendEveryMessage(BaseComponent base){
-		SeichiAssist plugin = SeichiAssist.instance;
-		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+		for ( Player player : Bukkit.getOnlinePlayers() ) {
 			player.spigot().sendMessage(base);
 		}
 	}
 
 	public static void sendEveryMessageWithoutIgnore(BaseComponent base){
-		SeichiAssist plugin = SeichiAssist.instance;
-		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+		for ( Player player : Bukkit.getOnlinePlayers() ) {
 			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverymessageflag()) {
 				player.spigot().sendMessage(base);
 			}
@@ -296,14 +291,12 @@ public final class Util {
 	}
 
 	public static void sendEverySound(Sound kind, float a, float b){
-		SeichiAssist plugin = SeichiAssist.instance;
-		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+		for ( Player player : Bukkit.getOnlinePlayers() ) {
 			player.playSound(player.getLocation(), kind, a, b);
 		}
 	}
 	public static void sendEverySoundWithoutIgnore(Sound kind, float a, float b){
-		SeichiAssist plugin = SeichiAssist.instance;
-		for ( Player player : plugin.getServer().getOnlinePlayers() ) {
+		for ( Player player : Bukkit.getOnlinePlayers() ) {
 			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverysoundflag()) {
 				player.playSound(player.getLocation(), kind, a, b);
 			}

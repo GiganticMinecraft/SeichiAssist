@@ -58,7 +58,7 @@ public final class BreakUtil {
 			CoreProtectAPI coreProtect = ExternalPlugins.getCoreProtect();
 			//破壊ログを設定
 			if (coreProtect == null) {
-				SeichiAssist.instance.getLogger().warning("CoreProtectにアクセスできませんでした。");
+				Bukkit.getLogger().warning("CoreProtectにアクセスできませんでした。");
 			} else {
 				boolean success = coreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
 				//もし失敗したらプレイヤーに報告し処理を終了

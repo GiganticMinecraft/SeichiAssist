@@ -283,7 +283,7 @@ class PlayerData(player: Player) {
         this.level = 1
         this.mebius = MebiusTask(this)
         this.numofsorryforbug = 0
-        this.inventory = SeichiAssist.instance.server.createInventory(null, 9 * 1, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "4次元ポケット")
+        this.inventory = Bukkit.createInventory(null, 9 * 1, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "4次元ポケット")
         this.rgnum = 0
         this.minestack = MineStack()
         this.minestackflag = true
