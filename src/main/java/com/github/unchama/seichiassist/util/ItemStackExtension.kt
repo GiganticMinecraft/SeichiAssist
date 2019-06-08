@@ -7,10 +7,10 @@ import org.bukkit.inventory.ItemStack
  */
 
 /**
- * [ItemStack] のLoreを設定します.
+ * [ItemStack] のLoreを設定します. ただし, [List] に ``null`` が入っている場合は無視されます.
  */
-fun ItemStack.setLore(lore: List<String>) {
-    val itemmeta = this.itemMeta.apply {
-        this.lore = lore
+fun ItemStack.setLoreNotNull(lore: List<String?>) {
+    this.itemMeta = this.itemMeta.apply {
+        this.lore = (lore.filterNotNull())
     }
 }

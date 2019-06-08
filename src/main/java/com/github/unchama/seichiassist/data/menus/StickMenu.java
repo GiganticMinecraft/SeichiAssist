@@ -52,7 +52,7 @@ public final class StickMenu {
                 event -> {
                     data.toggleExpBarVisibility();
                     data.notifyExpBarVisibility();
-                    ItemStackExtensionKt.setLore(event.getCurrentItem(),
+                    ItemStackExtensionKt.setLoreNotNull(event.getCurrentItem(),
                         PlayerInformationDescriptions.playerInfoLore(data));
                 }
             ))
