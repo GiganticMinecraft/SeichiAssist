@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
+import com.github.unchama.seichiassist.data.menu.MenuHandler;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.listener.*;
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent;
@@ -16,6 +17,7 @@ import com.github.unchama.seichiassist.task.EveryHalfHourTask;
 import com.github.unchama.seichiassist.task.EveryMinuteTask;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTask;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask;
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.github.unchama.util.collection.MapFactory;
@@ -770,7 +772,7 @@ public class SeichiAssist extends JavaPlugin{
 	// ガチャ系アイテム
 	// これは後に変更されるのでミュータブルでないといけない
 	private static List<MineStackObj> minestacklistgacha = new ArrayList<>(ImmutableListFactory.of(
-			new MineStackGachaObj("gachaimo",Util.getGachaRingoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaRingoLore()),
+			new MineStackGachaObj("gachaimo", StaticGachaPrizeFactory.getGachaRingoName(),1,Material.GOLDEN_APPLE,0, StaticGachaPrizeFactory.getGachaRingoLore()),
 			new MineStackGachaObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0)
 	));
 
@@ -933,6 +935,8 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new WorldRegenListener(), this);
 		//正月イベント用
 		new NewYearsEvent(this);
+		//Menu用Listener
+		getServer().getPluginManager().registerEvents(MenuHandler.getInstance(), this);
 		// BungeeCordとのI/O
 		Bukkit.getMessenger().registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this));
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "SeichiAssistBungee");

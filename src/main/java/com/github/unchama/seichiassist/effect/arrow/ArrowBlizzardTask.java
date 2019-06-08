@@ -1,20 +1,18 @@
 package com.github.unchama.seichiassist.effect.arrow;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.util.HashMap;
+import java.util.UUID;
 
-public class ArrowBlizzardTask extends BukkitRunnable{
+public class ArrowBlizzardTask extends SkeletonEffectTask<Snowball> {
 	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
 	Player player;
@@ -22,7 +20,6 @@ public class ArrowBlizzardTask extends BukkitRunnable{
 	UUID uuid;
 	PlayerData playerdata;
 	long tick;
-	Snowball proj;
 
 	public ArrowBlizzardTask(Player player) {
 		this.tick = 0;
@@ -66,7 +63,7 @@ public class ArrowBlizzardTask extends BukkitRunnable{
 		if(tick > 100){
 			proj.remove();
 			SeichiAssist.entitylist.remove(proj);
-			this.cancel();
+			cancel();
 		}
 	}
 

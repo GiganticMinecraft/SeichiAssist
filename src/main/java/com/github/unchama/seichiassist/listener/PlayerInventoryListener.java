@@ -1,7 +1,11 @@
 package com.github.unchama.seichiassist.listener;
 
 import com.github.unchama.seasonalevents.events.valentine.Valentine;
-import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.achievement.SeichiAchievement;
 import com.github.unchama.seichiassist.data.*;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
@@ -10,6 +14,7 @@ import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.task.CoolDownTask;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.ExperienceManager;
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.google.common.io.ByteArrayDataOutput;
@@ -491,14 +496,8 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(isSkull && itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.getName() + "の統計データ")){
 				// 整地量表示トグル
-				playerdata.getExpbar().setVisible(!playerdata.getExpbar().isVisible());
-				if(playerdata.getExpbar().isVisible()){
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					player.sendMessage(ChatColor.GREEN + "整地量バー表示");
-				}else{
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
-					player.sendMessage(ChatColor.RED + "整地量バー非表示");
-				}
+				playerdata.toggleExpBarVisibility();
+				playerdata.notifyExpBarVisibility();
 				SkullMeta skullmeta = (SkullMeta)itemstackcurrent.getItemMeta();
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispExpBarToggleMeta(playerdata,skullmeta));
 			}
@@ -2542,13 +2541,13 @@ public class PlayerInventoryListener implements Listener {
 			itemstack = new ItemStack(Material.GOLDEN_APPLE,1);
 			ItemMeta meta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
 
-			meta.setDisplayName(Util.getGachaRingoName());
-			List<String> lore = Util.getGachaRingoLore();
+			meta.setDisplayName(StaticGachaPrizeFactory.getGachaRingoName());
+			List<String> lore = StaticGachaPrizeFactory.getGachaRingoLore();
 			meta.setLore(lore);
 			itemstack.setItemMeta(meta);
 
-			meta.setDisplayName(Util.getGachaRingoName());
-			meta.setLore(Util.getGachaRingoLore());
+			meta.setDisplayName(StaticGachaPrizeFactory.getGachaRingoName());
+			meta.setLore(StaticGachaPrizeFactory.getGachaRingoLore());
 		} else if (num>=0) { //他のガチャアイテムの場合 -2以下は他のアイテムに対応させる
 			MineStackGachaData g = new MineStackGachaData(SeichiAssist.msgachadatalist.get(num));
 			UUID uuid = player.getUniqueId();
@@ -5252,7 +5251,7 @@ public class PlayerInventoryListener implements Listener {
 			/*
 			 * step3 椎名林檎をインベントリへ
 			 */
-			ItemStack ringo = Util.getMaxRingo(Util.getName(player));
+			ItemStack ringo = StaticGachaPrizeFactory.getMaxRingo(Util.getName(player));
 			int count = 0;
 			while(giveringo > 0){
 				if(player.getInventory().contains(ringo) || !Util.isPlayerInventoryFull(player)){

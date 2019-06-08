@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -76,8 +77,8 @@ public class PlayerPickupItemListener implements Listener {
 					ItemMeta meta = itemstack.getItemMeta();
 					//この時点で名前と説明文がある
 						if(mineStackObj.getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
-							if( !(meta.getDisplayName().equals(Util.getGachaRingoName()))
-								|| !(meta.getLore().equals(Util.getGachaRingoLore())) ){
+							if( !(meta.getDisplayName().equals(StaticGachaPrizeFactory.getGachaRingoName()))
+								|| !(meta.getLore().equals(StaticGachaPrizeFactory.getGachaRingoLore())) ){
 								return;
 							}
 							if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
