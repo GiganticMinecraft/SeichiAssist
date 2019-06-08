@@ -14,8 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-
 import static org.bukkit.ChatColor.*;
 
 /**
@@ -24,7 +22,7 @@ import static org.bukkit.ChatColor.*;
  * @author karayuu
  */
 public final class StickMenu {
-    @Nonnull
+    @NotNull
     private static final InventoryView stickMenu;
 
     private StickMenu() {

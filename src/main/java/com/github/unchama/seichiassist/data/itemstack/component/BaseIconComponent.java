@@ -6,8 +6,8 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -19,37 +19,37 @@ import java.util.stream.Collectors;
  * Created by karayuu on 2019/04/09
  */
 public class BaseIconComponent {
-    @Nonnull
+    @NotNull
     private Material material;
-    @Nonnull
+    @NotNull
     private String title;
-    @Nonnull
+    @NotNull
     private List<String> lore;
     private Boolean isEnchanted = false;
     private int number = 1;
     private short durability;
 
-    public BaseIconComponent(@Nonnull Material material) {
+    public BaseIconComponent(@NotNull Material material) {
         this(material, (short) 0);
     }
 
-    public BaseIconComponent(@Nonnull Material material, short durability) {
+    public BaseIconComponent(@NotNull Material material, short durability) {
         this.material = material;
         this.title = Bukkit.getItemFactory().getItemMeta(material).getDisplayName();
         this.lore = Collections.emptyList();
         this.durability = durability;
     }
 
-    @Nonnull
+    @NotNull
     public Material getMaterial() {
         return material;
     }
 
-    public void setTitle(@Nonnull String title) {
+    public void setTitle(@NotNull String title) {
         this.title = title;
     }
 
-    @Nonnull
+    @NotNull
     public List<String> getLore() {
         return lore;
     }
@@ -57,7 +57,7 @@ public class BaseIconComponent {
     /**
      * @param lore {@link List} として渡された要素に {@code null} が含まれていた場合,無視されます.
      */
-    public void setLore(@Nonnull List<String> lore) {
+    public void setLore(@NotNull List<String> lore) {
         this.lore = lore;
     }
 

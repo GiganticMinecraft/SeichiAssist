@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.data.itemstack.builder.component;
 
 import com.github.unchama.seichiassist.data.itemstack.component.BaseIconComponent;
 import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -14,40 +14,40 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilder<T>> implements ItemStackBuilder {
-    @Nonnull
+    @NotNull
     protected final BaseIconComponent component;
 
-    protected AbstractItemStackBuilder(@Nonnull Material material) {
+    protected AbstractItemStackBuilder(@NotNull Material material) {
         this.component = new BaseIconComponent(material);
     }
 
-    protected AbstractItemStackBuilder(@Nonnull Material material, short durability) {
+    protected AbstractItemStackBuilder(@NotNull Material material, short durability) {
         this.component = new BaseIconComponent(material, durability);
     }
 
     @Override
-    @Nonnull
-    public T title(@Nonnull String title) {
+    @NotNull
+    public T title(@NotNull String title) {
         this.component.setTitle(title);
         return (T) this;
     }
 
     @Override
-    @Nonnull
-    public T lore(@Nonnull List<String> lore) {
+    @NotNull
+    public T lore(@NotNull List<String> lore) {
         this.component.setLore(lore);
         return (T) this;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public T enchanted() {
         this.component.setEnchanted(true);
         return (T) this;
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public T number(int number) {
         this.component.setNumber(number);
         return (T) this;

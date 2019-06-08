@@ -2,8 +2,7 @@ package com.github.unchama.seichiassist.data.slot;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Slot全般を表すinterfaceです.
@@ -16,7 +15,7 @@ public interface Slot {
      *
      * @return セットされている場合 {@link ItemStack}.
      */
-    @Nonnull
+    @NotNull
     ItemStack getItemStack();
 
     /**
@@ -24,5 +23,5 @@ public interface Slot {
      *
      * @param event {@link InventoryClickEvent}
      */
-    void invoke(@Nonnull InventoryClickEvent event);
+    void invoke(@NotNull InventoryClickEvent event);
 }

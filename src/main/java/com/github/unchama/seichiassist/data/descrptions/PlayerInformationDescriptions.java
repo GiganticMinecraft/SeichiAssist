@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +28,7 @@ public final class PlayerInformationDescriptions {
      *
      * @param playerData {@link Player} の {@link PlayerData} ({@code null} は許容されません)
      */
-    @Nonnull
+    @NotNull
     public static List<String> playerInfoLore(@NotNull PlayerData playerData) {
         List<String> lore = new ArrayList<>();
 
@@ -55,7 +54,7 @@ public final class PlayerInformationDescriptions {
      * 木の棒メニュー等で用いられる整地レベルの説明文
      * スターレベルを保持していたら,スターレベルも同時に表示します.
      */
-    @Nonnull
+    @NotNull
     private static String seichiLevelDescription(@NotNull PlayerData playerData) {
         final int starLevel = playerData.getStarlevel();
         final int level = playerData.getLevel();
@@ -85,7 +84,7 @@ public final class PlayerInformationDescriptions {
     /**
      * パッシブスキルの説明文
      */
-    @Nonnull
+    @NotNull
     private static List<String> passiveSkillDescription(@NotNull PlayerData playerData) {
         return Arrays.asList(
             DARK_GRAY + "パッシブスキル効果：",
@@ -98,16 +97,16 @@ public final class PlayerInformationDescriptions {
     /**
      * 総整地量の説明文
      */
-    @Nonnull
-    private static String totalBreakAmountDescription(@Nonnull PlayerData playerData) {
+    @NotNull
+    private static String totalBreakAmountDescription(@NotNull PlayerData playerData) {
         return AQUA + "総整地量：" + playerData.getTotalbreaknum();
     }
 
     /**
      * ランキングの順位の説明文
      */
-    @Nonnull
-    private static String rankingDescription(@Nonnull PlayerData playerData) {
+    @NotNull
+    private static String rankingDescription(@NotNull PlayerData playerData) {
         return GOLD + "ランキング：" + playerData.calcPlayerRank(playerData.getPlayer()) + "位" +
             GRAY + "(" + SeichiAssist.ranklist.size() + "人中)";
     }
@@ -135,8 +134,8 @@ public final class PlayerInformationDescriptions {
     /**
      * 総ログイン時間の説明文
      */
-    @Nonnull
-    private static String totalLoginTimeDescrpition(@Nonnull PlayerData playerData) {
+    @NotNull
+    private static String totalLoginTimeDescrpition(@NotNull PlayerData playerData) {
         return GRAY + "総ログイン時間：" +
             TypeConverter.toTimeString(TypeConverter.toSecond(playerData.getPlaytick()));
     }
@@ -144,16 +143,16 @@ public final class PlayerInformationDescriptions {
     /**
      * 通算ログイン日数の説明文
      */
-    @Nonnull
-    private static String totalLoginDaysDescrption(@Nonnull PlayerData playerData) {
+    @NotNull
+    private static String totalLoginDaysDescrption(@NotNull PlayerData playerData) {
         return GRAY +"通算ログイン日数：" + playerData.getTotalJoin() + "日";
     }
 
     /**
      * 連続ログイン日数の説明文
      */
-    @Nonnull
-    private static String totalChainLoginDaysDescription(@Nonnull PlayerData playerData) {
+    @NotNull
+    private static String totalChainLoginDaysDescription(@NotNull PlayerData playerData) {
         return GRAY + "連続ログイン日数：" + playerData.getChainJoin() + "日";
     }
 
@@ -161,7 +160,7 @@ public final class PlayerInformationDescriptions {
      * 連続投票日数の説明文. ただし, {@link PlayerData#getChainVote()} が 0の場合は {@code null} を返します.
      */
     @Nullable
-    private static String totalChainVoteDaysDescription(@Nonnull PlayerData playerData) {
+    private static String totalChainVoteDaysDescription(@NotNull PlayerData playerData) {
         if (playerData.getChainVote() > 0) {
             return "連続投票日数：" + playerData.getChainVote() + "日";
         } else {
@@ -172,8 +171,8 @@ public final class PlayerInformationDescriptions {
     /**
      * Expバーの説明文.
      */
-    @Nonnull
-    private static List<String> expBarDescription(@Nonnull PlayerData playerData) {
+    @NotNull
+    private static List<String> expBarDescription(@NotNull PlayerData playerData) {
         if (playerData.getExpbar().isVisible()) {
             return Arrays.asList(
                 GREEN + "整地量バーを表示",
