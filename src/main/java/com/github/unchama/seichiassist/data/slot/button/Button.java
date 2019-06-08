@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.data.slot.button;
 
 import com.github.unchama.seichiassist.data.slot.base.BaseSlot;
-import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
-import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandlers;
+import com.github.unchama.seichiassist.data.slot.handler.SlotAction;
+import com.github.unchama.seichiassist.data.slot.handler.SlotActions;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -18,38 +18,38 @@ import java.util.List;
  */
 public class Button extends BaseSlot {
     /**
-     * この {@link Button} に付与されている {@link SlotActionHandler} の {@link List} です.
+     * この {@link Button} に付与されている {@link SlotAction} の {@link List} です.
      */
     @NotNull
-    private List<SlotActionHandler> handlers = new ArrayList<>();
+    private List<SlotAction> handlers = new ArrayList<>();
 
     /**
      * 基本的な {@link Button} を生成します. <br>
      * {@link Inventory} において,
-     * {@link SlotActionHandlers#READ_ONLY} が付与されるためReadOnlyなButtonとして働きます.
+     * {@link SlotActions#READ_ONLY} が付与されるためReadOnlyなButtonとして働きます.
      *
      * @param itemStack  {@link Inventory} へセットする {@link ItemStack} ({@code null} は許容されません.)
      */
     public Button(@NotNull ItemStack itemStack) {
         super(itemStack);
-        addHandler(SlotActionHandlers.READ_ONLY);
+        addHandler(SlotActions.READ_ONLY);
     }
 
     /**
-     * {@link Button} に {@link SlotActionHandler} を付与します.
+     * {@link Button} に {@link SlotAction} を付与します.
      *
-     * @param handler 付与する {@link SlotActionHandler} ({@code null} は許容されません.)
+     * @param handler 付与する {@link SlotAction} ({@code null} は許容されません.)
      */
-    public void addHandler(@NotNull SlotActionHandler handler) {
+    public void addHandler(@NotNull SlotAction handler) {
         this.handlers.add(handler);
     }
 
     /**
-     * {@link Button} に {@link SlotActionHandler} を付与します.
+     * {@link Button} に {@link SlotAction} を付与します.
      *
-     * @param handlers 付与する {@link SlotActionHandler} の {@link List} (全ての要素は {@code null} は許容されません.)
+     * @param handlers 付与する {@link SlotAction} の {@link List} (全ての要素は {@code null} は許容されません.)
      */
-    public void addHandlers(@NotNull List<SlotActionHandler> handlers) {
+    public void addHandlers(@NotNull List<SlotAction> handlers) {
         this.handlers.addAll(handlers);
     }
 

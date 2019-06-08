@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescrip
 import com.github.unchama.seichiassist.data.itemstack.builder.SkullItemStackBuilder;
 import com.github.unchama.seichiassist.data.menu.InventoryView;
 import com.github.unchama.seichiassist.data.slot.button.ButtonBuilder;
-import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
+import com.github.unchama.seichiassist.data.slot.handler.SlotAction;
 import com.github.unchama.seichiassist.data.slot.handler.ClickEventFilter;
 import com.github.unchama.seichiassist.util.ItemStackExtensionKt;
 import org.bukkit.entity.Player;
@@ -47,7 +47,7 @@ public final class StickMenu {
                     .lore(PlayerInformationDescriptions.playerInfoLore(data))
                     .build()
             )
-            .appendHandler(new SlotActionHandler(
+            .appendAction(new SlotAction(
                 ClickEventFilter.LEFT_CLICK,
                 event -> {
                     data.toggleExpBarVisibility();

@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  *
  * @author karayuu
  */
-public class SlotActionHandler {
+public class SlotAction {
     /**
      * InventoryClickEventを受け取って,動作を行わせるかを決定する {@link ClickEventFilter}
      */
@@ -25,15 +25,15 @@ public class SlotActionHandler {
     private Consumer<InventoryClickEvent> action;
 
     /**
-     * Slotの動作を決定する {@link SlotActionHandler} を生成します.
+     * Slotの動作を決定する {@link SlotAction} を生成します.
      *
      * @param clickEventFilter InventoryClickEventを受け取って,動作を行わせるかを決定する {@link ClickEventFilter}
      * @param action  InventoryClickEventを与えて,何かしらの動作を行わせるFunction <br>
      *                {@link #clickEventFilter} がtrueを返した際に動作します. <br>
      *                なお {@link #action} 呼び出し時点で, {@link InventoryClickEvent#getWhoClicked()} は {@link Player} であることが保証されています.
      */
-    public SlotActionHandler(@NotNull ClickEventFilter clickEventFilter,
-                             @NotNull Consumer<@NotNull InventoryClickEvent> action) {
+    public SlotAction(@NotNull ClickEventFilter clickEventFilter,
+                      @NotNull Consumer<@NotNull InventoryClickEvent> action) {
         this.clickEventFilter = clickEventFilter;
         this.action = action;
     }
