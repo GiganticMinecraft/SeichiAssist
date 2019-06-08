@@ -17,6 +17,7 @@ import com.github.unchama.seichiassist.task.EveryHalfHourTask;
 import com.github.unchama.seichiassist.task.EveryMinuteTask;
 import com.github.unchama.seichiassist.task.PlayerDataBackupTask;
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask;
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.github.unchama.util.collection.MapFactory;
@@ -771,7 +772,7 @@ public class SeichiAssist extends JavaPlugin{
 	// ガチャ系アイテム
 	// これは後に変更されるのでミュータブルでないといけない
 	private static List<MineStackObj> minestacklistgacha = new ArrayList<>(ImmutableListFactory.of(
-			new MineStackGachaObj("gachaimo",Util.getGachaRingoName(),1,Material.GOLDEN_APPLE,0,Util.getGachaRingoLore()),
+			new MineStackGachaObj("gachaimo", StaticGachaPrizeFactory.getGachaRingoName(),1,Material.GOLDEN_APPLE,0, StaticGachaPrizeFactory.getGachaRingoLore()),
 			new MineStackGachaObj("exp_bottle","エンチャントの瓶",1,Material.EXP_BOTTLE,0)
 	));
 

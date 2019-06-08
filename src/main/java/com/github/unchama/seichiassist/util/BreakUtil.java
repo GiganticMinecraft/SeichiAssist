@@ -203,8 +203,8 @@ public final class BreakUtil {
 					ItemMeta meta = itemstack.getItemMeta();
 					//この時点で名前と説明文がある
 						if(mineStackObj.getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
-							if( !(meta.getDisplayName().equals(Util.getGachaRingoName()))
-								|| !(meta.getLore().equals(Util.getGachaRingoLore())) ){
+							if( !(meta.getDisplayName().equals(StaticGachaPrizeFactory.getGachaRingoName()))
+								|| !(meta.getLore().equals(StaticGachaPrizeFactory.getGachaRingoLore())) ){
 								return false;
 							}
 							if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){

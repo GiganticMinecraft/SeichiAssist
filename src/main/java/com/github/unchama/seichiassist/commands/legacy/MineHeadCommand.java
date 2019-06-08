@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.commands.legacy;
 
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -17,7 +18,7 @@ public class MineHeadCommand implements CommandExecutor {
 			return true;
 		}else if(args.length == 0){
 			Player p = (Player) sender;
-			Util.addItemToPlayerSafely(p, Util.getMineHeadItem());
+			Util.addItemToPlayerSafely(p, StaticGachaPrizeFactory.getMineHeadItem());
 			p.sendMessage(ChatColor.GREEN + "専用アイテムを付与しました．");
 			return true;
 		}

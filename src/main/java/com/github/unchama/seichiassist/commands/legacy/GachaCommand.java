@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.Bukkit;
@@ -445,7 +446,7 @@ public class GachaCommand implements CommandExecutor {
 			if(id>=0){
 				present = new GachaData(SeichiAssist.gachadatalist.get(id));
 			} else {
-				present = new GachaData(Util.getGachaRingo(),1.0,1);
+				present = new GachaData(StaticGachaPrizeFactory.getGachaRingo(),1.0,1);
 			}
 			if(present.probability < 0.1){
 				if(name!=null){
