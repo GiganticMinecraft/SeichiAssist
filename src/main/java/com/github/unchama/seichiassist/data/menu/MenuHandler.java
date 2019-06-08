@@ -1,18 +1,12 @@
 package com.github.unchama.seichiassist.data.menu;
 
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {@link InventoryView} を管理するクラス.
@@ -36,7 +30,7 @@ public final class MenuHandler implements Listener {
     }
 
     /**
-     * 各 {@link InventoryView#invokeAndReload(int, InventoryClickEvent)} を呼び出します.
+     * 各 {@link InventoryView#invoke(int, InventoryClickEvent)} を呼び出します.
      *
      * @param event {@link InventoryClickEvent}
      */
@@ -61,7 +55,7 @@ public final class MenuHandler implements Listener {
 
         final InventoryHolder holder = clickedInventory.getHolder();
         if (holder instanceof InventoryView) {
-            ((InventoryView) holder).invokeAndReload(event.getSlot(), event);
+            ((InventoryView) holder).invoke(event.getSlot(), event);
         }
     }
 }

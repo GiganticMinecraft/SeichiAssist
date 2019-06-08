@@ -5,7 +5,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * SLotのActionを管理するクラスです.
@@ -14,10 +13,10 @@ import java.util.function.Function;
  */
 public class SlotActionHandler {
     /**
-     * InventoryClickEventを受け取って,動作を行わせるかを決定する {@link Trigger}
+     * InventoryClickEventを受け取って,動作を行わせるかを決定する {@link ClickEventFilter}
      */
     @NotNull
-    private Trigger trigger;
+    private ClickEventFilter clickEventFilter;
 
     /**
      * InventoryClickEventを与えて,何かしらの動作を行わせるFunction
@@ -28,25 +27,25 @@ public class SlotActionHandler {
     /**
      * Slotの動作を決定する {@link SlotActionHandler} を生成します.
      *
-     * @param trigger InventoryClickEventを受け取って,動作を行わせるかを決定する {@link Trigger}
+     * @param clickEventFilter InventoryClickEventを受け取って,動作を行わせるかを決定する {@link ClickEventFilter}
      * @param action  InventoryClickEventを与えて,何かしらの動作を行わせるFunction <br>
-     *                {@link #trigger} がtrueを返した際に動作します. <br>
+     *                {@link #clickEventFilter} がtrueを返した際に動作します. <br>
      *                なお {@link #action} 呼び出し時点で, {@link InventoryClickEvent#getWhoClicked()} は {@link Player} であることが保証されています.
      */
-    public SlotActionHandler(@NotNull Trigger trigger,
+    public SlotActionHandler(@NotNull ClickEventFilter clickEventFilter,
                              @NotNull Consumer<@NotNull InventoryClickEvent> action) {
-        this.trigger = trigger;
+        this.clickEventFilter = clickEventFilter;
         this.action = action;
     }
 
     /**
-     * InventoryClickEventを受け取り, {@link #trigger} で指定された条件を満たすか判断し,
+     * InventoryClickEventを受け取り, {@link #clickEventFilter} で指定された条件を満たすか判断し,
      * 満たす場合には {@link #action} で指定された動作を行います.
      *
      * @param event InventoryClickEvent
      */
     public void invoke(@NotNull InventoryClickEvent event) {
-        if (trigger.shouldReactTo(event)) {
+        if (clickEventFilter.shouldReactTo(event)) {
             action.accept(event);
         }
     }

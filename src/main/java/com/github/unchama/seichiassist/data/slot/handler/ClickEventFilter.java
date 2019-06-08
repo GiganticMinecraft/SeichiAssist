@@ -8,19 +8,19 @@ import java.util.function.Function;
 /**
  * @author karayuu
  */
-public enum Trigger {
+public enum ClickEventFilter {
     /**
-     * 左クリックを表す {@link Trigger} です.
+     * 左クリックを表す {@link ClickEventFilter} です.
      */
     LEFT_CLICK(InventoryClickEvent::isLeftClick),
 
     /**
-     * 右クリックを表す {@link Trigger} です.
+     * 右クリックを表す {@link ClickEventFilter} です.
      */
     RIGHT_CLICK(InventoryClickEvent::isRightClick),
 
     /**
-     * 常に {@code true} を返す {@link Trigger} です
+     * 常に {@code true} を返す {@link ClickEventFilter} です
      */
     ALWAYS_TRUE(event -> true)
     ;
@@ -28,7 +28,7 @@ public enum Trigger {
     @NotNull
     private Function<@NotNull InventoryClickEvent, @NotNull Boolean> trigger;
 
-    Trigger(@NotNull Function<@NotNull InventoryClickEvent, @NotNull Boolean> trigger) {
+    ClickEventFilter(@NotNull Function<@NotNull InventoryClickEvent, @NotNull Boolean> trigger) {
         this.trigger = trigger;
     }
 

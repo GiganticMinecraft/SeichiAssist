@@ -42,9 +42,7 @@ public class InventoryView implements InventoryHolder {
         slotMap.put(position, slot);
     }
 
-    void invokeAndReload(int position, @NotNull InventoryClickEvent event) {
-        final Inventory inventory = event.getClickedInventory();
-
+    void invoke(int position, @NotNull InventoryClickEvent event) {
         final Slot slot = slotMap.get(position);
         if (slot == null) {
             return;

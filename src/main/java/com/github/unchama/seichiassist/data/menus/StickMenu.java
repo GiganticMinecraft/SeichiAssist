@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.data.itemstack.builder.SkullItemStackBuil
 import com.github.unchama.seichiassist.data.menu.InventoryView;
 import com.github.unchama.seichiassist.data.slot.button.ButtonBuilder;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
-import com.github.unchama.seichiassist.data.slot.handler.Trigger;
+import com.github.unchama.seichiassist.data.slot.handler.ClickEventFilter;
 import com.github.unchama.seichiassist.util.ItemStackExtensionKt;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -48,7 +48,7 @@ public final class StickMenu {
                     .build()
             )
             .appendHandler(new SlotActionHandler(
-                Trigger.LEFT_CLICK,
+                ClickEventFilter.LEFT_CLICK,
                 event -> {
                     data.toggleExpBarVisibility();
                     data.notifyExpBarVisibility();
