@@ -948,6 +948,41 @@ class PlayerData(player: Player) {
         return responseMessage.asResponseToSender()
     }
 
+    /**
+     * 運営権限により強制的に実績を解除することを試みる。
+     * 解除に成功し、このインスタンスが指す[Player]がオンラインであるならばその[Player]に解除の旨がチャットにて通知される。
+     *
+     * @param number 解除対象の実績番号
+     * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
+     */
+    @Suppress("RedundantSuspendModifier")
+    suspend fun tryForcefullyUnlockAchievement(number: Int): MessageToSender =
+        if (!TitleFlags.get(number)) {
+            TitleFlags.set(number)
+            Bukkit.getPlayer(uuid)?.sendMessage("運営チームよりNo${number}の実績が配布されました。")
+
+            "$name に実績No. $number を${ChatColor.GREEN}付与${ChatColor.RESET}しました。".asResponseToSender()
+        } else {
+            "${ChatColor.GRAY}$name は既に実績No. $number を獲得しています。".asResponseToSender()
+        }
+
+    /**
+     * 運営権限により強制的に実績を剥奪することを試みる。
+     * 実績剥奪の通知はプレーヤーには行われない。
+     *
+     * @param number 解除対象の実績番号
+     * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
+     */
+    @Suppress("RedundantSuspendModifier")
+    suspend fun forcefullyDepriveAchievement(number: Int): MessageToSender =
+        if (!TitleFlags.get(number)) {
+            TitleFlags.set(number, false)
+
+            "$name から実績No. $number を${ChatColor.RED}剥奪${ChatColor.GREEN}しました。".asResponseToSender()
+        } else {
+            "${ChatColor.GRAY}$name は実績No. $number を獲得していません。".asResponseToSender()
+        }
+
     companion object {
         internal var config = SeichiAssist.config
     }

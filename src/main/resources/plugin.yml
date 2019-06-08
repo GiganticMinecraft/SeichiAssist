@@ -43,9 +43,9 @@ commands:
       usage: /<command>
       default-permission: NOT_OP
       permission-message: You don't have <permission>
-  unlockachv:
+  achievement:
       description: This is a Achievement command.
-      usage: /<command> <Achivement_No> <playername/ALL> <give/deprive/server/world>
+      usage: /<command> <操作> <実績No> <スコープ指定子>
       permission: multiseichiplugin.achievement
       permission-message: You don't have <permission>
   halfguard:
