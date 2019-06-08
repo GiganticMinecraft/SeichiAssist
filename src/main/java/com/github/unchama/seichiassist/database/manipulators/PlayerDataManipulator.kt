@@ -685,29 +685,22 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         return gateway.executeUpdate(command)
     }
 
-    //指定プレイヤーの四次元ポケットの中身取得
-    fun selectInventory(uuid: UUID): Inventory? {
-        val struuid = uuid.toString()
-        var inventory: Inventory? = null
-        val command = ("select inventory from " + tableReference
-                + " where uuid like '" + struuid + "'")
+  @Suppress("RedundantSuspendModifier")
+    suspend fun selectPocketInventoryOf(uuid: UUID): ResponseOrResult<Inventory> {
+        val command = "select inventory from $tableReference where uuid like '$uuid'"
+
         try {
             gateway.executeQuery(command).use { lrs ->
                 while (lrs.next()) {
-                    inventory = BukkitSerialization.fromBase64(lrs.getString("inventory"))
+                    return BukkitSerialization.fromBase64(lrs.getString("inventory")).right()
                 }
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
             e.printStackTrace()
-            return null
-        } catch (e: IOException) {
-            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-            e.printStackTrace()
-            return null
         }
 
-        return inventory
+        return "${ChatColor.RED}データベースから四次元ポケットのインベントリを取得できませんでした。".asResponseToSender().left()
     }
 
     @Suppress("RedundantSuspendModifier")
@@ -753,5 +746,32 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     fun saveQuitPlayerData(playerdata: PlayerData) {
         PlayerDataSaveTask(playerdata, false, true).runTaskAsynchronously(plugin)
     }
+
+  companion object {
+    //指定プレイヤーの四次元ポケットの中身取得
+    fun selectInventory(playerDataManipulator: PlayerDataManipulator, uuid: UUID): Inventory? {
+        val struuid = uuid.toString()
+        var inventory: Inventory? = null
+        val command = ("select inventory from " + playerDataManipulator.tableReference
+                + " where uuid like '" + struuid + "'")
+        try {
+            playerDataManipulator.gateway.executeQuery(command).use { lrs ->
+                while (lrs.next()) {
+                    inventory = BukkitSerialization.fromBase64(lrs.getString("inventory"))
+                }
+            }
+        } catch (e: SQLException) {
+            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+            e.printStackTrace()
+            return null
+        } catch (e: IOException) {
+            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+            e.printStackTrace()
+            return null
+        }
+
+        return inventory
+    }
+  }
 
 }

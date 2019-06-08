@@ -901,8 +901,10 @@ public class SeichiAssist extends JavaPlugin{
 			// コマンドの登録
 			MapFactory.of(
 					Pair.of("gacha", new GachaCommand()),
-					Pair.of("seichi",new SeichiCommand(instance)),
 					Pair.of("ef", EffectCommand.INSTANCE.getExecutor()),
+					Pair.of("seichihaste", SeichiHasteCommand.INSTANCE.getExecutor()),
+					Pair.of("seichiassist", SeichiAssistCommand.INSTANCE.getExecutor()),
+					Pair.of("openpocket", OpenPocketCommand.INSTANCE.getExecutor()),
 					Pair.of("lastquit", LastQuitCommand.INSTANCE.getExecutor()),
 					Pair.of("stick", StickCommand.INSTANCE.getExecutor()),
 					Pair.of("rmp", RmpCommand.INSTANCE.getExecutor()),

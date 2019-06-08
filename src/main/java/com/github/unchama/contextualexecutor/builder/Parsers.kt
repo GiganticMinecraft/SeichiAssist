@@ -31,4 +31,10 @@ object Parsers {
 
   fun nonNegativeInteger(failureMessage: MessageToSender = EmptyMessage): SingleArgumentParser =
       closedRangeInt(0, Int.MAX_VALUE, failureMessage)
+
+  fun double(failureMessage: MessageToSender = EmptyMessage): SingleArgumentParser = {
+    val parseResult = it.toDoubleOrNull()
+
+    if (parseResult != null) succeedWith(parseResult) else failWith(failureMessage)
+  }
 }
