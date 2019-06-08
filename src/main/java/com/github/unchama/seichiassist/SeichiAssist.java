@@ -904,7 +904,7 @@ public class SeichiAssist extends JavaPlugin{
 					Pair.of("lastquit", LastQuitCommand.INSTANCE.getExecutor()),
 					Pair.of("stick", StickCommand.INSTANCE.getExecutor()),
 					Pair.of("rmp", RmpCommand.INSTANCE.getExecutor()),
-					Pair.of("contentsPresentInSharedInventory", ShareInvCommand.INSTANCE.getExecutor()),
+					Pair.of("shareinv", ShareInvCommand.INSTANCE.getExecutor()),
 					Pair.of("mebius", MebiusCommand.INSTANCE.getExecutor()),
 					Pair.of("achievement", AchievementCommand.INSTANCE.getExecutor()),
 					Pair.of("halfguard", HalfBlockProtectCommand.INSTANCE.getExecutor()),

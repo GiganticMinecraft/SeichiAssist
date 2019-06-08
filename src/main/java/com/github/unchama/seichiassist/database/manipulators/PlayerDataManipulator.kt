@@ -413,17 +413,17 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
         try {
             // 共有インベントリに既にアイテムが格納されていないことを確認する
-            val selectCommand = "SELECT contentsPresentInSharedInventory FROM $tableReference WHERE uuid = '${playerData.uuid}'"
+            val selectCommand = "SELECT shareinv FROM $tableReference WHERE uuid = '${playerData.uuid}'"
             gateway.executeQuery(selectCommand).use { lrs ->
                 lrs.next()
-                val sharedInventorySerial = lrs.getString("contentsPresentInSharedInventory")
+                val sharedInventorySerial = lrs.getString("shareinv")
                 if (sharedInventorySerial != null && sharedInventorySerial != "") {
                     return "${ChatColor.RED}既にアイテムが収納されています".asResponseToSender().left()
                 }
             }
 
             // シリアル化されたインベントリデータを書き込む
-            val updateCommand = "UPDATE $tableReference SET contentsPresentInSharedInventory = '$serializedInventory' WHERE uuid = '${playerData.uuid}'"
+            val updateCommand = "UPDATE $tableReference SET shareinv = '$serializedInventory' WHERE uuid = '${playerData.uuid}'"
             if (gateway.executeUpdate(updateCommand) == Fail) {
                 Bukkit.getLogger().warning("${player.name} sql failed. -> saveSharedInventory(executeUpdate failed)")
 
@@ -447,11 +447,11 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         }
         CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
 
-        val command = "SELECT contentsPresentInSharedInventory FROM $tableReference WHERE uuid = '${playerData.uuid}'"
+        val command = "SELECT shareinv FROM $tableReference WHERE uuid = '${playerData.uuid}'"
         try {
             gateway.executeQuery(command).use { lrs ->
                 lrs.next()
-                return lrs.getString("contentsPresentInSharedInventory").right()
+                return lrs.getString("shareinv").right()
             }
         } catch (e: SQLException) {
             Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> loadShareInv")
@@ -463,7 +463,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
     @Suppress("RedundantSuspendModifier")
     suspend fun clearShareInv(player: Player, playerdata: PlayerData): ResponseOrResult<Unit> {
-        val command = "UPDATE $tableReference SET contentsPresentInSharedInventory = '' WHERE uuid = '${playerdata.uuid}'"
+        val command = "UPDATE $tableReference SET shareinv = '' WHERE uuid = '${playerdata.uuid}'"
 
         if (gateway.executeUpdate(command) == Fail) {
             Bukkit.getLogger().warning("${player.name} sql failed. -> clearShareInv")

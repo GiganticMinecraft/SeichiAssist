@@ -656,7 +656,7 @@ public class PlayerInventoryListener implements Listener {
 			// インベントリ共有ボタン
 			else if(itemstackcurrent.getType() == Material.TRAPPED_CHEST &&
 					itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "インベントリ共有")){
-				player.chat("/contentsPresentInSharedInventory");
+				player.chat("/shareinv");
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispShareInvMeta(playerdata));
 			}
 
