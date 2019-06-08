@@ -13,7 +13,7 @@ import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.messaging.MessageToSender
 import com.github.unchama.messaging.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.util.ExternalPlugins
+import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.util.data.merge
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import net.md_5.bungee.api.ChatColor
