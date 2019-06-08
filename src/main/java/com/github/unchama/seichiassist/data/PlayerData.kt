@@ -584,10 +584,10 @@ class PlayerData(player: Player) {
             }
         }
         //double値を四捨五入し、整地量に追加する整数xを出す
-        val x = (if (sum < 0.0) sum - 0.5 else sum + 0.5).toInt()
+        val x = Math.round(sum)
 
         //xを整地量に追加
-        totalbreaknum += x.toLong()
+        totalbreaknum += x
         return x
     }
 
