@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.GiganticBerserkTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
-import com.github.unchama.seichiassist.util.ExternalPlugins;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;

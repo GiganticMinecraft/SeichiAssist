@@ -7,11 +7,15 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
+import com.github.unchama.seichiassist.util.ExperienceManager;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
+import com.github.unchama.seichiassist.util.TypeConverter;
+import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.external.WorldGuard;
+import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.task.GiganticBerserkTask;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
-import com.github.unchama.seichiassist.util.*;
 import com.github.unchama.util.collection.ImmutableListFactory;
-import com.sk89q.worldguard.bukkit.WorldConfiguration;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Bukkit;
@@ -445,12 +449,11 @@ public class MenuInventoryData {
 		inventory.setItem(17,itemstack);
 
 		//保護関連メニュー
-		WorldConfiguration wcfg = Wg.getGlobalStateManager().get(player.getWorld());
 		RegionManager manager = Wg.getRegionManager(player.getWorld());
 
 		List<String> lore3 = Arrays.asList(ChatColor.DARK_GRAY + "土地の保護が行えます"
 			, ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
-			, ChatColor.GRAY + "保護作成上限：" + ChatColor.AQUA + wcfg.getMaxRegionCount(player)
+			, ChatColor.GRAY + "保護作成上限：" + ChatColor.AQUA + WorldGuard.getMaxRegionCount(player, player.getWorld())
 			, ChatColor.GRAY + "現在のあなたの保護作成数：" + ChatColor.AQUA + manager.getRegionCountOfPlayer(Wg.wrapPlayer(player))
 		);
 		ItemStack icon3 = Util.getMenuIcon(Material.DIAMOND_AXE, 1,
