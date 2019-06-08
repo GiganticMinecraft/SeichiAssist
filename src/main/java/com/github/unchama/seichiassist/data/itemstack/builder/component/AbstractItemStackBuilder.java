@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.data.itemstack.builder.component;
 
 import com.github.unchama.seichiassist.data.itemstack.component.BaseIconComponent;
-import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.Material;
 
 import javax.annotation.Nonnull;
@@ -28,14 +27,14 @@ public abstract class AbstractItemStackBuilder<T extends AbstractItemStackBuilde
 
     @Override
     @Nonnull
-    public T title(@Nonnull Text title) {
+    public T title(@Nonnull String title) {
         this.component.setTitle(title);
         return (T) this;
     }
 
     @Override
     @Nonnull
-    public T lore(@Nonnull List<Text> lore) {
+    public T lore(@Nonnull List<String> lore) {
         this.component.setLore(lore);
         return (T) this;
     }

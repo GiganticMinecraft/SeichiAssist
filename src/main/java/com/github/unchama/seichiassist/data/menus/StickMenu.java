@@ -9,13 +9,14 @@ import com.github.unchama.seichiassist.data.menu.InventoryView;
 import com.github.unchama.seichiassist.data.slot.button.ButtonBuilder;
 import com.github.unchama.seichiassist.data.slot.handler.SlotActionHandler;
 import com.github.unchama.seichiassist.data.slot.handler.Trigger;
-import com.github.unchama.seichiassist.text.Text;
-import org.bukkit.ChatColor;
+import com.github.unchama.seichiassist.util.ItemStackExtensionKt;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+
+import static org.bukkit.ChatColor.*;
 
 /**
  * 木の棒メニュー
@@ -30,8 +31,9 @@ public final class StickMenu {
     }
 
     static {
+        @SuppressWarnings("unchecked")
         final Either<Integer, InventoryType> property = new Either.Left(4 * 9);
-        stickMenu = new InventoryView(property, Text.of("木の棒メニュー", ChatColor.LIGHT_PURPLE));
+        stickMenu = new InventoryView(property, LIGHT_PURPLE + "木の棒メニュー");
     }
 
     public static void openBy(@NotNull Player player) {
@@ -41,7 +43,7 @@ public final class StickMenu {
                 SkullItemStackBuilder
                     .of()
                     .owner(data.getUuid())
-                    .title(Text.of(data.getName() + "の統計データ", ChatColor.UNDERLINE, ChatColor.BOLD, ChatColor.YELLOW))
+                    .title(YELLOW + "" + BOLD + "" + UNDERLINE + data.getName() + "の統計データ")
                     .lore(PlayerInformationDescriptions.playerInfoLore(data))
                     .build()
             )
@@ -50,6 +52,8 @@ public final class StickMenu {
                 event -> {
                     data.toggleExpBarVisibility();
                     data.notifyExpBarVisibility();
+                    ItemStackExtensionKt.setLore(event.getCurrentItem(),
+                        PlayerInformationDescriptions.playerInfoLore(data));
                 }
             ))
             .build()

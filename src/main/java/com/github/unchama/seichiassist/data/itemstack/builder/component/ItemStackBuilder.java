@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.data.itemstack.builder.component;
 
-import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,21 +12,21 @@ public interface ItemStackBuilder {
     /**
      * {@link ItemStack} の表示名を設定します.
      *
-     * @param title {@link ItemStack} の表示名の {@link Text}
+     * @param title {@link ItemStack} の表示名
      * @return このBuilder
      */
     @NotNull
-    ItemStackBuilder title(@NotNull Text title);
+    ItemStackBuilder title(@NotNull String title);
 
     /**
      * {@link ItemStack} のLoreを設定します.
      *
-     * @param lore {@link ItemStack} のLoreとして設定する {@link Text} の {@link List}
+     * @param lore {@link ItemStack} のLoreとして設定する {@link String} の {@link List}
      *             {@link List} に {@code null} が含まれていた場合,その行は無視されます.
      * @return このBuilder
      */
     @NotNull
-    ItemStackBuilder lore(@NotNull List<Text> lore);
+    ItemStackBuilder lore(@NotNull List<String> lore);
 
     /**
      * {@link ItemStack} にエンチャントを付与します.

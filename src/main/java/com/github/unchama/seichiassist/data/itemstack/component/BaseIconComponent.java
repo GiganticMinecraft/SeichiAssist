@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.data.itemstack.component;
 
-import com.github.unchama.seichiassist.text.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -23,12 +22,12 @@ public class BaseIconComponent {
     @Nonnull
     private Material material;
     @Nonnull
-    private Text title;
+    private String title;
     @Nonnull
-    private List<Text> lore;
+    private List<String> lore;
     private Boolean isEnchanted = false;
     private int number = 1;
-    private short durability = 0;
+    private short durability;
 
     public BaseIconComponent(@Nonnull Material material) {
         this(material, (short) 0);
@@ -36,7 +35,7 @@ public class BaseIconComponent {
 
     public BaseIconComponent(@Nonnull Material material, short durability) {
         this.material = material;
-        this.title = Text.of(Bukkit.getItemFactory().getItemMeta(material).getDisplayName());
+        this.title = Bukkit.getItemFactory().getItemMeta(material).getDisplayName();
         this.lore = Collections.emptyList();
         this.durability = durability;
     }
@@ -46,19 +45,19 @@ public class BaseIconComponent {
         return material;
     }
 
-    public void setTitle(@Nonnull Text title) {
+    public void setTitle(@Nonnull String title) {
         this.title = title;
     }
 
     @Nonnull
-    public List<Text> getLore() {
+    public List<String> getLore() {
         return lore;
     }
 
     /**
      * @param lore {@link List} として渡された要素に {@code null} が含まれていた場合,無視されます.
      */
-    public void setLore(@Nonnull List<Text> lore) {
+    public void setLore(@Nonnull List<String> lore) {
         this.lore = lore;
     }
 
@@ -82,10 +81,9 @@ public class BaseIconComponent {
      */
     public ItemMeta getItemMeta() {
         ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
-        meta.setDisplayName(title.stringValue());
+        meta.setDisplayName(title);
         List<String> collectLore = lore.stream()
                                        .filter(Objects::nonNull)
-                                       .map(Text::stringValue)
                                        .collect(Collectors.toList());
         meta.setLore(collectLore);
 

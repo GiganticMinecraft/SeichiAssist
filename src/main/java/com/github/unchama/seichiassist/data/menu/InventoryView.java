@@ -3,10 +3,8 @@ package com.github.unchama.seichiassist.data.menu;
 import arrow.core.Either;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.slot.Slot;
-import com.github.unchama.seichiassist.text.Text;
 import com.github.unchama.seichiassist.util.InventoryCreatorKt;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.EntityType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -25,19 +23,19 @@ public class InventoryView implements InventoryHolder {
     private final Either<@NotNull Integer, @NotNull InventoryType> property;
 
     @NotNull
-    private final Text title;
+    private final String title;
 
     @NotNull
     private final Map<@NotNull Integer, @NotNull Slot> slotMap = new HashMap<>();
 
-    public InventoryView(@NotNull Either<@NotNull Integer, @NotNull InventoryType> property, @NotNull Text title) {
+    public InventoryView(@NotNull Either<@NotNull Integer, @NotNull InventoryType> property, @NotNull String title) {
         this.property = property;
         this.title = title;
     }
 
     @NotNull
     public String getTitle() {
-        return this.title.stringValue();
+        return this.title;
     }
 
     public void setSlot(int position, @NotNull Slot slot) {
@@ -52,7 +50,6 @@ public class InventoryView implements InventoryHolder {
             return;
         }
         slot.invoke(event);
-        inventory.setItem(position, slot.getItemStack());
     }
 
     @NotNull
