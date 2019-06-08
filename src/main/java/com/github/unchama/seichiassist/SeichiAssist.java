@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
+import com.github.unchama.seichiassist.data.menu.MenuHandler;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.listener.*;
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent;
@@ -935,6 +936,8 @@ public class SeichiAssist extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new WorldRegenListener(), this);
 		//正月イベント用
 		new NewYearsEvent(this);
+		//Menu用Listener
+		getServer().getPluginManager().registerEvents(MenuHandler.getInstance(), this);
 		// BungeeCordとのI/O
 		Bukkit.getMessenger().registerIncomingPluginChannel(this, "SeichiAssistBungee", new BungeeReceiver(this));
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "SeichiAssistBungee");

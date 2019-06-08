@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.util;
 
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
