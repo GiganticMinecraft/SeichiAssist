@@ -589,7 +589,7 @@ class PlayerData(val player: Player) {
 
         //xを整地量に追加
         totalbreaknum += x
-        return x
+        return x.toInt()
     }
 
     //ブロック別整地数反映量の調節
