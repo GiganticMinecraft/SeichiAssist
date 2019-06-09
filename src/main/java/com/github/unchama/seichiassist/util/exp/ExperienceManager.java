@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.util;
+package com.github.unchama.seichiassist.util.exp;
 
 
 import java.lang.ref.WeakReference;
@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
  * See http://forums.bukkit.org/threads/experiencemanager-was-experienceutils-make-giving-taking-exp-a-bit-more-intuitive.54450/page-3#post-1273622
  *
  */
-public class ExperienceManager {
+public class ExperienceManager implements IExperienceManager {
 	// this is to stop the lookup table growing without control
 	private static int hardMaxLevel = 100000;
 
@@ -44,24 +44,6 @@ public class ExperienceManager {
 		Validate.notNull(player, "Player cannot be null");
 		this.player = new WeakReference<>(player);
 		this.playerName = player.getName();
-	}
-
-	/**
-	 * Get the current hard max level for which calculations will be done.
-	 *
-	 * @return the current hard max level
-	 */
-	public static int getHardMaxLevel() {
-		return hardMaxLevel;
-	}
-
-	/**
-	 * Set the current hard max level for which calculations will be done.
-	 *
-	 * @param hardMaxLevel the new hard max level
-	 */
-	public static void setHardMaxLevel(int hardMaxLevel) {
-		ExperienceManager.hardMaxLevel = hardMaxLevel;
 	}
 
 	/**
@@ -107,6 +89,7 @@ public class ExperienceManager {
 	 * @return the Player object
 	 * @throws IllegalStateException if the player is no longer online
 	 */
+	@Override
 	public Player getPlayer() {
 		Player p = player.get();
 		if (p == null) {
@@ -122,6 +105,7 @@ public class ExperienceManager {
 	 *
 	 * @param amt Amount of XP, may be negative
 	 */
+	@Override
 	public void changeExp(int amt) {
 		changeExp((double) amt);
 	}
@@ -133,6 +117,7 @@ public class ExperienceManager {
 	 *
 	 * @param amt Amount of XP, may be negative
 	 */
+	@Override
 	public void changeExp(double amt) {
 		setExp(getCurrentFractionalXP(), amt);
 	}
@@ -142,6 +127,7 @@ public class ExperienceManager {
 	 *
 	 * @param amt Amount of XP, should not be negative
 	 */
+	@Override
 	public void setExp(int amt) {
 		setExp(0, amt);
 	}
@@ -151,6 +137,7 @@ public class ExperienceManager {
 	 *
 	 * @param amt Amount of XP, should not be negative
 	 */
+	@Override
 	public void setExp(double amt) {
 		setExp(0, amt);
 	}
@@ -180,6 +167,7 @@ public class ExperienceManager {
 	 *
 	 * @return the player's total XP
 	 */
+	@Override
 	public int getCurrentExp() {
 		Player player = getPlayer();
 
@@ -207,6 +195,7 @@ public class ExperienceManager {
 	 * @param amt The amount to check for.
 	 * @return true if the player has enough XP, false otherwise
 	 */
+	@Override
 	public boolean hasExp(int amt) {
 		return getCurrentExp() >= amt;
 	}
@@ -217,6 +206,7 @@ public class ExperienceManager {
 	 * @param amt The amount to check for.
 	 * @return true if the player has enough XP, false otherwise
 	 */
+	@Override
 	public boolean hasExp(double amt) {
 		return getCurrentFractionalXP() >= amt;
 	}
@@ -228,6 +218,7 @@ public class ExperienceManager {
 	 * @return the level that a player with this amount total XP would be
 	 * @throws IllegalArgumentException if the given XP is less than 0
 	 */
+	@Override
 	public int getLevelForExp(int exp) {
 		if (exp <= 0) {
 			return 0;
@@ -249,6 +240,7 @@ public class ExperienceManager {
 	 * @return the amount of experience at this level in the level bar
 	 * @throws IllegalArgumentException if the level is less than 0
 	 */
+	@Override
 	public int getXpNeededToLevelUp(int level) {
 		Validate.isTrue(level >= 0, "Level may not be negative.");
 		return level > 30 ? 62 + (level - 30) * 7 : level >= 16 ? 17 + (level - 15) * 3 : 17;
@@ -261,6 +253,7 @@ public class ExperienceManager {
 	 * @return The amount of XP needed for the level.
 	 * @throws IllegalArgumentException if the level is less than 0 or greater than the current hard maximum
 	 */
+	@Override
 	public int getXpForLevel(int level) {
 		Validate.isTrue(level >= 0 && level <= hardMaxLevel, "Invalid level " + level + "(must be in range 0.." + hardMaxLevel + ")");
 		if (level >= xpTotalToReachLevel.length) {
