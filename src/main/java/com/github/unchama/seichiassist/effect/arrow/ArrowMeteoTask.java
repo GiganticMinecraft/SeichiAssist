@@ -18,9 +18,9 @@ public class ArrowMeteoTask extends AbstractEffectTask<Arrow> {
 
 		//スキルを実行する処理
 		Location loc = player.getLocation().clone();
-		loc.add(loc.getDirection()).add(getAddtionalVector());
+		loc.add(loc.getDirection()).add(getAdditionalVector());
 		Vector vec = loc.getDirection();
-		vec.multiply(getVectorMultipier());
+		vec.multiply(getVectorMultiplier());
 		projectile = player.getWorld().spawn(loc, Arrow.class);
 		SeichiAssist.entitylist.add(projectile);
 		projectile.setShooter(player);
@@ -47,11 +47,13 @@ public class ArrowMeteoTask extends AbstractEffectTask<Arrow> {
 	}
 
 
-	public Vector getAddtionalVector() {
+	@Override
+	public Vector getAdditionalVector() {
 		return new Vector(0, 1.6, 0);
 	}
 
-	public double getVectorMultipier() {
+	@Override
+	public double getVectorMultiplier() {
 		return 1.0;
 	}
 }
