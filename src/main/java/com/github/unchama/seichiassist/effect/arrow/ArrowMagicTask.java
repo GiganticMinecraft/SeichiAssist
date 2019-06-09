@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.effect.arrow;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.effect.FixedMetadataValueHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,10 +14,7 @@ import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
 
 public class ArrowMagicTask extends AbstractEffectTask<ThrownPotion> {
-	long tick;
-
 	public ArrowMagicTask(Player player) {
-		this.tick = 0;
 		//ポーションデータを生成
 		ItemStack i = new ItemStack(Material.SPLASH_POTION);
 		PotionMeta pm = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.SPLASH_POTION);
@@ -39,24 +35,12 @@ public class ArrowMagicTask extends AbstractEffectTask<ThrownPotion> {
 		projectile.setShooter(player);
 		projectile.setGravity(false);
 		projectile.setItem(i);
-		//読み込み方法
-		/*
-		 * Projectile proj = event.getEntity();
-			if ( proj instanceof Arrow && proj.hasMetadata("ArrowSkill") ) {
-			}
-		 */
-		projectile.setMetadata("ArrowSkill", FixedMetadataValueHolder.TRUE);
-		projectile.setVelocity(vec);
+		launchProjectile(vec);
 	}
 
 	@Override
 	public void run() {
-		tick ++;
-		if(tick > 100){
-			projectile.remove();
-			SeichiAssist.entitylist.remove(projectile);
-			this.cancel();
-		}
+
 	}
 
 	@Override
