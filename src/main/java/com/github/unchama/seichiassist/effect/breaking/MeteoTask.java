@@ -104,7 +104,7 @@ public class MeteoTask extends BukkitRunnable{
 			}
 		}
 		// 0..1 -> 0..0.4 -> 0.8..1.2
-        // (float)((Math.random()*0.4)+0.8)
+		// (float)((Math.random()*0.4)+0.8)
 		player.getWorld().playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, 1.2f - (new Random().nextFloat() / 0.25f));
 		final boolean stepflag = !(playerdata.getActiveskilldata().skillnum > 2);
 		for(Block b : blocks){
