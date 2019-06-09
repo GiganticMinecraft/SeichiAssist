@@ -75,7 +75,7 @@ public final class BukkitSerialization {
 		} catch (NullPointerException e) {
 			Bukkit.getLogger().warning("四次元ポケットの中身がnullです。四次元ポケットを初期化します。");
 			e.printStackTrace();
-			return SeichiAssist.instance.getServer().createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
+			return Bukkit.createInventory(null, 9*1 ,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "4次元ポケット");
 		}
 	}
 }

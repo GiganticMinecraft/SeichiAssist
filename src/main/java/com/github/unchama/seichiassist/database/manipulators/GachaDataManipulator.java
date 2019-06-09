@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.database.DatabaseConstants;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class GachaDataManipulator {
         //次に現在のgachadatalistでmysqlを更新
         for(GachaData gachadata : SeichiAssist.gachadatalist){
             //Inventory作ってガチャのitemstackに突っ込む
-            Inventory inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1);
+            Inventory inventory = Bukkit.getServer().createInventory(null, 9*1);
             inventory.setItem(0,gachadata.itemstack);
 
             command = "insert into " + getTableReference() + " (probability,amount,itemstack)"

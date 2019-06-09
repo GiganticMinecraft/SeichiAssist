@@ -26,6 +26,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -856,17 +857,18 @@ public class SeichiAssist extends JavaPlugin{
 		config = new Config(this);
 		config.loadConfig();
 
+		final ConsoleCommandSender ccs = Bukkit.getConsoleSender();
 		if(SeichiAssist.config.getDebugMode()==1){
 			//debugmode=1の時は最初からデバッグモードで鯖を起動
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "seichiassistをデバッグモードで起動します");
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "コンソールから/seichi debugmode");
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "を実行するといつでもONOFFを切り替えられます");
+			ccs.sendMessage(ChatColor.RED + "seichiassistをデバッグモードで起動します");
+			ccs.sendMessage(ChatColor.RED + "コンソールから/seichi debugmode");
+			ccs.sendMessage(ChatColor.RED + "を実行するといつでもONOFFを切り替えられます");
 			DEBUG = true;
 		}else{
 			//debugmode=0の時は/seichi debugmodeによる変更コマンドも使えない
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "seichiassistを通常モードで起動します");
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "デバッグモードを使用する場合は");
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "config.ymlの設定値を書き換えて再起動してください");
+			ccs.sendMessage(ChatColor.GREEN + "seichiassistを通常モードで起動します");
+			ccs.sendMessage(ChatColor.GREEN + "デバッグモードを使用する場合は");
+			ccs.sendMessage(ChatColor.GREEN + "config.ymlの設定値を書き換えて再起動してください");
 		}
 
 		// TODO nullチェック
