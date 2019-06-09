@@ -42,7 +42,7 @@ public class ArrowMeteoTask extends AbstractEffectTask<Arrow> {
 		if(tick > 100){
 			projectile.remove();
 			SeichiAssist.entitylist.remove(projectile);
-			this.cancel();
+			cancel();
 		}
 	}
 
