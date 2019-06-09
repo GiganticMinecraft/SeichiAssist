@@ -13,7 +13,6 @@ public class ArrowBlizzardTask extends AbstractEffectTask<Snowball> {
 
 	public ArrowBlizzardTask(Player player) {
 		this.tick = 0;
-		//UUIDを取得
 
 		//発射する音を再生する.
 		player.playSound(player.getLocation(), Sound.ENTITY_SNOWBALL_THROW, 1, 1.3f);
