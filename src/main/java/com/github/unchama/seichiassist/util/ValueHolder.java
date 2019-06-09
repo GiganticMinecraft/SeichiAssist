@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.util;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 /**
@@ -12,8 +13,8 @@ import java.util.function.UnaryOperator;
  * @param <V> 参照の型
  */
 public class ValueHolder<V> {
-    private V value;
-    private UnaryOperator<V> copyFactory;
+    private final V value;
+    private final UnaryOperator<V> copyFactory;
 
     /**
      * 新しいインスタンスを生成する。コピー・ファクトリは、{@code value}に影響を与えないファクトリでなければならない。したがって、
@@ -31,5 +32,32 @@ public class ValueHolder<V> {
 
     public V getValue() {
         return copyFactory.apply(value);
+    }
+
+    public UnaryOperator<V> getCopyFactory() {
+        return copyFactory;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj instanceof ValueHolder) {
+            final ValueHolder<?> c = (ValueHolder<?>) obj;
+            return Objects.equals(c.value, this.value) && Objects.equals(c.getCopyFactory(), this.getCopyFactory());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, copyFactory);
     }
 }
