@@ -20,7 +20,7 @@ object MebiusCommand {
         "${ChatColor.RED}/mebius nickname",
         "${ChatColor.RED}  MEBIUSから呼ばれる名前を表示します",
         "",
-        "${ChatColor.RED}/mebius nickname <name>",
+        "${ChatColor.RED}/mebius nickname set <name>",
         "${ChatColor.RED}  MEBIUSから呼ばれる名前を<name>に変更します",
         "",
         "${ChatColor.RED}/mebius nickname reset",
