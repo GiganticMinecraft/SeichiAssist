@@ -55,7 +55,7 @@ public class LevelCommand implements CommandExecutor {
                 sender.sendMessage(playerdata.getName() + "のレベルを" + playerdata.getLevel() + "に設定しました");
                 //プレイヤーがオンラインの時表示名を変更
                 if (!playerdata.isOffline()) {
-                    Player player = SeichiAssist.instance.getServer().getPlayer(playerdata.getName());
+                    Player player = Bukkit.getPlayer(playerdata.getName());
                     playerdata.setDisplayName(player);
                 }
             }
@@ -101,7 +101,7 @@ public class LevelCommand implements CommandExecutor {
                             sender.sendMessage(playerdata.getName() + "の整地量を" + playerdata.getTotalbreaknum() + "に設定しました");
                             //プレイヤーがオンラインの時表示名を変更
                             if (!playerdata.isOffline()) {
-                                Player player = SeichiAssist.instance.getServer().getPlayer(playerdata.getName());
+                                Player player = Bukkit.getServer().getPlayer(playerdata.getName());
                                 playerdata.setDisplayName(player);
                             }
                             //}

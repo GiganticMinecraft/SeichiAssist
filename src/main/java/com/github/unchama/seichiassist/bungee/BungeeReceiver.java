@@ -1,17 +1,17 @@
 package com.github.unchama.seichiassist.bungee;
 
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.UUID;
-
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
 
 public class BungeeReceiver implements PluginMessageListener {
 	private SeichiAssist plugin;
@@ -39,7 +39,7 @@ public class BungeeReceiver implements PluginMessageListener {
 
 	private void getLocation(String servername, String uuid, String wanter) {
 		// 受信UUIDからプレイヤーを特定
-		Player p = plugin.getServer().getPlayer(UUID.fromString(uuid));
+		Player p = Bukkit.getServer().getPlayer(UUID.fromString(uuid));
 		// プレイヤーデータを取得
 		PlayerData pd = SeichiAssist.playermap.get(UUID.fromString(uuid));
 
