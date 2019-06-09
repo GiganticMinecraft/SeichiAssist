@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.util;
+package com.github.unchama.seichiassist.util.external;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;

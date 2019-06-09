@@ -23,7 +23,8 @@ import kotlin.experimental.and
 import kotlin.experimental.or
 
 
-class PlayerData(player: Player) {
+class PlayerData(val player: Player) {
+
     //読み込み済みフラグ
     var loaded: Boolean = false
     //プレイヤー名
@@ -584,10 +585,10 @@ class PlayerData(player: Player) {
             }
         }
         //double値を四捨五入し、整地量に追加する整数xを出す
-        val x = (if (sum < 0.0) sum - 0.5 else sum + 0.5).toInt()
+        val x = Math.round(sum)
 
         //xを整地量に追加
-        totalbreaknum += x.toLong()
+        totalbreaknum += x
         return x
     }
 
@@ -929,7 +930,30 @@ class PlayerData(player: Player) {
         mana.calcAndSetMax(p, this.level)
     }
 
+    /**
+     * 整地量を表すEXPパーを表示なら非表示に,非表示なら表示に切り替えます.
+     */
+    fun toggleExpBarVisibility() {
+        this.expbar.isVisible = !this.expbar.isVisible
+    }
+
+    /**
+     * 整地量を表すExpバーの表示・非表示を [player] におしらせします.
+     */
+    fun notifyExpBarVisibility() {
+        if (this.expbar.isVisible) {
+            this.player.playSound(this.player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+            this.player.sendMessage("${ChatColor.GREEN}整地量バー表示")
+        } else {
+            this.player.playSound(this.player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
+            this.player.sendMessage("${ChatColor.RED}整地量バー非表示")
+        }
+    }
+
     companion object {
         internal var config = SeichiAssist.config
+
+        //TODO:もちろんここにあるべきではない
+        const val passiveSkillProbability = 10
     }
 }
