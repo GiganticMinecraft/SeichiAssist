@@ -608,7 +608,7 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 1.5);
 				//インベントリを開く
-				player.openInventory(SeichiAssist.instance.getServer().createInventory(null, 9*4 ,ChatColor.RED + "" + ChatColor.BOLD + "ゴミ箱(取扱注意)"));
+				player.openInventory(Bukkit.createInventory(null, 9*4 ,ChatColor.RED + "" + ChatColor.BOLD + "ゴミ箱(取扱注意)"));
 			}
 
 
@@ -617,7 +617,7 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
 				//インベントリを開く
-				player.openInventory(SeichiAssist.instance.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください"));
+				player.openInventory(Bukkit.createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください"));
 			}
 
 			else if(itemstackcurrent.getType() == Material.END_CRYSTAL){
@@ -633,7 +633,7 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
 				//インベントリを開く
-				player.openInventory(SeichiAssist.instance.getServer().createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい鉱石を入れてください"));
+				player.openInventory(Bukkit.createInventory(null, 9*4 ,ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい鉱石を入れてください"));
 			}
 
 			else if(itemstackcurrent.getType() == Material.GOLDEN_APPLE){
@@ -641,7 +641,7 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
 				//インベントリを開く
-				player.openInventory(SeichiAssist.instance.getServer().createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ"));
+				player.openInventory(Bukkit.createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ"));
 			}
 
 			else if(itemstackcurrent.getType() == Material.DIAMOND_AXE && itemstackcurrent.getItemMeta().getDisplayName().contains("限定タイタン")){
@@ -649,7 +649,7 @@ public class PlayerInventoryListener implements Listener {
 				//開く音を再生
 				player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, (float) 0.5);
 				//インベントリを開く
-				player.openInventory(SeichiAssist.instance.getServer().createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "修繕したい限定タイタンを入れてネ"));
+				player.openInventory(Bukkit.createInventory(null, 9*4 ,ChatColor.GOLD + "" + ChatColor.BOLD + "修繕したい限定タイタンを入れてネ"));
 			}
 
 			// インベントリ共有ボタン

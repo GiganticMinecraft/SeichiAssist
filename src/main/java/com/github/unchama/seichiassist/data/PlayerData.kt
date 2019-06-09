@@ -286,7 +286,7 @@ class PlayerData(val player: Player) {
         this.level = 1
         this.mebius = MebiusTask(this)
         this.numofsorryforbug = 0
-        this.inventory = SeichiAssist.instance.server.createInventory(null, 9 * 1, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "4次元ポケット")
+        this.inventory = Bukkit.createInventory(null, 9 * 1, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "4次元ポケット")
         this.rgnum = 0
         this.minestack = MineStack()
         this.minestackflag = true
@@ -587,10 +587,10 @@ class PlayerData(val player: Player) {
             }
         }
         //double値を四捨五入し、整地量に追加する整数xを出す
-        val x = (if (sum < 0.0) sum - 0.5 else sum + 0.5).toInt()
+        val x = Math.round(sum)
 
         //xを整地量に追加
-        totalbreaknum += x.toLong()
+        totalbreaknum += x
         return x
     }
 

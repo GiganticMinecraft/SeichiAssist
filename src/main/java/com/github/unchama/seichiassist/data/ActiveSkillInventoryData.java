@@ -40,7 +40,7 @@ public class ActiveSkillInventoryData {
 		//念のためエラー分岐
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
 			Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
 			return null;
 		}
