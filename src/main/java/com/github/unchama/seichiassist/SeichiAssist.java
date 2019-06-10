@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
-import com.github.unchama.seichiassist.commands.ContributeCommand;
+import com.github.unchama.seichiassist.commands.*;
 import com.github.unchama.seichiassist.commands.legacy.*;
 import com.github.unchama.seichiassist.data.GachaData;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
@@ -894,22 +894,23 @@ public class SeichiAssist extends JavaPlugin{
 			// コマンドの登録
 			MapFactory.of(
 					Pair.of("gacha", new GachaCommand()),
-					Pair.of("seichi",new SeichiCommand(instance)),
-					Pair.of("ef",new EffectCommand()),
-					Pair.of("level",new LevelCommand()),
-					Pair.of("lastquit",new LastQuitCommand()),
-					Pair.of("stick",new StickCommand()),
-					Pair.of("rmp",new RmpCommand()),
-					Pair.of("shareinv",new ShareInvCommand()),
-					Pair.of("mebius",new MebiusCommand()),
-					Pair.of("unlockachv", new UnlockAchievementCommand()),
-					Pair.of("halfguard", new HalfBlockProtectCommand()),
-					Pair.of("event", new EventCommand()),
+					Pair.of("ef", EffectCommand.INSTANCE.getExecutor()),
+					Pair.of("seichihaste", SeichiHasteCommand.INSTANCE.getExecutor()),
+					Pair.of("seichiassist", SeichiAssistCommand.INSTANCE.getExecutor()),
+					Pair.of("openpocket", OpenPocketCommand.INSTANCE.getExecutor()),
+					Pair.of("lastquit", LastQuitCommand.INSTANCE.getExecutor()),
+					Pair.of("stick", StickCommand.INSTANCE.getExecutor()),
+					Pair.of("rmp", RmpCommand.INSTANCE.getExecutor()),
+					Pair.of("shareinv", ShareInvCommand.INSTANCE.getExecutor()),
+					Pair.of("mebius", MebiusCommand.INSTANCE.getExecutor()),
+					Pair.of("achievement", AchievementCommand.INSTANCE.getExecutor()),
+					Pair.of("halfguard", HalfBlockProtectCommand.INSTANCE.getExecutor()),
+					Pair.of("event", EventCommand.INSTANCE.getExecutor()),
 					Pair.of("contribute", ContributeCommand.INSTANCE.getExecutor()),
-					Pair.of("subhome", new SubHomeCommand()),
-					Pair.of("gtfever", new GiganticFeverCommand()),
-					Pair.of("minehead", new MineHeadCommand()),
-					Pair.of("x-transfer", new RegionOwnerTransferCommand())
+					Pair.of("subhome", SubHomeCommand.INSTANCE.getExecutor()),
+					Pair.of("gtfever", GiganticFeverCommand.INSTANCE.getExecutor()),
+					Pair.of("minehead", MineHeadCommand.INSTANCE.getExecutor()),
+					Pair.of("x-transfer", RegionOwnerTransferCommand.INSTANCE.getExecutor())
 			).forEach((commandName, executor) -> getCommand(commandName).setExecutor(executor));
 		}
 

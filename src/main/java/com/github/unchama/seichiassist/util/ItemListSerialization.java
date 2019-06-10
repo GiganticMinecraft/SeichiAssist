@@ -9,19 +9,19 @@ import java.util.List;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-public final class SerializeItemList {
-	private SerializeItemList() {
+public final class ItemListSerialization {
+	private ItemListSerialization() {
 
 	}
 
-	public static String toBase64(List<ItemStack> items) {
+	public static @Nullable String serializeToBase64(List<ItemStack> items) {
 		if (items.isEmpty()) {
 			return "";
 		}
 
-		String serial;
 		try {
 			// List検査
 			// ByteArray出力ストリーム
@@ -34,19 +34,16 @@ public final class SerializeItemList {
 				for (ItemStack item : items) {
 					dataOutput.writeObject(item);
 				}
-
-				// ストリームが閉じられる
 			}
 			// 変換後のシリアルデータを取得
-			serial = Base64Coder.encodeLines(outputStream.toByteArray());
+			return Base64Coder.encodeLines(outputStream.toByteArray());
 		} catch (ClassCastException | IOException e) {
 			e.printStackTrace();
-			serial = "";
+			return null;
 		}
-		return serial;
 	}
 
-	public static List<ItemStack> fromBase64(String serial) {
+	public static List<ItemStack> deserializeFromBase64(String serial) {
 		List<ItemStack> items = new ArrayList<>();
 		try {
 			// String検査

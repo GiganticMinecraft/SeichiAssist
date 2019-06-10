@@ -1417,7 +1417,7 @@ public class MenuInventoryData {
 				, ""
 				));
 
-		if(playerdata.getShareinv()){
+		if(playerdata.getContentsPresentInSharedInventory()){
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "収納中");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでアイテムを取り出します。");
 			lore.add(ChatColor.RESET + "" + ChatColor.RED + "現在の装備・アイテムが空であることを確認してください。");
