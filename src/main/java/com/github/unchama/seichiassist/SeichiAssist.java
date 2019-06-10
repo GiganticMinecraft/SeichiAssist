@@ -47,7 +47,6 @@ public class SeichiAssist extends JavaPlugin{
 
 	// TODO これらは DatabaseConstants に移されるべき
 	public static final String PLAYERDATA_TABLENAME = "playerdata";
-	public static final String DONATEDATA_TABLENAME = "donatedata";
 
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
@@ -55,10 +54,6 @@ public class SeichiAssist extends JavaPlugin{
 	// TODO staticであるべきではない
 	public static DatabaseGateway databaseGateway;
 	public static Config config;
-
-	public static final int SUB_HOME_DATASIZE = 98;	//DB上でのサブホーム1つ辺りのデータサイズ　xyz各10*3+ワールド名64+区切り文字1*4
-
-	public static final int VOTE_FAIRYTIME_DATASIZE = 17; //DB上での妖精を召喚した時間のデータサイズ　年4+月2+日2+時間2+分2+区切り文字1*5
 
 	//起動するタスクリスト
 	private List<BukkitTask> tasklist = new ArrayList<>();
@@ -778,10 +773,6 @@ public class SeichiAssist extends JavaPlugin{
 	));
 
 	public static List<MineStackObj> minestacklist = null;
-
-	//public static final int minestacksize=minestacklist.size();
-	public static final boolean minestack_sql_enable=true; //ここは必ずtrue(falseのときはSQL初期設定+SQL入出力しない[デバッグ用])
-
 
 	public static final Set<Material> materiallist = EnumSet.of(
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
