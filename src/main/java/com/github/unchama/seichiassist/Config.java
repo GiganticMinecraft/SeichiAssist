@@ -44,22 +44,6 @@ public class Config{
 		return plugin.getConfig();
 	}
 
-	//config.ymlファイルからガチャデータの読み込み
-	public void loadGachaData(){
-		int num = config.getInt("gachanum");
-		int i;
-		for (i=1; i <= num; i++ ) {
-			GachaData gachadata = new GachaData();
-			gachadata.itemstack = config.getItemStack("item" + i);
-			gachadata.amount = config.getInt("amount" + i);
-			gachadata.probability = config.getDouble("probability" + i);
-			SeichiAssist.gachadatalist.add(gachadata);
-			//instance.getLogger().info(i + "番目のガチャデータロード完了");
-		}
-		plugin.getLogger().info("合計" + (i-1) + "個のガチャデータのLoadを完了しました");
-	}
-
-
 	public double getMinuteMineSpeed(){
 		return TypeConverter.toDouble(config.getString("minutespeedamount"));
 	}

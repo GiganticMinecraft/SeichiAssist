@@ -12,27 +12,24 @@ import java.util.List;
 
 public class GachaData {
 	//アイテムデータ格納
-	public ItemStack itemstack;
+	public ItemStack itemStack;
 	//取得確率格納
 	public double probability;
 	//アイテム数
 	public int amount;
-	public GachaData(){
-		itemstack = null;
-		probability = 0.0;
-		amount = 0;
-	}
-	public GachaData(ItemStack _itemstack,double _probability,int _amount){
-		itemstack = _itemstack.clone();
-		probability = _probability;
-		amount = _amount;
+
+	public GachaData(ItemStack itemStack, double probability, int amount){
+		this.itemStack = itemStack.clone();
+		this.probability = probability;
+		this.amount = amount;
 	}
 
 	public GachaData(GachaData gachadata) {
-		this.itemstack = gachadata.itemstack.clone();
+		this.itemStack = gachadata.itemStack.clone();
 		this.probability = gachadata.probability;
 		this.amount = gachadata.amount;
 	}
+
 	public static GachaData runGacha() {
 		double sum = 1.0;
 		double rand = Math.random();
@@ -40,16 +37,16 @@ public class GachaData {
 		for (GachaData gachadata : SeichiAssist.gachadatalist) {
 			sum -= gachadata.probability;
 			if (sum <= rand) {
-				return new GachaData(gachadata);
+				return gachadata.copy();
 			}
 		}
 		return new GachaData(StaticGachaPrizeFactory.getGachaRingo(),1.0,1);
 	}
 	public boolean compare(ItemStack m,String name) {
 		List<String> mlore,lore;
-		lore = this.itemstack.getItemMeta().getLore();
+		lore = this.itemStack.getItemMeta().getLore();
 		mlore = m.getItemMeta().getLore();
-		if(mlore.containsAll(lore)&&this.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
+		if(mlore.containsAll(lore)&&this.itemStack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
 			int index = Util.loreIndexOf(mlore, "所有者");
 			if(index >= 0){
 				//保有者であれば交換
@@ -65,13 +62,13 @@ public class GachaData {
 
 	public boolean compareonly(ItemStack m) { //ItemStackとgashadataが同じならOK
 		List<String> mlore,lore;
-		lore = this.itemstack.getItemMeta().getLore();
+		lore = this.itemStack.getItemMeta().getLore();
 		mlore = m.getItemMeta().getLore();
-		return mlore.containsAll(lore) && this.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName());
+		return mlore.containsAll(lore) && this.itemStack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName());
 	}
 
 	public void addname(String name) {
-		ItemMeta meta = this.itemstack.getItemMeta();
+		ItemMeta meta = this.itemStack.getItemMeta();
 		List<String> lore;
 		if(meta.hasLore()){
 			lore = meta.getLore();
@@ -80,6 +77,10 @@ public class GachaData {
 		}
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name);
 		meta.setLore(lore);
-		this.itemstack.setItemMeta(meta);
+		this.itemStack.setItemMeta(meta);
+	}
+
+	public GachaData copy() {
+		return new GachaData(this.itemStack.clone(), probability, amount);
 	}
 }

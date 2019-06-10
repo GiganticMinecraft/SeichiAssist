@@ -270,15 +270,15 @@ public class PlayerClickListener implements Listener {
 					present.addname(name);
 				}
 				//ガチャデータのitemstackの数を再設定（バグのため）
-				present.itemstack.setAmount(present.amount);
+				present.itemStack.setAmount(present.amount);
 				//メッセージ設定
 				String str = "";
 
 				//プレゼントを格納orドロップ
 				if(!Util.isPlayerInventoryFull(player)){
-					Util.addItem(player,present.itemstack);
+					Util.addItem(player,present.itemStack);
 				}else{
-					Util.dropItem(player,present.itemstack);
+					Util.dropItem(player,present.itemStack);
 					str += ChatColor.AQUA + "プレゼントがドロップしました。";
 				}
 
@@ -289,8 +289,8 @@ public class PlayerClickListener implements Listener {
 						player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, (float) 0.5, 2);
 					}
 					List<String> enchantname = new ArrayList<>();
-					List<String> lore = present.itemstack.getItemMeta().getLore();
-					Map<Enchantment, Integer> enchantment = present.itemstack.getItemMeta().getEnchants();
+					List<String> lore = present.itemStack.getItemMeta().getLore();
+					Map<Enchantment, Integer> enchantment = present.itemStack.getItemMeta().getEnchants();
 
 					for(Enchantment enchant : enchantment.keySet())
 					{
@@ -299,8 +299,8 @@ public class PlayerClickListener implements Listener {
 					lore.remove("§r§2所有者：" + player.getName());
 
 					TextComponent message = new TextComponent();
-					message.setText(ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
-					message.setHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(" " + present.itemstack.getItemMeta().getDisplayName() +  "\n" + Util.getDescFormat(enchantname) + Util.getDescFormat(lore)).create() ) );
+					message.setText(ChatColor.AQUA + present.itemStack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
+					message.setHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(" " + present.itemStack.getItemMeta().getDisplayName() +  "\n" + Util.getDescFormat(enchantname) + Util.getDescFormat(lore)).create() ) );
 
 					player.sendMessage(ChatColor.RED + "おめでとう！！！！！Gigantic☆大当たり！" + str);
 					Util.sendEveryMessageWithoutIgnore(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！");

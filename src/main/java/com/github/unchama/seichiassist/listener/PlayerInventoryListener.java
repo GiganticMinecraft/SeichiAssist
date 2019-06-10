@@ -2620,15 +2620,15 @@ public class PlayerInventoryListener implements Listener {
 				boolean flag = false;
 				//ガチャ景品リストを一個ずつ見ていくfor文
 				for(GachaData gachadata : gachadatalist){
-					if(!gachadata.itemstack.hasItemMeta()){
+					if(!gachadata.itemStack.hasItemMeta()){
 						continue;
-					}else if(!gachadata.itemstack.getItemMeta().hasLore()){
+					}else if(!gachadata.itemStack.getItemMeta().hasLore()){
 						continue;
 					}
 					//ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
 					if(gachadata.compare(m,name)){
 						if(SeichiAssist.DEBUG){
-							player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
+							player.sendMessage(gachadata.itemStack.getItemMeta().getDisplayName());
 						}
 						flag = true;
 						int amount = m.getAmount();
@@ -5184,15 +5184,15 @@ public class PlayerInventoryListener implements Listener {
 				boolean flag = false;
 				//ガチャ景品リストを一個ずつ見ていくfor文
 				for(GachaData gachadata : gachadatalist){
-					if(!gachadata.itemstack.hasItemMeta()){
+					if(!gachadata.itemStack.hasItemMeta()){
 						continue;
-					}else if(!gachadata.itemstack.getItemMeta().hasLore()){
+					}else if(!gachadata.itemStack.getItemMeta().hasLore()){
 						continue;
 					}
 					//ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
 					if(gachadata.compare(m,name)){
 						if(SeichiAssist.DEBUG){
-							player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
+							player.sendMessage(gachadata.itemStack.getItemMeta().getDisplayName());
 						}
 						flag = true;
 						int amount = m.getAmount();

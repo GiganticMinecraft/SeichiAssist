@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -34,11 +35,13 @@ public class GachaDataManipulator {
         String command = "select * from " + getTableReference();
         try (ResultSet lrs = gateway.executeQuery(command)) {
             while (lrs.next()) {
-                GachaData gachadata = new GachaData();
-                Inventory inventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"));
-                gachadata.itemstack = (inventory.getItem(0));
-                gachadata.amount = lrs.getInt("amount");
-                gachadata.probability = lrs.getDouble("probability");
+                Inventory restoredInventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"));
+                ItemStack restoredItemStack = restoredInventory.getItem(0);
+
+                GachaData gachadata = new GachaData(
+                        restoredItemStack, lrs.getDouble("probability"), lrs.getInt("amount")
+                );
+
                 gachadatalist.add(gachadata);
             }
         } catch (SQLException | IOException e) {
@@ -65,7 +68,7 @@ public class GachaDataManipulator {
         for(GachaData gachadata : SeichiAssist.gachadatalist){
             //Inventory作ってガチャのitemstackに突っ込む
             Inventory inventory = Bukkit.getServer().createInventory(null, 9*1);
-            inventory.setItem(0,gachadata.itemstack);
+            inventory.setItem(0,gachadata.itemStack);
 
             command = "insert into " + getTableReference() + " (probability,amount,itemstack)"
                     + " values"

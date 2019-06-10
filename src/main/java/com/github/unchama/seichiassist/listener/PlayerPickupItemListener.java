@@ -76,41 +76,38 @@ public class PlayerPickupItemListener implements Listener {
 					//名前・説明文付き
 					ItemMeta meta = itemstack.getItemMeta();
 					//この時点で名前と説明文がある
-						if(mineStackObj.getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
-							if( !(meta.getDisplayName().equals(StaticGachaPrizeFactory.getGachaRingoName()))
-								|| !(meta.getLore().equals(StaticGachaPrizeFactory.getGachaRingoLore())) ){
+					if(mineStackObj.getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
+						if( !(meta.getDisplayName().equals(StaticGachaPrizeFactory.getGachaRingoName()))
+							|| !(meta.getLore().equals(StaticGachaPrizeFactory.getGachaRingoLore())) ){
+							return;
+						}
+						if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
+							//レベルを満たしていない
+							return;
+						} else {
+							playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
+							break;
+						}
+					} else {
+						//ガチャ品
+						MineStackGachaData g = SeichiAssist.msgachadatalist.get(mineStackObj.getGachatype());
+						String name = playerdata.getName(); //プレイヤーのネームを見る
+						if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
+							if(!Util.ItemStackContainsOwnerName(itemstack, name)){
+								//所有者の名前が無ければreturn
 								return;
 							}
+						}
+
+						if (g.itemStackEquals(itemstack)) { //中身が同じ場合のみここに入る
 							if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
-								//レベルを満たしていない
 								return;
 							} else {
 								playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
 								break;
 							}
-						} else {
-							//ガチャ品
-							MineStackGachaData g = SeichiAssist.msgachadatalist.get(mineStackObj.getGachatype());
-							String name = playerdata.getName(); //プレイヤーのネームを見る
-							if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
-								if(!Util.ItemStackContainsOwnerName(itemstack, name)){
-									//所有者の名前が無ければreturn
-									return;
-								}
-							}
-
-							//GachaData.
-							if (g.itemStackEquals(itemstack)) { //中身が同じ場合のみここに入る
-								//player.sendMessage("Debug D");
-								if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
-									//レベルを満たしていない
-									return;
-								} else {
-									playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
-									break;
-								}
-							}
 						}
+					}
 				}
 			}
 		}
