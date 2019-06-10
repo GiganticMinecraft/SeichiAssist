@@ -92,7 +92,7 @@ public class PlayerPickupItemListener implements Listener {
 						//ガチャ品
 						MineStackGachaData g = SeichiAssist.msgachadatalist.get(mineStackObj.getGachatype());
 						String name = playerdata.getName(); //プレイヤーのネームを見る
-						if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
+						if(g.getProbability() <0.1){ //カタログギフト券を除く(名前があるアイテム)
 							if(!Util.ItemStackContainsOwnerName(itemstack, name)){
 								//所有者の名前が無ければreturn
 								return;

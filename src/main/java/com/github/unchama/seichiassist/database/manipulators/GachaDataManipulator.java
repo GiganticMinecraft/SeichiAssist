@@ -39,7 +39,7 @@ public class GachaDataManipulator {
                 ItemStack restoredItemStack = restoredInventory.getItem(0);
 
                 GachaData gachadata = new GachaData(
-                        restoredItemStack, lrs.getDouble("probability"), lrs.getInt("amount")
+                        restoredItemStack, lrs.getDouble("probability")
                 );
 
                 gachadatalist.add(gachadata);
@@ -68,14 +68,12 @@ public class GachaDataManipulator {
         for(GachaData gachadata : SeichiAssist.gachadatalist){
             //Inventory作ってガチャのitemstackに突っ込む
             Inventory inventory = Bukkit.getServer().createInventory(null, 9*1);
-            inventory.setItem(0,gachadata.itemStack);
+            inventory.setItem(0, gachadata.getItemStack());
 
-            command = "insert into " + getTableReference() + " (probability,amount,itemstack)"
+            command = "insert into " + getTableReference() + " (probability, itemstack)"
                     + " values"
-                    + "(" + gachadata.probability
-                    + "," + gachadata.amount
-                    + ",'" + BukkitSerialization.toBase64(inventory) + "'"
-                    + ")";
+                    + "(" + gachadata.getProbability() + "," +
+                    "'" + BukkitSerialization.toBase64(inventory) + "')";
             if(gateway.executeUpdate(command) == Fail){
                 return false;
             }

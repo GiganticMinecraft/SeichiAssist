@@ -2553,10 +2553,10 @@ public class PlayerInventoryListener implements Listener {
 			UUID uuid = player.getUniqueId();
 			PlayerData playerdata = playermap.get(uuid);
 			String name = playerdata.getName();
-			if(g.probability < 0.1){ //ガチャアイテムに名前を付与
+			if(g.getProbability() < 0.1){ //ガチャアイテムに名前を付与
 				g.addname(name);
 			}
-			itemstack = new ItemStack(g.itemStack); //この1行だけで問題なく動くのかテスト
+			itemstack = new ItemStack(g.getItemStack()); //この1行だけで問題なく動くのかテスト
 		}
 
 		return giveItemStackAndPlayMineStackSound(player, requestedAmount, itemstack);
@@ -2620,27 +2620,27 @@ public class PlayerInventoryListener implements Listener {
 				boolean flag = false;
 				//ガチャ景品リストを一個ずつ見ていくfor文
 				for(GachaData gachadata : gachadatalist){
-					if(!gachadata.itemStack.hasItemMeta()){
+					if(!gachadata.getItemStack().hasItemMeta()){
 						continue;
-					}else if(!gachadata.itemStack.getItemMeta().hasLore()){
+					}else if(!gachadata.getItemStack().getItemMeta().hasLore()){
 						continue;
 					}
 					//ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
 					if(gachadata.compare(m,name)){
 						if(SeichiAssist.DEBUG){
-							player.sendMessage(gachadata.itemStack.getItemMeta().getDisplayName());
+							player.sendMessage(gachadata.getItemStack().getItemMeta().getDisplayName());
 						}
 						flag = true;
 						int amount = m.getAmount();
-						if(gachadata.probability < 0.001){
+						if(gachadata.getProbability() < 0.001){
 							//ギガンティック大当たりの部分
 							//ガチャ券に交換せずそのままアイテムを返す
 							dropitem.add(m);
-						}else if(gachadata.probability < 0.01){
+						}else if(gachadata.getProbability() < 0.01){
 							//大当たりの部分
 							givegacha += (12*amount);
 							big++;
-						}else if(gachadata.probability < 0.1){
+						}else if(gachadata.getProbability() < 0.1){
 							//当たりの部分
 							givegacha += (3*amount);
 							reg++;
@@ -5184,19 +5184,19 @@ public class PlayerInventoryListener implements Listener {
 				boolean flag = false;
 				//ガチャ景品リストを一個ずつ見ていくfor文
 				for(GachaData gachadata : gachadatalist){
-					if(!gachadata.itemStack.hasItemMeta()){
+					if(!gachadata.getItemStack().hasItemMeta()){
 						continue;
-					}else if(!gachadata.itemStack.getItemMeta().hasLore()){
+					}else if(!gachadata.getItemStack().getItemMeta().hasLore()){
 						continue;
 					}
 					//ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
 					if(gachadata.compare(m,name)){
 						if(SeichiAssist.DEBUG){
-							player.sendMessage(gachadata.itemStack.getItemMeta().getDisplayName());
+							player.sendMessage(gachadata.getItemStack().getItemMeta().getDisplayName());
 						}
 						flag = true;
 						int amount = m.getAmount();
-						if(gachadata.probability < 0.001){
+						if(gachadata.getProbability() < 0.001){
 							//ギガンティック大当たりの部分
 							//1個につき椎名林檎n個と交換する
 							giveringo += (SeichiAssist.config.rateGiganticToRingo()*amount);

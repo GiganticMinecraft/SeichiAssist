@@ -265,32 +265,30 @@ public class PlayerClickListener implements Listener {
 				//プレゼント用ガチャデータ作成
 				GachaData present;
 				//ガチャ実行
-				present = GachaData.runGacha();
-				if(present.probability < 0.1){
+				present = GachaData.Companion.runGacha();
+				if(present.getProbability() < 0.1){
 					present.addname(name);
 				}
-				//ガチャデータのitemstackの数を再設定（バグのため）
-				present.itemStack.setAmount(present.amount);
 				//メッセージ設定
 				String str = "";
 
 				//プレゼントを格納orドロップ
 				if(!Util.isPlayerInventoryFull(player)){
-					Util.addItem(player,present.itemStack);
+					Util.addItem(player, present.getItemStack());
 				}else{
-					Util.dropItem(player,present.itemStack);
+					Util.dropItem(player, present.getItemStack());
 					str += ChatColor.AQUA + "プレゼントがドロップしました。";
 				}
 
 				//確率に応じてメッセージを送信
-				if(present.probability < 0.001){
+				if(present.getProbability() < 0.001){
 					Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH,(float)0.5, 2);
 					if (!playerdata.getEverysoundflag()) {
 						player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, (float) 0.5, 2);
 					}
 					List<String> enchantname = new ArrayList<>();
-					List<String> lore = present.itemStack.getItemMeta().getLore();
-					Map<Enchantment, Integer> enchantment = present.itemStack.getItemMeta().getEnchants();
+					List<String> lore = present.getItemStack().getItemMeta().getLore();
+					Map<Enchantment, Integer> enchantment = present.getItemStack().getItemMeta().getEnchants();
 
 					for(Enchantment enchant : enchantment.keySet())
 					{
@@ -299,19 +297,19 @@ public class PlayerClickListener implements Listener {
 					lore.remove("§r§2所有者：" + player.getName());
 
 					TextComponent message = new TextComponent();
-					message.setText(ChatColor.AQUA + present.itemStack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
-					message.setHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(" " + present.itemStack.getItemMeta().getDisplayName() +  "\n" + Util.getDescFormat(enchantname) + Util.getDescFormat(lore)).create() ) );
+					message.setText(ChatColor.AQUA + present.getItemStack().getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
+					message.setHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(" " + present.getItemStack().getItemMeta().getDisplayName() +  "\n" + Util.getDescFormat(enchantname) + Util.getDescFormat(lore)).create() ) );
 
 					player.sendMessage(ChatColor.RED + "おめでとう！！！！！Gigantic☆大当たり！" + str);
 					Util.sendEveryMessageWithoutIgnore(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！");
 					Util.sendEveryMessageWithoutIgnore(message);
-				}else if(present.probability < 0.01){
+				}else if(present.getProbability() < 0.01){
 					//大当たり時にSEを鳴らす(自分だけ)
 					player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
 					//ver 0.3.1以降 大当たり時の全体通知を削除
 					player.sendMessage(ChatColor.GOLD + "おめでとう！！大当たり！" + str);
 
-				}else if(present.probability < 0.1){
+				}else if(present.getProbability() < 0.1){
 					player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！" + str);
 				}else{
 					if(count == 1){
