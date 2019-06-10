@@ -24,12 +24,6 @@ public class GachaData {
 		this.amount = amount;
 	}
 
-	public GachaData(GachaData gachadata) {
-		this.itemStack = gachadata.itemStack.clone();
-		this.probability = gachadata.probability;
-		this.amount = gachadata.amount;
-	}
-
 	public static GachaData runGacha() {
 		double sum = 1.0;
 		double rand = Math.random();

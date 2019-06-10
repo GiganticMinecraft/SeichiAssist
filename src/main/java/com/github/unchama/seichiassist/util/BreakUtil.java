@@ -226,7 +226,6 @@ public final class BreakUtil {
 							}
 						}
 
-						//GachaData.
 						if (g.itemStackEquals(itemstack)) { //中身が同じ場合のみここに入る
 							if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 								//レベルを満たしていない
