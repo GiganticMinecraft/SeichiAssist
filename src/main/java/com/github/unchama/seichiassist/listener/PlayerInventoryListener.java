@@ -2549,7 +2549,7 @@ public class PlayerInventoryListener implements Listener {
 			meta.setDisplayName(StaticGachaPrizeFactory.getGachaRingoName());
 			meta.setLore(StaticGachaPrizeFactory.getGachaRingoLore());
 		} else if (num>=0) { //他のガチャアイテムの場合 -2以下は他のアイテムに対応させる
-			MineStackGachaData g = new MineStackGachaData(SeichiAssist.msgachadatalist.get(num));
+			MineStackGachaData g = SeichiAssist.msgachadatalist.get(num).copy();
 			UUID uuid = player.getUniqueId();
 			PlayerData playerdata = playermap.get(uuid);
 			String name = playerdata.getName();

@@ -11,35 +11,23 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MineStackGachaData {
-	public String objName;
+public class MineStackGachaData implements Cloneable {
+	public final String objName;
 	//アイテムデータ格納
-	public ItemStack itemStack;
+	public final ItemStack itemStack;
 	//取得確率格納
-	public double probability;
+	public final double probability;
 	//アイテム数
-	public int amount;
+	public final int amount;
 	//解放レベル(本来のレベルではないことに注意)
-	public int level;
+	public final int level;
 
-	public MineStackGachaData(){
-		itemStack = null;
-		probability = 0.0;
-		amount = 0;
-	}
-
-	public MineStackGachaData(String objName, ItemStack itemStack,double probability, int amount){
+	public MineStackGachaData(String objName, ItemStack itemStack, double probability, int amount, int level){
 		this.objName = objName;
 		this.itemStack = itemStack.clone();
 		this.probability = probability;
 		this.amount = amount;
-	}
-
-	public MineStackGachaData(MineStackGachaData gachadata) {
-		this.objName = gachadata.objName;
-		this.itemStack = gachadata.itemStack.clone();
-		this.probability = gachadata.probability;
-		this.amount = gachadata.amount;
+		this.level = level;
 	}
 
 	public boolean itemStackEquals(ItemStack another) { //ItemStackとgashadataが同じならOK
@@ -78,5 +66,9 @@ public class MineStackGachaData {
 		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name);
 		meta.setLore(lore);
 		this.itemStack.setItemMeta(meta);
+	}
+
+	public MineStackGachaData copy() {
+		return new MineStackGachaData(objName, itemStack.clone(), probability, amount, level);
 	}
 }

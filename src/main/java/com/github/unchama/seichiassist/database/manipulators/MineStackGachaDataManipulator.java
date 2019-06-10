@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -34,14 +35,15 @@ public class MineStackGachaDataManipulator {
         String command = "select * from " + getTableReference();
         try (ResultSet lrs = gateway.executeQuery(command)){
             while (lrs.next()) {
-                MineStackGachaData gachadata = new MineStackGachaData();
-                Inventory inventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"));
-                gachadata.itemStack = (inventory.getItem(0));
-                gachadata.amount = lrs.getInt("amount");
-                gachadata.level = lrs.getInt("level");
-                gachadata.objName = lrs.getString("obj_name");
-                gachadata.probability = lrs.getDouble("probability");
-                gachadatalist.add(gachadata);
+                Inventory savedInventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"));
+                ItemStack itemStack = savedInventory.getItem(0);
+
+                MineStackGachaData gachaData = new MineStackGachaData(
+                        lrs.getString("obj_name"), itemStack, lrs.getDouble("probability"),
+                        lrs.getInt("amount"), lrs.getInt("level")
+                );
+
+                gachadatalist.add(gachaData);
             }
         } catch (SQLException | IOException e) {
             java.lang.System.out.println("sqlクエリの実行に失敗しました。以下にエラーを表示します");

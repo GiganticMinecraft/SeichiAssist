@@ -13,6 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.UUID;
@@ -483,14 +484,9 @@ public class GachaCommand implements CommandExecutor {
 
 	private void Gachaaddms(CommandSender sender, String s, int level, int num) {
 		int temp = num-1;
-		if(temp>=0 && temp<SeichiAssist.gachadatalist.size()){
+		if(temp >= 0 && temp < SeichiAssist.gachadatalist.size()){
 			GachaData g = SeichiAssist.gachadatalist.get(temp);
-			MineStackGachaData mg = new MineStackGachaData();
-			mg.amount = g.amount;
-			mg.itemStack = g.itemstack;
-			mg.probability = g.probability;
-			mg.level = level;
-			mg.objName = s;
+			MineStackGachaData mg = new MineStackGachaData(s, g.itemstack.clone(), g.probability, level, level);
 			SeichiAssist.msgachadatalist.add(mg);
 			sender.sendMessage("データガチャリストID" + num + "のデータを" + "変数名:" + s + ",レベル:" + level + "でMineStack用ガチャデータリストに追加しました");
 			sender.sendMessage("/gacha savemsでmysqlに保存してください");
@@ -499,16 +495,10 @@ public class GachaCommand implements CommandExecutor {
 	}
 
 	private void Gachaaddms2(Player player,double probability, String name, int level) {
-		MineStackGachaData gachadata = new MineStackGachaData();
-		PlayerInventory inventory = player.getInventory();
-		gachadata.itemStack = inventory.getItemInMainHand();
-		gachadata.amount = inventory.getItemInMainHand().getAmount();
-		gachadata.probability = probability;
-		gachadata.objName = name;
-		gachadata.level = level;
-
-		SeichiAssist.msgachadatalist.add(gachadata);
-		player.sendMessage(gachadata.itemStack.getType().toString() + "/" + gachadata.itemStack.getItemMeta().getDisplayName() + ChatColor.RESET + gachadata.amount + "個を確率" + gachadata.probability + "としてMineStack用ガチャリストに追加しました");
+		ItemStack targetItemStack = player.getInventory().getItemInMainHand();
+		MineStackGachaData gachaData = new MineStackGachaData(name, targetItemStack, probability, targetItemStack.getAmount(), level);
+		SeichiAssist.msgachadatalist.add(gachaData);
+		player.sendMessage(gachaData.itemStack.getType().toString() + "/" + gachaData.itemStack.getItemMeta().getDisplayName() + ChatColor.RESET + gachaData.amount + "個を確率" + gachaData.probability + "としてMineStack用ガチャリストに追加しました");
 		player.sendMessage("/gacha savemsでmysqlに保存してください");
 	}
 
