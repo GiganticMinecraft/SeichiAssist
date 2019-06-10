@@ -7,7 +7,7 @@ import org.bukkit.ChatColor
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-class GachaData(itemStack: ItemStack, var probability: Double) {
+class GachaCandidate(itemStack: ItemStack, var probability: Double) {
   //アイテムデータ格納
   var itemStack: ItemStack = itemStack.clone()
 
@@ -34,24 +34,19 @@ class GachaData(itemStack: ItemStack, var probability: Double) {
     return false
   }
 
-  fun addname(name: String) {
+  @Deprecated("ここをなんのデータクラスだと思っているんだ")
+  fun appendOwnerLore(name: String) {
     val meta = this.itemStack.itemMeta
-    val lore: MutableList<String>
-    if (meta.hasLore()) {
-      lore = meta.lore
-    } else {
-      lore = ArrayList()
-    }
-    lore.add(ChatColor.RESET.toString() + "" + ChatColor.DARK_GREEN + "所有者：" + name)
-    meta.lore = lore
-    this.itemStack.itemMeta = meta
+    val lore = if (meta.hasLore()) meta.lore else ArrayList()
+    lore.add("${ChatColor.RESET}${ChatColor.DARK_GREEN}所有者：$name")
+    this.itemStack.itemMeta.lore = lore
   }
 
-  fun copy(): GachaData = GachaData(this.itemStack.clone(), probability)
+  fun copy(): GachaCandidate = GachaCandidate(this.itemStack.clone(), probability)
 
   companion object {
     // TODO ここにあるべきではない
-    fun runGacha(): GachaData {
+    fun runGacha(): GachaCandidate {
       var sum = 1.0
       val rand = Math.random()
 
@@ -61,7 +56,7 @@ class GachaData(itemStack: ItemStack, var probability: Double) {
           return gachadata.copy()
         }
       }
-      return GachaData(StaticGachaPrizeFactory.getGachaRingo(), 1.0)
+      return GachaCandidate(StaticGachaPrizeFactory.getGachaRingo(), 1.0)
     }
   }
 }

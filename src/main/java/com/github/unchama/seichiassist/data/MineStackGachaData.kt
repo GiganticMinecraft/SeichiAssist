@@ -40,14 +40,13 @@ class MineStackGachaData(val objName: String,
     return false
   }
 
-  fun addname(name: String) {
+  @Deprecated("ここをなんのデータクラスだと思っているんだ")
+  fun appendOwnerLore(name: String) {
     val meta = this.itemStack.itemMeta
     val lore = if (meta.hasLore()) meta.lore else ArrayList()
     lore.add("${ChatColor.RESET}${ChatColor.DARK_GREEN}所有者：$name")
     this.itemStack.itemMeta.lore = lore
   }
 
-  fun copy(): MineStackGachaData {
-    return MineStackGachaData(objName, itemStack.clone(), probability, level)
-  }
+  fun copy() = MineStackGachaData(objName, itemStack.clone(), probability, level)
 }

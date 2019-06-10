@@ -55,7 +55,7 @@ import static com.github.unchama.util.ActionStatus.Fail;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
+	List<GachaCandidate> gachadatalist = SeichiAssist.gachadatalist;
 	SeichiAssist plugin = SeichiAssist.instance;
 	private Config config = SeichiAssist.config;
 	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
@@ -2554,7 +2554,7 @@ public class PlayerInventoryListener implements Listener {
 			PlayerData playerdata = playermap.get(uuid);
 			String name = playerdata.getName();
 			if(g.getProbability() < 0.1){ //ガチャアイテムに名前を付与
-				g.addname(name);
+				g.appendOwnerLore(name);
 			}
 			itemstack = new ItemStack(g.getItemStack()); //この1行だけで問題なく動くのかテスト
 		}
@@ -2619,7 +2619,7 @@ public class PlayerInventoryListener implements Listener {
 				//ガチャ景品リストにアイテムがあった時にtrueになるフラグ
 				boolean flag = false;
 				//ガチャ景品リストを一個ずつ見ていくfor文
-				for(GachaData gachadata : gachadatalist){
+				for(GachaCandidate gachadata : gachadatalist){
 					if(!gachadata.getItemStack().hasItemMeta()){
 						continue;
 					}else if(!gachadata.getItemStack().getItemMeta().hasLore()){
@@ -5183,7 +5183,7 @@ public class PlayerInventoryListener implements Listener {
 				//ガチャ景品リストにアイテムがあった時にtrueになるフラグ
 				boolean flag = false;
 				//ガチャ景品リストを一個ずつ見ていくfor文
-				for(GachaData gachadata : gachadatalist){
+				for(GachaCandidate gachadata : gachadatalist){
 					if(!gachadata.getItemStack().hasItemMeta()){
 						continue;
 					}else if(!gachadata.getItemStack().getItemMeta().hasLore()){

@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.GachaCandidate;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.AsyncEntityRemover;
@@ -35,7 +35,7 @@ import java.util.*;
 public class PlayerClickListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
+	List<GachaCandidate> gachadatalist = SeichiAssist.gachadatalist;
 	//アクティブスキル処理
 	@EventHandler
 	public void onPlayerActiveSkillEvent(PlayerInteractEvent event){
@@ -263,11 +263,11 @@ public class PlayerClickListener implements Listener {
 			}
 			for(int c = 0 ; c < count ; c++){
 				//プレゼント用ガチャデータ作成
-				GachaData present;
+				GachaCandidate present;
 				//ガチャ実行
-				present = GachaData.Companion.runGacha();
+				present = GachaCandidate.Companion.runGacha();
 				if(present.getProbability() < 0.1){
-					present.addname(name);
+					present.appendOwnerLore(name);
 				}
 				//メッセージ設定
 				String str = "";
