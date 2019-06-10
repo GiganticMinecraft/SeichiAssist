@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.data
 
+import com.github.unchama.messaging.MessageToSender
+import com.github.unchama.messaging.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.Worlds
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -8,7 +10,7 @@ import com.github.unchama.seichiassist.minestack.MineStackHistoryData
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.task.MebiusTask
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.ExperienceManager
+import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import org.bukkit.*
@@ -135,7 +137,7 @@ class PlayerData(val player: Player) {
     var gachacooldownflag: Boolean = false
 
     //インベントリ共有トグル
-    var shareinv: Boolean = false
+    var contentsPresentInSharedInventory: Boolean = false
     //インベントリ共有ボタン連打防止用
     var shareinvcooldownflag: Boolean = false
 
@@ -284,7 +286,7 @@ class PlayerData(val player: Player) {
         this.level = 1
         this.mebius = MebiusTask(this)
         this.numofsorryforbug = 0
-        this.inventory = SeichiAssist.instance.server.createInventory(null, 9 * 1, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "4次元ポケット")
+        this.inventory = Bukkit.createInventory(null, 9 * 1, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "4次元ポケット")
         this.rgnum = 0
         this.minestack = MineStack()
         this.minestackflag = true
@@ -589,7 +591,7 @@ class PlayerData(val player: Player) {
 
         //xを整地量に追加
         totalbreaknum += x
-        return x
+        return x.toInt()
     }
 
     //ブロック別整地数反映量の調節
@@ -775,28 +777,6 @@ class PlayerData(val player: Player) {
         return this.halfBreakFlag
     }
 
-    fun toggleHalfBreakFlag() {
-        halfBreakFlag = !halfBreakFlag
-    }
-
-    /*
-	public void setAheadChunk(int amount) {
-		this.aheadChunk = amount;
-	}
-
-	public void setBehindChunk(int amount) {
-		this.behindChunk = amount;
-	}
-
-	public void setRightChunk(int amount) {
-		this.rightChunk = amount;
-	}
-
-	public void setLeftChunk(int amount) {
-		this.leftChunk = amount;
-	}
-	*/
-
     fun canGridExtend(directionType: DirectionType, world: String): Boolean {
         val LIMIT = config.getGridLimitPerWorld(world)
         val chunkMap = unitMap
@@ -929,6 +909,81 @@ class PlayerData(val player: Player) {
 
         mana.calcAndSetMax(p, this.level)
     }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun toggleEffect(): MessageToSender {
+        effectflag = (effectflag + 1) % 6
+
+        val responseMessage = when (effectflag) {
+            0 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(無制限)"
+            1 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(127制限)"
+            2 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(200制限)"
+            3 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(400制限)"
+            4 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(600制限)"
+            else -> "${ChatColor.GREEN}採掘速度上昇効果:OFF"
+        }
+
+        return responseMessage.asResponseToSender()
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun toggleMessageFlag(): MessageToSender {
+        messageflag = !messageflag
+
+        val responseMessage = if (messageflag) {
+            "${ChatColor.GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
+        } else {
+            "${ChatColor.GREEN}内訳表示:OFF"
+        }
+
+        return responseMessage.asResponseToSender()
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun toggleHalfBreakFlag(): MessageToSender {
+        halfBreakFlag = !halfBreakFlag
+
+        val newStatus = if (halfBreakFlag) "${ChatColor.GREEN}破壊可能" else "${ChatColor.RED}破壊不可能"
+        val responseMessage = "現在ハーフブロックは$newStatus${ChatColor.RESET}です."
+
+        return responseMessage.asResponseToSender()
+    }
+
+    /**
+     * 運営権限により強制的に実績を解除することを試みる。
+     * 解除に成功し、このインスタンスが指す[Player]がオンラインであるならばその[Player]に解除の旨がチャットにて通知される。
+     *
+     * @param number 解除対象の実績番号
+     * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
+     */
+    @Suppress("RedundantSuspendModifier")
+    suspend fun tryForcefullyUnlockAchievement(number: Int): MessageToSender =
+        if (!TitleFlags.get(number)) {
+            TitleFlags.set(number)
+            Bukkit.getPlayer(uuid)?.sendMessage("運営チームよりNo${number}の実績が配布されました。")
+
+            "$name に実績No. $number を${ChatColor.GREEN}付与${ChatColor.RESET}しました。".asResponseToSender()
+        } else {
+            "${ChatColor.GRAY}$name は既に実績No. $number を獲得しています。".asResponseToSender()
+        }
+
+    /**
+     * 運営権限により強制的に実績を剥奪することを試みる。
+     * 実績剥奪の通知はプレーヤーには行われない。
+     *
+     * @param number 解除対象の実績番号
+     * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
+     */
+    @Suppress("RedundantSuspendModifier")
+    suspend fun forcefullyDepriveAchievement(number: Int): MessageToSender =
+        if (!TitleFlags.get(number)) {
+            TitleFlags.set(number, false)
+
+            "$name から実績No. $number を${ChatColor.RED}剥奪${ChatColor.GREEN}しました。".asResponseToSender()
+        } else {
+            "${ChatColor.GRAY}$name は実績No. $number を獲得していません。".asResponseToSender()
+        }
+
 
     /**
      * 整地量を表すEXPパーを表示なら非表示に,非表示なら表示に切り替えます.

@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist.task;
 
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.achievement.SeichiAchievement;
-import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.data.EffectData;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -14,12 +15,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.commands.legacy.GiganticFeverCommand;
-import com.github.unchama.seichiassist.data.EffectData;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * 1分に1回回してる処理
@@ -30,8 +27,6 @@ public class EveryMinuteTask extends BukkitRunnable{
 	private SeichiAssist plugin = SeichiAssist.instance;
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
 	private Config config = SeichiAssist.config;
-	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-	public static int time = 0;
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public EveryMinuteTask() {
@@ -86,17 +81,8 @@ public class EveryMinuteTask extends BukkitRunnable{
 			//総プレイ時間更新
 			playerdata.calcPlayTick(player);
 
-			//以下の3つ、必ずこの順番で実施！(after更新→setIncrease→before更新)
-			//現在（after）の統計量を設定
-			//playerdata.minuteblock.after = playerdata.totalbreaknum;
-			//1分前(before)との差を計算し、設定
-			//playerdata.minuteblock.setIncrease();
-			//現在の統計量を設定(before)
-			//playerdata.minuteblock.before = playerdata.totalbreaknum;
-
 			//スターレベル更新
 			playerdata.calcStarLevel(player);
-
 
 			//effectの大きさ
 			double amplifier;
@@ -108,7 +94,6 @@ public class EveryMinuteTask extends BukkitRunnable{
 			//プレイヤー数による上昇
 			amplifier = (double) onlinenums * config.getLoginPlayerMineSpeed();
 			playerdata.getEffectdatalist().add(new EffectData(amplifier,1));
-
 
 			//effect追加の処理
 			//実際に適用されるeffect量
@@ -276,7 +261,5 @@ public class EveryMinuteTask extends BukkitRunnable{
 
 		}
 
-		time++;
-		GiganticFeverCommand.checkTime(); //GiganticFeverの時間チェック
 	}
 }

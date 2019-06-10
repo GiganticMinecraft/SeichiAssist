@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -53,8 +54,8 @@ public class CheckAlreadyExistPlayerDataTask extends BukkitRunnable{
 		// TODO 自動生成されたメソッド・スタブ
 
 		//対象プレイヤーがオフラインなら処理終了
-		if(SeichiAssist.instance.getServer().getPlayer(uuid) == null){
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + name + "はオフラインの為取得処理を中断");
+		if(Bukkit.getPlayer(uuid) == null){
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + name + "はオフラインの為取得処理を中断");
 			return;
 		}
 		//sqlコネクションチェック

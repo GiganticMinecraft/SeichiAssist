@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.util.ExperienceManager;
+import com.github.unchama.seichiassist.util.exp.ExperienceManager;
 import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
@@ -1417,7 +1417,7 @@ public class MenuInventoryData {
 				, ""
 				));
 
-		if(playerdata.getShareinv()){
+		if(playerdata.getContentsPresentInSharedInventory()){
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "収納中");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでアイテムを取り出します。");
 			lore.add(ChatColor.RESET + "" + ChatColor.RED + "現在の装備・アイテムが空であることを確認してください。");
