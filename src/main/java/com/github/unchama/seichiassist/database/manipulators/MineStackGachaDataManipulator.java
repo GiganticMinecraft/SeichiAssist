@@ -36,10 +36,10 @@ public class MineStackGachaDataManipulator {
             while (lrs.next()) {
                 MineStackGachaData gachadata = new MineStackGachaData();
                 Inventory inventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"));
-                gachadata.itemstack = (inventory.getItem(0));
+                gachadata.itemStack = (inventory.getItem(0));
                 gachadata.amount = lrs.getInt("amount");
                 gachadata.level = lrs.getInt("level");
-                gachadata.obj_name = lrs.getString("obj_name");
+                gachadata.objName = lrs.getString("obj_name");
                 gachadata.probability = lrs.getDouble("probability");
                 gachadatalist.add(gachadata);
             }
@@ -67,14 +67,14 @@ public class MineStackGachaDataManipulator {
         for(MineStackGachaData gachadata : SeichiAssist.msgachadatalist){
             //Inventory作ってガチャのitemstackに突っ込む
             Inventory inventory = Bukkit.getServer().createInventory(null, 9*1);
-            inventory.setItem(0,gachadata.itemstack);
+            inventory.setItem(0,gachadata.itemStack);
 
             command = "insert into " + getTableReference() + " (probability,amount,level,obj_name,itemstack)"
                     + " values"
                     + "(" + gachadata.probability
                     + "," + gachadata.amount
                     + "," + gachadata.level
-                    + ",'" + gachadata.obj_name + "'"
+                    + ",'" + gachadata.objName + "'"
                     + ",'" + BukkitSerialization.toBase64(inventory) + "'"
                     + ")";
 

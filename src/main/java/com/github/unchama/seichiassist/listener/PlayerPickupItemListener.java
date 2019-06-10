@@ -100,7 +100,7 @@ public class PlayerPickupItemListener implements Listener {
 							}
 
 							//GachaData.
-							if (g.compareonly(itemstack)) { //中身が同じ場合のみここに入る
+							if (g.itemStackEquals(itemstack)) { //中身が同じ場合のみここに入る
 								//player.sendMessage("Debug D");
 								if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 									//レベルを満たしていない

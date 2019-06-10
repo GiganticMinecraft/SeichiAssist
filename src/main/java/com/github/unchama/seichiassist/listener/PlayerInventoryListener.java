@@ -2556,7 +2556,7 @@ public class PlayerInventoryListener implements Listener {
 			if(g.probability < 0.1){ //ガチャアイテムに名前を付与
 				g.addname(name);
 			}
-			itemstack = new ItemStack(g.itemstack); //この1行だけで問題なく動くのかテスト
+			itemstack = new ItemStack(g.itemStack); //この1行だけで問題なく動くのかテスト
 		}
 
 		return giveItemStackAndPlayMineStackSound(player, requestedAmount, itemstack);
@@ -2581,13 +2581,7 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 		if(inventory.getTitle().equals(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください")){
-			//PlayerInventory pinventory = player.getInventory();
-			//ItemStack itemstack = pinventory.getItemInMainHand();
 			int givegacha = 0;
-			/*この分岐処理必要かなぁ…とりあえずコメントアウト
-			if(itemstack.getType().equals(Material.STICK)){
-			}
-			*/
 			/*
 			 * step1 for文でinventory内に対象商品がないか検索
 			 * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
@@ -2636,8 +2630,6 @@ public class PlayerInventoryListener implements Listener {
 						if(SeichiAssist.DEBUG){
 							player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
 						}
-					//if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())
-						   // &&gachadata.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
 						flag = true;
 						int amount = m.getAmount();
 						if(gachadata.probability < 0.001){
@@ -5154,13 +5146,7 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 		if(inventory.getTitle().equals(ChatColor.GOLD + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ")){
-			//PlayerInventory pinventory = player.getInventory();
-			//ItemStack itemstack = pinventory.getItemInMainHand();
 			int giveringo = 0;
-			/*この分岐処理必要かなぁ…とりあえずコメントアウト
-			if(itemstack.getType().equals(Material.STICK)){
-			}
-			*/
 			/*
 			 * step1 for文でinventory内に対象商品がないか検索
 			 * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
@@ -5208,8 +5194,6 @@ public class PlayerInventoryListener implements Listener {
 						if(SeichiAssist.DEBUG){
 							player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
 						}
-					//if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())
-						   // &&gachadata.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
 						flag = true;
 						int amount = m.getAmount();
 						if(gachadata.probability < 0.001){

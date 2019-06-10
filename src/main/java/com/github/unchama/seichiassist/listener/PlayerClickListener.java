@@ -309,10 +309,8 @@ public class PlayerClickListener implements Listener {
 					//大当たり時にSEを鳴らす(自分だけ)
 					player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
 					//ver 0.3.1以降 大当たり時の全体通知を削除
-					// Util.sendEverySound(Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
 					player.sendMessage(ChatColor.GOLD + "おめでとう！！大当たり！" + str);
 
-					//Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
 				}else if(present.probability < 0.1){
 					player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！" + str);
 				}else{
