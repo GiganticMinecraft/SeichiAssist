@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist;
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.*;
 import com.github.unchama.seichiassist.commands.legacy.*;
-import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
@@ -59,7 +59,7 @@ public class SeichiAssist extends JavaPlugin{
 	private List<BukkitTask> tasklist = new ArrayList<>();
 
 	//Gachadataに依存するデータリスト
-	public static final List<GachaData> gachadatalist = new ArrayList<>();
+	public static final List<GachaPrize> gachadatalist = new ArrayList<>();
 
 	//(minestackに格納する)Gachadataに依存するデータリスト
 	public static List<MineStackGachaData> msgachadatalist = new ArrayList<>();
@@ -1029,8 +1029,8 @@ public class SeichiAssist extends JavaPlugin{
 		List<MineStackObj> minestacklist = new ArrayList<>();
 		for(int i=0; i<SeichiAssist.msgachadatalist.size(); i++){
 			MineStackGachaData g = SeichiAssist.msgachadatalist.get(i);
-			if(g.itemstack.getType() != Material.EXP_BOTTLE){ //経験値瓶だけはすでにリストにあるので除外
-				minestacklist.add(new MineStackObj(g.obj_name,g.level,g.itemstack,true,i,5));
+			if(g.getItemStack().getType() != Material.EXP_BOTTLE){ //経験値瓶だけはすでにリストにあるので除外
+				minestacklist.add(new MineStackObj(g.getObjName(), g.getLevel(), g.getItemStack(),true,i,5));
 			}
 		}
 		return minestacklist;

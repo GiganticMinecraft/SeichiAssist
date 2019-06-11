@@ -9,7 +9,7 @@ commands:
   seichihaste:
     permission: multiseichiplugin.seichihaste
     permission-message: You don't have <permission>
-  seichassist:
+  seichiassist:
     permission: multiseichiplugin.seichiassist
     permission-message: You don't have <permission>
   openpocket:

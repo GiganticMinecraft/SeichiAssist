@@ -55,7 +55,7 @@ import static com.github.unchama.util.ActionStatus.Fail;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
+	List<GachaPrize> gachadatalist = SeichiAssist.gachadatalist;
 	SeichiAssist plugin = SeichiAssist.instance;
 	private Config config = SeichiAssist.config;
 	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
@@ -2549,14 +2549,14 @@ public class PlayerInventoryListener implements Listener {
 			meta.setDisplayName(StaticGachaPrizeFactory.getGachaRingoName());
 			meta.setLore(StaticGachaPrizeFactory.getGachaRingoLore());
 		} else if (num>=0) { //他のガチャアイテムの場合 -2以下は他のアイテムに対応させる
-			MineStackGachaData g = new MineStackGachaData(SeichiAssist.msgachadatalist.get(num));
+			MineStackGachaData g = SeichiAssist.msgachadatalist.get(num).copy();
 			UUID uuid = player.getUniqueId();
 			PlayerData playerdata = playermap.get(uuid);
 			String name = playerdata.getName();
-			if(g.probability < 0.1){ //ガチャアイテムに名前を付与
-				g.addname(name);
+			if(g.getProbability() < 0.1){ //ガチャアイテムに名前を付与
+				g.appendOwnerLore(name);
 			}
-			itemstack = new ItemStack(g.itemstack); //この1行だけで問題なく動くのかテスト
+			itemstack = new ItemStack(g.getItemStack()); //この1行だけで問題なく動くのかテスト
 		}
 
 		return giveItemStackAndPlayMineStackSound(player, requestedAmount, itemstack);
@@ -2581,13 +2581,7 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 		if(inventory.getTitle().equals(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "交換したい景品を入れてください")){
-			//PlayerInventory pinventory = player.getInventory();
-			//ItemStack itemstack = pinventory.getItemInMainHand();
 			int givegacha = 0;
-			/*この分岐処理必要かなぁ…とりあえずコメントアウト
-			if(itemstack.getType().equals(Material.STICK)){
-			}
-			*/
 			/*
 			 * step1 for文でinventory内に対象商品がないか検索
 			 * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
@@ -2625,30 +2619,28 @@ public class PlayerInventoryListener implements Listener {
 				//ガチャ景品リストにアイテムがあった時にtrueになるフラグ
 				boolean flag = false;
 				//ガチャ景品リストを一個ずつ見ていくfor文
-				for(GachaData gachadata : gachadatalist){
-					if(!gachadata.itemstack.hasItemMeta()){
+				for(GachaPrize gachadata : gachadatalist){
+					if(!gachadata.getItemStack().hasItemMeta()){
 						continue;
-					}else if(!gachadata.itemstack.getItemMeta().hasLore()){
+					}else if(!gachadata.getItemStack().getItemMeta().hasLore()){
 						continue;
 					}
 					//ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
 					if(gachadata.compare(m,name)){
 						if(SeichiAssist.DEBUG){
-							player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
+							player.sendMessage(gachadata.getItemStack().getItemMeta().getDisplayName());
 						}
-					//if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())
-						   // &&gachadata.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
 						flag = true;
 						int amount = m.getAmount();
-						if(gachadata.probability < 0.001){
+						if(gachadata.getProbability() < 0.001){
 							//ギガンティック大当たりの部分
 							//ガチャ券に交換せずそのままアイテムを返す
 							dropitem.add(m);
-						}else if(gachadata.probability < 0.01){
+						}else if(gachadata.getProbability() < 0.01){
 							//大当たりの部分
 							givegacha += (12*amount);
 							big++;
-						}else if(gachadata.probability < 0.1){
+						}else if(gachadata.getProbability() < 0.1){
 							//当たりの部分
 							givegacha += (3*amount);
 							reg++;
@@ -5154,13 +5146,7 @@ public class PlayerInventoryListener implements Listener {
 			return;
 		}
 		if(inventory.getTitle().equals(ChatColor.GOLD + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ")){
-			//PlayerInventory pinventory = player.getInventory();
-			//ItemStack itemstack = pinventory.getItemInMainHand();
 			int giveringo = 0;
-			/*この分岐処理必要かなぁ…とりあえずコメントアウト
-			if(itemstack.getType().equals(Material.STICK)){
-			}
-			*/
 			/*
 			 * step1 for文でinventory内に対象商品がないか検索
 			 * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
@@ -5197,22 +5183,20 @@ public class PlayerInventoryListener implements Listener {
 				//ガチャ景品リストにアイテムがあった時にtrueになるフラグ
 				boolean flag = false;
 				//ガチャ景品リストを一個ずつ見ていくfor文
-				for(GachaData gachadata : gachadatalist){
-					if(!gachadata.itemstack.hasItemMeta()){
+				for(GachaPrize gachadata : gachadatalist){
+					if(!gachadata.getItemStack().hasItemMeta()){
 						continue;
-					}else if(!gachadata.itemstack.getItemMeta().hasLore()){
+					}else if(!gachadata.getItemStack().getItemMeta().hasLore()){
 						continue;
 					}
 					//ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
 					if(gachadata.compare(m,name)){
 						if(SeichiAssist.DEBUG){
-							player.sendMessage(gachadata.itemstack.getItemMeta().getDisplayName());
+							player.sendMessage(gachadata.getItemStack().getItemMeta().getDisplayName());
 						}
-					//if(gachadata.itemstack.getItemMeta().getLore().equals(m.getItemMeta().getLore())
-						   // &&gachadata.itemstack.getItemMeta().getDisplayName().equals(m.getItemMeta().getDisplayName())){
 						flag = true;
 						int amount = m.getAmount();
-						if(gachadata.probability < 0.001){
+						if(gachadata.getProbability() < 0.001){
 							//ギガンティック大当たりの部分
 							//1個につき椎名林檎n個と交換する
 							giveringo += (SeichiAssist.config.rateGiganticToRingo()*amount);
