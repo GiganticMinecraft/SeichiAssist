@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.LimitedLoginEvent;
+import com.github.unchama.seichiassist.data.MineStack;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseConstants;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
@@ -116,14 +117,21 @@ public class PlayerDataLoadTask extends BukkitRunnable{
         }
 
 		try (ResultSet resultSet = stmt.executeQuery(mineStackDataQuery)) {
+			final Map<MineStackObj, Long> objectAmounts = new HashMap<>();
 			while (resultSet.next()) {
 				final String objectName = resultSet.getString("object_name");
 				final long objectAmount = resultSet.getLong("amount");
-
 				final MineStackObj mineStackObj = nameObjectMappings.get(objectName);
 
-				playerdata.getMinestack().setStackedAmountOf(mineStackObj, objectAmount);
+				if (mineStackObj != null) {
+					objectAmounts.put(mineStackObj, objectAmount);
+				} else {
+					final String message = "プレーヤー " + p.getName() + " のMineStackオブジェクト " + objectName + " は収納可能リストに見つかりませんでした。";
+					Bukkit.getLogger().warning(message);
+				}
 			}
+
+			playerdata.setMinestack(new MineStack(objectAmounts));
 		}
 	}
 

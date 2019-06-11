@@ -288,7 +288,6 @@ class PlayerData(val player: Player) {
         this.numofsorryforbug = 0
         this.inventory = Bukkit.createInventory(null, 9 * 1, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "4次元ポケット")
         this.rgnum = 0
-        this.minestack = MineStack()
         this.minestackflag = true
         this.servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK)
         this.playtick = 0
