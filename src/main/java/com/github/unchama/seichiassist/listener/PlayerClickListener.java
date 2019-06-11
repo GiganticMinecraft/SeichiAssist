@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.AsyncEntityRemover;
@@ -35,7 +35,7 @@ import java.util.*;
 public class PlayerClickListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	List<GachaData> gachadatalist = SeichiAssist.gachadatalist;
+	List<GachaPrize> gachadatalist = SeichiAssist.gachadatalist;
 	//アクティブスキル処理
 	@EventHandler
 	public void onPlayerActiveSkillEvent(PlayerInteractEvent event){
@@ -263,34 +263,32 @@ public class PlayerClickListener implements Listener {
 			}
 			for(int c = 0 ; c < count ; c++){
 				//プレゼント用ガチャデータ作成
-				GachaData present;
+				GachaPrize present;
 				//ガチャ実行
-				present = GachaData.runGacha();
-				if(present.probability < 0.1){
-					present.addname(name);
+				present = GachaPrize.Companion.runGacha();
+				if(present.getProbability() < 0.1){
+					present.appendOwnerLore(name);
 				}
-				//ガチャデータのitemstackの数を再設定（バグのため）
-				present.itemstack.setAmount(present.amount);
 				//メッセージ設定
 				String str = "";
 
 				//プレゼントを格納orドロップ
 				if(!Util.isPlayerInventoryFull(player)){
-					Util.addItem(player,present.itemstack);
+					Util.addItem(player, present.getItemStack());
 				}else{
-					Util.dropItem(player,present.itemstack);
+					Util.dropItem(player, present.getItemStack());
 					str += ChatColor.AQUA + "プレゼントがドロップしました。";
 				}
 
 				//確率に応じてメッセージを送信
-				if(present.probability < 0.001){
+				if(present.getProbability() < 0.001){
 					Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH,(float)0.5, 2);
 					if (!playerdata.getEverysoundflag()) {
 						player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, (float) 0.5, 2);
 					}
 					List<String> enchantname = new ArrayList<>();
-					List<String> lore = present.itemstack.getItemMeta().getLore();
-					Map<Enchantment, Integer> enchantment = present.itemstack.getItemMeta().getEnchants();
+					List<String> lore = present.getItemStack().getItemMeta().getLore();
+					Map<Enchantment, Integer> enchantment = present.getItemStack().getItemMeta().getEnchants();
 
 					for(Enchantment enchant : enchantment.keySet())
 					{
@@ -299,21 +297,19 @@ public class PlayerClickListener implements Listener {
 					lore.remove("§r§2所有者：" + player.getName());
 
 					TextComponent message = new TextComponent();
-					message.setText(ChatColor.AQUA + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
-					message.setHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(" " + present.itemstack.getItemMeta().getDisplayName() +  "\n" + Util.getDescFormat(enchantname) + Util.getDescFormat(lore)).create() ) );
+					message.setText(ChatColor.AQUA + present.getItemStack().getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
+					message.setHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(" " + present.getItemStack().getItemMeta().getDisplayName() +  "\n" + Util.getDescFormat(enchantname) + Util.getDescFormat(lore)).create() ) );
 
 					player.sendMessage(ChatColor.RED + "おめでとう！！！！！Gigantic☆大当たり！" + str);
 					Util.sendEveryMessageWithoutIgnore(ChatColor.GOLD + player.getDisplayName() + "がガチャでGigantic☆大当たり！");
 					Util.sendEveryMessageWithoutIgnore(message);
-				}else if(present.probability < 0.01){
+				}else if(present.getProbability() < 0.01){
 					//大当たり時にSEを鳴らす(自分だけ)
 					player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
 					//ver 0.3.1以降 大当たり時の全体通知を削除
-					// Util.sendEverySound(Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
 					player.sendMessage(ChatColor.GOLD + "おめでとう！！大当たり！" + str);
 
-					//Util.sendEveryMessage(ChatColor.GOLD + player.getDisplayName() + "がガチャで大当たり！\n" + ChatColor.DARK_BLUE + present.itemstack.getItemMeta().getDisplayName() + ChatColor.GOLD + "を引きました！おめでとうございます！");
-				}else if(present.probability < 0.1){
+				}else if(present.getProbability() < 0.1){
 					player.sendMessage(ChatColor.YELLOW + "おめでとう！当たり！" + str);
 				}else{
 					if(count == 1){
