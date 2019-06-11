@@ -1,11 +1,13 @@
 package com.github.unchama.seichiassist.database.manipulators;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.database.DatabaseConstants;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -28,16 +30,18 @@ public class GachaDataManipulator {
 
     //ガチャデータロード
     public boolean loadGachaData(){
-        List<GachaData> gachadatalist = new ArrayList<>();
+        List<GachaPrize> gachadatalist = new ArrayList<>();
 
         String command = "select * from " + getTableReference();
         try (ResultSet lrs = gateway.executeQuery(command)) {
             while (lrs.next()) {
-                GachaData gachadata = new GachaData();
-                Inventory inventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"));
-                gachadata.itemstack = (inventory.getItem(0));
-                gachadata.amount = lrs.getInt("amount");
-                gachadata.probability = lrs.getDouble("probability");
+                Inventory restoredInventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"));
+                ItemStack restoredItemStack = restoredInventory.getItem(0);
+
+                GachaPrize gachadata = new GachaPrize(
+                        restoredItemStack, lrs.getDouble("probability")
+                );
+
                 gachadatalist.add(gachadata);
             }
         } catch (SQLException | IOException e) {
@@ -61,17 +65,15 @@ public class GachaDataManipulator {
         }
 
         //次に現在のgachadatalistでmysqlを更新
-        for(GachaData gachadata : SeichiAssist.gachadatalist){
+        for(GachaPrize gachadata : SeichiAssist.gachadatalist){
             //Inventory作ってガチャのitemstackに突っ込む
-            Inventory inventory = SeichiAssist.instance.getServer().createInventory(null, 9*1);
-            inventory.setItem(0,gachadata.itemstack);
+            Inventory inventory = Bukkit.getServer().createInventory(null, 9*1);
+            inventory.setItem(0, gachadata.getItemStack());
 
-            command = "insert into " + getTableReference() + " (probability,amount,itemstack)"
+            command = "insert into " + getTableReference() + " (probability, itemstack)"
                     + " values"
-                    + "(" + gachadata.probability
-                    + "," + gachadata.amount
-                    + ",'" + BukkitSerialization.toBase64(inventory) + "'"
-                    + ")";
+                    + "(" + gachadata.getProbability() + "," +
+                    "'" + BukkitSerialization.toBase64(inventory) + "')";
             if(gateway.executeUpdate(command) == Fail){
                 return false;
             }

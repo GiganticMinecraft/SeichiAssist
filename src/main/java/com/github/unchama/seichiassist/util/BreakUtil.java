@@ -59,7 +59,7 @@ public final class BreakUtil {
 			CoreProtectAPI coreProtect = ExternalPlugins.getCoreProtect();
 			//破壊ログを設定
 			if (coreProtect == null) {
-				SeichiAssist.instance.getLogger().warning("CoreProtectにアクセスできませんでした。");
+				Bukkit.getLogger().warning("CoreProtectにアクセスできませんでした。");
 			} else {
 				boolean success = coreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
 				//もし失敗したらプレイヤーに報告し処理を終了
@@ -201,47 +201,42 @@ public final class BreakUtil {
 				} else if(mineStackObj.getNameloreflag() && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
 					//名前・説明文付き
 					ItemMeta meta = itemstack.getItemMeta();
+
 					//この時点で名前と説明文がある
-						if(mineStackObj.getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
-							if( !(meta.getDisplayName().equals(StaticGachaPrizeFactory.getGachaRingoName()))
-								|| !(meta.getLore().equals(StaticGachaPrizeFactory.getGachaRingoLore())) ){
+					if(mineStackObj.getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
+						if( !(meta.getDisplayName().equals(StaticGachaPrizeFactory.getGachaRingoName()))
+							|| !(meta.getLore().equals(StaticGachaPrizeFactory.getGachaRingoLore())) ){
+							return false;
+						}
+						if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
+							//レベルを満たしていない
+							return false;
+						} else {
+							playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
+							break;
+						}
+					} else {
+						//ガチャ品
+						MineStackGachaData g = SeichiAssist.msgachadatalist.get(mineStackObj.getGachatype());
+						String name = playerdata.getName(); //プレイヤーのネームを見る
+						if(g.getProbability() <0.1){ //カタログギフト券を除く(名前があるアイテム)
+							if(!Util.ItemStackContainsOwnerName(itemstack, name)){
+								//所有者の名前が無ければreturn
 								return false;
 							}
+						}
+
+						if (g.itemStackEquals(itemstack)) { //中身が同じ場合のみここに入る
 							if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 								//レベルを満たしていない
 								return false;
 							} else {
 								playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
+								//delete_flag=true;
 								break;
 							}
-						} else {
-							//ガチャ品
-							MineStackGachaData g = SeichiAssist.msgachadatalist.get(mineStackObj.getGachatype());
-							String name = playerdata.getName(); //プレイヤーのネームを見る
-							if(g.probability<0.1){ //カタログギフト券を除く(名前があるアイテム)
-								if(!Util.ItemStackContainsOwnerName(itemstack, name)){
-									//所有者の名前が無ければreturn
-									return false;
-								}
-							}
-							//ItemStack itemstack_temp = Util.ItemStackResetName(itemstack);//名前を消しておく
-
-							//GachaData.
-							if(!g.compareonly(itemstack)){ //この1行で対応可能？
-								//gachadata.itemstack.isSimilar(itemstack)でスタックサイズ以外が一致しているか判定可能
-								//continue; //アイテムの中身が違う
-							} else { //中身が同じ場合のみここに入る
-								if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
-									//レベルを満たしていない
-									return false;
-								} else {
-									playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
-									//delete_flag=true;
-									break;
-								}
-							}
-
 						}
+					}
 				}
 			}
 		}

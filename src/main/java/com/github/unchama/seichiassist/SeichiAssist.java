@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist;
 
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
-import com.github.unchama.seichiassist.commands.ContributeCommand;
+import com.github.unchama.seichiassist.commands.*;
 import com.github.unchama.seichiassist.commands.legacy.*;
-import com.github.unchama.seichiassist.data.GachaData;
+import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
@@ -26,6 +26,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,7 +47,6 @@ public class SeichiAssist extends JavaPlugin{
 
 	// TODO これらは DatabaseConstants に移されるべき
 	public static final String PLAYERDATA_TABLENAME = "playerdata";
-	public static final String DONATEDATA_TABLENAME = "donatedata";
 
 	public static final String SEICHIWORLDNAME = "world_sw";
 	public static final String DEBUGWORLDNAME = "world";
@@ -55,15 +55,11 @@ public class SeichiAssist extends JavaPlugin{
 	public static DatabaseGateway databaseGateway;
 	public static Config config;
 
-	public static final int SUB_HOME_DATASIZE = 98;	//DB上でのサブホーム1つ辺りのデータサイズ　xyz各10*3+ワールド名64+区切り文字1*4
-
-	public static final int VOTE_FAIRYTIME_DATASIZE = 17; //DB上での妖精を召喚した時間のデータサイズ　年4+月2+日2+時間2+分2+区切り文字1*5
-
 	//起動するタスクリスト
 	private List<BukkitTask> tasklist = new ArrayList<>();
 
 	//Gachadataに依存するデータリスト
-	public static final List<GachaData> gachadatalist = new ArrayList<>();
+	public static final List<GachaPrize> gachadatalist = new ArrayList<>();
 
 	//(minestackに格納する)Gachadataに依存するデータリスト
 	public static List<MineStackGachaData> msgachadatalist = new ArrayList<>();
@@ -778,10 +774,6 @@ public class SeichiAssist extends JavaPlugin{
 
 	public static List<MineStackObj> minestacklist = null;
 
-	//public static final int minestacksize=minestacklist.size();
-	public static final boolean minestack_sql_enable=true; //ここは必ずtrue(falseのときはSQL初期設定+SQL入出力しない[デバッグ用])
-
-
 	public static final Set<Material> materiallist = EnumSet.of(
 			Material.STONE,Material.NETHERRACK,Material.NETHER_BRICK,Material.DIRT
 			,Material.GRAVEL,Material.LOG,Material.LOG_2,Material.GRASS
@@ -856,17 +848,18 @@ public class SeichiAssist extends JavaPlugin{
 		config = new Config(this);
 		config.loadConfig();
 
+		final ConsoleCommandSender ccs = Bukkit.getConsoleSender();
 		if(SeichiAssist.config.getDebugMode()==1){
 			//debugmode=1の時は最初からデバッグモードで鯖を起動
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "seichiassistをデバッグモードで起動します");
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "コンソールから/seichi debugmode");
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "を実行するといつでもONOFFを切り替えられます");
+			ccs.sendMessage(ChatColor.RED + "seichiassistをデバッグモードで起動します");
+			ccs.sendMessage(ChatColor.RED + "コンソールから/seichi debugmode");
+			ccs.sendMessage(ChatColor.RED + "を実行するといつでもONOFFを切り替えられます");
 			DEBUG = true;
 		}else{
 			//debugmode=0の時は/seichi debugmodeによる変更コマンドも使えない
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "seichiassistを通常モードで起動します");
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "デバッグモードを使用する場合は");
-			instance.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "config.ymlの設定値を書き換えて再起動してください");
+			ccs.sendMessage(ChatColor.GREEN + "seichiassistを通常モードで起動します");
+			ccs.sendMessage(ChatColor.GREEN + "デバッグモードを使用する場合は");
+			ccs.sendMessage(ChatColor.GREEN + "config.ymlの設定値を書き換えて再起動してください");
 		}
 
 		// TODO nullチェック
@@ -901,22 +894,23 @@ public class SeichiAssist extends JavaPlugin{
 			// コマンドの登録
 			MapFactory.of(
 					Pair.of("gacha", new GachaCommand()),
-					Pair.of("seichi",new SeichiCommand(instance)),
-					Pair.of("ef",new EffectCommand()),
-					Pair.of("level",new LevelCommand()),
-					Pair.of("lastquit",new LastQuitCommand()),
-					Pair.of("stick",new StickCommand()),
-					Pair.of("rmp",new RmpCommand()),
-					Pair.of("shareinv",new ShareInvCommand()),
-					Pair.of("mebius",new MebiusCommand()),
-					Pair.of("unlockachv", new UnlockAchievementCommand()),
-					Pair.of("halfguard", new HalfBlockProtectCommand()),
-					Pair.of("event", new EventCommand()),
+					Pair.of("ef", EffectCommand.INSTANCE.getExecutor()),
+					Pair.of("seichihaste", SeichiHasteCommand.INSTANCE.getExecutor()),
+					Pair.of("seichiassist", SeichiAssistCommand.INSTANCE.getExecutor()),
+					Pair.of("openpocket", OpenPocketCommand.INSTANCE.getExecutor()),
+					Pair.of("lastquit", LastQuitCommand.INSTANCE.getExecutor()),
+					Pair.of("stick", StickCommand.INSTANCE.getExecutor()),
+					Pair.of("rmp", RmpCommand.INSTANCE.getExecutor()),
+					Pair.of("shareinv", ShareInvCommand.INSTANCE.getExecutor()),
+					Pair.of("mebius", MebiusCommand.INSTANCE.getExecutor()),
+					Pair.of("achievement", AchievementCommand.INSTANCE.getExecutor()),
+					Pair.of("halfguard", HalfBlockProtectCommand.INSTANCE.getExecutor()),
+					Pair.of("event", EventCommand.INSTANCE.getExecutor()),
 					Pair.of("contribute", ContributeCommand.INSTANCE.getExecutor()),
-					Pair.of("subhome", new SubHomeCommand()),
-					Pair.of("gtfever", new GiganticFeverCommand()),
-					Pair.of("minehead", new MineHeadCommand()),
-					Pair.of("x-transfer", new RegionOwnerTransferCommand())
+					Pair.of("subhome", SubHomeCommand.INSTANCE.getExecutor()),
+					Pair.of("gtfever", GiganticFeverCommand.INSTANCE.getExecutor()),
+					Pair.of("minehead", MineHeadCommand.INSTANCE.getExecutor()),
+					Pair.of("x-transfer", RegionOwnerTransferCommand.INSTANCE.getExecutor())
 			).forEach((commandName, executor) -> getCommand(commandName).setExecutor(executor));
 		}
 
@@ -1035,8 +1029,8 @@ public class SeichiAssist extends JavaPlugin{
 		List<MineStackObj> minestacklist = new ArrayList<>();
 		for(int i=0; i<SeichiAssist.msgachadatalist.size(); i++){
 			MineStackGachaData g = SeichiAssist.msgachadatalist.get(i);
-			if(g.itemstack.getType() != Material.EXP_BOTTLE){ //経験値瓶だけはすでにリストにあるので除外
-				minestacklist.add(new MineStackObj(g.obj_name,g.level,g.itemstack,true,i,5));
+			if(g.getItemStack().getType() != Material.EXP_BOTTLE){ //経験値瓶だけはすでにリストにあるので除外
+				minestacklist.add(new MineStackObj(g.getObjName(), g.getLevel(), g.getItemStack(),true,i,5));
 			}
 		}
 		return minestacklist;

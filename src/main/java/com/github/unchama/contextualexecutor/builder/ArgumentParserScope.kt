@@ -1,10 +1,10 @@
 package com.github.unchama.contextualexecutor.builder
 
 import arrow.core.Left
-import arrow.core.None
 import arrow.core.Right
-import arrow.core.Some
-import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
+import com.github.unchama.messaging.EmptyMessage
+import com.github.unchama.messaging.MessageToSender
+import com.github.unchama.messaging.asResponseToSender
 
 /**
  * [ContextualExecutorBuilder.argumentsParser]が要求する,
@@ -13,22 +13,22 @@ import com.github.unchama.contextualexecutor.builder.response.asResponseToSender
  * [ArgumentParserScope.ScopeProvider.parser]を通してスコープ付き関数をそのような関数に変換できる.
  */
 object ArgumentParserScope {
-  fun failWith(response: CommandResponse): ResponseOrResult<Nothing> = Left(response)
+  fun failWith(message: MessageToSender): ResponseOrResult<Nothing> = Left(message)
 
   /**
    * メッセージなしで「失敗」を表す[ResponseOrResult]を作成する.
    */
-  fun failWithoutError(): ResponseOrResult<Nothing> = failWith(None)
+  fun failWithoutError(): ResponseOrResult<Nothing> = failWith(EmptyMessage)
 
   /**
    * メッセージ付きの「失敗」を表す[ResponseOrResult]を作成する.
    */
-  fun failWith(message: String): ResponseOrResult<Nothing> = failWith(Some(message.asResponseToSender()))
+  fun failWith(message: String): ResponseOrResult<Nothing> = failWith(message.asResponseToSender())
 
   /**
    * メッセージ付きの「失敗」を表す[ResponseOrResult]を作成する.
    */
-  fun failWith(message: List<String>): ResponseOrResult<Any> = failWith(Some(message.asResponseToSender()))
+  fun failWith(message: List<String>): ResponseOrResult<Any> = failWith(message.asResponseToSender())
 
   /**
    * [result]により「成功」したことを示す[ResponseOrResult]を作成する.

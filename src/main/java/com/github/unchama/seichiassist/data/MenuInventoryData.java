@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.util.ExperienceManager;
+import com.github.unchama.seichiassist.util.exp.ExperienceManager;
 import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
@@ -252,22 +252,6 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(34,itemstack);
-
-		/*
-		if(SeichiAssist.DEBUG){
-			// 整地神番付を開く
-			itemstack = new ItemStack(Material.COOKIE,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COOKIE);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付神ランキングを見る");
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "(寄付しているプレイヤーのみ表記されます)"
-				,ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで開く"
-				);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(16,itemstack);
-		}
-		*/
-
 
 		//運営からの詫びガチャ配布ボタン
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -1417,7 +1401,7 @@ public class MenuInventoryData {
 				, ""
 				));
 
-		if(playerdata.getShareinv()){
+		if(playerdata.getContentsPresentInSharedInventory()){
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "収納中");
 			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでアイテムを取り出します。");
 			lore.add(ChatColor.RESET + "" + ChatColor.RED + "現在の装備・アイテムが空であることを確認してください。");
@@ -1574,19 +1558,6 @@ public class MenuInventoryData {
 			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		}
 
-		// 総整地量の表記
-		/*
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地鯖統計データ");
-		lore.clear();
-		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "全プレイヤー総整地量:"
-				,ChatColor.RESET + "" +  ChatColor.AQUA + SeichiAssist.allplayerbreakblockint
-				));
-		skullmeta.setLore(lore);
-		skullmeta.setOwner("unchama");
-		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(53,itemstack);
-		*/
-
 		return inventory;
 	}
 
@@ -1657,19 +1628,6 @@ public class MenuInventoryData {
 			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		}
 
-		// 総整地量の表記
-		/*
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地鯖統計データ");
-		lore.clear();
-		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "全プレイヤー総整地量:"
-				,ChatColor.RESET + "" +  ChatColor.AQUA + SeichiAssist.allplayerbreakblockint
-				));
-		skullmeta.setLore(lore);
-		skullmeta.setOwner("unchama");
-		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(53,itemstack);
-		*/
-
 		return inventory;
 	}
 
@@ -1737,19 +1695,6 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(skullmeta);
 			AsyncInventorySetter.setItemAsync(inventory,45,itemstack.clone());
 		}
-
-		// 総整地量の表記
-		/*
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地鯖統計データ");
-		lore.clear();
-		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "全プレイヤー総整地量:"
-				,ChatColor.RESET + "" +  ChatColor.AQUA + SeichiAssist.allplayerbreakblockint
-				));
-		skullmeta.setLore(lore);
-		skullmeta.setOwner("unchama");
-		itemstack.setItemMeta(skullmeta);
-		inventory.setItem(53,itemstack);
-		*/
 
 		return inventory;
 	}
@@ -5520,20 +5465,8 @@ public class MenuInventoryData {
 			itemmeta.setLore(lore);
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(8,itemstack);
-		}else{
-			/* ひとまず内部実装。使うことになったらコメントアウト解除。
-			itemstack = new ItemStack(Material.BEDROCK,1);
-			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BEDROCK);
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7009「???」" );
-			lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：公式イベント「第二回整地大会」で優勝"
-								,ChatColor.RESET + "" +  ChatColor.RED + "整地鯖一周年記念イベントでした！"
-								,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は配布解禁式です");
-			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-			itemmeta.setLore(lore);
-			itemstack.setItemMeta(itemmeta);
-			inventory.setItem(8,itemstack);
-			*/
 		}
+
 		if(playerdata.getTitleFlags().get(7010)){
 			itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
