@@ -55,7 +55,7 @@ import static com.github.unchama.util.ActionStatus.Fail;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	List<GachaCandidate> gachadatalist = SeichiAssist.gachadatalist;
+	List<GachaPrize> gachadatalist = SeichiAssist.gachadatalist;
 	SeichiAssist plugin = SeichiAssist.instance;
 	private Config config = SeichiAssist.config;
 	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
@@ -2619,7 +2619,7 @@ public class PlayerInventoryListener implements Listener {
 				//ガチャ景品リストにアイテムがあった時にtrueになるフラグ
 				boolean flag = false;
 				//ガチャ景品リストを一個ずつ見ていくfor文
-				for(GachaCandidate gachadata : gachadatalist){
+				for(GachaPrize gachadata : gachadatalist){
 					if(!gachadata.getItemStack().hasItemMeta()){
 						continue;
 					}else if(!gachadata.getItemStack().getItemMeta().hasLore()){
@@ -5183,7 +5183,7 @@ public class PlayerInventoryListener implements Listener {
 				//ガチャ景品リストにアイテムがあった時にtrueになるフラグ
 				boolean flag = false;
 				//ガチャ景品リストを一個ずつ見ていくfor文
-				for(GachaCandidate gachadata : gachadatalist){
+				for(GachaPrize gachadata : gachadatalist){
 					if(!gachadata.getItemStack().hasItemMeta()){
 						continue;
 					}else if(!gachadata.getItemStack().getItemMeta().hasLore()){

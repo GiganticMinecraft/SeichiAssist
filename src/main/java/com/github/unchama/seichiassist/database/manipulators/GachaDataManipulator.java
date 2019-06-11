@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.database.manipulators;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.GachaCandidate;
+import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.database.DatabaseConstants;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.BukkitSerialization;
@@ -30,7 +30,7 @@ public class GachaDataManipulator {
 
     //ガチャデータロード
     public boolean loadGachaData(){
-        List<GachaCandidate> gachadatalist = new ArrayList<>();
+        List<GachaPrize> gachadatalist = new ArrayList<>();
 
         String command = "select * from " + getTableReference();
         try (ResultSet lrs = gateway.executeQuery(command)) {
@@ -38,7 +38,7 @@ public class GachaDataManipulator {
                 Inventory restoredInventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"));
                 ItemStack restoredItemStack = restoredInventory.getItem(0);
 
-                GachaCandidate gachadata = new GachaCandidate(
+                GachaPrize gachadata = new GachaPrize(
                         restoredItemStack, lrs.getDouble("probability")
                 );
 
@@ -65,7 +65,7 @@ public class GachaDataManipulator {
         }
 
         //次に現在のgachadatalistでmysqlを更新
-        for(GachaCandidate gachadata : SeichiAssist.gachadatalist){
+        for(GachaPrize gachadata : SeichiAssist.gachadatalist){
             //Inventory作ってガチャのitemstackに突っ込む
             Inventory inventory = Bukkit.getServer().createInventory(null, 9*1);
             inventory.setItem(0, gachadata.getItemStack());

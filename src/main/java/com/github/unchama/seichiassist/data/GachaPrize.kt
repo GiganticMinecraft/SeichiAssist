@@ -7,7 +7,7 @@ import org.bukkit.ChatColor
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-class GachaCandidate(itemStack: ItemStack, var probability: Double) {
+class GachaPrize(itemStack: ItemStack, var probability: Double) {
   //アイテムデータ格納
   var itemStack: ItemStack = itemStack.clone()
 
@@ -42,11 +42,11 @@ class GachaCandidate(itemStack: ItemStack, var probability: Double) {
     this.itemStack.itemMeta.lore = lore
   }
 
-  fun copy(): GachaCandidate = GachaCandidate(this.itemStack.clone(), probability)
+  fun copy(): GachaPrize = GachaPrize(this.itemStack.clone(), probability)
 
   companion object {
     // TODO ここにあるべきではない
-    fun runGacha(): GachaCandidate {
+    fun runGacha(): GachaPrize {
       var sum = 1.0
       val rand = Math.random()
 
@@ -56,7 +56,7 @@ class GachaCandidate(itemStack: ItemStack, var probability: Double) {
           return gachadata.copy()
         }
       }
-      return GachaCandidate(StaticGachaPrizeFactory.getGachaRingo(), 1.0)
+      return GachaPrize(StaticGachaPrizeFactory.getGachaRingo(), 1.0)
     }
   }
 }

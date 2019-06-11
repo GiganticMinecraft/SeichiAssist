@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.GachaCandidate;
+import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.AsyncEntityRemover;
@@ -35,7 +35,7 @@ import java.util.*;
 public class PlayerClickListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.instance;
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	List<GachaCandidate> gachadatalist = SeichiAssist.gachadatalist;
+	List<GachaPrize> gachadatalist = SeichiAssist.gachadatalist;
 	//アクティブスキル処理
 	@EventHandler
 	public void onPlayerActiveSkillEvent(PlayerInteractEvent event){
@@ -263,9 +263,9 @@ public class PlayerClickListener implements Listener {
 			}
 			for(int c = 0 ; c < count ; c++){
 				//プレゼント用ガチャデータ作成
-				GachaCandidate present;
+				GachaPrize present;
 				//ガチャ実行
-				present = GachaCandidate.Companion.runGacha();
+				present = GachaPrize.Companion.runGacha();
 				if(present.getProbability() < 0.1){
 					present.appendOwnerLore(name);
 				}

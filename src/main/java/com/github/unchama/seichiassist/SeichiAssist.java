@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist;
 import com.github.unchama.seichiassist.bungee.BungeeReceiver;
 import com.github.unchama.seichiassist.commands.*;
 import com.github.unchama.seichiassist.commands.legacy.*;
-import com.github.unchama.seichiassist.data.GachaCandidate;
+import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
@@ -59,7 +59,7 @@ public class SeichiAssist extends JavaPlugin{
 	private List<BukkitTask> tasklist = new ArrayList<>();
 
 	//Gachadataに依存するデータリスト
-	public static final List<GachaCandidate> gachadatalist = new ArrayList<>();
+	public static final List<GachaPrize> gachadatalist = new ArrayList<>();
 
 	//(minestackに格納する)Gachadataに依存するデータリスト
 	public static List<MineStackGachaData> msgachadatalist = new ArrayList<>();
