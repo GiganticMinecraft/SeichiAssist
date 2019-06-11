@@ -15,6 +15,7 @@ class GachaPrize(itemStack: ItemStack, var probability: Double) {
   val itemStackAmount: Int
     get() = this.itemStack.amount
 
+  @Deprecated("ここをなんのデータクラスだと思っているんだ")
   fun compare(m: ItemStack, name: String): Boolean {
     val mlore: List<String> = m.itemMeta.lore
     val lore: List<String> = this.itemStack.itemMeta.lore
