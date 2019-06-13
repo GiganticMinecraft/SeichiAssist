@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.data
 
 import com.github.unchama.messaging.MessageToSender
 import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.seichiassist.LevelThresholds
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.Worlds
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -450,7 +451,7 @@ class PlayerData(val player: Player) {
      */
     fun setLevelandTotalbreaknum(_level: Int) {
         level = _level
-        totalbreaknum = SeichiAssist.levellist[_level - 1].toLong()
+        totalbreaknum = LevelThresholds.levelExpThresholds[_level - 1].toLong()
     }
 
 
@@ -488,11 +489,11 @@ class PlayerData(val player: Player) {
         //現在のランクを取得
         var i = level
         //既にレベル上限に達していたら終了
-        if (i >= SeichiAssist.levellist.size) {
+        if (i >= LevelThresholds.levelExpThresholds.size) {
             return
         }
         //ランクが上がらなくなるまで処理
-        while (SeichiAssist.levellist[i] <= totalbreaknum && i + 1 <= SeichiAssist.levellist.size) {
+        while (LevelThresholds.levelExpThresholds[i] <= totalbreaknum && i + 1 <= LevelThresholds.levelExpThresholds.size) {
 
             //レベルアップ時のメッセージ
             p.sendMessage(ChatColor.GOLD.toString() + "ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv(" + i + ")→Lv(" + (i + 1) + ")】")
@@ -511,7 +512,7 @@ class PlayerData(val player: Player) {
                 activeskilldata.mana.onLevelUp(p, i)
             }
             //レベル上限に達したら終了
-            if (i >= SeichiAssist.levellist.size) {
+            if (i >= LevelThresholds.levelExpThresholds.size) {
                 break
             }
         }

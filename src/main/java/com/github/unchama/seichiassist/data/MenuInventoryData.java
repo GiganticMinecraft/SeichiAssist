@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.data;
 import com.github.unchama.seasonalevents.events.valentine.Valentine;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.LevelThresholds;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
@@ -79,8 +80,8 @@ public class MenuInventoryData {
 		}else{
 			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "整地レベル:" + playerdata.getLevel() + "☆" + playerdata.getStarlevel());
 		}
-		if(playerdata.getLevel() < SeichiAssist.levellist.size()){
-			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (SeichiAssist.levellist.get(playerdata.getLevel()) - playerdata.getTotalbreaknum()));
+		if(playerdata.getLevel() < LevelThresholds.INSTANCE.getLevelExpThresholds().size()){
+			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (LevelThresholds.INSTANCE.getLevelExpThresholds().get(playerdata.getLevel()) - playerdata.getTotalbreaknum()));
 		}
 		//整地ワールド外では整地数が反映されない
 		if(!Util.isSeichiWorld(p)){
@@ -1325,8 +1326,8 @@ public class MenuInventoryData {
 			if(playerdata.getGBstage() == 4 && playerdata.getGBlevel() == 9){
 				lore.add(ChatColor.GRAY + "MOBの魂を極限まで吸収し最大限の力を発揮する");
 			}else {
-				lore.add(ChatColor.GRAY + "MOBの魂を" + SeichiAssist.GBlevellist.get(n) + "回吸収すると更なる力が得られる");
-				lore.add(ChatColor.GRAY + "" + playerdata.getGBexp() + "/" + SeichiAssist.GBlevellist.get(n));
+				lore.add(ChatColor.GRAY + "MOBの魂を" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n) + "回吸収すると更なる力が得られる");
+				lore.add(ChatColor.GRAY + "" + playerdata.getGBexp() + "/" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n));
 			}
 			lore.add(ChatColor.GRAY + "現在" + (playerdata.getGBlevel() + 1) + "レベル,回復率 " + (int)(100 * GBTR.getProb(playerdata)) + ".0%");
 
@@ -1431,7 +1432,7 @@ public class MenuInventoryData {
 			}
 //			if(count2==45){count2+=2;}
 			rankdata = SeichiAssist.ranklist.get(count);
-			if(rankdata.totalbreaknum<SeichiAssist.levellist.get(MIN_LEVEL-1)){ //レベル100相当の総整地量判定に変更
+			if(rankdata.totalbreaknum< LevelThresholds.INSTANCE.getLevelExpThresholds().get(MIN_LEVEL-1)){ //レベル100相当の総整地量判定に変更
 				break;
 			}
 
@@ -1503,21 +1504,14 @@ public class MenuInventoryData {
 		List<String> lore = new ArrayList<>();
 		itemstack.setDurability((short) 3);
 		RankData rankdata;
-//		for(int count = 50*page,count2=0;count < 50+50*page;count++,count2++){
 		for(int count = 10*page,count2=0;count < 10+10*page;count++,count2++){
 			if(count >= SeichiAssist.ranklist_playtick.size()){
 				break;
 			}
-//			if(count2==45){count2+=2;}
 			rankdata = SeichiAssist.ranklist_playtick.get(count);
-			//if(rankdata.totalbreaknum<SeichiAssist.levellist.get(MIN_LEVEL-1)){ //レベル100相当の総整地量判定に変更
-			//	break;
-			//}
 
 			skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (count+1) +"位:" + "" + ChatColor.WHITE + rankdata.name);
 			lore.clear();
-			//lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "整地レベル:" + rankdata.level);
-			//lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "総整地量:" + rankdata.totalbreaknum);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "総ログイン時間:" + TypeConverter.toTimeString(TypeConverter.toSecond(rankdata.playtick)));
 
 			skullmeta.setLore(lore);
