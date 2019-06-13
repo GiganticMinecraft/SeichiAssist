@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.database.manipulators
 
-import arrow.core.*
-import arrow.core.extensions.either.fx.fx as fxEither
+import arrow.core.flatMap
+import arrow.core.left
+import arrow.core.right
 import com.github.unchama.contextualexecutor.builder.ResponseOrResult
 import com.github.unchama.messaging.MessageToSender
 import com.github.unchama.messaging.asResponseToSender
@@ -16,20 +17,17 @@ import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.ActionStatus
+import com.github.unchama.util.ActionStatus.Fail
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
-
-import java.io.IOException
 import java.sql.SQLException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-
-import com.github.unchama.util.ActionStatus.Fail
 import kotlin.collections.ArrayList
+import arrow.core.extensions.either.fx.fx as fxEither
 
 class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     private val plugin = SeichiAssist.instance
@@ -263,42 +261,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         return true
     }
 
-    @Deprecated("戻り値の情報が少ないためdeprecated.", replaceWith = ReplaceWith("addContributionPoint"))
-    fun addContributionPoint__legacy(sender: CommandSender, targetName: String, p: Int): Boolean {
-        var point: Int? = null
-
-        val select = "SELECT contribute_point FROM $tableReference WHERE name LIKE '$targetName'"
-
-        // selectで確認
-        try {
-            gateway.executeQuery(select).use { lrs ->
-                // 初回のnextがnull→データが1件も無い場合
-                if (!lrs.next()) {
-                    sender.sendMessage(ChatColor.RED.toString() + "" + targetName + " はデータベースに登録されていません")
-                    return false
-                }
-                //今までのポイントを加算して計算
-                point = p + lrs.getInt("contribute_point")
-            }
-        } catch (e: SQLException) {
-            sender.sendMessage(ChatColor.RED.toString() + "貢献度ptの取得に失敗しました")
-            Bukkit.getLogger().warning(Util.getName(targetName) + " sql failed. -> contribute_point")
-            e.printStackTrace()
-            return false
-        }
-
-        val update = "UPDATE " + tableReference + " " +
-                " SET contribute_point = " + point!! +
-                " WHERE name LIKE '" + targetName + "'"
-
-        if (gateway.executeUpdate(update) == Fail) {
-            sender.sendMessage(ChatColor.RED.toString() + "貢献度ptの変更に失敗しました")
-            Bukkit.getLogger().warning(Util.getName(targetName) + " sql failed. -> contribute_point")
-            return false
-        }
-        return true
-    }
-
     @Suppress("RedundantSuspendModifier")
     private suspend fun assertPlayerDataExistenceFor(playerName: String): ResponseOrResult<Unit> =
         try {
@@ -354,51 +316,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             Bukkit.getLogger().warning("sql failed. -> setAnniversary")
             return false
         }
-        return true
-    }
-
-    /**
-     * 実績予約領域書き換え処理
-     *
-     * @param sender 発行Player
-     * @param targetName 対象Playerのname
-     * @param achvNo 対象実績No
-     * @return 成否…true: 成功、false: 失敗
-     */
-    fun writegiveachvNo(sender: Player, targetName: String, achvNo: String): Boolean {
-        val select = "SELECT giveachvNo FROM " + tableReference + " " +
-                "WHERE name LIKE '" + targetName + "'"
-        val update = "UPDATE " + tableReference + " " +
-                " SET giveachvNo = " + achvNo +
-                " WHERE name LIKE '" + targetName + "'"
-
-        // selectで確認
-        try {
-            gateway.executeQuery(select).use { lrs ->
-                // 初回のnextがnull→データが1件も無い場合
-                if (!lrs.next()) {
-                    sender.sendMessage(ChatColor.RED.toString() + "" + targetName + " はデータベースに登録されていません")
-                    return false
-                }
-                // 現在予約されている値を取得
-                val giveachvNo = lrs.getInt("giveachvNo")
-                // 既に予約がある場合
-                if (giveachvNo != 0) {
-                    sender.sendMessage(ChatColor.RED.toString() + "" + targetName + " には既に実績No " + giveachvNo + " が予約されています")
-                    return false
-                }
-                lrs.close()
-
-                // 実績を予約
-                gateway.executeUpdate(update)
-            }
-        } catch (e: SQLException) {
-            sender.sendMessage(ChatColor.RED.toString() + "実績の予約に失敗しました")
-            Bukkit.getLogger().warning(Util.getName(sender) + " sql failed. -> writegiveachvNo")
-            e.printStackTrace()
-            return false
-        }
-
         return true
     }
 
@@ -638,45 +555,8 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         if (!updatePlayTickRankingList()) return false
         if (!updateVoteRankingList()) return false
         if (!updatePremiumEffectPointRankingList()) return false
-        return if (!updateAppleNumberRankingList()) false else true
+        return updateAppleNumberRankingList()
 
-    }
-
-    //プレイヤーレベル全リセット
-    fun resetAllPlayerLevel(): ActionStatus {
-        val command = ("update " + tableReference
-                + " set level = 1")
-        return gateway.executeUpdate(command)
-    }
-
-    //プレイヤーのレベルと整地量をセット
-    fun resetPlayerLevelandBreaknum(uuid: UUID): ActionStatus {
-        val struuid = uuid.toString()
-        val playerdata = SeichiAssist.playermap[uuid]!!
-        val level = playerdata.level
-        val totalbreaknum = playerdata.totalbreaknum
-
-        val command = ("update " + tableReference
-                + " set"
-                + " level = " + level
-                + ",totalbreaknum = " + totalbreaknum
-                + " where uuid like '" + struuid + "'")
-
-        return gateway.executeUpdate(command)
-    }
-
-    //プレイヤーのレベルと整地量をセット(プレイヤーデータが無い場合)
-    fun resetPlayerLevelandBreaknum(uuid: UUID, level: Int): ActionStatus {
-        val struuid = uuid.toString()
-        val totalbreaknum = SeichiAssist.levellist[level - 1]
-
-        val command = ("update " + tableReference
-                + " set"
-                + " level = " + level
-                + ",totalbreaknum = " + totalbreaknum
-                + " where uuid like '" + struuid + "'")
-
-        return gateway.executeUpdate(command)
     }
 
     //全員に詫びガチャの配布
@@ -746,32 +626,5 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     fun saveQuitPlayerData(playerdata: PlayerData) {
         PlayerDataSaveTask(playerdata, false, true).runTaskAsynchronously(plugin)
     }
-
-  companion object {
-    //指定プレイヤーの四次元ポケットの中身取得
-    fun selectInventory(playerDataManipulator: PlayerDataManipulator, uuid: UUID): Inventory? {
-        val struuid = uuid.toString()
-        var inventory: Inventory? = null
-        val command = ("select inventory from " + playerDataManipulator.tableReference
-                + " where uuid like '" + struuid + "'")
-        try {
-            playerDataManipulator.gateway.executeQuery(command).use { lrs ->
-                while (lrs.next()) {
-                    inventory = BukkitSerialization.fromBase64(lrs.getString("inventory"))
-                }
-            }
-        } catch (e: SQLException) {
-            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-            e.printStackTrace()
-            return null
-        } catch (e: IOException) {
-            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-            e.printStackTrace()
-            return null
-        }
-
-        return inventory
-    }
-  }
 
 }
