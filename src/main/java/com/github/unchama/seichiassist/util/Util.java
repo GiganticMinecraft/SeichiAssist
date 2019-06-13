@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.util;
 
+import com.github.unchama.seichiassist.MineStackObjectList;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.util.collection.ImmutableListFactory;
@@ -528,9 +529,9 @@ public final class Util {
 
 	public static int getMineStackTypeindex(int idx){
 		int temp = 0;
-		int type = SeichiAssist.minestacklist.get(idx).getStacktype();
+		int type = MineStackObjectList.INSTANCE.getMinestacklist().get(idx).getStacktype();
 		for (int i = 0; i < idx; i++) {
-			if (SeichiAssist.minestacklist.get(i).getStacktype() == type) {
+			if (MineStackObjectList.INSTANCE.getMinestacklist().get(i).getStacktype() == type) {
 				temp++;
 			}
 		}
@@ -718,7 +719,7 @@ public final class Util {
 	 */
 	// TODO これはここにあるべきではない
 	@Deprecated public static @Nullable MineStackObj findMineStackObjectByName(String name) {
-		return SeichiAssist.minestacklist.stream()
+		return MineStackObjectList.INSTANCE.getMinestacklist().stream()
 				.filter(obj -> name.equals(obj.getMineStackObjName()))
 				.findFirst().orElse(null);
 	}
