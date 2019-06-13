@@ -35,12 +35,12 @@ abstract class AbstractEffectTask : BukkitRunnable() {
     SeichiAssist.entitylist += proj
     proj.setMetadata("ArrowSkill", FixedMetadataValueHolder.TRUE)
     proj.velocity = vec
-    val abort = object : BukkitRunnable() {
+    val onComplete = object : BukkitRunnable() {
       override fun run() {
         AsyncEntityRemover(proj).run()
         cancel()
       }
     }
-    abort.runTaskLater(SeichiAssist.instance, 100L)
+    onComplete.runTaskLater(SeichiAssist.instance, 100L)
   }
 }
