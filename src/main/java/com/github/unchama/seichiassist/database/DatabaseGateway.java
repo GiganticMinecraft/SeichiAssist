@@ -29,7 +29,7 @@ public class DatabaseGateway {
 	private @NotNull final String loginId;
 	private @NotNull final String password;
 
-	// TODO これらはこのクラスに入るべきではなさそう
+	// TODO これらはこのクラスに入るべきではなさそう(プラグインクラスに入れるべき)
     public final PlayerDataManipulator playerDataManipulator;
     public final GachaDataManipulator gachaDataManipulator;
     public final MineStackGachaDataManipulator mineStackGachaDataManipulator;
