@@ -40,6 +40,10 @@ repositories {
     maven { url = URI("https://repo.maven.apache.org/maven2") }
     maven { url = URI("https://hub.spigotmc.org/nexus/content/repositories/snapshots")}
     maven { url = URI("https://oss.sonatype.org/content/repositories/snapshots")}
+    maven {
+        name = "okkero's repository"
+        url = URI("http://nexus.okkero.com/repository/maven-releases/")
+    }
     jcenter()
     mavenCentral()
 }
@@ -66,6 +70,8 @@ dependencies {
     embed("org.flywaydb:flyway-core:5.2.4")
     embed(kotlin("stdlib-jdk8"))
     embed("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
+
+    embed("com.okkero.skedule:skedule:1.2.6")
 
     // arrow依存
     val arrowVersion = "0.9.0"
