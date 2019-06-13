@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.LevelThresholds;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Sound;
@@ -62,7 +63,7 @@ public class GiganticBerserkTask {
 
 		playerdata.setGBexp(playerdata.getGBexp() + 1);
 		//レベルアップするかどうか判定
-		if(SeichiAssist.GBlevellist.get(n) <= playerdata.getGBexp()){
+		if(LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n) <= playerdata.getGBexp()){
 			if(playerdata.getGBlevel() <= 8){
 				playerdata.setGBexp(0);
 				playerdata.setGBlevel(playerdata.getGBlevel() + 1);
