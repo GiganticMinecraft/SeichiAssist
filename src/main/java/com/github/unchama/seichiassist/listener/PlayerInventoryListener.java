@@ -1,11 +1,7 @@
 package com.github.unchama.seichiassist.listener;
 
 import com.github.unchama.seasonalevents.events.valentine.Valentine;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.achievement.SeichiAchievement;
 import com.github.unchama.seichiassist.data.*;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
@@ -1720,7 +1716,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			if(SeichiAssist.DEBUG){
-				player.sendMessage("MineStackSize = " + SeichiAssist.minestacklist.size());
+				player.sendMessage("MineStackSize = " + MineStackObjectList.INSTANCE.getMinestacklist().size());
 			}
 
 			/*
@@ -1967,7 +1963,7 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			if(SeichiAssist.DEBUG){
-				player.sendMessage("MineStackSize = " + SeichiAssist.minestacklist.size());
+				player.sendMessage("MineStackSize = " + MineStackObjectList.INSTANCE.getMinestacklist().size());
 			}
 
 			/*
@@ -2017,8 +2013,8 @@ public class PlayerInventoryListener implements Listener {
 				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
 				itemstackcurrent.setItemMeta(MenuInventoryData.MineStackToggleMeta(playerdata,itemmeta));
 			} else {
-				for (int i = 0; i < SeichiAssist.minestacklist.size(); i++) {
-					final MineStackObj mineStackObj = SeichiAssist.minestacklist.get(i);
+				for (int i = 0; i < MineStackObjectList.INSTANCE.getMinestacklist().size(); i++) {
+					final MineStackObj mineStackObj = MineStackObjectList.INSTANCE.getMinestacklist().get(i);
 					if (itemstackcurrent.getType() == mineStackObj.getMaterial()
 							&& itemstackcurrent.getDurability() == mineStackObj.getDurability()) { //MaterialとサブIDが一致
 

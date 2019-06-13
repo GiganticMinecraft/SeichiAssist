@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.util;
 
+import com.github.unchama.seichiassist.MineStackObjectList;
 import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.Config;
@@ -185,8 +186,8 @@ public final class BreakUtil {
 		}
 
 		int i;
-		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
-			final MineStackObj mineStackObj = SeichiAssist.minestacklist.get(i);
+		for(i=0; i< MineStackObjectList.INSTANCE.getMinestacklist().size(); i++){
+			final MineStackObj mineStackObj = MineStackObjectList.INSTANCE.getMinestacklist().get(i);
 			if(material == mineStackObj.getMaterial() &&
 				itemstack.getDurability() == mineStackObj.getDurability()){
 				//この時点でIDとサブIDが一致している
@@ -240,7 +241,7 @@ public final class BreakUtil {
 				}
 			}
 		}
-		return i != SeichiAssist.minestacklist.size();
+		return i != MineStackObjectList.INSTANCE.getMinestacklist().size();
 
 	}
 	@SuppressWarnings("deprecation")

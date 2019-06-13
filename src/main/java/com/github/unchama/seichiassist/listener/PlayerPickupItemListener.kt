@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist.MineStackObjectList
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.util.Util
@@ -36,8 +37,8 @@ class PlayerPickupItemListener : Listener {
     }
 
     var i = 0
-    while (i < SeichiAssist.minestacklist.size) {
-      val mineStackObj = SeichiAssist.minestacklist[i]
+    while (i < MineStackObjectList.minestacklist!!.size) {
+      val mineStackObj = MineStackObjectList.minestacklist!![i]
       if (material == mineStackObj.material && itemstack.durability.toInt() == mineStackObj.durability) {
         //この時点でIDとサブIDが一致している
         if (!mineStackObj.nameloreflag && !itemstack.itemMeta.hasLore() && !itemstack.itemMeta.hasDisplayName()) {//名前と説明文が無いアイテム
@@ -88,7 +89,7 @@ class PlayerPickupItemListener : Listener {
       i++
     }
 
-    if (i == SeichiAssist.minestacklist.size) {
+    if (i == MineStackObjectList.minestacklist!!.size) {
       return
     }
 

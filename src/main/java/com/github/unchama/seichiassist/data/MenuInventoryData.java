@@ -1,10 +1,7 @@
 package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.seasonalevents.events.valentine.Valentine;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.LevelThresholds;
-import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
@@ -972,8 +969,8 @@ public class MenuInventoryData {
 	//Minestack全ページ(切り替え式)
 	public static Inventory getMineStackMenu(Player p, int page, int stack_type){
 		int minestack_stacktype_size=0;
-		for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
-			if(SeichiAssist.minestacklist.get(i).getStacktype()==stack_type){
+		for(int i = 0; i< MineStackObjectList.INSTANCE.getMinestacklist().size(); i++){
+			if(MineStackObjectList.INSTANCE.getMinestacklist().get(i).getStacktype()==stack_type){
 				minestack_stacktype_size++;
 			}
 		}
@@ -1042,7 +1039,7 @@ public class MenuInventoryData {
 		int iii=0;
 		int ii = start + page*45 - 1;
 		while(ii_temp<ii){
-			if(SeichiAssist.minestacklist.get(iii).getStacktype()!=stack_type){//対象外
+			if(MineStackObjectList.INSTANCE.getMinestacklist().get(iii).getStacktype()!=stack_type){//対象外
 				iii++;
 			} else {
 				iii++;
@@ -1051,11 +1048,11 @@ public class MenuInventoryData {
 		}
 
 		while(i<max){
-			while(SeichiAssist.minestacklist.get(iii).getStacktype()!=stack_type){
+			while(MineStackObjectList.INSTANCE.getMinestacklist().get(iii).getStacktype()!=stack_type){
 				iii++;
 			}
 			//この時点で「stack_typeのii番目」のインデックスになっている
-			MineStackObj msobj = SeichiAssist.minestacklist.get(iii);
+			MineStackObj msobj = MineStackObjectList.INSTANCE.getMinestacklist().get(iii);
 			final long objectAmount = playerdata.getMinestack().getStackedAmountOf(msobj);
 			if(msobj.getItemStack()==null){
 				setMineStackButton(inventory, objectAmount, new ItemStack(msobj.getMaterial(), 1, (short)msobj.getDurability()),  SeichiAssist.config.getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());

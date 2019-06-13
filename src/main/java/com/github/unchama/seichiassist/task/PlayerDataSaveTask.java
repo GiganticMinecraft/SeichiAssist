@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.task;
 
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.MineStackObjectList;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -51,7 +52,7 @@ public class PlayerDataSaveTask extends BukkitRunnable{
 
 	private void updatePlayerMineStack(Statement stmt) throws SQLException {
 		final String playerUuid = playerdata.getUuid().toString();
-		for (final MineStackObj mineStackObj : SeichiAssist.minestacklist) {
+		for (final MineStackObj mineStackObj : MineStackObjectList.INSTANCE.getMinestacklist()) {
 			final String iThObjectName = mineStackObj.getMineStackObjName();
 			final long iThObjectAmount = playerdata.getMinestack().getStackedAmountOf(mineStackObj);
 

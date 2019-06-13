@@ -1,9 +1,6 @@
 package com.github.unchama.seichiassist.task;
 
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.GridTemplate;
 import com.github.unchama.seichiassist.data.LimitedLoginEvent;
 import com.github.unchama.seichiassist.data.MineStack;
@@ -109,8 +106,7 @@ public class PlayerDataLoadTask extends BukkitRunnable{
         {
             final HashMap<String, MineStackObj> resultMap = new HashMap<>();
 
-            SeichiAssist
-                    .minestacklist
+            MineStackObjectList.INSTANCE.getMinestacklist()
                     .forEach(object -> resultMap.put(object.getMineStackObjName(), object));
 
             nameObjectMappings = resultMap;
