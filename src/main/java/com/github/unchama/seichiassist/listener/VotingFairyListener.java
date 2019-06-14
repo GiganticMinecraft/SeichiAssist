@@ -21,7 +21,7 @@ import java.util.UUID;
 public class VotingFairyListener implements Listener {
 
 	public static void summon(Player p){
-		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+		HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 		UUID uuid = p.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
 		Mana mana = playerdata.getActiveskilldata().mana;
@@ -94,7 +94,7 @@ public class VotingFairyListener implements Listener {
 	}
 
 	public static void regeneMana(Player p) {
-		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+		HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 		UUID uuid = p.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
 		Mana mana = playerdata.getActiveskilldata().mana;

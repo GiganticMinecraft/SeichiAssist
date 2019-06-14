@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ArrowMagicTask extends SkeletonEffectTask<ThrownPotion> {
-	SeichiAssist plugin = SeichiAssist.instance;
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	Player player;
 	Location ploc;
 	UUID uuid;
@@ -56,7 +56,7 @@ public class ArrowMagicTask extends SkeletonEffectTask<ThrownPotion> {
 		vec.setY(vec.getY() * k);
 		vec.setZ(vec.getZ() * k);
 		proj = player.getWorld().spawn(loc, ThrownPotion.class);
-		SeichiAssist.entitylist.add(proj);
+		SeichiAssist.Companion.getEntitylist().add(proj);
 		proj.setShooter(player);
 		proj.setGravity(false);
 		proj.setItem(i);
@@ -74,7 +74,7 @@ public class ArrowMagicTask extends SkeletonEffectTask<ThrownPotion> {
 		tick ++;
 		if(tick > 100){
 			proj.remove();
-			SeichiAssist.entitylist.remove(proj);
+			SeichiAssist.Companion.getEntitylist().remove(proj);
 			cancel();
 		}
 	}

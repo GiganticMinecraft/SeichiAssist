@@ -22,9 +22,9 @@ import com.github.unchama.seichiassist.util.Util;
  *
  */
 public class EveryHalfHourTask extends BukkitRunnable{
-	SeichiAssist plugin = SeichiAssist.instance;
-	DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	DatabaseGateway databaseGateway = SeichiAssist.Companion.getDatabaseGateway();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
     static final List<ChatColor> color = ImmutableListFactory.of(ChatColor.DARK_PURPLE, ChatColor.BLUE, ChatColor.DARK_AQUA);
 
 	public EveryHalfHourTask() {
@@ -42,7 +42,7 @@ public class EveryHalfHourTask extends BukkitRunnable{
 		Util.sendEveryMessage("--------------30分間整地ランキング--------------");
 
 		//playermapに入っているすべてのプレイヤーデータについて処理
-		for(PlayerData playerdata:SeichiAssist.playermap.values()){
+		for(PlayerData playerdata: SeichiAssist.Companion.getPlayermap().values()){
 			//プレイヤー型を取得
 			Player player = plugin.getServer().getPlayer(playerdata.getUuid());
 			//プレイヤーがオンラインの時の処理
@@ -78,7 +78,7 @@ public class EveryHalfHourTask extends BukkitRunnable{
 			}
 		}
 
-		final List<PlayerData> entries = new ArrayList<>(SeichiAssist.playermap.values());
+		final List<PlayerData> entries = new ArrayList<>(SeichiAssist.Companion.getPlayermap().values());
 
 		// ここで、0 -> 第一位、 1 -> 第二位、・・・n -> 第(n+1)位にする (つまり降順)
 		entries.sort((o1, o2) -> {
@@ -102,6 +102,6 @@ public class EveryHalfHourTask extends BukkitRunnable{
 		Util.sendEveryMessage("--------------------------------------------------");
 	}
 	public int getSendMessageAmount(){
-		return SeichiAssist.config.getDefaultMineAmount()*30;
+		return SeichiAssist.Companion.getSeichiAssistConfig().getDefaultMineAmount()*30;
 	}
 }

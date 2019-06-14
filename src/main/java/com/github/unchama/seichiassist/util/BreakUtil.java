@@ -1,10 +1,7 @@
 package com.github.unchama.seichiassist.util;
 
-import com.github.unchama.seichiassist.MineStackObjectList;
+import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.util.external.ExternalPlugins;
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -34,7 +31,7 @@ public final class BreakUtil {
 		if(!player.isOnline() || breakblock == null){
 			return false;
 		}
-		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+		HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 		UUID uuid = player.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
 
@@ -84,7 +81,7 @@ public final class BreakUtil {
 		return true;
 	}
 	private static boolean equalsIgnoreNameCaseWorld(String name) {
-		List<String> ignoreworldlist = SeichiAssist.ignoreWorldlist;
+		List<String> ignoreworldlist = SeichiAssist.Companion.getIgnoreWorldlist();
 		for(String s : ignoreworldlist){
 			if(name.equalsIgnoreCase(s.toLowerCase())){
 				return true;
@@ -96,7 +93,7 @@ public final class BreakUtil {
 	public static void breakBlock(Player player, Block breakblock, Location centerofblock, ItemStack tool, boolean stepflag) {
 
 		Material material = breakblock.getType();
-		if(!SeichiAssist.materiallist.contains(material)){
+		if(!MaterialSets.INSTANCE.getMaterials().contains(material)){
 			return;
 		}
 
@@ -143,14 +140,14 @@ public final class BreakUtil {
 	}
 
 	public static boolean addItemtoMineStack(Player player, ItemStack itemstack) {
-		SeichiAssist plugin = SeichiAssist.instance;
-		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-		Config config = SeichiAssist.config;
+		SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+		HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+		Config config = SeichiAssist.Companion.getSeichiAssistConfig();
 		//もしサバイバルでなければ処理を終了
 		if(player.getGameMode() != GameMode.SURVIVAL){
 			return false;
 		}
-		if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getDEBUG()){
 			player.sendMessage(ChatColor.RED + "minestackAdd:" + itemstack.toString());
 			player.sendMessage(ChatColor.RED + "mineDurability:" + itemstack.getDurability());
 		}
@@ -218,7 +215,7 @@ public final class BreakUtil {
 						}
 					} else {
 						//ガチャ品
-						MineStackGachaData g = SeichiAssist.msgachadatalist.get(mineStackObj.getGachatype());
+						MineStackGachaData g = SeichiAssist.Companion.getMsgachadatalist().get(mineStackObj.getGachatype());
 						String name = playerdata.getName(); //プレイヤーのネームを見る
 						if(g.getProbability() <0.1){ //カタログギフト券を除く(名前があるアイテム)
 							if(!Util.ItemStackContainsOwnerName(itemstack, name)){
@@ -283,7 +280,7 @@ public final class BreakUtil {
 				break;
 			}
 
-		}else if(fortunelevel > 0 && SeichiAssist.luckmateriallist.contains(breakmaterial)){
+		}else if(fortunelevel > 0 && MaterialSets.INSTANCE.getLuckMaterials().contains(breakmaterial)){
 			//幸運の処理
 			switch(breakmaterial){
 				case COAL_ORE:
@@ -428,25 +425,25 @@ public final class BreakUtil {
 			if(playerdata.getLevel() < 8 || playerdata.getActiveskilldata().skillcanbreakflag == false){
 				return 0;
 			}else if (playerdata.getLevel() < 18){
-				return SeichiAssist.config.getDropExplevel(1);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(1);
 			}else if (playerdata.getLevel() < 28){
-				return SeichiAssist.config.getDropExplevel(2);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(2);
 			}else if (playerdata.getLevel() < 38){
-				return SeichiAssist.config.getDropExplevel(3);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(3);
 			}else if (playerdata.getLevel() < 48){
-				return SeichiAssist.config.getDropExplevel(4);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(4);
 			}else if (playerdata.getLevel() < 58){
-				return SeichiAssist.config.getDropExplevel(5);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(5);
 			}else if (playerdata.getLevel() < 68){
-				return SeichiAssist.config.getDropExplevel(6);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(6);
 			}else if (playerdata.getLevel() < 78){
-				return SeichiAssist.config.getDropExplevel(7);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(7);
 			}else if (playerdata.getLevel() < 88){
-				return SeichiAssist.config.getDropExplevel(8);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(8);
 			}else if (playerdata.getLevel() < 98){
-				return SeichiAssist.config.getDropExplevel(9);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(9);
 			}else{
-				return SeichiAssist.config.getDropExplevel(10);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(10);
 			}
 		}else{
 			return 0;
@@ -494,7 +491,7 @@ public final class BreakUtil {
 	}
 
 	public static boolean BlockEqualsMaterialList(Block b){
-		Set<Material> m = SeichiAssist.materiallist;
+		Set<Material> m = MaterialSets.INSTANCE.getMaterials();
 		for (Material material : m) {
 			if (b.getType() == material) {
 				return true;
@@ -522,7 +519,7 @@ public final class BreakUtil {
 
 		// 2. 破壊要因判定
 		/** 該当プレイヤーのPlayerData */
-		PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
+		PlayerData playerdata = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		/** ActiveSkillのリスト */
 		ActiveSkill[] skilllist = ActiveSkill.values();
 		/** 重力値の計算を始めるY座標 */
@@ -608,7 +605,7 @@ public final class BreakUtil {
 			/** 確認対象ブロック */
 			Block target = block.getRelative(0, startY + checkPointer, 0);
 			// 対象ブロックが地上判定ブロックの場合
-			if (SeichiAssist.transparentmateriallist.contains(target.getType())) {
+			if (MaterialSets.INSTANCE.getTransparentMaterials().contains(target.getType())) {
 				// カウンタを加算
 				openCount++;
 				if (openCount >= OPENHEIGHT) {

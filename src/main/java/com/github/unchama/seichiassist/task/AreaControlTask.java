@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.task;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.MaterialSets;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -13,7 +14,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class AreaControlTask extends BukkitRunnable{
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	Player player;
 	PlayerData playerdata;
 	//プレイヤーがターゲットしているブロックを取得
@@ -54,7 +55,7 @@ public class AreaControlTask extends BukkitRunnable{
 		}
 		tick++;
 
-		targetblock = player.getTargetBlock(SeichiAssist.transparentmateriallist, 40);
+		targetblock = player.getTargetBlock(MaterialSets.INSTANCE.getTransparentMaterials(), 40);
 		playerlocy = player.getLocation().getBlockY() - 1 ;
 
 		//もし前回とプレイヤーの向いている方向が違ったらBreakAreaを取り直す

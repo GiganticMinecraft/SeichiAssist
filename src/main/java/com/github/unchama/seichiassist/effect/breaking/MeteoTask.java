@@ -24,8 +24,8 @@ import com.github.unchama.seichiassist.task.ArrowControlTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class MeteoTask extends BukkitRunnable{
-	SeichiAssist plugin = SeichiAssist.instance;
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	//プレイヤー情報
 	Player player;
 	//プレイヤーデータ
@@ -123,12 +123,12 @@ public class MeteoTask extends BukkitRunnable{
 		if(playerdata.getActiveskilldata().skillnum > 2){
 			for(Block b : breaklist){
 				BreakUtil.breakBlock(player, b, droploc, tool, false);
-				SeichiAssist.allblocklist.remove(b);
+				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}else{
 			for(Block b : breaklist){
 				BreakUtil.breakBlock(player, b, droploc, tool, true);
-				SeichiAssist.allblocklist.remove(b);
+				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}
 	}

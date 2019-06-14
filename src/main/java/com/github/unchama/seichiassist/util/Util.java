@@ -56,9 +56,9 @@ public final class Util {
 	//スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
 	public static boolean isSkillEnable(Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
+		String worldname = SeichiAssist.Companion.getSEICHIWORLDNAME();
+		if(SeichiAssist.Companion.getDEBUG()){
+			worldname = SeichiAssist.Companion.getDEBUGWORLDNAME();
 		}
 
 		//整地ワールドzeroではスキル発動不可
@@ -81,9 +81,9 @@ public final class Util {
 	//プレイヤーが整地ワールドにいるかどうかの判定処理(整地ワールド=true、それ以外=false)
 	public static boolean isSeichiWorld(Player player){
 		//デバッグモード時は全ワールドtrue(DEBUGWORLDNAME = worldの場合)
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
+		String worldname = SeichiAssist.Companion.getSEICHIWORLDNAME();
+		if(SeichiAssist.Companion.getDEBUG()){
+			worldname = SeichiAssist.Companion.getDEBUGWORLDNAME();
 		}
 		//整地ワールドではtrue
 		return player.getWorld().getName().toLowerCase().startsWith(worldname);
@@ -151,7 +151,7 @@ public final class Util {
 
 	public static void sendEveryMessageWithoutIgnore(String str){
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
-			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverymessageflag()) {
+			if (SeichiAssist.Companion.getPlayermap().get(player.getUniqueId()).getEverymessageflag()) {
 				player.sendMessage(str);
 			}
 		}
@@ -168,7 +168,7 @@ public final class Util {
 
 	public static void sendEveryMessageWithoutIgnore(BaseComponent base){
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
-			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverymessageflag()) {
+			if (SeichiAssist.Companion.getPlayermap().get(player.getUniqueId()).getEverymessageflag()) {
 				player.spigot().sendMessage(base);
 			}
 		}
@@ -313,7 +313,7 @@ public final class Util {
 	}
 	public static void sendEverySoundWithoutIgnore(Sound kind, float a, float b){
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
-			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverysoundflag()) {
+			if (SeichiAssist.Companion.getPlayermap().get(player.getUniqueId()).getEverysoundflag()) {
 				player.playSound(player.getLocation(), kind, a, b);
 			}
 		}

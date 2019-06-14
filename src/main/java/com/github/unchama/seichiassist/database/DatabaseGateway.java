@@ -38,7 +38,7 @@ public class DatabaseGateway {
 	public Connection con = null;
 	private Statement stmt = null;
 
-	private SeichiAssist plugin = SeichiAssist.instance;
+	private SeichiAssist plugin = SeichiAssist.Companion.getInstance();
 
 	private DatabaseGateway(@NotNull String databaseUrl, @NotNull String databaseName, @NotNull String loginId, @NotNull String password){
 		this.databaseUrl = databaseUrl;

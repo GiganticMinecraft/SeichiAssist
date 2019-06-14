@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent
 
 class PlayerPickupItemListener : Listener {
   internal var playermap = SeichiAssist.playermap
-  private val config = SeichiAssist.config
+  private val config = SeichiAssist.seichiAssistConfig
 
   @EventHandler
   fun onPickupMineStackItem(event: PlayerPickupItemEvent) {

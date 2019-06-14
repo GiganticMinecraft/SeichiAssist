@@ -35,7 +35,7 @@ public final class StickMenu {
     }
 
     public static void openBy(@NotNull Player player) {
-        final PlayerData data = SeichiAssist.playermap.get(player.getUniqueId());
+        final PlayerData data = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
         stickMenu.setSlot(0, ButtonBuilder
             .from(
                 SkullItemStackBuilder

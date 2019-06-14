@@ -514,7 +514,7 @@ object MineStackObjectList {
       MineStackRsObj("record_wait", "レコード", 1, Material.RECORD_12, 0)
   )
 
-  var minestacklist: List<MineStackObj>? = null
+  var minestacklist: MutableList<MineStackObj>? = null
 
   // ガチャ系アイテム
   // これは後に変更されるのでミュータブルでないといけない
