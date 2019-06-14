@@ -1,9 +1,6 @@
 package com.github.unchama.seichiassist.listener;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MenuInventoryData;
 import com.github.unchama.seichiassist.data.PlayerData;
@@ -33,9 +30,9 @@ import org.bukkit.util.Vector;
 import java.util.*;
 
 public class PlayerClickListener implements Listener {
-	SeichiAssist plugin = SeichiAssist.instance;
-	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	List<GachaPrize> gachadatalist = SeichiAssist.gachadatalist;
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	HashMap<UUID, PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	List<GachaPrize> gachadatalist = SeichiAssist.Companion.getGachadatalist();
 	//アクティブスキル処理
 	@EventHandler
 	public void onPlayerActiveSkillEvent(PlayerInteractEvent event){
@@ -93,7 +90,7 @@ public class PlayerClickListener implements Listener {
 			}
 
 
-			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
+			if(MaterialSets.INSTANCE.getBreakMaterials().contains(event.getMaterial())){
 				if(playerdata.getActiveskilldata().skilltype == ActiveSkill.ARROW.gettypenum()){
 					//クールダウン処理
 					long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.getActiveskilldata().skillnum);
@@ -130,7 +127,7 @@ public class PlayerClickListener implements Listener {
 			}
 
 
-			if(SeichiAssist.breakmateriallist.contains(event.getMaterial())){
+			if(MaterialSets.INSTANCE.getBreakMaterials().contains(event.getMaterial())){
 				if(playerdata.getActiveskilldata().skilltype == ActiveSkill.ARROW.gettypenum()){
 					//クールダウン処理
 					long cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.getActiveskilldata().skillnum);
@@ -240,7 +237,7 @@ public class PlayerClickListener implements Listener {
 			return;
 		}
 		//ガチャシステムメンテナンス中は処理を終了
-		if(SeichiAssist.gachamente){
+		if(SeichiAssist.Companion.getGachamente()){
 			player.sendMessage("現在ガチャシステムはメンテナンス中です。\nしばらく経ってからもう一度お試しください");
 			return;
 		}
@@ -350,7 +347,7 @@ public class PlayerClickListener implements Listener {
 		}
 
 		//アクティブスキルを発動できるレベルに達していない場合処理終了
-		if( playerdata.getLevel() < SeichiAssist.config.getDualBreaklevel()){
+		if( playerdata.getLevel() < SeichiAssist.Companion.getSeichiAssistConfig().getDualBreaklevel()){
 			return;
 		}
 
@@ -363,8 +360,8 @@ public class PlayerClickListener implements Listener {
 
 		if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK){
 
-			boolean mainhandflag = SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInMainHand().getType());
-			boolean offhandflag = SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInOffHand().getType());
+			boolean mainhandflag = MaterialSets.INSTANCE.getBreakMaterials().contains(player.getInventory().getItemInMainHand().getType());
+			boolean offhandflag = MaterialSets.INSTANCE.getBreakMaterials().contains(player.getInventory().getItemInOffHand().getType());
 
 			int activemineflagnum = playerdata.getActiveskilldata().mineflagnum;
 			//どちらにも対応したアイテムを持っていない場合終了
@@ -376,7 +373,7 @@ public class PlayerClickListener implements Listener {
 				//クリックされたブロックの種類を取得
 				Material cmaterial = event.getClickedBlock().getType();
 				//cancelledmateriallistに存在すれば処理終了
-				if(SeichiAssist.cancelledmateriallist.contains(cmaterial)){
+				if(MaterialSets.INSTANCE.getCancelledMaterials().contains(cmaterial)){
 					return;
 				}
 			}
@@ -425,7 +422,7 @@ public class PlayerClickListener implements Listener {
 				}
 			}
 
-			if(SeichiAssist.breakmateriallist.contains(player.getInventory().getItemInOffHand().getType())
+			if(MaterialSets.INSTANCE.getBreakMaterials().contains(player.getInventory().getItemInOffHand().getType())
 					&& equipmentslot == EquipmentSlot.OFF_HAND
 					){
 				//オフハンドで指定ツールを持っていた時の処理
@@ -544,8 +541,8 @@ public class PlayerClickListener implements Listener {
 				return;
 			}
 			//パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
-			if( playerdata.getLevel() < SeichiAssist.config.getPassivePortalInventorylevel()){
-				player.sendMessage(ChatColor.GREEN + "4次元ポケットを入手するには整地レベルが"+SeichiAssist.config.getPassivePortalInventorylevel()+ "以上必要です。");
+			if( playerdata.getLevel() < SeichiAssist.Companion.getSeichiAssistConfig().getPassivePortalInventorylevel()){
+				player.sendMessage(ChatColor.GREEN + "4次元ポケットを入手するには整地レベルが"+ SeichiAssist.Companion.getSeichiAssistConfig().getPassivePortalInventorylevel()+ "以上必要です。");
 				return;
 			}
 			if(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK){

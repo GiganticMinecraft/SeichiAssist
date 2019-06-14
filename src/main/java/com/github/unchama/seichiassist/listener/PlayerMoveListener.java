@@ -27,10 +27,10 @@ public class PlayerMoveListener implements Listener {
 
 	// 自動回復タスクの登録
 	private void startTask(Player player) {
-		PlayerData pd = SeichiAssist.playermap.get(player.getUniqueId());
+		PlayerData pd = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		// 移動により回復カウントをキャンセルする
 		try { pd.getActiveskilldata().manaregenetask.cancel(); } catch (NullPointerException e) {}
 		// 5秒後から5秒間隔でマナ回復タスクを呼び出す
-		pd.getActiveskilldata().manaregenetask = new ManaRegeneTask(player).runTaskTimer(SeichiAssist.instance, 100, 100);
+		pd.getActiveskilldata().manaregenetask = new ManaRegeneTask(player).runTaskTimer(SeichiAssist.Companion.getInstance(), 100, 100);
 	}
 }

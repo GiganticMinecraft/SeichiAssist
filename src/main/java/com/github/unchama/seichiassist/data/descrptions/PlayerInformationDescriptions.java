@@ -109,7 +109,7 @@ public final class PlayerInformationDescriptions {
     @NotNull
     private static String rankingDescription(@NotNull PlayerData playerData) {
         return GOLD + "ランキング：" + playerData.calcPlayerRank(playerData.getPlayer()) + "位" +
-            GRAY + "(" + SeichiAssist.ranklist.size() + "人中)";
+            GRAY + "(" + SeichiAssist.Companion.getRanklist().size() + "人中)";
     }
 
     /**
@@ -123,7 +123,7 @@ public final class PlayerInformationDescriptions {
         final Player player = playerData.getPlayer();
         if (playerData.calcPlayerRank(player) > 1) {
             final int playerRanking = playerData.calcPlayerRank(player);
-            final RankData rankData = SeichiAssist.ranklist.get(playerRanking - 2);
+            final RankData rankData = SeichiAssist.Companion.getRanklist().get(playerRanking - 2);
             return AQUA + "" + (playerRanking - 1) + "位(" + rankData.name + ")との差：" +
                 (rankData.totalbreaknum - playerData.getTotalbreaknum());
             //TODO: この計算はここにあるべきではない.

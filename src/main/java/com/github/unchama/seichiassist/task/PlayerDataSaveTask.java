@@ -32,9 +32,9 @@ import static com.github.unchama.util.ActionStatus.Ok;
  *
  */
 public class PlayerDataSaveTask extends BukkitRunnable{
-	final private SeichiAssist plugin = SeichiAssist.instance;
-	final private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-	final private int serverId = SeichiAssist.config.getServerNum();
+	final private SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	final private DatabaseGateway databaseGateway = SeichiAssist.Companion.getDatabaseGateway();
+	final private int serverId = SeichiAssist.Companion.getSeichiAssistConfig().getServerNum();
 	final private boolean isOnDisable;
 	final private boolean logoutflag;
 	final PlayerData playerdata;

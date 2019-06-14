@@ -22,9 +22,9 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class PlayerJoinListener implements Listener {
-	private SeichiAssist plugin = SeichiAssist.instance;
-	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
+	private SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	private HashMap<UUID, PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	private DatabaseGateway databaseGateway = SeichiAssist.Companion.getDatabaseGateway();
 
 	// プレイヤーがjoinした時に実行
 	@EventHandler
@@ -61,7 +61,7 @@ public class PlayerJoinListener implements Listener {
 			//メビウスおひとつどうぞ
 			MebiusListener.give(player);
 			//初見さんにLv1メッセージを送信
-			player.sendMessage(SeichiAssist.config.getLvMessage(1));
+			player.sendMessage(SeichiAssist.Companion.getSeichiAssistConfig().getLvMessage(1));
 		}
 
 	}
@@ -70,7 +70,7 @@ public class PlayerJoinListener implements Listener {
 	@EventHandler
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
 		// 整地ワールドから他のワールドに移動したとき
-		if (SeichiAssist.seichiWorldList.contains(event.getFrom().getName())) {
+		if (SeichiAssist.Companion.getSeichiWorldList().contains(event.getFrom().getName())) {
 			Player p = event.getPlayer();
 			PlayerData pd = playermap.get(p.getUniqueId());
 

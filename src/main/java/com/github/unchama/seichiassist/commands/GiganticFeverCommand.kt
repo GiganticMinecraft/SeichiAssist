@@ -12,7 +12,7 @@ import org.bukkit.Difficulty
 object GiganticFeverCommand {
   val executor = ContextualExecutorBuilder.beginConfiguration()
       .execution {
-        val config = SeichiAssist.config
+        val config = SeichiAssist.seichiAssistConfig
 
         Util.sendEveryMessage("${ChatColor.AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！")
         Util.sendEveryMessage("${ChatColor.AQUA}(${config.giganticFeverDisplayTime}間)")

@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.task;
 
 import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.MaterialSets;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
@@ -25,8 +26,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class AssaultTask extends BukkitRunnable{
-	SeichiAssist plugin = SeichiAssist.instance;
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	Player player;
 	UUID uuid;
 	PlayerData playerdata;
@@ -101,9 +102,9 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に使用するツールを格納する
 		tool = null;
 		//メインハンドにツールがあるか
-		boolean mainhandtoolflag = SeichiAssist.breakmateriallist.contains(mainhanditem.getType());
+		boolean mainhandtoolflag = MaterialSets.INSTANCE.getBreakMaterials().contains(mainhanditem.getType());
 		//オフハンドにツールがあるか
-		boolean offhandtoolflag = SeichiAssist.breakmateriallist.contains(offhanditem.getType());
+		boolean offhandtoolflag = MaterialSets.INSTANCE.getBreakMaterials().contains(offhanditem.getType());
 
 		//場合分け
 		if(offhandtoolflag){
@@ -179,7 +180,7 @@ public class AssaultTask extends BukkitRunnable{
 				&&((lastloc.getBlockZ()-10) < player.getLocation().getBlockZ())
 				&&((lastloc.getBlockZ()+10) > player.getLocation().getBlockZ())
 				){
-			if(SeichiAssist.DEBUG){
+			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "放置を検出");
 			}
 			idletime ++;
@@ -205,7 +206,7 @@ public class AssaultTask extends BukkitRunnable{
 		ItemStack offhanditem = inventory.getItemInOffHand();
 		//最初に登録したツールと今のツールが違う場合
 		if(!tool.equals(offhanditem)){
-			if(SeichiAssist.DEBUG){
+			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "ツールの変更を検知しました");
 			}
 			setCancel();
@@ -235,7 +236,7 @@ public class AssaultTask extends BukkitRunnable{
 												|| breakblock.getType() == Material.LAVA;
 					boolean water_materialflag = breakblock.getType() == Material.STATIONARY_WATER
 												|| breakblock.getType() == Material.WATER;
-					if(SeichiAssist.materiallist.contains(breakblock.getType())
+					if(MaterialSets.INSTANCE.getMaterials().contains(breakblock.getType())
 							|| lava_materialflag || water_materialflag
 							){
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block) || !breakflag){
@@ -246,7 +247,7 @@ public class AssaultTask extends BukkitRunnable{
 									waterlist.add(breakblock);
 								}else{
 									breaklist.add(breakblock);
-									SeichiAssist.allblocklist.add(breakblock);
+									SeichiAssist.Companion.getAllblocklist().add(breakblock);
 								}
 							}
 						}
@@ -285,7 +286,7 @@ public class AssaultTask extends BukkitRunnable{
 		//重力値の判定
 		if(gravity > 15){
 			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-			SeichiAssist.allblocklist.removeAll(breaklist);
+			SeichiAssist.Companion.getAllblocklist().removeAll(breaklist);
 			setCancel();
 			return;
 		}
@@ -293,10 +294,10 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に経験値を減らせるか判定
 		if(!mana.has(useMana)){
 			//デバッグ用
-			if(SeichiAssist.DEBUG){
+			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
-			SeichiAssist.allblocklist.removeAll(breaklist);
+			SeichiAssist.Companion.getAllblocklist().removeAll(breaklist);
 			setCancel();
 			return;
 		}
@@ -305,10 +306,10 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に耐久値を減らせるか判定
 		if(tool.getType().getMaxDurability() <= durability && !tool.getItemMeta().spigot().isUnbreakable()){
 			//デバッグ用
-			if(SeichiAssist.DEBUG){
+			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
-			SeichiAssist.allblocklist.removeAll(breaklist);
+			SeichiAssist.Companion.getAllblocklist().removeAll(breaklist);
 			setCancel();
 			return;
 		}
@@ -353,10 +354,10 @@ public class AssaultTask extends BukkitRunnable{
 			}
 			for(Block b:breaklist){
 				BreakUtil.breakBlock(player, b, player.getLocation(), tool,false);
-				SeichiAssist.allblocklist.remove(b);
+				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}
-		SeichiAssist.allblocklist.removeAll(breaklist);
+		SeichiAssist.Companion.getAllblocklist().removeAll(breaklist);
 	}
 
 	private boolean isCanceled() {

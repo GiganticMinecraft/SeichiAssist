@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.data
 import com.github.unchama.messaging.MessageToSender
 import com.github.unchama.messaging.asResponseToSender
 import com.github.unchama.seichiassist.LevelThresholds
+import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.Worlds
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -300,7 +301,7 @@ class PlayerData(val player: Player) {
         this.idletime = 0
         this.staticdata = ArrayList()
         this.totalbreaknum = 0
-        for (m in SeichiAssist.materiallist) {
+        for (m in MaterialSets.materials) {
             //統計にないため除外
             if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
                 staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m))
@@ -467,9 +468,9 @@ class PlayerData(val player: Player) {
                 displayname = "[Lv" + level + "☆" + starlevel + "]" + displayname + ChatColor.WHITE
             }
         } else {
-            val displayTitle1 = SeichiAssist.config.getTitle1(displayTitle1No)
-            val displayTitle2 = SeichiAssist.config.getTitle2(displayTitle2No)
-            val displayTitle3 = SeichiAssist.config.getTitle3(displayTitle3No)
+            val displayTitle1 = SeichiAssist.seichiAssistConfig.getTitle1(displayTitle1No)
+            val displayTitle2 = SeichiAssist.seichiAssistConfig.getTitle2(displayTitle2No)
+            val displayTitle3 = SeichiAssist.seichiAssistConfig.getTitle3(displayTitle3No)
             displayname = "[" + displayTitle1 + displayTitle2 + displayTitle3 + "]" + displayname + ChatColor.WHITE
         }
         //放置時に色を変える
@@ -502,7 +503,7 @@ class PlayerData(val player: Player) {
             //レベルアップ時の花火の打ち上げ
             val loc = p.location
             Util.launchFireWorks(loc)
-            val lvmessage = SeichiAssist.config.getLvMessage(i + 1)
+            val lvmessage = SeichiAssist.seichiAssistConfig.getLvMessage(i + 1)
             if (!lvmessage.isEmpty()) {
                 p.sendMessage(ChatColor.AQUA.toString() + lvmessage)
             }
@@ -572,7 +573,7 @@ class PlayerData(val player: Player) {
     fun calcMineBlock(p: Player): Int {
         var i = 0
         var sum = 0.0
-        for (m in SeichiAssist.materiallist) {
+        for (m in MaterialSets.materials) {
             if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
                 val getstat = p.getStatistic(Statistic.MINE_BLOCK, m)
                 val getincrease = getstat - staticdata[i]
@@ -675,31 +676,31 @@ class PlayerData(val player: Player) {
         return if (level < 8) {
             0.0
         } else if (level < 18) {
-            SeichiAssist.config.getDropExplevel(1)
+            SeichiAssist.seichiAssistConfig.getDropExplevel(1)
         } else if (level < 28) {
-            SeichiAssist.config.getDropExplevel(2)
+            SeichiAssist.seichiAssistConfig.getDropExplevel(2)
         } else if (level < 38) {
-            SeichiAssist.config.getDropExplevel(3)
+            SeichiAssist.seichiAssistConfig.getDropExplevel(3)
         } else if (level < 48) {
-            SeichiAssist.config.getDropExplevel(4)
+            SeichiAssist.seichiAssistConfig.getDropExplevel(4)
         } else if (level < 58) {
-            SeichiAssist.config.getDropExplevel(5)
+            SeichiAssist.seichiAssistConfig.getDropExplevel(5)
         } else if (level < 68) {
-            SeichiAssist.config.getDropExplevel(6)
+            SeichiAssist.seichiAssistConfig.getDropExplevel(6)
         } else if (level < 78) {
-            SeichiAssist.config.getDropExplevel(7)
+            SeichiAssist.seichiAssistConfig.getDropExplevel(7)
         } else if (level < 88) {
-            SeichiAssist.config.getDropExplevel(8)
+            SeichiAssist.seichiAssistConfig.getDropExplevel(8)
         } else if (level < 98) {
-            SeichiAssist.config.getDropExplevel(9)
+            SeichiAssist.seichiAssistConfig.getDropExplevel(9)
         } else {
-            SeichiAssist.config.getDropExplevel(10)
+            SeichiAssist.seichiAssistConfig.getDropExplevel(10)
         }
     }
 
     //サブホームの位置をセットする
     fun setSubHomeLocation(location: Location, subHomeIndex: Int) {
-        if ((subHomeIndex >= 0) and (subHomeIndex < SeichiAssist.config.subHomeMax)) {
+        if ((subHomeIndex >= 0) and (subHomeIndex < SeichiAssist.seichiAssistConfig.subHomeMax)) {
             val currentSubHome = this.subHomeMap[subHomeIndex]
             val currentSubHomeName = currentSubHome?.name
 
@@ -708,7 +709,7 @@ class PlayerData(val player: Player) {
     }
 
     fun setSubHomeName(name: String?, subHomeIndex: Int) {
-        if ((subHomeIndex >= 0) and (subHomeIndex < SeichiAssist.config.subHomeMax)) {
+        if ((subHomeIndex >= 0) and (subHomeIndex < SeichiAssist.seichiAssistConfig.subHomeMax)) {
             val currentSubHome = this.subHomeMap[subHomeIndex]
             if (currentSubHome != null) {
                 this.subHomeMap[subHomeIndex] = SubHome(currentSubHome.location, name)
@@ -757,7 +758,7 @@ class PlayerData(val player: Player) {
     }
 
     private fun loadTotalExp() {
-        val server_num = SeichiAssist.config.serverNum
+        val server_num = SeichiAssist.seichiAssistConfig.serverNum
         //経験値が統合されてない場合は統合する
         if (expmarge.toInt() != 0x07 && server_num >= 1 && server_num <= 3) {
             if (expmarge and (0x01 shl server_num - 1).toByte() == 0.toByte()) {
@@ -1006,7 +1007,7 @@ class PlayerData(val player: Player) {
     }
 
     companion object {
-        internal var config = SeichiAssist.config
+        internal var config = SeichiAssist.seichiAssistConfig
 
         //TODO:もちろんここにあるべきではない
         const val passiveSkillProbability = 10

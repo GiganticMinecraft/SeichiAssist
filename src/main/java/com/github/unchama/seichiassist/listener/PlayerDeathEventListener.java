@@ -16,8 +16,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class PlayerDeathEventListener implements Listener {
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	SeichiAssist plugin = SeichiAssist.instance;
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onDeath(PlayerDeathEvent event){
@@ -57,7 +57,7 @@ public class PlayerDeathEventListener implements Listener {
 				p.sendMessage("整地サーバー1周年の記念品を入手しました。");
 				p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
 				playerdata.setAnniversary(false);
-				SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(false, p.getUniqueId());
+				SeichiAssist.Companion.getDatabaseGateway().playerDataManipulator.setAnniversary(false, p.getUniqueId());
 			}
 		}
 	}

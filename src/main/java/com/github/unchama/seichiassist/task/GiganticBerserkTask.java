@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class GiganticBerserkTask {
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	Player player;
 	PlayerData playerdata;
 
@@ -27,8 +27,8 @@ public class GiganticBerserkTask {
 		Mana mana = playerdata.getActiveskilldata().mana;
 
 		playerdata.setGBcd(playerdata.getGBcd() + 1);
-		if (playerdata.getGBcd() >= SeichiAssist.config.getGiganticBerserkLimit()){
-			if(SeichiAssist.DEBUG){
+		if (playerdata.getGBcd() >= SeichiAssist.Companion.getSeichiAssistConfig().getGiganticBerserkLimit()){
+			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage("上限到達");
 			}
 			return;

@@ -31,10 +31,10 @@ import java.util.*;
  */
 public class PlayerDataLoadTask extends BukkitRunnable{
 
-	private SeichiAssist plugin = SeichiAssist.instance;
-	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-	private static Config config = SeichiAssist.config;
+	private SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	private HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	private DatabaseGateway databaseGateway = SeichiAssist.Companion.getDatabaseGateway();
+	private static Config config = SeichiAssist.Companion.getSeichiAssistConfig();
 
 	private LimitedLoginEvent LLE = new LimitedLoginEvent();
 
@@ -49,7 +49,7 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 
 	public PlayerDataLoadTask(PlayerData playerData) {
 		timer = MillisecondTimer.getInitializedTimerInstance();
-		db = SeichiAssist.config.getDB();
+		db = SeichiAssist.Companion.getSeichiAssistConfig().getDB();
 		p = Bukkit.getPlayer(playerData.getUuid());
 		playerdata = playerData;
 		uuid = playerData.getUuid();
@@ -375,7 +375,7 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 	@Override
 	public void run() {
 		//対象プレイヤーがオフラインなら処理終了
-		if(SeichiAssist.instance.getServer().getPlayer(uuid) == null){
+		if(SeichiAssist.Companion.getInstance().getServer().getPlayer(uuid) == null){
 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "はオフラインの為取得処理を中断");
 			cancel();
 			return;
@@ -446,7 +446,7 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 			e.printStackTrace();
 		}
 
-		if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getDEBUG()){
 			p.sendMessage("sqlデータで更新しました");
 		}
 		//更新したplayerdataをplayermapに追加

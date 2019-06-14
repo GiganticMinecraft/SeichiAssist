@@ -28,9 +28,9 @@ import java.util.UUID;
  * 正月イベント関連クラス
  */
 public class NewYearsEvent implements Listener {
-	private static SeichiAssist plugin = SeichiAssist.instance;
-	private static Config config = SeichiAssist.config;
-	private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap;
+	private static SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	private static Config config = SeichiAssist.Companion.getSeichiAssistConfig();
+	private static Map<UUID, PlayerData> playerMap = SeichiAssist.Companion.getPlayermap();
 
 	/**
 	 * 正月イベント準備メソッド(コンストラクタ)

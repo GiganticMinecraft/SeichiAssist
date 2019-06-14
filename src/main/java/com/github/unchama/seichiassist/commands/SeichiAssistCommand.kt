@@ -23,7 +23,7 @@ object SeichiAssistCommand {
 
   private val reloadConfigExecutor = ContextualExecutorBuilder.beginConfiguration()
       .execution {
-        SeichiAssist.config.reloadConfig()
+        SeichiAssist.seichiAssistConfig.reloadConfig()
         "config.ymlの設定値を再読み込みしました".asResponseToSender()
       }
       .build()
@@ -31,7 +31,7 @@ object SeichiAssistCommand {
   private val toggleDebugExecutor = ContextualExecutorBuilder.beginConfiguration()
       .execution {
         //debugフラグ反転処理
-        if (SeichiAssist.config.debugMode == 1) {
+        if (SeichiAssist.seichiAssistConfig.debugMode == 1) {
           //メッセージフラグを反転
           SeichiAssist.DEBUG = !SeichiAssist.DEBUG
           SeichiAssist.instance.stopAllTaskRunnable()

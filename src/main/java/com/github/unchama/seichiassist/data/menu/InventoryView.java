@@ -69,7 +69,7 @@ public class InventoryView implements InventoryHolder {
      * @param itemStack セットしたい {@link ItemStack}
      */
     private void setItemStackAsynchronously(@NotNull Inventory inventory, int position, @NotNull ItemStack itemStack) {
-        Bukkit.getScheduler().runTaskAsynchronously(SeichiAssist.instance,
+        Bukkit.getScheduler().runTaskAsynchronously(SeichiAssist.Companion.getInstance(),
                 () -> inventory.setItem(position, itemStack));
     }
 }

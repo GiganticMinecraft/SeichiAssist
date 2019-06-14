@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class GachaItemListener implements Listener {
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	//private SeichiAssist instance = SeichiAssist.instance;
 	@EventHandler
 	public void onPlayerItemConsumeEvent(PlayerItemConsumeEvent e){

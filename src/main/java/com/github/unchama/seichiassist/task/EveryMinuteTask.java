@@ -24,9 +24,9 @@ import java.util.UUID;
  *
  */
 public class EveryMinuteTask extends BukkitRunnable{
-	private SeichiAssist plugin = SeichiAssist.instance;
-	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	private Config config = SeichiAssist.config;
+	private SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	private HashMap<UUID, PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	private Config config = SeichiAssist.Companion.getSeichiAssistConfig();
 
 	//newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理
 	public EveryMinuteTask() {

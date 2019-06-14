@@ -32,8 +32,8 @@ import java.util.UUID;
  * 正月イベント・リンゴのListener
  */
 public class NewYearItemListener implements Listener {
-	private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap;
-	private static Config config = SeichiAssist.config;
+	private static Map<UUID, PlayerData> playerMap = SeichiAssist.Companion.getPlayermap();
+	private static Config config = SeichiAssist.Companion.getSeichiAssistConfig();
 
 	@EventHandler
 	public void onPlayerNewYearItemConsumeEvent(PlayerItemConsumeEvent event) {
