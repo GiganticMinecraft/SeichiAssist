@@ -251,19 +251,19 @@ class SeichiAssist : JavaPlugin() {
     val playermap = HashMap<UUID, PlayerData>()
 
     //総採掘量ランキング表示用データリスト
-    val ranklist: List<RankData> = ArrayList()
+    val ranklist: MutableList<RankData> = ArrayList()
 
     //プレイ時間ランキング表示用データリスト
-    val ranklist_playtick: List<RankData> = ArrayList()
+    val ranklist_playtick: MutableList<RankData> = ArrayList()
 
     //投票ポイント表示用データリスト
-    val ranklist_p_vote: List<RankData> = ArrayList()
+    val ranklist_p_vote: MutableList<RankData> = ArrayList()
 
     //マナ妖精表示用のデータリスト
-    val ranklist_p_apple: List<RankData> = ArrayList()
+    val ranklist_p_apple: MutableList<RankData> = ArrayList()
 
     //プレミアムエフェクトポイント表示用データリスト
-    val ranklist_premiumeffectpoint: List<RankData> = ArrayList()
+    val ranklist_premiumeffectpoint: MutableList<RankData> = ArrayList()
 
     //総採掘量表示用
     var allplayerbreakblockint: Long = 0
