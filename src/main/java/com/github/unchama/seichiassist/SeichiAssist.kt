@@ -20,7 +20,8 @@ import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.ActionStatus.Fail
 import com.github.unchama.util.collection.ImmutableListFactory
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
+import org.bukkit.ChatColor.GREEN
+import org.bukkit.ChatColor.RED
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
@@ -30,7 +31,6 @@ import java.util.*
 
 
 class SeichiAssist : JavaPlugin() {
-
   //起動するタスクリスト
   private val taskList = ArrayList<BukkitTask>()
 
@@ -38,26 +38,28 @@ class SeichiAssist : JavaPlugin() {
     instance = this
 
     //チャンネルを追加
-    val pluginChannel = "BungeeCord"
-    Bukkit.getMessenger().registerOutgoingPluginChannel(this,
-        pluginChannel)
+    Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord")
+
+    // BungeeCordとのI/O
+    Bukkit.getMessenger().registerIncomingPluginChannel(this, "SeichiAssistBungee", BungeeReceiver(this))
+    Bukkit.getMessenger().registerOutgoingPluginChannel(this, "SeichiAssistBungee")
+
 
     //コンフィグ系の設定は全てConfig.javaに移動
     seichiAssistConfig = Config(this)
     seichiAssistConfig.loadConfig()
 
-    val ccs = Bukkit.getConsoleSender()
     if (SeichiAssist.seichiAssistConfig.debugMode == 1) {
       //debugmode=1の時は最初からデバッグモードで鯖を起動
-      ccs.sendMessage(ChatColor.RED.toString() + "seichiassistをデバッグモードで起動します")
-      ccs.sendMessage(ChatColor.RED.toString() + "コンソールから/seichi debugmode")
-      ccs.sendMessage(ChatColor.RED.toString() + "を実行するといつでもONOFFを切り替えられます")
+      logger.info("${RED}seichiassistをデバッグモードで起動します")
+      logger.info("${RED}コンソールから/seichi debugmode")
+      logger.info("${RED}を実行するといつでもONOFFを切り替えられます")
       DEBUG = true
     } else {
       //debugmode=0の時は/seichi debugmodeによる変更コマンドも使えない
-      ccs.sendMessage(ChatColor.GREEN.toString() + "seichiassistを通常モードで起動します")
-      ccs.sendMessage(ChatColor.GREEN.toString() + "デバッグモードを使用する場合は")
-      ccs.sendMessage(ChatColor.GREEN.toString() + "config.ymlの設定値を書き換えて再起動してください")
+      logger.info("${GREEN}seichiassistを通常モードで起動します")
+      logger.info("${GREEN}デバッグモードを使用する場合は")
+      logger.info("${GREEN}config.ymlの設定値を書き換えて再起動してください")
     }
 
     databaseGateway = DatabaseGateway.createInitializedInstance(
@@ -131,10 +133,6 @@ class SeichiAssist : JavaPlugin() {
     //Menu用Listener
     server.pluginManager.registerEvents(MenuHandler.getInstance(), this)
 
-    // BungeeCordとのI/O
-    Bukkit.getMessenger().registerIncomingPluginChannel(this, "SeichiAssistBungee", BungeeReceiver(this))
-    Bukkit.getMessenger().registerOutgoingPluginChannel(this, "SeichiAssistBungee")
-
     //オンラインの全てのプレイヤーを処理
     for (p in server.onlinePlayers) {
       //プレイヤーデータを生成
@@ -158,9 +156,7 @@ class SeichiAssist : JavaPlugin() {
     stopAllTaskRunnable()
 
     //全てのエンティティを削除
-    for (e in entitylist) {
-      e.remove()
-    }
+    entitylist.forEach { it.remove() }
 
     //全てのスキルで破壊されるブロックを強制破壊
     for (b in allblocklist) {
@@ -176,8 +172,8 @@ class SeichiAssist : JavaPlugin() {
       val playerdata = playermap[uuid]
       //念のためエラー分岐
       if (playerdata == null) {
-        p.sendMessage(ChatColor.RED.toString() + "playerdataの保存に失敗しました。管理者に報告してください")
-        server.consoleSender.sendMessage(ChatColor.RED.toString() + "SeichiAssist[Ondisable処理]でエラー発生")
+        p.sendMessage(RED.toString() + "playerdataの保存に失敗しました。管理者に報告してください")
+        server.consoleSender.sendMessage(RED.toString() + "SeichiAssist[Ondisable処理]でエラー発生")
         logger.warning(Util.getName(p) + "のplayerdataの保存失敗。開発者に報告してください")
         continue
       }
@@ -271,10 +267,10 @@ class SeichiAssist : JavaPlugin() {
     var allplayergiveapplelong: Long = 0
 
     //プラグインで出すエンティティの保存
-    val entitylist: List<Entity> = ArrayList()
+    val entitylist: MutableList<Entity> = ArrayList()
 
     //プレイヤーがスキルで破壊するブロックリスト
-    val allblocklist: List<Block> = ArrayList()
+    val allblocklist: MutableList<Block> = ArrayList()
 
     //スキル破壊ブロック分のcoreprotectログ保存処理を除外するワールドリスト(coreprotectログデータ肥大化の軽減が目的)
     //スキル自体はメインワールドと各整地ワールドのみ(world_SWで始まるワールドのみ)で発動する(ここの設定は無視する)
