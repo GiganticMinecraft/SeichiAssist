@@ -2,10 +2,9 @@ package com.github.unchama.seichiassist.effect.arrow
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effect.FixedMetadataValueHolder
-import com.github.unchama.seichiassist.task.AsyncEntityRemover
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.okkero.skedule.SynchronizationContext
+import com.okkero.skedule.schedule
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -39,8 +38,8 @@ abstract class AbstractEffectTask : BukkitRunnable() {
     proj.setMetadata("ArrowSkill", FixedMetadataValueHolder.TRUE)
     proj.velocity = vec
 
-    GlobalScope.launch(BukkitServerThreadDispatcher) {
-      delay(5000)
+    Bukkit.getScheduler().schedule(SeichiAssist.instance, SynchronizationContext.ASYNC) {
+      waitFor(100)
       proj.remove()
       SeichiAssist.entitylist.remove(proj)
     }
