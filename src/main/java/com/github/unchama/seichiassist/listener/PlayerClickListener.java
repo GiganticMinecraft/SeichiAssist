@@ -109,7 +109,7 @@ public class PlayerClickListener implements Listener {
 					//エフェクトが指定されているときの処理
 					else if(playerdata.getActiveskilldata().effectnum <= 100){
 						ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-						skilleffect[playerdata.getActiveskilldata().effectnum - 1].runArrowEffect(player);
+						skilleffect[playerdata.getActiveskilldata().effectnum - 1].runProjectileEffect(player);
 					}else if(playerdata.getActiveskilldata().effectnum > 100){
 						ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
 						premiumeffect[playerdata.getActiveskilldata().effectnum - 1 -100].runArrowEffect(player);
@@ -146,7 +146,7 @@ public class PlayerClickListener implements Listener {
 					//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
 					else if(playerdata.getActiveskilldata().effectnum <= 100){
 						ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-						skilleffect[playerdata.getActiveskilldata().effectnum - 1].runArrowEffect(player);
+						skilleffect[playerdata.getActiveskilldata().effectnum - 1].runProjectileEffect(player);
 					}
 
 					//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）

@@ -157,7 +157,7 @@ public class PlayerDataLoadTask extends BukkitRunnable{
             while (resultSet.next()) {
                 final String effectName = resultSet.getString("effect_name");
 
-                final ActiveSkillEffect effect = ActiveSkillEffect.fromSqlName(effectName);
+                final ActiveSkillEffect effect = ActiveSkillEffect.Companion.fromSqlName(effectName);
                 playerdata.getActiveskilldata().obtainedSkillEffects.add(effect);
             }
         }
@@ -172,7 +172,7 @@ public class PlayerDataLoadTask extends BukkitRunnable{
             while (resultSet.next()) {
                 final String effectName = resultSet.getString("effect_name");
 
-                final ActiveSkillPremiumEffect effect = ActiveSkillPremiumEffect.fromSqlName(effectName);
+                final ActiveSkillPremiumEffect effect = ActiveSkillPremiumEffect.Companion.fromSqlName(effectName);
                 playerdata.getActiveskilldata().obtainedSkillPremiumEffects.add(effect);
             }
         }
