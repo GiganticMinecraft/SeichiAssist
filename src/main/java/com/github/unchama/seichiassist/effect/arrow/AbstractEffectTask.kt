@@ -3,6 +3,9 @@ package com.github.unchama.seichiassist.effect.arrow
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effect.FixedMetadataValueHolder
 import com.github.unchama.seichiassist.task.AsyncEntityRemover
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -35,12 +38,11 @@ abstract class AbstractEffectTask : BukkitRunnable() {
     SeichiAssist.entitylist += proj
     proj.setMetadata("ArrowSkill", FixedMetadataValueHolder.TRUE)
     proj.velocity = vec
-    val onComplete = object : BukkitRunnable() {
-      override fun run() {
-        AsyncEntityRemover(proj).run()
-        cancel()
-      }
+
+    GlobalScope.launch(BukkitServerThreadDispatcher) {
+      delay(5000)
+      proj.remove()
+      SeichiAssist.entitylist.remove(proj)
     }
-    onComplete.runTaskLater(SeichiAssist.instance, 100L)
   }
 }
