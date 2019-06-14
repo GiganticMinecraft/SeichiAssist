@@ -12,13 +12,14 @@ import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.listener.*
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.MineStackObj
-import com.github.unchama.seichiassist.task.EveryHalfHourTask
-import com.github.unchama.seichiassist.task.EveryMinuteTask
+import com.github.unchama.seichiassist.task.HalfHourRankingRoutine
+import com.github.unchama.seichiassist.task.PlayerDataPeriodicRecalculation
 import com.github.unchama.seichiassist.task.PlayerDataBackupTask
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.ActionStatus.Fail
 import com.github.unchama.util.collection.ImmutableListFactory
+import kotlinx.coroutines.*
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.RED
@@ -26,16 +27,17 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.scheduler.BukkitTask
 import java.util.*
 
 
 class SeichiAssist : JavaPlugin() {
-  //起動するタスクリスト
-  private val taskList = ArrayList<BukkitTask>()
+  init {
+    instance = this
+  }
+
+  private var repeatedJobCoroutine: Job? = null
 
   override fun onEnable() {
-    instance = this
 
     //チャンネルを追加
     Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord")
@@ -145,23 +147,19 @@ class SeichiAssist : JavaPlugin() {
       Bukkit.shutdown()
     }
 
-    //タスクスタート
-    startTaskRunnable()
+    startRepeatedJobs()
 
     logger.info("SeichiAssist is Enabled!")
   }
 
   override fun onDisable() {
-    //全てのタスクをキャンセル
-    stopAllTaskRunnable()
+    cancelRepeatedJobs()
 
     //全てのエンティティを削除
     entitylist.forEach { it.remove() }
 
     //全てのスキルで破壊されるブロックを強制破壊
-    for (b in allblocklist) {
-      b.type = Material.AIR
-    }
+    for (b in allblocklist) b.type = Material.AIR
 
     //sqlコネクションチェック
     databaseGateway.ensureConnection()
@@ -190,32 +188,21 @@ class SeichiAssist : JavaPlugin() {
     logger.info("SeichiAssist is Disabled!")
   }
 
-  fun startTaskRunnable() {
-    //一定時間おきに処理を実行するタスク
-    if (DEBUG) {
-      taskList.add(EveryHalfHourTask().runTaskTimer(this, 440, 400))
-    } else {
-      taskList.add(EveryHalfHourTask().runTaskTimer(this, 36400, 36000))
-    }
-
-    if (DEBUG) {
-      taskList.add(EveryMinuteTask().runTaskTimer(this, 0, 200))
-    } else {
-      taskList.add(EveryMinuteTask().runTaskTimer(this, 0, 1200))
-    }
-
-    //非同期処理にしたいけど別ステートメントでsql文処理させるようにしてからじゃないとだめぽ
-    if (DEBUG) {
-      taskList.add(PlayerDataBackupTask().runTaskTimer(this, 480, 400))
-    } else {
-      taskList.add(PlayerDataBackupTask().runTaskTimer(this, 12800, 12000))
+  private fun startRepeatedJobs() {
+    repeatedJobCoroutine = CoroutineScope(Schedulers.sync).launch {
+      async { HalfHourRankingRoutine.launch() }
+      async { PlayerDataPeriodicRecalculation.launch() }
+      async { PlayerDataBackupTask.launch() }
     }
   }
 
-  fun stopAllTaskRunnable() {
-    for (task in taskList) {
-      task.cancel()
-    }
+  private fun cancelRepeatedJobs() {
+    repeatedJobCoroutine?.cancel()
+  }
+
+  fun restartRepeatedJobs() {
+    cancelRepeatedJobs()
+    startRepeatedJobs()
   }
 
   companion object {

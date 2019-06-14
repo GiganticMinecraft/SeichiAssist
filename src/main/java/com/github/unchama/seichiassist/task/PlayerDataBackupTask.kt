@@ -2,25 +2,25 @@ package com.github.unchama.seichiassist.task
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util
+import kotlinx.coroutines.delay
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.scheduler.BukkitRunnable
 
-class PlayerDataBackupTask : BukkitRunnable() {
-  private val plugin = SeichiAssist.instance
-  private val databaseGateway = SeichiAssist.databaseGateway
-  private val playermap = SeichiAssist.playermap
+object PlayerDataBackupTask: RepeatedTaskLauncher() {
+  override fun getRepeatIntervalTicks(): Long = if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 10
 
-  override fun run() {
-    //playermapが空の時return
-    if (playermap.isEmpty()) return
+  override suspend fun runRoutine() {
+    val playerMap = SeichiAssist.playermap
+    val databaseGateway = SeichiAssist.databaseGateway
+
+    if (playerMap.isEmpty()) return
 
     Util.sendEveryMessage(ChatColor.AQUA.toString() + "プレイヤーデータセーブ中…")
     Bukkit.getLogger().info(ChatColor.AQUA.toString() + "プレイヤーデータセーブ中…")
 
     //現在オンラインのプレイヤーのプレイヤーデータを永続化する
     for (player in Bukkit.getOnlinePlayers()) {
-      val playerData = playermap[player.uniqueId]
+      val playerData = playerMap[player.uniqueId]
 
       if (playerData != null) {
         databaseGateway.playerDataManipulator.savePlayerData(playerData)
@@ -35,8 +35,7 @@ class PlayerDataBackupTask : BukkitRunnable() {
 
     //ランキングリストを最新情報に更新する
     if (!databaseGateway.playerDataManipulator.updateAllRankingList()) {
-      plugin.logger.info("ランキングデータの作成に失敗しました")
+      SeichiAssist.instance.logger.info("ランキングデータの作成に失敗しました")
     }
   }
-
 }
