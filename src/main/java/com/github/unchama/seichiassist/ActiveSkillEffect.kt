@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.effect.breaking.ExplosionTask
 import com.github.unchama.seichiassist.effect.breaking.MeteoTask
 import com.github.unchama.seichiassist.data.Coordinate
 import com.github.unchama.seichiassist.data.PlayerData
-import com.github.unchama.seichiassist.effect.arrow.AbstractEffectTask
+import com.okkero.skedule.BukkitSchedulerController
 import com.okkero.skedule.SynchronizationContext
 import com.okkero.skedule.schedule
 import org.bukkit.*
@@ -58,9 +58,10 @@ enum class ActiveSkillEffect constructor(val num: Int, private val sql_name: Str
 
   //エフェクトの実行処理分岐
   fun runProjectileEffect(player: Player) {
-    for (i in 0..99) {
-      Bukkit.getScheduler().schedule(SeichiAssist.instance, SynchronizationContext.ASYNC) {
-        waitFor(i.toLong()) // TODO: これであってるのか？
+    async {
+      // https://discordapp.com/channels/237758724121427969/565935041574731807/589097781088616500
+      for (_0 in 0..99) {
+        waitFor(1)
         when (this@ActiveSkillEffect) {
           EXPLOSION -> ArrowExplosionTask(player)
           BLIZZARD -> ArrowBlizzardTask(player)
@@ -78,6 +79,10 @@ enum class ActiveSkillEffect constructor(val num: Int, private val sql_name: Str
       BLIZZARD -> player.world.spawnParticle(Particle.SNOW_SHOVEL, player.eyeLocation, 1, 3.0, 3.0, 3.0, 1.0)
       METEO -> player.world.spawnParticle(Particle.DRIP_LAVA, player.eyeLocation, 1, 3.0, 3.0, 3.0, 1.0)
     }
+  }
+
+  private fun async(action: suspend BukkitSchedulerController.() -> Unit) {
+    Bukkit.getScheduler().schedule(SeichiAssist.instance, SynchronizationContext.ASYNC, action)
   }
 
   companion object {
