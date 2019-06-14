@@ -34,8 +34,7 @@ object SeichiAssistCommand {
         if (SeichiAssist.seichiAssistConfig.debugMode == 1) {
           //メッセージフラグを反転
           SeichiAssist.DEBUG = !SeichiAssist.DEBUG
-          SeichiAssist.instance.stopAllTaskRunnable()
-          SeichiAssist.instance.startTaskRunnable()
+          SeichiAssist.instance.restartRepeatedJobs()
 
           val resultMessage = if (SeichiAssist.DEBUG) {
             "${ChatColor.GREEN}デバッグモードを有効にしました"
