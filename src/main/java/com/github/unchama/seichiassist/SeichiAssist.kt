@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.RankData
-import com.github.unchama.seichiassist.data.menu.MenuHandler
+import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.listener.*
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
@@ -133,7 +133,7 @@ class SeichiAssist : JavaPlugin() {
     NewYearsEvent(this)
 
     //Menu用Listener
-    server.pluginManager.registerEvents(MenuHandler.getInstance(), this)
+    server.pluginManager.registerEvents(MenuHandler, this)
 
     //オンラインの全てのプレイヤーを処理
     for (p in server.onlinePlayers) {
