@@ -41,7 +41,7 @@ class PlayerPickupItemListener : Listener {
       val mineStackObj = MineStackObjectList.minestacklist!![i]
       if (material == mineStackObj.material && itemstack.durability.toInt() == mineStackObj.durability) {
         //この時点でIDとサブIDが一致している
-        if (!mineStackObj.nameloreflag && !itemstack.itemMeta.hasLore() && !itemstack.itemMeta.hasDisplayName()) {//名前と説明文が無いアイテム
+        if (!mineStackObj.nameLoreFlag && !itemstack.itemMeta.hasLore() && !itemstack.itemMeta.hasDisplayName()) {//名前と説明文が無いアイテム
           if (playerData.level < config.getMineStacklevel(mineStackObj.level)) {
             //レベルを満たしていない
             return
@@ -49,11 +49,11 @@ class PlayerPickupItemListener : Listener {
             playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong())
             break
           }
-        } else if (mineStackObj.nameloreflag && itemstack.itemMeta.hasDisplayName() && itemstack.itemMeta.hasLore()) {
+        } else if (mineStackObj.nameLoreFlag && itemstack.itemMeta.hasDisplayName() && itemstack.itemMeta.hasLore()) {
           //名前・説明文付き
           val meta = itemstack.itemMeta
           //この時点で名前と説明文がある
-          if (mineStackObj.gachatype == -1) { //ガチャ以外のアイテム(がちゃりんご)
+          if (mineStackObj.gachaType == -1) { //ガチャ以外のアイテム(がちゃりんご)
             if (meta.displayName != StaticGachaPrizeFactory.getGachaRingoName() || meta.lore != StaticGachaPrizeFactory.getGachaRingoLore()) {
               return
             }
@@ -66,7 +66,7 @@ class PlayerPickupItemListener : Listener {
             }
           } else {
             //ガチャ品
-            val g = SeichiAssist.msgachadatalist[mineStackObj.gachatype]
+            val g = SeichiAssist.msgachadatalist[mineStackObj.gachaType]
             val name = playerData.name //プレイヤーのネームを見る
             if (g.probability < 0.1) { //カタログギフト券を除く(名前があるアイテム)
               if (!Util.ItemStackContainsOwnerName(itemstack, name)) {

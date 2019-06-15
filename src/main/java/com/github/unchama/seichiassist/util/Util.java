@@ -529,9 +529,9 @@ public final class Util {
 
 	public static int getMineStackTypeindex(int idx){
 		int temp = 0;
-		int type = MineStackObjectList.INSTANCE.getMinestacklist().get(idx).getStacktype();
+		int type = MineStackObjectList.INSTANCE.getMinestacklist().get(idx).getStackType();
 		for (int i = 0; i < idx; i++) {
-			if (MineStackObjectList.INSTANCE.getMinestacklist().get(i).getStacktype() == type) {
+			if (MineStackObjectList.INSTANCE.getMinestacklist().get(i).getStackType() == type) {
 				temp++;
 			}
 		}

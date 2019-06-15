@@ -519,7 +519,7 @@ object MineStackObjectList {
   // ガチャ系アイテム
   // これは後に変更されるのでミュータブルでないといけない
   var minestacklistgacha: MutableList<MineStackObj> = mutableListOf(
-      MineStackGachaObj("gachaimo", StaticGachaPrizeFactory.getGachaRingoName(), 1, Material.GOLDEN_APPLE, 0, StaticGachaPrizeFactory.getGachaRingoLore()),
+      MineStackGachaObj("gachaimo", StaticGachaPrizeFactory.getGachaRingoName(), 1, Material.GOLDEN_APPLE, 0),
       MineStackGachaObj("exp_bottle", "エンチャントの瓶", 1, Material.EXP_BOTTLE, 0)
   )
 }

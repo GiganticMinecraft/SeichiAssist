@@ -956,11 +956,10 @@ public class MenuInventoryData {
 
 			MineStackObj obj = data.obj;
 			final long objectAmount = pd.getMinestack().getStackedAmountOf(obj);
-			if (obj.getItemStack() == null) {
-				setMineStackButton(inventory, objectAmount, new ItemStack(obj.getMaterial(), 1, (short)obj.getDurability()), SeichiAssist.Companion.getSeichiAssistConfig().getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
-			} else {
-				setMineStackButton(inventory, objectAmount, obj.getItemStack(), SeichiAssist.Companion.getSeichiAssistConfig().getMineStacklevel(obj.getLevel()), slot, obj.getJapaneseName());
-			}
+			setMineStackButton(
+					inventory, objectAmount, obj.getItemStack(),
+					SeichiAssist.Companion.getSeichiAssistConfig().getMineStacklevel(obj.getLevel()),
+					slot, obj.getJapaneseName());
 			slot++;
 		}
 		return inventory;
@@ -970,7 +969,7 @@ public class MenuInventoryData {
 	public static Inventory getMineStackMenu(Player p, int page, int stack_type){
 		int minestack_stacktype_size=0;
 		for(int i = 0; i< MineStackObjectList.INSTANCE.getMinestacklist().size(); i++){
-			if(MineStackObjectList.INSTANCE.getMinestacklist().get(i).getStacktype()==stack_type){
+			if(MineStackObjectList.INSTANCE.getMinestacklist().get(i).getStackType()==stack_type){
 				minestack_stacktype_size++;
 			}
 		}
@@ -1039,7 +1038,7 @@ public class MenuInventoryData {
 		int iii=0;
 		int ii = start + page*45 - 1;
 		while(ii_temp<ii){
-			if(MineStackObjectList.INSTANCE.getMinestacklist().get(iii).getStacktype()!=stack_type){//対象外
+			if(MineStackObjectList.INSTANCE.getMinestacklist().get(iii).getStackType()!=stack_type){//対象外
 				iii++;
 			} else {
 				iii++;
@@ -1048,19 +1047,17 @@ public class MenuInventoryData {
 		}
 
 		while(i<max){
-			while(MineStackObjectList.INSTANCE.getMinestacklist().get(iii).getStacktype()!=stack_type){
+			while(MineStackObjectList.INSTANCE.getMinestacklist().get(iii).getStackType()!=stack_type){
 				iii++;
 			}
 			//この時点で「stack_typeのii番目」のインデックスになっている
 			MineStackObj msobj = MineStackObjectList.INSTANCE.getMinestacklist().get(iii);
 			final long objectAmount = playerdata.getMinestack().getStackedAmountOf(msobj);
-			if(msobj.getItemStack()==null){
-				setMineStackButton(inventory, objectAmount, new ItemStack(msobj.getMaterial(), 1, (short)msobj.getDurability()),  SeichiAssist.Companion.getSeichiAssistConfig().getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
-				iii++;
-			} else {
-				setMineStackButton(inventory, objectAmount, msobj.getItemStack(), SeichiAssist.Companion.getSeichiAssistConfig().getMineStacklevel(msobj.getLevel()), i, msobj.getJapaneseName());
-				iii++;
-			}
+			setMineStackButton(
+					inventory, objectAmount, msobj.getItemStack(),
+					SeichiAssist.Companion.getSeichiAssistConfig().getMineStacklevel(msobj.getLevel()),
+					i, msobj.getJapaneseName());
+			iii++;
 			i++;
 		}
 
@@ -1122,50 +1119,7 @@ public class MenuInventoryData {
 		itemmeta.setLore(lore);
 		return itemmeta;
 	}
-	//MineStackボタン作成 Material版
-	public static Inventory setMineStackButton(Inventory inv, long minestack,Material type,int level,int set){
-		ItemStack itemstack = new ItemStack(type,1);
-		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(type);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + type.toString());
-		List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + minestack +"個"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "Lv" + level + "以上でスタック可能"
-				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inv.setItem(set,itemstack);
-		return inv;
-	}
-	//MineStackボタン作成 Material版名前付き
-	public static Inventory setMineStackButton(Inventory inv, long minestack,Material type,int level,int set,String name){
-		ItemStack itemstack = new ItemStack(type,1);
-		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(type);
-		if(name!=null){
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + name);
-		} else {
-			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + type.toString());
-		}
-		List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + minestack +"個"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "Lv" + level + "以上でスタック可能"
-				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inv.setItem(set,itemstack);
-		return inv;
-	}
-	//MineStackボタン作成 ItemStack版
-	public static Inventory setMineStackButton(Inventory inv, long minestack, ItemStack itemstack,int level,int set){
-		itemstack.setAmount(1);
-		ItemMeta itemmeta = itemstack.getItemMeta();
-		//itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + itemmeta.getDisplayName());
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + itemstack.getType().toString());
-		List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + minestack +"個"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "Lv" + level + "以上でスタック可能"
-				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで1スタック取り出し");
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inv.setItem(set,itemstack);
-		return inv;
-	}
+
 	//MineStackボタン作成 ItemStack版名前付き
 	public static Inventory setMineStackButton(Inventory inv, long minestack,ItemStack itemstack,int level,int set, String name){
 		itemstack.setAmount(1);
