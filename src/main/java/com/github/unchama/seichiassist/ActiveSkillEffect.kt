@@ -60,7 +60,7 @@ enum class ActiveSkillEffect constructor(val num: Int, private val sql_name: Str
   fun runProjectileEffect(player: Player) {
     async {
       // https://discordapp.com/channels/237758724121427969/565935041574731807/589097781088616500
-      for (_0 in 0..99) {
+      repeat (100) {
         waitFor(1)
         when (this@ActiveSkillEffect) {
           EXPLOSION -> ArrowExplosionTask(player)
