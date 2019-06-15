@@ -1809,7 +1809,7 @@ public class PlayerInventoryListener implements Listener {
 				if (itemstackcurrent.getType() == data.obj.getMaterial()
 						&& itemstackcurrent.getDurability() == data.obj.getDurability()) { //MaterialとサブIDが一致
 
-					if (!data.obj.getNameloreflag()) {
+					if (!data.obj.getNameLoreFlag()) {
 						/* loreが無いとき */
 
 						//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
@@ -1843,7 +1843,7 @@ public class PlayerInventoryListener implements Listener {
 								playerdata.getMinestack().subtractStackedAmountOf(mineStackObj, withdrawnAmount);
 							}
 						}
-					} else if (data.obj.getNameloreflag() && itemstackcurrent.getItemMeta().hasDisplayName()) { //名前と説明文がある
+					} else if (data.obj.getNameLoreFlag() && itemstackcurrent.getItemMeta().hasDisplayName()) { //名前と説明文がある
 						//System.out.println("debug AA");
 						//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
 						int level = SeichiAssist.Companion.getSeichiAssistConfig().getMineStacklevel(data.obj.getLevel());
@@ -1868,7 +1868,7 @@ public class PlayerInventoryListener implements Listener {
 							itemstack_name = itemstack_name.replaceAll("§[0-9A-Za-z]","");
 							minestack_name = minestack_name.replaceAll("§[0-9A-Za-z]","");
 
-							if (data.obj.getGachatype() == -1) {//ガチャアイテムにはない（がちゃりんご）
+							if (data.obj.getGachaType() == -1) {//ガチャアイテムにはない（がちゃりんご）
 								if (itemstack_name.equals(minestack_name)) { //表記はアイテム名だけなのでアイテム名で判定
 									final ItemStack itemStackToGive = new ItemStack(data.obj.getMaterial(), 1, (short)data.obj.getDurability());
 									final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, playerdata.getMinestack().getStackedAmountOf(data.obj), itemStackToGive, -1);
@@ -1876,7 +1876,7 @@ public class PlayerInventoryListener implements Listener {
 									playerdata.getMinestack().subtractStackedAmountOf(data.obj, withdrawnAmount);
 								}
 							} else { //ガチャアイテム(処理は同じでも念のためデバッグ用に分離)
-								if (data.obj.getGachatype()>=0) {
+								if (data.obj.getGachaType()>=0) {
 									if (itemstack_name.equals(minestack_name)) { //表記はアイテム名だけなのでアイテム名で判定
 										//盾、バナーの模様判定
 										if ((itemstackcurrent.getType() == Material.SHIELD || (itemstackcurrent.getType() == Material.BANNER) ) && data.obj.getItemStack().getType() == itemstackcurrent.getType()){
@@ -1890,12 +1890,12 @@ public class PlayerInventoryListener implements Listener {
 
 											if (p0.containsAll(p1)) {
 												final long currentObjectAmount = playerdata.getMinestack().getStackedAmountOf(data.obj);
-												final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(data.obj.getMaterial(), 1, (short)data.obj.getDurability()), data.obj.getGachatype());
+												final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(data.obj.getMaterial(), 1, (short)data.obj.getDurability()), data.obj.getGachaType());
 												playerdata.getMinestack().subtractStackedAmountOf(data.obj, withdrawnAmount);
 											}
 										} else {
 											final long currentObjectAmount = playerdata.getMinestack().getStackedAmountOf(data.obj);
-											final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(data.obj.getMaterial(), 1, (short)data.obj.getDurability()), data.obj.getGachatype());
+											final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(data.obj.getMaterial(), 1, (short)data.obj.getDurability()), data.obj.getGachaType());
 											playerdata.getMinestack().subtractStackedAmountOf(data.obj, withdrawnAmount);
 										}
 									}
@@ -2018,7 +2018,7 @@ public class PlayerInventoryListener implements Listener {
 					if (itemstackcurrent.getType() == mineStackObj.getMaterial()
 							&& itemstackcurrent.getDurability() == mineStackObj.getDurability()) { //MaterialとサブIDが一致
 
-						if (!mineStackObj.getNameloreflag()) {
+						if (!mineStackObj.getNameLoreFlag()) {
 							/* loreが無いとき */
 
 							//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
@@ -2052,10 +2052,10 @@ public class PlayerInventoryListener implements Listener {
 									playerdata.getMinestack().subtractStackedAmountOf(mineStackObj, withdrawnAmount);
 
 									open_flag = (Util.getMineStackTypeindex(i) + 1) / 45;
-									open_flag_type = mineStackObj.getStacktype();
+									open_flag_type = mineStackObj.getStackType();
 								}
 							}
-						} else if (mineStackObj.getNameloreflag() && itemstackcurrent.getItemMeta().hasDisplayName()) { //名前と説明文がある
+						} else if (mineStackObj.getNameLoreFlag() && itemstackcurrent.getItemMeta().hasDisplayName()) { //名前と説明文がある
 							//System.out.println("debug AA");
 							//同じ名前の別アイテムに対応するためにインベントリの「解放レベル」を見る
 							int level = SeichiAssist.Companion.getSeichiAssistConfig().getMineStacklevel(mineStackObj.getLevel());
@@ -2080,16 +2080,16 @@ public class PlayerInventoryListener implements Listener {
 								itemstack_name = itemstack_name.replaceAll("§[0-9A-Za-z]","");
 								minestack_name = minestack_name.replaceAll("§[0-9A-Za-z]","");
 
-								if(mineStackObj.getGachatype()==-1){//ガチャアイテムにはない（がちゃりんご）
+								if(mineStackObj.getGachaType()==-1){//ガチャアイテムにはない（がちゃりんご）
 									if(itemstack_name.equals(minestack_name)){ //表記はアイテム名だけなのでアイテム名で判定
 										final long currentObjectAmount = playerdata.getMinestack().getStackedAmountOf(mineStackObj);
 										final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(mineStackObj.getMaterial(), 1, (short)mineStackObj.getDurability()),-1);
 										playerdata.getMinestack().subtractStackedAmountOf(mineStackObj, withdrawnAmount);
 										open_flag = (Util.getMineStackTypeindex(i)+1)/45;
-										open_flag_type = mineStackObj.getStacktype();
+										open_flag_type = mineStackObj.getStackType();
 									}
 								} else { //ガチャアイテム(処理は同じでも念のためデバッグ用に分離)
-									if(mineStackObj.getGachatype()>=0){
+									if(mineStackObj.getGachaType()>=0){
 										if(itemstack_name.equals(minestack_name)){ //表記はアイテム名だけなのでアイテム名で判定
 											//盾、バナーの模様判定
 											if( (itemstackcurrent.getType() == Material.SHIELD || (itemstackcurrent.getType() == Material.BANNER) ) && mineStackObj.getItemStack().getType() == itemstackcurrent.getType()){
@@ -2103,24 +2103,24 @@ public class PlayerInventoryListener implements Listener {
 
 												if(p0.containsAll(p1)){
 													final long currentObjectAmount = playerdata.getMinestack().getStackedAmountOf(mineStackObj);
-													final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(mineStackObj.getMaterial(), 1, (short)mineStackObj.getDurability()),mineStackObj.getGachatype());
+													final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(mineStackObj.getMaterial(), 1, (short)mineStackObj.getDurability()),mineStackObj.getGachaType());
 													playerdata.getMinestack().subtractStackedAmountOf(mineStackObj,withdrawnAmount);
 													open_flag = (Util.getMineStackTypeindex(i)+1)/45;
-													open_flag_type=mineStackObj.getStacktype();
+													open_flag_type=mineStackObj.getStackType();
 												}
 											} else {
 												final long currentObjectAmount = playerdata.getMinestack().getStackedAmountOf(mineStackObj);
-												final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(mineStackObj.getMaterial(), 1, (short)mineStackObj.getDurability()),mineStackObj.getGachatype());
+												final int withdrawnAmount = giveItemStackWithNameLoreAndPlayMineStackSound(player, currentObjectAmount, new ItemStack(mineStackObj.getMaterial(), 1, (short)mineStackObj.getDurability()),mineStackObj.getGachaType());
 												playerdata.getMinestack().subtractStackedAmountOf(mineStackObj,withdrawnAmount);
 												open_flag = (Util.getMineStackTypeindex(i)+1)/45;
-												open_flag_type=mineStackObj.getStacktype();
+												open_flag_type=mineStackObj.getStackType();
 											}
 										}
 									}
 								}
 							}
 						}
-						if (mineStackObj.getGachatype() == -1) {
+						if (mineStackObj.getGachaType() == -1) {
 							playerdata.getHisotryData().add(i, mineStackObj);
 						}
 					}

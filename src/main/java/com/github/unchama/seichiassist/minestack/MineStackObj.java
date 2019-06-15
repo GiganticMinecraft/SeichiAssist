@@ -1,117 +1,67 @@
 package com.github.unchama.seichiassist.minestack;
 
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-
 public class MineStackObj {
-
-	private String objname;
-	private String japanesename;
+	private String objName;
+	private String japaneseName;
 	private int level;
-	private Material material;
-	private int durability;
-	private boolean nameloreflag;
-	private int gachatype;
-	private List<String> lore;
-	private ItemStack itemstack;
-	private int stacktype;
-	private Enchantment needed_enchantment;
+	private int gachaType;
+	private int stackType;
+	private ItemStack itemStack;
+	private boolean nameLoreFlag;
 
-	public MineStackObj(String objname, String japanesename,
-			int level, Material material, int durability,
-			boolean nameloreflag, int gachatype, int stacktype){
-		this.objname = objname;
-		this.japanesename = japanesename;
+	public MineStackObj(String objName, String japaneseName,
+						int level, Material material, int durability,
+						boolean nameLoreFlag, int gachaType, int stackType){
+		this.objName = objName;
+		this.japaneseName = japaneseName;
 		this.level = level;
-		this.material = material;
-		this.durability = durability;
-		this.nameloreflag = nameloreflag;
-		this.gachatype = gachatype;
-		this.lore = null;
-		this.itemstack = null;
-		this.stacktype = stacktype;
+		this.nameLoreFlag = nameLoreFlag;
+		this.gachaType = gachaType;
+		this.itemStack = new ItemStack(material, 1, (short) durability);
+		this.stackType = stackType;
 	}
 
-	public MineStackObj(String objname, String japanesename,
-			int level, Material material, int durability,
-			boolean nameloreflag, int gachatype, List<String> lore, int stacktype){
-		this.objname = objname;
-		this.japanesename = japanesename;
+	public MineStackObj(String objName, int level, ItemStack itemStack, boolean nameLoreFlag, int gachaType, int stackType){
+		this.objName = objName;
+		this.japaneseName = itemStack.getItemMeta().getDisplayName();
 		this.level = level;
-		this.material = material;
-		this.durability = durability;
-		this.nameloreflag = nameloreflag;
-		this.gachatype = gachatype;
-		this.lore = lore;
-		this.itemstack = null;
-		this.stacktype = stacktype;
-	}
-
-	public MineStackObj(String objname, int level, ItemStack itemstack, boolean nameloreflag, int gachatype, int stacktype){
-		this.objname = objname;
-		this.japanesename = itemstack.getItemMeta().getDisplayName();
-		this.level = level;
-		this.material = itemstack.getType();
-		this.durability = itemstack.getDurability();
-		this.nameloreflag = nameloreflag;
-		this.gachatype = gachatype;
-		this.lore = itemstack.getItemMeta().getLore();
-		this.itemstack = itemstack.clone();
-		this.stacktype = stacktype;
-	}
-
-	protected MineStackObj(String objname, String japanesename, int level, Material material, int durability,
-						   boolean nameloreflag, int gachatype, int stacktype, Enchantment needed_enchantment) {
-		this.objname = objname;
-		this.japanesename = japanesename;
-		this.level = level;
-		this.material = material;
-		this.durability = durability;
-		this.nameloreflag = nameloreflag;
-		this.gachatype = gachatype;
-		this.stacktype = stacktype;
-		this.needed_enchantment = needed_enchantment;
+		this.nameLoreFlag = nameLoreFlag;
+		this.gachaType = gachaType;
+		this.itemStack = itemStack.clone();
+		this.stackType = stackType;
 	}
 
 	public String getMineStackObjName(){
-		return objname;
+		return objName;
 	}
 	public String getJapaneseName(){
-		return japanesename;
+		return japaneseName;
 	}
 	public int getLevel(){
 		return level;
 	}
 	public Material getMaterial(){
-		return material;
+		return itemStack.getType();
 	}
 	public int getDurability(){
-		return durability;
+		return itemStack.getDurability();
 	}
-	public boolean getNameloreflag(){
-		return nameloreflag;
+	public boolean getNameLoreFlag(){
+		return nameLoreFlag;
 	}
-	public int getGachatype(){
-		return gachatype;
-	}
-
-	public List<String> getLore(){
-		return lore;
+	public int getGachaType(){
+		return gachaType;
 	}
 
 	public ItemStack getItemStack(){
-		return itemstack;
+		return itemStack;
 	}
 
-	public int getStacktype(){
-		return stacktype;
-	}
-
-	public Enchantment getNeeded_enchantment() {
-		return needed_enchantment;
+	public int getStackType(){
+		return stackType;
 	}
 
 }

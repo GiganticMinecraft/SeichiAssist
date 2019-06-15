@@ -188,7 +188,7 @@ public final class BreakUtil {
 			if(material == mineStackObj.getMaterial() &&
 				itemstack.getDurability() == mineStackObj.getDurability()){
 				//この時点でIDとサブIDが一致している
-				if(!mineStackObj.getNameloreflag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
+				if(!mineStackObj.getNameLoreFlag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
 					if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 						//レベルを満たしていない
 						return false;
@@ -196,12 +196,12 @@ public final class BreakUtil {
 						playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
 						break;
 					}
-				} else if(mineStackObj.getNameloreflag() && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
+				} else if(mineStackObj.getNameLoreFlag() && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
 					//名前・説明文付き
 					ItemMeta meta = itemstack.getItemMeta();
 
 					//この時点で名前と説明文がある
-					if(mineStackObj.getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
+					if(mineStackObj.getGachaType()==-1){ //ガチャ以外のアイテム(がちゃりんご)
 						if( !(meta.getDisplayName().equals(StaticGachaPrizeFactory.getGachaRingoName()))
 							|| !(meta.getLore().equals(StaticGachaPrizeFactory.getGachaRingoLore())) ){
 							return false;
@@ -215,7 +215,7 @@ public final class BreakUtil {
 						}
 					} else {
 						//ガチャ品
-						MineStackGachaData g = SeichiAssist.Companion.getMsgachadatalist().get(mineStackObj.getGachatype());
+						MineStackGachaData g = SeichiAssist.Companion.getMsgachadatalist().get(mineStackObj.getGachaType());
 						String name = playerdata.getName(); //プレイヤーのネームを見る
 						if(g.getProbability() <0.1){ //カタログギフト券を除く(名前があるアイテム)
 							if(!Util.ItemStackContainsOwnerName(itemstack, name)){
