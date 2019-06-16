@@ -4,7 +4,7 @@ import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.effect.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.ChatColor
 import org.bukkit.command.ConsoleCommandSender

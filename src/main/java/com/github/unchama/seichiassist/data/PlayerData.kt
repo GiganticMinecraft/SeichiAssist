@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data
 
-import com.github.unchama.messaging.MessageToSender
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.effect.MessageToSender
+import com.github.unchama.effect.asResponseToSender
 import com.github.unchama.seichiassist.LevelThresholds
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.SeichiAssist

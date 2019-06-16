@@ -2,9 +2,9 @@ package com.github.unchama.contextualexecutor.builder
 
 import arrow.core.Left
 import arrow.core.Right
-import com.github.unchama.messaging.EmptyMessage
-import com.github.unchama.messaging.MessageToSender
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.effect.EmptyMessage
+import com.github.unchama.effect.MessageToSender
+import com.github.unchama.effect.asResponseToSender
 
 /**
  * [ContextualExecutorBuilder.argumentsParser]が要求する,

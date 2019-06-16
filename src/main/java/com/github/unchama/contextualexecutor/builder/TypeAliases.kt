@@ -5,7 +5,7 @@ import arrow.core.Option
 import com.github.unchama.contextualexecutor.ParsedArgCommandContext
 import com.github.unchama.contextualexecutor.PartiallyParsedArgs
 import com.github.unchama.contextualexecutor.RawCommandContext
-import com.github.unchama.messaging.MessageToSender
+import com.github.unchama.effect.MessageToSender
 import org.bukkit.command.CommandSender
 
 typealias Result<Error, Success> = Either<Error, Success>

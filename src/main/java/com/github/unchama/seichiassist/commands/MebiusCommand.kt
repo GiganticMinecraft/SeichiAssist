@@ -4,8 +4,8 @@ import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
-import com.github.unchama.messaging.EmptyMessage
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.effect.EmptyMessage
+import com.github.unchama.effect.asResponseToSender
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.listener.MebiusListener
 import org.bukkit.ChatColor

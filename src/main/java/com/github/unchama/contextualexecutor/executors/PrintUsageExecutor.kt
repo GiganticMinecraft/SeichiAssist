@@ -2,7 +2,7 @@ package com.github.unchama.contextualexecutor.executors
 
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.RawCommandContext
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.effect.asResponseToSender
 import org.bukkit.command.Command
 
 /**

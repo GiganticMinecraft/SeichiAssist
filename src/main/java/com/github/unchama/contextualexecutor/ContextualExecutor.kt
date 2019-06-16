@@ -3,7 +3,6 @@ package com.github.unchama.contextualexecutor
 import arrow.effects.extensions.io.fx.fx
 import arrow.effects.extensions.io.unsafeRun.runNonBlocking
 import arrow.unsafe
-import com.github.unchama.messaging.MessageToSender
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor

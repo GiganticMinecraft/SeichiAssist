@@ -4,8 +4,8 @@ import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
 import com.github.unchama.contextualexecutor.builder.ResponseOrResult
-import com.github.unchama.messaging.MessageToSender
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.effect.MessageToSender
+import com.github.unchama.effect.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.RankData

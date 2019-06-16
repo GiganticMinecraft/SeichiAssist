@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
-import com.github.unchama.messaging.EmptyMessage
-import com.github.unchama.messaging.asResponseToSender
-import com.github.unchama.messaging.plus
+import com.github.unchama.effect.EmptyMessage
+import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.plus
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder

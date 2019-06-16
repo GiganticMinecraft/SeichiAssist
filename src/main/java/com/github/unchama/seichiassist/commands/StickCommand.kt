@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
-import com.github.unchama.messaging.EmptyMessage
+import com.github.unchama.effect.EmptyMessage
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.Material

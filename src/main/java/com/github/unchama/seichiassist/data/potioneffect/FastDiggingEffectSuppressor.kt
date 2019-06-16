@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data.potioneffect
 
-import com.github.unchama.messaging.MessageToSender
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.effect.MessageToSender
+import com.github.unchama.effect.asResponseToSender
 import org.bukkit.ChatColor
 
 class FastDiggingEffectSuppressor {

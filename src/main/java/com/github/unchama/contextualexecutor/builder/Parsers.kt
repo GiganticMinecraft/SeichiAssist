@@ -4,8 +4,8 @@ import arrow.core.flatMap
 import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.ScopeProvider.parser
 import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.failWith
 import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.succeedWith
-import com.github.unchama.messaging.EmptyMessage
-import com.github.unchama.messaging.MessageToSender
+import com.github.unchama.effect.EmptyMessage
+import com.github.unchama.effect.MessageToSender
 
 object Parsers {
   val identity: SingleArgumentParser = parser { succeedWith(it) }

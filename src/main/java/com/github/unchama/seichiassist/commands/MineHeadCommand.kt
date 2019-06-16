@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.effect.asResponseToSender
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.util.Util
