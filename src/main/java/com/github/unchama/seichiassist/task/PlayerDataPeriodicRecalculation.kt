@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.task
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
-import com.github.unchama.seichiassist.data.EffectData
+import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -70,18 +70,18 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       //effectのメッセージ
       //１分間のブロック破壊量による上昇
       amplifier = increase.toDouble() * config.minuteMineSpeed
-      playerData.effectdatalist.add(EffectData(amplifier, 2))
+      playerData.effectdatalist.add(FastDiggingEffect(amplifier, 2))
 
       //プレイヤー数による上昇
       amplifier = onlinenums.toDouble() * config.loginPlayerMineSpeed
-      playerData.effectdatalist.add(EffectData(amplifier, 1))
+      playerData.effectdatalist.add(FastDiggingEffect(amplifier, 1))
 
       //effect追加の処理
       //実際に適用されるeffect量
       var minespeedlv = 0
 
       //effectflag ONの時のみ実行
-      if (playerData.effectflag != 5) {
+      if (playerData.fastDiggingEffectSuppressor.isSuppressionActive()) {
         //合計effect量
         var sum = 0.0
         //最大持続時間
@@ -99,14 +99,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
         minespeedlv = (sum - 1).toInt()
 
         //effect上限値を判定
-        val maxSpeed = when (playerData.effectflag) {
-          0 -> 25565
-          1 -> 127
-          2 -> 200
-          3 -> 400
-          4 -> 600
-          else -> 0
-        }
+        val maxSpeed = playerData.fastDiggingEffectSuppressor.maximumAllowedEffectAmplifier()
 
         //effect追加の処理
         //実際のeffect値が0より小さいときはeffectを適用しない

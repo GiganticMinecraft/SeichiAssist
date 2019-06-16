@@ -7,7 +7,7 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.messaging.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.EffectData
+import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -61,7 +61,7 @@ object SeichiHasteCommand {
         val effectAmplifier = context.args.parsed[2] as Double
         val scope = context.args.parsed[3] as ScopeSpecification
 
-        val effectData = EffectData(effectLengthInTick, effectAmplifier, descriptionId)
+        val effectData = FastDiggingEffect(effectLengthInTick, effectAmplifier, descriptionId)
         val effectLengthString = TypeConverter.toTimeString(effectLengthInTick / 20)
 
         when (scope) {

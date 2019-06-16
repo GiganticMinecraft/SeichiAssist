@@ -26,32 +26,10 @@ import org.bukkit.potion.PotionEffectType
  */
 object StickMenu {
   private fun mineSpeedToggleButtonLore(operatorData: PlayerData): List<String> {
-    val toggleNavigation = when (operatorData.effectflag) {
-      0 -> listOf(
-          "$RESET${GREEN}現在有効です(無制限)",
-          "$RESET$DARK_RED${UNDERLINE}クリックで127制限"
-      )
-      1 -> listOf(
-          "$RESET${GREEN}現在有効です$YELLOW(127制限)",
-          "$RESET$DARK_RED${UNDERLINE}クリックで200制限"
-      )
-      2 -> listOf(
-          "$RESET${GREEN}現在有効です$YELLOW(200制限)",
-          "$RESET$DARK_RED${UNDERLINE}クリックで400制限"
-      )
-      3 -> listOf(
-          "$RESET${GREEN}現在有効です$YELLOW(400制限)",
-          "$RESET$DARK_RED${UNDERLINE}クリックで600制限"
-      )
-      4 -> listOf(
-          "$RESET${GREEN}現在有効です$YELLOW(600制限)",
-          "$RESET$DARK_RED${UNDERLINE}クリックでOFF"
-      )
-      else -> listOf(
-          "$RESET${RED}現在OFFです",
-          "$RESET$DARK_GREEN${UNDERLINE}クリックで無制限"
-      )
-    }
+    val toggleNavigation = listOf(
+        operatorData.fastDiggingEffectSuppressor.currentStatus(),
+        "$RESET$DARK_RED${UNDERLINE}クリックで" + operatorData.fastDiggingEffectSuppressor.nextStatus()
+    )
 
     val explanation = listOf(
         "$RESET${GRAY}採掘速度上昇効果とは",
@@ -93,13 +71,13 @@ object StickMenu {
                     .build(),
                 ButtonAction(ClickEventFilter.LEFT_CLICK) { event ->
                   runBlocking {
-                    // TODO 副作用全部一箇所にまとめたい
+                    // TODO 副作用の発動一箇所にまとめたい
 
-                    val effectResponse = openerData.toggleEffect()
+                    val effectResponse = openerData.fastDiggingEffectSuppressor.toggleEffect()
                     effectResponse.transmitTo(this@openMenu)
+                    this@openMenu.playSound(location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                   }
-
-                  player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+                  // TODO このロジックはここにあるべきではない
 
                   val activeEffects = openerData.effectdatalist
 
@@ -107,14 +85,7 @@ object StickMenu {
                   val maxDuration = activeEffects.map { it.duration }.max() ?: 0
                   val computedAmplifier = Math.floor(amplifierSum - 1).toInt()
 
-                  val maxSpeed: Int = when(openerData.effectflag) {
-                    0 -> 25565
-                    1 -> 127
-                    2 -> 200
-                    3 -> 400
-                    4 -> 600
-                    else -> 0
-                  }
+                  val maxSpeed: Int = openerData.fastDiggingEffectSuppressor.maximumAllowedEffectAmplifier()
 
                   // 実際に適用されるeffect量
                   val amplifier = Math.min(computedAmplifier, maxSpeed)

@@ -181,7 +181,7 @@ public class PlayerDataSaveTask extends BukkitRunnable{
 				+ " name = '" + playerdata.getName() + "'"
 
 				//各種数値更新処理
-				+ ",effectflag = " + playerdata.getEffectflag()
+				+ ",effectflag = " + playerdata.getFastDiggingEffectSuppressor().serializedSuppressionState()
 				+ ",minestackflag = " + playerdata.getMinestackflag()
 				+ ",messageflag = " + playerdata.getMessageflag()
 				+ ",activemineflagnum = " + playerdata.getActiveskilldata().mineflagnum

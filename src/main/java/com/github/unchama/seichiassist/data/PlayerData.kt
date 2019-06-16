@@ -6,6 +6,8 @@ import com.github.unchama.seichiassist.LevelThresholds
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.Worlds
+import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
+import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackHistoryData
@@ -35,8 +37,9 @@ class PlayerData(val player: Player) {
     var name: String
     //UUID
     var uuid: UUID
-    //エフェクトのフラグ
-    var effectflag: Int = 0
+
+    val fastDiggingEffectSuppressor = FastDiggingEffectSuppressor()
+
     //内訳メッセージを出すフラグ
     var messageflag: Boolean = false
     //1分間のデータを保存するincrease:１分間の採掘量
@@ -54,7 +57,7 @@ class PlayerData(val player: Player) {
     //前回の採掘速度上昇レベルを格納
     var lastminespeedlv: Int = 0
     //持ってるポーションエフェクト全てを格納する．
-    var effectdatalist: MutableList<EffectData>
+    var effectdatalist: MutableList<FastDiggingEffect>
     //現在のプレイヤーレベル
     var level: Int = 0
     //詫び券をあげる数
@@ -275,7 +278,7 @@ class PlayerData(val player: Player) {
         this.loaded = false
         this.name = Util.getName(player)
         this.uuid = player.uniqueId
-        this.effectflag = 0
+        this.fastDiggingEffectSuppressor.internalValue = 0
         this.messageflag = false
         //this.minuteblock = new MineBlock();
         this.halfhourblock = MineBlock()
@@ -419,7 +422,7 @@ class PlayerData(val player: Player) {
     //エフェクトデータのdurationを60秒引く
     fun calcEffectData() {
         //tmplistを作成
-        val tmplist = ArrayList<EffectData>()
+        val tmplist = ArrayList<FastDiggingEffect>()
         //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
         for (ed in effectdatalist) {
             ed.duration -= 1200
@@ -909,22 +912,6 @@ class PlayerData(val player: Player) {
         this.added_mana += addMana
 
         mana.calcAndSetMax(p, this.level)
-    }
-
-    @Suppress("RedundantSuspendModifier")
-    suspend fun toggleEffect(): MessageToSender {
-        effectflag = (effectflag + 1) % 6
-
-        val responseMessage = when (effectflag) {
-            0 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(無制限)"
-            1 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(127制限)"
-            2 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(200制限)"
-            3 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(400制限)"
-            4 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(600制限)"
-            else -> "${ChatColor.RED}採掘速度上昇効果:OFF"
-        }
-
-        return responseMessage.asResponseToSender()
     }
 
     @Suppress("RedundantSuspendModifier")
