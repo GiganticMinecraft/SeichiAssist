@@ -16,7 +16,7 @@ import java.util.UUID
 class SkullItemStackBuilder(private val ownerUUID: UUID):
     AbstractItemStackBuilder<SkullItemStackBuilder, SkullMeta>(Material.SKULL_ITEM, 3.toShort()) {
 
-  override fun transformItemMeta(meta: SkullMeta) {
+  override fun transformItemMetaOnBuild(meta: SkullMeta) {
     val offlinePlayer = Bukkit.getOfflinePlayer(ownerUUID)
     meta.owningPlayer = offlinePlayer
   }

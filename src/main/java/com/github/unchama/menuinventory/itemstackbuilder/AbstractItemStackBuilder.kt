@@ -39,15 +39,12 @@ protected constructor(material: Material, durability: Short) : ItemStackBuilder 
     return this as T
   }
 
-  override fun build(): ItemStack {
-    val itemStack = component.itemStack
-    itemStack.itemMeta = (component.itemMeta as M).also { transformItemMeta(it) }
-
-    return itemStack
+  final override fun build(): ItemStack = component.itemStack.apply {
+    itemMeta = (component.itemMeta as M).also { transformItemMetaOnBuild(it) }
   }
 
   /**
    * 生成されるアイテムスタックに入る[ItemMeta]を, ビルダー内の情報に基づいて変更する.
    */
-  protected abstract fun transformItemMeta(meta: M)
+  protected abstract fun transformItemMetaOnBuild(meta: M)
 }
