@@ -4,6 +4,23 @@ import arrow.typeclasses.Monoid
 import org.bukkit.command.CommandSender
 
 /**
+ * Minecraft内の何らかの対象[T]に向けた作用を持ち,
+ * [runFor]メソッドにより作用を[T]に及ぼすことができるオブジェクトへのinterface.
+ *
+ * [runFor]の副作用は, Arrow Fxの設計理念に従いコルーチンの中で発動される.
+ */
+interface TargetedEffect<in T>{
+  suspend fun runFor(minecraftObject: T)
+}
+
+/**
+ * 何も作用を及ぼさないような[TargetedEffect].
+ */
+object EmptyEffect: TargetedEffect<Any?> {
+  override suspend fun runFor(minecraftObject: Any?) = Unit
+}
+
+/**
  * [CommandSender]へ送信される何らかの情報を内包しているオブジェクトへのinterface.
  */
 interface MessageToSender {
