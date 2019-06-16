@@ -2,44 +2,44 @@ package com.github.unchama.contextualexecutor.builder
 
 import arrow.core.Left
 import arrow.core.Right
-import com.github.unchama.effect.EmptyMessage
-import com.github.unchama.effect.MessageToSender
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.*
+import org.bukkit.command.CommandSender
 
 /**
  * [ContextualExecutorBuilder.argumentsParser]が要求する,
- * 引数文字列から[ResponseOrResult<Any>]への関数の作成を行うためのスコープオブジェクト.
+ * 引数文字列から[ResponseEffectOrResult<Any>]への関数の作成を行うためのスコープオブジェクト.
  *
  * [ArgumentParserScope.ScopeProvider.parser]を通してスコープ付き関数をそのような関数に変換できる.
  */
 object ArgumentParserScope {
-  fun failWith(message: MessageToSender): ResponseOrResult<Nothing> = Left(message)
+  fun <CS> failWith(message: TargetedEffect<CS>): ResponseEffectOrResult<CS, Nothing> = Left(message)
 
   /**
-   * メッセージなしで「失敗」を表す[ResponseOrResult]を作成する.
+   * メッセージなしで「失敗」を表す[ResponseEffectOrResult]を作成する.
    */
-  fun failWithoutError(): ResponseOrResult<Nothing> = failWith(EmptyMessage)
+  fun failWithoutError(): ResponseEffectOrResult<Any?, Nothing> = failWith(EmptyEffect)
 
   /**
-   * メッセージ付きの「失敗」を表す[ResponseOrResult]を作成する.
+   * メッセージ付きの「失敗」を表す[ResponseEffectOrResult]を作成する.
    */
-  fun failWith(message: String): ResponseOrResult<Nothing> = failWith(message.asResponseToSender())
+  fun failWith(message: String): ResponseEffectOrResult<CommandSender, Nothing> = failWith(message.asMessageEffect())
 
   /**
-   * メッセージ付きの「失敗」を表す[ResponseOrResult]を作成する.
+   * メッセージ付きの「失敗」を表す[ResponseEffectOrResult]を作成する.
    */
-  fun failWith(message: List<String>): ResponseOrResult<Any> = failWith(message.asResponseToSender())
+  fun failWith(message: List<String>): ResponseEffectOrResult<CommandSender, Any> = failWith(message.asMessageEffect())
 
   /**
-   * [result]により「成功」したことを示す[ResponseOrResult]を作成する.
+   * [result]により「成功」したことを示す[ResponseEffectOrResult]を作成する.
    */
-  fun succeedWith(result: Any): ResponseOrResult<Any> = Right(result)
+  fun succeedWith(result: Any): ResponseEffectOrResult<Any?, Any> = Right(result)
 
   object ScopeProvider {
     /**
      * [ArgumentParserScope]のスコープ付き関数をプレーンな関数へと変換する.
      */
-    fun parser(parse: ArgumentParserScope.(String) -> ResponseOrResult<Any>): (String) -> ResponseOrResult<Any> =
-        { argument -> with(ArgumentParserScope) { parse(argument) } }
+    fun <CS> parser(
+        parse: ArgumentParserScope.(String) -> ResponseEffectOrResult<CS, Any>
+    ): (String) -> ResponseEffectOrResult<CS, Any> = { argument -> with(ArgumentParserScope) { parse(argument) } }
   }
 }

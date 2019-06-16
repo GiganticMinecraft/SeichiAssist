@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.asMessageEffect
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.util.Util
@@ -12,7 +12,7 @@ object MineHeadCommand {
       .execution { context ->
         Util.addItemToPlayerSafely(context.sender, StaticGachaPrizeFactory.getMineHeadItem())
 
-        "${ChatColor.GREEN}専用アイテムを付与しました。".asResponseToSender()
+        "${ChatColor.GREEN}専用アイテムを付与しました。".asMessageEffect()
       }
       .build()
       .asNonBlockingTabExecutor()

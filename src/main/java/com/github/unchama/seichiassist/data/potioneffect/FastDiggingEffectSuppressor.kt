@@ -1,14 +1,15 @@
 package com.github.unchama.seichiassist.data.potioneffect
 
-import com.github.unchama.effect.MessageToSender
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.TargetedEffect
+import com.github.unchama.effect.asMessageEffect
 import org.bukkit.ChatColor
+import org.bukkit.command.CommandSender
 
 class FastDiggingEffectSuppressor {
   var internalValue = 0
 
   @Suppress("RedundantSuspendModifier")
-  suspend fun toggleEffect(): MessageToSender {
+  suspend fun toggleEffect(): TargetedEffect<CommandSender> {
     internalValue = (internalValue + 1) % 6
 
     val responseMessage = when (internalValue) {
@@ -20,7 +21,7 @@ class FastDiggingEffectSuppressor {
       else -> "${ChatColor.RED}採掘速度上昇効果:OFF"
     }
 
-    return responseMessage.asResponseToSender()
+    return responseMessage.asMessageEffect()
   }
 
   fun currentStatus(): String {

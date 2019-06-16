@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
-import com.github.unchama.effect.EmptyMessage
+import com.github.unchama.effect.EmptyEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util
 import kotlinx.coroutines.delay
@@ -24,7 +24,7 @@ object GiganticFeverCommand {
         Util.setDifficulty(SeichiAssist.seichiWorldList, Difficulty.HARD)
         Util.sendEveryMessage("${ChatColor.AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
 
-        EmptyMessage
+        EmptyEffect
       }
       .build()
       .asNonBlockingTabExecutor()

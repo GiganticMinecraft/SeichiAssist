@@ -74,7 +74,7 @@ object StickMenu {
                     // TODO 副作用の発動一箇所にまとめたい
 
                     val effectResponse = openerData.fastDiggingEffectSuppressor.toggleEffect()
-                    effectResponse.transmitTo(this@openMenu)
+                    effectResponse.runFor(this@openMenu)
                     this@openMenu.playSound(location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                   }
                   // TODO このロジックはここにあるべきではない

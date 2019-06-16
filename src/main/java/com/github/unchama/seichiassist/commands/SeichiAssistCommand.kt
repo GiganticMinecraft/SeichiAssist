@@ -4,7 +4,7 @@ import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.ChatColor
 import org.bukkit.command.ConsoleCommandSender
@@ -19,12 +19,12 @@ object SeichiAssistCommand {
       "config.ymlのdebugmodeの値が1の場合のみ、コンソールから使用可能",
       "${ChatColor.RED}/seichiassist set-anniversary-flag",
       "1周年記念フラグを立てる（コンソール限定コマンド）"
-  ).asResponseToSender())
+  ).asMessageEffect())
 
   private val reloadConfigExecutor = ContextualExecutorBuilder.beginConfiguration()
       .execution {
         SeichiAssist.seichiAssistConfig.reloadConfig()
-        "config.ymlの設定値を再読み込みしました".asResponseToSender()
+        "config.ymlの設定値を再読み込みしました".asMessageEffect()
       }
       .build()
 
@@ -42,12 +42,12 @@ object SeichiAssistCommand {
             "${ChatColor.GREEN}デバッグモードを無効にしました"
           }
 
-          resultMessage.asResponseToSender()
+          resultMessage.asMessageEffect()
         } else {
           listOf(
             "${ChatColor.RED}このコマンドは現在の設定では実行できません",
             "${ChatColor.RED}config.ymlのdebugmodeの値を1に書き換えて再起動またはreloadしてください"
-          ).asResponseToSender()
+          ).asMessageEffect()
         }
       }
       .build()
@@ -57,7 +57,7 @@ object SeichiAssistCommand {
       .execution {
         SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(true, null)
 
-        "Anniversaryアイテムの配布を開始しました。".asResponseToSender()
+        "Anniversaryアイテムの配布を開始しました。".asMessageEffect()
       }
       .build()
 
