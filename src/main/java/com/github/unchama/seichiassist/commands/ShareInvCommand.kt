@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.commands
 
 import arrow.core.Either
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
-import com.github.unchama.effect.MessageToSender
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.TargetedEffect
+import com.github.unchama.effect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.util.ItemListSerialization
@@ -23,7 +23,7 @@ object ShareInvCommand {
     }
   }
 
-  private suspend fun withdrawFromSharedInventory(player: Player): MessageToSender {
+  private suspend fun withdrawFromSharedInventory(player: Player): TargetedEffect<Player> {
     val playerData = SeichiAssist.playermap[player.uniqueId]!!
     val databaseGateway = SeichiAssist.databaseGateway
 
@@ -32,7 +32,7 @@ object ShareInvCommand {
       is Either.Right -> either.b
     }
 
-    if (serial == "") return "${ChatColor.RESET}${ChatColor.RED}${ChatColor.BOLD}収納アイテムが存在しません。".asResponseToSender()
+    if (serial == "") return "${ChatColor.RESET}${ChatColor.RED}${ChatColor.BOLD}収納アイテムが存在しません。".asMessageEffect()
 
     val playerInventory = player.inventory
 
@@ -48,10 +48,10 @@ object ShareInvCommand {
     playerData.contentsPresentInSharedInventory = false
 
     Bukkit.getLogger().info("${player.name}がアイテム取り出しを実施(DB書き換え成功)")
-    return "${ChatColor.GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。".asResponseToSender()
+    return "${ChatColor.GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。".asMessageEffect()
   }
 
-  private suspend fun depositToSharedInventory(player: Player): MessageToSender {
+  private suspend fun depositToSharedInventory(player: Player): TargetedEffect<Player> {
     val playerData = SeichiAssist.playermap[player.uniqueId]!!
     val databaseGateway = SeichiAssist.databaseGateway
 
@@ -59,7 +59,7 @@ object ShareInvCommand {
 
     // アイテム一覧をシリアル化する
     val serializedInventory = ItemListSerialization.serializeToBase64(playerInventory.contents.toList())
-        ?: return "${ChatColor.RESET}${ChatColor.RED}${ChatColor.BOLD}収納アイテムの変換に失敗しました。".asResponseToSender()
+        ?: return "${ChatColor.RESET}${ChatColor.RED}${ChatColor.BOLD}収納アイテムの変換に失敗しました。".asMessageEffect()
 
     return databaseGateway.playerDataManipulator.saveSharedInventory(player, playerData, serializedInventory).map {
       // 現所持アイテムを全て削除
@@ -70,7 +70,7 @@ object ShareInvCommand {
       player.performCommand("stick")
 
       Bukkit.getLogger().info("${player.name}がアイテム収納を実施(SQL送信成功)")
-      "${ChatColor.GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。".asResponseToSender()
+      "${ChatColor.GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。".asMessageEffect()
     }.merge()
   }
 

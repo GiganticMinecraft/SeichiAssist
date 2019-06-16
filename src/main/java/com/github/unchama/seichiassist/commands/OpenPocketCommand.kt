@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.commands
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.effect.EmptyMessage
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.EmptyEffect
+import com.github.unchama.effect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.util.data.merge
@@ -16,7 +16,7 @@ object OpenPocketCommand {
       "${ChatColor.RED}/openpocket <プレイヤー名>",
       "対象プレイヤーの四次元ポケットを開きます。",
       "編集結果はオンラインのプレイヤーにのみ反映されます。"
-  ).asResponseToSender())
+  ).asMessageEffect())
 
   val executor = playerCommandBuilder
       .argumentsParsers(listOf(Parsers.identity), onMissingArguments = descriptionPrintExecutor)
@@ -29,17 +29,17 @@ object OpenPocketCommand {
           val targetInventory = playerData.inventory
 
           context.sender.openInventory(targetInventory)
-          EmptyMessage
+          EmptyEffect
         } else {
           @Suppress("DEPRECATION") val targetPlayerUuid = Bukkit.getOfflinePlayer(playerName)?.uniqueId
-              ?: return@execution "${ChatColor.RED}プレーヤー $playerName のuuidを取得できませんでした。".asResponseToSender()
+              ?: return@execution "${ChatColor.RED}プレーヤー $playerName のuuidを取得できませんでした。".asMessageEffect()
 
           SeichiAssist.databaseGateway.playerDataManipulator
               .selectPocketInventoryOf(targetPlayerUuid)
               .map { inventory ->
                 context.sender.openInventory(inventory)
 
-                "${ChatColor.RED}対象プレイヤーはオフラインです。編集結果は反映されません。".asResponseToSender()
+                "${ChatColor.RED}対象プレイヤーはオフラインです。編集結果は反映されません。".asMessageEffect()
               }
               .merge()
         }

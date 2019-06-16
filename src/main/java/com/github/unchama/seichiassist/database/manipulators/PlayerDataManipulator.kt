@@ -3,9 +3,9 @@ package com.github.unchama.seichiassist.database.manipulators
 import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
-import com.github.unchama.contextualexecutor.builder.ResponseOrResult
-import com.github.unchama.effect.MessageToSender
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
+import com.github.unchama.effect.TargetedEffect
+import com.github.unchama.effect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.RankData
@@ -20,6 +20,7 @@ import com.github.unchama.util.ActionStatus
 import com.github.unchama.util.ActionStatus.Fail
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import java.sql.SQLException
@@ -262,11 +263,11 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     @Suppress("RedundantSuspendModifier")
-    private suspend fun assertPlayerDataExistenceFor(playerName: String): ResponseOrResult<Unit> =
+    private suspend fun assertPlayerDataExistenceFor(playerName: String): ResponseEffectOrResult<CommandSender, Unit> =
         try {
             gateway.executeQuery("select * from $tableReference where name like $playerName").use { resultSet ->
                 if (!resultSet.next()) {
-                    "${ChatColor.RED}$playerName はデータベースに登録されていません。".asResponseToSender().left()
+                    "${ChatColor.RED}$playerName はデータベースに登録されていません。".asMessageEffect().left()
                 } else {
                     Unit.right()
                 }
@@ -275,17 +276,17 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             Bukkit.getLogger().warning("sql failed on checking data existence of $playerName")
             e.printStackTrace()
 
-            "${ChatColor.RED}プレーヤーデータへのアクセスに失敗しました。".asResponseToSender().left()
+            "${ChatColor.RED}プレーヤーデータへのアクセスに失敗しました。".asMessageEffect().left()
         }
 
-    suspend fun addContributionPoint(targetPlayerName: String, point: Int): ResponseOrResult<Unit> {
+    suspend fun addContributionPoint(targetPlayerName: String, point: Int): ResponseEffectOrResult<CommandSender, Unit> {
         @Suppress("RedundantSuspendModifier")
-        suspend fun executeUpdate(): ResponseOrResult<Unit> {
+        suspend fun executeUpdate(): ResponseEffectOrResult<CommandSender, Unit> {
             val updateCommand = "UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name LIKE '$targetPlayerName'"
 
             return if (gateway.executeUpdate(updateCommand) == Fail) {
                 Bukkit.getLogger().warning("sql failed on updating $targetPlayerName's contribute_point")
-                "${ChatColor.RED}貢献度ptの変更に失敗しました。".asResponseToSender().left()
+                "${ChatColor.RED}貢献度ptの変更に失敗しました。".asMessageEffect().left()
             } else {
                 Unit.right()
             }
@@ -321,10 +322,10 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): ResponseOrResult<Unit> {
+    suspend fun saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): ResponseEffectOrResult<CommandSender, Unit> {
         //連打による負荷防止の為クールダウン処理
         if (!playerData.shareinvcooldownflag) {
-            return "${ChatColor.RED}しばらく待ってからやり直してください".asResponseToSender().left()
+            return "${ChatColor.RED}しばらく待ってからやり直してください".asMessageEffect().left()
         }
         CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
 
@@ -335,7 +336,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                 lrs.next()
                 val sharedInventorySerial = lrs.getString("shareinv")
                 if (sharedInventorySerial != null && sharedInventorySerial != "") {
-                    return "${ChatColor.RED}既にアイテムが収納されています".asResponseToSender().left()
+                    return "${ChatColor.RED}既にアイテムが収納されています".asMessageEffect().left()
                 }
             }
 
@@ -344,7 +345,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             if (gateway.executeUpdate(updateCommand) == Fail) {
                 Bukkit.getLogger().warning("${player.name} sql failed. -> saveSharedInventory(executeUpdate failed)")
 
-                return "${ChatColor.RED}アイテムの収納に失敗しました".asResponseToSender().left()
+                return "${ChatColor.RED}アイテムの収納に失敗しました".asMessageEffect().left()
             }
 
             return Unit.right()
@@ -352,15 +353,15 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             Bukkit.getLogger().warning("${player.name} sql failed. -> clearShareInv(SQLException)")
             e.printStackTrace()
 
-            return "${ChatColor.RED}共有インベントリにアクセスできません".asResponseToSender().left()
+            return "${ChatColor.RED}共有インベントリにアクセスできません".asMessageEffect().left()
         }
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun loadShareInv(player: Player, playerData: PlayerData): ResponseOrResult<String> {
+    suspend fun loadShareInv(player: Player, playerData: PlayerData): ResponseEffectOrResult<CommandSender, String> {
         //連打による負荷防止の為クールダウン処理
         if (!playerData.shareinvcooldownflag) {
-            return "${ChatColor.RED}しばらく待ってからやり直してください".asResponseToSender().left()
+            return "${ChatColor.RED}しばらく待ってからやり直してください".asMessageEffect().left()
         }
         CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
 
@@ -374,17 +375,17 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> loadShareInv")
             e.printStackTrace()
 
-            return "${ChatColor.RED}共有インベントリにアクセスできません".asResponseToSender().left()
+            return "${ChatColor.RED}共有インベントリにアクセスできません".asMessageEffect().left()
         }
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun clearShareInv(player: Player, playerdata: PlayerData): ResponseOrResult<Unit> {
+    suspend fun clearShareInv(player: Player, playerdata: PlayerData): ResponseEffectOrResult<CommandSender, Unit> {
         val command = "UPDATE $tableReference SET shareinv = '' WHERE uuid = '${playerdata.uuid}'"
 
         if (gateway.executeUpdate(command) == Fail) {
             Bukkit.getLogger().warning("${player.name} sql failed. -> clearShareInv")
-            return "${ChatColor.RED}アイテムのクリアに失敗しました".asResponseToSender().left()
+            return "${ChatColor.RED}アイテムのクリアに失敗しました".asMessageEffect().left()
         }
 
         return Unit.right()
@@ -566,7 +567,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
   @Suppress("RedundantSuspendModifier")
-    suspend fun selectPocketInventoryOf(uuid: UUID): ResponseOrResult<Inventory> {
+    suspend fun selectPocketInventoryOf(uuid: UUID): ResponseEffectOrResult<CommandSender, Inventory> {
         val command = "select inventory from $tableReference where uuid like '$uuid'"
 
         try {
@@ -580,11 +581,11 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             e.printStackTrace()
         }
 
-        return "${ChatColor.RED}データベースから四次元ポケットのインベントリを取得できませんでした。".asResponseToSender().left()
+        return "${ChatColor.RED}データベースから四次元ポケットのインベントリを取得できませんでした。".asMessageEffect().left()
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun inquireLastQuitOf(playerName: String): MessageToSender {
+    suspend fun inquireLastQuitOf(playerName: String): TargetedEffect<CommandSender> {
         suspend fun fetchLastQuitData(): String? {
             val command = "select lastquit from $tableReference where playerName = '$playerName'"
             try {
@@ -599,7 +600,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         }
 
         return fetchLastQuitData()
-            ?.let { "${playerName}の最終ログアウト日時：$it".asResponseToSender() }
+            ?.let { "${playerName}の最終ログアウト日時：$it".asMessageEffect() }
             ?: run {
                 val messages = listOf(
                     "${ChatColor.RED}最終ログアウト日時の照会に失敗しました。",
@@ -607,7 +608,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                     "${ChatColor.RED}プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります。"
                 )
 
-                messages.asResponseToSender()
+                messages.asMessageEffect()
             }
     }
 

@@ -4,8 +4,8 @@ import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
-import com.github.unchama.effect.EmptyMessage
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.EmptyEffect
+import com.github.unchama.effect.asMessageEffect
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.listener.MebiusListener
 import org.bukkit.ChatColor
@@ -26,9 +26,9 @@ object MebiusCommand {
         "${ChatColor.RED}/mebius nickname reset",
         "${ChatColor.RED}  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
         ""
-    ).asResponseToSender()
+    ).asMessageEffect()
 
-    val permissionWarning = "${ChatColor.RED}このコマンドは権限者のみが実行可能です.".asResponseToSender()
+    val permissionWarning = "${ChatColor.RED}このコマンドは権限者のみが実行可能です.".asMessageEffect()
   }
 
   private object ChildExecutors {
@@ -40,7 +40,7 @@ object MebiusCommand {
         .execution { context ->
           if (!context.sender.isOp) Messages.permissionWarning else {
             MebiusListener.debugGive(context.sender)
-            EmptyMessage
+            EmptyEffect
           }
         }
         .build()
@@ -49,7 +49,7 @@ object MebiusCommand {
         .execution { context ->
           if (!context.sender.isOp) Messages.permissionWarning else {
             MebiusListener.reload()
-            EmptyMessage
+            EmptyEffect
           }
         }
         .build()
@@ -58,7 +58,7 @@ object MebiusCommand {
         .execution { context ->
           if (!context.sender.isOp) Messages.permissionWarning else {
             MebiusListener.debug(context.sender)
-            EmptyMessage
+            EmptyEffect
           }
         }
         .build()
@@ -70,7 +70,7 @@ object MebiusCommand {
                 ?.let { "${ChatColor.GREEN}現在のメビウスからの呼び名 : $it" }
                 ?: "${ChatColor.RED}呼び名の確認はMEBIUSを装着して行ってください."
 
-            message.asResponseToSender()
+            message.asMessageEffect()
           }
           .build()
 
@@ -82,7 +82,7 @@ object MebiusCommand {
               "${ChatColor.RED}呼び名のリセットはMEBIUSを装着して行ってください."
             }
 
-            message.asResponseToSender()
+            message.asMessageEffect()
           }
           .build()
 
@@ -96,7 +96,7 @@ object MebiusCommand {
               "${ChatColor.GREEN}メビウスからの呼び名を${newName}にセットしました."
             }
 
-            message.asResponseToSender()
+            message.asMessageEffect()
           }
           .build()
 
@@ -112,8 +112,8 @@ object MebiusCommand {
           val newName = "${context.args.parsed[0] as String} ${context.args.yetToBeParsed.joinToString(" ")}"
 
           if (!MebiusListener.setName(context.sender, newName)) {
-            "${ChatColor.RED}命名はMEBIUSを装着して行ってください.".asResponseToSender()
-          } else EmptyMessage
+            "${ChatColor.RED}命名はMEBIUSを装着して行ってください.".asMessageEffect()
+          } else EmptyEffect
         }
         .build()
   }

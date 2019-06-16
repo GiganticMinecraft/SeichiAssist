@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
-import com.github.unchama.effect.EmptyMessage
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.EmptyEffect
+import com.github.unchama.effect.asMessageEffect
 import com.github.unchama.effect.plus
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.SeichiAssist
@@ -12,9 +12,9 @@ object EffectCommand {
 
   private val toggleExecutor = playerCommandBuilder
       .execution { context ->
-        val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution EmptyMessage
+        val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution EmptyEffect
         val toggleResponse = playerData.fastDiggingEffectSuppressor.toggleEffect()
-        val guidance = "再度 /ef コマンドを実行することでトグルします。".asResponseToSender()
+        val guidance = "再度 /ef コマンドを実行することでトグルします。".asMessageEffect()
 
         toggleResponse + guidance
       }
@@ -22,7 +22,7 @@ object EffectCommand {
 
   private val messageFlagToggleExecutor = playerCommandBuilder
       .execution { context ->
-        val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution EmptyMessage
+        val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution EmptyEffect
 
         playerData.toggleMessageFlag()
       }

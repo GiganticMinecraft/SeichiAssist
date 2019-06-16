@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data
 
-import com.github.unchama.effect.MessageToSender
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.TargetedEffect
+import com.github.unchama.effect.asMessageEffect
 import com.github.unchama.seichiassist.LevelThresholds
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.SeichiAssist
@@ -18,6 +18,7 @@ import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import org.bukkit.*
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import java.math.BigDecimal
@@ -915,7 +916,7 @@ class PlayerData(val player: Player) {
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun toggleMessageFlag(): MessageToSender {
+    suspend fun toggleMessageFlag(): TargetedEffect<Player> {
         messageflag = !messageflag
 
         val responseMessage = if (messageflag) {
@@ -924,17 +925,17 @@ class PlayerData(val player: Player) {
             "${ChatColor.GREEN}内訳表示:OFF"
         }
 
-        return responseMessage.asResponseToSender()
+        return responseMessage.asMessageEffect()
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun toggleHalfBreakFlag(): MessageToSender {
+    suspend fun toggleHalfBreakFlag(): TargetedEffect<Player> {
         halfBreakFlag = !halfBreakFlag
 
         val newStatus = if (halfBreakFlag) "${ChatColor.GREEN}破壊可能" else "${ChatColor.RED}破壊不可能"
         val responseMessage = "現在ハーフブロックは$newStatus${ChatColor.RESET}です."
 
-        return responseMessage.asResponseToSender()
+        return responseMessage.asMessageEffect()
     }
 
     /**
@@ -945,14 +946,14 @@ class PlayerData(val player: Player) {
      * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
      */
     @Suppress("RedundantSuspendModifier")
-    suspend fun tryForcefullyUnlockAchievement(number: Int): MessageToSender =
+    suspend fun tryForcefullyUnlockAchievement(number: Int): TargetedEffect<CommandSender> =
         if (!TitleFlags.get(number)) {
             TitleFlags.set(number)
             Bukkit.getPlayer(uuid)?.sendMessage("運営チームよりNo${number}の実績が配布されました。")
 
-            "$name に実績No. $number を${ChatColor.GREEN}付与${ChatColor.RESET}しました。".asResponseToSender()
+            "$name に実績No. $number を${ChatColor.GREEN}付与${ChatColor.RESET}しました。".asMessageEffect()
         } else {
-            "${ChatColor.GRAY}$name は既に実績No. $number を獲得しています。".asResponseToSender()
+            "${ChatColor.GRAY}$name は既に実績No. $number を獲得しています。".asMessageEffect()
         }
 
     /**
@@ -963,13 +964,13 @@ class PlayerData(val player: Player) {
      * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
      */
     @Suppress("RedundantSuspendModifier")
-    suspend fun forcefullyDepriveAchievement(number: Int): MessageToSender =
+    suspend fun forcefullyDepriveAchievement(number: Int): TargetedEffect<CommandSender> =
         if (!TitleFlags.get(number)) {
             TitleFlags.set(number, false)
 
-            "$name から実績No. $number を${ChatColor.RED}剥奪${ChatColor.GREEN}しました。".asResponseToSender()
+            "$name から実績No. $number を${ChatColor.RED}剥奪${ChatColor.GREEN}しました。".asMessageEffect()
         } else {
-            "${ChatColor.GRAY}$name は実績No. $number を獲得していません。".asResponseToSender()
+            "${ChatColor.GRAY}$name は実績No. $number を獲得していません。".asMessageEffect()
         }
 
 

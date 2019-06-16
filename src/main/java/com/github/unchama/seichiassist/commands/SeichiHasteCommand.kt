@@ -5,7 +5,7 @@ import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.ScopePr
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.util.TypeConverter
@@ -39,14 +39,14 @@ object SeichiHasteCommand {
       " - 3 ドラゲナイタイムから",
       " - 4 投票から",
       " - 5 コマンド入力から(イベントや不具合等)"
-  ).asResponseToSender())
+  ).asMessageEffect())
 
   val executor = ContextualExecutorBuilder.beginConfiguration()
       .argumentsParsers(
           listOf(
-              Parsers.closedRangeInt(0, 5, "説明文idは0から5の整数を指定してください。".asResponseToSender()),
-              Parsers.nonNegativeInteger("効果の持続ティック数は非負の整数を指定してください。".asResponseToSender()),
-              Parsers.double("効果の強さは実数を指定してください。".asResponseToSender()),
+              Parsers.closedRangeInt(0, 5, "説明文idは0から5の整数を指定してください。".asMessageEffect()),
+              Parsers.nonNegativeInteger("効果の持続ティック数は非負の整数を指定してください。".asMessageEffect()),
+              Parsers.double("効果の強さは実数を指定してください。".asMessageEffect()),
               parser { argument ->
                 ScopeSpecification.fromString(argument)
                     ?.let { succeedWith(it) }
@@ -67,21 +67,21 @@ object SeichiHasteCommand {
         when (scope) {
           ScopeSpecification.PLAYER -> {
             val playerName = context.args.yetToBeParsed.firstOrNull()
-                ?: return@execution "対象のプレーヤー名を指定してください。".asResponseToSender()
+                ?: return@execution "対象のプレーヤー名を指定してください。".asMessageEffect()
 
             val playerData = Bukkit.getPlayer(playerName)?.let { SeichiAssist.playermap[it.uniqueId] }
-                ?: return@execution "プレーヤー $playerName はオンラインではありません。".asResponseToSender()
+                ?: return@execution "プレーヤー $playerName はオンラインではありません。".asMessageEffect()
 
             playerData.effectdatalist.add(effectData)
 
-            "${ChatColor.LIGHT_PURPLE}$playerName に上昇値 $effectAmplifier を $effectLengthString 追加しました".asResponseToSender()
+            "${ChatColor.LIGHT_PURPLE}$playerName に上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
           }
           ScopeSpecification.ALL -> {
             SeichiAssist.playermap.values.forEach {
               it.effectdatalist.add(effectData)
             }
 
-            "${ChatColor.LIGHT_PURPLE}すべてのプレーヤーに上昇値 $effectAmplifier を $effectLengthString 追加しました".asResponseToSender()
+            "${ChatColor.LIGHT_PURPLE}すべてのプレーヤーに上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
           }
         }
       }

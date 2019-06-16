@@ -6,9 +6,9 @@ import com.github.unchama.contextualexecutor.ParsedArgCommandContext
 import com.github.unchama.contextualexecutor.PartiallyParsedArgs
 import com.github.unchama.contextualexecutor.RawCommandContext
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
-import com.github.unchama.effect.EmptyMessage
-import com.github.unchama.effect.MessageToSender
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.EmptyEffect
+import com.github.unchama.effect.TargetedEffect
+import com.github.unchama.effect.asMessageEffect
 import org.bukkit.command.CommandSender
 
 /**
@@ -24,7 +24,7 @@ import org.bukkit.command.CommandSender
  */
 data class ContextualExecutorBuilder<CS : CommandSender>(
     val senderTypeValidation: SenderTypeValidation<CS>,
-    val argumentsParser: CommandArgumentsParser,
+    val argumentsParser: CommandArgumentsParser<CS>,
     val contextualExecution: ScopedContextualExecution<CS>) {
 
   /**
@@ -35,8 +35,8 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
    */
   fun argumentsParsers(parsers: List<SingleArgumentParser>,
                        onMissingArguments: ContextualExecutor = PrintUsageExecutor): ContextualExecutorBuilder<CS> {
-    val combinedParser: CommandArgumentsParser = { context: RawCommandContext ->
-      tailrec suspend fun parse(parsers: List<(String) -> ResponseOrResult<Any>>,
+    val combinedParser: CommandArgumentsParser<CS> = { refinedSender, context: RawCommandContext ->
+      tailrec suspend fun parse(parsers: List<(String) -> ResponseEffectOrResult<CS, Any>>,
                                 onMissingArguments: ContextualExecutor,
                                 args: List<String>,
                                 reverseAccumulator: List<Any> = listOf()): Option<Pair<List<Any>, List<String>>> {
@@ -45,7 +45,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
             ?: return None.also { onMissingArguments.executeWith(context) }
 
         return when (val transformed = firstParser(firstArg)) {
-          is Either.Left -> None.also { transformed.a.transmitTo(context.sender) }
+          is Either.Left -> None.also { transformed.a.runFor(refinedSender) }
           is Either.Right -> {
             val parsedArg = transformed.b
             parse(parsers.drop(1), onMissingArguments, args.drop(1), reverseAccumulator.plus(parsedArg))
@@ -66,6 +66,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
    *
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドからの呼び出しに対応しなければならない.
    */
+  // TODO Effectを返すのでExecutionではない 名前を変えるべき
   fun execution(execution: ScopedContextualExecution<CS>): ContextualExecutorBuilder<CS> =
       this.copy(contextualExecution = execution)
 
@@ -74,13 +75,13 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
    * 失敗したら[errorMessageOnFail]が返るような[senderTypeValidation]が入った
    * 新しい[ContextualExecutorBuilder]
    */
-  inline fun <reified CS1 : CS> refineSender(errorMessageOnFail: MessageToSender): ContextualExecutorBuilder<CS1> {
+  inline fun <reified CS1 : CS> refineSender(errorMessageOnFail: TargetedEffect<CS>): ContextualExecutorBuilder<CS1> {
     val newSenderTypeValidation: SenderTypeValidation<CS1> = { sender ->
       senderTypeValidation(sender).flatMap { refined1 ->
         if (refined1 is CS1) {
           refined1.some()
         } else {
-          errorMessageOnFail.transmitTo(sender)
+          errorMessageOnFail.runFor(refined1)
           None
         }
       }
@@ -95,7 +96,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
    * 新しい[ContextualExecutorBuilder]
    */
   inline fun <reified CS1 : CS> refineSenderWithError(message: String): ContextualExecutorBuilder<CS1> =
-      refineSender(message.asResponseToSender())
+      refineSender(message.asMessageEffect())
 
   /**
    * @return [CS]を[CS1]へ狭めるキャストを試み,
@@ -103,7 +104,7 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
    * 新しい[ContextualExecutorBuilder]
    */
   inline fun <reified CS1 : CS> refineSenderWithError(messages: List<String>): ContextualExecutorBuilder<CS1> =
-      refineSender(messages.asResponseToSender())
+      refineSender(messages.asMessageEffect())
 
   /**
    * ビルダーに入っている情報から[ContextualExecutor]を生成する.
@@ -121,19 +122,19 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
     override suspend fun executeWith(rawContext: RawCommandContext) {
       senderTypeValidation(rawContext.sender)
           .flatMap { refinedSender ->
-            argumentsParser(rawContext).map { parsedArgs ->
+            argumentsParser(refinedSender, rawContext).map { parsedArgs ->
               ParsedArgCommandContext(refinedSender, rawContext.command, parsedArgs)
             }
           }
-          .map { context -> contextualExecution(context).transmitTo(context.sender) }
+          .map { context -> contextualExecution(context).runFor(context.sender) }
     }
   }
 
   companion object {
-    private val defaultArgumentParser: CommandArgumentsParser = { context ->
+    private val defaultArgumentParser: CommandArgumentsParser<CommandSender> = { _, context ->
       Some(PartiallyParsedArgs(listOf(), context.args))
     }
-    private val defaultExecution: ScopedContextualExecution<CommandSender> = { EmptyMessage }
+    private val defaultExecution: ScopedContextualExecution<CommandSender> = { EmptyEffect }
     private val defaultSenderValidation: SenderTypeValidation<CommandSender> = { sender: CommandSender -> Some(sender) }
 
     fun beginConfiguration() = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)

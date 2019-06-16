@@ -2,7 +2,7 @@ package com.github.unchama.contextualexecutor.executors
 
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.RawCommandContext
-import com.github.unchama.effect.asResponseToSender
+import com.github.unchama.effect.asMessageEffect
 import org.bukkit.command.Command
 
 /**
@@ -10,5 +10,5 @@ import org.bukkit.command.Command
  */
 object PrintUsageExecutor : ContextualExecutor {
   override suspend fun executeWith(rawContext: RawCommandContext) =
-      rawContext.command.command.usage.asResponseToSender().transmitTo(rawContext.sender)
+      rawContext.command.command.usage.asMessageEffect().runFor(rawContext.sender)
 }
