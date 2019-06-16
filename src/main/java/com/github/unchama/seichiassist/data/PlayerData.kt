@@ -921,7 +921,7 @@ class PlayerData(val player: Player) {
             2 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(200制限)"
             3 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(400制限)"
             4 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(600制限)"
-            else -> "${ChatColor.GREEN}採掘速度上昇効果:OFF"
+            else -> "${ChatColor.RED}採掘速度上昇効果:OFF"
         }
 
         return responseMessage.asResponseToSender()

@@ -5,7 +5,6 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.EffectData
 import com.github.unchama.seichiassist.util.Util
-import kotlinx.coroutines.delay
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Sound
@@ -136,7 +135,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
         if (playerData.messageflag) {
           player.sendMessage("----------------------------内訳-----------------------------")
           for (ed in playerData.effectdatalist) {
-            player.sendMessage(ChatColor.RESET.toString() + "" + ChatColor.RED + "" + ed.EDtoString(ed.id, ed.duration, ed.amplifier))
+            player.sendMessage(ChatColor.RESET.toString() + "" + ChatColor.RED + "" + ed.effectDescription)
           }
           player.sendMessage("-------------------------------------------------------------")
         }

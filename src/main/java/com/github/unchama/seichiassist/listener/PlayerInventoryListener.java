@@ -380,10 +380,10 @@ public class PlayerInventoryListener implements Listener {
 				//effectdatalistにある全てのeffectについて計算
 				for(EffectData ed : playerdata.getEffectdatalist()){
 					//effect量を加算
-					sum += ed.amplifier;
+					sum += ed.getAmplifier();
 					//持続時間の最大値を取得
-					if(maxduration < ed.duration){
-						maxduration = ed.duration;
+					if(maxduration < ed.getDuration()){
+						maxduration = ed.getDuration();
 					}
 				}
 				//実際のeffect値をsum-1の切り捨て整数値に設定
