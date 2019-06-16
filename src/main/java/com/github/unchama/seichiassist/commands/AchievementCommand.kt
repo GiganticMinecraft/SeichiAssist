@@ -5,8 +5,8 @@ import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.ScopePr
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.messaging.EmptyMessage
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.effect.EmptyMessage
+import com.github.unchama.effect.asResponseToSender
 import com.github.unchama.seichiassist.SeichiAssist
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit

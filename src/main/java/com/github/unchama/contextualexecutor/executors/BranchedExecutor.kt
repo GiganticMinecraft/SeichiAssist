@@ -2,8 +2,6 @@ package com.github.unchama.contextualexecutor.executors
 
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.RawCommandContext
-import com.github.unchama.messaging.EmptyMessage
-import com.github.unchama.messaging.MessageToSender
 
 /**
  * コマンドの枝分かれでのルーティングを静的に行うアクションを返す[ContextualExecutor]

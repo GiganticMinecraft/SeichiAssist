@@ -1,4 +1,4 @@
-package com.github.unchama.messaging
+package com.github.unchama.effect
 
 import arrow.typeclasses.Monoid
 import org.bukkit.command.CommandSender
