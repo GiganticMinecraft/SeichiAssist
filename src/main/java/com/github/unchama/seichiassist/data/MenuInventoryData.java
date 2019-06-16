@@ -815,7 +815,7 @@ public class MenuInventoryData {
 				, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "上昇量の内訳"
 				));
 		for(EffectData ed : playerdata.getEffectdatalist()){
-			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "" + ed.EDtoString(ed.id,ed.duration,ed.amplifier));
+			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "" + ed.getEffectDescription());
 		}
 		itemmeta.setLore(lore);
 		return itemmeta;
