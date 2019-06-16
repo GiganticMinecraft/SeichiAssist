@@ -66,7 +66,6 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
    *
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドからの呼び出しに対応しなければならない.
    */
-  // TODO Effectを返すのでExecutionではない 名前を変えるべき
   fun execution(execution: ScopedContextualExecution<CS>): ContextualExecutorBuilder<CS> =
       this.copy(contextualExecution = execution)
 
