@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.commands
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.effect.EmptyEffect
 import com.github.unchama.effect.asMessageEffect
-import com.github.unchama.effect.plus
+import com.github.unchama.effect.TargetedEffectOps.plus
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
