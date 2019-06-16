@@ -4,6 +4,7 @@ import com.github.unchama.seasonalevents.events.valentine.Valentine;
 import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.achievement.SeichiAchievement;
 import com.github.unchama.seichiassist.data.*;
+import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
@@ -363,69 +364,8 @@ public class PlayerInventoryListener implements Listener {
 			}
 
 			else if(itemstackcurrent.getType() == Material.DIAMOND_PICKAXE){
-				// ver0.3.2 採掘速度上昇効果トグル
-				/* effectflagは0->無制限,1->200,2->400,3->600,4->off
-				 * これを0->無制限,1->127,2->200,3->400,4->600,5->offに変更する。
-				 */
-				playerdata.setEffectflag((playerdata.getEffectflag() + 1) % 6);
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-
-				// 採掘速度上昇量計算
-				//実際に適用されるeffect量
-				int minespeedlv;
-				//合計effect量
-				double sum = 0;
-				//最大持続時間
-				int maxduration = 0;
-				//effectdatalistにある全てのeffectについて計算
-				for(EffectData ed : playerdata.getEffectdatalist()){
-					//effect量を加算
-					sum += ed.getAmplifier();
-					//持続時間の最大値を取得
-					if(maxduration < ed.getDuration()){
-						maxduration = ed.getDuration();
-					}
-				}
-				//実際のeffect値をsum-1の切り捨て整数値に設定
-				minespeedlv = (int) Math.floor(sum - 1);
-
-				int maxSpeed;
-				if (playerdata.getEffectflag() == 0) {
-					maxSpeed = 25565;
-					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
-				} else if (playerdata.getEffectflag() == 1) {
-					maxSpeed = 127;
-					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(127制限)");
-				} else if (playerdata.getEffectflag() == 2) {
-					maxSpeed = 200;
-					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(200制限)");
-				} else if (playerdata.getEffectflag() == 3) {
-					maxSpeed = 400;
-					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(400制限)");
-				} else if (playerdata.getEffectflag() == 4) {
-					maxSpeed = 600;
-					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON(600制限)");
-				} else {
-					maxSpeed = 0;
-					player.sendMessage(ChatColor.RED + "採掘速度上昇効果:OFF");
-				}
-
-				//effect追加の処理
-				//実際のeffect値が0より小さいときはeffectを適用しない
-				if(minespeedlv < 0 || maxSpeed == 0){
-					player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true);
-				}else{
-					if(minespeedlv > maxSpeed) {
-						player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, maxSpeed, false, false), true);
-					}else{
-						player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, minespeedlv, false, false), true);
-					}
-				}
-				ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-				itemstackcurrent.setItemMeta(MenuInventoryData.EFButtonMeta(playerdata,itemmeta));
-			}
-
-			else if(itemstackcurrent.getType() == Material.FLINT_AND_STEEL){
+				// TODO this fragment is deleted.
+			} else if(itemstackcurrent.getType() == Material.FLINT_AND_STEEL){
 				// 死亡メッセージ表示トグル
 				playerdata.setDispkilllogflag(!playerdata.getDispkilllogflag());
 				if(playerdata.getDispkilllogflag()){

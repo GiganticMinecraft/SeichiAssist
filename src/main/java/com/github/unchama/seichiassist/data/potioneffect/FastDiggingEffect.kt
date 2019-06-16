@@ -1,10 +1,9 @@
-package com.github.unchama.seichiassist.data
+package com.github.unchama.seichiassist.data.potioneffect
 
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.potion.PotionEffectType
 
 /**
- *
  * @param duration 持続ティック数
  * @param amplifier 効果の強さ
  * @param id 上昇値の種類
@@ -20,7 +19,7 @@ import org.bukkit.potion.PotionEffectType
  * TODO これをイミュータブルなデータクラスに
  * TODO [id]はenumに[effectDescription]
  */
-class EffectData(var duration: Int, var amplifier: Double, private val id: Int) {
+class FastDiggingEffect(var duration: Int, var amplifier: Double, private val id: Int) {
   val effectDescription: String
     get() {
       return when (id) {

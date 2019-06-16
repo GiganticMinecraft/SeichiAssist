@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.seasonalevents.events.valentine.Valentine;
 import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
@@ -780,44 +781,8 @@ public class MenuInventoryData {
 	}
 
 	// 採掘速度トグルボタン
+	@Deprecated
 	public static ItemMeta EFButtonMeta(PlayerData playerdata,ItemMeta itemmeta){
-		List<String> lore = new ArrayList<>();
-		if (playerdata.getEffectflag() == 0) {
-			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "現在有効です(無制限)");
-			lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで127制限");
-		} else if (playerdata.getEffectflag() == 1) {
-			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在有効です" + ChatColor.YELLOW + "(127制限)");
-			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで200制限");
-		} else if(playerdata.getEffectflag() == 2) {
-			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在有効です" + ChatColor.YELLOW + "(200制限)");
-			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで400制限");
-		} else if(playerdata.getEffectflag() == 3) {
-			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在有効です" + ChatColor.YELLOW + "(400制限)");
-			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで600制限");
-		} else if(playerdata.getEffectflag() == 4) {
-			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "現在有効です" + ChatColor.YELLOW + "(600制限)");
-			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
-		} else {
-			itemmeta.removeEnchant(Enchantment.DIG_SPEED);
-			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "現在OFFです");
-			lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで無制限");
-		}
-		lore.addAll(
-				Arrays.asList(ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度上昇効果とは"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "接続人数と1分間の採掘量に応じて"
-				, ChatColor.RESET + "" +  ChatColor.GRAY + "採掘速度が変化するシステムです"
-				, ChatColor.RESET + "" +  ChatColor.GOLD + "現在の採掘速度上昇Lv：" + (playerdata.getMinespeedlv() +1)
-				, ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "上昇量の内訳"
-				));
-		for(EffectData ed : playerdata.getEffectdatalist()){
-			lore.add(ChatColor.RESET + "" +  ChatColor.RED + "" + ed.getEffectDescription());
-		}
-		itemmeta.setLore(lore);
 		return itemmeta;
 	}
 	// ガチャ券受け取りボタン

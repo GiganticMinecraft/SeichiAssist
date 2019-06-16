@@ -191,7 +191,7 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 			while (rs.next()) {
 				//各種数値
 				playerdata.setLoaded(true);
-				playerdata.setEffectflag(rs.getInt("effectflag"));
+				playerdata.getFastDiggingEffectSuppressor().setStateFromSerializedValue(rs.getInt("effectflag"));
 				playerdata.setMinestackflag(rs.getBoolean("minestackflag"));
 				playerdata.setMessageflag(rs.getBoolean("messageflag"));
 				playerdata.getActiveskilldata().mineflagnum = rs.getInt("activemineflagnum");
