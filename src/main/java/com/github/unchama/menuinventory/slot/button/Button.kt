@@ -3,7 +3,7 @@ package com.github.unchama.menuinventory.slot.button
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
 import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.asTargeted
+import com.github.unchama.targetedeffect.unfocusedEffect
 import com.github.unchama.targetedeffect.ops.asSequentialEffect
 import com.github.unchama.targetedeffect.ops.plus
 import org.bukkit.entity.Player
@@ -30,6 +30,6 @@ class Button(override val itemStack: ItemStack,
   constructor(itemStack: ItemStack, vararg effects: ButtonEffect): this(itemStack, effects.toList())
 
   override fun computeEffectOn(event: InventoryClickEvent): TargetedEffect<Player> =
-      asTargeted { event.isCancelled = true } + this.effects.map { it.runAsyncEffectOn(event) }.asSequentialEffect()
+      unfocusedEffect { event.isCancelled = true } + this.effects.map { it.runAsyncEffectOn(event) }.asSequentialEffect()
 
 }

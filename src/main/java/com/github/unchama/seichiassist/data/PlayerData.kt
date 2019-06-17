@@ -17,7 +17,7 @@ import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
-import com.github.unchama.targetedeffect.asTargeted
+import com.github.unchama.targetedeffect.unfocusedEffect
 import com.github.unchama.targetedeffect.computedEffect
 import com.github.unchama.targetedeffect.ops.plus
 import com.github.unchama.targetedeffect.player.ForcedPotionEffect
@@ -1024,7 +1024,7 @@ class PlayerData(val player: Player) {
     }
 
     fun toggleExpBarVisibility(): TargetedEffect<Player> =
-        asTargeted {
+        unfocusedEffect {
             this.expbar.isVisible = !this.expbar.isVisible
         } + computedEffect {
             when {

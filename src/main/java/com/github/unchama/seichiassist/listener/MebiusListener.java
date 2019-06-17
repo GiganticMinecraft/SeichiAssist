@@ -104,44 +104,6 @@ public class MebiusListener implements Listener {
 		getPlayerData(player).getMebius().cancel();
 	}
 
-	// 経験値瓶を投げた時
-	// @EventHandler(priority = EventPriority.LOW) //
-	// onPlayerRightClickExpBottleEventより先に呼び出す
-	// public void onExpBottle(PlayerInteractEvent event) {
-	// // PlayerのLvがEXPBONUS以上なら抜ける
-	// if (getPlayerData(event.getPlayer()).level >= EXPBONUS) {
-	// return;
-	// }
-	// // PlayerがMebiusを装備してなければ抜ける
-	// if (!isEquip(event.getPlayer())) {
-	// return;
-	// }
-	// // メインハンドにアイテムを持っていなければ抜ける
-	// if (event.getPlayer().getInventory() == null ||
-	// event.getPlayer().getInventory().getItemInMainHand() == null) {
-	// return;
-	// }
-	// try {
-	// // 経験値瓶を投げる時
-	// if
-	// (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
-	// && (event.getAction().equals(Action.RIGHT_CLICK_AIR) ||
-	// event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
-	// int amount = 1;
-	// // スニーク状態
-	// if (event.getPlayer().isSneaking()) {
-	// amount = event.getItem().getAmount();
-	// }
-	// // 投げる個数分追加で投げる
-	// for (int cnt = 0; cnt < amount; cnt++) {
-	// event.getPlayer().launchProjectile(ThrownExpBottle.class);
-	// }
-	// }
-	// } catch (NullPointerException e) {
-	// // 万が一NullPointerExceptionが発生した場合、処理無しでOK
-	// }
-	// }
-
 	// Tipsを呼び出されたとき
 	public static void callTips(Player player) {
 		if (isEquip(player)) {
