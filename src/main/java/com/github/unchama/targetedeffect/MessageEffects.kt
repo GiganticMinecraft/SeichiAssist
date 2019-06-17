@@ -2,14 +2,12 @@ package com.github.unchama.targetedeffect
 
 import org.bukkit.command.CommandSender
 
-fun String.asMessageEffect() = object : TargetedEffect<CommandSender> {
-  override suspend fun runFor(minecraftObject: CommandSender) {
-    minecraftObject.sendMessage(this@asMessageEffect)
-  }
-}
+fun String.asMessageEffect() =
+    TargetedEffect { commandSender: CommandSender ->
+      commandSender.sendMessage(this@asMessageEffect)
+    }
 
-fun List<String>.asMessageEffect() = object : TargetedEffect<CommandSender> {
-  override suspend fun runFor(minecraftObject: CommandSender) {
-    minecraftObject.sendMessage(toTypedArray())
+fun List<String>.asMessageEffect() =
+  TargetedEffect { commandSender: CommandSender ->
+    commandSender.sendMessage(this@asMessageEffect.toTypedArray())
   }
-}

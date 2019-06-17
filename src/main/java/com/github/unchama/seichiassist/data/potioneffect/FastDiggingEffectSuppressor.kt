@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.data.potioneffect
 
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.asMessageEffect
-import com.github.unchama.targetedeffect.asTargeted
+import com.github.unchama.targetedeffect.unfocusedEffect
 import com.github.unchama.targetedeffect.computedEffect
 import com.github.unchama.targetedeffect.ops.plus
 import org.bukkit.ChatColor
@@ -12,7 +12,7 @@ class FastDiggingEffectSuppressor {
   var internalValue = 0
 
   fun toggleSuppressionDegree(): TargetedEffect<CommandSender> =
-      asTargeted {
+      unfocusedEffect {
         internalValue = (internalValue + 1) % 6
       } + computedEffect {
         when (internalValue) {

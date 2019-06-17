@@ -448,44 +448,6 @@ public class PlayerClickListener implements Listener {
 		}
 	}
 
-	/* ver0.3.2 左クリックトグル無効化
-	@EventHandler
-	public void onPlayerEffectToggleEvent(PlayerInteractEvent event){
-		//プレイヤーを取得
-		Player player = event.getPlayer();
-		//UUIDを取得
-		UUID uuid = player.getUniqueId();
-		//プレイヤーデータを取得
-		PlayerData playerdata = playermap.get(uuid);
-		//プレイヤーが起こしたアクションを取得
-		Action action = event.getAction();
-		//アクションを起こした手を取得
-		EquipmentSlot equipmentslot = event.getHand();
-
-
-
-		if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
-			//左クリックの処理
-			if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)){
-				//メインハンドに棒を持っているときの処理
-
-				//オフハンドのアクション実行時処理を終了
-				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
-					return;
-				}
-				//エフェクトフラグを取得
-				boolean effectflag = !playerdata.effectflag;
-				if (effectflag){
-					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:ON");
-				}else{
-					player.sendMessage(ChatColor.GREEN + "採掘速度上昇効果:OFF");
-				}
-				player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-				playerdata.effectflag = effectflag;
-			}
-		}
-	}
-	*/
 	//棒メニューを開くイベント
 	@EventHandler
 	public void onPlayerMenuEvent(PlayerInteractEvent event){

@@ -24,21 +24,21 @@ object MenuHandler : Listener {
     val openInventory = event.whoClicked.openInventory.topInventory
 
     //プレイヤーインベントリ内のクリック排除
-    if (openInventory.holder is MenuInventoryView && clickedInventory.type == InventoryType.PLAYER) {
+    if (openInventory.holder is MenuSession && clickedInventory.type == InventoryType.PLAYER) {
       event.isCancelled = true
       return
     }
 
     val holder = clickedInventory.holder
 
-    if (holder is MenuInventoryView) {
-      val asyncEffectTrigger = holder.getAsyncEffectTriggerAt(event.slot)
+    if (holder is MenuSession) {
+      val effect = holder.view.slotLayout.computeAsyncEffectOn(event)
 
       unsafe {
         runNonBlocking({
           fx {
             !effect {
-              asyncEffectTrigger(event).runFor(whoClicked)
+              effect.runFor(whoClicked)
             }
           }
         }) {}
