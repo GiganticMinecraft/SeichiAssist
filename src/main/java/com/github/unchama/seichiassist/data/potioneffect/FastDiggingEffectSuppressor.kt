@@ -2,27 +2,28 @@ package com.github.unchama.seichiassist.data.potioneffect
 
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.asMessageEffect
+import com.github.unchama.targetedeffect.asTargeted
+import com.github.unchama.targetedeffect.computedEffect
+import com.github.unchama.targetedeffect.ops.plus
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 
 class FastDiggingEffectSuppressor {
   var internalValue = 0
 
-  @Suppress("RedundantSuspendModifier")
-  suspend fun toggleEffect(): TargetedEffect<CommandSender> {
-    internalValue = (internalValue + 1) % 6
-
-    val responseMessage = when (internalValue) {
-      0 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(無制限)"
-      1 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(127制限)"
-      2 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(200制限)"
-      3 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(400制限)"
-      4 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(600制限)"
-      else -> "${ChatColor.RED}採掘速度上昇効果:OFF"
-    }
-
-    return responseMessage.asMessageEffect()
-  }
+  fun toggleSuppressionDegree(): TargetedEffect<CommandSender> =
+      asTargeted {
+        internalValue = (internalValue + 1) % 6
+      } + computedEffect {
+        when (internalValue) {
+          0 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(無制限)"
+          1 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(127制限)"
+          2 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(200制限)"
+          3 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(400制限)"
+          4 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(600制限)"
+          else -> "${ChatColor.RED}採掘速度上昇効果:OFF"
+        }.asMessageEffect()
+      }
 
   fun currentStatus(): String {
     return "${ChatColor.RESET}" + when (internalValue) {
@@ -35,7 +36,7 @@ class FastDiggingEffectSuppressor {
     }
   }
 
-  fun nextStatus(): String {
+  fun nextToggledStatus(): String {
     return when (internalValue) {
       0 -> "127制限"
       1 -> "200制限"
@@ -48,7 +49,7 @@ class FastDiggingEffectSuppressor {
 
   fun isSuppressionActive(): Boolean = internalValue in 0..4
 
-  fun serializedSuppressionState(): Int = internalValue
+  fun serialized(): Int = internalValue
 
   fun setStateFromSerializedValue(value: Int) {
     internalValue = value

@@ -19,3 +19,16 @@ interface TargetedEffect<in T>{
   }
 }
 
+/**
+ * 副作用を持つ[effect]を[TargetedEffect]として扱えるように変換する.
+ */
+fun asTargeted(effect: suspend () -> Unit): TargetedEffect<Any?> = object : TargetedEffect<Any?> {
+  override suspend fun runFor(minecraftObject: Any?) = effect.invoke()
+}
+
+/**
+ * [TargetedEffect]を計算する非純粋な関数[f]を[TargetedEffect]として扱えるように変換する.
+ */
+fun <T> computedEffect(f: suspend () -> TargetedEffect<T>): TargetedEffect<T> = object : TargetedEffect<T> {
+  override suspend fun runFor(minecraftObject: T) = f().runFor(minecraftObject)
+}

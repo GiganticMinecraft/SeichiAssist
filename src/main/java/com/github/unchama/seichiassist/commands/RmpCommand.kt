@@ -10,7 +10,7 @@ import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.targetedeffect.asMessageEffect
-import com.github.unchama.targetedeffect.ops.combineAll
+import com.github.unchama.targetedeffect.ops.asSequentialEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.util.data.merge
@@ -79,7 +79,7 @@ object RmpCommand {
           } else {
             removalTargets
                 .map { "${ChatColor.YELLOW}[rmp] Deleted Region -> ${world.name}.${it.id}".asMessageEffect() }
-                .combineAll()
+                .asSequentialEffect()
           }
         }.merge()
       }
@@ -96,7 +96,7 @@ object RmpCommand {
           } else {
             removalTargets
                 .map { ("${ChatColor.GREEN}[rmp] List Region -> ${world.name}.${it.id}").asMessageEffect() }
-                .combineAll()
+                .asSequentialEffect()
           }
         }.merge()
       }

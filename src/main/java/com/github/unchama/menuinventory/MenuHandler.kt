@@ -1,6 +1,9 @@
 package com.github.unchama.menuinventory
 
-import org.bukkit.entity.EntityType
+import arrow.effects.extensions.io.fx.fx
+import arrow.effects.extensions.io.unsafeRun.runNonBlocking
+import arrow.unsafe
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -14,7 +17,7 @@ import org.bukkit.event.inventory.InventoryType
 object MenuHandler : Listener {
   @EventHandler
   fun onInventoryClick(event: InventoryClickEvent) {
-    if (event.whoClicked.type != EntityType.PLAYER) return
+    val whoClicked = event.whoClicked as? Player ?: return
 
     //メニュー外のクリック排除
     val clickedInventory = event.clickedInventory ?: return
@@ -29,7 +32,17 @@ object MenuHandler : Listener {
     val holder = clickedInventory.holder
 
     if (holder is MenuInventoryView) {
-      holder.getEffectTriggerAt(event.slot)(event)
+      val asyncEffectTrigger = holder.getAsyncEffectTriggerAt(event.slot)
+
+      unsafe {
+        runNonBlocking({
+          fx {
+            !effect {
+              asyncEffectTrigger(event).runFor(whoClicked)
+            }
+          }
+        }) {}
+      }
     }
   }
 }

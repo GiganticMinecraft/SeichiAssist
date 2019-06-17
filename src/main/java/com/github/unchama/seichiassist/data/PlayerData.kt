@@ -17,10 +17,17 @@ import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
+import com.github.unchama.targetedeffect.asTargeted
+import com.github.unchama.targetedeffect.computedEffect
+import com.github.unchama.targetedeffect.ops.plus
+import com.github.unchama.targetedeffect.player.ForcedPotionEffect
+import com.github.unchama.targetedeffect.player.asTargetedEffect
 import org.bukkit.*
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
@@ -961,7 +968,7 @@ class PlayerData(val player: Player) {
      * 実績剥奪の通知はプレーヤーには行われない。
      *
      * @param number 解除対象の実績番号
-     * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
+     * @return この作用の実行者に向け操作の結果を記述する[TargetedEffect]
      */
     @Suppress("RedundantSuspendModifier")
     suspend fun forcefullyDepriveAchievement(number: Int): TargetedEffect<CommandSender> =
@@ -973,11 +980,33 @@ class PlayerData(val player: Player) {
             "${ChatColor.GRAY}$name は実績No. $number を獲得していません。".asMessageEffect()
         }
 
+    /**
+     * プレーヤーに付与されるべき採掘速度上昇効果を作用として与える[TargetedEffect]を計算する.
+     */
+    fun fastDiggingEffect(): ForcedPotionEffect {
+        val activeEffects = effectdatalist.toList()
+
+        val amplifierSum = activeEffects.map { it.amplifier }.sum()
+        val maxDuration = activeEffects.map { it.duration }.max() ?: 0
+        val computedAmplifier = Math.floor(amplifierSum - 1).toInt()
+
+        val maxSpeed: Int = fastDiggingEffectSuppressor.maximumAllowedEffectAmplifier()
+
+        // 実際に適用されるeffect量
+        val amplifier = Math.min(computedAmplifier, maxSpeed)
+
+        return if (amplifier >= 0) {
+            PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
+        } else {
+            // 実際のeffect値が0より小さいときはeffectを適用しない
+            PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
+        }.asTargetedEffect()
+    }
 
     /**
      * 整地量を表すEXPパーを表示なら非表示に,非表示なら表示に切り替えます.
      */
-    fun toggleExpBarVisibility() {
+    fun toggleExpBarVisibility__old() {
         this.expbar.isVisible = !this.expbar.isVisible
     }
 
@@ -993,6 +1022,16 @@ class PlayerData(val player: Player) {
             this.player.sendMessage("${ChatColor.RED}整地量バー非表示")
         }
     }
+
+    fun toggleExpBarVisibility(): TargetedEffect<Player> =
+        asTargeted {
+            this.expbar.isVisible = !this.expbar.isVisible
+        } + computedEffect {
+            when {
+                this.expbar.isVisible -> "${ChatColor.GREEN}整地量バー表示"
+                else -> "${ChatColor.RED}整地量バー非表示"
+            }.asMessageEffect()
+        }
 
     companion object {
         internal var config = SeichiAssist.seichiAssistConfig
