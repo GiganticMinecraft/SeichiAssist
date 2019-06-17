@@ -6,9 +6,9 @@ import com.github.unchama.contextualexecutor.ParsedArgCommandContext
 import com.github.unchama.contextualexecutor.PartiallyParsedArgs
 import com.github.unchama.contextualexecutor.RawCommandContext
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
-import com.github.unchama.effect.EmptyEffect
-import com.github.unchama.effect.TargetedEffect
-import com.github.unchama.effect.asMessageEffect
+import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.asMessageEffect
 import org.bukkit.command.CommandSender
 
 /**

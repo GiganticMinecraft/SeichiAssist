@@ -4,8 +4,8 @@ import arrow.core.flatMap
 import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.ScopeProvider.parser
 import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.failWith
 import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.succeedWith
-import com.github.unchama.effect.EmptyEffect
-import com.github.unchama.effect.TargetedEffect
+import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.command.CommandSender
 
 object Parsers {

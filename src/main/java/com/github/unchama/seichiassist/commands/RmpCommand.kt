@@ -9,8 +9,8 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.effect.asMessageEffect
-import com.github.unchama.effect.ops.combineAll
+import com.github.unchama.targetedeffect.asMessageEffect
+import com.github.unchama.targetedeffect.ops.combineAll
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.util.data.merge

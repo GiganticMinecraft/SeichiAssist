@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data.potioneffect
 
-import com.github.unchama.effect.TargetedEffect
-import com.github.unchama.effect.asMessageEffect
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.asMessageEffect
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 

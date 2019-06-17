@@ -4,8 +4,8 @@ import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
 import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
-import com.github.unchama.effect.TargetedEffect
-import com.github.unchama.effect.asMessageEffect
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.RankData

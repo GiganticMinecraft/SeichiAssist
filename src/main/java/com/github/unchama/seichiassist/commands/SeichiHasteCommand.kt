@@ -5,7 +5,7 @@ import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.ScopePr
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.effect.asMessageEffect
+import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.util.TypeConverter
