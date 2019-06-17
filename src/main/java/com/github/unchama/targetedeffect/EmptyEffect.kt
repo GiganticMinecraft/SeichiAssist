@@ -1,4 +1,4 @@
-package com.github.unchama.effect
+package com.github.unchama.targetedeffect
 
 /**
  * 何も作用を及ぼさないような[TargetedEffect].

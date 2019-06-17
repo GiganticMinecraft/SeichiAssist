@@ -1,7 +1,7 @@
-package com.github.unchama.effect.ops
+package com.github.unchama.targetedeffect.ops
 
 import arrow.data.extensions.list.foldable.fold
-import com.github.unchama.effect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 
 operator fun <T> TargetedEffect<T>.plus(anotherEffect: TargetedEffect<T>): TargetedEffect<T> = object : TargetedEffect<T> {
   override suspend fun runFor(minecraftObject: T) {

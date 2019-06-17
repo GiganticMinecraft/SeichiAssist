@@ -6,8 +6,8 @@ import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers.identity
 import com.github.unchama.contextualexecutor.builder.Parsers.nonNegativeInteger
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
-import com.github.unchama.effect.TargetedEffect
-import com.github.unchama.effect.asMessageEffect
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.data.merge
 import org.bukkit.ChatColor

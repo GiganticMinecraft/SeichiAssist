@@ -2,7 +2,7 @@ package com.github.unchama.contextualexecutor.builder
 
 import arrow.core.Left
 import arrow.core.Right
-import com.github.unchama.effect.*
+import com.github.unchama.targetedeffect.*
 import org.bukkit.command.CommandSender
 
 /**

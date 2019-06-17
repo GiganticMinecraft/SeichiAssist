@@ -1,4 +1,4 @@
-package com.github.unchama.effect
+package com.github.unchama.targetedeffect
 
 import org.bukkit.command.CommandSender
 

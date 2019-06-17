@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data
 
-import com.github.unchama.effect.TargetedEffect
-import com.github.unchama.effect.asMessageEffect
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.seichiassist.LevelThresholds
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.SeichiAssist

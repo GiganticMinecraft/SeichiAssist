@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.commands
 
 import arrow.core.Either
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
-import com.github.unchama.effect.TargetedEffect
-import com.github.unchama.effect.asMessageEffect
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.util.ItemListSerialization

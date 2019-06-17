@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.commands
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.ScopeProvider.parser
 import com.github.unchama.contextualexecutor.builder.Parsers
-import com.github.unchama.effect.TargetedEffect
-import com.github.unchama.effect.asMessageEffect
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
