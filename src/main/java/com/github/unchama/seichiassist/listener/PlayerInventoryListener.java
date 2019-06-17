@@ -4,7 +4,6 @@ import com.github.unchama.seasonalevents.events.valentine.Valentine;
 import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.achievement.SeichiAchievement;
 import com.github.unchama.seichiassist.data.*;
-import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
@@ -38,8 +37,6 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -432,7 +429,7 @@ public class PlayerInventoryListener implements Listener {
 
 			else if(isSkull && itemstackcurrent.getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.getName() + "の統計データ")){
 				// 整地量表示トグル
-				playerdata.toggleExpBarVisibility();
+				playerdata.toggleExpBarVisibility__old();
 				playerdata.notifyExpBarVisibility();
 				SkullMeta skullmeta = (SkullMeta)itemstackcurrent.getItemMeta();
 				itemstackcurrent.setItemMeta(MenuInventoryData.dispExpBarToggleMeta(playerdata,skullmeta));

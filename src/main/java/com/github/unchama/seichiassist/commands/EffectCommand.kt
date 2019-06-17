@@ -13,7 +13,7 @@ object EffectCommand {
   private val toggleExecutor = playerCommandBuilder
       .execution { context ->
         val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution EmptyEffect
-        val toggleResponse = playerData.fastDiggingEffectSuppressor.toggleEffect()
+        val toggleResponse = playerData.fastDiggingEffectSuppressor.toggleSuppressionDegree()
         val guidance = "再度 /ef コマンドを実行することでトグルします。".asMessageEffect()
 
         toggleResponse + guidance

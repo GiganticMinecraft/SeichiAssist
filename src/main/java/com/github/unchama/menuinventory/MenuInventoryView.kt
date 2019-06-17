@@ -3,10 +3,13 @@ package com.github.unchama.menuinventory
 import arrow.core.Either
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.seichiassist.Schedulers
+import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
@@ -24,8 +27,12 @@ typealias InventorySize = Either<Int, InventoryType>
 class MenuInventoryView(private val size: InventorySize,
                         private val title: String,
                         private val slotMap: Map<Int, Slot>) : InventoryHolder {
-  internal fun getEffectTriggerAt(position: Int) = { event: InventoryClickEvent ->
-    slotMap[position]?.runEffect(event)
+
+  /**
+   * このビューの[position]に登録された, 非同期スレッドから発火されてよい副作用を返す.
+   */
+  internal fun getAsyncEffectTriggerAt(position: Int): suspend (InventoryClickEvent) -> TargetedEffect<Player> = { event ->
+    slotMap[position]?.computeEffectOn(event) ?: EmptyEffect
   }
 
   override fun getInventory(): Inventory {

@@ -10,4 +10,4 @@ operator fun <T> TargetedEffect<T>.plus(anotherEffect: TargetedEffect<T>): Targe
   }
 }
 
-fun <T> List<TargetedEffect<T>>.combineAll(): TargetedEffect<T> = fold(TargetedEffect.monoid())
+fun <T> List<TargetedEffect<T>>.asSequentialEffect(): TargetedEffect<T> = fold(TargetedEffect.monoid())

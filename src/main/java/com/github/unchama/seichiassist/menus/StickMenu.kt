@@ -5,19 +5,22 @@ import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.menuinventory.slot.button.action.ButtonAction
+import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
+import com.github.unchama.seichiassist.targetedeffect.playerDataEffect
 import com.github.unchama.seichiassist.util.ops.lore
-import kotlinx.coroutines.runBlocking
+import com.github.unchama.targetedeffect.asTargeted
+import com.github.unchama.targetedeffect.computedEffect
+import com.github.unchama.targetedeffect.ops.asSequentialEffect
+import com.github.unchama.targetedeffect.ops.plus
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
 
 /**
  * 木の棒メニュー
@@ -28,7 +31,7 @@ object StickMenu {
   private fun mineSpeedToggleButtonLore(operatorData: PlayerData): List<String> {
     val toggleNavigation = listOf(
         operatorData.fastDiggingEffectSuppressor.currentStatus(),
-        "$RESET$DARK_RED${UNDERLINE}クリックで" + operatorData.fastDiggingEffectSuppressor.nextStatus()
+        "$RESET$DARK_RED${UNDERLINE}クリックで" + operatorData.fastDiggingEffectSuppressor.nextToggledStatus()
     )
 
     val explanation = listOf(
@@ -45,7 +48,7 @@ object StickMenu {
     return toggleNavigation + explanation + effectStats
   }
 
-  fun Player.openMenu() {
+  suspend fun Player.openMenu() {
     val openerData = SeichiAssist.playermap[uniqueId]!!
 
     val menuView = MenuInventoryView(
@@ -56,11 +59,15 @@ object StickMenu {
                     .title("$YELLOW$BOLD$UNDERLINE${name}の統計データ")
                     .lore(PlayerInformationDescriptions.playerInfoLore(openerData))
                     .build(),
-                ButtonAction(ClickEventFilter.LEFT_CLICK) { event ->
-                  openerData.toggleExpBarVisibility()
-                  openerData.notifyExpBarVisibility()
-
-                  event.currentItem.lore = PlayerInformationDescriptions.playerInfoLore(openerData)
+                ButtonEffect(ClickEventFilter.LEFT_CLICK) { event ->
+                  openerData.toggleExpBarVisibility() +
+                      computedEffect {
+                        val toggleSoundPitch = if (openerData.expbar.isVisible) 1.0f else 0.5f
+                        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
+                      } +
+                      asTargeted {
+                        event.currentItem.lore = PlayerInformationDescriptions.playerInfoLore(openerData)
+                      }
                 }
             ),
             1 to Button(
@@ -69,37 +76,17 @@ object StickMenu {
                     .enchanted()
                     .lore(mineSpeedToggleButtonLore(openerData))
                     .build(),
-                ButtonAction(ClickEventFilter.LEFT_CLICK) { event ->
-                  runBlocking {
-                    // TODO 副作用の発動一箇所にまとめたい
-
-                    val effectResponse = openerData.fastDiggingEffectSuppressor.toggleEffect()
-                    effectResponse.runFor(this@openMenu)
-                    this@openMenu.playSound(location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-                  }
-                  // TODO このロジックはここにあるべきではない
-
-                  val activeEffects = openerData.effectdatalist
-
-                  val amplifierSum = activeEffects.map { it.amplifier }.sum()
-                  val maxDuration = activeEffects.map { it.duration }.max() ?: 0
-                  val computedAmplifier = Math.floor(amplifierSum - 1).toInt()
-
-                  val maxSpeed: Int = openerData.fastDiggingEffectSuppressor.maximumAllowedEffectAmplifier()
-
-                  // 実際に適用されるeffect量
-                  val amplifier = Math.min(computedAmplifier, maxSpeed)
-
-                  // 実際のeffect値が0より小さいときはeffectを適用しない
-                  val potionEffect = if (amplifier < 0) {
-                    PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
-                  } else {
-                    PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
-                  }
-
-                  player.addPotionEffect(potionEffect, true)
-
-                  event.currentItem.lore = mineSpeedToggleButtonLore(openerData)
+                ButtonEffect(ClickEventFilter.LEFT_CLICK) { event ->
+                  listOf(
+                      FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+                      playerDataEffect {
+                        fastDiggingEffectSuppressor.toggleSuppressionDegree()
+                      },
+                      openerData.fastDiggingEffect(),
+                      asTargeted {
+                        event.currentItem.lore = mineSpeedToggleButtonLore(openerData)
+                      }
+                  ).asSequentialEffect()
                 }
             )
         )
