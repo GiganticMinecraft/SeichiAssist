@@ -30,9 +30,6 @@ class Button(override val itemStack: ItemStack,
   constructor(itemStack: ItemStack, vararg effects: ButtonEffect): this(itemStack, effects.toList())
 
   override fun computeEffectOn(event: InventoryClickEvent): TargetedEffect<Player> =
-      asTargeted { event.isCancelled = true }
-          .plus(
-              this.effects.map { it.runAsyncEffectOn(event) }.asSequentialEffect()
-          )
+      asTargeted { event.isCancelled = true } + this.effects.map { it.runAsyncEffectOn(event) }.asSequentialEffect()
 
 }
