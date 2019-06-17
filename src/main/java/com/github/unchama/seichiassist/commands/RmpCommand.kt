@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.commands
 
 import arrow.core.left
 import arrow.core.right
-import arrow.data.extensions.list.foldable.fold
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.ScopeProvider.parser
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
@@ -10,8 +9,8 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.effect.TargetedEffect
 import com.github.unchama.effect.asMessageEffect
+import com.github.unchama.effect.ops.combineAll
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.util.data.merge
@@ -80,7 +79,7 @@ object RmpCommand {
           } else {
             removalTargets
                 .map { "${ChatColor.YELLOW}[rmp] Deleted Region -> ${world.name}.${it.id}".asMessageEffect() }
-                .fold(TargetedEffect.monoid())
+                .combineAll()
           }
         }.merge()
       }
@@ -97,7 +96,7 @@ object RmpCommand {
           } else {
             removalTargets
                 .map { ("${ChatColor.GREEN}[rmp] List Region -> ${world.name}.${it.id}").asMessageEffect() }
-                .fold(TargetedEffect.monoid())
+                .combineAll()
           }
         }.merge()
       }
