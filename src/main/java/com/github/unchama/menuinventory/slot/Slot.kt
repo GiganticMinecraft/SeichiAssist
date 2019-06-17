@@ -9,12 +9,7 @@ import org.bukkit.inventory.ItemStack
 /**
  * [Slot]はインベントリUI上の一つの枠についての情報を持つオブジェクトです.
  *
- * [itemStack]は枠が表示するべきアイテムスタックを表します.
-
- * [computeEffectOn]は, この枠がクリックされた際に非同期で及ぼすべき作用を発生させ,
- * クリックしたプレーヤーに対して追加で発生させる[TargetedEffect]を返却します.
- *
- * [computeEffectOn]の作用はクリックにより発生した[InventoryClickEvent]をキャンセル状態にすることができます.
+ * [effectOn]の作用はクリックにより発生した[InventoryClickEvent]をキャンセル状態にすることができます.
  *
  * @author karayuu
  */
@@ -32,7 +27,7 @@ interface Slot {
    * @param event [InventoryClickEvent]
    * @return クリックした[Player]へ及ぼすべき作用
    */
-  fun computeEffectOn(event: InventoryClickEvent): TargetedEffect<Player>
+  fun effectOn(event: InventoryClickEvent): TargetedEffect<Player>
 
   companion object {
     /**
@@ -40,7 +35,7 @@ interface Slot {
      */
     fun eventless(itemStack: ItemStack): Slot = object : Slot {
       override val itemStack = itemStack
-      override fun computeEffectOn(event: InventoryClickEvent) = EmptyEffect
+      override fun effectOn(event: InventoryClickEvent) = EmptyEffect
     }
   }
 }
