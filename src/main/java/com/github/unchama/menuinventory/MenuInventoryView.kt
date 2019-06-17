@@ -22,7 +22,12 @@ import org.bukkit.inventory.InventoryHolder
 typealias InventorySize = Either<Int, InventoryType>
 
 /**
- * Created by karayuu on 2019/05/23
+ * 入っているアイテムスタックをクリックすることで作用が引き起こされるような
+ * インベントリのイミュータブルなビューを表すオブジェクトのクラス.
+ *
+ * @param size インベントリのサイズを決定するデータ
+ * @param title インベントリのタイトル
+ * @param slotMap インベントリの各スロットのindexと[Slot]間のMap
  */
 class MenuInventoryView(private val size: InventorySize,
                         private val title: String,
