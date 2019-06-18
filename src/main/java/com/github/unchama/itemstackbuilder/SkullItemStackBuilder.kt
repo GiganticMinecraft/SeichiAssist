@@ -1,12 +1,9 @@
-package com.github.unchama.menuinventory.itemstackbuilder
+package com.github.unchama.itemstackbuilder
 
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
-
-import java.util.UUID
+import java.util.*
 
 /**
  * @param ownerUUID [Material.SKULL_ITEM] に表示するskullのownerを設定します.
