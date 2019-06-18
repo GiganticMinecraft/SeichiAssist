@@ -1,4 +1,4 @@
-package com.github.unchama.menuinventory.itemstackbuilder
+package com.github.unchama.itemstackbuilder
 
 import org.bukkit.inventory.ItemStack
 

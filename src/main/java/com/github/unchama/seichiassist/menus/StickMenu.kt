@@ -1,20 +1,18 @@
 package com.github.unchama.seichiassist.menus
 
 import arrow.core.Left
+import com.github.unchama.itemstackbuilder.IconItemStackBuilder
+import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
 import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.MenuSession
-import com.github.unchama.menuinventory.itemstackbuilder.IconItemStackBuilder
-import com.github.unchama.menuinventory.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
-import com.github.unchama.seichiassist.util.ops.lore
 import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.unfocusedEffect
 import com.github.unchama.targetedeffect.computedEffect
 import com.github.unchama.targetedeffect.ops.asSequentialEffect
 import com.github.unchama.targetedeffect.ops.plus

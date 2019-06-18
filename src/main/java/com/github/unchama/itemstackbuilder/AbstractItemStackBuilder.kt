@@ -1,6 +1,6 @@
-package com.github.unchama.menuinventory.itemstackbuilder
+package com.github.unchama.itemstackbuilder
 
-import com.github.unchama.menuinventory.itemstackbuilder.component.IconComponent
+import com.github.unchama.itemstackbuilder.component.IconComponent
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta

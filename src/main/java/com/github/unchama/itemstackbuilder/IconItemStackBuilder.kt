@@ -1,8 +1,7 @@
-package com.github.unchama.menuinventory.itemstackbuilder
+package com.github.unchama.itemstackbuilder
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag
-import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 
 /**
