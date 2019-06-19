@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
+import com.github.unchama.targetedeffect.deferredEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import org.bukkit.ChatColor.*
@@ -37,11 +38,11 @@ object StickMenu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
           sequentialEffect(
               openerData.toggleExpBarVisibility(),
-              computedEffect {
+              deferredEffect {
                 val toggleSoundPitch = if (openerData.expbar.isVisible) 1.0f else 0.5f
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
               },
-              computedEffect { overwriteCurrentSlotBy(computeStatsButton()) }
+              deferredEffect { overwriteCurrentSlotBy(computeStatsButton()) }
           )
         }
     )
@@ -77,8 +78,8 @@ object StickMenu {
             sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                 openerData.fastDiggingEffectSuppressor.suppressionDegreeToggleEffect,
-                computedEffect { openerData.computeFastDiggingEffect() },
-                computedEffect { overwriteCurrentSlotBy(computeEffectSuppressionButton()) }
+                deferredEffect { openerData.computeFastDiggingEffect() },
+                deferredEffect { overwriteCurrentSlotBy(computeEffectSuppressionButton()) }
             )
           }
       )
@@ -114,8 +115,8 @@ object StickMenu {
 
       val leftClickEffect = if (playerHasEnoughLevelToOpen) {
         sequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
-            //TODO open MineStack ui
+            FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
+            MineStackUI.open
         )
       } else FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
 
@@ -135,10 +136,9 @@ object StickMenu {
     )
   }
 
-  fun open(): TargetedEffect<Player> = TargetedEffect { player ->
-    val menuLayout = player.computeMenuLayout()
-    val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", menuLayout)
+  val open: TargetedEffect<Player> = computedEffect { player ->
+    val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", player.computeMenuLayout())
 
-    view.createNewSession().open.runFor(player)
+    view.createNewSession().open
   }
 }
