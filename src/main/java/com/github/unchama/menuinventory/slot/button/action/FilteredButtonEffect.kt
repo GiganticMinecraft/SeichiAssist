@@ -15,6 +15,12 @@ import org.bukkit.event.inventory.InventoryClickEvent
  */
 data class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter,
                                 private val effect: ButtonEffectScope.() -> TargetedEffect<Player>): ButtonEffect {
+
+  /**
+   * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[FilteredButtonEffect]を構築する.
+   */
+  constructor(clickEventFilter: ClickEventFilter, effect: TargetedEffect<Player>): this(clickEventFilter, { effect })
+
   /**
    * [event]に基づいた[effect]による作用を計算する.
    */
