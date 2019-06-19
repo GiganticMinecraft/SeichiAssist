@@ -6,15 +6,15 @@ import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
 import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
+import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
-import com.github.unchama.targetedeffect.ops.asSequentialEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.sequentialEffect
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -55,15 +55,15 @@ object StickMenu {
             .title("$YELLOW$BOLD$UNDERLINE${name}の統計データ")
             .lore(PlayerInformationDescriptions.playerInfoLore(openerData))
             .build(),
-        ButtonEffect(ClickEventFilter.LEFT_CLICK) {
-          listOf(
+        FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+          sequentialEffect(
               openerData.toggleExpBarVisibility(),
               computedEffect {
                 val toggleSoundPitch = if (openerData.expbar.isVisible) 1.0f else 0.5f
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
               },
               computedEffect { overwriteCurrentSlotBy(computeStatsButton()) }
-          ).asSequentialEffect()
+          )
         }
     )
 
@@ -73,13 +73,13 @@ object StickMenu {
             .enchanted()
             .lore(mineSpeedToggleButtonLore(openerData))
             .build(),
-        ButtonEffect(ClickEventFilter.LEFT_CLICK) {
-          listOf(
+        FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+          sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               openerData.fastDiggingEffectSuppressor.suppressionDegreeToggleEffect,
               computedEffect { openerData.computeFastDiggingEffect() },
               computedEffect { overwriteCurrentSlotBy(computeEffectSuppressionButton()) }
-          ).asSequentialEffect()
+          )
         }
     )
 
