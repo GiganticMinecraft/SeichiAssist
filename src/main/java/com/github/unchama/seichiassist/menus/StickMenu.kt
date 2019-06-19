@@ -9,7 +9,6 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
@@ -26,26 +25,6 @@ import org.bukkit.entity.Player
  * @author karayuu
  */
 object StickMenu {
-  @Suppress("RedundantSuspendModifier")
-  private suspend fun mineSpeedToggleButtonLore(operatorData: PlayerData): List<String> {
-    val toggleNavigation = listOf(
-        operatorData.fastDiggingEffectSuppressor.currentStatus(),
-        "$RESET$DARK_RED${UNDERLINE}クリックで" + operatorData.fastDiggingEffectSuppressor.nextToggledStatus()
-    )
-
-    val explanation = listOf(
-        "$RESET${GRAY}採掘速度上昇効果とは",
-        "$RESET${GRAY}接続人数と1分間の採掘量に応じて",
-        "$RESET${GRAY}採掘速度が変化するシステムです",
-        "$RESET${GOLD}現在の採掘速度上昇Lv：${operatorData.minespeedlv + 1}"
-    )
-
-    val effectStats =
-        listOf("$RESET$YELLOW${UNDERLINE}上昇量の内訳") +
-            operatorData.effectdatalist.map { it.effectDescription }
-
-    return toggleNavigation + explanation + effectStats
-  }
 
   private suspend fun Player.computeMenuLayout(): IndexedSlotLayout {
     val openerData = SeichiAssist.playermap[uniqueId]!!
@@ -67,25 +46,92 @@ object StickMenu {
         }
     )
 
-    suspend fun computeEffectSuppressionButton(): Button = Button(
-        IconItemStackBuilder(Material.DIAMOND_PICKAXE)
-            .title("$YELLOW$UNDERLINE${BOLD}採掘速度上昇効果")
-            .enchanted()
-            .lore(mineSpeedToggleButtonLore(openerData))
-            .build(),
-        FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-          sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              openerData.fastDiggingEffectSuppressor.suppressionDegreeToggleEffect,
-              computedEffect { openerData.computeFastDiggingEffect() },
-              computedEffect { overwriteCurrentSlotBy(computeEffectSuppressionButton()) }
-          )
+    suspend fun computeEffectSuppressionButton(): Button {
+      val buttonLore: List<String> = run {
+        val toggleNavigation = listOf(
+            openerData.fastDiggingEffectSuppressor.currentStatus(),
+            "$RESET$DARK_RED${UNDERLINE}クリックで" + openerData.fastDiggingEffectSuppressor.nextToggledStatus()
+        )
+
+        val explanation = listOf(
+            "$RESET${GRAY}採掘速度上昇効果とは",
+            "$RESET${GRAY}接続人数と1分間の採掘量に応じて",
+            "$RESET${GRAY}採掘速度が変化するシステムです",
+            "$RESET${GOLD}現在の採掘速度上昇Lv：${openerData.minespeedlv + 1}"
+        )
+
+        val effectStats =
+            listOf("$RESET$YELLOW${UNDERLINE}上昇量の内訳") +
+                openerData.effectdatalist.map { it.effectDescription }
+
+        toggleNavigation + explanation + effectStats
+      }
+
+      return Button(
+          IconItemStackBuilder(Material.DIAMOND_PICKAXE)
+              .title("$YELLOW$UNDERLINE${BOLD}採掘速度上昇効果")
+              .enchanted()
+              .lore(buttonLore)
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+                openerData.fastDiggingEffectSuppressor.suppressionDegreeToggleEffect,
+                computedEffect { openerData.computeFastDiggingEffect() },
+                computedEffect { overwriteCurrentSlotBy(computeEffectSuppressionButton()) }
+            )
+          }
+      )
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun computeMineStackButton(): Button {
+      val minimumLevelRequired = SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
+      val playerHasEnoughLevelToOpen = openerData.level >= minimumLevelRequired
+
+      val buttonLore: List<String> = run {
+        val explanation = listOf(
+            "$RESET${GREEN}説明しよう!MineStackとは…",
+            "${RESET}主要アイテムを無限にスタック出来る!",
+            "${RESET}スタックしたアイテムは",
+            "${RESET}ここから取り出せるゾ!"
+        )
+
+        val actionGuidance = if (playerHasEnoughLevelToOpen) {
+          "$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+        } else {
+          "$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumLevelRequired}以上必要です"
         }
-    )
+
+        val annotation = listOf(
+            "$RESET${DARK_GRAY}※スタックしたアイテムは",
+            "$RESET${DARK_GRAY}各サバイバルサーバー間で",
+            "$RESET${DARK_GRAY}共有されます"
+        )
+
+        explanation + actionGuidance + annotation
+      }
+
+      val leftClickEffect = if (playerHasEnoughLevelToOpen) {
+        sequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
+            //TODO open MineStack ui
+        )
+      } else FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
+
+      return Button(
+          IconItemStackBuilder(Material.CHEST)
+              .title("$YELLOW$UNDERLINE${BOLD}MineStack機能")
+              .lore(buttonLore)
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+      )
+    }
 
     return IndexedSlotLayout(
         0 to computeStatsButton(),
-        1 to computeEffectSuppressionButton()
+        1 to computeEffectSuppressionButton(),
+        24 to computeMineStackButton()
     )
   }
 
