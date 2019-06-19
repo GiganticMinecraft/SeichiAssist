@@ -76,8 +76,8 @@ object StickMenu {
         ButtonEffect(ClickEventFilter.LEFT_CLICK) {
           listOf(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              openerData.fastDiggingEffectSuppressor.toggleSuppressionDegree(),
-              openerData.fastDiggingEffect(),
+              openerData.fastDiggingEffectSuppressor.suppressionDegreeToggleEffect,
+              computedEffect { openerData.computeFastDiggingEffect() },
               computedEffect { overwriteCurrentSlotBy(computeEffectSuppressionButton()) }
           ).asSequentialEffect()
         }
