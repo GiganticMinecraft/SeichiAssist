@@ -1,6 +1,7 @@
 package com.github.unchama.targetedeffect
 
 import arrow.typeclasses.Monoid
+import com.github.unchama.targetedeffect.ops.asSequentialEffect
 
 /**
  * Minecraft内の何らかの対象[T]に向けた作用を持ち,
@@ -27,3 +28,5 @@ interface TargetedEffect<in T>{
  * [TargetedEffect]を計算する非純粋な関数[f]を[TargetedEffect]として扱えるように変換する.
  */
 fun <T> computedEffect(f: suspend () -> TargetedEffect<T>): TargetedEffect<T> = TargetedEffect { f().runFor(it) }
+
+fun <T> sequentialEffect(vararg effects: TargetedEffect<T>): TargetedEffect<T> = effects.toList().asSequentialEffect()
