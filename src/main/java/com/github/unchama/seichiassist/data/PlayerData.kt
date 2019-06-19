@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.data
 
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.seichiassist.LevelThresholds
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.SeichiAssist
@@ -14,14 +12,15 @@ import com.github.unchama.seichiassist.minestack.MineStackHistoryData
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.task.MebiusTask
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
-import com.github.unchama.targetedeffect.unfocusedEffect
+import com.github.unchama.seichiassist.util.exp.ExperienceManager
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.targetedeffect.computedEffect
 import com.github.unchama.targetedeffect.ops.plus
-import com.github.unchama.targetedeffect.player.ForcedPotionEffect
 import com.github.unchama.targetedeffect.player.asTargetedEffect
+import com.github.unchama.targetedeffect.unfocusedEffect
 import org.bukkit.*
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -981,9 +980,9 @@ class PlayerData(val player: Player) {
         }
 
     /**
-     * プレーヤーに付与されるべき採掘速度上昇効果を作用として与える[TargetedEffect]を計算する.
+     * プレーヤーに付与されるべき採掘速度上昇効果を発火時に計算し適用する[TargetedEffect].
      */
-    fun fastDiggingEffect(): ForcedPotionEffect {
+    fun fastDiggingEffect(): TargetedEffect<Player> = computedEffect {
         val activeEffects = effectdatalist.toList()
 
         val amplifierSum = activeEffects.map { it.amplifier }.sum()
@@ -995,7 +994,7 @@ class PlayerData(val player: Player) {
         // 実際に適用されるeffect量
         val amplifier = Math.min(computedAmplifier, maxSpeed)
 
-        return if (amplifier >= 0) {
+        if (amplifier >= 0) {
             PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
         } else {
             // 実際のeffect値が0より小さいときはeffectを適用しない
