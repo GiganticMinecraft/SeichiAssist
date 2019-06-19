@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.data.potioneffect
 
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.asMessageEffect
-import com.github.unchama.targetedeffect.computedEffect
+import com.github.unchama.targetedeffect.deferredEffect
 import com.github.unchama.targetedeffect.ops.plus
 import com.github.unchama.targetedeffect.unfocusedEffect
 import org.bukkit.ChatColor
@@ -14,7 +14,7 @@ class FastDiggingEffectSuppressor {
   val suppressionDegreeToggleEffect: TargetedEffect<CommandSender> =
       unfocusedEffect {
         internalValue = (internalValue + 1) % 6
-      } + computedEffect {
+      } + deferredEffect {
         when (internalValue) {
           0 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(無制限)"
           1 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(127制限)"

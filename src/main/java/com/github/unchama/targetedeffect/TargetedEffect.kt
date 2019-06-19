@@ -25,8 +25,13 @@ interface TargetedEffect<in T>{
 }
 
 /**
- * [TargetedEffect]を計算する非純粋な関数[f]を[TargetedEffect]として扱えるように変換する.
+ * [TargetedEffect]を非純粋に計算しそれをすぐに実行するような作用を作成する.
  */
-fun <T> computedEffect(f: suspend () -> TargetedEffect<T>): TargetedEffect<T> = TargetedEffect { f().runFor(it) }
+fun <T> deferredEffect(f: suspend () -> TargetedEffect<T>): TargetedEffect<T> = TargetedEffect { f().runFor(it) }
+
+/**
+ * 実行対象の[T]から[TargetedEffect]を非純粋に計算しそれをすぐに実行するような作用を作成する.
+ */
+fun <T> computedEffect(f: suspend (T) -> TargetedEffect<T>): TargetedEffect<T> = TargetedEffect { f(it).runFor(it) }
 
 fun <T> sequentialEffect(vararg effects: TargetedEffect<T>): TargetedEffect<T> = effects.toList().asSequentialEffect()
