@@ -14,7 +14,6 @@ import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescrip
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
 import com.github.unchama.targetedeffect.ops.asSequentialEffect
-import com.github.unchama.targetedeffect.ops.plus
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
@@ -57,12 +56,14 @@ object StickMenu {
             .lore(PlayerInformationDescriptions.playerInfoLore(openerData))
             .build(),
         ButtonEffect(ClickEventFilter.LEFT_CLICK) {
-          openerData.toggleExpBarVisibility() +
+          listOf(
+              openerData.toggleExpBarVisibility(),
               computedEffect {
                 val toggleSoundPitch = if (openerData.expbar.isVisible) 1.0f else 0.5f
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
-              } +
+              },
               computedEffect { overwriteCurrentSlotBy(computeStatsButton()) }
+          ).asSequentialEffect()
         }
     )
 
