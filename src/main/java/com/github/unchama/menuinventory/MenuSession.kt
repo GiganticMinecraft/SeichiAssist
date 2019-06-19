@@ -23,7 +23,7 @@ class MenuSession internal constructor(view: MenuInventoryView): InventoryHolder
   /**
    * このセッションが持つ共有インベントリを開く作用を返します.
    */
-  val openSessionInventoryEffect: TargetedEffect<Player> = TargetedEffect {
+  val open: TargetedEffect<Player> = TargetedEffect {
     it.openInventory(sessionInventory)
   }
 

@@ -90,8 +90,9 @@ object StickMenu {
   }
 
   fun open(): TargetedEffect<Player> = TargetedEffect { player ->
-    val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", player.computeMenuLayout())
+    val menuLayout = player.computeMenuLayout()
+    val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", menuLayout)
 
-    view.createNewSession().openSessionInventoryEffect.runFor(player)
+    view.createNewSession().open.runFor(player)
   }
 }
