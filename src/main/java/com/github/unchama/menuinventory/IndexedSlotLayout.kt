@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack
 /**
  * どのインデックスがどの[Slot]と関連付けられているかの情報を持つ[Map]のラッパークラス.
  */
-data class IndexedSlotLayout(val map: Map<Int, Slot>) {
+data class IndexedSlotLayout(private val map: Map<Int, Slot>) {
   constructor(vararg mappings: Pair<Int, Slot>): this(mapOf(*mappings))
 
   /**
@@ -37,4 +37,9 @@ data class IndexedSlotLayout(val map: Map<Int, Slot>) {
       }
     }
   }
+
+  /**
+   * [slotReplacement]でレイアウトの一箇所を置き換えた新しいレイアウトを計算する.
+   */
+  internal fun altered(slotReplacement: Pair<Int, Slot>) = copy(map = map + slotReplacement)
 }

@@ -5,7 +5,6 @@ import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
 import com.github.unchama.menuinventory.MenuInventoryView
-import com.github.unchama.menuinventory.MenuSession
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
@@ -28,7 +27,8 @@ import org.bukkit.entity.Player
  * @author karayuu
  */
 object StickMenu {
-  private fun mineSpeedToggleButtonLore(operatorData: PlayerData): List<String> {
+  @Suppress("RedundantSuspendModifier")
+  private suspend fun mineSpeedToggleButtonLore(operatorData: PlayerData): List<String> {
     val toggleNavigation = listOf(
         operatorData.fastDiggingEffectSuppressor.currentStatus(),
         "$RESET$DARK_RED${UNDERLINE}クリックで" + operatorData.fastDiggingEffectSuppressor.nextToggledStatus()
@@ -48,47 +48,49 @@ object StickMenu {
     return toggleNavigation + explanation + effectStats
   }
 
-  private fun Player.buildMenuLayout(): IndexedSlotLayout {
+  private suspend fun Player.computeMenuLayout(): IndexedSlotLayout {
     val openerData = SeichiAssist.playermap[uniqueId]!!
 
+    suspend fun computeStatsButton(): Button = Button(
+        SkullItemStackBuilder(uniqueId)
+            .title("$YELLOW$BOLD$UNDERLINE${name}の統計データ")
+            .lore(PlayerInformationDescriptions.playerInfoLore(openerData))
+            .build(),
+        ButtonEffect(ClickEventFilter.LEFT_CLICK) {
+          openerData.toggleExpBarVisibility() +
+              computedEffect {
+                val toggleSoundPitch = if (openerData.expbar.isVisible) 1.0f else 0.5f
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
+              } +
+              computedEffect { overwriteCurrentSlotBy(computeStatsButton()) }
+        }
+    )
+
+    suspend fun computeEffectSuppressionButton(): Button = Button(
+        IconItemStackBuilder(Material.DIAMOND_PICKAXE)
+            .title("$YELLOW$UNDERLINE${BOLD}採掘速度上昇効果")
+            .enchanted()
+            .lore(mineSpeedToggleButtonLore(openerData))
+            .build(),
+        ButtonEffect(ClickEventFilter.LEFT_CLICK) {
+          listOf(
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+              openerData.fastDiggingEffectSuppressor.toggleSuppressionDegree(),
+              openerData.fastDiggingEffect(),
+              computedEffect { overwriteCurrentViewBy(computeMenuLayout()) }
+          ).asSequentialEffect()
+        }
+    )
+
     return IndexedSlotLayout(
-        0 to Button(
-            SkullItemStackBuilder(uniqueId)
-                .title("$YELLOW$BOLD$UNDERLINE${name}の統計データ")
-                .lore(PlayerInformationDescriptions.playerInfoLore(openerData))
-                .build(),
-            ButtonEffect(ClickEventFilter.LEFT_CLICK) {
-              openerData.toggleExpBarVisibility() +
-                  computedEffect {
-                    val toggleSoundPitch = if (openerData.expbar.isVisible) 1.0f else 0.5f
-                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
-                  } + overwriteCurrentViewBy(buildMenuLayout())
-            }
-        ),
-        1 to Button(
-            IconItemStackBuilder(Material.DIAMOND_PICKAXE)
-                .title("$YELLOW$UNDERLINE${BOLD}採掘速度上昇効果")
-                .enchanted()
-                .lore(mineSpeedToggleButtonLore(openerData))
-                .build(),
-            ButtonEffect(ClickEventFilter.LEFT_CLICK) {
-              listOf(
-                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                  openerData.fastDiggingEffectSuppressor.toggleSuppressionDegree(),
-                  openerData.fastDiggingEffect(),
-                  overwriteCurrentViewBy(buildMenuLayout())
-              ).asSequentialEffect()
-            }
-        )
+        0 to computeStatsButton(),
+        1 to computeEffectSuppressionButton()
     )
   }
 
   fun open(): TargetedEffect<Player> = TargetedEffect { player ->
-    val view = with(player) {
-      MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", buildMenuLayout())
-    }
+    val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", player.computeMenuLayout())
 
-    // TODO can this be "flatten"ed?
-    MenuSession(view).openSessionInventoryEffect.runFor(player)
+    view.createNewSession().openSessionInventoryEffect.runFor(player)
   }
 }

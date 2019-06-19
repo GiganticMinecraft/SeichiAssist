@@ -30,6 +30,7 @@ data class MenuInventoryView(private val size: InventorySize,
         slotLayout.asynchronouslySetItemsOn(it)
       }
     }
-
   }
+
+  fun createNewSession(): MenuSession = MenuSession(this)
 }

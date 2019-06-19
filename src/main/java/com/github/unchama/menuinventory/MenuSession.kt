@@ -7,7 +7,7 @@ import org.bukkit.inventory.InventoryHolder
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
  */
-class MenuSession(view: MenuInventoryView): InventoryHolder {
+class MenuSession internal constructor(view: MenuInventoryView): InventoryHolder {
   private val sessionInventory = view.createConfiguredInventory(this)
 
   var view: MenuInventoryView = view
