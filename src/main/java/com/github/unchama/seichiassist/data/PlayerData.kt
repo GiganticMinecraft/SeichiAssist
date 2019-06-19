@@ -980,9 +980,9 @@ class PlayerData(val player: Player) {
         }
 
     /**
-     * プレーヤーに付与されるべき採掘速度上昇効果を発火時に計算し適用する[TargetedEffect].
+     * プレーヤーに付与されるべき採掘速度上昇効果を適用する[TargetedEffect].
      */
-    fun fastDiggingEffect(): TargetedEffect<Player> = computedEffect {
+    suspend fun computeFastDiggingEffect(): TargetedEffect<Player> {
         val activeEffects = effectdatalist.toList()
 
         val amplifierSum = activeEffects.map { it.amplifier }.sum()
@@ -994,7 +994,7 @@ class PlayerData(val player: Player) {
         // 実際に適用されるeffect量
         val amplifier = Math.min(computedAmplifier, maxSpeed)
 
-        if (amplifier >= 0) {
+        return if (amplifier >= 0) {
             PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
         } else {
             // 実際のeffect値が0より小さいときはeffectを適用しない
