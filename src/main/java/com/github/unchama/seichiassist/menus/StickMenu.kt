@@ -26,28 +26,31 @@ import org.bukkit.entity.Player
  * @author karayuu
  */
 object StickMenu {
+  object ButtonComputations {
+    suspend fun Player.computeStatsButton(): Button {
+      val openerData = SeichiAssist.playermap[uniqueId]!!
 
-  private suspend fun Player.computeMenuLayout(): IndexedSlotLayout {
-    val openerData = SeichiAssist.playermap[uniqueId]!!
+      return Button(
+          SkullItemStackBuilder(uniqueId)
+              .title("$YELLOW$BOLD$UNDERLINE${name}の統計データ")
+              .lore(PlayerInformationDescriptions.playerInfoLore(openerData))
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                openerData.toggleExpBarVisibility(),
+                deferredEffect {
+                  val toggleSoundPitch = if (openerData.expbar.isVisible) 1.0f else 0.5f
+                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
+                },
+                deferredEffect { overwriteCurrentSlotBy(computeStatsButton()) }
+            )
+          }
+      )
+    }
 
-    suspend fun computeStatsButton(): Button = Button(
-        SkullItemStackBuilder(uniqueId)
-            .title("$YELLOW$BOLD$UNDERLINE${name}の統計データ")
-            .lore(PlayerInformationDescriptions.playerInfoLore(openerData))
-            .build(),
-        FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-          sequentialEffect(
-              openerData.toggleExpBarVisibility(),
-              deferredEffect {
-                val toggleSoundPitch = if (openerData.expbar.isVisible) 1.0f else 0.5f
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
-              },
-              deferredEffect { overwriteCurrentSlotBy(computeStatsButton()) }
-          )
-        }
-    )
+    suspend fun Player.computeEffectSuppressionButton(): Button {
+      val openerData = SeichiAssist.playermap[uniqueId]!!
 
-    suspend fun computeEffectSuppressionButton(): Button {
       val buttonLore: List<String> = run {
         val toggleNavigation = listOf(
             openerData.fastDiggingEffectSuppressor.currentStatus(),
@@ -85,8 +88,9 @@ object StickMenu {
       )
     }
 
-    @Suppress("RedundantSuspendModifier")
-    suspend fun computeMineStackButton(): Button {
+    suspend fun Player.computeMineStackButton(): Button {
+      val openerData = SeichiAssist.playermap[uniqueId]!!
+
       val minimumLevelRequired = SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
       val playerHasEnoughLevelToOpen = openerData.level >= minimumLevelRequired
 
@@ -129,7 +133,10 @@ object StickMenu {
       )
     }
 
-    return IndexedSlotLayout(
+  }
+
+  private suspend fun Player.computeMenuLayout(): IndexedSlotLayout = with(ButtonComputations) {
+    IndexedSlotLayout(
         0 to computeStatsButton(),
         1 to computeEffectSuppressionButton(),
         24 to computeMineStackButton()
