@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.util.ActionStatus
 import com.github.unchama.util.ActionStatus.Fail
 import com.github.unchama.util.ActionStatus.Ok
+import kotlinx.coroutines.runBlocking
 import org.bukkit.ChatColor
 import org.bukkit.scheduler.BukkitRunnable
 import java.sql.SQLException
@@ -164,7 +165,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         + " name = '" + playerdata.name + "'"
 
         //各種数値更新処理
-        + ",effectflag = " + playerdata.fastDiggingEffectSuppressor.serialized()
+        + ",effectflag = " + runBlocking { playerdata.fastDiggingEffectSuppressor.serialized() }
         + ",minestackflag = " + playerdata.minestackflag
         + ",messageflag = " + playerdata.messageflag
         + ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum
