@@ -10,6 +10,7 @@ import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
+import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
 import com.github.unchama.targetedeffect.deferredEffect
@@ -120,7 +121,7 @@ object StickMenu {
       val leftClickEffect = if (playerHasEnoughLevelToOpen) {
         sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-            MineStackUI.open
+            MineStackMainMenu.openMainMenu
         )
       } else FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
 
