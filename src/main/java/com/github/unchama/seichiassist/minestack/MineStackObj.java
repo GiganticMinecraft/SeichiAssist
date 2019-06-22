@@ -69,7 +69,7 @@ public class MineStackObj {
 	}
 
 	/**
-	 * @deprecated use MineStackObj.toType defined with MineStackObjectType
+	 * @deprecated use MineStackObj.toType defined with MineStackObjectCategory
 	 */
 	@Deprecated
 	public int getStackType(){
