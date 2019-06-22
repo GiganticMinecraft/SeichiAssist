@@ -31,9 +31,10 @@ interface Slot {
 
   companion object {
     /**
-     * クリックしたときに何も反応しない, [itemStack]が入っただけの[Slot]を作成します.
+     * クリックしたときにイベンっとをキャンセルすることもせず
+     * 何も追加の作用を発生させない, [itemStack]が入っただけの[Slot]を作成する.
      */
-    fun eventless(itemStack: ItemStack): Slot = object : Slot {
+    fun plainSlotWith(itemStack: ItemStack): Slot = object : Slot {
       override val itemStack = itemStack
       override fun effectOn(event: InventoryClickEvent) = EmptyEffect
     }
