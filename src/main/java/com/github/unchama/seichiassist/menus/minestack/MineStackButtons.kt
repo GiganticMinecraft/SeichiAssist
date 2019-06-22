@@ -63,8 +63,9 @@ object MineStackButtons {
         itemStack,
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
           sequentialEffect(
-            withDrawOneStackEffect(mineStackObj),
-            deferredEffect { overwriteCurrentSlotBy(getMineStackItemButtonOf(mineStackObj)) }
+              withDrawOneStackEffect(mineStackObj),
+              deferredEffect { overwriteCurrentSlotBy(getMineStackItemButtonOf(mineStackObj)) },
+              unfocusedEffect { playerData.hisotryData.add(mineStackObj) }
           )
         }
     )

@@ -9,9 +9,9 @@ import com.github.unchama.seichiassist.minestack.HistoryData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.task.CoolDownTask;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
-import com.github.unchama.seichiassist.util.exp.ExperienceManager;
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.exp.ExperienceManager;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -2058,7 +2058,7 @@ public class PlayerInventoryListener implements Listener {
 							}
 						}
 						if (mineStackObj.getGachaType() == -1) {
-							playerdata.getHisotryData().add(i, mineStackObj);
+							playerdata.getHisotryData().add(mineStackObj);
 						}
 					}
 

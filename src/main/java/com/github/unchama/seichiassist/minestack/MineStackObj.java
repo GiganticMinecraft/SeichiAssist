@@ -4,6 +4,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Objects;
+
 public class MineStackObj {
 	private String objName;
 	private int level;
@@ -76,4 +78,16 @@ public class MineStackObj {
 		return stackType;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		MineStackObj that = (MineStackObj) o;
+		return objName.equals(that.objName);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(objName);
+	}
 }
