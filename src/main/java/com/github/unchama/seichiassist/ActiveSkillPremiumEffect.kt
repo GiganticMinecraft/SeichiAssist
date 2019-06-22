@@ -33,12 +33,13 @@ enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, 
   }
 
   //エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
-  fun runBreakEffect(player: Player, playerdata: PlayerData, tool: ItemStack, breaklist: List<Block>, start: Coordinate, end: Coordinate, standard: Location) {
+
+  fun runBreakEffect(player: Player, tool: ItemStack, breaklist: List<Block>, start: Coordinate, end: Coordinate, standard: Location) {
     when (this) {
       MAGIC -> if (SeichiAssist.DEBUG) {
-        MagicTask(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 100)
+        MagicTask(player, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 100)
       } else {
-        MagicTask(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 10)
+        MagicTask(player, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 10)
       }
     }
   }

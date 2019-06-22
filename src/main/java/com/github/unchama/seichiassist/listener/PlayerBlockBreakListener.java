@@ -533,7 +533,7 @@ public class PlayerBlockBreakListener implements Listener {
 			breaklist.add(block);
 			SeichiAssist.allblocklist.add(block);
 			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-			premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
+			premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player, tool, new ArrayList<>(breaklist), start, end,centerofblock);
 		}
 
 		//経験値を減らす

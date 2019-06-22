@@ -315,13 +315,13 @@ public class EntityListener implements Listener {
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
 		else if(playerdata.getActiveskilldata().effectnum <= 100){
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
+			skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player, playerdata, tool, new ArrayList<>(breaklist), start, end,centerofblock);
 		}
 
 		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
 		else if(playerdata.getActiveskilldata().effectnum > 100){
 			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-			premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
+			premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player, tool, new ArrayList<>(breaklist), start, end,centerofblock);
 		}
 
 	}
