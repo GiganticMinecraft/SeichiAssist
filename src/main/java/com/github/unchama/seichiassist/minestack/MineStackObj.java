@@ -2,10 +2,10 @@ package com.github.unchama.seichiassist.minestack;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class MineStackObj {
 	private String objName;
-	private String japaneseName;
 	private int level;
 	private int gachaType;
 	private int stackType;
@@ -16,21 +16,29 @@ public class MineStackObj {
 						int level, Material material, int durability,
 						boolean nameLoreFlag, int gachaType, int stackType){
 		this.objName = objName;
-		this.japaneseName = japaneseName;
 		this.level = level;
 		this.nameLoreFlag = nameLoreFlag;
 		this.gachaType = gachaType;
 		this.itemStack = new ItemStack(material, 1, (short) durability);
+
+		if (japaneseName != null) {
+			final ItemMeta meta = this.itemStack.getItemMeta();
+			meta.setDisplayName(japaneseName);
+			this.itemStack.setItemMeta(meta);
+		}
+
 		this.stackType = stackType;
 	}
 
 	public MineStackObj(String objName, int level, ItemStack itemStack, boolean nameLoreFlag, int gachaType, int stackType){
 		this.objName = objName;
-		this.japaneseName = itemStack.getItemMeta().getDisplayName();
 		this.level = level;
 		this.nameLoreFlag = nameLoreFlag;
 		this.gachaType = gachaType;
+
 		this.itemStack = itemStack.clone();
+		this.itemStack.setAmount(1);
+
 		this.stackType = stackType;
 	}
 
@@ -38,7 +46,7 @@ public class MineStackObj {
 		return objName;
 	}
 	public String getJapaneseName(){
-		return japaneseName;
+		return this.itemStack.getItemMeta().getDisplayName();
 	}
 	public int getLevel(){
 		return level;
