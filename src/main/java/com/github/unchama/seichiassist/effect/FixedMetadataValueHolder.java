@@ -4,5 +4,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public final class FixedMetadataValueHolder {
+    private FixedMetadataValueHolder() {
+
+    }
     public static final FixedMetadataValue TRUE = new FixedMetadataValue(SeichiAssist.instance, true);
 }
