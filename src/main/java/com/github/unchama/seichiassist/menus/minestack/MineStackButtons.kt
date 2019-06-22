@@ -5,6 +5,8 @@ import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
+import com.github.unchama.seichiassist.minestack.category
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -65,7 +67,11 @@ object MineStackButtons {
           sequentialEffect(
               withDrawOneStackEffect(mineStackObj),
               deferredEffect { overwriteCurrentSlotBy(getMineStackItemButtonOf(mineStackObj)) },
-              unfocusedEffect { playerData.hisotryData.add(mineStackObj) }
+              unfocusedEffect {
+                if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
+                  playerData.hisotryData.add(mineStackObj)
+                }
+              }
           )
         }
     )
