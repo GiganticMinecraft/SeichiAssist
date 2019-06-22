@@ -39,6 +39,14 @@ data class IndexedSlotLayout(private val map: Map<Int, Slot>) {
   }
 
   /**
+   * このレイアウトに[another]を「かぶせた」新しいレイアウトを作成する。
+   *
+   * 新しいレイアウトのスロットは, 同じ場所が[another]で埋まっている場合[another]のものが,
+   * そうでなければこのレイアウトのものがセットされている.
+   */
+  fun merge(another: IndexedSlotLayout): IndexedSlotLayout = IndexedSlotLayout(map.plus(another.map))
+
+  /**
    * [slotReplacement]でレイアウトの一箇所を置き換えた新しいレイアウトを計算する.
    */
   internal fun altered(slotReplacement: Pair<Int, Slot>) = copy(map = map + slotReplacement)
