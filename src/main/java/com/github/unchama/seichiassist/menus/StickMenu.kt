@@ -26,7 +26,7 @@ import org.bukkit.entity.Player
  * @author karayuu
  */
 object StickMenu {
-  object ButtonComputations {
+  private object ButtonComputations {
     suspend fun Player.computeStatsButton(): Button {
       val openerData = SeichiAssist.playermap[uniqueId]!!
 
