@@ -15,12 +15,9 @@ import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.asMessageEffect
-import com.github.unchama.targetedeffect.deferredEffect
+import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.ops.plus
 import com.github.unchama.targetedeffect.player.asTargetedEffect
-import com.github.unchama.targetedeffect.unfocusedEffect
 import org.bukkit.*
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -1030,6 +1027,11 @@ class PlayerData(val player: Player) {
                 this.expbar.isVisible -> "${ChatColor.GREEN}整地量バー表示"
                 else -> "${ChatColor.RED}整地量バー非表示"
             }.asMessageEffect()
+        }
+
+    fun toggleAutoMineStack(): UnfocusedEffect =
+        unfocusedEffect {
+            this.minestackflag = !this.minestackflag
         }
 
     companion object {
