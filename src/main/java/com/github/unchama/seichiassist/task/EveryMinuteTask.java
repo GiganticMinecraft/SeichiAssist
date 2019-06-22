@@ -88,11 +88,11 @@ public class EveryMinuteTask extends BukkitRunnable{
 			double amplifier;
 			//effectのメッセージ
 			//１分間のブロック破壊量による上昇
-			amplifier = (double) increase * config.getMinuteMineSpeed();
+			amplifier = increase * config.getMinuteMineSpeed();
 			playerdata.getEffectdatalist().add(new EffectData(amplifier,2));
 
 			//プレイヤー数による上昇
-			amplifier = (double) onlinenums * config.getLoginPlayerMineSpeed();
+			amplifier = onlinenums * config.getLoginPlayerMineSpeed();
 			playerdata.getEffectdatalist().add(new EffectData(amplifier,1));
 
 			//effect追加の処理
