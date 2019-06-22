@@ -119,7 +119,7 @@ public class MeteoTask extends BukkitRunnable{
 				}
 			}
 		}
-		player.getWorld().playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, (float)1, (float)((Math.random()*0.4)+0.8));
+		player.getWorld().playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, 1, (float)((Math.random()*0.4)+0.8));
 		if(playerdata.getActiveskilldata().skillnum > 2){
 			for(Block b : breaklist){
 				BreakUtil.breakBlock(player, b, droploc, tool, false);

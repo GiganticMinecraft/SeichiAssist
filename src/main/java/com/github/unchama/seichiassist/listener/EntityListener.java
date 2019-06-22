@@ -239,7 +239,7 @@ public class EntityListener implements Listener {
 		//減る経験値計算
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-		double useMana = (double) (breaklist.size()) * (double) (gravity + 1)
+		double useMana = (double) (breaklist.size()) * (gravity + 1)
 				* ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
 				/(ifallbreaknum) ;
 		if(SeichiAssist.Companion.getDEBUG()){

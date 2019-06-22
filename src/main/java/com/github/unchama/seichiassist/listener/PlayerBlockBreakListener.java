@@ -280,7 +280,7 @@ public class PlayerBlockBreakListener implements Listener {
 			//減る経験値計算
 			//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
-			useAllMana += (double) (breaklist.size() + 1) * (double) (gravity + 1)
+			useAllMana += (double) (breaklist.size() + 1) * (gravity + 1)
 					* ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
 					/(ifallbreaknum * breaknum) ;
 
@@ -321,7 +321,7 @@ public class PlayerBlockBreakListener implements Listener {
 			//選択されたブロックを破壊せずに保存する処理
 			multibreaklist.add(new ArrayList<>(breaklist));
 			multilavalist.add(new ArrayList<>(lavalist));
-			breakblocknum += (long)breaklist.size();
+			breakblocknum += breaklist.size();
 		}
 
 
@@ -449,7 +449,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 		Coordinate breaklength = area.getBreakLength();
 		int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
-		double useMana = (double) (breaklist.size()+1) * (double) (gravity + 1)
+		double useMana = (double) (breaklist.size()+1) * (gravity + 1)
 				* ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
 				/ifallbreaknum ;
 		if(SeichiAssist.Companion.getDEBUG()){
