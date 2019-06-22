@@ -40,27 +40,26 @@ object MineStackButtons {
 
   suspend fun Player.getMineStackItemButtonOf(mineStackObj: MineStackObj): Button {
     val playerData = SeichiAssist.playermap[uniqueId]!!
+    val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
-    val itemStack = mineStackObj.itemStack.clone()
-    val displayName = run {
-      val name = if (itemStack.itemMeta.hasDisplayName()) itemStack.itemMeta.displayName else itemStack.type.toString()
+    val itemStack = mineStackObj.itemStack.clone().apply {
+      itemMeta = itemMeta.apply {
+        displayName = run {
+          val name = if (hasDisplayName()) displayName else type.toString()
 
-      "$YELLOW$UNDERLINE$BOLD$name"
-    }
-    val lore = run {
-      val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
-      val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
+          "$YELLOW$UNDERLINE$BOLD$name"
+        }
 
-      listOf(
-          "$RESET$GREEN${stackedAmount}個",
-          "$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
-          "$RESET$DARK_RED${UNDERLINE}クリックで1スタック取り出し"
-      )
-    }
+        lore = run {
+          val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
 
-    itemStack.itemMeta = itemStack.itemMeta.apply {
-      this.displayName = displayName
-      this.lore = lore
+          listOf(
+              "$RESET$GREEN${stackedAmount}個",
+              "$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
+              "$RESET$DARK_RED${UNDERLINE}クリックで1スタック取り出し"
+          )
+        }
+      }
     }
 
     return Button(
