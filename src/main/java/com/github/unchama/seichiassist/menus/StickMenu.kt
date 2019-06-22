@@ -11,6 +11,8 @@ import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
+import com.github.unchama.seichiassist.util.external.ExternalPlugins
+import com.github.unchama.seichiassist.util.external.WorldGuard
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
 import com.github.unchama.targetedeffect.deferredEffect
@@ -89,6 +91,37 @@ object StickMenu {
       )
     }
 
+
+    fun Player.computeRegionMenuButton(): Button {
+      val worldGuardPlugin = ExternalPlugins.getWorldGuard()
+      val player = this
+      val regionManager = worldGuardPlugin.getRegionManager(player.world)
+
+      val maxRegionCount = WorldGuard.getMaxRegionCount(player, player.world)
+      val currentPlayerRegionCount =
+          regionManager.getRegionCountOfPlayer(worldGuardPlugin.wrapPlayer(player))
+
+      val buttonLore = listOf(
+          "${GRAY}土地の保護が行えます",
+          "$DARK_RED${UNDERLINE}クリックで開く",
+          "${GRAY}保護作成上限：$AQUA$maxRegionCount",
+          "${GRAY}現在のあなたの保護作成数：$AQUA$currentPlayerRegionCount"
+      )
+
+      val leftClickEffect = sequentialEffect(
+          FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.5f)
+          //TODO:メニューを開く処理を追加
+      )
+
+      return Button(
+          IconItemStackBuilder(Material.DIAMOND_AXE)
+              .title("$YELLOW${UNDERLINE}土地保護メニュー")
+              .lore(buttonLore)
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+      )
+    }
+
     suspend fun Player.computeMineStackButton(): Button {
       val openerData = SeichiAssist.playermap[uniqueId]!!
 
@@ -140,6 +173,7 @@ object StickMenu {
     IndexedSlotLayout(
         0 to computeStatsButton(),
         1 to computeEffectSuppressionButton(),
+        3 to computeRegionMenuButton(),
         24 to computeMineStackButton()
     )
   }
