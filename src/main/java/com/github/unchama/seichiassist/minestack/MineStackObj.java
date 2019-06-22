@@ -68,6 +68,10 @@ public class MineStackObj {
 		return itemStack;
 	}
 
+	/**
+	 * @deprecated use MineStackObj.toType defined with MineStackObjectType
+	 */
+	@Deprecated
 	public int getStackType(){
 		return stackType;
 	}
