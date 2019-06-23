@@ -20,16 +20,16 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
-
-/**
- * Created by karayuu on 2017/11/29
- * Developer of Gigantic☆Seichi Server
- * Support at dev-basic or dev-extreme channel of Discord
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * 正月イベント・お年玉袋関連処理実装クラス。
+ * @author karayuu
+ * @since 2017/11/29
  */
 public class NewYearBagListener implements Listener {
 	private static Config config = SeichiAssist.config;
@@ -63,11 +63,11 @@ public class NewYearBagListener implements Listener {
 			if (Util.isPlayerInventoryFull(player)) {
 				Util.dropItem(player, getNewYearBag());
 				player.sendMessage(ChatColor.RED + "インベントリがいっぱいのため「お年玉袋」がドロップしました");
-				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 3f, 1f);
+				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f);
 			} else {
 				Util.addItem(player, getNewYearBag());
 				player.sendMessage(ChatColor.AQUA + "「お年玉袋」を見つけたよ！");
-				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 3f, 1f);
+				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f);
 			}
 			playerData.setNewYearBagAmount(playerData.getNewYearBagAmount() + 1);
 		}
