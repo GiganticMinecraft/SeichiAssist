@@ -22,6 +22,7 @@ import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import javax.swing.plaf.synth.Region
 
 /**
  * 木の棒メニュー
@@ -92,7 +93,7 @@ object StickMenu {
     }
 
 
-    fun Player.computeRegionMenuButton(): Button {
+    suspend fun Player.computeRegionMenuButton(): Button {
       val worldGuardPlugin = ExternalPlugins.getWorldGuard()
       val player = this
       val regionManager = worldGuardPlugin.getRegionManager(player.world)
@@ -109,8 +110,8 @@ object StickMenu {
       )
 
       val leftClickEffect = sequentialEffect(
-          FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.5f)
-          //TODO:メニューを開く処理を追加
+          FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.5f),
+          RegionMenu.open
       )
 
       return Button(
