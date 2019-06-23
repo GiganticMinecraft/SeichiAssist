@@ -158,7 +158,7 @@ public class ExperienceManager implements IExperienceManager {
 			player.setTotalExperience(player.getTotalExperience() + xp - (int)base);
 		}
 
-		double pct = (base - getXpForLevel(newLvl) + amt) / (double) (getXpNeededToLevelUp(newLvl));
+		double pct = (base - getXpForLevel(newLvl) + amt) / (getXpNeededToLevelUp(newLvl));
 		player.setExp((float) pct);
 	}
 

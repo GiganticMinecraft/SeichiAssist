@@ -22,14 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/*
- * Created by karayuu on 2017/12/10
- * Developer of Gigantic☆Seichi Server
- * Support at dev-basic or dev-extreme channel of Discord
- */
-
 /**
  * 正月イベント・リンゴのListener
+ * @author karayuu
+ * @since 2017/12/10
  */
 public class NewYearItemListener implements Listener {
 	private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap;
