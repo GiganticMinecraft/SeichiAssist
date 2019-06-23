@@ -5,6 +5,8 @@ import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
 import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
+import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
@@ -33,7 +35,11 @@ object MineStackMainMenu {
             .lore(listOf("$BLUE$UNDERLINE$BOLD${category.uiLabel}"))
             .build()
 
-        slotIndex to Button(iconItemStack) // TODO クリックで各カテゴリのUIを開く
+        val button = Button(
+            iconItemStack,
+            FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { CategorizedMineStackMenu.open(category) }
+        )
+        slotIndex to button
       }.toMap()
 
       IndexedSlotLayout(layoutMap)
