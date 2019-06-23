@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist
 
+import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands.*
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
@@ -7,19 +8,20 @@ import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.RankData
-import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.listener.*
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.task.HalfHourRankingRoutine
-import com.github.unchama.seichiassist.task.PlayerDataPeriodicRecalculation
 import com.github.unchama.seichiassist.task.PlayerDataBackupTask
+import com.github.unchama.seichiassist.task.PlayerDataPeriodicRecalculation
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.ActionStatus.Fail
 import com.github.unchama.util.collection.ImmutableListFactory
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.RED
@@ -190,9 +192,9 @@ class SeichiAssist : JavaPlugin() {
 
   private fun startRepeatedJobs() {
     repeatedJobCoroutine = CoroutineScope(Schedulers.sync).launch {
-      async { HalfHourRankingRoutine.launch() }
-      async { PlayerDataPeriodicRecalculation.launch() }
-      async { PlayerDataBackupTask.launch() }
+      launch { HalfHourRankingRoutine.launch() }
+      launch { PlayerDataPeriodicRecalculation.launch() }
+      launch { PlayerDataBackupTask.launch() }
     }
   }
 
