@@ -31,7 +31,7 @@ interface Slot {
 
   companion object {
     /**
-     * クリックしたときにイベンっとをキャンセルすることもせず
+     * クリックしたときにイベントをキャンセルすることもせず
      * 何も追加の作用を発生させない, [itemStack]が入っただけの[Slot]を作成する.
      */
     fun plainSlotWith(itemStack: ItemStack): Slot = object : Slot {
