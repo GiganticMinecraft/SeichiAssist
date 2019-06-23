@@ -20,12 +20,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 /**
- * Created by karayuu on 2017/11/28
- * Developer of Gigantic☆Seichi Server
- * Support at dev-basic or dev-extreme channel of Discord
- */
-/**
  * 正月イベント関連クラス
+ * @author karayuu
+ * @since 2017/11/28
  */
 public class NewYearsEvent implements Listener {
 	private static SeichiAssist plugin = SeichiAssist.instance;

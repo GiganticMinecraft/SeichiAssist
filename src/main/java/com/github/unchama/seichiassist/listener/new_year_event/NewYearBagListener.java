@@ -20,16 +20,16 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
-
-/**
- * Created by karayuu on 2017/11/29
- * Developer of Gigantic☆Seichi Server
- * Support at dev-basic or dev-extreme channel of Discord
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * 正月イベント・お年玉袋関連処理実装クラス。
+ * @author karayuu
+ * @since 2017/11/29
  */
 public class NewYearBagListener implements Listener {
 	private static Config config = SeichiAssist.config;

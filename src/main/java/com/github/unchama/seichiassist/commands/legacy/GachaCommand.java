@@ -418,10 +418,10 @@ public class GachaCommand implements CommandExecutor {
 			}
 			sender.sendMessage(
 					ChatColor.AQUA + "" + ChatColor.BOLD + "ガチャ券" + i + "回試行結果\n"
-					+ ChatColor.RESET + "ギガンティック："+ gigantic +"回("+ ((double)gigantic/(double)i*100.0) +"%)\n"
-					+ "大当たり："+ big +"回("+ ((double)big/(double)i*100.0) +"%)\n"
-					+ "当たり："+ regular +"回("+ ((double)regular/(double)i*100.0) +"%)\n"
-					+ "ハズレ："+ potato +"回("+ ((double)potato/(double)i*100.0) +"%)\n"
+					+ ChatColor.RESET + "ギガンティック："+ gigantic +"回("+ ((double)gigantic/ i *100.0) +"%)\n"
+					+ "大当たり："+ big +"回("+ ((double)big/ i *100.0) +"%)\n"
+					+ "当たり："+ regular +"回("+ ((double)regular/ i *100.0) +"%)\n"
+					+ "ハズレ："+ potato +"回("+ ((double)potato/ i *100.0) +"%)\n"
 					);
 			return true;
 		}
