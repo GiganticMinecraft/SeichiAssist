@@ -27,19 +27,10 @@ object MineStackMainMenu {
         GACHA_PRIZES -> Material.GOLDEN_APPLE
       }
 
-      fun labelFor(category: MineStackObjectCategory): String = when (category) {
-        ORES -> "鉱石系アイテム"
-        MOB_DROP -> "ドロップ系アイテム"
-        AGRICULTURAL -> "農業・食料系アイテム"
-        BUILDING -> "建築系アイテム"
-        REDSTONE_AND_TRANSPORTATION -> "レッドストーン・移動系アイテム"
-        GACHA_PRIZES -> "ガチャ品"
-      }
-
       val layoutMap = MineStackObjectCategory.values().mapIndexed { index, category ->
         val slotIndex = index + 1 // 0には自動スタック機能トグルが入るので、1から入れ始める
         val iconItemStack = IconItemStackBuilder(iconMaterialFor(category))
-            .lore(listOf("$BLUE$UNDERLINE$BOLD${labelFor(category)}"))
+            .lore(listOf("$BLUE$UNDERLINE$BOLD${category.uiLabel}"))
             .build()
 
         slotIndex to Button(iconItemStack) // TODO クリックで各カテゴリのUIを開く
