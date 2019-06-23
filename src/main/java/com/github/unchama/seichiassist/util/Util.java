@@ -95,7 +95,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = ItemMetaHolder.SKULL.getValue();
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
@@ -437,7 +437,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = ItemMetaHolder.SKULL.getValue();
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
@@ -452,7 +452,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = ItemMetaHolder.SKULL.getValue();
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
@@ -467,7 +467,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = ItemMetaHolder.SKULL.getValue();
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"

@@ -53,7 +53,7 @@ public final class StaticGachaPrizeFactory {
             ItemMeta meta;
             siinaRingo = new ItemStack(Material.GOLDEN_APPLE, 1);
             siinaRingo.setDurability((short) 1);
-            meta = ItemMetaHolder.GOLDEN_APPLE.getValue();
+            meta = ItemMetaFactory.GOLDEN_APPLE.getValue();
             meta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.ITALIC + "椎名林檎");
             List<String> lore = getMaxRingoLore(name);
             meta.setLore(lore);

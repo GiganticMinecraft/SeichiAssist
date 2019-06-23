@@ -8,8 +8,8 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 @SuppressWarnings("UtilityClassCanBeEnum")
-public final class ItemMetaHolder {
-    private ItemMetaHolder() {
+public final class ItemMetaFactory {
+    private ItemMetaFactory() {
 
     }
 

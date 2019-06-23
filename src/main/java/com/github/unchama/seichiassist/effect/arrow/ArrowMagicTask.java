@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.effect.arrow;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.ItemMetaHolder;
+import com.github.unchama.seichiassist.util.ItemMetaFactory;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -40,7 +40,7 @@ public class ArrowMagicTask extends SkeletonEffectTask<ThrownPotion> {
 		this.playerdata = playermap.get(uuid);
 		//ポーションデータを生成
 		this.i = new ItemStack(Material.SPLASH_POTION);
-		this.pm = ItemMetaHolder.SPLASH_POTION.getValue();
+		this.pm = ItemMetaFactory.SPLASH_POTION.getValue();
 		pm.setBasePotionData(new PotionData(PotionType.INSTANT_HEAL));
 		i.setItemMeta(pm);
 
