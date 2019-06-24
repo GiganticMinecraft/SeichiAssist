@@ -7,6 +7,8 @@ import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor.*
@@ -54,16 +56,91 @@ object RegionMenu {
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
       )
     }
+
+    suspend fun Player.computeClaimRegionButton(): Button {
+      val player = this
+      val openerData = SeichiAssist.playermap[uniqueId]!!
+      val selection = ExternalPlugins.getWorldEdit().getSelection(player)
+
+      val playerHasPermission = player.hasPermission("worldguard.region.claim")
+      val isSelectionNull = selection == null
+      val selectionHasEnoughSpace = selection.length >= 10 && selection.width >= 10
+
+      val buttonLore = run {
+        val baseLore = if (!playerHasPermission) {
+          listOf(
+              "${RED}このワールドでは",
+              "${RED}保護を申請できません"
+          )
+        } else if (isSelectionNull) {
+          listOf(
+              "${RED}範囲指定されていません",
+              "${RED}先に木の斧で2か所クリックしてネ"
+          )
+        } else if (selectionHasEnoughSpace) {
+          listOf(
+              "${RED}選択された範囲が狭すぎます",
+              "${RED}一辺当たり最低10ブロック以上にしてネ"
+          )
+        } else {
+          listOf(
+              "$DARK_GREEN${UNDERLINE}範囲指定されています",
+              "$DARK_GREEN${UNDERLINE}クリックすると保護を申請します"
+          )
+        }
+
+        val infoLore = if (playerHasPermission) {
+          listOf(
+              "${GRAY}Y座標は自動で全範囲保護されます",
+              "${YELLOW}A new region has been claimed",
+              "${YELLOW}named '${player.name}_${openerData.rgnum}'.",
+              "${GRAY}と出れば保護設定完了です",
+              "${RED}赤色で別の英文が出た場合",
+              "${GRAY}保護の設定に失敗しています",
+              "${GRAY}・別の保護と被っていないか",
+              "${GRAY}・保護数上限に達していないか",
+              "${GRAY}確認してください"
+          )
+        } else {
+          listOf()
+        }
+
+        baseLore + infoLore
+      }
+
+
+      val leftClickEffect = if (playerHasPermission && !isSelectionNull && selectionHasEnoughSpace) {
+        sequentialEffect(
+            "//expand vert".asCommandEffect(),
+            "/rg claim ${player.name}_${openerData.rgnum}".asCommandEffect(),
+            deferredEffect { openerData.computeRegionNumberEffect() },
+            "//sel".asCommandEffect(),
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+        )
+      } else {
+        EmptyEffect
+      }
+
+      return Button(
+          IconItemStackBuilder(Material.GOLD_AXE)
+              .title("$YELLOW$UNDERLINE${BOLD}保護の申請")
+              .lore(buttonLore)
+              //TODO: 保護作成可能の時、エンチャントを付与させたい.
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+      )
+    }
   }
 
-  private val menuLayout = with(Buttons) {
+  private suspend fun Player.computeMenuLayout(): IndexedSlotLayout = with(Buttons) {
     IndexedSlotLayout(
-        0 to summonWandButton
+        0 to summonWandButton,
+        1 to computeClaimRegionButton()
     )
   }
 
   val open: TargetedEffect<Player> = TargetedEffect {
-    val view = MenuInventoryView(Right(InventoryType.HOPPER), "${BLACK}保護メニュー", menuLayout)
+    val view = MenuInventoryView(Right(InventoryType.HOPPER), "${BLACK}保護メニュー", it.computeMenuLayout())
     view.createNewSession().open
   }
 }

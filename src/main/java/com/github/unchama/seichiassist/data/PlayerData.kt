@@ -1034,6 +1034,14 @@ class PlayerData(val player: Player) {
             this.minestackflag = !this.minestackflag
         }
 
+    /**
+     * 保護申請の番号を更新させる[UnfocusedEffect]
+     */
+    fun computeRegionNumberEffect(): UnfocusedEffect =
+        unfocusedEffect {
+          this.rgnum += 1
+        }
+
     companion object {
         internal var config = SeichiAssist.seichiAssistConfig
 
