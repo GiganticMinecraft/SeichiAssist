@@ -85,7 +85,7 @@ object CategorizedMineStackMenu {
   fun open(category: MineStackObjectCategory, page: Int = 0): TargetedEffect<Player> = computedEffect { player ->
     val view = MenuInventoryView(
         Left(6 * 9),
-        "$DARK_BLUE${BOLD}MineStack - ${category.uiLabel}",
+        "$DARK_BLUE${BOLD}MineStack - ${category.uiLabel} (${page}ページ目)",
         player.computeCategorizedMineStackMenuLayout(category, page)
     )
 
