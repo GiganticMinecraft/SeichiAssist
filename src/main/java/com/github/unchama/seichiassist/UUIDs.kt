@@ -11,4 +11,7 @@ object UUIDs {
 
   // MHF_ArrowDown
   val MHFArrowDown: UUID = UUID.fromString("68f59b9b-5b0b-4b05-a9f2-e1d1405aa348")
+
+  // MHF_ArrowLeft
+  val MHFArrowLeft: UUID = UUID.fromString("a68f0b64-8d14-4000-a95f-4b9ba14f8df9")
 }
