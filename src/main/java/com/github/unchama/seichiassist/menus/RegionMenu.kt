@@ -133,6 +133,7 @@ object RegionMenu {
 
     val displayOpenerRegionButton: Button = run {
       val buttonLore = listOf(
+          "$DARK_RED${UNDERLINE}クリックで表示",
           "${GRAY}今いるワールドで",
           "${GRAY}あなたが保護している",
           "${GRAY}土地の一覧を表示します",
