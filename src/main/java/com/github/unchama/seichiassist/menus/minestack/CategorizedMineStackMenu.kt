@@ -28,11 +28,10 @@ object CategorizedMineStackMenu {
     val categoryItemList = MineStackObjectList.minestacklist!!.filter { it.category() == category }
     val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt()
 
-    /**
-     * オブジェクトリストが更新されるなどの理由でpageが最大値を超えてしまった場合、最後のページを計算する
-     */
+    // オブジェクトリストが更新されるなどの理由でpageが最大値を超えてしまった場合、最後のページを計算する
     if (page >= totalNumberOfPages) return computeCategorizedMineStackMenuLayout(category, totalNumberOfPages - 1)
 
+    // カテゴリ内のMineStackアイテム取り出しボタンを含むセクション
     val categorizedItemSection =
         IndexedSlotLayout(
             categoryItemList.drop(mineStackObjectPerPage * page).take(mineStackObjectPerPage)
@@ -40,6 +39,7 @@ object CategorizedMineStackMenu {
                 .mapValues { with (MineStackButtons) { getMineStackItemButtonOf(it) } }
         )
 
+    // ページ操作等のボタンを含むレイアウトセクション
     val uiOperationSection = run {
       fun buttonToTransferTo(page: Int, skullOwnerUUID: UUID) = Button(
           SkullItemStackBuilder(skullOwnerUUID)
@@ -71,6 +71,7 @@ object CategorizedMineStackMenu {
       )
     }
 
+    // 自動スタック機能トグルボタンを含むセクション
     val autoMineStackToggleButtonSection = singleSlotLayout {
       (9 * 5 + 4) to with(MineStackButtons) { computeAutoMineStackToggleButton() }
     }
@@ -82,6 +83,9 @@ object CategorizedMineStackMenu {
     )
   }
 
+  /**
+   * カテゴリ別マインスタックメニューで[page]ページ目のメニューを開く作用
+   */
   fun open(category: MineStackObjectCategory, page: Int = 0): TargetedEffect<Player> = computedEffect { player ->
     val view = MenuInventoryView(
         Left(6 * 9),
