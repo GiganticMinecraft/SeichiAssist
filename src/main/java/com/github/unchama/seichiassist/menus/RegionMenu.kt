@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.menus
 
 import arrow.core.Right
+import arrow.core.left
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
 import com.github.unchama.menuinventory.MenuInventoryView
@@ -164,7 +165,7 @@ object RegionMenu {
       val leftClickEffect = sequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           TargetedEffect { it.closeInventory() },
-          "/land".asCommandEffect()
+          TargetedEffect { it.chat("/rg list -p ${it.name}") }
       )
 
       Button(
@@ -177,11 +178,58 @@ object RegionMenu {
     }
   }
 
+  val regionGUIButton: Button = run {
+    val buttonLore = listOf(
+        "$DARK_RED${UNDERLINE}クリックで開く",
+        "${RED}保護の管理が超簡単に！",
+        "${YELLOW}自分の所有する保護内でクリックすると",
+        "${YELLOW}保護の各種設定や削除が行えます",
+        "${DARK_GRAY}command->[/land]"
+    )
+
+    val leftClickEffect = "/land".asCommandEffect()
+
+    Button(
+        IconItemStackBuilder(Material.DIAMOND_AXE)
+            .title("$YELLOW$UNDERLINE${BOLD}RegionGUI機能")
+            .lore(buttonLore)
+            .build(),
+        FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+    )
+  }
+
+  val gridRegionMenuOpenButton: Button = run {
+    val buttonLore = listOf(
+        "$DARK_RED${UNDERLINE}クリックで開く",
+        "${RED}グリッド式保護の作成ができます",
+        "${YELLOW}グリッド式保護とは..."
+        "${GRAY}保護をユニット単位で管理するシステムのこと",
+        "${AQUA}15ブロック=1ユニットとして",
+        "${AQUA}保護が作成されます。"
+    )
+
+
+    val leftClickEffect = sequentialEffect(
+        FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
+    //TODO: ここにメニューを開く処理を加える。
+    )
+
+    Button(
+        IconItemStackBuilder(Material.IRON_AXE)
+            .title("$YELLOW$UNDERLINE${BOLD}グリッド式保護作成画面へ")
+            .lore(buttonLore)
+            .build(),
+        FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+    )
+  }
+
   private suspend fun Player.computeMenuLayout(): IndexedSlotLayout = with(Buttons) {
     IndexedSlotLayout(
         0 to summonWandButton,
         1 to computeClaimRegionButton(),
-        2 to displayOpenerRegionButton
+        2 to displayOpenerRegionButton,
+        3 to regionGUIButton,
+        4 to gridRegionMenuOpenButton
     )
   }
 
