@@ -142,12 +142,46 @@ object RegionMenu {
         )
       }
     }
+
+    val displayOpenerRegionButton: Button = run {
+      val buttonLore = listOf(
+          "$DARK_RED${UNDERLINE}クリックで表示",
+          "${GRAY}今いるワールドで",
+          "${GRAY}あなたが保護している",
+          "${GRAY}土地の一覧を表示します",
+          "$RED$UNDERLINE/rg info 保護名",
+          "${GRAY}該当保護の詳細情報を表示",
+          "$RED$UNDERLINE/rg rem 保護名",
+          "${GRAY}該当保護を削除する",
+          "$RED$UNDERLINE/rg addmem 保護名 プレイヤー名",
+          "${GRAY}該当保護に指定メンバーを追加",
+          "$RED$UNDERLINE/rg removemenber 保護名 プレイヤー名",
+          "${GRAY}該当保護の指定メンバーを削除",
+          "${DARK_GRAY}その他のコマンドはwikiを参照",
+          "${DARK_GRAY}command->[/rg list]"
+      )
+
+      val leftClickEffect = sequentialEffect(
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+          TargetedEffect { it.closeInventory() },
+          "/land".asCommandEffect()
+      )
+
+      Button(
+          IconItemStackBuilder(Material.STONE_AXE)
+              .title("$YELLOW$UNDERLINE${BOLD}保護一覧を表示")
+              .lore(buttonLore)
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+      )
+    }
   }
 
   private suspend fun Player.computeMenuLayout(): IndexedSlotLayout = with(Buttons) {
     IndexedSlotLayout(
         0 to summonWandButton,
-        1 to computeClaimRegionButton()
+        1 to computeClaimRegionButton(),
+        2 to displayOpenerRegionButton
     )
   }
 
