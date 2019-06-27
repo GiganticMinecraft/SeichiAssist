@@ -66,6 +66,8 @@ object RegionMenu {
       val isSelectionNull = selection == null
       val selectionHasEnoughSpace = selection.length >= 10 && selection.width >= 10
 
+      val canMakeRegion = playerHasPermission && !isSelectionNull && selectionHasEnoughSpace
+
       val buttonLore = run {
         val baseLore = if (!playerHasPermission) {
           listOf(
@@ -109,7 +111,7 @@ object RegionMenu {
       }
 
 
-      val leftClickEffect = if (playerHasPermission && !isSelectionNull && selectionHasEnoughSpace) {
+      val leftClickEffect = if (canMakeRegion) {
         sequentialEffect(
             "//expand vert".asCommandEffect(),
             "/rg claim ${player.name}_${openerData.rgnum}".asCommandEffect(),
@@ -121,14 +123,24 @@ object RegionMenu {
         EmptyEffect
       }
 
-      return Button(
-          IconItemStackBuilder(Material.GOLD_AXE)
-              .title("$YELLOW$UNDERLINE${BOLD}保護の申請")
-              .lore(buttonLore)
-              //TODO: 保護作成可能の時、エンチャントを付与させたい.
-              .build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
-      )
+      val baseIconBuilder = IconItemStackBuilder(Material.GOLD_AXE)
+          .title("$YELLOW$UNDERLINE${BOLD}保護の申請")
+          .lore(buttonLore)
+      val buttonEffect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+
+      return if (canMakeRegion) {
+        Button(
+            baseIconBuilder
+                .enchanted()
+                .build(),
+            buttonEffect
+        )
+      } else {
+        Button(
+            baseIconBuilder.build(),
+            buttonEffect
+        )
+      }
     }
   }
 
