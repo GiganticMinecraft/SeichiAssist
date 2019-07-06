@@ -202,7 +202,7 @@ object RegionMenu {
     val buttonLore = listOf(
         "$DARK_RED${UNDERLINE}クリックで開く",
         "${RED}グリッド式保護の作成ができます",
-        "${YELLOW}グリッド式保護とは..."
+        "${YELLOW}グリッド式保護とは...",
         "${GRAY}保護をユニット単位で管理するシステムのこと",
         "${AQUA}15ブロック=1ユニットとして",
         "${AQUA}保護が作成されます。"

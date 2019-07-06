@@ -13,11 +13,8 @@ import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescrip
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.external.WorldGuard
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.computedEffect
-import com.github.unchama.targetedeffect.deferredEffect
+import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.sequentialEffect
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -168,6 +165,72 @@ object StickMenu {
       )
     }
 
+    val teleportServerButton = run {
+      val buttonLore = listOf(
+          "${GRAY}・各サバイバルサーバー",
+          "${GRAY}・公共施設サーバー",
+          "${GRAY}間を移動する時に使います",
+          "$DARK_RED${UNDERLINE}クリックして開く"
+      )
+
+      val leftClickEffect = sequentialEffect(
+          FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f)
+          //TODO: サーバー間移動メニューを開けるようにする.
+      )
+
+      Button(
+          IconItemStackBuilder(Material.NETHER_STAR)
+              .title("$RED$UNDERLINE${BOLD}サーバー間移動メニューへ")
+              .lore(buttonLore)
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+      )
+    }
+
+    val spawnCommandButton = run {
+      val buttonLore = listOf(
+          "${GRAY}・メインワールド",
+          "${GRAY}・整地ワールド",
+          "${GRAY}間を移動するときに使います",
+          "$DARK_RED${UNDERLINE}クリックするとワープします",
+          "${DARK_GRAY}command->[/spawn]"
+      )
+
+      val leftClickEffect = sequentialEffect(
+          TargetedEffect { it.closeInventory() },
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+          "/spawn".asCommandEffect()
+      )
+
+      Button(
+          IconItemStackBuilder(Material.BEACON)
+              .title("$YELLOW$UNDERLINE${BOLD}スポーンワールドへワープ")
+              .lore(buttonLore)
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+      )
+    }
+
+    val achievementSystemButton = run {
+      val buttonLore = listOf(
+          "${GRAY}様々な実績に挑んで、",
+          "${GRAY}いろんな二つ名を手に入れよう！",
+          "$DARK_GRAY${UNDERLINE}クリックで設定画面へ移動"
+      )
+
+      val leftClickEffect = sequentialEffect(
+        FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
+        //TODO: 実績メニューを開く処理を追加
+      )
+
+      Button(
+          IconItemStackBuilder(Material.END_CRYSTAL)
+              .title("$YELLOW$UNDERLINE${BOLD}実績・二つ名システム")
+              .lore(buttonLore)
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+      )
+    }
   }
 
   private suspend fun Player.computeMenuLayout(): IndexedSlotLayout = with(ButtonComputations) {
@@ -175,6 +238,9 @@ object StickMenu {
         0 to computeStatsButton(),
         1 to computeEffectSuppressionButton(),
         3 to computeRegionMenuButton(),
+        7 to teleportServerButton,
+        8 to spawnCommandButton,
+        9 to achievementSystemButton,
         24 to computeMineStackButton()
     )
   }
