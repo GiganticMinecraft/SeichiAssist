@@ -12,7 +12,6 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
-import org.bukkit.ChatColor
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -108,18 +107,20 @@ object SecondPage {
         val baseBuilder = IconItemStackBuilder(Material.BARRIER)
             .title("$YELLOW$UNDERLINE${BOLD}ワールドガード保護メッセージ表示切替")
 
-        val loreHeading = "${ChatColor.RESET}${ChatColor.GRAY}スキル使用時のワールドガード保護警告メッセージ"
+        val loreHeading = "$RESET${GRAY}スキル使用時のワールドガード保護警告メッセージ"
 
         if (playerData.dispworldguardlogflag) {
           baseBuilder
               .enchanted()
               .lore(listOf(
+                  loreHeading,
                   "$RESET${GREEN}表示する",
                   "$RESET$DARK_RED${UNDERLINE}クリックで隠す"
               ))
         } else {
           baseBuilder
               .lore(listOf(
+                  loreHeading,
                   "$RESET${RED}隠す",
                   "$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"
               ))
