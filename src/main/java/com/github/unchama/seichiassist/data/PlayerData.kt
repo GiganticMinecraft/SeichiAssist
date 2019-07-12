@@ -1034,6 +1034,11 @@ class PlayerData(val player: Player) {
             this.minestackflag = !this.minestackflag
         }
 
+    val toggleWorldGuardLogEffect: UnfocusedEffect =
+        unfocusedEffect {
+            this.dispworldguardlogflag = !this.dispworldguardlogflag
+        }
+
     companion object {
         internal var config = SeichiAssist.seichiAssistConfig
 

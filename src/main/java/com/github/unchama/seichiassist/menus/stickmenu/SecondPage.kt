@@ -109,6 +109,7 @@ object SecondPage {
             .build()
       }
 
+      // TODO add effect
       return Button(iconItemStack)
     }
 
@@ -136,6 +137,7 @@ object SecondPage {
         }
       }.build()
 
+      // TODO add effect
       return Button(iconItemStack)
     }
 
@@ -166,7 +168,30 @@ object SecondPage {
         }
       }.build()
 
-      return Button(iconItemStack)
+      return Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                playerData.toggleWorldGuardLogEffect,
+                deferredEffect {
+                  val soundPitch: Float
+                  val message: String
+                  if (playerData.dispworldguardlogflag) {
+                    soundPitch = 1.0f
+                    message = "${ChatColor.GREEN}ワールドガード保護メッセージ:表示"
+                  } else {
+                    soundPitch = 0.5f
+                    message = "${ChatColor.RED}ワールドガード保護メッセージ:隠す"
+                  }
+
+                  sequentialEffect(
+                      FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch),
+                      message.asMessageEffect()
+                  )
+                }
+            )
+          }
+      )
     }
 
     suspend fun Player.computeHubCommandButton(): Button {
@@ -178,6 +203,7 @@ object SecondPage {
           ))
           .build()
 
+      // TODO add effect
       return Button(iconItemStack)
     }
 
@@ -193,6 +219,7 @@ object SecondPage {
           ))
           .build()
 
+      // TODO add effect
       return Button(iconItemStack)
     }
 
@@ -208,6 +235,7 @@ object SecondPage {
           ))
           .build()
 
+      // TODO add effect
       return Button(iconItemStack)
     }
 
@@ -224,6 +252,7 @@ object SecondPage {
           ))
           .build()
 
+      // TODO add effect
       return Button(iconItemStack)
     }
 
@@ -238,6 +267,7 @@ object SecondPage {
           ))
           .build()
 
+      // TODO add effect
       return Button(iconItemStack)
     }
 
@@ -258,6 +288,7 @@ object SecondPage {
           ))
           .build()
 
+      // TODO add effect
       return Button(iconItemStack)
     }
 
@@ -278,6 +309,7 @@ object SecondPage {
           .enchanted()
           .build()
 
+      // TODO add effect
       return Button(iconItemStack)
     }
 
@@ -285,6 +317,7 @@ object SecondPage {
       val iconItemStack = IconItemStackBuilder(Material.TRAPPED_CHEST)
           .build()
 
+      // TODO add effect
       return Button(iconItemStack)
     }
 
@@ -298,6 +331,7 @@ object SecondPage {
           ))
           .build()
 
+      // TODO add effect
       return Button(iconItemStack)
     }
   }
