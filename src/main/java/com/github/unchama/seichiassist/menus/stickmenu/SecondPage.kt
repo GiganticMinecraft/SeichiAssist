@@ -48,37 +48,36 @@ object SecondPage {
             .build()
       }
 
-      return Button(
-          iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-            computedEffect {
-              val expManager = ExperienceManager(it)
-              if (expManager.hasExp(10000)) {
-                val skullToGive = ItemStack(Material.SKULL_ITEM, 1).apply {
-                  durability = 3.toShort()
-                  itemMeta = (Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM) as SkullMeta).apply {
-                    owningPlayer = player
-                  }.let { meta ->
-                    //バレンタイン中(イベント中かどうかの判断はSeasonalEvent側で行う)
-                    Valentine.playerHeadLore(meta)
-                  }
-                }
-
-                sequentialEffect(
-                    unfocusedEffect { expManager.changeExp(-10000) },
-                    unfocusedEffect { Util.dropItem(it, skullToGive) },
-                    "${ChatColor.GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
-                    FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
-                )
-              } else {
-                sequentialEffect(
-                    "${ChatColor.RED}必要な経験値が足りません".asMessageEffect(),
-                    FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
-                )
+      val effect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+        computedEffect {
+          val expManager = ExperienceManager(it)
+          if (expManager.hasExp(10000)) {
+            val skullToGive = ItemStack(Material.SKULL_ITEM, 1).apply {
+              durability = 3.toShort()
+              itemMeta = (Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM) as SkullMeta).apply {
+                owningPlayer = player
+              }.let { meta ->
+                //バレンタイン中(イベント中かどうかの判断はSeasonalEvent側で行う)
+                Valentine.playerHeadLore(meta)
               }
             }
+
+            sequentialEffect(
+                unfocusedEffect { expManager.changeExp(-10000) },
+                unfocusedEffect { Util.dropItem(it, skullToGive) },
+                "${ChatColor.GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
+                FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+            )
+          } else {
+            sequentialEffect(
+                "${ChatColor.RED}必要な経験値が足りません".asMessageEffect(),
+                FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
+            )
           }
-      )
+        }
+      }
+
+      return Button(iconItemStack, effect)
     }
 
     suspend fun Player.computeBroadcastMessageToggleButton(): Button {
