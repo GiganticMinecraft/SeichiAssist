@@ -484,9 +484,8 @@ public final class BreakUtil {
 		}
 	}
 
-	public static boolean BlockEqualsMaterialList(Block b){
-		Set<Material> m = SeichiAssist.materiallist;
-		return m.stream().anyMatch(material -> b.getType() == material);
+	public static boolean BlockEqualsMaterialList(final Block block){
+		return SeichiAssist.materiallist.contains(block.getType());
 	}
 
 	/**

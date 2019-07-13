@@ -291,7 +291,10 @@ public class PlayerClickListener implements Listener {
 					List<String> lore = present.getItemStack().getItemMeta().getLore();
 					Map<Enchantment, Integer> enchantment = present.getItemStack().getItemMeta().getEnchants();
 
-					enchantname = enchantment.keySet().stream().map(enchant -> ChatColor.GRAY + Util.getEnchantName(enchant.getName(), enchantment.get(enchant))).collect(Collectors.toList());
+					enchantname = enchantment.keySet()
+							.stream()
+							.map(enchant -> ChatColor.GRAY + Util.getEnchantName(enchant.getName(), enchantment.get(enchant)))
+							.collect(Collectors.toList());
 					lore.remove("§r§2所有者：" + player.getName());
 
 					TextComponent message = new TextComponent();

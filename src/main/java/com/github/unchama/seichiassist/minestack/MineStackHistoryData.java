@@ -35,8 +35,9 @@ public final class MineStackHistoryData {
 	}
 
 	public List<MineStackObj> getObjs() {
-		List<MineStackObj> result = historyList.stream().map(data -> data.obj).collect(Collectors.toList());
-        return result;
+		return historyList.stream()
+				.map(data -> data.obj)
+				.collect(Collectors.toList());
 	}
 
 	/**
