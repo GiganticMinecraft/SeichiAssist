@@ -16,8 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-	public class OfflineUUID {
+public class OfflineUUID {
 	   private OfflineUUID() {}
 
 	   static {
@@ -84,7 +85,7 @@ import java.util.UUID;
 	   }
 
 	   private static String getUUIDJSON(String name) throws IOException {
-		  StringBuilder re = new StringBuilder(100);
+		  String re;
 
 		  URL url = new URL("https://api.mojang.com/profiles/page/1");
 		  HttpURLConnection huc = (HttpURLConnection)url.openConnection();
@@ -101,12 +102,9 @@ import java.util.UUID;
 		  pw.close();
 
 		  BufferedReader br = new BufferedReader(new InputStreamReader(huc.getInputStream(), StandardCharsets.UTF_8));
-		  String line;
-		  while ((line = br.readLine()) != null) {
-			 re.append(line).append("\n");
-		  }
+           re = br.lines().map(line -> line + "\n").collect(Collectors.joining());
 		  br.close();
 		  huc.disconnect();
-		  return re.toString();
+		  return re;
 	   }
 	}

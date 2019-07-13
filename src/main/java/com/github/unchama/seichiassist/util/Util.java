@@ -363,13 +363,11 @@ public final class Util {
 	//カラーをランダムで決める
 	public static Color[] getRandomColors(int length) {
 		// 配列を作る
-		Color[] colors = new Color[length];
+		Color[] colors;
 		Random rand = new Random();
 		// 配列の要素を順に処理していく
-		for (int n = 0; n != length; n++) {
-			// 24ビットカラーの範囲でランダムな色を決める
-			colors[n] = Color.fromBGR(rand.nextInt(1 << 24));
-		}
+		// 24ビットカラーの範囲でランダムな色を決める
+		colors = IntStream.range(0, length).mapToObj(n -> Color.fromBGR(rand.nextInt(1 << 24))).toArray(Color[]::new);
 
 		// 配列を返す
 		return colors;
@@ -527,13 +525,9 @@ public final class Util {
 	}
 
 	public static int getMineStackTypeindex(int idx){
-		int temp = 0;
+		int temp;
 		int type = SeichiAssist.minestacklist.get(idx).getStacktype();
-		for (int i = 0; i < idx; i++) {
-			if (SeichiAssist.minestacklist.get(i).getStacktype() == type) {
-				temp++;
-			}
-		}
+		temp = (int) IntStream.range(0, idx).filter(i -> SeichiAssist.minestacklist.get(i).getStacktype() == type).count();
 		return temp;
 	}
 

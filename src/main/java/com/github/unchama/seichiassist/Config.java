@@ -160,12 +160,8 @@ public class Config{
 	public boolean isGridProtectEnable(Player player) {
 		List<String> worldlist = config.getStringList("GridProtectEnableWorld");
 
-		for (String name : worldlist) {
-			if (player.getWorld().getName().equalsIgnoreCase(name)) {
-				return true;
-			}
-		}
-		return false;
+        return worldlist.stream()
+                .anyMatch(name -> player.getWorld().getName().equalsIgnoreCase(name));
 	}
 
 	/**

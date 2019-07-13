@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.minestack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by karayuu on 2018/06/13
@@ -34,11 +35,8 @@ public final class MineStackHistoryData {
 	}
 
 	public List<MineStackObj> getObjs() {
-		List<MineStackObj> result = new ArrayList<>();
-		for (HistoryData data : historyList) {
-			result.add(data.obj);
-		}
-		return result;
+		List<MineStackObj> result = historyList.stream().map(data -> data.obj).collect(Collectors.toList());
+        return result;
 	}
 
 	/**
@@ -48,12 +46,7 @@ public final class MineStackHistoryData {
 	 */
 	private boolean isDuplicated(int index) {
 		//要素の番号はサーバー起動時から変化しないので,要素の番号だけで重複を判断してもかまわない。
-		for (HistoryData data : historyList) {
-			if (data.index == index) {
-				return true;
-			}
-		}
-		//ここまで来たら要素としてないので重複はありえない。
-		return false;
+        //ここまで来たら要素としてないので重複はありえない。
+		return historyList.stream().anyMatch(data -> data.index == index);
 	}
 }
