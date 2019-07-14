@@ -70,7 +70,8 @@ object SecondPage {
                 unfocusedEffect { expManager.changeExp(-10000) },
                 unfocusedEffect { Util.dropItem(it, skullToGive) },
                 "${ChatColor.GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
-                FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+                FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
+                deferredEffect { overwriteCurrentSlotBy(computeHeadSummoningButton()) }
             )
           } else {
             sequentialEffect(
@@ -125,7 +126,8 @@ object SecondPage {
                     RECEIVE_MESSAGE_ONLY -> "${RED}消音可能な全体通知音を消音します"
                     MUTE_MESSAGE_AND_SOUND -> "${RED}非表示可能な全体メッセージを非表示にします"
                   }.asMessageEffect()
-                }
+                },
+                deferredEffect { overwriteCurrentSlotBy(computeBroadcastMessageToggleButton()) }
             )
           }
       )
@@ -171,7 +173,8 @@ object SecondPage {
                       message.asMessageEffect(),
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
                   )
-                }
+                },
+                deferredEffect { overwriteCurrentSlotBy(computeDeathMessageToggleButton()) }
             )
           }
       )
@@ -220,7 +223,8 @@ object SecondPage {
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch),
                       message.asMessageEffect()
                   )
-                }
+                },
+                deferredEffect { overwriteCurrentSlotBy(computeWorldGuardMessageToggleButton()) }
             )
           }
       )
