@@ -981,7 +981,7 @@ public class MenuInventoryData {
 				.filter(i -> SeichiAssist.minestacklist.get(i).getStacktype() == stack_type)
 				.count();
 
-        //現在の最大ページ数を取得(1ページ=0,2ページ=1,...)
+		//現在の最大ページ数を取得(1ページ=0,2ページ=1,...)
 		int maxpage = (minestack_stacktype_size + 1) / 45;
 		if((minestack_stacktype_size + 1) % 45 == 0){
 			maxpage--;

@@ -363,14 +363,14 @@ public final class Util {
 	//カラーをランダムで決める
 	public static Color[] getRandomColors(int length) {
 		// 配列を作る
-		Color[] colors;
-		Random rand = new Random();
+        Random rand = new Random();
 		// 配列の要素を順に処理していく
 		// 24ビットカラーの範囲でランダムな色を決める
-		colors = IntStream.range(0, length).mapToObj(n -> Color.fromBGR(rand.nextInt(1 << 24))).toArray(Color[]::new);
 
-		// 配列を返す
-		return colors;
+        // 配列を返す
+		return IntStream.range(0, length)
+                .mapToObj(n -> Color.fromBGR(rand.nextInt(1 << 24)))
+                .toArray(Color[]::new);
 	}
 
 	//ガチャアイテムを含んでいるか調べる
@@ -525,10 +525,10 @@ public final class Util {
 	}
 
 	public static int getMineStackTypeindex(int idx){
-		int temp;
-		int type = SeichiAssist.minestacklist.get(idx).getStacktype();
-		temp = (int) IntStream.range(0, idx).filter(i -> SeichiAssist.minestacklist.get(i).getStacktype() == type).count();
-		return temp;
+        int type = SeichiAssist.minestacklist.get(idx).getStacktype();
+        return (int) IntStream.range(0, idx)
+                .filter(i -> SeichiAssist.minestacklist.get(i).getStacktype() == type)
+                .count();
 	}
 
 	/**

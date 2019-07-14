@@ -450,10 +450,11 @@ public final class BreakUtil {
 	//num回だけ耐久を減らす処理
 	public static short calcDurability(int enchantmentLevel,int num) {
 		Random rand = new Random();
-		short durability;
-		double probability = 1.0 / (enchantmentLevel + 1.0);
+        double probability = 1.0 / (enchantmentLevel + 1.0);
 
-		durability = (short) IntStream.range(0, num).filter(i -> probability > rand.nextDouble()).count();
+        short durability = (short) IntStream.range(0, num)
+                .filter(i -> probability > rand.nextDouble())
+                .count();
 		return durability;
 	}
 
