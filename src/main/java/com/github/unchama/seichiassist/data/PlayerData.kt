@@ -1029,7 +1029,7 @@ class PlayerData(val player: Player) {
             }.asMessageEffect()
         }
 
-    fun toggleAutoMineStack(): UnfocusedEffect =
+    val toggleAutoMineStack: UnfocusedEffect =
         unfocusedEffect {
             this.minestackflag = !this.minestackflag
         }
