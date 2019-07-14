@@ -1043,6 +1043,11 @@ class PlayerData(val player: Player) {
             this.dispworldguardlogflag = !this.dispworldguardlogflag
         }
 
+    val toggleDeathMessageMutingSettings: UnfocusedEffect =
+        unfocusedEffect {
+            this.dispkilllogflag = !this.dispkilllogflag
+        }
+
     companion object {
         internal var config = SeichiAssist.seichiAssistConfig
 

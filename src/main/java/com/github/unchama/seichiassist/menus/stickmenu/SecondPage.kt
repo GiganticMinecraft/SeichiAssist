@@ -154,8 +154,26 @@ object SecondPage {
         }
       }.build()
 
-      // TODO add effect
-      return Button(iconItemStack)
+      return Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                playerData.toggleDeathMessageMutingSettings,
+                deferredEffect {
+                  val (soundPitch, message) =
+                      if (playerData.dispkilllogflag)
+                        Pair(1.0f, "${GREEN}死亡メッセージ:表示")
+                      else
+                        Pair(0.5f, "${RED}死亡メッセージ:隠す")
+
+                  sequentialEffect(
+                      message.asMessageEffect(),
+                      FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
+                  )
+                }
+            )
+          }
+      )
     }
 
     suspend fun Player.computeWorldGuardMessageToggleButton(): Button {
@@ -191,15 +209,11 @@ object SecondPage {
             sequentialEffect(
                 playerData.toggleWorldGuardLogEffect,
                 deferredEffect {
-                  val soundPitch: Float
-                  val message: String
-                  if (playerData.dispworldguardlogflag) {
-                    soundPitch = 1.0f
-                    message = "${ChatColor.GREEN}ワールドガード保護メッセージ:表示"
-                  } else {
-                    soundPitch = 0.5f
-                    message = "${ChatColor.RED}ワールドガード保護メッセージ:隠す"
-                  }
+                  val (soundPitch, message) =
+                      if (playerData.dispworldguardlogflag)
+                        Pair(1.0f, "${ChatColor.GREEN}ワールドガード保護メッセージ:表示")
+                      else
+                        Pair(0.5f, "${ChatColor.RED}ワールドガード保護メッセージ:隠す")
 
                   sequentialEffect(
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch),
