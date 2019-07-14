@@ -45,7 +45,7 @@ public class ArrowMagicTask extends SkeletonEffectTask<ThrownPotion> {
 		i.setItemMeta(pm);
 
 		//発射する音を再生する.
-		player.playSound(ploc, Sound.ENTITY_WITCH_THROW, 1, (float)1.3);
+		player.playSound(ploc, Sound.ENTITY_WITCH_THROW, 1, 1.3f);
 
 		//スキルを実行する処理
 		Location loc = player.getLocation().clone();

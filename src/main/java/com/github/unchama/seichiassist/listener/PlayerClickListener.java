@@ -88,7 +88,7 @@ public class PlayerClickListener implements Listener {
 			//クールダウンタイム中は処理を終了
 			if(!playerdata.getActiveskilldata().skillcanbreakflag){
 				//SEを再生
-				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
+				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1);
 				return;
 			}
 
@@ -125,7 +125,7 @@ public class PlayerClickListener implements Listener {
 			//クールダウンタイム中は処理を終了
 			if(!playerdata.getActiveskilldata().skillcanbreakflag){
 				//SEを再生
-				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
+				player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1);
 				return;
 			}
 
@@ -282,9 +282,9 @@ public class PlayerClickListener implements Listener {
 
 				//確率に応じてメッセージを送信
 				if(present.getProbability() < 0.001){
-					Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH,(float)0.5, 2);
+					Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH,0.5f, 2);
 					if (!playerdata.getEverysoundflag()) {
-						player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, (float) 0.5, 2);
+						player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 0.5f, 2);
 					}
 					List<String> enchantname = new ArrayList<>();
 					List<String> lore = present.getItemStack().getItemMeta().getLore();
@@ -305,7 +305,7 @@ public class PlayerClickListener implements Listener {
 					Util.sendEveryMessageWithoutIgnore(message);
 				}else if(present.getProbability() < 0.01){
 					//大当たり時にSEを鳴らす(自分だけ)
-					player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, (float) 0.8, 1);
+					player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.8f, 1);
 					//ver 0.3.1以降 大当たり時の全体通知を削除
 					player.sendMessage(ChatColor.GOLD + "おめでとう！！大当たり！" + str);
 
@@ -317,7 +317,7 @@ public class PlayerClickListener implements Listener {
 					}
 				}
 			}
-			player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, (float) 0.1);
+			player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, 0.1f);
 		}
 	}
 	//スキル切り替えのイベント
@@ -357,7 +357,7 @@ public class PlayerClickListener implements Listener {
 		//クールダウンタイム中は処理を終了
 		if(!playerdata.getActiveskilldata().skillcanbreakflag){
 			//SEを再生
-			//player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
+			//player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1);
 			return;
 		}
 
@@ -510,7 +510,7 @@ public class PlayerClickListener implements Listener {
 					return;
 				}
 				//開く音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				Inventory inv = MenuInventoryData.getMenuData(player);
 				if(inv == null){
 					return;
@@ -554,7 +554,7 @@ public class PlayerClickListener implements Listener {
 						return;
 					}
 					//開く音を再生
-					player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, (float) 0.1);
+					player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1, 0.1f);
 					//インベントリを開く
 					player.openInventory(playerdata.getInventory());
 			}

@@ -86,7 +86,7 @@ public class CoolDownTask extends BukkitRunnable{
 		}else{
 			playerdata.getActiveskilldata().skillcanbreakflag = true;
 			if(soundflag){
-				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, (float)0.5, (float)0.1);
+				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f);
 			}
 		}
 		//デバッグ用
