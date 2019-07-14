@@ -161,7 +161,7 @@ object SecondPage {
                 playerData.toggleDeathMessageMutingSettings,
                 deferredEffect {
                   val (soundPitch, message) =
-                      if (playerData.shouldDisplayDeathMessages)
+                      if (playerData.shouldDisplayDeathMessages())
                         Pair(1.0f, "${GREEN}死亡メッセージ:表示")
                       else
                         Pair(0.5f, "${RED}死亡メッセージ:隠す")
