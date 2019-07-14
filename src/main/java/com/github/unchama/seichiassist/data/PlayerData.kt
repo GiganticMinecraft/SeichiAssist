@@ -307,8 +307,8 @@ class PlayerData(val player: Player) {
         this.minestackflag = true
         this.servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK)
         this.playtick = 0
-        this.shouldDisplayDeathMessages = false
-        this.shouldDisplayWorldGuardLogs = true
+        this.dispkilllogflag = false
+        this.dispworldguardlogflag = true
         this.multipleidbreakflag = false
         this.pvpflag = false
         this.loc = null
@@ -1043,19 +1043,19 @@ class PlayerData(val player: Player) {
 
     val toggleWorldGuardLogEffect: UnfocusedEffect =
         unfocusedEffect {
-            this.shouldDisplayWorldGuardLogs = !this.shouldDisplayWorldGuardLogs
+            this.dispworldguardlogflag = !this.dispworldguardlogflag
         }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun shouldDisplayWorldGuardLogs(): Boolean = this.shouldDisplayWorldGuardLogs
+    suspend fun shouldDisplayWorldGuardLogs(): Boolean = this.dispworldguardlogflag
 
     val toggleDeathMessageMutingSettings: UnfocusedEffect =
         unfocusedEffect {
-            this.shouldDisplayDeathMessages = !this.shouldDisplayDeathMessages
+            this.dispkilllogflag = !this.dispkilllogflag
         }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun shouldDisplayDeathMessages(): Boolean = this.shouldDisplayDeathMessages
+    suspend fun shouldDisplayDeathMessages(): Boolean = this.dispkilllogflag
 
     companion object {
         internal var config = SeichiAssist.seichiAssistConfig
