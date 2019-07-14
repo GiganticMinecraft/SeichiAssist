@@ -19,6 +19,7 @@ import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.closeInventoryEffect
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.*
@@ -225,7 +226,7 @@ object SecondPage {
       )
     }
 
-    suspend fun Player.computeHubCommandButton(): Button {
+    val hubCommandButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.NETHER_STAR)
           .title("$YELLOW$UNDERLINE${BOLD}ロビーサーバーへ移動")
           .lore(listOf(
@@ -234,11 +235,19 @@ object SecondPage {
           ))
           .build()
 
-      // TODO add effect
-      return Button(iconItemStack)
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                closeInventoryEffect,
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
+                TargetedEffect { it.performCommand("hub") } // TODO asCommandEffect
+            )
+          }
+      )
     }
 
-    suspend fun Player.computeOfficialWikiNavigationButton(): Button {
+    val officialWikiNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.BOOK)
           .title("$YELLOW$UNDERLINE${BOLD}公式Wikiにアクセス")
           .lore(listOf(
@@ -250,11 +259,19 @@ object SecondPage {
           ))
           .build()
 
-      // TODO add effect
-      return Button(iconItemStack)
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                closeInventoryEffect,
+                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("official")}".asMessageEffect(),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+            )
+          }
+      )
     }
 
-    suspend fun Player.computeRulesPageNavigationButton(): Button {
+    val rulesPageNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.PAPER)
           .title("$YELLOW$UNDERLINE${BOLD}運営方針とルールを確認")
           .lore(listOf(
@@ -266,11 +283,19 @@ object SecondPage {
           ))
           .build()
 
-      // TODO add effect
-      return Button(iconItemStack)
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                closeInventoryEffect,
+                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("rule")}".asMessageEffect(),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+            )
+          }
+      )
     }
 
-    suspend fun Player.computeServerMapNavigationButton(): Button {
+    val serverMapNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.MAP)
           .title("$YELLOW$UNDERLINE${BOLD}鯖Mapを見る")
           .lore(listOf(
@@ -283,11 +308,19 @@ object SecondPage {
           ))
           .build()
 
-      // TODO add effect
-      return Button(iconItemStack)
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                closeInventoryEffect,
+                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("map")}".asMessageEffect(),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+            )
+          }
+      )
     }
 
-    suspend fun Player.computeJMSNavigationButton(): Button {
+    val computeJMSNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.SIGN)
           .title("$YELLOW$UNDERLINE${BOLD}JapanMinecraftServerリンク")
           .lore(listOf(
@@ -298,11 +331,19 @@ object SecondPage {
           ))
           .build()
 
-      // TODO add effect
-      return Button(iconItemStack)
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                closeInventoryEffect,
+                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("jms")}".asMessageEffect(),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+            )
+          }
+      )
     }
 
-    suspend fun Player.computeAppleConversionButton(): Button {
+    val appleConversionButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.GOLDEN_APPLE)
           .title("$YELLOW$UNDERLINE${BOLD}GT景品→椎名林檎変換システム")
           .lore(listOf(
@@ -319,11 +360,21 @@ object SecondPage {
           ))
           .build()
 
-      // TODO add effect
-      return Button(iconItemStack)
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
+                TargetedEffect {
+                  // TODO メニューインベントリに差し替える
+                  it.openInventory(Bukkit.createInventory(null, 9 * 4, "$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ"))
+                }
+            )
+          }
+      )
     }
 
-    suspend fun Player.computeTitanConversionButton(): Button {
+    val computeTitanConversionButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.DIAMOND_AXE)
           .title("$YELLOW$UNDERLINE${BOLD}限定タイタン修繕システム")
           .lore(listOf(
@@ -340,8 +391,18 @@ object SecondPage {
           .enchanted()
           .build()
 
-      // TODO add effect
-      return Button(iconItemStack)
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
+                TargetedEffect {
+                  // TODO メニューインベントリに差し替える
+                  it.openInventory(Bukkit.createInventory(null, 9 * 4, "$GOLD${BOLD}修繕したい限定タイタンを入れてネ"))
+                }
+            )
+          }
+      )
     }
 
     suspend fun Player.computeShareInventoryButton(): Button {
@@ -369,20 +430,20 @@ object SecondPage {
 
   private suspend fun Player.computeMenuLayout(): IndexedSlotLayout = with(ButtonComputations) {
     IndexedSlotLayout(
-        0 to computeOfficialWikiNavigationButton(),
-        1 to computeRulesPageNavigationButton(),
-        2 to computeServerMapNavigationButton(),
-        3 to computeJMSNavigationButton(),
+        0 to officialWikiNavigationButton,
+        1 to rulesPageNavigationButton,
+        2 to serverMapNavigationButton,
+        3 to computeJMSNavigationButton,
         6 to computeShareInventoryButton(),
-        8 to computeHubCommandButton(),
+        8 to hubCommandButton,
         12 to computeHeadSummoningButton(),
         13 to computeBroadcastMessageToggleButton(),
         14 to computeDeathMessageToggleButton(),
         15 to computeWorldGuardMessageToggleButton(),
         27 to CommonButtons.openStickMenu,
         30 to computeRecycleBinButton(),
-        34 to computeTitanConversionButton(),
-        35 to computeAppleConversionButton()
+        34 to computeTitanConversionButton,
+        35 to appleConversionButton
     )
   }
 
