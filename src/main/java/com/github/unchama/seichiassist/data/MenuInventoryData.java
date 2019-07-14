@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 public class MenuInventoryData {
 	private static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
@@ -976,12 +977,9 @@ public class MenuInventoryData {
 
 	//Minestack全ページ(切り替え式)
 	public static Inventory getMineStackMenu(Player p, int page, int stack_type){
-		int minestack_stacktype_size=0;
-		for(int i=0; i<SeichiAssist.minestacklist.size(); i++){
-			if(SeichiAssist.minestacklist.get(i).getStacktype()==stack_type){
-				minestack_stacktype_size++;
-			}
-		}
+		int minestack_stacktype_size= (int) IntStream.range(0, SeichiAssist.minestacklist.size())
+				.filter(i -> SeichiAssist.minestacklist.get(i).getStacktype() == stack_type)
+				.count();
 
 		//現在の最大ページ数を取得(1ページ=0,2ページ=1,...)
 		int maxpage = (minestack_stacktype_size + 1) / 45;
