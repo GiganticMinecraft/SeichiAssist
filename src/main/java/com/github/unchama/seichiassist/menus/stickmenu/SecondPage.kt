@@ -499,7 +499,7 @@ object SecondPage {
       }
 
   val open: TargetedEffect<Player> = computedEffect { player ->
-    val view = MenuInventoryView(Left(4 * 9), "$DARK_PURPLE${BOLD}木の棒メニュー", player.computeMenuLayout())
+    val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", player.computeMenuLayout())
 
     view.createNewSession().open
   }
