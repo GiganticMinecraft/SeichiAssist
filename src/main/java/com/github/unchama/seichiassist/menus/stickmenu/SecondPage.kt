@@ -453,19 +453,29 @@ object SecondPage {
       )
     }
 
-    suspend fun Player.computeRecycleBinButton(): Button {
-      val iconItemStack = IconItemStackBuilder(Material.BUCKET)
-          .title("$YELLOW$UNDERLINE${BOLD}ゴミ箱を開く")
-          .lore(listOf(
-              "$RESET${GREEN}不用品の大量処分にドウゾ！",
-              "$RESET${RED}復活しないので取扱注意",
-              "$RESET$DARK_RED${UNDERLINE}クリックで開く"
-          ))
-          .build()
+    val recycleBinButton: Button = run {
+        val iconItemStack = IconItemStackBuilder(Material.BUCKET)
+            .title("$YELLOW$UNDERLINE${BOLD}ゴミ箱を開く")
+            .lore(listOf(
+                "$RESET${GREEN}不用品の大量処分にドウゾ！",
+                "$RESET${RED}復活しないので取扱注意",
+                "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+            ))
+            .build()
 
-      // TODO add effect
-      return Button(iconItemStack)
-    }
+        Button(
+            iconItemStack,
+            FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+              sequentialEffect(
+                  FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
+                  TargetedEffect {
+                    // TODO メニューインベントリに差し替える
+                    it.openInventory(Bukkit.createInventory(null, 9 * 4, "$RED${BOLD}ゴミ箱(取扱注意)"))
+                  }
+              )
+            }
+        )
+      }
   }
 
   private suspend fun Player.computeMenuLayout(): IndexedSlotLayout = with(ButtonComputations) {
@@ -481,7 +491,7 @@ object SecondPage {
         14 to computeDeathMessageToggleButton(),
         15 to computeWorldGuardMessageToggleButton(),
         27 to CommonButtons.openStickMenu,
-        30 to computeRecycleBinButton(),
+        30 to recycleBinButton,
         34 to computeTitanConversionButton,
         35 to appleConversionButton
     )
