@@ -30,6 +30,211 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
 object SecondPage {
+  private object ConstantButtons {
+    val officialWikiNavigationButton: Button = run {
+      val iconItemStack = IconItemStackBuilder(Material.BOOK)
+          .title("$YELLOW$UNDERLINE${BOLD}公式Wikiにアクセス")
+          .lore(listOf(
+              "$RESET${GREEN}鯖内の「困った」は公式Wikiで解決！",
+              "$RESET${DARK_GRAY}クリックするとチャット欄に",
+              "$RESET${DARK_GRAY}URLが表示されますので",
+              "$RESET${DARK_GRAY}Tキーを押してから",
+              "$RESET${DARK_GRAY}そのURLをクリックしてください"
+          ))
+          .build()
+
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                closeInventoryEffect,
+                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("official")}".asMessageEffect(),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+            )
+          }
+      )
+    }
+
+    val rulesPageNavigationButton: Button = run {
+      val iconItemStack = IconItemStackBuilder(Material.PAPER)
+          .title("$YELLOW$UNDERLINE${BOLD}運営方針とルールを確認")
+          .lore(listOf(
+              "$RESET${GREEN}当鯖で遊ぶ前に確認してネ！",
+              "$RESET${DARK_GRAY}クリックするとチャット欄に",
+              "$RESET${DARK_GRAY}URLが表示されますので",
+              "$RESET${DARK_GRAY}Tキーを押してから",
+              "$RESET${DARK_GRAY}そのURLをクリックしてください"
+          ))
+          .build()
+
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                closeInventoryEffect,
+                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("rule")}".asMessageEffect(),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+            )
+          }
+      )
+    }
+
+    val serverMapNavigationButton: Button = run {
+      val iconItemStack = IconItemStackBuilder(Material.MAP)
+          .title("$YELLOW$UNDERLINE${BOLD}鯖Mapを見る")
+          .lore(listOf(
+              "$RESET${GREEN}webブラウザから鯖Mapを閲覧出来ます",
+              "$RESET${GREEN}他人の居場所や保護の場所を確認出来ます",
+              "$RESET${DARK_GRAY}クリックするとチャット欄に",
+              "$RESET${DARK_GRAY}URLが表示されますので",
+              "$RESET${DARK_GRAY}Tキーを押してから",
+              "$RESET${DARK_GRAY}そのURLをクリックしてください"
+          ))
+          .build()
+
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                closeInventoryEffect,
+                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("map")}".asMessageEffect(),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+            )
+          }
+      )
+    }
+
+    val JMSNavigationButton: Button = run {
+      val iconItemStack = IconItemStackBuilder(Material.SIGN)
+          .title("$YELLOW$UNDERLINE${BOLD}JapanMinecraftServerリンク")
+          .lore(listOf(
+              "$RESET${DARK_GRAY}クリックするとチャット欄に",
+              "$RESET${DARK_GRAY}URLが表示されますので",
+              "$RESET${DARK_GRAY}Tキーを押してから",
+              "$RESET${DARK_GRAY}そのURLをクリックしてください"
+          ))
+          .build()
+
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                closeInventoryEffect,
+                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("jms")}".asMessageEffect(),
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+            )
+          }
+      )
+    }
+
+    val appleConversionButton: Button = run {
+      val iconItemStack = IconItemStackBuilder(Material.GOLDEN_APPLE)
+          .title("$YELLOW$UNDERLINE${BOLD}GT景品→椎名林檎変換システム")
+          .lore(listOf(
+              "$RESET${GREEN}不必要なGT大当り景品を",
+              "$RESET${GOLD}椎名林檎$RESET${GREEN}と交換できます",
+              "$RESET${GREEN}出てきたインベントリーに",
+              "$RESET${GREEN}交換したい景品を入れて",
+              "$RESET${GREEN}escキーを押してください",
+              "$RESET${DARK_GRAY}たまにアイテムが消失しますが",
+              "$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
+              "$RESET${DARK_GRAY}神に祈りながら交換しよう",
+              "${RESET}現在の交換レート:GT景品1つにつき${SeichiAssist.seichiAssistConfig.rateGiganticToRingo()}個",
+              "$RESET$DARK_GRAY$DARK_RED${UNDERLINE}クリックで開く"
+          ))
+          .build()
+
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
+                TargetedEffect {
+                  // TODO メニューインベントリに差し替える
+                  it.openInventory(Bukkit.createInventory(null, 9 * 4, "$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ"))
+                }
+            )
+          }
+      )
+    }
+
+    val titanConversionButton: Button = run {
+      val iconItemStack = IconItemStackBuilder(Material.DIAMOND_AXE)
+          .title("$YELLOW$UNDERLINE${BOLD}限定タイタン修繕システム")
+          .lore(listOf(
+              "$RESET${GREEN}不具合によりテクスチャが反映されなくなってしまった",
+              "$RESET${GOLD}ホワイトデーイベント限定タイタン$RESET${GREEN}を修繕できます",
+              "$RESET${GREEN}出てきたインベントリーに",
+              "$RESET${GREEN}修繕したいタイタンを入れて",
+              "$RESET${GREEN}escキーを押してください",
+              "$RESET${DARK_GRAY}たまにアイテムが消失しますが",
+              "$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
+              "$RESET${DARK_GRAY}神に祈りながら交換しよう",
+              "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+          ))
+          .enchanted()
+          .build()
+
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
+                TargetedEffect {
+                  // TODO メニューインベントリに差し替える
+                  it.openInventory(Bukkit.createInventory(null, 9 * 4, "$GOLD${BOLD}修繕したい限定タイタンを入れてネ"))
+                }
+            )
+          }
+      )
+    }
+
+    val recycleBinButton: Button = run {
+      val iconItemStack = IconItemStackBuilder(Material.BUCKET)
+          .title("$YELLOW$UNDERLINE${BOLD}ゴミ箱を開く")
+          .lore(listOf(
+              "$RESET${GREEN}不用品の大量処分にドウゾ！",
+              "$RESET${RED}復活しないので取扱注意",
+              "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+          ))
+          .build()
+
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
+                TargetedEffect {
+                  // TODO メニューインベントリに差し替える
+                  it.openInventory(Bukkit.createInventory(null, 9 * 4, "$RED${BOLD}ゴミ箱(取扱注意)"))
+                }
+            )
+          }
+      )
+    }
+
+    val hubCommandButton: Button = run {
+      val iconItemStack = IconItemStackBuilder(Material.NETHER_STAR)
+          .title("$YELLOW$UNDERLINE${BOLD}ロビーサーバーへ移動")
+          .lore(listOf(
+              "$RESET$DARK_RED${UNDERLINE}クリックすると移動します",
+              "$RESET${DARK_GRAY}command->[/hub]"
+          ))
+          .build()
+
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                closeInventoryEffect,
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
+                TargetedEffect { it.performCommand("hub") } // TODO asCommandEffect
+            )
+          }
+      )
+    }
+  }
+
   private object ButtonComputations {
     suspend fun Player.computeHeadSummoningButton(): Button {
       val iconItemStack = run {
@@ -230,185 +435,6 @@ object SecondPage {
       )
     }
 
-    val hubCommandButton: Button = run {
-      val iconItemStack = IconItemStackBuilder(Material.NETHER_STAR)
-          .title("$YELLOW$UNDERLINE${BOLD}ロビーサーバーへ移動")
-          .lore(listOf(
-              "$RESET$DARK_RED${UNDERLINE}クリックすると移動します",
-              "$RESET${DARK_GRAY}command->[/hub]"
-          ))
-          .build()
-
-      Button(
-          iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-            sequentialEffect(
-                closeInventoryEffect,
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
-                TargetedEffect { it.performCommand("hub") } // TODO asCommandEffect
-            )
-          }
-      )
-    }
-
-    val officialWikiNavigationButton: Button = run {
-      val iconItemStack = IconItemStackBuilder(Material.BOOK)
-          .title("$YELLOW$UNDERLINE${BOLD}公式Wikiにアクセス")
-          .lore(listOf(
-              "$RESET${GREEN}鯖内の「困った」は公式Wikiで解決！",
-              "$RESET${DARK_GRAY}クリックするとチャット欄に",
-              "$RESET${DARK_GRAY}URLが表示されますので",
-              "$RESET${DARK_GRAY}Tキーを押してから",
-              "$RESET${DARK_GRAY}そのURLをクリックしてください"
-          ))
-          .build()
-
-      Button(
-          iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-            sequentialEffect(
-                closeInventoryEffect,
-                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("official")}".asMessageEffect(),
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-            )
-          }
-      )
-    }
-
-    val rulesPageNavigationButton: Button = run {
-      val iconItemStack = IconItemStackBuilder(Material.PAPER)
-          .title("$YELLOW$UNDERLINE${BOLD}運営方針とルールを確認")
-          .lore(listOf(
-              "$RESET${GREEN}当鯖で遊ぶ前に確認してネ！",
-              "$RESET${DARK_GRAY}クリックするとチャット欄に",
-              "$RESET${DARK_GRAY}URLが表示されますので",
-              "$RESET${DARK_GRAY}Tキーを押してから",
-              "$RESET${DARK_GRAY}そのURLをクリックしてください"
-          ))
-          .build()
-
-      Button(
-          iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-            sequentialEffect(
-                closeInventoryEffect,
-                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("rule")}".asMessageEffect(),
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-            )
-          }
-      )
-    }
-
-    val serverMapNavigationButton: Button = run {
-      val iconItemStack = IconItemStackBuilder(Material.MAP)
-          .title("$YELLOW$UNDERLINE${BOLD}鯖Mapを見る")
-          .lore(listOf(
-              "$RESET${GREEN}webブラウザから鯖Mapを閲覧出来ます",
-              "$RESET${GREEN}他人の居場所や保護の場所を確認出来ます",
-              "$RESET${DARK_GRAY}クリックするとチャット欄に",
-              "$RESET${DARK_GRAY}URLが表示されますので",
-              "$RESET${DARK_GRAY}Tキーを押してから",
-              "$RESET${DARK_GRAY}そのURLをクリックしてください"
-          ))
-          .build()
-
-      Button(
-          iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-            sequentialEffect(
-                closeInventoryEffect,
-                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("map")}".asMessageEffect(),
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-            )
-          }
-      )
-    }
-
-    val computeJMSNavigationButton: Button = run {
-      val iconItemStack = IconItemStackBuilder(Material.SIGN)
-          .title("$YELLOW$UNDERLINE${BOLD}JapanMinecraftServerリンク")
-          .lore(listOf(
-              "$RESET${DARK_GRAY}クリックするとチャット欄に",
-              "$RESET${DARK_GRAY}URLが表示されますので",
-              "$RESET${DARK_GRAY}Tキーを押してから",
-              "$RESET${DARK_GRAY}そのURLをクリックしてください"
-          ))
-          .build()
-
-      Button(
-          iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-            sequentialEffect(
-                closeInventoryEffect,
-                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("jms")}".asMessageEffect(),
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-            )
-          }
-      )
-    }
-
-    val appleConversionButton: Button = run {
-      val iconItemStack = IconItemStackBuilder(Material.GOLDEN_APPLE)
-          .title("$YELLOW$UNDERLINE${BOLD}GT景品→椎名林檎変換システム")
-          .lore(listOf(
-              "$RESET${GREEN}不必要なGT大当り景品を",
-              "$RESET${GOLD}椎名林檎$RESET${GREEN}と交換できます",
-              "$RESET${GREEN}出てきたインベントリーに",
-              "$RESET${GREEN}交換したい景品を入れて",
-              "$RESET${GREEN}escキーを押してください",
-              "$RESET${DARK_GRAY}たまにアイテムが消失しますが",
-              "$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
-              "$RESET${DARK_GRAY}神に祈りながら交換しよう",
-              "${RESET}現在の交換レート:GT景品1つにつき${SeichiAssist.seichiAssistConfig.rateGiganticToRingo()}個",
-              "$RESET$DARK_GRAY$DARK_RED${UNDERLINE}クリックで開く"
-          ))
-          .build()
-
-      Button(
-          iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-            sequentialEffect(
-                FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-                TargetedEffect {
-                  // TODO メニューインベントリに差し替える
-                  it.openInventory(Bukkit.createInventory(null, 9 * 4, "$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ"))
-                }
-            )
-          }
-      )
-    }
-
-    val computeTitanConversionButton: Button = run {
-      val iconItemStack = IconItemStackBuilder(Material.DIAMOND_AXE)
-          .title("$YELLOW$UNDERLINE${BOLD}限定タイタン修繕システム")
-          .lore(listOf(
-              "$RESET${GREEN}不具合によりテクスチャが反映されなくなってしまった",
-              "$RESET${GOLD}ホワイトデーイベント限定タイタン$RESET${GREEN}を修繕できます",
-              "$RESET${GREEN}出てきたインベントリーに",
-              "$RESET${GREEN}修繕したいタイタンを入れて",
-              "$RESET${GREEN}escキーを押してください",
-              "$RESET${DARK_GRAY}たまにアイテムが消失しますが",
-              "$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
-              "$RESET${DARK_GRAY}神に祈りながら交換しよう",
-              "$RESET$DARK_RED${UNDERLINE}クリックで開く"
-          ))
-          .enchanted()
-          .build()
-
-      Button(
-          iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-            sequentialEffect(
-                FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-                TargetedEffect {
-                  // TODO メニューインベントリに差し替える
-                  it.openInventory(Bukkit.createInventory(null, 9 * 4, "$GOLD${BOLD}修繕したい限定タイタンを入れてネ"))
-                }
-            )
-          }
-      )
-    }
-
     suspend fun Player.computeShareInventoryButton(): Button {
       val iconItemStack = run {
         val lore = run {
@@ -452,50 +478,29 @@ object SecondPage {
           }
       )
     }
+  }
 
-    val recycleBinButton: Button = run {
-        val iconItemStack = IconItemStackBuilder(Material.BUCKET)
-            .title("$YELLOW$UNDERLINE${BOLD}ゴミ箱を開く")
-            .lore(listOf(
-                "$RESET${GREEN}不用品の大量処分にドウゾ！",
-                "$RESET${RED}復活しないので取扱注意",
-                "$RESET$DARK_RED${UNDERLINE}クリックで開く"
-            ))
-            .build()
-
-        Button(
-            iconItemStack,
-            FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-              sequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-                  TargetedEffect {
-                    // TODO メニューインベントリに差し替える
-                    it.openInventory(Bukkit.createInventory(null, 9 * 4, "$RED${BOLD}ゴミ箱(取扱注意)"))
-                  }
-              )
-            }
-        )
+  private suspend fun Player.computeMenuLayout(): IndexedSlotLayout =
+      with(ConstantButtons) {
+        with(ButtonComputations) {
+          IndexedSlotLayout(
+              0 to officialWikiNavigationButton,
+              1 to rulesPageNavigationButton,
+              2 to serverMapNavigationButton,
+              3 to JMSNavigationButton,
+              6 to computeShareInventoryButton(),
+              8 to hubCommandButton,
+              12 to computeHeadSummoningButton(),
+              13 to computeBroadcastMessageToggleButton(),
+              14 to computeDeathMessageToggleButton(),
+              15 to computeWorldGuardMessageToggleButton(),
+              27 to CommonButtons.openStickMenu,
+              30 to recycleBinButton,
+              34 to titanConversionButton,
+              35 to appleConversionButton
+          )
+        }
       }
-  }
-
-  private suspend fun Player.computeMenuLayout(): IndexedSlotLayout = with(ButtonComputations) {
-    IndexedSlotLayout(
-        0 to officialWikiNavigationButton,
-        1 to rulesPageNavigationButton,
-        2 to serverMapNavigationButton,
-        3 to computeJMSNavigationButton,
-        6 to computeShareInventoryButton(),
-        8 to hubCommandButton,
-        12 to computeHeadSummoningButton(),
-        13 to computeBroadcastMessageToggleButton(),
-        14 to computeDeathMessageToggleButton(),
-        15 to computeWorldGuardMessageToggleButton(),
-        27 to CommonButtons.openStickMenu,
-        30 to recycleBinButton,
-        34 to computeTitanConversionButton,
-        35 to appleConversionButton
-    )
-  }
 
   val open: TargetedEffect<Player> = computedEffect { player ->
     val view = MenuInventoryView(Left(4 * 9), "$DARK_PURPLE${BOLD}木の棒メニュー", player.computeMenuLayout())
