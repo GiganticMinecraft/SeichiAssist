@@ -89,7 +89,9 @@ class PlayerData(val player: Player) {
     var servertick: Int = 0
     //プレイ時間
     var playtick: Int = 0
+
     //キルログ表示トグル
+    @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayDeathMessages"))
     var dispkilllogflag: Boolean = false
 
     //全体通知音消音トグル
@@ -100,6 +102,7 @@ class PlayerData(val player: Player) {
     var everymessageflag: Boolean = false
 
     //ワールドガード保護ログ表示トグル
+    @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayWorldGuardLogs"))
     var dispworldguardlogflag: Boolean = false
     //複数種類破壊トグル
     var multipleidbreakflag: Boolean = false
@@ -304,8 +307,8 @@ class PlayerData(val player: Player) {
         this.minestackflag = true
         this.servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK)
         this.playtick = 0
-        this.dispkilllogflag = false
-        this.dispworldguardlogflag = true
+        this.shouldDisplayDeathMessages = false
+        this.shouldDisplayWorldGuardLogs = true
         this.multipleidbreakflag = false
         this.pvpflag = false
         this.loc = null
@@ -1040,13 +1043,19 @@ class PlayerData(val player: Player) {
 
     val toggleWorldGuardLogEffect: UnfocusedEffect =
         unfocusedEffect {
-            this.dispworldguardlogflag = !this.dispworldguardlogflag
+            this.shouldDisplayWorldGuardLogs = !this.shouldDisplayWorldGuardLogs
         }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun shouldDisplayWorldGuardLogs(): Boolean = this.shouldDisplayWorldGuardLogs
 
     val toggleDeathMessageMutingSettings: UnfocusedEffect =
         unfocusedEffect {
-            this.dispkilllogflag = !this.dispkilllogflag
+            this.shouldDisplayDeathMessages = !this.shouldDisplayDeathMessages
         }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun shouldDisplayDeathMessages(): Boolean = this.shouldDisplayDeathMessages
 
     companion object {
         internal var config = SeichiAssist.seichiAssistConfig
