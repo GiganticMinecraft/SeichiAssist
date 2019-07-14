@@ -91,10 +91,14 @@ class PlayerData(val player: Player) {
     var playtick: Int = 0
     //キルログ表示トグル
     var dispkilllogflag: Boolean = false
+
     //全体通知音消音トグル
+    @Deprecated("BroadcastMutingSettingsを使え。")
     var everysoundflag: Boolean = false
     //全体メッセージ非表示トグル
+    @Deprecated("BroadcastMutingSettingsを使え。")
     var everymessageflag: Boolean = false
+
     //ワールドガード保護ログ表示トグル
     var dispworldguardlogflag: Boolean = false
     //複数種類破壊トグル

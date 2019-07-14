@@ -11,6 +11,9 @@ import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.UUIDs
+import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.*
+import com.github.unchama.seichiassist.data.player.settings.getBroadcastMutingSettings
+import com.github.unchama.seichiassist.data.player.settings.toggleBroadcastMutingSettings
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
@@ -82,17 +85,18 @@ object SecondPage {
 
     suspend fun Player.computeBroadcastMessageToggleButton(): Button {
       val playerData = SeichiAssist.playermap[uniqueId]!!
-
       val iconItemStack = run {
+        val currentSettings = playerData.getBroadcastMutingSettings()
+
         val soundConfigurationState =
-            if (playerData.everysoundflag) {
+            if (currentSettings.shouldMuteSounds()) {
               "$RESET${GREEN}全体通知音:消音しない"
             } else {
               "$RESET${RED}全体通知音:消音する"
             }
 
         val messageConfigurationState =
-            if (playerData.everymessageflag) {
+            if (currentSettings.shouldMuteSounds()) {
               "$RESET${GREEN}全体メッセージ:表示する"
             } else {
               "$RESET${RED}全体メッセージ:表示しない"
@@ -108,8 +112,22 @@ object SecondPage {
             .build()
       }
 
-      // TODO add effect
-      return Button(iconItemStack)
+      return Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+                playerData.toggleBroadcastMutingSettings,
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
+                deferredEffect {
+                  when (playerData.getBroadcastMutingSettings()) {
+                    RECEIVE_MESSAGE_AND_SOUND -> "${GREEN}非表示/消音設定を解除しました"
+                    RECEIVE_MESSAGE_ONLY -> "${RED}消音可能な全体通知音を消音します"
+                    MUTE_MESSAGE_AND_SOUND -> "${RED}非表示可能な全体メッセージを非表示にします"
+                  }.asMessageEffect()
+                }
+            )
+          }
+      )
     }
 
     suspend fun Player.computeDeathMessageToggleButton(): Button {
