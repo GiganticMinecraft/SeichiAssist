@@ -26,7 +26,6 @@ import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
 object SecondPage {
@@ -258,33 +257,30 @@ object SecondPage {
       }
 
       val effect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-        computedEffect {
-          val expManager = ExperienceManager(it)
-          if (expManager.hasExp(10000)) {
-            val skullToGive = ItemStack(Material.SKULL_ITEM, 1).apply {
-              durability = 3.toShort()
-              itemMeta = (Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM) as SkullMeta).apply {
-                owningPlayer = player
-              }.let { meta ->
-                //バレンタイン中(イベント中かどうかの判断はSeasonalEvent側で行う)
-                Valentine.playerHeadLore(meta)
-              }
-            }
+        sequentialEffect(
+            computedEffect<Player> {
+              val expManager = ExperienceManager(it)
+              if (expManager.hasExp(10000)) {
+                val skullToGive = SkullItemStackBuilder(uniqueId).build().apply {
+                  //バレンタイン中(イベント中かどうかの判断はSeasonalEvent側で行う)
+                  itemMeta = Valentine.playerHeadLore(itemMeta as SkullMeta)
+                }
 
-            sequentialEffect(
-                unfocusedEffect { expManager.changeExp(-10000) },
-                unfocusedEffect { Util.dropItem(it, skullToGive) },
-                "${ChatColor.GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
-                FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
-                deferredEffect { overwriteCurrentSlotBy(computeHeadSummoningButton()) }
-            )
-          } else {
-            sequentialEffect(
-                "${ChatColor.RED}必要な経験値が足りません".asMessageEffect(),
-                FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
-            )
-          }
-        }
+                sequentialEffect(
+                    unfocusedEffect { expManager.changeExp(-10000) },
+                    unfocusedEffect { Util.dropItem(it, skullToGive) },
+                    "${ChatColor.GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
+                    FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+                )
+              } else {
+                sequentialEffect(
+                    "${ChatColor.RED}必要な経験値が足りません".asMessageEffect(),
+                    FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
+                )
+              }
+            },
+            deferredEffect { overwriteCurrentSlotBy(computeHeadSummoningButton()) }
+        )
       }
 
       return Button(iconItemStack, effect)
