@@ -406,11 +406,47 @@ object SecondPage {
     }
 
     suspend fun Player.computeShareInventoryButton(): Button {
-      val iconItemStack = IconItemStackBuilder(Material.TRAPPED_CHEST)
-          .build()
+      val iconItemStack = run {
+        val lore = run {
+          val playerData = SeichiAssist.playermap[uniqueId]!!
 
-      // TODO add effect
-      return Button(iconItemStack)
+          val base = listOf(
+              "$RESET${GREEN}現在の装備・アイテムを移動します。",
+              "${RESET}サーバー間のアイテム移動にご利用ください。",
+              ""
+          )
+
+          val statusDisplay = if (playerData.contentsPresentInSharedInventory) {
+            listOf(
+                "$RESET${GREEN}収納中",
+                "$RESET$DARK_RED${UNDERLINE}クリックでアイテムを取り出します。",
+                "$RESET${RED}現在の装備・アイテムが空であることを確認してください。"
+            )
+          } else {
+            listOf(
+                "$RESET${GREEN}非収納中",
+                "$RESET$DARK_RED${UNDERLINE}クリックでアイテムを収納します。"
+            )
+          }
+
+          base + statusDisplay
+        }
+
+        IconItemStackBuilder(Material.TRAPPED_CHEST)
+            .title("$YELLOW$UNDERLINE${BOLD}インベントリ共有")
+            .lore(lore)
+            .build()
+      }
+
+      return Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+            sequentialEffect(
+              TargetedEffect<Player> { it.performCommand("shareinv") }, // TODO asCommandEffect
+              deferredEffect { overwriteCurrentSlotBy(computeShareInventoryButton()) }
+            )
+          }
+      )
     }
 
     suspend fun Player.computeRecycleBinButton(): Button {
