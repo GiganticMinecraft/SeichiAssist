@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTask
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
+import com.github.unchama.seichiassist.task.recordIteration
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.ActionStatus
@@ -60,11 +61,9 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
             var command = "select p_vote,p_givenvote from $tableReference where uuid = '$struuid'"
             try {
-                gateway.executeQuery(command).use { lrs ->
-                    while (lrs.next()) {
-                        p_vote = lrs.getInt("p_vote")
-                        p_givenvote = lrs.getInt("p_givenvote")
-                    }
+                gateway.executeQuery(command).recordIteration {
+                    p_vote = getInt("p_vote")
+                    p_givenvote = getInt("p_givenvote")
                 }
             } catch (e: SQLException) {
                 println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
@@ -98,10 +97,8 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
             var command = "select numofsorryforbug from $tableReference where uuid = '$struuid'"
             try {
-                gateway.executeQuery(command).use { lrs ->
-                    while (lrs.next()) {
-                        numofsorryforbug = lrs.getInt("numofsorryforbug")
-                    }
+                gateway.executeQuery(command).recordIteration {
+                    numofsorryforbug = getInt("numofsorryforbug")
                 }
             } catch (e: SQLException) {
                 println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
@@ -191,20 +188,18 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                     return false
                 }
 
-                if (lrs.getString("lastvote") == null || lrs.getString("lastvote") == "") {
-                    lastvote = sdf.format(cal.time)
+                lastvote = if (lrs.getString("lastvote") == null || lrs.getString("lastvote") == "") {
+                    sdf.format(cal.time)
                 } else {
-                    lastvote = lrs.getString("lastvote")
+                    lrs.getString("lastvote")
                 }
-
-                lrs.close()
-
-                val update = "UPDATE " + tableReference + " " +
-                        " SET lastvote = '" + sdf.format(cal.time) + "'" +
-                        " WHERE name LIKE '" + name + "'"
-
-                gateway.executeUpdate(update)
             }
+
+            val update = "UPDATE " + tableReference + " " +
+                    " SET lastvote = '" + sdf.format(cal.time) + "'" +
+                    " WHERE name LIKE '" + name + "'"
+
+            gateway.executeUpdate(update)
         } catch (e: SQLException) {
             Bukkit.getLogger().warning(Util.getName(name) + " sql failed. -> lastvote")
             e.printStackTrace()
@@ -506,15 +501,14 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         val command = ("select name,level,totalbreaknum from " + tableReference
                 + " order by totalbreaknum desc")
         try {
-            gateway.executeQuery(command).use { lrs ->
-                while (lrs.next()) {
-                    val rankdata = RankData()
-                    rankdata.name = lrs.getString("name")
-                    rankdata.level = lrs.getInt("level")
-                    rankdata.totalbreaknum = lrs.getLong("totalbreaknum")
-                    ranklist.add(rankdata)
-                    SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum
-                }
+            gateway.executeQuery(command).recordIteration {
+                val lrs = this
+                val rankdata = RankData()
+                rankdata.name = lrs.getString("name")
+                rankdata.level = lrs.getInt("level")
+                rankdata.totalbreaknum = lrs.getLong("totalbreaknum")
+                ranklist.add(rankdata)
+                SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
@@ -533,13 +527,12 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         val command = ("select name,playtick from " + tableReference
                 + " order by playtick desc")
         try {
-            gateway.executeQuery(command).use { lrs ->
-                while (lrs.next()) {
-                    val rankdata = RankData()
-                    rankdata.name = lrs.getString("name")
-                    rankdata.playtick = lrs.getInt("playtick")
-                    ranklist.add(rankdata)
-                }
+            gateway.executeQuery(command).recordIteration {
+                val lrs = this
+                val rankdata = RankData()
+                rankdata.name = lrs.getString("name")
+                rankdata.playtick = lrs.getInt("playtick")
+                ranklist.add(rankdata)
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
@@ -558,13 +551,12 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         val command = ("select name,p_vote from " + tableReference
                 + " order by p_vote desc")
         try {
-            gateway.executeQuery(command).use { lrs ->
-                while (lrs.next()) {
-                    val rankdata = RankData()
-                    rankdata.name = lrs.getString("name")
-                    rankdata.p_vote = lrs.getInt("p_vote")
-                    ranklist.add(rankdata)
-                }
+            gateway.executeQuery(command).recordIteration {
+                val lrs = this
+                val rankdata = RankData()
+                rankdata.name = lrs.getString("name")
+                rankdata.p_vote = lrs.getInt("p_vote")
+                ranklist.add(rankdata)
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
@@ -583,13 +575,12 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         val command = ("select name,premiumeffectpoint from " + tableReference
                 + " order by premiumeffectpoint desc")
         try {
-            gateway.executeQuery(command).use { lrs ->
-                while (lrs.next()) {
-                    val rankdata = RankData()
-                    rankdata.name = lrs.getString("name")
-                    rankdata.premiumeffectpoint = lrs.getInt("premiumeffectpoint")
-                    ranklist.add(rankdata)
-                }
+            gateway.executeQuery(command).recordIteration {
+                val lrs = this
+                val rankdata = RankData()
+                rankdata.name = lrs.getString("name")
+                rankdata.premiumeffectpoint = lrs.getInt("premiumeffectpoint")
+                ranklist += rankdata
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
@@ -608,14 +599,13 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         SeichiAssist.allplayergiveapplelong = 0
         val command = "select name,p_apple from $tableReference order by p_apple desc"
         try {
-            gateway.executeQuery(command).use { lrs ->
-                while (lrs.next()) {
-                    val rankdata = RankData()
-                    rankdata.name = lrs.getString("name")
-                    rankdata.p_apple = lrs.getInt("p_apple")
-                    ranklist.add(rankdata)
-                    SeichiAssist.allplayergiveapplelong += rankdata.p_apple.toLong()
-                }
+            gateway.executeQuery(command).recordIteration {
+                val lrs = this
+                val rankdata = RankData()
+                rankdata.name = lrs.getString("name")
+                rankdata.p_apple = lrs.getInt("p_apple")
+                ranklist += rankdata
+                SeichiAssist.allplayergiveapplelong += rankdata.p_apple.toLong()
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
@@ -638,7 +628,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         if (!updatePlayTickRankingList()) return false
         if (!updateVoteRankingList()) return false
         if (!updatePremiumEffectPointRankingList()) return false
-        return if (!updateAppleNumberRankingList()) false else true
+        return updateAppleNumberRankingList()
 
     }
 
@@ -690,10 +680,8 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         val command = "select inventory from $tableReference where uuid like '$uuid'"
 
         try {
-            gateway.executeQuery(command).use { lrs ->
-                while (lrs.next()) {
-                    return BukkitSerialization.fromBase64(lrs.getString("inventory")).right()
-                }
+            gateway.executeQuery(command).recordIteration {
+                return BukkitSerialization.fromBase64(getString("inventory")).right()
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
@@ -755,10 +743,8 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         val command = ("select inventory from " + playerDataManipulator.tableReference
                 + " where uuid like '" + struuid + "'")
         try {
-            playerDataManipulator.gateway.executeQuery(command).use { lrs ->
-                while (lrs.next()) {
-                    inventory = BukkitSerialization.fromBase64(lrs.getString("inventory"))
-                }
+            playerDataManipulator.gateway.executeQuery(command).recordIteration {
+                inventory = BukkitSerialization.fromBase64(getString("inventory"))
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
