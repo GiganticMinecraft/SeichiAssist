@@ -31,6 +31,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PlayerClickListener implements Listener {
 	SeichiAssist plugin = SeichiAssist.instance;
@@ -286,14 +287,14 @@ public class PlayerClickListener implements Listener {
 					if (!playerdata.getEverysoundflag()) {
 						player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, (float) 0.5, 2);
 					}
-					List<String> enchantname = new ArrayList<>();
+					List<String> enchantname;
 					List<String> lore = present.getItemStack().getItemMeta().getLore();
 					Map<Enchantment, Integer> enchantment = present.getItemStack().getItemMeta().getEnchants();
 
-					for(Enchantment enchant : enchantment.keySet())
-					{
-						enchantname.add(ChatColor.GRAY + Util.getEnchantName(enchant.getName(), enchantment.get(enchant)));
-					}
+					enchantname = enchantment.keySet()
+							.stream()
+							.map(enchant -> ChatColor.GRAY + Util.getEnchantName(enchant.getName(), enchantment.get(enchant)))
+							.collect(Collectors.toList());
 					lore.remove("§r§2所有者：" + player.getName());
 
 					TextComponent message = new TextComponent();

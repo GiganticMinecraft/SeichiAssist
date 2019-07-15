@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.IntStream;
+
 
 public final class BreakUtil {
 	private BreakUtil() {
@@ -86,12 +88,7 @@ public final class BreakUtil {
 	}
 	private static boolean equalsIgnoreNameCaseWorld(String name) {
 		List<String> ignoreworldlist = SeichiAssist.ignoreWorldlist;
-		for(String s : ignoreworldlist){
-			if(name.equalsIgnoreCase(s.toLowerCase())){
-				return true;
-			}
-		}
-		return false;
+		return ignoreworldlist.stream().anyMatch(s -> name.equalsIgnoreCase(s.toLowerCase()));
 	}
 	//ブロックを破壊する処理、ドロップも含む、統計増加も含む
 	public static void breakBlock(Player player, Block breakblock, Location centerofblock, ItemStack tool, boolean stepflag) {
@@ -456,14 +453,11 @@ public final class BreakUtil {
 	//num回だけ耐久を減らす処理
 	public static short calcDurability(int enchantmentLevel,int num) {
 		Random rand = new Random();
-		short durability = 0;
-		double probability = 1.0 / (enchantmentLevel + 1.0);
+        double probability = 1.0 / (enchantmentLevel + 1.0);
 
-		for(int i = 0; i < num ; i++){
-			if(probability >  rand.nextDouble() ){
-				durability++;
-			}
-		}
+        short durability = (short) IntStream.range(0, num)
+                .filter(i -> probability > rand.nextDouble())
+                .count();
 		return durability;
 	}
 
@@ -494,14 +488,8 @@ public final class BreakUtil {
 		}
 	}
 
-	public static boolean BlockEqualsMaterialList(Block b){
-		Set<Material> m = SeichiAssist.materiallist;
-		for (Material material : m) {
-			if (b.getType() == material) {
-				return true;
-			}
-		}
-		return false;
+	public static boolean BlockEqualsMaterialList(final Block block){
+		return SeichiAssist.materiallist.contains(block.getType());
 	}
 
 	/**
