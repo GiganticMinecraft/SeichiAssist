@@ -416,7 +416,7 @@ class PlayerData(val player: Player) {
         //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
         for (ed in effectdatalist) {
             ed.duration -= 1200
-            tmplist.add(ed)
+            tmplist += ed
         }
         //tmplistのdurationが3秒以下（60tick）のものはeffectdatalistから削除
         for (ed in tmplist) {

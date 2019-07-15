@@ -188,10 +188,12 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                     return false
                 }
 
-                lastvote = if (lrs.getString("lastvote") == null || lrs.getString("lastvote") == "") {
+                val lv = lrs.getString("lastvote")
+
+                lastvote = if (lv == null || lv == "") {
                     sdf.format(cal.time)
                 } else {
-                    lrs.getString("lastvote")
+                    lv
                 }
             }
 
@@ -382,11 +384,9 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                     sender.sendMessage(ChatColor.RED.toString() + "" + targetName + " には既に実績No " + giveachvNo + " が予約されています")
                     return false
                 }
-                lrs.close()
-
-                // 実績を予約
-                gateway.executeUpdate(update)
             }
+            // 実績を予約
+            gateway.executeUpdate(update)
         } catch (e: SQLException) {
             sender.sendMessage(ChatColor.RED.toString() + "実績の予約に失敗しました")
             Bukkit.getLogger().warning(Util.getName(sender) + " sql failed. -> writegiveachvNo")
@@ -479,7 +479,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                 val uuidList = ArrayList<UUID>()
                 while (lrs.next()) {
                     try {
-                        uuidList.add(UUID.fromString(lrs.getString("uuid")))
+                        uuidList += UUID.fromString(lrs.getString("uuid"))
                     } catch (e: IllegalArgumentException) {
                         println("不適切なUUID: " + lrs.getString("name") + ": " + lrs.getString("uuid"))
                     }
@@ -507,7 +507,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                 rankdata.name = lrs.getString("name")
                 rankdata.level = lrs.getInt("level")
                 rankdata.totalbreaknum = lrs.getLong("totalbreaknum")
-                ranklist.add(rankdata)
+                ranklist += rankdata
                 SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum
             }
         } catch (e: SQLException) {
@@ -532,7 +532,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                 val rankdata = RankData()
                 rankdata.name = lrs.getString("name")
                 rankdata.playtick = lrs.getInt("playtick")
-                ranklist.add(rankdata)
+                ranklist += rankdata
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
@@ -556,7 +556,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                 val rankdata = RankData()
                 rankdata.name = lrs.getString("name")
                 rankdata.p_vote = lrs.getInt("p_vote")
-                ranklist.add(rankdata)
+                ranklist += rankdata
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
