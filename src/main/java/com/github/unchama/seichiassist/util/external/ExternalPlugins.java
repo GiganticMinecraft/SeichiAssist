@@ -7,6 +7,7 @@ import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 public final class ExternalPlugins {
 	private ExternalPlugins() {
@@ -35,6 +36,13 @@ public final class ExternalPlugins {
 		}
 
 		return CoreProtect;
+	}
+
+	@Nullable
+	public static CoreProtectWrapper getCoreProtectWrapper() {
+		final CoreProtectAPI cp = getCoreProtect();
+
+		return cp == null ? null : new CoreProtectWrapper(getCoreProtect());
 	}
 
 	//ワールドガードAPIを返す
