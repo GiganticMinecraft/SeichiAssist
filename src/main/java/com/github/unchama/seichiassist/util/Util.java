@@ -95,7 +95,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
@@ -363,16 +363,14 @@ public final class Util {
 	//カラーをランダムで決める
 	public static Color[] getRandomColors(int length) {
 		// 配列を作る
-		Color[] colors = new Color[length];
-		Random rand = new Random();
+        Random rand = new Random();
 		// 配列の要素を順に処理していく
-		for (int n = 0; n != length; n++) {
-			// 24ビットカラーの範囲でランダムな色を決める
-			colors[n] = Color.fromBGR(rand.nextInt(1 << 24));
-		}
+		// 24ビットカラーの範囲でランダムな色を決める
 
-		// 配列を返す
-		return colors;
+        // 配列を返す
+		return IntStream.range(0, length)
+                .mapToObj(n -> Color.fromBGR(rand.nextInt(1 << 24)))
+                .toArray(Color[]::new);
 	}
 
 	//ガチャアイテムを含んでいるか調べる
@@ -437,7 +435,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
@@ -452,7 +450,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
@@ -467,7 +465,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
@@ -527,14 +525,10 @@ public final class Util {
 	}
 
 	public static int getMineStackTypeindex(int idx){
-		int temp = 0;
-		int type = SeichiAssist.minestacklist.get(idx).getStacktype();
-		for (int i = 0; i < idx; i++) {
-			if (SeichiAssist.minestacklist.get(i).getStacktype() == type) {
-				temp++;
-			}
-		}
-		return temp;
+        int type = SeichiAssist.minestacklist.get(idx).getStacktype();
+        return (int) IntStream.range(0, idx)
+                .filter(i -> SeichiAssist.minestacklist.get(i).getStacktype() == type)
+                .count();
 	}
 
 	/**

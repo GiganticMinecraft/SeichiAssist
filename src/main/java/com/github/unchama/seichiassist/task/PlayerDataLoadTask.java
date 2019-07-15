@@ -355,7 +355,7 @@ public class PlayerDataLoadTask extends BukkitRunnable{
 				// 1周年記念
 				if (playerdata.getAnniversary()) {
 					p.sendMessage("整地サーバー1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。http://seichi.click/wiki/anniversary");
-					p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
+					p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f);
 				}
 
 				//正月イベント用

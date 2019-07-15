@@ -39,8 +39,8 @@ GradleタブからTasks -> build -> jarを実行すれば`build/lib`フォルダ
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
-- [gachadata.spl](https://red.minecraftserver.jp/attachments/download/895/gachadata.sql) -> import to "gachadata" table.
-- [msgachadata.spl](https://red.minecraftserver.jp/attachments/download/894/msgachadata.sql) -> import to "msgachadata" table.
+- [gachadata.sql](https://red.minecraftserver.jp/attachments/download/895/gachadata.sql) -> import to "gachadata" table.
+- [msgachadata.sql](https://red.minecraftserver.jp/attachments/download/894/msgachadata.sql) -> import to "msgachadata" table.
 
 ## JavaDocs
 publicなメソッドについては、JavaDocsを記載するよう心がけてください。
