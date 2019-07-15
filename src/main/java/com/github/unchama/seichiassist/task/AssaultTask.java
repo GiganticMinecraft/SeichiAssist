@@ -328,21 +328,21 @@ public class AssaultTask extends BukkitRunnable{
 		if(waterflag){
 			for (Block value : waterlist) {
 				value.setType(Material.PACKED_ICE);
-				BreakUtil.logPlace(player, value);
+				BreakUtil.logRemove(player, value);
 			}
 		}else if(lavaflag){
 			for (Block value : lavalist) {
 				value.setType(Material.MAGMA);
-				BreakUtil.logPlace(player, value);
+				BreakUtil.logRemove(player, value);
 			}
 		}else if(fluidflag) {
 			for (Block item : waterlist) {
 				item.setType(Material.PACKED_ICE);
-				BreakUtil.logPlace(player, item);
+				BreakUtil.logRemove(player, item);
 			}
 			for (Block value : lavalist) {
 				value.setType(Material.MAGMA);
-				BreakUtil.logPlace(player, value);
+				BreakUtil.logRemove(player, value);
 			}
 		}else if(breakflag){
 			for (Block item : waterlist) {
