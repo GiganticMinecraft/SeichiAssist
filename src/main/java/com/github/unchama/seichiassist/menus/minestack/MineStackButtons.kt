@@ -17,7 +17,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-object MineStackButtons {
+internal object MineStackButtons {
   private fun withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect<Player> {
     fun ItemStack.withAmount(amount: Int): ItemStack = clone().apply { this.amount = amount }
 

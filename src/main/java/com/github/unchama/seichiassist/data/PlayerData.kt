@@ -89,13 +89,20 @@ class PlayerData(val player: Player) {
     var servertick: Int = 0
     //プレイ時間
     var playtick: Int = 0
+
     //キルログ表示トグル
+    @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayDeathMessages"))
     var dispkilllogflag: Boolean = false
+
     //全体通知音消音トグル
+    @Deprecated("BroadcastMutingSettingsを使え。")
     var everysoundflag: Boolean = false
     //全体メッセージ非表示トグル
+    @Deprecated("BroadcastMutingSettingsを使え。")
     var everymessageflag: Boolean = false
+
     //ワールドガード保護ログ表示トグル
+    @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayWorldGuardLogs"))
     var dispworldguardlogflag: Boolean = false
     //複数種類破壊トグル
     var multipleidbreakflag: Boolean = false
@@ -1033,6 +1040,22 @@ class PlayerData(val player: Player) {
         unfocusedEffect {
             this.minestackflag = !this.minestackflag
         }
+
+    val toggleWorldGuardLogEffect: UnfocusedEffect =
+        unfocusedEffect {
+            this.dispworldguardlogflag = !this.dispworldguardlogflag
+        }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun shouldDisplayWorldGuardLogs(): Boolean = this.dispworldguardlogflag
+
+    val toggleDeathMessageMutingSettings: UnfocusedEffect =
+        unfocusedEffect {
+            this.dispkilllogflag = !this.dispkilllogflag
+        }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun shouldDisplayDeathMessages(): Boolean = this.dispkilllogflag
 
     /**
      * 保護申請の番号を更新させる[UnfocusedEffect]

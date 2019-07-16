@@ -3,6 +3,7 @@ package com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.targetedeffect.EmptyEffect
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.util.collection.toMap
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.bukkit.Material
@@ -16,6 +17,8 @@ import org.bukkit.inventory.ItemStack
  */
 data class IndexedSlotLayout(private val map: Map<Int, Slot>) {
   constructor(vararg mappings: Pair<Int, Slot>): this(mapOf(*mappings))
+
+  constructor(mapping: Iterable<IndexedValue<Slot>>): this(mapping.toMap())
 
   /**
    * クリックされた枠に対応した[Slot]が[InventoryClickEvent]に基づいて引き起こす作用を計算する.
@@ -51,3 +54,10 @@ data class IndexedSlotLayout(private val map: Map<Int, Slot>) {
    */
   internal fun altered(slotReplacement: Pair<Int, Slot>) = copy(map = map + slotReplacement)
 }
+
+val emptyLayout = IndexedSlotLayout()
+
+inline fun singleSlotLayout(indexedSlot: () -> Pair<Int, Slot>): IndexedSlotLayout = IndexedSlotLayout(indexedSlot())
+
+fun combinedLayout(vararg layouts: IndexedSlotLayout): IndexedSlotLayout =
+    layouts.toList().fold(emptyLayout) { acc, layout -> acc.merge(layout) }
