@@ -1019,7 +1019,7 @@ class PlayerData(val player: Player) {
         }
     }
 
-    fun toggleExpBarVisibility(): TargetedEffect<Player> =
+    val toggleExpBarVisibility: TargetedEffect<Player> =
         unfocusedEffect {
             this.expbar.isVisible = !this.expbar.isVisible
         } + deferredEffect {
@@ -1029,7 +1029,7 @@ class PlayerData(val player: Player) {
             }.asMessageEffect()
         }
 
-    fun toggleAutoMineStack(): UnfocusedEffect =
+    val toggleAutoMineStack: UnfocusedEffect =
         unfocusedEffect {
             this.minestackflag = !this.minestackflag
         }
@@ -1037,7 +1037,7 @@ class PlayerData(val player: Player) {
     /**
      * 保護申請の番号を更新させる[UnfocusedEffect]
      */
-    fun computeRegionNumberEffect(): UnfocusedEffect =
+    val incrementRegionNumber: UnfocusedEffect =
         unfocusedEffect {
           this.rgnum += 1
         }

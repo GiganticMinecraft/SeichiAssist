@@ -41,7 +41,7 @@ object StickMenu {
               .build(),
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
-                openerData.toggleExpBarVisibility(),
+                openerData.toggleExpBarVisibility,
                 deferredEffect {
                   val toggleSoundPitch = if (openerData.expbar.isVisible) 1.0f else 0.5f
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)

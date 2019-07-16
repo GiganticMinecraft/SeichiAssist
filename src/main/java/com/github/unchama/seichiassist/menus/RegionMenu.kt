@@ -116,7 +116,7 @@ object RegionMenu {
         sequentialEffect(
             "/expand vert".asCommandEffect(),
             "rg claim ${player.name}_${openerData.rgnum}".asCommandEffect(),
-            deferredEffect { openerData.computeRegionNumberEffect() },
+            deferredEffect { openerData.incrementRegionNumber },
             "/sel".asCommandEffect(),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         )
