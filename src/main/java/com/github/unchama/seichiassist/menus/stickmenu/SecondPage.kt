@@ -250,7 +250,7 @@ object SecondPage {
               "$RESET$DARK_RED${UNDERLINE}経験値が足りません"
             }
 
-        SkullItemStackBuilder(UUIDs.MHFVillager)
+        SkullItemStackBuilder(UUIDs.MHF_Villager)
             .title("$YELLOW$UNDERLINE${BOLD}自分の頭を召喚")
             .lore(baseLore + actionNavigation)
             .build()

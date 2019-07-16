@@ -21,7 +21,7 @@ object CommonButtons {
     )
 
     Button(
-        SkullItemStackBuilder(UUIDs.MHFArrowLeft)
+        SkullItemStackBuilder(UUIDs.MHF_ArrowLeft)
             .title("${ChatColor.YELLOW}${ChatColor.UNDERLINE}${ChatColor.BOLD}ホームへ")
             .lore(listOf("${ChatColor.RESET}${ChatColor.DARK_RED}${ChatColor.UNDERLINE}クリックで移動"))
             .build(),

@@ -57,11 +57,11 @@ object CategorizedMineStackMenu {
       val stickMenuButtonSection = singleSlotLayout { (9 * 5) to CommonButtons.openStickMenu }
 
       val previousPageButtonSection = if (page > 0) {
-        singleSlotLayout { 9 * 5 + 7 to buttonToTransferTo(page - 1, UUIDs.MHFArrowUp) }
+        singleSlotLayout { 9 * 5 + 7 to buttonToTransferTo(page - 1, UUIDs.MHF_ArrowUp) }
       } else emptyLayout
 
       val nextPageButtonSection = if (page + 1 < totalNumberOfPages) {
-        singleSlotLayout { 9 * 5 + 8 to buttonToTransferTo(page + 1, UUIDs.MHFArrowDown) }
+        singleSlotLayout { 9 * 5 + 8 to buttonToTransferTo(page + 1, UUIDs.MHF_ArrowDown) }
       } else emptyLayout
 
       combinedLayout(

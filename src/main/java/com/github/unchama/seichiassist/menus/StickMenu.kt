@@ -8,9 +8,13 @@ import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
+import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.UUIDs
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
+import com.github.unchama.seichiassist.menus.stickmenu.SecondPage
+import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.external.WorldGuard
 import com.github.unchama.targetedeffect.TargetedEffect
@@ -30,6 +34,218 @@ import org.bukkit.entity.Player
  * @author karayuu
  */
 object StickMenu {
+  private object ConstantButtons {
+    val teleportServerButton = run {
+      val buttonLore = listOf(
+          "${GRAY}・各サバイバルサーバー",
+          "${GRAY}・公共施設サーバー",
+          "${GRAY}間を移動する時に使います",
+          "$DARK_RED${UNDERLINE}クリックして開く"
+      )
+
+      val leftClickEffect = sequentialEffect(
+          FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f)
+          //TODO: サーバー間移動メニューを開けるようにする.
+      )
+
+      Button(
+          IconItemStackBuilder(Material.NETHER_STAR)
+              .title("$RED$UNDERLINE${BOLD}サーバー間移動メニューへ")
+              .lore(buttonLore)
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+      )
+    }
+
+    val spawnCommandButton = run {
+      val buttonLore = listOf(
+          "${GRAY}・メインワールド",
+          "${GRAY}・整地ワールド",
+          "${GRAY}間を移動するときに使います",
+          "$DARK_RED${UNDERLINE}クリックするとワープします",
+          "${DARK_GRAY}command->[/spawn]"
+      )
+
+      val leftClickEffect = sequentialEffect(
+          TargetedEffect { it.closeInventory() },
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+          "spawn".asCommandEffect()
+      )
+
+      Button(
+          IconItemStackBuilder(Material.BEACON)
+              .title("$YELLOW$UNDERLINE${BOLD}スポーンワールドへワープ")
+              .lore(buttonLore)
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+      )
+    }
+
+    val achievementSystemButton = run {
+      val buttonLore = listOf(
+          "${GRAY}様々な実績に挑んで、",
+          "${GRAY}いろんな二つ名を手に入れよう！",
+          "$DARK_GRAY${UNDERLINE}クリックで設定画面へ移動"
+      )
+
+      val leftClickEffect = sequentialEffect(
+          FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
+          //TODO: 実績メニューを開く処理を追加
+      )
+
+      Button(
+          IconItemStackBuilder(Material.END_CRYSTAL)
+              .title("$YELLOW$UNDERLINE${BOLD}実績・二つ名システム")
+              .lore(buttonLore)
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+      )
+    }
+
+    val seichiGodRankingButton = run {
+      Button(
+          IconItemStackBuilder(Material.COOKIE)
+              .title("$YELLOW$UNDERLINE${BOLD}整地神ランキングを見る")
+              .lore(listOf(
+                  "$RESET$RED(整地レベル100以上のプレイヤーのみ表記されます)",
+                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+              ))
+              .build()
+      )
+    }
+
+    val loginGodRankingButton = run {
+      Button(
+          IconItemStackBuilder(Material.COOKIE)
+              .title("$YELLOW$UNDERLINE${BOLD}ログイン神ランキングを見る")
+              .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで開く"))
+              .build()
+      )
+    }
+
+    val voteGodRankingButton = run {
+      Button(
+          IconItemStackBuilder(Material.COOKIE)
+              .title("$YELLOW$UNDERLINE${BOLD}投票神ランキングを見る")
+              .lore(listOf(
+                  "$RESET$RED(投票しているプレイヤーのみ表記されます)",
+                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+              ))
+              .build()
+      )
+    }
+
+    val secondPageButton = run {
+      Button(
+          SkullItemStackBuilder(UUIDs.MHF_ArrowRight)
+              .title("$YELLOW$UNDERLINE${BOLD}2ページ目へ")
+              .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
+              .build(),
+          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, SecondPage.open)
+      )
+    }
+
+    val gachaPrizeExchangeButton = run {
+      Button(
+          IconItemStackBuilder(Material.NOTE_BLOCK)
+              .title("$YELLOW$UNDERLINE${BOLD}不要ガチャ景品交換システム")
+              .lore(listOf(
+                  "$RESET${GREEN}不必要な当たり、大当たり景品を",
+                  "$RESET${GREEN}ガチャ券と交換出来ます",
+                  "$RESET${GREEN}出てきたインベントリ―に",
+                  "$RESET${GREEN}交換したい景品を入れて",
+                  "$RESET${GREEN}escキーを押してください",
+                  "$RESET${DARK_GRAY}たまにアイテムが消失するから",
+                  "$RESET${DARK_GRAY}大事なものはいれないでネ",
+                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+              ))
+              .build()
+      )
+    }
+
+    val homePointMenuButton = run {
+      Button(
+          IconItemStackBuilder(Material.BED)
+              .title("$YELLOW$UNDERLINE${BOLD}ホームメニューを開く")
+              .lore(listOf(
+                  "$RESET${GRAY}ホームポイントに関するメニュー",
+                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+              ))
+              .build()
+      )
+    }
+
+    val randomTeleportButton = run {
+      Button(
+          IconItemStackBuilder(Material.COMPASS)
+              .title("$YELLOW$UNDERLINE${BOLD}ランダムテレポート(β)")
+              .lore(listOf(
+                  "$RESET${GRAY}整地ワールドで使うと、良さげな土地にワープします",
+                  "$RESET${GRAY}βテスト中のため、謎挙動にご注意ください",
+                  "$RESET$DARK_RED${UNDERLINE}クリックで発動",
+                  "$RESET${DARK_GRAY}command->[/rtp]"
+              ))
+              .build()
+      )
+    }
+
+    val fastCraftButton = run {
+      Button(
+          IconItemStackBuilder(Material.WORKBENCH)
+              .title("$YELLOW$UNDERLINE${BOLD}FastCraft機能")
+              .lore(listOf(
+                  "$RESET$DARK_RED${UNDERLINE}クリックで開く",
+                  "$RESET${RED}ただの作業台じゃないんです…",
+                  "$RESET${YELLOW}自動レシピ補完機能付きの",
+                  "$RESET${YELLOW}最強な作業台はこちら",
+                  "$RESET${DARK_GRAY}command->[/fc craft]"
+              ))
+              .build()
+      )
+    }
+
+    val passiveSkillBookButton = run {
+      Button(
+          IconItemStackBuilder(Material.ENCHANTED_BOOK)
+              .enchanted()
+              .title("$YELLOW$UNDERLINE${BOLD}パッシブスキルブック")
+              .lore(listOf(
+                  "$RESET${GRAY}整地に便利なスキルを使用できるゾ",
+                  "$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く"
+              ))
+              .build()
+      )
+    }
+
+    val oreExchangeButton = run {
+      Button(
+          IconItemStackBuilder(Material.DIAMOND_ORE)
+              .title("$YELLOW$UNDERLINE${BOLD}鉱石・交換券変換システム")
+              .lore(listOf(
+                  "$RESET${GREEN}不必要な各種鉱石を",
+                  "$RESET${DARK_RED}交換券$RESET${GREEN}と交換できます",
+                  "$RESET${GREEN}出てきたインベントリ―に",
+                  "$RESET${GREEN}交換したい鉱石を入れて",
+                  "$RESET${GREEN}escキーを押してください",
+                  "$RESET${DARK_GRAY}たまにアイテムが消失するから",
+                  "$RESET${DARK_GRAY}大事なものはいれないでネ",
+                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+              ))
+              .build()
+      )
+    }
+
+    val votePointMenuButton = run {
+      Button(
+          IconItemStackBuilder(Material.DIAMOND)
+              .enchanted()
+              .title("$YELLOW$UNDERLINE${BOLD}投票ptメニュー")
+              .lore(listOf("$RESET${GREEN}投票ptに関することはこちらから！"))
+              .build()
+      )
+    }
+  }
+
   private object ButtonComputations {
     suspend fun Player.computeStatsButton(): Button {
       val openerData = SeichiAssist.playermap[uniqueId]!!
@@ -91,7 +307,6 @@ object StickMenu {
           }
       )
     }
-
 
     suspend fun Player.computeRegionMenuButton(): Button {
       val worldGuardPlugin = ExternalPlugins.getWorldGuard()
@@ -168,85 +383,248 @@ object StickMenu {
       )
     }
 
-    val teleportServerButton = run {
-      val buttonLore = listOf(
-          "${GRAY}・各サバイバルサーバー",
-          "${GRAY}・公共施設サーバー",
-          "${GRAY}間を移動する時に使います",
-          "$DARK_RED${UNDERLINE}クリックして開く"
-      )
+    suspend fun Player.computePocketOpenButton(): Button {
+      val playerData = SeichiAssist.playermap[uniqueId]!!
 
-      val leftClickEffect = sequentialEffect(
-          FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f)
-          //TODO: サーバー間移動メニューを開けるようにする.
-      )
+      val iconItemStack = run {
+        val loreHeading = run {
+          val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
 
-      Button(
-          IconItemStackBuilder(Material.NETHER_STAR)
-              .title("$RED$UNDERLINE${BOLD}サーバー間移動メニューへ")
-              .lore(buttonLore)
-              .build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
-      )
+          if (playerData.level >= minimumRequiredLevel) {
+            listOf(
+                "$RESET${GRAY}ポケットサイズ:${playerData.inventory.size}スタック",
+                "$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+            )
+          } else {
+            listOf(
+                "$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です"
+            )
+          }
+        }
+
+        val loreAnnotation = listOf(
+            "$RESET${DARK_GRAY}※4次元ポケットの中身は",
+            "$RESET${DARK_GRAY}各サバイバルサーバー間で",
+            "$RESET${DARK_GRAY}共有されます"
+        )
+
+        IconItemStackBuilder(Material.ENDER_PORTAL_FRAME)
+            .title("$YELLOW$UNDERLINE${BOLD}4次元ポケットを開く")
+            .lore(loreHeading + loreAnnotation)
+            .build()
+      }
+
+      return Button(iconItemStack)
     }
 
-    val spawnCommandButton = run {
-      val buttonLore = listOf(
-          "${GRAY}・メインワールド",
-          "${GRAY}・整地ワールド",
-          "${GRAY}間を移動するときに使います",
-          "$DARK_RED${UNDERLINE}クリックするとワープします",
-          "${DARK_GRAY}command->[/spawn]"
-      )
+    suspend fun Player.computeEnderChestButton(): Button {
+      val playerData = SeichiAssist.playermap[uniqueId]!!
 
-      val leftClickEffect = sequentialEffect(
-          TargetedEffect { it.closeInventory() },
-          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          "spawn".asCommandEffect()
-      )
+      val iconItemStack = run {
+        val loreHeading = run {
+          val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
 
-      Button(
-          IconItemStackBuilder(Material.BEACON)
-              .title("$YELLOW$UNDERLINE${BOLD}スポーンワールドへワープ")
-              .lore(buttonLore)
-              .build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
-      )
+          if (playerData.level >= minimumRequiredLevel) {
+            "$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+          } else {
+            "$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です"
+          }
+        }
+
+        IconItemStackBuilder(Material.ENDER_CHEST)
+            .title("$DARK_PURPLE$UNDERLINE${BOLD}どこでもエンダーチェスト")
+            .lore(listOf(loreHeading))
+            .build()
+      }
+
+      return Button(iconItemStack)
     }
 
-    val achievementSystemButton = run {
-      val buttonLore = listOf(
-          "${GRAY}様々な実績に挑んで、",
-          "${GRAY}いろんな二つ名を手に入れよう！",
-          "$DARK_GRAY${UNDERLINE}クリックで設定画面へ移動"
-      )
+    suspend fun Player.computeApologyItemsButton(): Button {
+      val playerData = SeichiAssist.playermap[uniqueId]!!
 
-      val leftClickEffect = sequentialEffect(
-        FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
-        //TODO: 実績メニューを開く処理を追加
-      )
+      val iconItemStack = run {
+        val lore = run {
+          val explanation = listOf(
+              "$RESET${GRAY}運営からのガチャ券を受け取ります",
+              "$RESET${GRAY}以下の場合に配布されます",
+              "$RESET${GRAY}・各種不具合のお詫びとして",
+              "$RESET${GRAY}・イベント景品として",
+              "$RESET${GRAY}・各種謝礼として"
+          )
 
-      Button(
-          IconItemStackBuilder(Material.END_CRYSTAL)
-              .title("$YELLOW$UNDERLINE${BOLD}実績・二つ名システム")
-              .lore(buttonLore)
-              .build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
-      )
+          val obtainableApologyItems = playerData.numofsorryforbug
+          val currentStatus =
+              if (obtainableApologyItems != 0)
+                "$RESET${AQUA}未獲得ガチャ券：${obtainableApologyItems}枚"
+              else
+                "$RESET${RED}獲得できるガチャ券はありません"
+
+          explanation + currentStatus
+        }
+
+        SkullItemStackBuilder(UUIDs.whitecat_haru)
+            .title("$DARK_AQUA$UNDERLINE${BOLD}運営からのガチャ券を受け取る")
+            .lore(lore)
+            .build()
+      }
+
+      return Button(iconItemStack)
+    }
+
+    suspend fun Player.computeStarLevelStatsButton(): Button {
+      val playerData = SeichiAssist.playermap[uniqueId]!!
+
+      val iconItemStack = run {
+        val breakNumRequiredToNextStarLevel =
+            (playerData.starlevel_Break.toLong() + 1) * 87115000 - playerData.totalbreaknum
+
+        val lore = listOf(
+            "$RESET$AQUA${BOLD}整地量：☆${playerData.starlevel_Break}",
+            "$RESET${AQUA}次の☆まで：あと$breakNumRequiredToNextStarLevel",
+            "$RESET$GREEN$UNDERLINE${BOLD}合計：☆${playerData.starlevel}"
+        )
+
+        IconItemStackBuilder(Material.GOLD_INGOT)
+            .title("$YELLOW$UNDERLINE${BOLD}スターレベル情報")
+            .lore(lore)
+            .build()
+      }
+
+      return Button(iconItemStack)
+    }
+
+    suspend fun Player.computeActiveSkillButton(): Button {
+      val iconItemStack = run {
+        val lore =
+            if (Util.isSkillEnable(this))
+              listOf(
+                  "$RESET${RED}このワールドでは",
+                  "$RESET${RED}整地スキルを使えません"
+              )
+            else
+              listOf(
+                  "$RESET${GRAY}整地に便利なスキルを使用できるゾ",
+                  "$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く"
+              )
+
+        SkullItemStackBuilder(UUIDs.whitecat_haru)
+            .title("$DARK_AQUA$UNDERLINE${BOLD}運営からのガチャ券を受け取る")
+            .lore(lore)
+            .build()
+      }
+
+      return Button(iconItemStack)
+    }
+
+    suspend fun Player.computeGachaTicketButton(): Button {
+      val playerData = SeichiAssist.playermap[uniqueId]!!
+
+      val iconItemStack = run {
+        val lore = run {
+          val obtainableGachaTicket = playerData.gachapoint / 1000
+          val gachaPointToNextTicket = 1000 - playerData.gachapoint % 1000
+
+          val gachaTicketStatus = if (obtainableGachaTicket != 0)
+            "$RESET${AQUA}未獲得ガチャ券：${obtainableGachaTicket}枚"
+          else
+            "$RESET${RED}獲得できるガチャ券はありません"
+
+          val gachaPointStatus = "$RESET${AQUA}次のガチャ券まで:${gachaPointToNextTicket}ブロック"
+
+          listOf(gachaTicketStatus, gachaPointStatus)
+        }
+
+        SkullItemStackBuilder(UUIDs.unchama)
+            .title("$DARK_AQUA$UNDERLINE${BOLD}整地報酬ガチャ券を受け取る")
+            .lore(lore)
+            .build()
+      }
+
+      return Button(iconItemStack)
+    }
+
+    suspend fun Player.computeGachaTicketDeliveryButton(): Button {
+      val playerData = SeichiAssist.playermap[uniqueId]!!
+
+      val iconItemStack = run {
+        val lore = run {
+          val settingsStatus =
+              if (playerData.gachaflag)
+                "$RESET${GREEN}毎分受け取ります"
+              else
+                "$RESET${RED}後でまとめて受け取ります"
+
+          val navigationMessage = "$RESET$DARK_RED${UNDERLINE}クリックで変更"
+
+          listOf(settingsStatus, navigationMessage)
+        }
+
+        IconItemStackBuilder(Material.STONE_BUTTON)
+            .title("$YELLOW$UNDERLINE${BOLD}整地報酬ガチャ券受け取り方法")
+            .lore(lore)
+            .build()
+      }
+
+      return Button(iconItemStack)
+    }
+
+    suspend fun Player.computeValentineChocolateButton(): Button {
+      val playerData = SeichiAssist.playermap[uniqueId]!!
+
+      return if (playerData.hasChocoGave && Valentine.isInEvent) {
+        Button(
+            IconItemStackBuilder(Material.TRAPPED_CHEST)
+                .enchanted()
+                .title("プレゼントボックス")
+                .lore(listOf(
+                    "$RESET$RED<バレンタインイベント記念>",
+                    "$RESET${AQUA}記念品として",
+                    "$RESET${GREEN}チョコチップクッキー×64個",
+                    "$RESET${AQUA}を配布します。",
+                    "$RESET$DARK_RED$UNDERLINE${BOLD}クリックで受け取る"
+                ))
+                .build()
+        )
+      } else {
+        Button(IconItemStackBuilder(Material.AIR).build())
+      }
     }
   }
 
-  private suspend fun Player.computeMenuLayout(): IndexedSlotLayout = with(ButtonComputations) {
-    IndexedSlotLayout(
-        0 to computeStatsButton(),
-        1 to computeEffectSuppressionButton(),
-        3 to computeRegionMenuButton(),
-        7 to teleportServerButton,
-        8 to spawnCommandButton,
-        9 to achievementSystemButton,
-        24 to computeMineStackButton()
-    )
-  }
+  private suspend fun Player.computeMenuLayout(): IndexedSlotLayout =
+      with(ConstantButtons) {
+        with(ButtonComputations) {
+          IndexedSlotLayout(
+              0 to computeStatsButton(),
+              1 to computeEffectSuppressionButton(),
+              3 to computeRegionMenuButton(),
+              5 to computeValentineChocolateButton(),
+              7 to teleportServerButton,
+              8 to spawnCommandButton,
+              9 to achievementSystemButton,
+              10 to computeStarLevelStatsButton(),
+              11 to passiveSkillBookButton,
+              13 to computeActiveSkillButton(),
+              16 to gachaPrizeExchangeButton,
+              17 to oreExchangeButton,
+              18 to homePointMenuButton,
+              19 to randomTeleportButton,
+              21 to computePocketOpenButton(),
+              22 to computeEnderChestButton(),
+              23 to fastCraftButton,
+              24 to computeMineStackButton(),
+              27 to computeGachaTicketButton(),
+              28 to computeGachaTicketDeliveryButton(),
+              29 to computeApologyItemsButton(),
+              30 to votePointMenuButton,
+              32 to seichiGodRankingButton,
+              33 to loginGodRankingButton,
+              34 to voteGodRankingButton,
+              35 to secondPageButton
+          )
+        }
+      }
 
   val open: TargetedEffect<Player> = computedEffect { player ->
     val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", player.computeMenuLayout())
