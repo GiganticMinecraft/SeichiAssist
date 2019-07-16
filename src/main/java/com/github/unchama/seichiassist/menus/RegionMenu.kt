@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.menus
 
 import arrow.core.Right
-import arrow.core.left
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
 import com.github.unchama.menuinventory.MenuInventoryView
@@ -12,6 +11,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.asCommandEffect
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -114,10 +114,10 @@ object RegionMenu {
 
       val leftClickEffect = if (canMakeRegion) {
         sequentialEffect(
-            "//expand vert".asCommandEffect(),
-            "/rg claim ${player.name}_${openerData.rgnum}".asCommandEffect(),
+            "/expand vert".asCommandEffect(),
+            "rg claim ${player.name}_${openerData.rgnum}".asCommandEffect(),
             deferredEffect { openerData.computeRegionNumberEffect() },
-            "//sel".asCommandEffect(),
+            "/sel".asCommandEffect(),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         )
       } else {
@@ -187,7 +187,7 @@ object RegionMenu {
         "${DARK_GRAY}command->[/land]"
     )
 
-    val leftClickEffect = "/land".asCommandEffect()
+    val leftClickEffect = "land".asCommandEffect()
 
     Button(
         IconItemStackBuilder(Material.DIAMOND_AXE)

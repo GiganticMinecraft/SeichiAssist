@@ -13,13 +13,16 @@ import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescrip
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.external.WorldGuard
-import com.github.unchama.targetedeffect.*
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.computedEffect
+import com.github.unchama.targetedeffect.deferredEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.asCommandEffect
+import com.github.unchama.targetedeffect.sequentialEffect
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import javax.swing.plaf.synth.Region
 
 /**
  * 木の棒メニュー
@@ -199,7 +202,7 @@ object StickMenu {
       val leftClickEffect = sequentialEffect(
           TargetedEffect { it.closeInventory() },
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          "/spawn".asCommandEffect()
+          "spawn".asCommandEffect()
       )
 
       Button(
