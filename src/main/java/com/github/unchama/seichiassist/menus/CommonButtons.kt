@@ -5,6 +5,7 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seichiassist.UUIDs
+import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import org.bukkit.ChatColor
@@ -17,7 +18,7 @@ object CommonButtons {
   val openStickMenu = run {
     val buttonEffect = sequentialEffect(
         FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-        StickMenu.open
+        FirstPage.open
     )
 
     Button(

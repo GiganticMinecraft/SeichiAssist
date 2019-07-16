@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.menus
+package com.github.unchama.seichiassist.menus.stickmenu
 
 import arrow.core.Left
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
@@ -12,8 +12,8 @@ import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.UUIDs
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
+import com.github.unchama.seichiassist.menus.RegionMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
-import com.github.unchama.seichiassist.menus.stickmenu.SecondPage
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.external.WorldGuard
@@ -33,7 +33,7 @@ import org.bukkit.entity.Player
  *
  * @author karayuu
  */
-object StickMenu {
+object FirstPage {
   private object ConstantButtons {
     val teleportServerButton = run {
       val buttonLore = listOf(
