@@ -8,9 +8,11 @@ import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
+import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.UUIDs
+import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
 import com.github.unchama.seichiassist.menus.RegionMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
@@ -23,6 +25,8 @@ import com.github.unchama.targetedeffect.deferredEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.asCommandEffect
 import com.github.unchama.targetedeffect.sequentialEffect
+import net.md_5.bungee.api.ChatColor
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -43,17 +47,16 @@ object FirstPage {
           "$DARK_RED${UNDERLINE}クリックして開く"
       )
 
-      val leftClickEffect = sequentialEffect(
-          FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f)
-          //TODO: サーバー間移動メニューを開けるようにする.
-      )
-
       Button(
           IconItemStackBuilder(Material.NETHER_STAR)
               .title("$RED$UNDERLINE${BOLD}サーバー間移動メニューへ")
               .lore(buttonLore)
               .build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f),
+              // TODO メニューに置き換える
+              TargetedEffect { it.openInventory(MenuInventoryData.getServerSwitchMenu(it)) }
+          )
       )
     }
 
@@ -66,18 +69,16 @@ object FirstPage {
           "${DARK_GRAY}command->[/spawn]"
       )
 
-      val leftClickEffect = sequentialEffect(
-          TargetedEffect { it.closeInventory() },
-          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          "spawn".asCommandEffect()
-      )
-
       Button(
           IconItemStackBuilder(Material.BEACON)
               .title("$YELLOW$UNDERLINE${BOLD}スポーンワールドへワープ")
               .lore(buttonLore)
               .build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+          LeftClickButtonEffect(
+              TargetedEffect { it.closeInventory() },
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+              "spawn".asCommandEffect()
+          )
       )
     }
 
@@ -88,17 +89,16 @@ object FirstPage {
           "$DARK_GRAY${UNDERLINE}クリックで設定画面へ移動"
       )
 
-      val leftClickEffect = sequentialEffect(
-          FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
-          //TODO: 実績メニューを開く処理を追加
-      )
-
       Button(
           IconItemStackBuilder(Material.END_CRYSTAL)
               .title("$YELLOW$UNDERLINE${BOLD}実績・二つ名システム")
               .lore(buttonLore)
               .build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
+              // TODO メニューに置き換える
+              TargetedEffect { it.openInventory(MenuInventoryData.getTitleMenuData(it)) }
+          )
       )
     }
 
@@ -112,8 +112,14 @@ object FirstPage {
               ))
               .build()
 
-      // todo add effect
-      Button(iconItemStack)
+      Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              // TODO メニューに置き換える
+              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList(it, 0)) }
+          )
+      )
     }
 
     val loginGodRankingButton = run {
@@ -123,8 +129,14 @@ object FirstPage {
               .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで開く"))
               .build()
 
-      // todo add effect
-      Button(iconItemStack)
+      Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              // TODO メニューに置き換える
+              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList_playtick(it, 0)) }
+          )
+      )
     }
 
     val voteGodRankingButton = run {
@@ -137,8 +149,14 @@ object FirstPage {
               ))
               .build()
 
-      // todo add effect
-      Button(iconItemStack)
+      Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              // TODO メニューに置き換える
+              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList_p_vote(it, 0)) }
+          )
+      )
     }
 
     val secondPageButton = run {
@@ -150,12 +168,9 @@ object FirstPage {
 
       Button(
           iconItemStack,
-          FilteredButtonEffect(
-              ClickEventFilter.LEFT_CLICK,
-              sequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-                  SecondPage.open
-              )
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              SecondPage.open
           )
       )
     }
@@ -176,8 +191,22 @@ object FirstPage {
               ))
               .build()
 
-      // todo add effect
-      Button(iconItemStack)
+      Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
+              // TODO メニューに置き換える
+              TargetedEffect {
+                it.openInventory(
+                    Bukkit.createInventory(
+                        null,
+                        9 * 4,
+                        "${ChatColor.LIGHT_PURPLE}${ChatColor.BOLD}交換したい景品を入れてください"
+                    )
+                )
+              }
+          )
+      )
     }
 
     val homePointMenuButton = run {
@@ -190,8 +219,13 @@ object FirstPage {
               ))
               .build()
 
-      // todo add effect
-      Button(iconItemStack)
+      Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
+              TargetedEffect { it.openInventory(MenuInventoryData.getHomeMenuData(it)) }
+          )
+      )
     }
 
     val randomTeleportButton = run {
@@ -206,8 +240,13 @@ object FirstPage {
               ))
               .build()
 
-      // todo add effect
-      Button(iconItemStack)
+      Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
+              "rtp".asCommandEffect()
+          )
+      )
     }
 
     val fastCraftButton = run {
@@ -223,8 +262,14 @@ object FirstPage {
               ))
               .build()
 
-      // todo add effect
-      Button(iconItemStack)
+
+      Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
+              "fc craft".asCommandEffect()
+          )
+      )
     }
 
     val passiveSkillBookButton = run {
@@ -238,8 +283,14 @@ object FirstPage {
               ))
               .build()
 
-      // todo add effect
-      Button(iconItemStack)
+      Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
+              // TODO メニューに置き換える
+              TargetedEffect { it.openInventory(MenuInventoryData.getPassiveSkillMenuData(it)) }
+          )
+      )
     }
 
     val oreExchangeButton = run {
@@ -258,8 +309,22 @@ object FirstPage {
               ))
               .build()
 
-      // todo add effect
-      Button(iconItemStack)
+      Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
+              // TODO メニューに置き換える
+              TargetedEffect {
+                it.openInventory(
+                    Bukkit.createInventory(
+                        null,
+                        9 * 4,
+                        "${ChatColor.LIGHT_PURPLE}${ChatColor.BOLD}交換したい鉱石を入れてください"
+                    )
+                )
+              }
+          )
+      )
     }
 
     val votePointMenuButton = run {
@@ -270,8 +335,14 @@ object FirstPage {
               .lore(listOf("$RESET${GREEN}投票ptに関することはこちらから！"))
               .build()
 
-      // todo add effect
-      Button(iconItemStack)
+      Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              // TODO メニューに置き換える
+              TargetedEffect { it.openInventory(MenuInventoryData.getVotingMenuData(it)) }
+          )
+      )
     }
   }
 

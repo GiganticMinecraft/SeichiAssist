@@ -2,6 +2,7 @@ package com.github.unchama.menuinventory.slot.button.action
 
 import com.github.unchama.targetedeffect.EmptyEffect
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.sequentialEffect
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 
@@ -19,7 +20,7 @@ data class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter,
   /**
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[FilteredButtonEffect]を構築する.
    */
-  constructor(clickEventFilter: ClickEventFilter, effect: TargetedEffect<Player>): this(clickEventFilter, { effect })
+  constructor(clickEventFilter: ClickEventFilter, vararg effects: TargetedEffect<Player>): this(clickEventFilter, { sequentialEffect(*effects) })
 
   /**
    * [event]に基づいた[effect]による作用を計算する.
@@ -32,4 +33,16 @@ data class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter,
     }
   }
 
+}
+
+/**
+ * 左クリックに限定した[FilteredButtonEffect]
+ */
+data class LeftClickButtonEffect(private val effect: ButtonEffectScope.() -> TargetedEffect<Player>):
+    ButtonEffect by FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, effect) {
+
+  /**
+   * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[LeftClickButtonEffect]を構築する.
+   */
+  constructor(vararg effects: TargetedEffect<Player>): this({ sequentialEffect(*effects) })
 }
