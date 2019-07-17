@@ -8,6 +8,8 @@ import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
+import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
+import com.github.unchama.menuinventory.slot.button.recomputedButton
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.UUIDs
@@ -19,6 +21,7 @@ import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.asCommandEffect
 import com.github.unchama.targetedeffect.player.closeInventoryEffect
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
@@ -235,7 +238,7 @@ object SecondPage {
   }
 
   private object ButtonComputations {
-    suspend fun Player.computeHeadSummoningButton(): Button {
+    suspend fun Player.computeHeadSummoningButton(): Button = recomputedButton {
       val iconItemStack = run {
         val baseLore = listOf(
             "$RESET${GRAY}経験値10000を消費して",
@@ -258,7 +261,7 @@ object SecondPage {
 
       val effect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
         sequentialEffect(
-            computedEffect<Player> {
+            computedEffect {
               val expManager = ExperienceManager(it)
               if (expManager.hasExp(10000)) {
                 val skullToGive = SkullItemStackBuilder(uniqueId).build().apply {
@@ -278,15 +281,14 @@ object SecondPage {
                     FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
                 )
               }
-            },
-            deferredEffect { overwriteCurrentSlotBy(computeHeadSummoningButton()) }
+            }
         )
       }
 
-      return Button(iconItemStack, effect)
+      Button(iconItemStack, effect)
     }
 
-    suspend fun Player.computeBroadcastMessageToggleButton(): Button {
+    suspend fun Player.computeBroadcastMessageToggleButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]!!
       val iconItemStack = run {
         val currentSettings = playerData.getBroadcastMutingSettings()
@@ -315,7 +317,7 @@ object SecondPage {
             .build()
       }
 
-      return Button(
+      Button(
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
@@ -327,14 +329,13 @@ object SecondPage {
                     RECEIVE_MESSAGE_ONLY -> "${RED}消音可能な全体通知音を消音します"
                     MUTE_MESSAGE_AND_SOUND -> "${RED}非表示可能な全体メッセージを非表示にします"
                   }.asMessageEffect()
-                },
-                deferredEffect { overwriteCurrentSlotBy(computeBroadcastMessageToggleButton()) }
+                }
             )
           }
       )
     }
 
-    suspend fun Player.computeDeathMessageToggleButton(): Button {
+    suspend fun Player.computeDeathMessageToggleButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
       val iconItemStack = run {
@@ -358,7 +359,7 @@ object SecondPage {
         }
       }.build()
 
-      return Button(
+      Button(
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
@@ -374,14 +375,13 @@ object SecondPage {
                       message.asMessageEffect(),
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
                   )
-                },
-                deferredEffect { overwriteCurrentSlotBy(computeDeathMessageToggleButton()) }
+                }
             )
           }
       )
     }
 
-    suspend fun Player.computeWorldGuardMessageToggleButton(): Button {
+    suspend fun Player.computeWorldGuardMessageToggleButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
       val iconItemStack = run {
@@ -408,7 +408,7 @@ object SecondPage {
         }
       }.build()
 
-      return Button(
+      Button(
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
@@ -424,14 +424,13 @@ object SecondPage {
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch),
                       message.asMessageEffect()
                   )
-                },
-                deferredEffect { overwriteCurrentSlotBy(computeWorldGuardMessageToggleButton()) }
+                }
             )
           }
       )
     }
 
-    suspend fun Player.computeShareInventoryButton(): Button {
+    suspend fun Player.computeShareInventoryButton(): Button = recomputedButton {
       val iconItemStack = run {
         val lore = run {
           val playerData = SeichiAssist.playermap[uniqueId]!!
@@ -464,15 +463,7 @@ object SecondPage {
             .build()
       }
 
-      return Button(
-          iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
-            sequentialEffect(
-              TargetedEffect<Player> { it.performCommand("shareinv") }, // TODO asCommandEffect
-              deferredEffect { overwriteCurrentSlotBy(computeShareInventoryButton()) }
-            )
-          }
-      )
+      Button(iconItemStack, LeftClickButtonEffect("shareinv".asCommandEffect()))
     }
   }
 

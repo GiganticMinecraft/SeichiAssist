@@ -4,6 +4,7 @@ import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
+import com.github.unchama.menuinventory.slot.button.recomputedButton
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
@@ -38,7 +39,7 @@ internal object MineStackButtons {
     }
   }
 
-  suspend fun Player.getMineStackItemButtonOf(mineStackObj: MineStackObj): Button {
+  suspend fun Player.getMineStackItemButtonOf(mineStackObj: MineStackObj): Button = recomputedButton {
     val playerData = SeichiAssist.playermap[uniqueId]!!
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
@@ -62,12 +63,11 @@ internal object MineStackButtons {
       }
     }
 
-    return Button(
+    Button(
         itemStack,
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
           sequentialEffect(
               withDrawOneStackEffect(mineStackObj),
-              deferredEffect { overwriteCurrentSlotBy(getMineStackItemButtonOf(mineStackObj)) },
               unfocusedEffect {
                 if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
                   playerData.hisotryData.add(mineStackObj)
@@ -78,7 +78,7 @@ internal object MineStackButtons {
     )
   }
 
-  suspend fun Player.computeAutoMineStackToggleButton(): Button {
+  suspend fun Player.computeAutoMineStackToggleButton(): Button = recomputedButton {
     val playerData = SeichiAssist.playermap[uniqueId]!!
 
     val iconItemStack = run {
@@ -123,11 +123,10 @@ internal object MineStackButtons {
                 message.asMessageEffect(),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
             )
-          },
-          deferredEffect { overwriteCurrentSlotBy(computeAutoMineStackToggleButton()) }
+          }
       )
     }
 
-    return Button(iconItemStack, buttonEffect)
+    Button(iconItemStack, buttonEffect)
   }
 }

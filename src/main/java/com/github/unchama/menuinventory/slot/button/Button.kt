@@ -21,8 +21,8 @@ import org.bukkit.inventory.ItemStack
  * @param itemStack  [Inventory] へセットする [ItemStack]
  * @author karayuu
  */
-class Button(override val itemStack: ItemStack,
-             private val effects: List<ButtonEffect>) : Slot {
+data class Button(override val itemStack: ItemStack,
+                  private val effects: List<ButtonEffect>) : Slot {
 
   /**
    * [effects]をひとつずつ作用として発生させる [Slot] を構築します.
@@ -31,5 +31,7 @@ class Button(override val itemStack: ItemStack,
 
   override fun effectOn(event: InventoryClickEvent): TargetedEffect<Player> =
       unfocusedEffect { event.isCancelled = true } + this.effects.map { it.asyncEffectOn(event) }.asSequentialEffect()
+
+  fun withAnotherEffect(effect: ButtonEffect): Button = this.copy(effects = effects + effect)
 
 }

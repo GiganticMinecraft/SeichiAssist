@@ -9,6 +9,7 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
+import com.github.unchama.menuinventory.slot.button.recomputedButton
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.UUIDs
@@ -347,10 +348,10 @@ object FirstPage {
   }
 
   private object ButtonComputations {
-    suspend fun Player.computeStatsButton(): Button {
+    suspend fun Player.computeStatsButton(): Button = recomputedButton {
       val openerData = SeichiAssist.playermap[uniqueId]!!
 
-      return Button(
+      Button(
           SkullItemStackBuilder(uniqueId)
               .title("$YELLOW$BOLD$UNDERLINE${name}の統計データ")
               .lore(PlayerInformationDescriptions.playerInfoLore(openerData))
@@ -361,14 +362,13 @@ object FirstPage {
                 deferredEffect {
                   val toggleSoundPitch = if (openerData.expbar.isVisible) 1.0f else 0.5f
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
-                },
-                deferredEffect { overwriteCurrentSlotBy(computeStatsButton()) }
+                }
             )
           }
       )
     }
 
-    suspend fun Player.computeEffectSuppressionButton(): Button {
+    suspend fun Player.computeEffectSuppressionButton(): Button = recomputedButton {
       val openerData = SeichiAssist.playermap[uniqueId]!!
 
       val buttonLore: List<String> = run {
@@ -391,7 +391,7 @@ object FirstPage {
         toggleNavigation + explanation + effectStats
       }
 
-      return Button(
+      Button(
           IconItemStackBuilder(Material.DIAMOND_PICKAXE)
               .title("$YELLOW$UNDERLINE${BOLD}採掘速度上昇効果")
               .enchanted()
@@ -401,40 +401,38 @@ object FirstPage {
             sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                 openerData.fastDiggingEffectSuppressor.suppressionDegreeToggleEffect,
-                deferredEffect { openerData.computeFastDiggingEffect() },
-                deferredEffect { overwriteCurrentSlotBy(computeEffectSuppressionButton()) }
+                deferredEffect { openerData.computeFastDiggingEffect() }
             )
           }
       )
     }
 
     suspend fun Player.computeRegionMenuButton(): Button {
-      val worldGuardPlugin = ExternalPlugins.getWorldGuard()
-      val player = this
-      val regionManager = worldGuardPlugin.getRegionManager(player.world)
+      val buttonLore = run {
+        val worldGuardPlugin = ExternalPlugins.getWorldGuard()
+        val regionManager = worldGuardPlugin.getRegionManager(world)
 
-      val maxRegionCount = WorldGuard.getMaxRegionCount(player, player.world)
-      val currentPlayerRegionCount =
-          regionManager.getRegionCountOfPlayer(worldGuardPlugin.wrapPlayer(player))
+        val maxRegionCount = WorldGuard.getMaxRegionCount(this, world)
+        val currentPlayerRegionCount =
+            regionManager.getRegionCountOfPlayer(worldGuardPlugin.wrapPlayer(this))
 
-      val buttonLore = listOf(
-          "${GRAY}土地の保護が行えます",
-          "$DARK_RED${UNDERLINE}クリックで開く",
-          "${GRAY}保護作成上限：$AQUA$maxRegionCount",
-          "${GRAY}現在のあなたの保護作成数：$AQUA$currentPlayerRegionCount"
-      )
-
-      val leftClickEffect = sequentialEffect(
-          FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.5f),
-          RegionMenu.open
-      )
+        listOf(
+            "${GRAY}土地の保護が行えます",
+            "$DARK_RED${UNDERLINE}クリックで開く",
+            "${GRAY}保護作成上限：$AQUA$maxRegionCount",
+            "${GRAY}現在のあなたの保護作成数：$AQUA$currentPlayerRegionCount"
+        )
+      }
 
       return Button(
           IconItemStackBuilder(Material.DIAMOND_AXE)
               .title("$YELLOW${UNDERLINE}土地保護メニュー")
               .lore(buttonLore)
               .build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+          LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.5f),
+              RegionMenu.open
+          )
       )
     }
 
@@ -442,7 +440,6 @@ object FirstPage {
       val openerData = SeichiAssist.playermap[uniqueId]!!
 
       val minimumLevelRequired = SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
-      val playerHasEnoughLevelToOpen = openerData.level >= minimumLevelRequired
 
       val buttonLore: List<String> = run {
         val explanation = listOf(
@@ -452,7 +449,7 @@ object FirstPage {
             "${RESET}ここから取り出せるゾ!"
         )
 
-        val actionGuidance = if (playerHasEnoughLevelToOpen) {
+        val actionGuidance = if (openerData.level >= minimumLevelRequired) {
           "$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
         } else {
           "$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumLevelRequired}以上必要です"
@@ -467,19 +464,19 @@ object FirstPage {
         explanation + actionGuidance + annotation
       }
 
-      val leftClickEffect = if (playerHasEnoughLevelToOpen) {
-        sequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-            MineStackMainMenu.openMainMenu
-        )
-      } else FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
-
       return Button(
           IconItemStackBuilder(Material.CHEST)
               .title("$YELLOW$UNDERLINE${BOLD}MineStack機能")
               .lore(buttonLore)
               .build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, leftClickEffect)
+          LeftClickButtonEffect {
+            if (openerData.level >= minimumLevelRequired) {
+              sequentialEffect(
+                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
+                  MineStackMainMenu.openMainMenu
+              )
+            } else FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
+          }
       )
     }
 
@@ -518,9 +515,7 @@ object FirstPage {
                     FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 0.1f),
                     TargetedEffect { it.openInventory(playerData.inventory) }
                   )
-                } else {
-                  FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
-                }
+                } else FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
               }
           )
       )
@@ -562,7 +557,7 @@ object FirstPage {
       )
     }
 
-    suspend fun Player.computeApologyItemsButton(): Button {
+    suspend fun Player.computeApologyItemsButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
       val iconItemStack = run {
@@ -591,7 +586,7 @@ object FirstPage {
             .build()
       }
 
-      return Button(
+      Button(
           iconItemStack,
           LeftClickButtonEffect(
               computedEffect {
@@ -666,7 +661,7 @@ object FirstPage {
       )
     }
 
-    suspend fun Player.computeGachaTicketButton(): Button {
+    suspend fun Player.computeGachaTicketButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
       val iconItemStack = run {
@@ -690,33 +685,31 @@ object FirstPage {
             .build()
       }
 
-      return Button(
+      Button(
           iconItemStack,
-          LeftClickButtonEffect(
-            deferredEffect {
-              if (playerData.gachacooldownflag) {
-                CoolDownTask(this@computeGachaTicketButton, false, false, true).runTaskLater(SeichiAssist.instance, 20)
+          LeftClickButtonEffect {
+            if (playerData.gachacooldownflag) {
+              CoolDownTask(this@computeGachaTicketButton, false, false, true).runTaskLater(SeichiAssist.instance, 20)
 
-                val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.gachaPresentInterval
-                val gachaTicketsToGive = min(playerData.gachapoint / gachaPointPerTicket, 576)
+              val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.gachaPresentInterval
+              val gachaTicketsToGive = min(playerData.gachapoint / gachaPointPerTicket, 576)
 
-                val itemStackToGive = Util.getskull(this@computeGachaTicketButton.name)
+              val itemStackToGive = Util.getskull(this@computeGachaTicketButton.name)
 
-                sequentialEffect(
-                    unfocusedEffect {
-                      playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
-                      repeat(gachaTicketsToGive) { Util.addItemToPlayerSafely(this@computeGachaTicketButton, itemStackToGive) }
-                    },
-                    "${ChatColor.GOLD}ガチャ券${gachaTicketsToGive}枚${ChatColor.WHITE}プレゼントフォーユー".asMessageEffect(),
-                    FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
-                )
-              } else EmptyEffect
-            }
-          )
+              sequentialEffect(
+                  unfocusedEffect {
+                    playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
+                    repeat(gachaTicketsToGive) { Util.addItemToPlayerSafely(this@computeGachaTicketButton, itemStackToGive) }
+                  },
+                  "${ChatColor.GOLD}ガチャ券${gachaTicketsToGive}枚${ChatColor.WHITE}プレゼントフォーユー".asMessageEffect(),
+                  FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+              )
+            } else EmptyEffect
+          }
       )
     }
 
-    suspend fun Player.computeGachaTicketDeliveryButton(): Button {
+    suspend fun Player.computeGachaTicketDeliveryButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
       val iconItemStack = run {
@@ -738,7 +731,7 @@ object FirstPage {
             .build()
       }
 
-      return Button(
+      Button(
           iconItemStack,
           LeftClickButtonEffect(
               unfocusedEffect {
@@ -762,10 +755,10 @@ object FirstPage {
       )
     }
 
-    suspend fun Player.computeValentineChocolateButton(): Button {
+    suspend fun Player.computeValentineChocolateButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
-      return if (playerData.hasChocoGave && Valentine.isInEvent) {
+      if (playerData.hasChocoGave && Valentine.isInEvent) {
         val iconItemStack =
             IconItemStackBuilder(Material.TRAPPED_CHEST)
                 .enchanted()
