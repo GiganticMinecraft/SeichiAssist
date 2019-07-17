@@ -12,25 +12,25 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.UUIDs
+import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
 import com.github.unchama.seichiassist.menus.RegionMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
+import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.external.WorldGuard
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.computedEffect
-import com.github.unchama.targetedeffect.deferredEffect
+import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.asCommandEffect
-import com.github.unchama.targetedeffect.sequentialEffect
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import kotlin.math.min
 
 /**
  * 木の棒メニュー
@@ -201,7 +201,7 @@ object FirstPage {
                     Bukkit.createInventory(
                         null,
                         9 * 4,
-                        "${ChatColor.LIGHT_PURPLE}${ChatColor.BOLD}交換したい景品を入れてください"
+                        "$LIGHT_PURPLE${BOLD}交換したい景品を入れてください"
                     )
                 )
               }
@@ -319,7 +319,7 @@ object FirstPage {
                     Bukkit.createInventory(
                         null,
                         9 * 4,
-                        "${ChatColor.LIGHT_PURPLE}${ChatColor.BOLD}交換したい鉱石を入れてください"
+                        "$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください"
                     )
                 )
               }
@@ -486,27 +486,22 @@ object FirstPage {
     suspend fun Player.computePocketOpenButton(): Button {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
+      val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
+
       val iconItemStack = run {
-        val loreHeading = run {
-          val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
-
-          if (playerData.level >= minimumRequiredLevel) {
-            listOf(
-                "$RESET${GRAY}ポケットサイズ:${playerData.inventory.size}スタック",
-                "$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
-            )
-          } else {
-            listOf(
-                "$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です"
-            )
-          }
-        }
-
         val loreAnnotation = listOf(
             "$RESET${DARK_GRAY}※4次元ポケットの中身は",
             "$RESET${DARK_GRAY}各サバイバルサーバー間で",
             "$RESET${DARK_GRAY}共有されます"
         )
+        val loreHeading = if (playerData.level >= minimumRequiredLevel) {
+          listOf(
+              "$RESET${GRAY}ポケットサイズ:${playerData.inventory.size}スタック",
+              "$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+          )
+        } else {
+          listOf("$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です")
+        }
 
         IconItemStackBuilder(Material.ENDER_PORTAL_FRAME)
             .title("$YELLOW$UNDERLINE${BOLD}4次元ポケットを開く")
@@ -514,17 +509,29 @@ object FirstPage {
             .build()
       }
 
-      // todo add effect
-      return Button(iconItemStack)
+      return Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              deferredEffect {
+                if (playerData.level >= minimumRequiredLevel) {
+                  sequentialEffect(
+                    FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 0.1f),
+                    TargetedEffect { it.openInventory(playerData.inventory) }
+                  )
+                } else {
+                  FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
+                }
+              }
+          )
+      )
     }
 
     suspend fun Player.computeEnderChestButton(): Button {
       val playerData = SeichiAssist.playermap[uniqueId]!!
+      val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
 
       val iconItemStack = run {
         val loreHeading = run {
-          val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
-
           if (playerData.level >= minimumRequiredLevel) {
             "$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
           } else {
@@ -538,8 +545,21 @@ object FirstPage {
             .build()
       }
 
-      // todo add effect
-      return Button(iconItemStack)
+      return Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              deferredEffect {
+                if (playerData.level >= minimumRequiredLevel) {
+                  sequentialEffect(
+                      FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f),
+                      TargetedEffect { it.openInventory(player.enderChest) }
+                  )
+                } else {
+                  FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
+                }
+              }
+          )
+      )
     }
 
     suspend fun Player.computeApologyItemsButton(): Button {
@@ -571,8 +591,27 @@ object FirstPage {
             .build()
       }
 
-      // todo add effect
-      return Button(iconItemStack)
+      return Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              computedEffect {
+                val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(this, playerData)
+
+                if (numberOfItemsToGive != 0) {
+                  val itemToGive = Util.getForBugskull(this.name)
+
+                  sequentialEffect(
+                      unfocusedEffect {
+                        repeat(numberOfItemsToGive) { Util.addItemToPlayerSafely(this, itemToGive) }
+                        playerData.numofsorryforbug = 0
+                      },
+                      FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
+                      "${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
+                  )
+                } else EmptyEffect
+              }
+          )
+      )
     }
 
     suspend fun Player.computeStarLevelStatsButton(): Button {
@@ -594,7 +633,6 @@ object FirstPage {
             .build()
       }
 
-      // todo add effect
       return Button(iconItemStack)
     }
 
@@ -612,14 +650,20 @@ object FirstPage {
                   "$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く"
               )
 
-        SkullItemStackBuilder(UUIDs.whitecat_haru)
-            .title("$DARK_AQUA$UNDERLINE${BOLD}運営からのガチャ券を受け取る")
+        IconItemStackBuilder(Material.ENCHANTED_BOOK)
+            .enchanted()
+            .title("$YELLOW$UNDERLINE${BOLD}アクティブスキルブック")
             .lore(lore)
             .build()
       }
 
-      // todo add effect
-      return Button(iconItemStack)
+      return Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              // TODO メニューに置き換える
+              TargetedEffect { it.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(it)) }
+          )
+      )
     }
 
     suspend fun Player.computeGachaTicketButton(): Button {
@@ -646,8 +690,30 @@ object FirstPage {
             .build()
       }
 
-      // todo add effect
-      return Button(iconItemStack)
+      return Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+            deferredEffect {
+              if (playerData.gachacooldownflag) {
+                CoolDownTask(this@computeGachaTicketButton, false, false, true).runTaskLater(SeichiAssist.instance, 20)
+
+                val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.gachaPresentInterval
+                val gachaTicketsToGive = min(playerData.gachapoint / gachaPointPerTicket, 576)
+
+                val itemStackToGive = Util.getskull(this@computeGachaTicketButton.name)
+
+                sequentialEffect(
+                    unfocusedEffect {
+                      playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
+                      repeat(gachaTicketsToGive) { Util.addItemToPlayerSafely(this@computeGachaTicketButton, itemStackToGive) }
+                    },
+                    "${ChatColor.GOLD}ガチャ券${gachaTicketsToGive}枚${ChatColor.WHITE}プレゼントフォーユー".asMessageEffect(),
+                    FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+                )
+              } else EmptyEffect
+            }
+          )
+      )
     }
 
     suspend fun Player.computeGachaTicketDeliveryButton(): Button {
@@ -672,8 +738,28 @@ object FirstPage {
             .build()
       }
 
-      // todo add effect
-      return Button(iconItemStack)
+      return Button(
+          iconItemStack,
+          LeftClickButtonEffect(
+              unfocusedEffect {
+                playerData.gachaflag = !playerData.gachaflag
+              },
+              deferredEffect {
+                if (playerData.gachaflag) {
+                  sequentialEffect(
+                      "${ChatColor.GREEN}毎分のガチャ券受け取り:ON".asMessageEffect(),
+                      FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+                  )
+                } else {
+                  sequentialEffect(
+                      "${ChatColor.RED}毎分のガチャ券受け取り:OFF".asMessageEffect(),
+                      "${ChatColor.GREEN}ガチャ券受け取りボタンを押すともらえます".asMessageEffect(),
+                      FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1.0f, 1.0f)
+                  )
+                }
+              }
+          )
+      )
     }
 
     suspend fun Player.computeValentineChocolateButton(): Button {
@@ -693,8 +779,25 @@ object FirstPage {
                 ))
                 .build()
 
-        // todo add effect
-        Button(iconItemStack)
+        Button(
+            iconItemStack,
+            LeftClickButtonEffect(
+                deferredEffect {
+                  if (Valentine.isInEvent) {
+                    sequentialEffect(
+                        FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 0.5f),
+                        unfocusedEffect {
+                          Valentine.giveChoco(this)
+                          playerData.hasChocoGave = true
+                        },
+                        "${ChatColor.AQUA}チョコチップクッキーを付与しました。".asMessageEffect()
+                    )
+                  } else {
+                    EmptyEffect
+                  }
+                }
+            )
+        )
       } else {
         Button(IconItemStackBuilder(Material.AIR).build())
       }

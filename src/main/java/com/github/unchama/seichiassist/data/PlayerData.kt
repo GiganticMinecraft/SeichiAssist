@@ -19,6 +19,7 @@ import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.ops.plus
 import com.github.unchama.targetedeffect.player.asTargetedEffect
 import org.bukkit.*
+import org.bukkit.ChatColor.*
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -68,6 +69,16 @@ class PlayerData(val player: Player) {
     var numofsorryforbug: Int = 0
     //拡張インベントリ
     var inventory: Inventory
+        get() {
+            // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
+            if (field.size < pocketSize) {
+                field = Bukkit.getServer()
+                    .createInventory(null, pocketSize, "$DARK_PURPLE${BOLD}4次元ポケット")
+                    .also { field.forEachIndexed(it::setItem) }
+            }
+
+            return field
+        }
     //ワールドガード保護自動設定用
     var rgnum: Int = 0
 
@@ -302,7 +313,7 @@ class PlayerData(val player: Player) {
         this.level = 1
         this.mebius = MebiusTask(this)
         this.numofsorryforbug = 0
-        this.inventory = Bukkit.createInventory(null, 9 * 1, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "4次元ポケット")
+        this.inventory = Bukkit.createInventory(null, 9 * 1, DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
         this.rgnum = 0
         this.minestackflag = true
         this.servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK)
@@ -426,7 +437,7 @@ class PlayerData(val player: Player) {
     fun NotifySorryForBug(player: Player) {
         if (numofsorryforbug > 0) {
             player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-            player.sendMessage(ChatColor.GREEN.toString() + "運営チームから" + numofsorryforbug + "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が届いています！\n木の棒メニューから受け取ってください")
+            player.sendMessage(GREEN.toString() + "運営チームから" + numofsorryforbug + "枚の" + GOLD + "ガチャ券" + WHITE + "が届いています！\n木の棒メニューから受け取ってください")
         }
     }
 
@@ -477,21 +488,21 @@ class PlayerData(val player: Player) {
         //表示を追加する処理
         if (displayTitle1No == 0 && displayTitle2No == 0 && displayTitle3No == 0) {
             if (starlevel <= 0) {
-                displayname = "[ Lv" + level + " ]" + displayname + ChatColor.WHITE
+                displayname = "[ Lv" + level + " ]" + displayname + WHITE
             } else {
-                displayname = "[Lv" + level + "☆" + starlevel + "]" + displayname + ChatColor.WHITE
+                displayname = "[Lv" + level + "☆" + starlevel + "]" + displayname + WHITE
             }
         } else {
             val displayTitle1 = SeichiAssist.seichiAssistConfig.getTitle1(displayTitle1No)
             val displayTitle2 = SeichiAssist.seichiAssistConfig.getTitle2(displayTitle2No)
             val displayTitle3 = SeichiAssist.seichiAssistConfig.getTitle3(displayTitle3No)
-            displayname = "[" + displayTitle1 + displayTitle2 + displayTitle3 + "]" + displayname + ChatColor.WHITE
+            displayname = "[" + displayTitle1 + displayTitle2 + displayTitle3 + "]" + displayname + WHITE
         }
         //放置時に色を変える
         if (idletime >= 10) {
-            displayname = ChatColor.DARK_GRAY.toString() + displayname
+            displayname = DARK_GRAY.toString() + displayname
         } else if (idletime >= 3) {
-            displayname = ChatColor.GRAY.toString() + displayname
+            displayname = GRAY.toString() + displayname
         }
 
         p.displayName = displayname
@@ -511,7 +522,7 @@ class PlayerData(val player: Player) {
         while (LevelThresholds.levelExpThresholds[i] <= totalbreaknum && i + 1 <= LevelThresholds.levelExpThresholds.size) {
 
             //レベルアップ時のメッセージ
-            p.sendMessage(ChatColor.GOLD.toString() + "ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv(" + i + ")→Lv(" + (i + 1) + ")】")
+            p.sendMessage(GOLD.toString() + "ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv(" + i + ")→Lv(" + (i + 1) + ")】")
             //レベルアップイベント着火
             Bukkit.getPluginManager().callEvent(SeichiLevelUpEvent(p, this, i + 1))
             //レベルアップ時の花火の打ち上げ
@@ -519,7 +530,7 @@ class PlayerData(val player: Player) {
             Util.launchFireWorks(loc)
             val lvmessage = SeichiAssist.seichiAssistConfig.getLvMessage(i + 1)
             if (!lvmessage.isEmpty()) {
-                p.sendMessage(ChatColor.AQUA.toString() + lvmessage)
+                p.sendMessage(AQUA.toString() + lvmessage)
             }
             i++
             if (activeskilldata.mana.isLoaded) {
@@ -549,7 +560,7 @@ class PlayerData(val player: Player) {
 
         //整地量の確認
         if (iB < iB2) {
-            p.sendMessage(ChatColor.GOLD.toString() + "ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆(" + iB + ")→☆(" + iB2 + ")】")
+            p.sendMessage(GOLD.toString() + "ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆(" + iB + ")→☆(" + iB2 + ")】")
             starlevel_Break = iB2
         }
 
@@ -568,7 +579,7 @@ class PlayerData(val player: Player) {
         //合計値の確認
         i2 = iB2 + iT2 + iE2
         if (i < i2) {
-            p.sendMessage(ChatColor.GOLD.toString() + "★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆(" + i + ")→☆(" + i2 + ")】")
+            p.sendMessage(GOLD.toString() + "★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆(" + i + ")→☆(" + i2 + ")】")
             starlevel = i2
         }
     }
@@ -903,7 +914,7 @@ class PlayerData(val player: Player) {
         //効果は継続しているか
         if (this.usingVotingFairy && Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime) == false) {
             this.usingVotingFairy = false
-            p.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...")
+            p.sendMessage(LIGHT_PURPLE.toString() + "" + BOLD + "妖精は何処かへ行ってしまったようだ...")
         } else if (this.usingVotingFairy) {
             VotingFairyTask.speak(p, "おかえり！" + p.name, true)
         }
@@ -914,11 +925,11 @@ class PlayerData(val player: Player) {
 
         //負数(入力ミスによるやり直し中プレイヤーがオンラインだった場合)の時
         if (addMana < 0) {
-            p.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "入力者のミスによって得た不正なマナを" + -10 * addMana + "分減少させました.")
-            p.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "申し訳ございません.")
+            p.sendMessage(GREEN.toString() + "" + BOLD + "入力者のミスによって得た不正なマナを" + -10 * addMana + "分減少させました.")
+            p.sendMessage(GREEN.toString() + "" + BOLD + "申し訳ございません.")
         } else {
-            p.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "運営からあなたの整地鯖への貢献報酬として")
-            p.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "マナの上限値が" + 10 * addMana + "上昇しました．(永久)")
+            p.sendMessage(GREEN.toString() + "" + BOLD + "運営からあなたの整地鯖への貢献報酬として")
+            p.sendMessage(GREEN.toString() + "" + BOLD + "マナの上限値が" + 10 * addMana + "上昇しました．(永久)")
         }
         this.added_mana += addMana
 
@@ -930,9 +941,9 @@ class PlayerData(val player: Player) {
         messageflag = !messageflag
 
         val responseMessage = if (messageflag) {
-            "${ChatColor.GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
+            "${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
         } else {
-            "${ChatColor.GREEN}内訳表示:OFF"
+            "${GREEN}内訳表示:OFF"
         }
 
         return responseMessage.asMessageEffect()
@@ -942,8 +953,8 @@ class PlayerData(val player: Player) {
     suspend fun toggleHalfBreakFlag(): TargetedEffect<Player> {
         halfBreakFlag = !halfBreakFlag
 
-        val newStatus = if (halfBreakFlag) "${ChatColor.GREEN}破壊可能" else "${ChatColor.RED}破壊不可能"
-        val responseMessage = "現在ハーフブロックは$newStatus${ChatColor.RESET}です."
+        val newStatus = if (halfBreakFlag) "${GREEN}破壊可能" else "${RED}破壊不可能"
+        val responseMessage = "現在ハーフブロックは$newStatus${RESET}です."
 
         return responseMessage.asMessageEffect()
     }
@@ -961,9 +972,9 @@ class PlayerData(val player: Player) {
             TitleFlags.set(number)
             Bukkit.getPlayer(uuid)?.sendMessage("運営チームよりNo${number}の実績が配布されました。")
 
-            "$name に実績No. $number を${ChatColor.GREEN}付与${ChatColor.RESET}しました。".asMessageEffect()
+            "$name に実績No. $number を${GREEN}付与${RESET}しました。".asMessageEffect()
         } else {
-            "${ChatColor.GRAY}$name は既に実績No. $number を獲得しています。".asMessageEffect()
+            "$GRAY$name は既に実績No. $number を獲得しています。".asMessageEffect()
         }
 
     /**
@@ -978,9 +989,9 @@ class PlayerData(val player: Player) {
         if (!TitleFlags.get(number)) {
             TitleFlags.set(number, false)
 
-            "$name から実績No. $number を${ChatColor.RED}剥奪${ChatColor.GREEN}しました。".asMessageEffect()
+            "$name から実績No. $number を${RED}剥奪${GREEN}しました。".asMessageEffect()
         } else {
-            "${ChatColor.GRAY}$name は実績No. $number を獲得していません。".asMessageEffect()
+            "$GRAY$name は実績No. $number を獲得していません。".asMessageEffect()
         }
 
     /**
@@ -1019,10 +1030,10 @@ class PlayerData(val player: Player) {
     fun notifyExpBarVisibility() {
         if (this.expbar.isVisible) {
             this.player.playSound(this.player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-            this.player.sendMessage("${ChatColor.GREEN}整地量バー表示")
+            this.player.sendMessage("${GREEN}整地量バー表示")
         } else {
             this.player.playSound(this.player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
-            this.player.sendMessage("${ChatColor.RED}整地量バー非表示")
+            this.player.sendMessage("${RED}整地量バー非表示")
         }
     }
 
@@ -1031,8 +1042,8 @@ class PlayerData(val player: Player) {
             this.expbar.isVisible = !this.expbar.isVisible
         } + deferredEffect {
             when {
-                this.expbar.isVisible -> "${ChatColor.GREEN}整地量バー表示"
-                else -> "${ChatColor.RED}整地量バー非表示"
+                this.expbar.isVisible -> "${GREEN}整地量バー表示"
+                else -> "${RED}整地量バー非表示"
             }.asMessageEffect()
         }
 
