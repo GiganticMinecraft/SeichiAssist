@@ -103,7 +103,7 @@ object FirstPage {
     }
 
     val seichiGodRankingButton = run {
-      Button(
+      val iconItemStack =
           IconItemStackBuilder(Material.COOKIE)
               .title("$YELLOW$UNDERLINE${BOLD}整地神ランキングを見る")
               .lore(listOf(
@@ -111,20 +111,24 @@ object FirstPage {
                   "$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
-      )
+
+      // todo add effect
+      Button(iconItemStack)
     }
 
     val loginGodRankingButton = run {
-      Button(
+      val iconItemStack =
           IconItemStackBuilder(Material.COOKIE)
               .title("$YELLOW$UNDERLINE${BOLD}ログイン神ランキングを見る")
               .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで開く"))
               .build()
-      )
+
+      // todo add effect
+      Button(iconItemStack)
     }
 
     val voteGodRankingButton = run {
-      Button(
+      val iconItemStack =
           IconItemStackBuilder(Material.COOKIE)
               .title("$YELLOW$UNDERLINE${BOLD}投票神ランキングを見る")
               .lore(listOf(
@@ -132,21 +136,32 @@ object FirstPage {
                   "$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
-      )
+
+      // todo add effect
+      Button(iconItemStack)
     }
 
     val secondPageButton = run {
-      Button(
+      val iconItemStack =
           SkullItemStackBuilder(UUIDs.MHF_ArrowRight)
               .title("$YELLOW$UNDERLINE${BOLD}2ページ目へ")
               .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
-              .build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, SecondPage.open)
+              .build()
+
+      Button(
+          iconItemStack,
+          FilteredButtonEffect(
+              ClickEventFilter.LEFT_CLICK,
+              sequentialEffect(
+                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                  SecondPage.open
+              )
+          )
       )
     }
 
     val gachaPrizeExchangeButton = run {
-      Button(
+      val iconItemStack =
           IconItemStackBuilder(Material.NOTE_BLOCK)
               .title("$YELLOW$UNDERLINE${BOLD}不要ガチャ景品交換システム")
               .lore(listOf(
@@ -160,11 +175,13 @@ object FirstPage {
                   "$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
-      )
+
+      // todo add effect
+      Button(iconItemStack)
     }
 
     val homePointMenuButton = run {
-      Button(
+      val iconItemStack =
           IconItemStackBuilder(Material.BED)
               .title("$YELLOW$UNDERLINE${BOLD}ホームメニューを開く")
               .lore(listOf(
@@ -172,11 +189,13 @@ object FirstPage {
                   "$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
-      )
+
+      // todo add effect
+      Button(iconItemStack)
     }
 
     val randomTeleportButton = run {
-      Button(
+      val iconItemStack =
           IconItemStackBuilder(Material.COMPASS)
               .title("$YELLOW$UNDERLINE${BOLD}ランダムテレポート(β)")
               .lore(listOf(
@@ -186,11 +205,13 @@ object FirstPage {
                   "$RESET${DARK_GRAY}command->[/rtp]"
               ))
               .build()
-      )
+
+      // todo add effect
+      Button(iconItemStack)
     }
 
     val fastCraftButton = run {
-      Button(
+      val iconItemStack =
           IconItemStackBuilder(Material.WORKBENCH)
               .title("$YELLOW$UNDERLINE${BOLD}FastCraft機能")
               .lore(listOf(
@@ -201,11 +222,13 @@ object FirstPage {
                   "$RESET${DARK_GRAY}command->[/fc craft]"
               ))
               .build()
-      )
+
+      // todo add effect
+      Button(iconItemStack)
     }
 
     val passiveSkillBookButton = run {
-      Button(
+      val iconItemStack =
           IconItemStackBuilder(Material.ENCHANTED_BOOK)
               .enchanted()
               .title("$YELLOW$UNDERLINE${BOLD}パッシブスキルブック")
@@ -214,11 +237,13 @@ object FirstPage {
                   "$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く"
               ))
               .build()
-      )
+
+      // todo add effect
+      Button(iconItemStack)
     }
 
     val oreExchangeButton = run {
-      Button(
+      val iconItemStack =
           IconItemStackBuilder(Material.DIAMOND_ORE)
               .title("$YELLOW$UNDERLINE${BOLD}鉱石・交換券変換システム")
               .lore(listOf(
@@ -232,17 +257,21 @@ object FirstPage {
                   "$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
-      )
+
+      // todo add effect
+      Button(iconItemStack)
     }
 
     val votePointMenuButton = run {
-      Button(
+      val iconItemStack =
           IconItemStackBuilder(Material.DIAMOND)
               .enchanted()
               .title("$YELLOW$UNDERLINE${BOLD}投票ptメニュー")
               .lore(listOf("$RESET${GREEN}投票ptに関することはこちらから！"))
               .build()
-      )
+
+      // todo add effect
+      Button(iconItemStack)
     }
   }
 
@@ -414,6 +443,7 @@ object FirstPage {
             .build()
       }
 
+      // todo add effect
       return Button(iconItemStack)
     }
 
@@ -437,6 +467,7 @@ object FirstPage {
             .build()
       }
 
+      // todo add effect
       return Button(iconItemStack)
     }
 
@@ -469,6 +500,7 @@ object FirstPage {
             .build()
       }
 
+      // todo add effect
       return Button(iconItemStack)
     }
 
@@ -491,6 +523,7 @@ object FirstPage {
             .build()
       }
 
+      // todo add effect
       return Button(iconItemStack)
     }
 
@@ -514,6 +547,7 @@ object FirstPage {
             .build()
       }
 
+      // todo add effect
       return Button(iconItemStack)
     }
 
@@ -541,6 +575,7 @@ object FirstPage {
             .build()
       }
 
+      // todo add effect
       return Button(iconItemStack)
     }
 
@@ -566,6 +601,7 @@ object FirstPage {
             .build()
       }
 
+      // todo add effect
       return Button(iconItemStack)
     }
 
@@ -573,7 +609,7 @@ object FirstPage {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
       return if (playerData.hasChocoGave && Valentine.isInEvent) {
-        Button(
+        val iconItemStack =
             IconItemStackBuilder(Material.TRAPPED_CHEST)
                 .enchanted()
                 .title("プレゼントボックス")
@@ -585,7 +621,9 @@ object FirstPage {
                     "$RESET$DARK_RED$UNDERLINE${BOLD}クリックで受け取る"
                 ))
                 .build()
-        )
+
+        // todo add effect
+        Button(iconItemStack)
       } else {
         Button(IconItemStackBuilder(Material.AIR).build())
       }
