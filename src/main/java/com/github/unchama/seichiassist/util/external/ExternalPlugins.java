@@ -1,13 +1,14 @@
 package com.github.unchama.seichiassist.util.external;
 
-import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("UtilityClassCanBeEnum")
 public final class ExternalPlugins {
 	private ExternalPlugins() {
 
@@ -15,7 +16,7 @@ public final class ExternalPlugins {
 
 
 	//コアプロテクトAPIを返す
-	public static CoreProtectAPI getCoreProtect() {
+	private static CoreProtectAPI getCoreProtect() {
 		Plugin plugin = Bukkit.getPluginManager().getPlugin("CoreProtect");
 
 		// Check that CoreProtect is loaded
@@ -24,7 +25,7 @@ public final class ExternalPlugins {
 		}
 
 		// Check that the API is enabled
-		CoreProtectAPI CoreProtect = ((CoreProtect)plugin).getAPI();
+		final CoreProtectAPI CoreProtect = ((CoreProtect)plugin).getAPI();
 		if (!CoreProtect.isEnabled()){
 			return null;
 		}
@@ -35,6 +36,13 @@ public final class ExternalPlugins {
 		}
 
 		return CoreProtect;
+	}
+
+	@Nullable
+	public static CoreProtectWrapper getCoreProtectWrapper() {
+		final CoreProtectAPI cp = getCoreProtect();
+
+		return cp == null ? null : new CoreProtectWrapper(getCoreProtect());
 	}
 
 	//ワールドガードAPIを返す

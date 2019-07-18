@@ -6,10 +6,15 @@ import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import net.coreprotect.CoreProtectAPI;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Effect;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Statistic;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -18,8 +23,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Dye;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.IntStream;
+
 
 public final class BreakUtil {
 	private BreakUtil() {
@@ -36,16 +46,10 @@ public final class BreakUtil {
 		UUID uuid = player.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
 
-		//壊されるブロックの状態を取得
-		BlockState blockstate = breakblock.getState();
-		//壊されるブロックのデータを取得
-		byte data = blockstate.getData().getData();
 		//壊されるブロックのMaterialを取得
-		Material material = breakblock.getType();
-
+		final Material material = breakblock.getType();
 
 		//壊されるブロックがワールドガード範囲だった場合処理を終了
-		//ここをオンオフ可能にする
 		if(!ExternalPlugins.getWorldGuard().canBuild(player, breakblock.getLocation())){
 			if(playerdata.getDispworldguardlogflag()){
 				player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
@@ -54,15 +58,13 @@ public final class BreakUtil {
 		}
 
 		if(!equalsIgnoreNameCaseWorld(player.getWorld().getName())){
-			//コアプロテクトのクラスを取得
-			CoreProtectAPI coreProtect = ExternalPlugins.getCoreProtect();
-			//破壊ログを設定
-			if (coreProtect == null) {
+			final CoreProtectWrapper wrapper = ExternalPlugins.getCoreProtectWrapper();
+			if (wrapper == null) {
 				Bukkit.getLogger().warning("CoreProtectにアクセスできませんでした。");
 			} else {
-				boolean success = coreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
+				final boolean failure = !wrapper.queueBlockRemoval(player, breakblock);
 				//もし失敗したらプレイヤーに報告し処理を終了
-				if(!success){
+				if(failure) {
 					player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
 					return false;
 				}
@@ -614,18 +616,17 @@ public final class BreakUtil {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static boolean logPlace(Player player, Block placeblock) {
-		//設置するブロックの状態を取得
-		BlockState blockstate = placeblock.getState();
-		//設置するブロックのデータを取得
-		byte data = blockstate.getData().getData();
+	public static boolean logRemove(final Player player, final Block removedBlock) {
+		final CoreProtectWrapper wrapper = ExternalPlugins.getCoreProtectWrapper();
+		if (wrapper == null) {
+			player.sendMessage(ChatColor.RED + "error:coreprotectに保存できませんでした。管理者に報告してください。");
+			return false;
+		}
 
-		//コアプロテクトのクラスを取得
-		CoreProtectAPI CoreProtect = ExternalPlugins.getCoreProtect();
-		//破壊ログを設定
-		boolean success = CoreProtect.logRemoval(player.getName(), placeblock.getLocation(), blockstate.getType(),data);
+		final boolean failure = !wrapper.queueBlockRemoval(player, removedBlock);
+
 		//もし失敗したらプレイヤーに報告し処理を終了
-		if(!success){
+		if(failure){
 			player.sendMessage(ChatColor.RED + "error:coreprotectに保存できませんでした。管理者に報告してください。");
 			return false;
 		}
