@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta
  * Created by karayuu on 2019/04/09
  */
 class IconComponent constructor(val material: Material, private val durability: Short = 0.toShort()) {
-  var title: String = Bukkit.getItemFactory().getItemMeta(material).displayName
+  var title: String? = Bukkit.getItemFactory().getItemMeta(material)?.displayName
   var lore: List<String> = emptyList()
 
   var isEnchanted: Boolean = false
@@ -25,8 +25,11 @@ class IconComponent constructor(val material: Material, private val durability: 
 
   val itemMeta: ItemMeta
     get() {
-      val meta = Bukkit.getItemFactory().getItemMeta(material)
-      meta.displayName = title
+      val meta = Bukkit.getItemFactory().getItemMeta(material).also { println(it) }
+      title?.let {
+        println(meta)
+        meta.displayName = it
+      }
       meta.lore = lore
 
       if (isEnchanted) {

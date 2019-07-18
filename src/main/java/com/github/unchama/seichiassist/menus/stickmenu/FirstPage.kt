@@ -32,6 +32,7 @@ import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import kotlin.math.min
 
 /**
@@ -793,7 +794,7 @@ private object FirstPage: Menu {
             )
         )
       } else {
-        Button(IconItemStackBuilder(Material.AIR).build())
+        Button(ItemStack(Material.AIR))
       }
     }
   }

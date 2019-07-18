@@ -426,14 +426,12 @@ class PlayerClickListener : Listener {
     val player = event.player
     //プレイヤーが起こしたアクションを取得
     val action = event.action
-    //アクションを起こした手を取得
-    val equipmentslot = event.hand
 
     if (player.inventory.itemInMainHand.type != Material.STICK) return
 
     // 右クリックの処理ではない
     if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
-    if (equipmentslot == EquipmentSlot.OFF_HAND) return
+    if (event.hand == EquipmentSlot.OFF_HAND) return
 
     val effect = sequentialEffect(
         unfocusedEffect { event.isCancelled = true },

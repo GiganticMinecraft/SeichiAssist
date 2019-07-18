@@ -15,7 +15,11 @@ interface TargetedEffect<in T>{
   companion object {
     fun <T> monoid(): Monoid<TargetedEffect<T>> = object : Monoid<TargetedEffect<T>> {
       override fun empty(): TargetedEffect<T> = EmptyEffect
-      override fun TargetedEffect<T>.combine(b: TargetedEffect<T>): TargetedEffect<T> = this + b
+      override fun TargetedEffect<T>.combine(b: TargetedEffect<T>): TargetedEffect<T> =
+          TargetedEffect {
+            this.runFor(it)
+            b.runFor(it)
+          }
     }
 
     operator fun <T> invoke(effect: suspend (T) -> Unit): TargetedEffect<T> = object : TargetedEffect<T> {
