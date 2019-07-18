@@ -1,9 +1,6 @@
 package com.github.unchama.seichiassist.listener;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
@@ -31,8 +28,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class EntityListener implements Listener {
-	SeichiAssist plugin = SeichiAssist.instance;
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 
 	@EventHandler
 	public void onPlayerActiveSkillEvent(ProjectileHitEvent event){
@@ -52,7 +49,7 @@ public class EntityListener implements Listener {
 		}
 		player = (Player)projsource;
 
-		if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getDEBUG()){
 			player.sendMessage(ChatColor.RED + "ProjectileHitEventの呼び出し");
 		}
 
@@ -77,14 +74,14 @@ public class EntityListener implements Listener {
 		Material material = block.getType();
 
 		//ブロックタイプがmateriallistに登録されていなければ処理終了
-		if(!SeichiAssist.materiallist.contains(material) && e.hasMetadata("ArrowSkill")){
+		if(!MaterialSets.INSTANCE.getMaterials().contains(material) && e.hasMetadata("ArrowSkill")){
 			return;
 		}
 
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//UUIDを基にプレイヤーデータ取得
-		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		PlayerData playerdata = SeichiAssist.Companion.getPlayermap().get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
 			Util.sendPlayerDataNullMessage(player);
@@ -117,9 +114,9 @@ public class EntityListener implements Listener {
 		//実際に使用するツールを格納する
 		ItemStack tool;
 		//メインハンドにツールがあるか
-		boolean mainhandtoolflag = SeichiAssist.breakmateriallist.contains(mainhanditem.getType());
+		boolean mainhandtoolflag = MaterialSets.INSTANCE.getBreakMaterials().contains(mainhanditem.getType());
 		//オフハンドにツールがあるか
-		boolean offhandtoolflag = SeichiAssist.breakmateriallist.contains(offhanditem.getType());
+		boolean offhandtoolflag = MaterialSets.INSTANCE.getBreakMaterials().contains(offhanditem.getType());
 
 		//場合分け
 		if(mainhandtoolflag){
@@ -137,8 +134,8 @@ public class EntityListener implements Listener {
 			return;
 		}
 		//スキルで破壊されるブロックの時処理を終了
-		if(SeichiAssist.allblocklist.contains(block)){
-			if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getAllblocklist().contains(block)){
+			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage("スキルで使用中のブロックです。");
 			}
 			return;
@@ -146,7 +143,7 @@ public class EntityListener implements Listener {
 
 		runArrowSkillofHitBlock(player,proj, block, tool);
 
-		SeichiAssist.entitylist.remove(proj);
+		SeichiAssist.Companion.getEntitylist().remove(proj);
 		proj.remove();
 	}
 
@@ -197,7 +194,7 @@ public class EntityListener implements Listener {
 				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
 
-					if(playerdata.getLevel() >= SeichiAssist.config.getMultipleIDBlockBreaklevel() && playerdata.getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
+					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
 						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
 							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 								if(BreakUtil.canBreak(player, breakblock)){
@@ -205,7 +202,7 @@ public class EntityListener implements Listener {
 										lavalist.add(breakblock);
 									}else{
 										breaklist.add(breakblock);
-										SeichiAssist.allblocklist.add(breakblock);
+										SeichiAssist.Companion.getAllblocklist().add(breakblock);
 									}
 								}
 							}
@@ -225,7 +222,7 @@ public class EntityListener implements Listener {
 									lavalist.add(breakblock);
 								}else{
 									breaklist.add(breakblock);
-									SeichiAssist.allblocklist.add(breakblock);
+									SeichiAssist.Companion.getAllblocklist().add(breakblock);
 								}
 							}
 						}
@@ -245,7 +242,7 @@ public class EntityListener implements Listener {
 		double useMana = (double) (breaklist.size()) * (gravity + 1)
 				* ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
 				/(ifallbreaknum) ;
-		if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getDEBUG()){
 			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum));
 			player.sendMessage(ChatColor.RED + "全ての破壊数：" + (ifallbreaknum));
 			player.sendMessage(ChatColor.RED + "実際の破壊数：" + breaklist.size());
@@ -260,29 +257,29 @@ public class EntityListener implements Listener {
 		//重力値の判定
 		if(gravity > 15){
 			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-			SeichiAssist.allblocklist.removeAll(breaklist);
+			SeichiAssist.Companion.getAllblocklist().removeAll(breaklist);
 			return;
 		}
 
 		//実際に経験値を減らせるか判定
 		if(!mana.has(useMana)){
 			//デバッグ用
-			if(SeichiAssist.DEBUG){
+			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
-			SeichiAssist.allblocklist.removeAll(breaklist);
+			SeichiAssist.Companion.getAllblocklist().removeAll(breaklist);
 			return;
 		}
-		if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getDEBUG()){
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値:" + durability);
 		}
 		//実際に耐久値を減らせるか判定
 		if(tool.getType().getMaxDurability() <= durability && !tool.getItemMeta().spigot().isUnbreakable()){
 			//デバッグ用
-			if(SeichiAssist.DEBUG){
+			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
-			SeichiAssist.allblocklist.removeAll(breaklist);
+			SeichiAssist.Companion.getAllblocklist().removeAll(breaklist);
 			return;
 		}
 
@@ -309,7 +306,7 @@ public class EntityListener implements Listener {
 		if(playerdata.getActiveskilldata().effectnum == 0){
 			for(Block b:breaklist){
 				BreakUtil.breakBlock(player, b, player.getLocation(), tool,false);
-				SeichiAssist.allblocklist.remove(b);
+				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）

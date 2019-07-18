@@ -58,7 +58,7 @@ public class MebiusListener implements Listener {
 	// 起動時
 	public MebiusListener() {
 		me = this;
-		if (SeichiAssist.config.getMebiusDebug() == 1) {
+		if (SeichiAssist.Companion.getSeichiAssistConfig().getMebiusDebug() == 1) {
 			// mebiusdebug=1の時はコマンドでトグル可能
 			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "メビウス帽子のdebugモードトグル機能：有効");
 			DEBUGENABLE = true;
@@ -104,44 +104,6 @@ public class MebiusListener implements Listener {
 		Player player = event.getPlayer();
 		getPlayerData(player).getMebius().cancel();
 	}
-
-	// 経験値瓶を投げた時
-	// @EventHandler(priority = EventPriority.LOW) //
-	// onPlayerRightClickExpBottleEventより先に呼び出す
-	// public void onExpBottle(PlayerInteractEvent event) {
-	// // PlayerのLvがEXPBONUS以上なら抜ける
-	// if (getPlayerData(event.getPlayer()).level >= EXPBONUS) {
-	// return;
-	// }
-	// // PlayerがMebiusを装備してなければ抜ける
-	// if (!isEquip(event.getPlayer())) {
-	// return;
-	// }
-	// // メインハンドにアイテムを持っていなければ抜ける
-	// if (event.getPlayer().getInventory() == null ||
-	// event.getPlayer().getInventory().getItemInMainHand() == null) {
-	// return;
-	// }
-	// try {
-	// // 経験値瓶を投げる時
-	// if
-	// (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
-	// && (event.getAction().equals(Action.RIGHT_CLICK_AIR) ||
-	// event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
-	// int amount = 1;
-	// // スニーク状態
-	// if (event.getPlayer().isSneaking()) {
-	// amount = event.getItem().getAmount();
-	// }
-	// // 投げる個数分追加で投げる
-	// for (int cnt = 0; cnt < amount; cnt++) {
-	// event.getPlayer().launchProjectile(ThrownExpBottle.class);
-	// }
-	// }
-	// } catch (NullPointerException e) {
-	// // 万が一NullPointerExceptionが発生した場合、処理無しでOK
-	// }
-	// }
 
 	// Tipsを呼び出されたとき
 	public static void callTips(Player player) {
@@ -417,7 +379,7 @@ public class MebiusListener implements Listener {
 
 	// PlayerData取得
 	private static PlayerData getPlayerData(Player player) {
-		return SeichiAssist.playermap.get(player.getUniqueId());
+		return SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 	}
 
 	// ItemStackがMebiusか
@@ -444,8 +406,8 @@ public class MebiusListener implements Listener {
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "おめでとうございます。採掘中にMEBIUSを発見しました。");
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "MEBIUSはプレイヤーと共に成長するヘルメットです。");
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなただけのMEBIUSを育てましょう！");
-		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.instance, () -> getPlayerData(player).getMebius().speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！"), 10);
-		player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f);
+		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> getPlayerData(player).getMebius().speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！"), 10);
+		player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
 		if (!Util.isPlayerInventoryFull(player)) {
 			Util.addItem(player, mebius);
 		} else {

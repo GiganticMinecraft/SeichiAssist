@@ -17,8 +17,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.Util;
 
 public class LimitedLoginEvent {
-	private static Config config = SeichiAssist.config;
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	private static Config config = SeichiAssist.Companion.getSeichiAssistConfig();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	Player player;
 	PlayerData playerdata;
 	String lastcheckdate ;
