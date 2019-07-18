@@ -66,32 +66,32 @@ public class MebiusTask extends BukkitRunnable {
 	// 喋る時の効果音
 	// HARPちゃんは聞こえんのだよ…
 	private void playSe() {
-		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1f);
-		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1f);
-		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1f);
+		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.0f);
+		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.0f);
+		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.0f);
 		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> {
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
 		}, 2);
 	}
 
 	// 強制時の効果音
 	// HARPちゃんは聞こえんのだよ…
 	private void playSeForce() {
-		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 1.5f);
-		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> {
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2f, 2f);
+		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
+		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
+		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
+		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
+		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
+		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
+		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.instance, () -> {
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f);
 		}, 2);
 	}
 }

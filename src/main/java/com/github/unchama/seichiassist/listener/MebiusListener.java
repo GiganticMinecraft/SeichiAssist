@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -137,8 +138,9 @@ public class MebiusListener implements Listener {
 				"いてっ！やめろよー！僕を怒らせたら怖いぞー！");
 
 		// プレイヤーがダメージを受けた場合
-		if (event.getEntity() instanceof Player) {
-			Player player = (Player) event.getEntity();
+		final Entity entity = event.getEntity();
+		if (entity instanceof Player) {
+			Player player = (Player) entity;
 			// プレイヤーがMebiusを装備していない場合は除外
 			if (!isEquip(player)) {
 				return;
@@ -151,7 +153,7 @@ public class MebiusListener implements Listener {
 				short max = mebius.getType().getMaxDurability();
 				short dur = mebius.getDurability();
 				if (dur >= max - 10) {
-					getPlayerData((Player) event.getEntity()).getMebius().speak(getMessage(breakmsgs, Objects.requireNonNull(getNickname(player)), ""));
+					getPlayerData(player).getMebius().speak(getMessage(breakmsgs, Objects.requireNonNull(getNickname(player)), ""));
 				}
 			}
 
@@ -159,7 +161,7 @@ public class MebiusListener implements Listener {
 			if (event.getDamager() instanceof Monster) {
 				Monster monster = (Monster) event.getDamager();
 				// 対モンスターメッセージ
-				getPlayerData((Player) event.getEntity()).getMebius().speak(getMessage(warnmsgs, Objects.requireNonNull(getNickname(player)), monster.getName()));
+				getPlayerData(player).getMebius().speak(getMessage(warnmsgs, Objects.requireNonNull(getNickname(player)), monster.getName()));
 			}
 		}
 	}
@@ -181,7 +183,7 @@ public class MebiusListener implements Listener {
 			getPlayerData(event.getPlayer()).getMebius().speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
 			player.sendMessage(getName(item) + ChatColor.RESET + "が旅立ちました。");
 			// エンドラが叫ぶ
-			player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 0.1f);
+			player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f);
 		}
 	}
 

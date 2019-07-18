@@ -42,10 +42,10 @@ public class VotingFairyTask {
 
 	//妖精効果音
 	public static void playSe(Player p) {
-		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 2f, 1f);
+		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 2.0f, 1.0f);
 		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> {
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 2f, 1.5f);
-			Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 2f, 2f), 2);
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 2.0f, 1.5f);
+			Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 2.0f, 2.0f), 2);
 		}, 2);
 	}
 
