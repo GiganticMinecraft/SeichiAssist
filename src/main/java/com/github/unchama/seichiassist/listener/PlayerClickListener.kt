@@ -2,7 +2,8 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.*
 import com.github.unchama.seichiassist.data.GachaPrize
-import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
+import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
+import com.github.unchama.seichiassist.menus.stickmenu.firstPage
 import com.github.unchama.seichiassist.task.AsyncEntityRemover
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.BreakUtil
@@ -437,7 +438,7 @@ class PlayerClickListener : Listener {
     val effect = sequentialEffect(
         unfocusedEffect { event.isCancelled = true },
         FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-        FirstPage.open
+        StickMenu.firstPage.open
     )
 
     runBlocking {

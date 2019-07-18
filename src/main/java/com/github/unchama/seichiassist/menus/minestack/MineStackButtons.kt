@@ -17,6 +17,7 @@ import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import kotlin.math.min
 
 internal object MineStackButtons {
   private fun withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect<Player> {
@@ -25,7 +26,7 @@ internal object MineStackButtons {
     return computedEffect { player ->
       val playerData = SeichiAssist.playermap[player.uniqueId]!!
       val currentAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
-      val grantAmount = Math.min(mineStackObj.itemStack.maxStackSize.toLong(), currentAmount).toInt()
+      val grantAmount = min(mineStackObj.itemStack.maxStackSize.toLong(), currentAmount).toInt()
 
       val soundEffectPitch = if (currentAmount >= grantAmount) 1.0f else 0.5f
 

@@ -4,6 +4,7 @@ import arrow.core.Left
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
+import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
@@ -34,11 +35,11 @@ import org.bukkit.entity.Player
 import kotlin.math.min
 
 /**
- * 木の棒メニュー
+ * 木の棒メニュー1ページ目
  *
  * @author karayuu
  */
-object FirstPage {
+private object FirstPage: Menu {
   private object ConstantButtons {
     val teleportServerButton = run {
       val buttonLore = listOf(
@@ -171,7 +172,7 @@ object FirstPage {
           iconItemStack,
           LeftClickButtonEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              SecondPage.open
+              StickMenu.secondPage.open
           )
       )
     }
@@ -473,7 +474,7 @@ object FirstPage {
             if (openerData.level >= minimumLevelRequired) {
               sequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-                  MineStackMainMenu.openMainMenu
+                  MineStackMainMenu.open
               )
             } else FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
           }
@@ -831,9 +832,13 @@ object FirstPage {
         }
       }
 
-  val open: TargetedEffect<Player> = computedEffect { player ->
+  override val open: TargetedEffect<Player> = computedEffect { player ->
     val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", player.computeMenuLayout())
 
     view.createNewSession().open
   }
 }
+
+@Suppress("unused")
+val StickMenu.firstPage: Menu
+  get() = FirstPage

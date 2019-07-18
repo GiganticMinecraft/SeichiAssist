@@ -4,6 +4,7 @@ import arrow.core.Left
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
+import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
@@ -31,7 +32,10 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
 
-object SecondPage {
+/**
+ * 木の棒メニュー2ページ目
+ */
+object SecondPage: Menu {
   private object ConstantButtons {
     val officialWikiNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.BOOK)
@@ -489,9 +493,13 @@ object SecondPage {
         }
       }
 
-  val open: TargetedEffect<Player> = computedEffect { player ->
+  override val open: TargetedEffect<Player> = computedEffect { player ->
     val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", player.computeMenuLayout())
 
     view.createNewSession().open
   }
 }
+
+@Suppress("unused")
+val StickMenu.secondPage: Menu
+  get() = SecondPage

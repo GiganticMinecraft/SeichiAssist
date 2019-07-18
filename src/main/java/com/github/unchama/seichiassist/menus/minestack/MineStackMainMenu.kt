@@ -3,10 +3,10 @@ package com.github.unchama.seichiassist.menus.minestack
 import arrow.core.Left
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
+import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
-import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
+import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
@@ -17,7 +17,7 @@ import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-object MineStackMainMenu {
+object MineStackMainMenu: Menu {
   private object ButtonComputations {
     val categoryButtonLayout = run {
       fun iconMaterialFor(category: MineStackObjectCategory): Material = when (category) {
@@ -37,7 +37,7 @@ object MineStackMainMenu {
 
         val button = Button(
             iconItemStack,
-            FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { CategorizedMineStackMenu.open(category) }
+            LeftClickButtonEffect(CategorizedMineStackMenu.forCategory(category).open)
         )
         slotIndex to button
       }.toMap()
@@ -73,7 +73,7 @@ object MineStackMainMenu {
     }
   }
 
-  val openMainMenu: TargetedEffect<Player> = computedEffect { player ->
+  override val open: TargetedEffect<Player> = computedEffect { player ->
     val view = MenuInventoryView(
         Left(4 * 9),
         "$DARK_PURPLE${BOLD}MineStackメインメニュー",

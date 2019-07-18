@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.menus
 import arrow.core.Right
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
+import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
@@ -21,7 +22,7 @@ import org.bukkit.event.inventory.InventoryType
 /**
  * Created by karayuu on 2019/06/23
  */
-object RegionMenu {
+object RegionMenu: Menu {
   private object Buttons {
     val summonWandButton: Button = run {
       val usage = listOf(
@@ -178,7 +179,7 @@ object RegionMenu {
     }
   }
 
-  val regionGUIButton: Button = run {
+  private val regionGUIButton: Button = run {
     val buttonLore = listOf(
         "$DARK_RED${UNDERLINE}クリックで開く",
         "${RED}保護の管理が超簡単に！",
@@ -198,7 +199,7 @@ object RegionMenu {
     )
   }
 
-  val gridRegionMenuOpenButton: Button = run {
+  private val gridRegionMenuOpenButton: Button = run {
     val buttonLore = listOf(
         "$DARK_RED${UNDERLINE}クリックで開く",
         "${RED}グリッド式保護の作成ができます",
@@ -233,7 +234,7 @@ object RegionMenu {
     )
   }
 
-  val open: TargetedEffect<Player> = TargetedEffect {
+  override val open: TargetedEffect<Player> = TargetedEffect {
     val view = MenuInventoryView(Right(InventoryType.HOPPER), "${BLACK}保護メニュー", it.computeMenuLayout())
     view.createNewSession().open
   }

@@ -20,16 +20,17 @@ import org.bukkit.ChatColor.*
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import java.util.*
+import kotlin.math.ceil
 
 object CategorizedMineStackMenu {
   private const val mineStackObjectPerPage = 9 * 5
 
-  private suspend fun Player.computeCategorizedMineStackMenuLayout(category: MineStackObjectCategory, page: Int): IndexedSlotLayout {
+  private suspend fun Player.computeMenuLayout(category: MineStackObjectCategory, page: Int): IndexedSlotLayout {
     val categoryItemList = MineStackObjectList.minestacklist!!.filter { it.category() == category }
-    val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt()
+    val totalNumberOfPages = ceil(categoryItemList.size / 45.0).toInt()
 
     // オブジェクトリストが更新されるなどの理由でpageが最大値を超えてしまった場合、最後のページを計算する
-    if (page >= totalNumberOfPages) return computeCategorizedMineStackMenuLayout(category, totalNumberOfPages - 1)
+    if (page >= totalNumberOfPages) return computeMenuLayout(category, totalNumberOfPages - 1)
 
     // カテゴリ内のMineStackアイテム取り出しボタンを含むセクション
     val categorizedItemSection =
@@ -49,7 +50,7 @@ object CategorizedMineStackMenu {
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-                open(category, page)
+                forCategory(category, page).open
             )
           }
       )
@@ -84,15 +85,17 @@ object CategorizedMineStackMenu {
   }
 
   /**
-   * カテゴリ別マインスタックメニューで[page]ページ目のメニューを開く作用
+   * カテゴリ別マインスタックメニューで[page]ページ目の[Menu]
    */
-  fun open(category: MineStackObjectCategory, page: Int = 0): TargetedEffect<Player> = computedEffect { player ->
-    val view = MenuInventoryView(
-        Left(6 * 9),
-        "$DARK_BLUE${BOLD}MineStack - ${category.uiLabel} (${page}ページ目)",
-        player.computeCategorizedMineStackMenuLayout(category, page)
-    )
+  fun forCategory(category: MineStackObjectCategory, page: Int = 0): Menu = object: Menu {
+    override val open: TargetedEffect<Player> = computedEffect { player ->
+      val view = MenuInventoryView(
+          Left(6 * 9),
+          "$DARK_BLUE${BOLD}MineStack - ${category.uiLabel} (${page}ページ目)",
+          player.computeMenuLayout(category, page)
+      )
 
-    view.createNewSession().open
+      view.createNewSession().open
+    }
   }
 }

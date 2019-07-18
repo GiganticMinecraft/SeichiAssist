@@ -8,7 +8,8 @@ import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.data.MenuInventoryData
-import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
+import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
+import com.github.unchama.seichiassist.menus.stickmenu.firstPage
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.util.Util
@@ -157,7 +158,7 @@ class PlayerInventoryListener : Listener {
         runBlocking {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              FirstPage.open
+              StickMenu.firstPage.open
           ).runFor(player)
         }
       } else if (itemstackcurrent.type == Material.DIAMOND_PICKAXE) {
@@ -387,7 +388,7 @@ class PlayerInventoryListener : Listener {
         runBlocking {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              FirstPage.open
+              StickMenu.firstPage.open
           ).runFor(player)
         }
       } else if (itemstackcurrent.type == Material.STONE_BUTTON) {
@@ -1123,7 +1124,7 @@ class PlayerInventoryListener : Listener {
         runBlocking {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              FirstPage.open
+              StickMenu.firstPage.open
           ).runFor(player)
         }
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowDown") {
@@ -1190,7 +1191,7 @@ class PlayerInventoryListener : Listener {
         runBlocking {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              FirstPage.open
+              StickMenu.firstPage.open
           ).runFor(player)
         }
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowDown") {
@@ -1257,7 +1258,7 @@ class PlayerInventoryListener : Listener {
         runBlocking {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              FirstPage.open
+              StickMenu.firstPage.open
           ).runFor(player)
         }
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowDown") {
@@ -1324,7 +1325,7 @@ class PlayerInventoryListener : Listener {
         runBlocking {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              FirstPage.open
+              StickMenu.firstPage.open
           ).runFor(player)
         }
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowDown") {
@@ -1606,7 +1607,7 @@ class PlayerInventoryListener : Listener {
         runBlocking {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              FirstPage.open
+              StickMenu.firstPage.open
           ).runFor(player)
         }
         return
@@ -3949,7 +3950,7 @@ class PlayerInventoryListener : Listener {
         runBlocking {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              FirstPage.open
+              StickMenu.firstPage.open
           ).runFor(player)
         }
       } else if (itemstackcurrent.type == Material.WATCH) {
