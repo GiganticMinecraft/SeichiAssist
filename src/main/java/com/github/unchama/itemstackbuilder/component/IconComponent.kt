@@ -25,9 +25,8 @@ class IconComponent constructor(val material: Material, private val durability: 
 
   val itemMeta: ItemMeta
     get() {
-      val meta = Bukkit.getItemFactory().getItemMeta(material).also { println(it) }
+      val meta = Bukkit.getItemFactory().getItemMeta(material)
       title?.let {
-        println(meta)
         meta.displayName = it
       }
       meta.lore = lore
