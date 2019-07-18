@@ -32,8 +32,8 @@ import java.util.UUID;
  * @since 2017/11/29
  */
 public class NewYearBagListener implements Listener {
-	private static Config config = SeichiAssist.config;
-	private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap;
+	private static Config config = SeichiAssist.Companion.getSeichiAssistConfig();
+	private static Map<UUID, PlayerData> playerMap = SeichiAssist.Companion.getPlayermap();
 	/**
 	 * プレイヤーがブロックを破壊した際に呼ばれるメソッド。
 	 * お年玉袋のドロップ処理に利用。

@@ -20,7 +20,7 @@ public enum ActiveSkillPremiumEffect {
     MAGIC(1, "ef_magic", ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マジック", "鶏が出る手品", 10, Material.RED_ROSE),
     ;
 
-    SeichiAssist plugin = SeichiAssist.instance;
+    SeichiAssist plugin = SeichiAssist.Companion.getInstance();
 
     private int num;
     private String sql_name;
@@ -76,7 +76,7 @@ public enum ActiveSkillPremiumEffect {
     public void runBreakEffect(Player player, PlayerData playerdata, ItemStack tool, List<Block> breaklist, Coordinate start, Coordinate end, Location standard) {
         switch (this.toString()) {
             case "MAGIC":
-                if (SeichiAssist.DEBUG) {
+                if (SeichiAssist.Companion.getDEBUG()) {
                     new MagicTask(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 100);
                 } else {
                     new MagicTask(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 10);

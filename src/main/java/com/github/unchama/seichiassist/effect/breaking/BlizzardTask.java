@@ -62,7 +62,7 @@ public class BlizzardTask extends BukkitRunnable{
 			}else{
 				for(Block b : breaklist){
 					BreakUtil.breakBlock(player, b, droploc, tool, true);
-					SeichiAssist.allblocklist.remove(b);
+					SeichiAssist.Companion.getAllblocklist().remove(b);
 				}
 				cancel();
 			}
@@ -91,7 +91,7 @@ public class BlizzardTask extends BukkitRunnable{
 					}else{
 						b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND,Material.PACKED_ICE);
 					}
-					SeichiAssist.allblocklist.remove(b);
+					SeichiAssist.Companion.getAllblocklist().remove(b);
 				}
 			}
 			cancel();

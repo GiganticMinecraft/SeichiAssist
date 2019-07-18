@@ -49,8 +49,8 @@ public class GachaDataManipulator {
             e.printStackTrace();
             return false;
         }
-        SeichiAssist.gachadatalist.clear();
-        SeichiAssist.gachadatalist.addAll(gachadatalist);
+        SeichiAssist.Companion.getGachadatalist().clear();
+        SeichiAssist.Companion.getGachadatalist().addAll(gachadatalist);
         return true;
 
     }
@@ -65,7 +65,7 @@ public class GachaDataManipulator {
         }
 
         //次に現在のgachadatalistでmysqlを更新
-        for(GachaPrize gachadata : SeichiAssist.gachadatalist){
+        for(GachaPrize gachadata : SeichiAssist.Companion.getGachadatalist()){
             //Inventory作ってガチャのitemstackに突っ込む
             Inventory inventory = Bukkit.getServer().createInventory(null, 9*1);
             inventory.setItem(0, gachadata.getItemStack());

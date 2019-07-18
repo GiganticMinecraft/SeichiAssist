@@ -29,7 +29,7 @@ public enum ActiveSkillEffect {
 
 	;
 
-	SeichiAssist plugin = SeichiAssist.instance;
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
 
 	private int num;
 	private String sql_name;
@@ -76,7 +76,7 @@ public enum ActiveSkillEffect {
 			if(playerdata.getActiveskilldata().skillnum < 3){
 				new BlizzardTask(player,playerdata,tool,breaklist,start,end,standard).runTaskLater(plugin, 1);
 			}else{
-				if(SeichiAssist.DEBUG){
+				if(SeichiAssist.Companion.getDEBUG()){
 					new BlizzardTask(player,playerdata,tool,breaklist,start,end,standard).runTaskTimer(plugin, 0, 100);
 				}else{
 					new BlizzardTask(player,playerdata,tool,breaklist,start,end,standard).runTaskTimer(plugin, 0, 10);

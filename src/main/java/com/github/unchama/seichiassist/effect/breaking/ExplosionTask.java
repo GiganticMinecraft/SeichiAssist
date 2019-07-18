@@ -58,12 +58,12 @@ public class ExplosionTask extends BukkitRunnable{
 		if(playerdata.getActiveskilldata().skillnum > 2){
 			for(Block b : breaklist){
 				BreakUtil.breakBlock(player, b, droploc, tool, false);
-				SeichiAssist.allblocklist.remove(b);
+				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}else{
 			for(Block b : breaklist){
 				BreakUtil.breakBlock(player, b, droploc, tool, true);
-				SeichiAssist.allblocklist.remove(b);
+				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}
 	}

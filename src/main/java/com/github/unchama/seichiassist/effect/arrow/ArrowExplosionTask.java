@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ArrowExplosionTask extends SkeletonEffectTask<SmallFireball> {
-	SeichiAssist plugin = SeichiAssist.instance;
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	Player player;
 	Location ploc;
 	UUID uuid;
@@ -43,7 +43,7 @@ public class ArrowExplosionTask extends SkeletonEffectTask<SmallFireball> {
 		vec.setY(vec.getY() * k);
 		vec.setZ(vec.getZ() * k);
 		proj = player.getWorld().spawn(loc, SmallFireball.class);
-		SeichiAssist.entitylist.add(proj);
+		SeichiAssist.Companion.getEntitylist().add(proj);
 		proj.setShooter(player);
 		proj.setGravity(false);
 		//読み込み方法
@@ -61,7 +61,7 @@ public class ArrowExplosionTask extends SkeletonEffectTask<SmallFireball> {
 		tick ++;
 		if(tick > 100){
 			proj.remove();
-			SeichiAssist.entitylist.remove(proj);
+			SeichiAssist.Companion.getEntitylist().remove(proj);
 			cancel();
 		}
 	}

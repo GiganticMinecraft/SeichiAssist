@@ -3,7 +3,6 @@ package com.github.unchama.contextualexecutor
 import arrow.effects.extensions.io.fx.fx
 import arrow.effects.extensions.io.unsafeRun.runNonBlocking
 import arrow.unsafe
-import com.github.unchama.messaging.MessageToSender
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
@@ -18,10 +17,8 @@ interface ContextualExecutor {
    *
    * このメソッドは**サーバーメインスレッド上のコルーチンで実行する必要性はない**.
    * また, 実行時例外が発生することはない.
-   *
-   * @return 発生させた作用に対応する[MessageToSender]. 作用の発生源である[CommandSender]にこのオブジェクトが転送されることが想定されている.
    */
-  suspend fun executeWith(rawContext: RawCommandContext): MessageToSender
+  suspend fun executeWith(rawContext: RawCommandContext)
 
   /**
    * [context] に基づいてTab補完の候補をListで返却する.
@@ -43,11 +40,7 @@ fun ContextualExecutor.asNonBlockingTabExecutor(): TabExecutor = object : TabExe
     unsafe {
       runNonBlocking({
         fx {
-          !effect {
-            val message = executeWith(context)
-
-            message.transmitTo(sender)
-          }
+          !effect { executeWith(context) }
         }
       }) { }
     }
