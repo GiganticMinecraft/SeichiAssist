@@ -119,7 +119,7 @@ private object FirstPage: Menu {
           LeftClickButtonEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
               // TODO メニューに置き換える
-              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList(it, 0)) }
+              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList(0)) }
           )
       )
     }
@@ -136,7 +136,7 @@ private object FirstPage: Menu {
           LeftClickButtonEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
               // TODO メニューに置き換える
-              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList_playtick(it, 0)) }
+              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList_playtick(0)) }
           )
       )
     }
@@ -156,7 +156,7 @@ private object FirstPage: Menu {
           LeftClickButtonEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
               // TODO メニューに置き換える
-              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList_p_vote(it, 0)) }
+              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList_p_vote(0)) }
           )
       )
     }

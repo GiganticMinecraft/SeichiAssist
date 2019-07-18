@@ -10,9 +10,7 @@ import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.util.collection.ImmutableListFactory;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -30,7 +28,6 @@ import java.util.*;
 public class MenuInventoryData {
 	private static HashMap<UUID, PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	private static DatabaseGateway databaseGateway = SeichiAssist.Companion.getDatabaseGateway();
-	private static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
 
 	//二つ名組合せシステム用
 	private static boolean nextpageflag1 = false ;
@@ -138,12 +135,6 @@ public class MenuInventoryData {
 		inventory.setItem(9,itemstack);
 
 		return inventory;
-	}
-
-	// 採掘速度トグルボタン
-	@Deprecated
-	public static ItemMeta EFButtonMeta(PlayerData playerdata,ItemMeta itemmeta){
-		return itemmeta;
 	}
 
 	//投票特典受け取りボタン
@@ -264,7 +255,7 @@ public class MenuInventoryData {
 	}
 
 	//ランキングリスト
-	public static Inventory getRankingList(Player p, int page){
+	public static Inventory getRankingList(int page){
 //		int maxpage=2;
 		int maxpage=14;
 		final int MIN_LEVEL = 100;
@@ -343,7 +334,7 @@ public class MenuInventoryData {
 	}
 
 	//ランキングリスト(ログイン時間)
-	public static Inventory getRankingList_playtick(Player p, int page){
+	public static Inventory getRankingList_playtick(int page){
 //		int maxpage=2;
 		int maxpage=14;
 		//final int MIN_LEVEL = 100;
@@ -405,7 +396,7 @@ public class MenuInventoryData {
 	}
 
 	//ランキングリスト(投票回数)
-	public static Inventory getRankingList_p_vote(Player p, int page){
+	public static Inventory getRankingList_p_vote(int page){
 //		int maxpage=2;
 		int maxpage=14;
 		final int MIN_LEVEL = 1;
@@ -475,7 +466,7 @@ public class MenuInventoryData {
 	}
 
 	//ランキングリスト(プレミアムエフェクトポイント)
-	public static Inventory getRankingList_premiumeffectpoint(Player p, int page){
+	public static Inventory getRankingList_premiumeffectpoint(int page){
 		int maxpage=2;
 		final int MIN_LEVEL = 1;
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "寄付神ランキング");

@@ -1134,7 +1134,7 @@ class PlayerInventoryListener : Listener {
 
           //開く音を再生
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList(player, page_display - 1))
+          player.openInventory(MenuInventoryData.getRankingList(page_display - 1))
         }
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowUp") {
         val itemmeta = itemstackcurrent.itemMeta
@@ -1143,7 +1143,7 @@ class PlayerInventoryListener : Listener {
 
           //開く音を再生
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList(player, page_display - 1))
+          player.openInventory(MenuInventoryData.getRankingList(page_display - 1))
         }
       }
     }
@@ -1201,7 +1201,7 @@ class PlayerInventoryListener : Listener {
 
           //開く音を再生
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList_playtick(player, page_display - 1))
+          player.openInventory(MenuInventoryData.getRankingList_playtick(page_display - 1))
         }
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowUp") {
         val itemmeta = itemstackcurrent.itemMeta
@@ -1210,7 +1210,7 @@ class PlayerInventoryListener : Listener {
 
           //開く音を再生
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList_playtick(player, page_display - 1))
+          player.openInventory(MenuInventoryData.getRankingList_playtick(page_display - 1))
         }
       }
     }
@@ -1268,7 +1268,7 @@ class PlayerInventoryListener : Listener {
 
           //開く音を再生
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList_p_vote(player, page_display - 1))
+          player.openInventory(MenuInventoryData.getRankingList_p_vote(page_display - 1))
         }
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowUp") {
         val itemmeta = itemstackcurrent.itemMeta
@@ -1277,7 +1277,7 @@ class PlayerInventoryListener : Listener {
 
           //開く音を再生
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList_p_vote(player, page_display - 1))
+          player.openInventory(MenuInventoryData.getRankingList_p_vote(page_display - 1))
         }
       }
     }
@@ -1335,7 +1335,7 @@ class PlayerInventoryListener : Listener {
 
           //開く音を再生
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(player, page_display - 1))
+          player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(page_display - 1))
         }
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowUp") {
         val itemmeta = itemstackcurrent.itemMeta
@@ -1344,7 +1344,7 @@ class PlayerInventoryListener : Listener {
 
           //開く音を再生
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(player, page_display - 1))
+          player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(page_display - 1))
         }
       }
     }
