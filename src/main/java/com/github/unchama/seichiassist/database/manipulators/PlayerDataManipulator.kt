@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.database.manipulators
 
-import arrow.core.*
 import com.github.unchama.contextualexecutor.builder.ResponseOrResult
 import com.github.unchama.messaging.MessageToSender
 import com.github.unchama.messaging.asResponseToSender
@@ -28,12 +27,12 @@ import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
+import java.io.IOException
 import java.sql.SQLException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import arrow.core.extensions.either.fx.fx as fxEither
 
 class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     private val plugin = SeichiAssist.instance
