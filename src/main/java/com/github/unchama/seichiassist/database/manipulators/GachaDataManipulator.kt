@@ -7,11 +7,8 @@ import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.task.recordIteration
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import org.bukkit.Bukkit
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.ItemStack
 
 import java.io.IOException
-import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.ArrayList
 
@@ -24,20 +21,20 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
 
   //ガチャデータロード
   fun loadGachaData(): Boolean {
-    val gachadatalist = ArrayList<GachaPrize>()
+    val prizes = ArrayList<GachaPrize>()
 
     val command = "select * from $tableReference"
     try {
       gateway.executeQuery(command).recordIteration {
         val lrs = this
-          val restoredInventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"))
-          val restoredItemStack = restoredInventory.getItem(0)
+        val restoredInventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"))
+        val restoredItemStack = restoredInventory.getItem(0)
 
-          val gachadata = GachaPrize(
-              restoredItemStack, lrs.getDouble("probability")
-          )
+        val prize = GachaPrize(
+            restoredItemStack, lrs.getDouble("probability")
+        )
 
-        gachadatalist += gachadata
+        prizes += prize
       }
     } catch (e: SQLException) {
       println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
@@ -50,7 +47,7 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     SeichiAssist.gachadatalist.clear()
-    SeichiAssist.gachadatalist.addAll(gachadatalist)
+    SeichiAssist.gachadatalist.addAll(prizes)
     return true
 
   }

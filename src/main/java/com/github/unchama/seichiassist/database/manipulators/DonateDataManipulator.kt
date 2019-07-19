@@ -14,7 +14,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 
-import java.sql.ResultSet
 import java.sql.SQLException
 
 class DonateDataManipulator(private val gateway: DatabaseGateway) {
@@ -53,7 +52,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
     var itemstack: ItemStack
     var itemmeta: ItemMeta
     var material: Material
-    var lore: List<String>
+    var lore2: List<String>
     var count = 0
     val effect = ActiveSkillPremiumEffect.values()
 
@@ -62,28 +61,31 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
       gateway.executeQuery(command).recordIteration {
         val lrs = this
         //ポイント購入の処理
-        if (lrs.getInt("getpoint") > 0) {
+        val getPoint = lrs.getInt("getpoint")
+        val usePoint = lrs.getInt("usepoint")
+        if (getPoint > 0) {
           itemstack = ItemStack(Material.DIAMOND)
-          itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND)
-          itemmeta.displayName = ChatColor.AQUA.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付"
-          lore = ImmutableListFactory.of(ChatColor.RESET.toString() + "" + ChatColor.GREEN + "" + "金額：" + lrs.getInt("getpoint") * 100,
-              ChatColor.RESET.toString() + "" + ChatColor.GREEN + "" + "プレミアムエフェクトポイント：+" + lrs.getInt("getpoint"),
-              ChatColor.RESET.toString() + "" + ChatColor.GREEN + "" + "日時：" + lrs.getString("date")
+          lore2 = ImmutableListFactory.of(ChatColor.RESET.toString() + "" + ChatColor.GREEN + "" + "金額：" + getPoint * 100,
+              "" + ChatColor.RESET + ChatColor.GREEN + "プレミアムエフェクトポイント：+" + getPoint,
+              "" + ChatColor.RESET + ChatColor.GREEN + "日時：" + lrs.getString("date")
           )
-          itemmeta.lore = lore
-          itemstack.itemMeta = itemmeta
+          itemstack.itemMeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND).apply {
+            displayName = "" + ChatColor.AQUA + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付"
+            lore = lore2
+          }
           inventory.setItem(count, itemstack)
-        } else if (lrs.getInt("usepoint") > 0) {
+        } else if (usePoint > 0) {
           val num = lrs.getInt("effectnum") - 1
           material = effect[num].material
           itemstack = ItemStack(material)
-          itemmeta = Bukkit.getItemFactory().getItemMeta(material)
-          itemmeta.displayName = ChatColor.RESET.toString() + "" + ChatColor.YELLOW + "購入エフェクト：" + effect[num].getName()
-          lore = ImmutableListFactory.of(ChatColor.RESET.toString() + "" + ChatColor.GOLD + "" + "プレミアムエフェクトポイント： -" + lrs.getInt("usepoint"),
-              ChatColor.RESET.toString() + "" + ChatColor.GOLD + "" + "日時：" + lrs.getString("date")
+
+          lore2 = ImmutableListFactory.of("" + ChatColor.RESET + ChatColor.GOLD + "プレミアムエフェクトポイント： -" + usePoint,
+              "" + ChatColor.RESET + ChatColor.GOLD + "日時：" + lrs.getString("date")
           )
-          itemmeta.lore = lore
-          itemstack.itemMeta = itemmeta
+          itemstack.itemMeta = Bukkit.getItemFactory().getItemMeta(material).apply {
+            displayName = "" + ChatColor.RESET.toString() + ChatColor.YELLOW + "購入エフェクト：" + effect[num].getName()
+            lore = lore2
+          }
           inventory.setItem(count, itemstack)
         }
         count++

@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.database.manipulators
 
 import arrow.core.*
-import arrow.core.extensions.either.fx.fx as fxEither
 import com.github.unchama.contextualexecutor.builder.ResponseOrResult
 import com.github.unchama.messaging.MessageToSender
 import com.github.unchama.messaging.asResponseToSender
@@ -473,29 +472,27 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         val command = "select name, uuid from $tableReference " +
             "where ((lastquit <= date_sub(curdate(), interval $days day)) " +
             "or (lastquit is null)) and (name != '') and (uuid != '')"
+        val uuidList = ArrayList<UUID>()
 
         try {
-            return gateway.executeQuery(command).use { lrs ->
-                val uuidList = ArrayList<UUID>()
-                while (lrs.next()) {
-                    try {
-                        uuidList += UUID.fromString(lrs.getString("uuid"))
-                    } catch (e: IllegalArgumentException) {
-                        println("不適切なUUID: " + lrs.getString("name") + ": " + lrs.getString("uuid"))
-                    }
+            gateway.executeQuery(command).recordIteration {
+                val lrs = this
+                try {
+                    uuidList += UUID.fromString(lrs.getString("uuid"))
+                } catch (e: IllegalArgumentException) {
+                    println("不適切なUUID: " + lrs.getString("name") + ": " + lrs.getString("uuid"))
                 }
-
-                uuidList.toList()
             }
         } catch (e: SQLException) {
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
             e.printStackTrace()
             return null
         }
+        return uuidList.toList()
     }
 
     //ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
-    private fun updateBlockRankingList(): Boolean {
+    private fun successBlockRankingUpdate(): Boolean {
         val ranklist = ArrayList<RankData>()
         SeichiAssist.allplayerbreakblockint = 0
         val command = ("select name,level,totalbreaknum from " + tableReference
@@ -522,7 +519,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     //ランキング表示用にプレイ時間のカラムだけ全員分引っ張る
-    private fun updatePlayTickRankingList(): Boolean {
+    private fun successPlayTickRankingUpdate(): Boolean {
         val ranklist = ArrayList<RankData>()
         val command = ("select name,playtick from " + tableReference
                 + " order by playtick desc")
@@ -546,7 +543,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     //ランキング表示用に投票数のカラムだけ全員分引っ張る
-    private fun updateVoteRankingList(): Boolean {
+    private fun successVoteRankingUpdate(): Boolean {
         val ranklist = ArrayList<RankData>()
         val command = ("select name,p_vote from " + tableReference
                 + " order by p_vote desc")
@@ -570,7 +567,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     //ランキング表示用にプレミアムエフェクトポイントのカラムだけ全員分引っ張る
-    private fun updatePremiumEffectPointRankingList(): Boolean {
+    private fun successPremiumEffectPointRanking(): Boolean {
         val ranklist = ArrayList<RankData>()
         val command = ("select name,premiumeffectpoint from " + tableReference
                 + " order by premiumeffectpoint desc")
@@ -594,7 +591,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     //ランキング表示用に上げたりんご数のカラムだけ全員分引っ張る
-    private fun updateAppleNumberRankingList(): Boolean {
+    private fun successAppleNumberRankingUpdate(): Boolean {
         val ranklist = ArrayList<RankData>()
         SeichiAssist.allplayergiveapplelong = 0
         val command = "select name,p_apple from $tableReference order by p_apple desc"
@@ -623,12 +620,12 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
      * @return 成否…true: 成功、false: 失敗
      * TODO この処理はDB上と通信を行う為非同期にすべき
      */
-    fun updateAllRankingList(): Boolean {
-        if (!updateBlockRankingList()) return false
-        if (!updatePlayTickRankingList()) return false
-        if (!updateVoteRankingList()) return false
-        if (!updatePremiumEffectPointRankingList()) return false
-        return updateAppleNumberRankingList()
+    fun successRankingUpdate(): Boolean {
+        if (!successBlockRankingUpdate()) return false
+        if (!successPlayTickRankingUpdate()) return false
+        if (!successVoteRankingUpdate()) return false
+        if (!successPremiumEffectPointRanking()) return false
+        return successAppleNumberRankingUpdate()
 
     }
 
@@ -675,7 +672,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         return gateway.executeUpdate(command)
     }
 
-  @Suppress("RedundantSuspendModifier")
+    @Suppress("RedundantSuspendModifier")
     suspend fun selectPocketInventoryOf(uuid: UUID): ResponseOrResult<Inventory> {
         val command = "select inventory from $tableReference where uuid like '$uuid'"
 
@@ -735,29 +732,29 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         PlayerDataSaveTask(playerdata, false, true).runTaskAsynchronously(plugin)
     }
 
-  companion object {
-    //指定プレイヤーの四次元ポケットの中身取得
-    fun selectInventory(playerDataManipulator: PlayerDataManipulator, uuid: UUID): Inventory? {
-        val struuid = uuid.toString()
-        var inventory: Inventory? = null
-        val command = ("select inventory from " + playerDataManipulator.tableReference
-                + " where uuid like '" + struuid + "'")
-        try {
-            playerDataManipulator.gateway.executeQuery(command).recordIteration {
-                inventory = BukkitSerialization.fromBase64(getString("inventory"))
+    companion object {
+      //指定プレイヤーの四次元ポケットの中身取得
+        fun selectInventory(playerDataManipulator: PlayerDataManipulator, uuid: UUID): Inventory? {
+            val struuid = uuid.toString()
+            var inventory: Inventory? = null
+            val command = ("select inventory from " + playerDataManipulator.tableReference
+                    + " where uuid like '" + struuid + "'")
+            try {
+                playerDataManipulator.gateway.executeQuery(command).recordIteration {
+                    inventory = BukkitSerialization.fromBase64(getString("inventory"))
+                }
+            } catch (e: SQLException) {
+                println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+                e.printStackTrace()
+                return null
+            } catch (e: IOException) {
+                println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+                e.printStackTrace()
+                return null
             }
-        } catch (e: SQLException) {
-            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-            e.printStackTrace()
-            return null
-        } catch (e: IOException) {
-            println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-            e.printStackTrace()
-            return null
-        }
 
-        return inventory
+            return inventory
+        }
     }
-  }
 
 }
