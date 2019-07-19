@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class ActiveSkillInventoryData {
-	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-	SeichiAssist plugin = SeichiAssist.instance;
+	static HashMap<UUID, PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	static DatabaseGateway databaseGateway = SeichiAssist.Companion.getDatabaseGateway();
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
 
 	//アクティブスキルメニュー
 	public static Inventory getActiveSkillMenuData(Player p){
@@ -37,7 +37,7 @@ public class ActiveSkillInventoryData {
 		//UUID取得
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
-		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		PlayerData playerdata = SeichiAssist.Companion.getPlayermap().get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -96,7 +96,7 @@ public class ActiveSkillInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(2,itemstack);
 
-		if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getDEBUG()){
 		itemstack = new ItemStack(Material.STONE_BUTTON,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_BUTTON);
 		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リセットボタン");

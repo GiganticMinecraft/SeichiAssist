@@ -5,8 +5,8 @@ import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.ScopePr
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.messaging.EmptyMessage
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
@@ -31,7 +31,7 @@ object AchievementCommand {
           "${ChatColor.RED}/achievement <操作> <実績No> <スコープ指定子>",
           "<操作>にはgive(実績付与)またはdeprive(実績剥奪)のいずれかを入力することができます。",
           "<スコープ指定子>にはuser <ユーザー名>, server, worldのいずれかを入力することができます。"
-      ).asResponseToSender()
+      ).asMessageEffect()
   )
 
   private val operationParser =
@@ -51,7 +51,7 @@ object AchievementCommand {
   private val achievementNumberParser =
       Parsers.closedRangeInt(
           1000, 9999,
-          "${ChatColor.RED}操作の対象として指定できるのはNo1000～9999の実績です。".asResponseToSender()
+          "${ChatColor.RED}操作の対象として指定できるのはNo1000～9999の実績です。".asMessageEffect()
       )
 
   private val scopeParser =
@@ -76,14 +76,14 @@ object AchievementCommand {
           ScopeSpecification.USER -> {
             val targetPlayerName =
                 context.args.yetToBeParsed.firstOrNull()
-                    ?: return@execution "${ChatColor.RED}プレーヤー名が未入力です。".asResponseToSender()
+                    ?: return@execution "${ChatColor.RED}プレーヤー名が未入力です。".asMessageEffect()
 
             listOf(targetPlayerName)
           }
           ScopeSpecification.SERVER -> Bukkit.getServer().onlinePlayers.map { it.name }
           ScopeSpecification.WORLD -> {
             if (sender is Player) sender.world.players.map { it.name }
-            else return@execution "コンソール実行の場合は「world」処理は実行できません。".asResponseToSender()
+            else return@execution "コンソール実行の場合は「world」処理は実行できません。".asMessageEffect()
           }
         }
 
@@ -102,7 +102,7 @@ object AchievementCommand {
           }
         }
 
-        EmptyMessage
+        EmptyEffect
       }
       .build()
       .asNonBlockingTabExecutor()

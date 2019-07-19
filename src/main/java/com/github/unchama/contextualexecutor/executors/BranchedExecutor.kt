@@ -2,8 +2,6 @@ package com.github.unchama.contextualexecutor.executors
 
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.RawCommandContext
-import com.github.unchama.messaging.EmptyMessage
-import com.github.unchama.messaging.MessageToSender
 
 /**
  * コマンドの枝分かれでのルーティングを静的に行うアクションを返す[ContextualExecutor]
@@ -12,16 +10,16 @@ data class BranchedExecutor(val branches: Map<String, ContextualExecutor>,
                             val whenArgInsufficient: ContextualExecutor? = PrintUsageExecutor,
                             val whenBranchNotFound: ContextualExecutor? = PrintUsageExecutor) : ContextualExecutor {
 
-  override suspend fun executeWith(rawContext: RawCommandContext): MessageToSender {
+  override suspend fun executeWith(rawContext: RawCommandContext) {
     val firstArg = rawContext.args.firstOrNull()
-        ?: return whenArgInsufficient?.executeWith(rawContext) ?: EmptyMessage
+        ?: return whenArgInsufficient?.executeWith(rawContext) ?: Unit
 
     val branch = branches[firstArg]
-        ?: return whenBranchNotFound?.executeWith(rawContext) ?: EmptyMessage
+        ?: return whenBranchNotFound?.executeWith(rawContext) ?: Unit
 
     val argShiftedContext = rawContext.copy(args = rawContext.args.drop(1))
 
-    return branch.executeWith(argShiftedContext)
+    branch.executeWith(argShiftedContext)
   }
 
   override fun tabCandidatesFor(context: RawCommandContext): List<String>? {

@@ -2,14 +2,25 @@ package com.github.unchama.seichiassist.task
 
 import com.github.unchama.seichiassist.ActiveSkillEffect
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect
+import com.github.unchama.seichiassist.MineStackObjectList
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
+import com.github.unchama.seichiassist.data.MineStack
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.util.MillisecondTimer
+import kotlinx.coroutines.runBlocking
+import org.bukkit.Bukkit
+import org.bukkit.ChatColor
+import org.bukkit.Location
+import org.bukkit.Sound
+import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitRunnable
+import java.io.IOException
+import java.math.BigDecimal
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
@@ -22,6 +33,7 @@ import java.sql.Statement
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * プレイヤーデータロードを実施する処理(非同期で実行すること)
@@ -164,6 +176,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
 
         val effect = ActiveSkillPremiumEffect.fromSqlName(effectName)
         playerdata.activeskilldata.obtainedSkillPremiumEffects.add(effect)
+      }
     }
   }
 

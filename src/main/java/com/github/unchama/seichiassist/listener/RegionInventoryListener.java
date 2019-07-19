@@ -47,10 +47,10 @@ import java.util.UUID;
  * 2017/09/02
  */
 public class RegionInventoryListener implements Listener {
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
 	static WorldEditPlugin We = ExternalPlugins.getWorldEdit();
-	static Config config = SeichiAssist.config;
+	static Config config = SeichiAssist.Companion.getSeichiAssistConfig();
 
 	/**
 	 * 木の棒メニューの保護ボタンのみのListener
@@ -288,7 +288,7 @@ public class RegionInventoryListener implements Listener {
 	}
 
 	private static void gridResetFunction(Player player) {
-		PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
+		PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		playerData.setUnitAmount(DirectionType.AHEAD, 0);
 		playerData.setUnitAmount(DirectionType.BEHIND, 0);
 		playerData.setUnitAmount(DirectionType.RIGHT, 0);
@@ -304,7 +304,7 @@ public class RegionInventoryListener implements Listener {
 	}
 
 	private static void gridChangeFunction(Player player, DirectionType directionType, InventoryClickEvent event) {
-		PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
+		PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		if (event.isLeftClick()) {
 			if (playerData.canGridExtend(directionType,player.getWorld().getName())) {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
@@ -325,7 +325,7 @@ public class RegionInventoryListener implements Listener {
 	}
 
 	private static void setWGSelection(Player player) {
-		PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
+		PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		Map<DirectionType, Integer> unitMap = playerData.getUnitMap();
 		Direction direction = Util.getPlayerDirection(player);
 		World world = player.getWorld();
@@ -378,7 +378,7 @@ public class RegionInventoryListener implements Listener {
 	}
 
 	private static void canCreateRegion(Player player) {
-		PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
+		PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		Selection selection = We.getSelection(player);
 		RegionManager manager = Wg.getRegionManager(player.getWorld());
 		WorldConfiguration wcfg = Wg.getGlobalStateManager().get(player.getWorld());
@@ -406,7 +406,7 @@ public class RegionInventoryListener implements Listener {
 	}
 
 	private void createRegion(Player player) {
-		PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
+		PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		Selection selection = We.getSelection(player);
 
 		ProtectedRegion region = new ProtectedCuboidRegion(player.getName() + "_" + playerData.getRgnum(),
@@ -503,7 +503,7 @@ public class RegionInventoryListener implements Listener {
 	}
 
 	private static void playerGridTemplateSave(Player player, int i) {
-		PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
+		PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		Map<DirectionType,Integer> unitMap = playerData.getUnitMap();
 
 		player.sendMessage(ChatColor.GREEN + "グリッド式保護の現在の設定を保存しました。");

@@ -1,17 +1,14 @@
 package com.github.unchama.seichiassist.util;
 
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import net.coreprotect.CoreProtectAPI;
+import com.github.unchama.seichiassist.util.external.CoreProtectWrapper;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -20,7 +17,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Dye;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import java.util.stream.IntStream;
+
 
 public final class BreakUtil {
 	private BreakUtil() {
@@ -33,20 +35,14 @@ public final class BreakUtil {
 		if(!player.isOnline() || breakblock == null){
 			return false;
 		}
-		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+		HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 		UUID uuid = player.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
 
-		//壊されるブロックの状態を取得
-		BlockState blockstate = breakblock.getState();
-		//壊されるブロックのデータを取得
-		byte data = blockstate.getData().getData();
 		//壊されるブロックのMaterialを取得
-		Material material = breakblock.getType();
-
+		final Material material = breakblock.getType();
 
 		//壊されるブロックがワールドガード範囲だった場合処理を終了
-		//ここをオンオフ可能にする
 		if(!ExternalPlugins.getWorldGuard().canBuild(player, breakblock.getLocation())){
 			if(playerdata.getDispworldguardlogflag()){
 				player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
@@ -55,15 +51,13 @@ public final class BreakUtil {
 		}
 
 		if(!equalsIgnoreNameCaseWorld(player.getWorld().getName())){
-			//コアプロテクトのクラスを取得
-			CoreProtectAPI coreProtect = ExternalPlugins.getCoreProtect();
-			//破壊ログを設定
-			if (coreProtect == null) {
+			final CoreProtectWrapper wrapper = ExternalPlugins.getCoreProtectWrapper();
+			if (wrapper == null) {
 				Bukkit.getLogger().warning("CoreProtectにアクセスできませんでした。");
 			} else {
-				boolean success = coreProtect.logRemoval(player.getName(), breakblock.getLocation(), blockstate.getType(),data);
+				final boolean failure = !wrapper.queueBlockRemoval(player, breakblock);
 				//もし失敗したらプレイヤーに報告し処理を終了
-				if(!success){
+				if(failure) {
 					player.sendMessage(ChatColor.RED + "coreprotectに保存できませんでした。管理者に報告してください。");
 					return false;
 				}
@@ -83,19 +77,14 @@ public final class BreakUtil {
 		return true;
 	}
 	private static boolean equalsIgnoreNameCaseWorld(String name) {
-		List<String> ignoreworldlist = SeichiAssist.ignoreWorldlist;
-		for(String s : ignoreworldlist){
-			if(name.equalsIgnoreCase(s.toLowerCase())){
-				return true;
-			}
-		}
-		return false;
+		List<String> ignoreworldlist = SeichiAssist.Companion.getIgnoreWorldlist();
+		return ignoreworldlist.stream().anyMatch(s -> name.equalsIgnoreCase(s.toLowerCase()));
 	}
 	//ブロックを破壊する処理、ドロップも含む、統計増加も含む
 	public static void breakBlock(Player player, Block breakblock, Location centerofblock, ItemStack tool, boolean stepflag) {
 
 		Material material = breakblock.getType();
-		if(!SeichiAssist.materiallist.contains(material)){
+		if(!MaterialSets.INSTANCE.getMaterials().contains(material)){
 			return;
 		}
 
@@ -142,14 +131,14 @@ public final class BreakUtil {
 	}
 
 	public static boolean addItemtoMineStack(Player player, ItemStack itemstack) {
-		SeichiAssist plugin = SeichiAssist.instance;
-		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-		Config config = SeichiAssist.config;
+		SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+		HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+		Config config = SeichiAssist.Companion.getSeichiAssistConfig();
 		//もしサバイバルでなければ処理を終了
 		if(player.getGameMode() != GameMode.SURVIVAL){
 			return false;
 		}
-		if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getDEBUG()){
 			player.sendMessage(ChatColor.RED + "minestackAdd:" + itemstack.toString());
 			player.sendMessage(ChatColor.RED + "mineDurability:" + itemstack.getDurability());
 		}
@@ -185,12 +174,12 @@ public final class BreakUtil {
 		}
 
 		int i;
-		for(i=0; i<SeichiAssist.minestacklist.size(); i++){
-			final MineStackObj mineStackObj = SeichiAssist.minestacklist.get(i);
+		for(i=0; i< MineStackObjectList.INSTANCE.getMinestacklist().size(); i++){
+			final MineStackObj mineStackObj = MineStackObjectList.INSTANCE.getMinestacklist().get(i);
 			if(material == mineStackObj.getMaterial() &&
 				itemstack.getDurability() == mineStackObj.getDurability()){
 				//この時点でIDとサブIDが一致している
-				if(!mineStackObj.getNameloreflag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
+				if(!mineStackObj.getNameLoreFlag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
 					if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 						//レベルを満たしていない
 						return false;
@@ -198,12 +187,12 @@ public final class BreakUtil {
 						playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
 						break;
 					}
-				} else if(mineStackObj.getNameloreflag() && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
+				} else if(mineStackObj.getNameLoreFlag() && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
 					//名前・説明文付き
 					ItemMeta meta = itemstack.getItemMeta();
 
 					//この時点で名前と説明文がある
-					if(mineStackObj.getGachatype()==-1){ //ガチャ以外のアイテム(がちゃりんご)
+					if(mineStackObj.getGachaType()==-1){ //ガチャ以外のアイテム(がちゃりんご)
 						if( !(meta.getDisplayName().equals(StaticGachaPrizeFactory.getGachaRingoName()))
 							|| !(meta.getLore().equals(StaticGachaPrizeFactory.getGachaRingoLore())) ){
 							return false;
@@ -217,7 +206,7 @@ public final class BreakUtil {
 						}
 					} else {
 						//ガチャ品
-						MineStackGachaData g = SeichiAssist.msgachadatalist.get(mineStackObj.getGachatype());
+						MineStackGachaData g = SeichiAssist.Companion.getMsgachadatalist().get(mineStackObj.getGachaType());
 						String name = playerdata.getName(); //プレイヤーのネームを見る
 						if(g.getProbability() <0.1){ //カタログギフト券を除く(名前があるアイテム)
 							if(!Util.ItemStackContainsOwnerName(itemstack, name)){
@@ -240,7 +229,7 @@ public final class BreakUtil {
 				}
 			}
 		}
-		return i != SeichiAssist.minestacklist.size();
+		return i != MineStackObjectList.INSTANCE.getMinestacklist().size();
 
 	}
 	@SuppressWarnings("deprecation")
@@ -282,7 +271,7 @@ public final class BreakUtil {
 				break;
 			}
 
-		}else if(fortunelevel > 0 && SeichiAssist.luckmateriallist.contains(breakmaterial)){
+		}else if(fortunelevel > 0 && MaterialSets.INSTANCE.getLuckMaterials().contains(breakmaterial)){
 			//幸運の処理
 			switch(breakmaterial){
 				case COAL_ORE:
@@ -427,25 +416,25 @@ public final class BreakUtil {
 			if(playerdata.getLevel() < 8 || playerdata.getActiveskilldata().skillcanbreakflag == false){
 				return 0;
 			}else if (playerdata.getLevel() < 18){
-				return SeichiAssist.config.getDropExplevel(1);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(1);
 			}else if (playerdata.getLevel() < 28){
-				return SeichiAssist.config.getDropExplevel(2);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(2);
 			}else if (playerdata.getLevel() < 38){
-				return SeichiAssist.config.getDropExplevel(3);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(3);
 			}else if (playerdata.getLevel() < 48){
-				return SeichiAssist.config.getDropExplevel(4);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(4);
 			}else if (playerdata.getLevel() < 58){
-				return SeichiAssist.config.getDropExplevel(5);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(5);
 			}else if (playerdata.getLevel() < 68){
-				return SeichiAssist.config.getDropExplevel(6);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(6);
 			}else if (playerdata.getLevel() < 78){
-				return SeichiAssist.config.getDropExplevel(7);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(7);
 			}else if (playerdata.getLevel() < 88){
-				return SeichiAssist.config.getDropExplevel(8);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(8);
 			}else if (playerdata.getLevel() < 98){
-				return SeichiAssist.config.getDropExplevel(9);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(9);
 			}else{
-				return SeichiAssist.config.getDropExplevel(10);
+				return SeichiAssist.Companion.getSeichiAssistConfig().getDropExplevel(10);
 			}
 		}else{
 			return 0;
@@ -454,14 +443,11 @@ public final class BreakUtil {
 	//num回だけ耐久を減らす処理
 	public static short calcDurability(int enchantmentLevel,int num) {
 		Random rand = new Random();
-		short durability = 0;
-		double probability = 1.0 / (enchantmentLevel + 1.0);
+        double probability = 1.0 / (enchantmentLevel + 1.0);
 
-		for(int i = 0; i < num ; i++){
-			if(probability >  rand.nextDouble() ){
-				durability++;
-			}
-		}
+        short durability = (short) IntStream.range(0, num)
+                .filter(i -> probability > rand.nextDouble())
+                .count();
 		return durability;
 	}
 
@@ -492,14 +478,8 @@ public final class BreakUtil {
 		}
 	}
 
-	public static boolean BlockEqualsMaterialList(Block b){
-		Set<Material> m = SeichiAssist.materiallist;
-		for (Material material : m) {
-			if (b.getType() == material) {
-				return true;
-			}
-		}
-		return false;
+	public static boolean BlockEqualsMaterialList(final Block block){
+		return MaterialSets.INSTANCE.getMaterials().contains(block.getType());
 	}
 
 	/**
@@ -521,7 +501,7 @@ public final class BreakUtil {
 
 		// 2. 破壊要因判定
 		/** 該当プレイヤーのPlayerData */
-		PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
+		PlayerData playerdata = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		/** ActiveSkillのリスト */
 		ActiveSkill[] skilllist = ActiveSkill.values();
 		/** 重力値の計算を始めるY座標 */
@@ -607,7 +587,7 @@ public final class BreakUtil {
 			/** 確認対象ブロック */
 			Block target = block.getRelative(0, startY + checkPointer, 0);
 			// 対象ブロックが地上判定ブロックの場合
-			if (SeichiAssist.transparentmateriallist.contains(target.getType())) {
+			if (MaterialSets.INSTANCE.getTransparentMaterials().contains(target.getType())) {
 				// カウンタを加算
 				openCount++;
 				if (openCount >= OPENHEIGHT) {
@@ -629,18 +609,17 @@ public final class BreakUtil {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static boolean logPlace(Player player, Block placeblock) {
-		//設置するブロックの状態を取得
-		BlockState blockstate = placeblock.getState();
-		//設置するブロックのデータを取得
-		byte data = blockstate.getData().getData();
+	public static boolean logRemove(final Player player, final Block removedBlock) {
+		final CoreProtectWrapper wrapper = ExternalPlugins.getCoreProtectWrapper();
+		if (wrapper == null) {
+			player.sendMessage(ChatColor.RED + "error:coreprotectに保存できませんでした。管理者に報告してください。");
+			return false;
+		}
 
-		//コアプロテクトのクラスを取得
-		CoreProtectAPI CoreProtect = ExternalPlugins.getCoreProtect();
-		//破壊ログを設定
-		boolean success = CoreProtect.logRemoval(player.getName(), placeblock.getLocation(), blockstate.getType(),data);
+		final boolean failure = !wrapper.queueBlockRemoval(player, removedBlock);
+
 		//もし失敗したらプレイヤーに報告し処理を終了
-		if(!success){
+		if(failure){
 			player.sendMessage(ChatColor.RED + "error:coreprotectに保存できませんでした。管理者に報告してください。");
 			return false;
 		}

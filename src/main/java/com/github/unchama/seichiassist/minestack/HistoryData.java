@@ -3,12 +3,11 @@ package com.github.unchama.seichiassist.minestack;
 /**
  * @author karayuu
  */
+@Deprecated
 public class HistoryData {
-	public int index;
 	public MineStackObj obj;
 
-	HistoryData(int index, MineStackObj obj) {
-		this.index = index;
+	HistoryData(MineStackObj obj) {
 		this.obj = obj;
 	}
 
@@ -19,6 +18,6 @@ public class HistoryData {
 		}
 
 		HistoryData data = (HistoryData) object;
-		return this.index == data.index;
+		return this.obj.getMineStackObjName().equals(data.obj.getMineStackObjName());
 	}
 }

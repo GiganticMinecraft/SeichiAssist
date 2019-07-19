@@ -249,7 +249,7 @@ public enum SeichiAchievement {
     }
 
     private static PlayerData getPlayerData(Player player) {
-        return SeichiAssist.playermap.get(player.getUniqueId());
+        return SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
     }
 
 }

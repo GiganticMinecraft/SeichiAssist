@@ -78,19 +78,19 @@ public class MagicTask extends SkeletonBreakTask {
 
 	@Override
 	public void callSecond() {
-		if (SeichiAssist.entitylist.isEmpty()) {
+		if (SeichiAssist.Companion.getEntitylist().isEmpty()) {
 			Chicken e = (Chicken) player.getWorld().spawnEntity(centerbreakloc, EntityType.CHICKEN);
-			SeichiAssist.entitylist.add(e);
+			SeichiAssist.Companion.getEntitylist().add(e);
 			e.playEffect(EntityEffect.WITCH_MAGIC);
 			e.setInvulnerable(true);
-			new AsyncEntityRemover(e).runTaskLater(SeichiAssist.instance, 100);
+			new AsyncEntityRemover(e).runTaskLater(SeichiAssist.Companion.getInstance(), 100);
 			player.getWorld().playSound(effectloc, Sound.ENTITY_WITCH_AMBIENT, 1, 1.5F);
 		}
 
 		for (Block b : breaklist) {
 			b.setType(Material.AIR);
 			b.getWorld().spawnParticle(Particle.NOTE, b.getLocation().add(0.5, 0.5, 0.5), 1);
-			SeichiAssist.allblocklist.remove(b);
+			SeichiAssist.Companion.getAllblocklist().remove(b);
 		}
 		cancel();
 	}
