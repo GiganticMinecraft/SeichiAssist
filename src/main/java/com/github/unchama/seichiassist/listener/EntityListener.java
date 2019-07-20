@@ -347,8 +347,8 @@ public class EntityListener implements Listener {
 	}
 	@EventHandler
 	public void onPotionSplashEvent(PotionSplashEvent event){
-		Entity e = event.getPotion();
-		if ( e instanceof Projectile){
+		Projectile e = event.getPotion();
+		if (e != null){
 			if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
 				event.setCancelled(true);
 			}

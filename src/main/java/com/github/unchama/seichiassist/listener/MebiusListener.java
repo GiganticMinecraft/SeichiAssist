@@ -195,13 +195,13 @@ public class MebiusListener implements Listener {
 					"さすが[str1]！[str2]なんて敵じゃないね！", "僕にかかれば[str2]なんてこんなもんだよー！",
 					"モンスターってなんで人間を襲うんだろう…？", "ねえ[str1]、今の僕のおかげだよね！ね？",
 					"たまにはやられてみたいもんだねー、ふふん！", "[str2]なんて僕の力を出すまでもなかったね！");
+			final LivingEntity le = event.getEntity();
 			// プレイヤーがモンスターを倒した場合以外は除外
-			if (!(event.getEntity() instanceof Monster || event.getEntity() instanceof LivingEntity)
-					|| !(event.getEntity().getKiller() instanceof Player)) {
+			if (le == null || le.getKiller() == null) {
 				return;
 			}
-			Player player = event.getEntity().getKiller();
-			String monsterName = event.getEntity().getName();
+			Player player = le.getKiller();
+			String monsterName = le.getName();
 
 			// プレイヤーがMebiusを装備していない場合は除外
 			if (!isEquip(player)) {
