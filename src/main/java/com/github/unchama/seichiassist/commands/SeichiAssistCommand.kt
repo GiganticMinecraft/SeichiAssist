@@ -4,7 +4,7 @@ import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.ChatColor
 import org.bukkit.command.ConsoleCommandSender
@@ -19,23 +19,22 @@ object SeichiAssistCommand {
       "config.ymlのdebugmodeの値が1の場合のみ、コンソールから使用可能",
       "${ChatColor.RED}/seichiassist set-anniversary-flag",
       "1周年記念フラグを立てる（コンソール限定コマンド）"
-  ).asResponseToSender())
+  ).asMessageEffect())
 
   private val reloadConfigExecutor = ContextualExecutorBuilder.beginConfiguration()
       .execution {
-        SeichiAssist.config.reloadConfig()
-        "config.ymlの設定値を再読み込みしました".asResponseToSender()
+        SeichiAssist.seichiAssistConfig.reloadConfig()
+        "config.ymlの設定値を再読み込みしました".asMessageEffect()
       }
       .build()
 
   private val toggleDebugExecutor = ContextualExecutorBuilder.beginConfiguration()
       .execution {
         //debugフラグ反転処理
-        if (SeichiAssist.config.debugMode == 1) {
+        if (SeichiAssist.seichiAssistConfig.debugMode == 1) {
           //メッセージフラグを反転
           SeichiAssist.DEBUG = !SeichiAssist.DEBUG
-          SeichiAssist.instance.stopAllTaskRunnable()
-          SeichiAssist.instance.startTaskRunnable()
+          SeichiAssist.instance.restartRepeatedJobs()
 
           val resultMessage = if (SeichiAssist.DEBUG) {
             "${ChatColor.GREEN}デバッグモードを有効にしました"
@@ -43,12 +42,12 @@ object SeichiAssistCommand {
             "${ChatColor.GREEN}デバッグモードを無効にしました"
           }
 
-          resultMessage.asResponseToSender()
+          resultMessage.asMessageEffect()
         } else {
           listOf(
             "${ChatColor.RED}このコマンドは現在の設定では実行できません",
             "${ChatColor.RED}config.ymlのdebugmodeの値を1に書き換えて再起動またはreloadしてください"
-          ).asResponseToSender()
+          ).asMessageEffect()
         }
       }
       .build()
@@ -58,7 +57,7 @@ object SeichiAssistCommand {
       .execution {
         SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(true, null)
 
-        "Anniversaryアイテムの配布を開始しました。".asResponseToSender()
+        "Anniversaryアイテムの配布を開始しました。".asMessageEffect()
       }
       .build()
 

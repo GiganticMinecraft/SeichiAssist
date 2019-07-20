@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.data.descrptions;
 
+import com.github.unchama.seichiassist.LevelThresholds;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RankData;
@@ -68,13 +69,13 @@ public final class PlayerInformationDescriptions {
 
     /**
      * 次のレベルまでの残り必要整地量の説明文
-     * レベルが {@link SeichiAssist#levellist} で指定された最大レベルを超えている場合, {@code null} を返します.
+     * レベルが {@link LevelThresholds#levelExpThresholds} で指定された最大レベルを超えている場合, {@code null} を返します.
      */
     @Nullable
     private static String remainLevelDescription(@NotNull PlayerData playerData) {
-        if (playerData.getLevel() < SeichiAssist.levellist.size()) {
+        if (playerData.getLevel() < LevelThresholds.INSTANCE.getLevelExpThresholds().size()) {
             return AQUA + "次のレベルまで:" +
-                (SeichiAssist.levellist.get(playerData.getLevel()) - playerData.getTotalbreaknum());
+                (LevelThresholds.INSTANCE.getLevelExpThresholds().get(playerData.getLevel()) - playerData.getTotalbreaknum());
             //TODO:この計算は,ここにあるべきではない.
         } else {
             return null;
@@ -108,7 +109,7 @@ public final class PlayerInformationDescriptions {
     @NotNull
     private static String rankingDescription(@NotNull PlayerData playerData) {
         return GOLD + "ランキング：" + playerData.calcPlayerRank(playerData.getPlayer()) + "位" +
-            GRAY + "(" + SeichiAssist.ranklist.size() + "人中)";
+            GRAY + "(" + SeichiAssist.Companion.getRanklist().size() + "人中)";
     }
 
     /**
@@ -122,7 +123,7 @@ public final class PlayerInformationDescriptions {
         final Player player = playerData.getPlayer();
         if (playerData.calcPlayerRank(player) > 1) {
             final int playerRanking = playerData.calcPlayerRank(player);
-            final RankData rankData = SeichiAssist.ranklist.get(playerRanking - 2);
+            final RankData rankData = SeichiAssist.Companion.getRanklist().get(playerRanking - 2);
             return AQUA + "" + (playerRanking - 1) + "位(" + rankData.name + ")との差：" +
                 (rankData.totalbreaknum - playerData.getTotalbreaknum());
             //TODO: この計算はここにあるべきではない.

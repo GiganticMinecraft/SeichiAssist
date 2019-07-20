@@ -5,16 +5,17 @@ import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers.identity
 import com.github.unchama.contextualexecutor.builder.Parsers.nonNegativeInteger
-import com.github.unchama.messaging.MessageToSender
-import com.github.unchama.messaging.asResponseToSender
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.data.merge
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandExecutor
+import org.bukkit.command.CommandSender
 
 object ContributeCommand {
-  private suspend fun addContributionPoint(targetPlayerName: String, point: Int): MessageToSender =
+  private suspend fun addContributionPoint(targetPlayerName: String, point: Int): TargetedEffect<CommandSender> =
       SeichiAssist.databaseGateway.playerDataManipulator
           .addContributionPoint(targetPlayerName, point)
           .map {
@@ -25,16 +26,16 @@ object ContributeCommand {
                   "${ChatColor.GREEN}${targetPlayerName}の貢献度ポイントを${point}減少させました"
                 }
 
-            operationResponse.asResponseToSender()
+            operationResponse.asMessageEffect()
           }.merge()
 
-  private val helpMessage: MessageToSender = listOf(
+  private val helpMessage: TargetedEffect<CommandSender> = listOf(
       "${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
       "${ChatColor.RED}/contribute add <プレイヤー名> <増加分ポイント>",
       "指定されたプレイヤーの貢献度ptを指定分増加させます",
       "${ChatColor.RED}/contribute remove <プレイヤー名> <減少分ポイント>",
       "指定されたプレイヤーの貢献度ptを指定分減少させます(入力ミス回避用)"
-  ).asResponseToSender()
+  ).asMessageEffect()
 
   private val printHelpExecutor: ContextualExecutor = ContextualExecutorBuilder.beginConfiguration()
       .execution { helpMessage }
@@ -43,7 +44,7 @@ object ContributeCommand {
   private val parserConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
       .argumentsParsers(listOf(
           identity,
-          nonNegativeInteger("${ChatColor.RED}増加分ポイントは0以上の整数を指定してください。".asResponseToSender())
+          nonNegativeInteger("${ChatColor.RED}増加分ポイントは0以上の整数を指定してください。".asMessageEffect())
       ), onMissingArguments = printHelpExecutor)
 
   private val addPointExecutor: ContextualExecutor = parserConfiguredBuilder

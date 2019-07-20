@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.BreakUtil;
 
 public class MultiBreakTask extends BukkitRunnable{
-	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
+	private HashMap<UUID, PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	private Player player;
 	private Location droploc;
 	private ItemStack tool;
@@ -54,7 +54,7 @@ public class MultiBreakTask extends BukkitRunnable{
 	@Override
 	public void run() {
 		if(count < breaknum){
-			if(SeichiAssist.DEBUG){
+			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage("" + count);
 			}
 			//溶岩の破壊する処理
@@ -67,7 +67,7 @@ public class MultiBreakTask extends BukkitRunnable{
 				//ブロックを破壊する処理
 				for(Block b:multibreaklist.get(count)){
 					BreakUtil.breakBlock(player, b, droploc, tool,false);
-					SeichiAssist.allblocklist.remove(b);
+					SeichiAssist.Companion.getAllblocklist().remove(b);
 				}
 			}
 

@@ -1,12 +1,11 @@
 package com.github.unchama.seichiassist.data;
 
+import com.github.unchama.seichiassist.LevelThresholds;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
-
-import com.github.unchama.seichiassist.SeichiAssist;
 
 public class ExpBar {
 	private BossBar expbar;
@@ -33,17 +32,17 @@ public class ExpBar {
 		if (expbar.isVisible()) {
 			remove();
 			// レベル上限の人
-			if (pd.getLevel() >= SeichiAssist.levellist.size()) {
+			if (pd.getLevel() >= LevelThresholds.INSTANCE.getLevelExpThresholds().size()) {
 				// BarをMAXにして総整地量を表示
 				String bartext = ChatColor.GOLD + "" + ChatColor.BOLD + "Lv " + pd.getLevel() + "(総整地量: " + String.format("%,d", pd.getTotalbreaknum()) + ")";
 				expbar = p.getServer().createBossBar(bartext, BarColor.YELLOW, BarStyle.SOLID);
 				expbar.setProgress(1.0);
 			} else {
 				// 現在のLvにおける割合をBarに配置
-				long exp = pd.getTotalbreaknum() - SeichiAssist.levellist.get(pd.getLevel() - 1);
-				int expmax = SeichiAssist.levellist.get(pd.getLevel()) - SeichiAssist.levellist.get(pd.getLevel() - 1);
+				long exp = pd.getTotalbreaknum() - LevelThresholds.INSTANCE.getLevelExpThresholds().get(pd.getLevel() - 1);
+				int expmax = LevelThresholds.INSTANCE.getLevelExpThresholds().get(pd.getLevel()) - LevelThresholds.INSTANCE.getLevelExpThresholds().get(pd.getLevel() - 1);
 				String bartext = ChatColor.GOLD + "" + ChatColor.BOLD + "Lv " + pd.getLevel() + "(" + String.format("%,d", pd.getTotalbreaknum()) + "/"
-						+ String.format("%,d", SeichiAssist.levellist.get(pd.getLevel())) + ")";
+						+ String.format("%,d", LevelThresholds.INSTANCE.getLevelExpThresholds().get(pd.getLevel())) + ")";
 				expbar = p.getServer().createBossBar(bartext, BarColor.YELLOW, BarStyle.SOLID);
 				// 範囲チェック
 				if(exp >= expmax) {

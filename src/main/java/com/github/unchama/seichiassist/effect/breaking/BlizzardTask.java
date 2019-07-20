@@ -46,19 +46,19 @@ public class BlizzardTask extends AbstractRoundedTask {
 	@Override
 	public void firstAction() {
 		//1回目のrun
-		if (playerdata.getActiveskilldata().skillnum <= 2) {
-			for(final Block b : blocks){
-				BreakUtil.breakBlock(player, b, droploc, tool, true);
-				SeichiAssist.allblocklist.remove(b);
-			}
-			cancel();
-		} else {
-			for(final Block b : blocks){
-				BreakUtil.breakBlock(player, b, droploc, tool, false);
-				b.setType(Material.PACKED_ICE);
-			}
-		}
-		soundRadius = 5;
+        if(playerdata.getActiveskilldata().skillnum > 2){
+            for(Block b : breaklist){
+                BreakUtil.breakBlock(player, b, droploc, tool, false);
+                b.setType(Material.PACKED_ICE);
+            }
+        }else{
+            for(Block b : breaklist){
+                BreakUtil.breakBlock(player, b, droploc, tool, true);
+                SeichiAssist.Companion.getAllblocklist().remove(b);
+            }
+            cancel();
+        }
+        soundRadius = 5;
 		setRadius = playerdata.getActiveskilldata().skilltype == ActiveSkill.BREAK.gettypenum();
 	}
 
@@ -82,7 +82,7 @@ public class BlizzardTask extends AbstractRoundedTask {
 				} else {
 					b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, Material.PACKED_ICE);
 				}
-				SeichiAssist.allblocklist.remove(b);
+				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.util;
 
+import com.github.unchama.seichiassist.MineStackObjectList;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.util.collection.ImmutableListFactory;
@@ -55,9 +56,9 @@ public final class Util {
 	//スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
 	public static boolean isSkillEnable(Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
+		String worldname = SeichiAssist.Companion.getSEICHIWORLDNAME();
+		if(SeichiAssist.Companion.getDEBUG()){
+			worldname = SeichiAssist.Companion.getDEBUGWORLDNAME();
 		}
 
 		//整地ワールドzeroではスキル発動不可
@@ -80,9 +81,9 @@ public final class Util {
 	//プレイヤーが整地ワールドにいるかどうかの判定処理(整地ワールド=true、それ以外=false)
 	public static boolean isSeichiWorld(Player player){
 		//デバッグモード時は全ワールドtrue(DEBUGWORLDNAME = worldの場合)
-		String worldname = SeichiAssist.SEICHIWORLDNAME;
-		if(SeichiAssist.DEBUG){
-			worldname = SeichiAssist.DEBUGWORLDNAME;
+		String worldname = SeichiAssist.Companion.getSEICHIWORLDNAME();
+		if(SeichiAssist.Companion.getDEBUG()){
+			worldname = SeichiAssist.Companion.getDEBUGWORLDNAME();
 		}
 		//整地ワールドではtrue
 		return player.getWorld().getName().toLowerCase().startsWith(worldname);
@@ -95,7 +96,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
@@ -150,7 +151,7 @@ public final class Util {
 
 	public static void sendEveryMessageWithoutIgnore(String str){
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
-			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverymessageflag()) {
+			if (SeichiAssist.Companion.getPlayermap().get(player.getUniqueId()).getEverymessageflag()) {
 				player.sendMessage(str);
 			}
 		}
@@ -167,7 +168,7 @@ public final class Util {
 
 	public static void sendEveryMessageWithoutIgnore(BaseComponent base){
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
-			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverymessageflag()) {
+			if (SeichiAssist.Companion.getPlayermap().get(player.getUniqueId()).getEverymessageflag()) {
 				player.spigot().sendMessage(base);
 			}
 		}
@@ -299,10 +300,8 @@ public final class Util {
 
 	}
 
-	public static String getDescFormat(List<String> list)
-	{
+	public static String getDescFormat(List<String> list) {
 		return " " + String.join("\n", list) + "\n";
-		//return list.toString().replaceAll(",", "\n").replaceAll("\\[", " ").replaceAll("]", "\n");
 	}
 
 	public static void sendEverySound(Sound kind, float a, float b){
@@ -312,7 +311,7 @@ public final class Util {
 	}
 	public static void sendEverySoundWithoutIgnore(Sound kind, float a, float b){
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
-			if (SeichiAssist.playermap.get(player.getUniqueId()).getEverysoundflag()) {
+			if (SeichiAssist.Companion.getPlayermap().get(player.getUniqueId()).getEverysoundflag()) {
 				player.playSound(player.getLocation(), kind, a, b);
 			}
 		}
@@ -363,16 +362,14 @@ public final class Util {
 	//カラーをランダムで決める
 	public static Color[] getRandomColors(int length) {
 		// 配列を作る
-		Color[] colors = new Color[length];
-		Random rand = new Random();
+        Random rand = new Random();
 		// 配列の要素を順に処理していく
-		for (int n = 0; n != length; n++) {
-			// 24ビットカラーの範囲でランダムな色を決める
-			colors[n] = Color.fromBGR(rand.nextInt(1 << 24));
-		}
+		// 24ビットカラーの範囲でランダムな色を決める
 
-		// 配列を返す
-		return colors;
+        // 配列を返す
+		return IntStream.range(0, length)
+                .mapToObj(n -> Color.fromBGR(rand.nextInt(1 << 24)))
+                .toArray(Color[]::new);
 	}
 
 	//ガチャアイテムを含んでいるか調べる
@@ -437,7 +434,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
@@ -452,7 +449,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
@@ -467,7 +464,7 @@ public final class Util {
 		ItemStack skull;
 		SkullMeta skullmeta;
 		skull = new ItemStack(Material.SKULL_ITEM, 1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
 		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
@@ -526,18 +523,7 @@ public final class Util {
 		return itemstack_temp;
 	}
 
-	public static int getMineStackTypeindex(int idx){
-		int temp = 0;
-		int type = SeichiAssist.minestacklist.get(idx).getStacktype();
-		for (int i = 0; i < idx; i++) {
-			if (SeichiAssist.minestacklist.get(i).getStacktype() == type) {
-				temp++;
-			}
-		}
-		return temp;
-	}
-
-	/**
+    /**
 	 * GUIメニューアイコン作成用
 	 * @author karayuu
 	 *
@@ -718,7 +704,7 @@ public final class Util {
 	 */
 	// TODO これはここにあるべきではない
 	@Deprecated public static @Nullable MineStackObj findMineStackObjectByName(String name) {
-		return SeichiAssist.minestacklist.stream()
+		return MineStackObjectList.INSTANCE.getMinestacklist().stream()
 				.filter(obj -> name.equals(obj.getMineStackObjName()))
 				.findFirst().orElse(null);
 	}

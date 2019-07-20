@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
+import com.github.unchama.seichiassist.util.ItemMetaFactory;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,9 +26,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class ActiveSkillInventoryData {
-	static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap;
-	static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
-	SeichiAssist plugin = SeichiAssist.instance;
+	static HashMap<UUID, PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	static DatabaseGateway databaseGateway = SeichiAssist.Companion.getDatabaseGateway();
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
 
 	//アクティブスキルメニュー
 	public static Inventory getActiveSkillMenuData(Player p){
@@ -36,7 +37,7 @@ public class ActiveSkillInventoryData {
 		//UUID取得
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
-		PlayerData playerdata = SeichiAssist.playermap.get(uuid);
+		PlayerData playerdata = SeichiAssist.Companion.getPlayermap().get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -95,7 +96,7 @@ public class ActiveSkillInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(2,itemstack);
 
-		if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getDEBUG()){
 		itemstack = new ItemStack(Material.STONE_BUTTON,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_BUTTON);
 		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リセットボタン");
@@ -108,7 +109,7 @@ public class ActiveSkillInventoryData {
 		}
 		if(playerdata.getActiveskilldata().arrowskill >= 4){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
-			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
+			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.REGEN));
 			potionmeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 			potionmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -136,7 +137,7 @@ public class ActiveSkillInventoryData {
 
 		if(playerdata.getActiveskilldata().arrowskill >= 5){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
-			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
+			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.FIRE_RESISTANCE));
 			potionmeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 			potionmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -164,7 +165,7 @@ public class ActiveSkillInventoryData {
 
 		if(playerdata.getActiveskilldata().arrowskill >= 6){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
-			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
+			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.INSTANT_HEAL));
 			potionmeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 			potionmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -192,7 +193,7 @@ public class ActiveSkillInventoryData {
 
 		if(playerdata.getActiveskilldata().arrowskill >= 7){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
-			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
+			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.NIGHT_VISION));
 			potionmeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 			potionmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -220,7 +221,7 @@ public class ActiveSkillInventoryData {
 
 		if(playerdata.getActiveskilldata().arrowskill >= 8){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
-			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
+			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.SPEED));
 			potionmeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 			potionmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -248,7 +249,7 @@ public class ActiveSkillInventoryData {
 
 		if(playerdata.getActiveskilldata().arrowskill >= 9){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
-			potionmeta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.TIPPED_ARROW);
+			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.INSTANT_DAMAGE));
 			potionmeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 			potionmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);

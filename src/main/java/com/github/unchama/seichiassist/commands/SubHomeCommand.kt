@@ -4,7 +4,7 @@ import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import org.bukkit.ChatColor
@@ -19,16 +19,16 @@ object SubHomeCommand {
           "${ChatColor.GREEN}/subHome set [セットしたいサブホームの番号]",
           "${ChatColor.GREEN}名前変更する場合",
           "${ChatColor.GREEN}/subHome name [名前変更したいサブホームの番号]"
-      ).asResponseToSender()
+      ).asMessageEffect()
   )
 
   private val argsAndSenderConfiguredBuilder = playerCommandBuilder
       .argumentsParsers(
           listOf(
-              SeichiAssist.config.subHomeMax.let { subHomeMax ->
+              SeichiAssist.seichiAssistConfig.subHomeMax.let { subHomeMax ->
                 Parsers.closedRangeInt(
                     0, subHomeMax,
-                    failureMessage = "サブホームの番号を1～${subHomeMax}の間で入力してください".asResponseToSender())
+                    failureMessage = "サブホームの番号を1～${subHomeMax}の間で入力してください".asMessageEffect())
               }
           ),
           onMissingArguments = printDescriptionExecutor
@@ -42,9 +42,9 @@ object SubHomeCommand {
 
         if (subHomeLocation != null) {
           player.teleport(subHomeLocation)
-          "サブホームポイント${subHomeId}にワープしました".asResponseToSender()
+          "サブホームポイント${subHomeId}にワープしました".asMessageEffect()
         } else {
-          "サブホームポイント${subHomeId}が設定されてません".asResponseToSender()
+          "サブホームポイント${subHomeId}が設定されてません".asMessageEffect()
         }
       }
       .build()
@@ -57,7 +57,7 @@ object SubHomeCommand {
 
         playerData.setSubHomeLocation(player.location, subHomeId - 1)
 
-        "現在位置をサブホームポイント${subHomeId}に設定しました".asResponseToSender()
+        "現在位置をサブホームポイント${subHomeId}に設定しました".asMessageEffect()
       }
       .build()
 
@@ -73,7 +73,7 @@ object SubHomeCommand {
         listOf(
             "サブホームポイント${subHomeId}に設定する名前をチャットで入力してください",
             "${ChatColor.YELLOW}※入力されたチャット内容は他のプレイヤーには見えません"
-        ).asResponseToSender()
+        ).asMessageEffect()
       }
       .build()
 
