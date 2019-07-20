@@ -318,7 +318,7 @@ public class EntityListener implements Listener {
 		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
 		else if(playerdata.getActiveskilldata().effectnum > 100){
 			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-			premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player, tool, new ArrayList<>(breaklist), start, end,centerofblock);
+			premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player, tool, new ArrayList<>(breaklist), start, end, centerofblock);
 		}
 
 	}

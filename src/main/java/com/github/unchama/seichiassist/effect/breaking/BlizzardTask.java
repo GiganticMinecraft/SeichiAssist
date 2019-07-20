@@ -47,12 +47,12 @@ public class BlizzardTask extends AbstractRoundedTask {
 	public void firstAction() {
 		//1回目のrun
         if(playerdata.getActiveskilldata().skillnum > 2){
-            for(Block b : breaklist){
+            for(final Block b : blocks){
                 BreakUtil.breakBlock(player, b, droploc, tool, false);
                 b.setType(Material.PACKED_ICE);
             }
         }else{
-            for(Block b : breaklist){
+            for(final Block b : blocks){
                 BreakUtil.breakBlock(player, b, droploc, tool, true);
                 SeichiAssist.Companion.getAllblocklist().remove(b);
             }
