@@ -4,7 +4,7 @@ import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
-import com.github.unchama.seichiassist.UUIDs
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.menus.stickmenu.firstPage
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -23,7 +23,7 @@ object CommonButtons {
     )
 
     Button(
-        SkullItemStackBuilder(UUIDs.MHF_ArrowLeft)
+        SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
             .title("${ChatColor.YELLOW}${ChatColor.UNDERLINE}${ChatColor.BOLD}ホームへ")
             .lore(listOf("${ChatColor.RESET}${ChatColor.DARK_RED}${ChatColor.UNDERLINE}クリックで移動"))
             .build(),

@@ -13,7 +13,7 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.recomputedButton
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.UUIDs
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.*
 import com.github.unchama.seichiassist.data.player.settings.getBroadcastMutingSettings
 import com.github.unchama.seichiassist.data.player.settings.toggleBroadcastMutingSettings
@@ -257,7 +257,7 @@ object SecondPage: Menu {
               "$RESET$DARK_RED${UNDERLINE}経験値が足りません"
             }
 
-        SkullItemStackBuilder(UUIDs.MHF_Villager)
+        SkullItemStackBuilder(SkullOwners.MHF_Villager)
             .title("$YELLOW$UNDERLINE${BOLD}自分の頭を召喚")
             .lore(baseLore + actionNavigation)
             .build()

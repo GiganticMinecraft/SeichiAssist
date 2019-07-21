@@ -7,7 +7,9 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seichiassist.MineStackObjectList
-import com.github.unchama.seichiassist.UUIDs
+import com.github.unchama.seichiassist.SkullOwnerReference
+import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.seichiassist.asSkullOwnerReference
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.category
@@ -19,7 +21,6 @@ import com.github.unchama.util.collection.mapValues
 import org.bukkit.ChatColor.*
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import java.util.*
 import kotlin.math.ceil
 
 object CategorizedMineStackMenu {
@@ -42,8 +43,8 @@ object CategorizedMineStackMenu {
 
     // ページ操作等のボタンを含むレイアウトセクション
     val uiOperationSection = run {
-      fun buttonToTransferTo(page: Int, skullOwnerUUID: UUID) = Button(
-          SkullItemStackBuilder(skullOwnerUUID)
+      fun buttonToTransferTo(page: Int, skullOwnerReference: SkullOwnerReference) = Button(
+          SkullItemStackBuilder(skullOwnerReference)
               .title("$YELLOW$UNDERLINE${BOLD}MineStack${page + 1}ページ目へ")
               .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
               .build(),
@@ -58,11 +59,11 @@ object CategorizedMineStackMenu {
       val stickMenuButtonSection = singleSlotLayout { (9 * 5) to CommonButtons.openStickMenu }
 
       val previousPageButtonSection = if (page > 0) {
-        singleSlotLayout { 9 * 5 + 7 to buttonToTransferTo(page - 1, UUIDs.MHF_ArrowUp) }
+        singleSlotLayout { 9 * 5 + 7 to buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp.asSkullOwnerReference()) }
       } else emptyLayout
 
       val nextPageButtonSection = if (page + 1 < totalNumberOfPages) {
-        singleSlotLayout { 9 * 5 + 8 to buttonToTransferTo(page + 1, UUIDs.MHF_ArrowDown) }
+        singleSlotLayout { 9 * 5 + 8 to buttonToTransferTo(page + 1, SkullOwners.MHF_ArrowDown.asSkullOwnerReference()) }
       } else emptyLayout
 
       combinedLayout(
