@@ -17,7 +17,7 @@ import org.bukkit.inventory.InventoryHolder
  */
 data class MenuInventoryView(private val size: InventorySize,
                              private val title: String,
-                             internal val slotLayout: IndexedSlotLayout) {
+                             internal val slotLayout: IndexedSlotLayout = IndexedSlotLayout()) {
   internal fun createConfiguredInventory(holder: InventoryHolder): Inventory {
     fun createInventory(property: InventorySize, title: String): Inventory =
         when (property) {

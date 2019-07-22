@@ -12,6 +12,7 @@ import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.recomputedButton
 import com.github.unchama.seasonalevents.events.valentine.Valentine
+import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.*
@@ -494,9 +495,12 @@ object SecondPage: Menu {
       }
 
   override val open: TargetedEffect<Player> = computedEffect { player ->
-    val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", player.computeMenuLayout())
+    val session = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー").createNewSession()
 
-    view.createNewSession().open
+    sequentialEffect(
+        session.openEffectThrough(Schedulers.sync),
+        unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+    )
   }
 }
 

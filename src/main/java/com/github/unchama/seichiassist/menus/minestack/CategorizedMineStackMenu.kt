@@ -6,10 +6,7 @@ import com.github.unchama.menuinventory.*
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
-import com.github.unchama.seichiassist.MineStackObjectList
-import com.github.unchama.seichiassist.SkullOwnerReference
-import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.seichiassist.asSkullOwnerReference
+import com.github.unchama.seichiassist.*
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.category
@@ -17,6 +14,7 @@ import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
+import com.github.unchama.targetedeffect.unfocusedEffect
 import com.github.unchama.util.collection.mapValues
 import org.bukkit.ChatColor.*
 import org.bukkit.Sound
@@ -90,13 +88,15 @@ object CategorizedMineStackMenu {
    */
   fun forCategory(category: MineStackObjectCategory, page: Int = 0): Menu = object: Menu {
     override val open: TargetedEffect<Player> = computedEffect { player ->
-      val view = MenuInventoryView(
+      val session = MenuInventoryView(
           Left(6 * 9),
-          "$DARK_BLUE${BOLD}MineStack - ${category.uiLabel} (${page}ページ目)",
-          player.computeMenuLayout(category, page)
-      )
+          "$DARK_BLUE${BOLD}MineStack - ${category.uiLabel} (${page}ページ目)"
+      ).createNewSession()
 
-      view.createNewSession().open
+      sequentialEffect(
+          session.openEffectThrough(Schedulers.sync),
+          unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout(category, page)) }
+      )
     }
   }
 }

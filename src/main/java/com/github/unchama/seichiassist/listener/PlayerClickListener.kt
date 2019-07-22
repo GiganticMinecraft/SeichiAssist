@@ -11,7 +11,8 @@ import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.targetedeffect.unfocusedEffect
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
@@ -439,7 +440,7 @@ class PlayerClickListener : Listener {
         StickMenu.firstPage.open
     )
 
-    runBlocking {
+    GlobalScope.launch(Schedulers.async) {
       effect.runFor(player)
     }
   }
