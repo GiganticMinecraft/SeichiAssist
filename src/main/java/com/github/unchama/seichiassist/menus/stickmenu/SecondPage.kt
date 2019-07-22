@@ -235,7 +235,7 @@ object SecondPage: Menu {
             sequentialEffect(
                 closeInventoryEffect,
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
-                TargetedEffect { it.performCommand("hub") } // TODO asCommandEffect
+                "hub".asCommandEffect()
             )
           }
       )
