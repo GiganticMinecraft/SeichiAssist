@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.listener.*
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.task.HalfHourRankingRoutine
 import com.github.unchama.seichiassist.task.PlayerDataBackupTask
 import com.github.unchama.seichiassist.task.PlayerDataPeriodicRecalculation
@@ -282,7 +283,7 @@ class SeichiAssist : JavaPlugin() {
       for (i in msgachadatalist.indices) {
         val g = msgachadatalist[i]
         if (g.itemStack.type != Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外
-          minestacklist.add(MineStackObj(g.objName, g.level, g.itemStack, true, i, 5))
+          minestacklist.add(MineStackObj(g.objName, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES))
         }
       }
       return minestacklist

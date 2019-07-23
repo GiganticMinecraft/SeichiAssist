@@ -8,8 +8,8 @@ import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
-import com.github.unchama.seichiassist.minestack.MineStackHistoryData
 import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.MebiusTask
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
@@ -240,7 +240,7 @@ class PlayerData(val player: Player) {
     var hasChocoGave: Boolean = false
 
     //MineStackの履歴
-    var hisotryData: MineStackHistoryData
+    var hisotryData: MineStackUsageHistory
     //MineStack検索機能使用中かどうか
     var isSearching: Boolean = false
     //MineStack検索保存用Map
@@ -389,7 +389,7 @@ class PlayerData(val player: Player) {
 
         this.hasChocoGave = false
 
-        this.hisotryData = MineStackHistoryData()
+        this.hisotryData = MineStackUsageHistory()
         this.isSearching = false
         this.indexMap = HashMap()
 

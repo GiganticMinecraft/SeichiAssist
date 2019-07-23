@@ -10,13 +10,13 @@ public class MineStackObj {
 	private String objName;
 	private int level;
 	private int gachaType;
-	private int stackType;
+	public final MineStackObjectCategory stackType;
 	private ItemStack itemStack;
 	private boolean nameLoreFlag;
 
 	public MineStackObj(String objName, String japaneseName,
 						int level, Material material, int durability,
-						boolean nameLoreFlag, int gachaType, int stackType){
+						boolean nameLoreFlag, int gachaType, MineStackObjectCategory stackType){
 		this.objName = objName;
 		this.level = level;
 		this.nameLoreFlag = nameLoreFlag;
@@ -32,7 +32,7 @@ public class MineStackObj {
 		this.stackType = stackType;
 	}
 
-	public MineStackObj(String objName, int level, ItemStack itemStack, boolean nameLoreFlag, int gachaType, int stackType){
+	public MineStackObj(String objName, int level, ItemStack itemStack, boolean nameLoreFlag, int gachaType, MineStackObjectCategory stackType){
 		this.objName = objName;
 		this.level = level;
 		this.nameLoreFlag = nameLoreFlag;
@@ -47,9 +47,7 @@ public class MineStackObj {
 	public String getMineStackObjName(){
 		return objName;
 	}
-	public String getJapaneseName(){
-		return this.itemStack.getItemMeta().getDisplayName();
-	}
+
 	public int getLevel(){
 		return level;
 	}
@@ -68,14 +66,6 @@ public class MineStackObj {
 
 	public ItemStack getItemStack(){
 		return itemStack;
-	}
-
-	/**
-	 * @deprecated use MineStackObj.toType defined with MineStackObjectCategory
-	 */
-	@Deprecated
-	public int getStackType(){
-		return stackType;
 	}
 
 	@Override
