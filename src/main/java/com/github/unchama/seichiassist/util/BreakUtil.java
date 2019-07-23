@@ -179,7 +179,7 @@ public final class BreakUtil {
 			if(material == mineStackObj.getMaterial() &&
 				itemstack.getDurability() == mineStackObj.getDurability()){
 				//この時点でIDとサブIDが一致している
-				if(!mineStackObj.getNameLoreFlag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
+				if(!mineStackObj.getHasNameLore() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
 					if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 						//レベルを満たしていない
 						return false;
@@ -187,7 +187,7 @@ public final class BreakUtil {
 						playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
 						break;
 					}
-				} else if(mineStackObj.getNameLoreFlag() && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
+				} else if(mineStackObj.getHasNameLore() && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
 					//名前・説明文付き
 					ItemMeta meta = itemstack.getItemMeta();
 
