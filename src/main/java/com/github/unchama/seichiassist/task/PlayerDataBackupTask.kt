@@ -22,7 +22,7 @@ object PlayerDataBackupTask: RepeatedTaskLauncher() {
     for (player in Bukkit.getOnlinePlayers()) {
       val playerData = playerMap[player.uniqueId]
 
-      if (playerData != null) {
+      if (playerData !== null) {
         databaseGateway.playerDataManipulator.savePlayerData(playerData)
       } else {
         Bukkit.getLogger().warning(player.name + " -> PlayerData not found.")

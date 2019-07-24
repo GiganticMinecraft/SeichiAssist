@@ -282,7 +282,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
   }
 
   override fun run() {
-    val resultMessage = if (executeUpdate() == Ok)
+    val resultMessage = if (executeUpdate() === Ok)
       ChatColor.GREEN.toString() + playerdata.name + "のプレイヤーデータ保存完了"
     else
       ChatColor.RED.toString() + playerdata.name + "のプレイヤーデータ保存失敗"

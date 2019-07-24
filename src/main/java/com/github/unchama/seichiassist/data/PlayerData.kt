@@ -326,12 +326,15 @@ class PlayerData(val player: Player) {
         this.idletime = 0
         this.staticdata = ArrayList()
         this.totalbreaknum = 0
-        for (m in MaterialSets.materials) {
-            //統計にないため除外
-            if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
-                staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m))
+        run {
+            for (m in MaterialSets.materials) {
+                //統計にないため除外
+                if (m !in exclude) {
+                    staticdata += player.getStatistic(Statistic.MINE_BLOCK, m)
+                }
             }
         }
+
         this.activeskilldata = ActiveSkillData()
         this.expbar = ExpBar(this, player)
         this.expmanager = ExperienceManager(player)
@@ -573,7 +576,7 @@ class PlayerData(val player: Player) {
 
         //イベント入手分の確認
 
-        //今後実装予定。
+        //TODO: 今後実装予定。
 
 
         //合計値の確認
@@ -599,7 +602,7 @@ class PlayerData(val player: Player) {
         var i = 0
         var sum = 0.0
         for (m in MaterialSets.materials) {
-            if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
+            if (m !in exclude) {
                 val getstat = p.getStatistic(Statistic.MINE_BLOCK, m)
                 val getincrease = getstat - staticdata[i]
                 sum += calcBlockExp(m, getincrease, p)
@@ -1081,5 +1084,7 @@ class PlayerData(val player: Player) {
 
         //TODO:もちろんここにあるべきではない
         const val passiveSkillProbability = 10
+
+        val exclude = EnumSet.of(Material.GRASS_PATH, Material.SOIL, Material.MOB_SPAWNER)
     }
 }
