@@ -35,7 +35,7 @@ object MineStackMainMenu: Menu {
       val layoutMap = MineStackObjectCategory.values().mapIndexed { index, category ->
         val slotIndex = index + 1 // 0には自動スタック機能トグルが入るので、1から入れ始める
         val iconItemStack = IconItemStackBuilder(iconMaterialFor(category))
-            .lore(listOf("$BLUE$UNDERLINE$BOLD${category.uiLabel}"))
+            .title("$BLUE$UNDERLINE$BOLD${category.uiLabel}")
             .build()
 
         val button = Button(
