@@ -1,17 +1,17 @@
 package com.github.unchama.seichiassist
 
-import com.github.unchama.seichiassist.effect.arrow.ArrowMagicTask
-import com.github.unchama.seichiassist.effect.breaking.MagicTask
 import com.github.unchama.seichiassist.data.Coordinate
-import com.github.unchama.seichiassist.data.PlayerData
+import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
+import com.github.unchama.seichiassist.effect.breaking.MagicTask
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-
-import java.util.Arrays
+import java.util.*
 
 enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, val desc: String, val explain: String, val usePoint: Int, val material: Material) {
   MAGIC(1, "ef_magic", ChatColor.RED.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マジック", "鶏が出る手品", 10, Material.RED_ROSE);
@@ -46,8 +46,12 @@ enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, 
 
   //エフェクトの実行処理分岐
   fun runArrowEffect(player: Player) {
-    when (this) {
-      MAGIC -> ArrowMagicTask(player)
+    val effect = when (this) {
+      MAGIC -> ArrowEffects.singleArrowMagicEffect
+    }
+
+    GlobalScope.launch {
+      effect.runFor(player)
     }
   }
 

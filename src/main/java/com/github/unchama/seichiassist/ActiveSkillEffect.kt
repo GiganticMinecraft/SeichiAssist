@@ -2,15 +2,15 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist.data.Coordinate
 import com.github.unchama.seichiassist.data.PlayerData
-import com.github.unchama.seichiassist.effect.arrow.ArrowBlizzardTask
-import com.github.unchama.seichiassist.effect.arrow.ArrowExplosionTask
-import com.github.unchama.seichiassist.effect.arrow.ArrowMeteoTask
+import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.BlizzardTask
 import com.github.unchama.seichiassist.effect.breaking.ExplosionTask
 import com.github.unchama.seichiassist.effect.breaking.MeteoTask
 import com.okkero.skedule.BukkitSchedulerController
 import com.okkero.skedule.SynchronizationContext
 import com.okkero.skedule.schedule
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -56,15 +56,17 @@ enum class ActiveSkillEffect constructor(val num: Int, private val sql_name: Str
 
   //エフェクトの実行処理分岐
   fun runArrowEffect(player: Player) {
+    val effect = when (this@ActiveSkillEffect) {
+      EXPLOSION -> ArrowEffects.singleArrowExplosionEffect
+      BLIZZARD -> ArrowEffects.singleArrowBlizzardEffect
+      METEO -> ArrowEffects.singleArrowMeteoEffect
+    }
+
     async {
       // https://discordapp.com/channels/237758724121427969/565935041574731807/589097781088616500
       repeat (100) {
         waitFor(1)
-        when (this@ActiveSkillEffect) {
-          EXPLOSION -> ArrowExplosionTask(player)
-          BLIZZARD -> ArrowBlizzardTask(player)
-          METEO -> ArrowMeteoTask(player)
-        }
+        GlobalScope.launch { effect.runFor(player) }
       }
     }
   }
