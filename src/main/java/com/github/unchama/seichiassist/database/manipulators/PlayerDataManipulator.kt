@@ -77,7 +77,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                 command = ("update " + tableReference
                         + " set p_givenvote = " + p_vote
                         + " where uuid like '" + struuid + "'")
-                if (gateway.executeUpdate(command) == Fail) {
+                if (gateway.executeUpdate(command) === Fail) {
                     player.sendMessage(ChatColor.RED.toString() + "投票特典の受け取りに失敗しました")
                     return@ifCoolDownDoneThenGet 0
                 }
@@ -114,7 +114,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                 command = ("update " + tableReference
                         + " set numofsorryforbug = numofsorryforbug - 576"
                         + " where uuid like '" + struuid + "'")
-                if (gateway.executeUpdate(command) == Fail) {
+                if (gateway.executeUpdate(command) === Fail) {
                     player.sendMessage(ChatColor.RED.toString() + "ガチャ券の受け取りに失敗しました")
                     return@ifCoolDownDoneThenGet 0
                 }
@@ -125,7 +125,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                 command = ("update " + tableReference
                         + " set numofsorryforbug = 0"
                         + " where uuid like '" + struuid + "'")
-                if (gateway.executeUpdate(command) == Fail) {
+                if (gateway.executeUpdate(command) === Fail) {
                     player.sendMessage(ChatColor.RED.toString() + "ガチャ券の受け取りに失敗しました")
                     return@ifCoolDownDoneThenGet 0
                 }
@@ -284,7 +284,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         suspend fun executeUpdate(): ResponseEffectOrResult<CommandSender, Unit> {
             val updateCommand = "UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name LIKE '$targetPlayerName'"
 
-            return if (gateway.executeUpdate(updateCommand) == Fail) {
+            return if (gateway.executeUpdate(updateCommand) === Fail) {
                 Bukkit.getLogger().warning("sql failed on updating $targetPlayerName's contribute_point")
                 "${ChatColor.RED}貢献度ptの変更に失敗しました。".asMessageEffect().left()
             } else {
@@ -313,7 +313,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         if (uuid != null) {
             command += " WHERE uuid = '$uuid'"
         }
-        if (gateway.executeUpdate(command) == Fail) {
+        if (gateway.executeUpdate(command) === Fail) {
             Bukkit.getLogger().warning("sql failed. -> setAnniversary")
             return false
         }
@@ -342,7 +342,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
             // シリアル化されたインベントリデータを書き込む
             val updateCommand = "UPDATE $tableReference SET shareinv = '$serializedInventory' WHERE uuid = '${playerData.uuid}'"
-            if (gateway.executeUpdate(updateCommand) == Fail) {
+            if (gateway.executeUpdate(updateCommand) === Fail) {
                 Bukkit.getLogger().warning("${player.name} sql failed. -> saveSharedInventory(executeUpdate failed)")
 
                 return "${ChatColor.RED}アイテムの収納に失敗しました".asMessageEffect().left()
@@ -383,7 +383,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     suspend fun clearShareInv(player: Player, playerdata: PlayerData): ResponseEffectOrResult<CommandSender, Unit> {
         val command = "UPDATE $tableReference SET shareinv = '' WHERE uuid = '${playerdata.uuid}'"
 
-        if (gateway.executeUpdate(command) == Fail) {
+        if (gateway.executeUpdate(command) === Fail) {
             Bukkit.getLogger().warning("${player.name} sql failed. -> clearShareInv")
             return "${ChatColor.RED}アイテムのクリアに失敗しました".asMessageEffect().left()
         }
