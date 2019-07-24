@@ -11,11 +11,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -164,7 +160,7 @@ public enum SeichiAchievement {
     NO_9017(9017, player -> Calendar.getInstance().get(Calendar.MONTH) + 1 == 5),
     NO_9018(9018, player -> inDayOf(5, 5)),
     NO_9019(9019, player -> inDayOf(5, 5)), // missing?
-    NO_9020(9020, player -> isWeekday(Month.MAY, 2, DayOfWeek.SUNDAY)),
+    NO_9020(9020, player -> todayIsAt(Month.MAY, 2, DayOfWeek.SUNDAY)),
     NO_9021(9021, player -> Calendar.getInstance().get(Calendar.MONTH) + 1 == 6),
     NO_9022(9022, player -> inDayOf(6, 12)),
     NO_9023(9023, player -> inDayOf(6, 17)),
@@ -266,7 +262,7 @@ public enum SeichiAchievement {
      @param weekday 何曜日か。
      @return 今日が{@code month}月の{@code weeks}週の{@code weekday}曜日かを判定するならtrue、そうでないならfalse
      */
-    private static boolean isWeekday(final Month month, final int weeks, final DayOfWeek weekday) {
+    private static boolean todayIsAt(final Month month, final int weeks, final DayOfWeek weekday) {
         if (weeks < 1 || weeks > 5) {
             throw new IllegalArgumentException("weeks requires in 1..5");
         }
