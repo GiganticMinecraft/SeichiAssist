@@ -409,7 +409,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
     }
 
     //ログインフラグの確認を行う
-    val table = SeichiAssist.PLAYERDATA_TABLENAME
+    val table = DatabaseConstants.PLAYERDATA_TABLENAME
     val loginFlagSelectionQuery = "select loginflag from " +
         db + "." + table + " " +
         "where uuid = '" + stringUuid + "'"

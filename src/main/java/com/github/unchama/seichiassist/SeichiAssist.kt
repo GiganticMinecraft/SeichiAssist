@@ -217,9 +217,6 @@ class SeichiAssist : JavaPlugin() {
     //ガチャシステムのメンテナンスフラグ
     var gachamente = false
 
-    // TODO これらは DatabaseConstants に移されるべき
-    const val PLAYERDATA_TABLENAME = "playerdata"
-
     val SEICHIWORLDNAME = "world_sw"
     val DEBUGWORLDNAME = "world"
 
