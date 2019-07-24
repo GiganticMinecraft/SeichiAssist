@@ -19,4 +19,4 @@ enum class MineStackObjectCategory(val serializedValue: Int, val uiLabel: String
   }
 }
 
-fun MineStackObj.category(): MineStackObjectCategory = MineStackObjectCategory.fromSerializedValue(this.stackType)!!
+fun MineStackObj.category(): MineStackObjectCategory = this.stackType

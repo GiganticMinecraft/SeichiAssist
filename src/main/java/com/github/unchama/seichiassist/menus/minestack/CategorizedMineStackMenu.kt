@@ -6,8 +6,7 @@ import com.github.unchama.menuinventory.*
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
-import com.github.unchama.seichiassist.MineStackObjectList
-import com.github.unchama.seichiassist.UUIDs
+import com.github.unchama.seichiassist.*
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.category
@@ -15,11 +14,11 @@ import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
+import com.github.unchama.targetedeffect.unfocusedEffect
 import com.github.unchama.util.collection.mapValues
 import org.bukkit.ChatColor.*
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import java.util.*
 import kotlin.math.ceil
 
 object CategorizedMineStackMenu {
@@ -42,8 +41,8 @@ object CategorizedMineStackMenu {
 
     // ページ操作等のボタンを含むレイアウトセクション
     val uiOperationSection = run {
-      fun buttonToTransferTo(page: Int, skullOwnerUUID: UUID) = Button(
-          SkullItemStackBuilder(skullOwnerUUID)
+      fun buttonToTransferTo(page: Int, skullOwnerReference: SkullOwnerReference) = Button(
+          SkullItemStackBuilder(skullOwnerReference)
               .title("$YELLOW$UNDERLINE${BOLD}MineStack${page + 1}ページ目へ")
               .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
               .build(),
@@ -58,11 +57,11 @@ object CategorizedMineStackMenu {
       val stickMenuButtonSection = singleSlotLayout { (9 * 5) to CommonButtons.openStickMenu }
 
       val previousPageButtonSection = if (page > 0) {
-        singleSlotLayout { 9 * 5 + 7 to buttonToTransferTo(page - 1, UUIDs.MHF_ArrowUp) }
+        singleSlotLayout { 9 * 5 + 7 to buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp.asSkullOwnerReference()) }
       } else emptyLayout
 
       val nextPageButtonSection = if (page + 1 < totalNumberOfPages) {
-        singleSlotLayout { 9 * 5 + 8 to buttonToTransferTo(page + 1, UUIDs.MHF_ArrowDown) }
+        singleSlotLayout { 9 * 5 + 8 to buttonToTransferTo(page + 1, SkullOwners.MHF_ArrowDown.asSkullOwnerReference()) }
       } else emptyLayout
 
       combinedLayout(
@@ -89,13 +88,15 @@ object CategorizedMineStackMenu {
    */
   fun forCategory(category: MineStackObjectCategory, page: Int = 0): Menu = object: Menu {
     override val open: TargetedEffect<Player> = computedEffect { player ->
-      val view = MenuInventoryView(
+      val session = MenuInventoryView(
           Left(6 * 9),
-          "$DARK_BLUE${BOLD}MineStack - ${category.uiLabel} (${page}ページ目)",
-          player.computeMenuLayout(category, page)
-      )
+          "$DARK_BLUE${BOLD}MineStack - ${category.uiLabel} (${page}ページ目)"
+      ).createNewSession()
 
-      view.createNewSession().open
+      sequentialEffect(
+          session.openEffectThrough(Schedulers.sync),
+          unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout(category, page)) }
+      )
     }
   }
 }

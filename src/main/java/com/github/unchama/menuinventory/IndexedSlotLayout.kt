@@ -16,6 +16,8 @@ import org.bukkit.inventory.ItemStack
  * どのインデックスがどの[Slot]と関連付けられているかの情報を持つ[Map]のラッパークラス.
  */
 data class IndexedSlotLayout(private val map: Map<Int, Slot>) {
+  constructor(): this(mapOf())
+
   constructor(vararg mappings: Pair<Int, Slot>): this(mapOf(*mappings))
 
   constructor(mapping: Iterable<IndexedValue<Slot>>): this(mapping.toMap())

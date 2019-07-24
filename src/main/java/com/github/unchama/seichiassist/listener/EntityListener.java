@@ -15,9 +15,14 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.projectiles.ProjectileSource;
@@ -347,9 +352,9 @@ public class EntityListener implements Listener {
 	}
 	@EventHandler
 	public void onPotionSplashEvent(PotionSplashEvent event){
-		Entity e = event.getPotion();
-		if ( e instanceof Projectile){
-			if(e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")){
+		ThrownPotion thrown = event.getPotion();
+		if (thrown != null){
+			if(thrown.hasMetadata("ArrowSkill") || thrown.hasMetadata("Effect")){
 				event.setCancelled(true);
 			}
 		}

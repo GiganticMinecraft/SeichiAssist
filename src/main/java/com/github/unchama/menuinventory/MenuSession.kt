@@ -1,8 +1,10 @@
 package com.github.unchama.menuinventory
 
 import com.github.unchama.targetedeffect.TargetedEffect
+import kotlinx.coroutines.withContext
 import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryHolder
+import kotlin.coroutines.CoroutineContext
 
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
@@ -21,10 +23,14 @@ class MenuSession internal constructor(view: MenuInventoryView): InventoryHolder
   override fun getInventory() = sessionInventory
 
   /**
-   * このセッションが持つ共有インベントリを開く作用を返します.
+   * このセッションが持つ共有インベントリを開く[TargetedEffect]を返します.
+   *
+   * @param syncExecutionContext インベントリを開くコルーチンの実行コンテキスト
    */
-  val open: TargetedEffect<Player> = TargetedEffect {
-    it.openInventory(sessionInventory)
+  fun openEffectThrough(syncExecutionContext: CoroutineContext): TargetedEffect<Player> = TargetedEffect {
+    withContext(syncExecutionContext) {
+      it.openInventory(sessionInventory)
+    }
   }
 
 }

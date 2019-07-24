@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -291,7 +291,7 @@ public class RegionMenuData {
 
 	private static Map<DirectionType, String> getPlayerDirectionString(Player player) {
 		double rotation = (player.getLocation().getYaw() + 180) % 360;
-		Map<DirectionType, String> directionMap = new HashMap<>();
+		Map<DirectionType, String> directionMap = new EnumMap<>(DirectionType.class);
 
 		if (rotation < 0) {
 			rotation += 360;

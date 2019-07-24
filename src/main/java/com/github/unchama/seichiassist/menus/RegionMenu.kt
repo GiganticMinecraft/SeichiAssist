@@ -8,6 +8,7 @@ import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
+import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.targetedeffect.*
@@ -234,8 +235,12 @@ object RegionMenu: Menu {
     )
   }
 
-  override val open: TargetedEffect<Player> = TargetedEffect {
-    val view = MenuInventoryView(Right(InventoryType.HOPPER), "${BLACK}保護メニュー", it.computeMenuLayout())
-    view.createNewSession().open
+  override val open: TargetedEffect<Player> = computedEffect { player ->
+    val session = MenuInventoryView(Right(InventoryType.HOPPER), "${BLACK}保護メニュー").createNewSession()
+
+    sequentialEffect(
+        session.openEffectThrough(Schedulers.sync),
+        unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+    )
   }
 }

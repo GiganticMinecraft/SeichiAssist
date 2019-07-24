@@ -190,32 +190,38 @@ public class MebiusListener implements Listener {
 	// モンスターを倒した時
 	@EventHandler
 	public void onKill(EntityDeathEvent event) {
-		try {
-			final Set<String> msgs = SetFactory.of(
-					"さすが[str1]！[str2]なんて敵じゃないね！", "僕にかかれば[str2]なんてこんなもんだよー！",
-					"モンスターってなんで人間を襲うんだろう…？", "ねえ[str1]、今の僕のおかげだよね！ね？",
-					"たまにはやられてみたいもんだねー、ふふん！", "[str2]なんて僕の力を出すまでもなかったね！");
-			// プレイヤーがモンスターを倒した場合以外は除外
-			if (!(event.getEntity() instanceof Monster || event.getEntity() instanceof LivingEntity)
-					|| !(event.getEntity().getKiller() instanceof Player)) {
-				return;
-			}
-			Player player = event.getEntity().getKiller();
-			String monsterName = event.getEntity().getName();
-
-			// プレイヤーがMebiusを装備していない場合は除外
-			if (!isEquip(player)) {
-				return;
-			}
-
-			//もしモンスター名が取れなければ除外
-			if(monsterName.equals("")){
-				return;
-			}
-			getPlayerData(player).getMebius().speak(getMessage(msgs,
-					Objects.requireNonNull(getNickname(player)), monsterName));
-		} catch (NullPointerException e) {
+		final Set<String> msgs = SetFactory.of(
+				"さすが[str1]！[str2]なんて敵じゃないね！", "僕にかかれば[str2]なんてこんなもんだよー！",
+				"モンスターってなんで人間を襲うんだろう…？", "ねえ[str1]、今の僕のおかげだよね！ね？",
+				"たまにはやられてみたいもんだねー、ふふん！", "[str2]なんて僕の力を出すまでもなかったね！");
+		final LivingEntity lived = event.getEntity();
+		// プレイヤーがモンスターを倒した場合以外は除外
+		if (lived == null) {
+			return;
 		}
+
+		final Player player = lived.getKiller();
+		if (player == null) {
+			return;
+		}
+
+		final String monsterName = lived.getName();
+
+		// プレイヤーがMebiusを装備していない場合は除外
+		if (!isEquip(player)) {
+			return;
+		}
+
+		//もしモンスター名が取れなければ除外
+		if(monsterName.equals("")){
+			return;
+		}
+
+		String playerNick = getNickname(player);
+		Objects.requireNonNull(playerNick);
+		getPlayerData(player).getMebius().speak(
+				getMessage(msgs, playerNick, monsterName)
+		);
 	}
 
 	// ブロックを破壊した時
