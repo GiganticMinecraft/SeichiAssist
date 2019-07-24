@@ -50,7 +50,7 @@ public class ExplosionTask extends AbstractBreakTask2 {
 		final boolean stepflag = playerdata.getActiveskilldata().skillnum <= 2;
 		for(final Block b : blocks) {
 			BreakUtil.breakBlock(player, b, droploc, tool, stepflag);
-			SeichiAssist.allblocklist.remove(b);
+			SeichiAssist.Companion.getAllblocklist().remove(b);
 		}
 	}
 }

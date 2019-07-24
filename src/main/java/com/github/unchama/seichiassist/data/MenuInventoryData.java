@@ -5,18 +5,10 @@ import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.LevelThresholds;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.minestack.HistoryData;
-import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.seichiassist.util.AsyncInventorySetter;
-import com.github.unchama.seichiassist.util.exp.ExperienceManager;
-import com.github.unchama.seichiassist.util.ItemMetaFactory;
-import com.github.unchama.seichiassist.util.TypeConverter;
-import com.github.unchama.seichiassist.util.Util;
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
-import com.github.unchama.seichiassist.util.external.WorldGuard;
 import com.github.unchama.seichiassist.task.GiganticBerserkTask;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
+import com.github.unchama.seichiassist.util.ItemMetaFactory;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
@@ -32,13 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.IntStream;
+import java.util.*;
 
 public class MenuInventoryData {
 	private static HashMap<UUID, PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
@@ -654,7 +640,7 @@ public class MenuInventoryData {
 					if (playerdata.getActiveskilldata().obtainedSkillPremiumEffects.contains(premiumeffect[i])) {
 						itemstack = new ItemStack(premiumeffect[i].getMaterial(),1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(premiumeffect[i].getMaterial());
-						itemmeta.setDisplayName(ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(premiumeffect[i].getName()));
+						itemmeta.setDisplayName(ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(premiumeffect[i].getDesc()));
 						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + premiumeffect[i].getExplain()
 								, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
 								);
@@ -665,7 +651,7 @@ public class MenuInventoryData {
 					else{
 						itemstack = new ItemStack(Material.BEDROCK,1);
 						itemmeta = ItemMetaFactory.BEDROCK.getValue();
-						itemmeta.setDisplayName(premiumeffect[i].getName());
+						itemmeta.setDisplayName(premiumeffect[i].getDesc());
 						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + premiumeffect[i].getExplain()
 								, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要プレミアムポイント：" + premiumeffect[i].getUsePoint()
 								, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");

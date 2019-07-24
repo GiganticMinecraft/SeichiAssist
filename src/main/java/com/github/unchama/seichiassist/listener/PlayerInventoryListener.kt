@@ -513,7 +513,7 @@ class PlayerInventoryListener : Listener {
               player.sendMessage(ChatColor.YELLOW.toString() + "既に選択されています")
             } else {
               playerdata.activeskilldata.effectnum = activeSkillPremiumEffect.num + 100
-              player.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト:" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + " が選択されました")
+              player.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト:" + activeSkillPremiumEffect.desc + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + " が選択されました")
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
             }
           }
@@ -545,13 +545,13 @@ class PlayerInventoryListener : Listener {
         val itemmeta = itemstackcurrent.itemMeta
         val premiumeffect = ActiveSkillPremiumEffect.values()
         for (activeSkillPremiumEffect in premiumeffect) {
-          if (itemmeta.displayName.contains(activeSkillPremiumEffect.getName())) {
+          if (itemmeta.displayName.contains(activeSkillPremiumEffect.desc)) {
             if (playerdata.activeskilldata.premiumeffectpoint < activeSkillPremiumEffect.usePoint) {
               player.sendMessage(ChatColor.DARK_RED.toString() + "プレミアムエフェクトポイントが足りません")
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.5.toFloat())
             } else {
               playerdata.activeskilldata.obtainedSkillPremiumEffects.add(activeSkillPremiumEffect)
-              player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました")
+              player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.desc + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました")
               if (databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
                 player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。")
               }

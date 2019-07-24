@@ -83,7 +83,7 @@ public class DonateDataManipulator {
                     material = effect[num].getMaterial();
                     itemstack = new ItemStack(material);
                     itemmeta = Bukkit.getItemFactory().getItemMeta(material);
-                    itemmeta.setDisplayName(ChatColor.RESET + "" +  ChatColor.YELLOW + "購入エフェクト：" + effect[num].getName());
+                    itemmeta.setDisplayName(ChatColor.RESET + "" +  ChatColor.YELLOW + "購入エフェクト：" + effect[num].getDesc());
                     lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GOLD + "" + "プレミアムエフェクトポイント： -" + lrs.getInt("usepoint"),
                             ChatColor.RESET + "" +  ChatColor.GOLD + "" + "日時：" + lrs.getString("date")
                     );
