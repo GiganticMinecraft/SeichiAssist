@@ -53,7 +53,7 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
@@ -70,7 +70,7 @@ class PlayerInventoryListener : Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
       val meta = itemstackcurrent.itemMeta
@@ -110,7 +110,7 @@ class PlayerInventoryListener : Listener {
   @EventHandler
   fun onPlayerClickPassiveSkillSellectEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.clickedInventory === null) {
       return
     }
 
@@ -118,7 +118,7 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
@@ -141,10 +141,10 @@ class PlayerInventoryListener : Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
-      val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
@@ -159,43 +159,60 @@ class PlayerInventoryListener : Listener {
               StickMenu.firstPage.open
           ).runFor(player)
         }
-      } else if (itemstackcurrent.type == Material.DIAMOND_PICKAXE) {
-        // 複数破壊トグル
+      } else {
+        val type = itemstackcurrent.type
+        when (type) {
+          Material.DIAMOND_PICKAXE -> {
+            // 複数破壊トグル
 
-        if (playerdata.level >= SeichiAssist.seichiAssistConfig.multipleIDBlockBreaklevel) {
-          playerdata.multipleidbreakflag = !playerdata.multipleidbreakflag
-          if (playerdata.multipleidbreakflag) {
-            player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-            player.sendMessage(ChatColor.GREEN.toString() + "複数種類同時破壊:ON")
-          } else {
-            player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
-            player.sendMessage(ChatColor.RED.toString() + "複数種類同時破壊:OFF")
+            if (playerdata.level >= SeichiAssist.seichiAssistConfig.multipleIDBlockBreaklevel) {
+              playerdata.multipleidbreakflag = !playerdata.multipleidbreakflag
+              if (playerdata.multipleidbreakflag) {
+                player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+                player.sendMessage(ChatColor.GREEN.toString() + "複数種類同時破壊:ON")
+              } else {
+                player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
+                player.sendMessage(ChatColor.RED.toString() + "複数種類同時破壊:OFF")
+              }
+              val itemmeta = itemstackcurrent.itemMeta
+              itemstackcurrent.itemMeta = MenuInventoryData.MultipleIDBlockBreakToggleMeta(playerdata, itemmeta)
+            } else {
+              player.sendMessage("整地レベルが足りません")
+              player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
+            }
           }
-          val itemmeta = itemstackcurrent.itemMeta
-          itemstackcurrent.itemMeta = MenuInventoryData.MultipleIDBlockBreakToggleMeta(playerdata, itemmeta)
-        } else {
-          player.sendMessage("整地レベルが足りません")
-          player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-        }
-      } else if (itemstackcurrent.type == Material.DIAMOND_AXE) {
-        playerdata.chestflag = false
-        player.sendMessage(ChatColor.GREEN.toString() + "スキルでのチェスト破壊を無効化しました。")
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
-        player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player))
-      } else if (itemstackcurrent.type == Material.CHEST) {
-        playerdata.chestflag = true
-        player.sendMessage(ChatColor.RED.toString() + "スキルでのチェスト破壊を有効化しました。")
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player))
-      } else if (itemstackcurrent.type == Material.STICK) {
-        player.sendMessage(ChatColor.WHITE.toString() + "パッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk" + ChatColor.WHITE + "はレベル10以上から使用可能です")
-        player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-      } else if (itemstackcurrent.type == Material.WOOD_SWORD || itemstackcurrent.type == Material.STONE_SWORD || itemstackcurrent.type == Material.GOLD_SWORD || itemstackcurrent.type == Material.IRON_SWORD || itemstackcurrent.type == Material.DIAMOND_SWORD) {
-        if (!playerdata.isGBStageUp) {
-          player.sendMessage(ChatColor.RED.toString() + "進化条件を満たしていません")
-        } else {
-          player.openInventory(MenuInventoryData.getGiganticBerserkEvolutionMenu(player))
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
+
+          Material.DIAMOND_AXE -> {
+            playerdata.chestflag = false
+            player.sendMessage(ChatColor.GREEN.toString() + "スキルでのチェスト破壊を無効化しました。")
+            player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
+            player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player))
+          }
+
+          Material.CHEST -> {
+            playerdata.chestflag = true
+            player.sendMessage(ChatColor.RED.toString() + "スキルでのチェスト破壊を有効化しました。")
+            player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+            player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player))
+          }
+
+          Material.STICK -> {
+            player.sendMessage(ChatColor.WHITE.toString() + "パッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk" + ChatColor.WHITE + "はレベル10以上から使用可能です")
+            player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
+          }
+
+          Material.WOOD_SWORD, Material.STONE_SWORD, Material.GOLD_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD -> {
+            if (playerdata.isGBStageUp) {
+              player.openInventory(MenuInventoryData.getGiganticBerserkEvolutionMenu(player))
+              player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
+            } else {
+              player.sendMessage(ChatColor.RED.toString() + "進化条件を満たしていません")
+            }
+          }
+
+          else -> {
+
+          }
         }
       }
     }
@@ -205,7 +222,7 @@ class PlayerInventoryListener : Listener {
   @EventHandler
   fun onPlayerClickActiveSkillSellectEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.clickedInventory === null) {
       return
     }
 
@@ -213,7 +230,7 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
@@ -234,152 +251,56 @@ class PlayerInventoryListener : Listener {
 
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地スキル選択") {
-      val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
 
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      var type: Int
+      var type = ActiveSkill.ARROW.gettypenum()
       var name: String
-      var skilllevel: Int
-      //ARROWSKILL
-      type = ActiveSkill.ARROW.gettypenum()
-      skilllevel = 4
-      while (skilllevel <= 9) {
-        name = ActiveSkill.ARROW.getName(skilllevel)
-        if (itemstackcurrent.type == ActiveSkill.ARROW.getMaterial(skilllevel)) {
-          val potionmeta = itemstackcurrent.itemMeta as PotionMeta
-          if (potionmeta.basePotionData.type == ActiveSkill.ARROW.getPotionType(skilllevel)) {
-            if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
-              player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-              player.sendMessage(ChatColor.YELLOW.toString() + "選択を解除しました")
-              playerdata.activeskilldata.skilltype = 0
-              playerdata.activeskilldata.skillnum = 0
-            } else {
-              playerdata.activeskilldata.updateSkill(player, type, skilllevel, 1)
-              player.sendMessage(ChatColor.GREEN.toString() + "アクティブスキル:" + name + "  が選択されました")
-              player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
+      val current = itemstackcurrent.type
+
+      /**
+       * 選択されたときの発動コマンド
+       */
+      fun onSelect(e: ActiveSkill, initializeLevel: Int = 4) {
+        var someIndex = initializeLevel
+        while (someIndex <= 10) {
+          val name1 = e.getName(someIndex)
+          if (current == e.getMaterial(someIndex)) {
+            val potionmeta = itemstackcurrent.itemMeta as PotionMeta
+            if (potionmeta.basePotionData.type === e.getPotionType(someIndex)) {
+              if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == someIndex) {
+                player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
+                player.sendMessage(ChatColor.YELLOW.toString() + "選択を解除しました")
+                playerdata.activeskilldata.skilltype = 0
+                playerdata.activeskilldata.skillnum = 0
+                break
+              } else {
+                playerdata.activeskilldata.updateSkill(player, type, someIndex, 1)
+                player.sendMessage(ChatColor.GREEN.toString() + "アクティブスキル:" + name1 + "  が選択されました")
+                player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
+                break
+              }
             }
           }
-        }
-        skilllevel++
-      }
-      //MULTISKILL
-      type = ActiveSkill.MULTI.gettypenum()
-      skilllevel = 4
-      while (skilllevel <= 9) {
-        name = ActiveSkill.MULTI.getName(skilllevel)
-        if (itemstackcurrent.type == ActiveSkill.MULTI.getMaterial(skilllevel)) {
-          if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
-            player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-            player.sendMessage(ChatColor.YELLOW.toString() + "選択を解除しました")
-            playerdata.activeskilldata.skilltype = 0
-            playerdata.activeskilldata.skillnum = 0
-          } else {
-            playerdata.activeskilldata.updateSkill(player, type, skilllevel, 1)
-            player.sendMessage(ChatColor.GREEN.toString() + "アクティブスキル:" + name + "  が選択されました")
-            player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
-          }
-        }
-        skilllevel++
-      }
-      //BREAKSKILL
-      type = ActiveSkill.BREAK.gettypenum()
-      skilllevel = 1
-      while (skilllevel <= 9) {
-        name = ActiveSkill.BREAK.getName(skilllevel)
-        if (itemstackcurrent.type == ActiveSkill.BREAK.getMaterial(skilllevel)) {
-          if (playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum() && playerdata.activeskilldata.skillnum == skilllevel) {
-            player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-            player.sendMessage(ChatColor.YELLOW.toString() + "選択を解除しました")
-            playerdata.activeskilldata.skilltype = 0
-            playerdata.activeskilldata.skillnum = 0
-          } else {
-            playerdata.activeskilldata.updateSkill(player, type, skilllevel, 1)
-            player.sendMessage(ChatColor.GREEN.toString() + "アクティブスキル:" + name + "  が選択されました")
-            player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
-          }
-        }
-        skilllevel++
-      }
-      //CONDENSKILL
-      //WATER
-      type = ActiveSkill.WATERCONDENSE.gettypenum()
-      skilllevel = 7
-      while (skilllevel <= 9) {
-        name = ActiveSkill.WATERCONDENSE.getName(skilllevel)
-        if (itemstackcurrent.type == ActiveSkill.WATERCONDENSE.getMaterial(skilllevel)) {
-          if (playerdata.activeskilldata.assaulttype == type && playerdata.activeskilldata.assaultnum == skilllevel) {
-            player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-            player.sendMessage(ChatColor.YELLOW.toString() + "選択を解除しました")
-            playerdata.activeskilldata.assaulttype = 0
-            playerdata.activeskilldata.assaultnum = 0
-          } else {
-            playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
-            player.sendMessage(ChatColor.DARK_GREEN.toString() + "アサルトスキル:" + name + "  が選択されました")
-            player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
-          }
-        }
-        skilllevel++
-      }
-
-      //LAVA
-      type = ActiveSkill.LAVACONDENSE.gettypenum()
-      skilllevel = 7
-      while (skilllevel <= 9) {
-        name = ActiveSkill.LAVACONDENSE.getName(skilllevel)
-        if (itemstackcurrent.type == ActiveSkill.LAVACONDENSE.getMaterial(skilllevel)) {
-          if (playerdata.activeskilldata.assaulttype == type && playerdata.activeskilldata.assaultnum == skilllevel) {
-            player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-            player.sendMessage(ChatColor.YELLOW.toString() + "選択を解除しました")
-            playerdata.activeskilldata.assaulttype = 0
-            playerdata.activeskilldata.assaultnum = 0
-          } else {
-            playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
-            player.sendMessage(ChatColor.DARK_GREEN.toString() + "アサルトスキル:" + name + "  が選択されました")
-            player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
-          }
-        }
-        skilllevel++
-      }
-
-      type = ActiveSkill.FLUIDCONDENSE.gettypenum()
-      skilllevel = 10
-      if (itemstackcurrent.type == ActiveSkill.FLUIDCONDENSE.getMaterial(skilllevel)) {
-        if (playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type) {
-          player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-          player.sendMessage(ChatColor.YELLOW.toString() + "選択を解除しました")
-          playerdata.activeskilldata.assaulttype = 0
-          playerdata.activeskilldata.assaultnum = 0
-        } else {
-          playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
-          player.sendMessage(ChatColor.DARK_GREEN.toString() + "アサルトスキル:" + "ヴェンダー・ブリザード" + " が選択されました")
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
+          someIndex++
         }
       }
-
-      //アサルトアーマー
-      type = ActiveSkill.ARMOR.gettypenum()
-      skilllevel = 10
-      if (itemstackcurrent.type == ActiveSkill.ARMOR.getMaterial(skilllevel)) {
-        if (playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type) {
-          player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-          player.sendMessage(ChatColor.YELLOW.toString() + "選択を解除しました")
-          playerdata.activeskilldata.assaulttype = 0
-          playerdata.activeskilldata.assaultnum = 0
-        } else {
-          playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
-          player.sendMessage(ChatColor.DARK_GREEN.toString() + "アサルトスキル:" + "アサルト・アーマー" + " が選択されました")
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
-        }
-      }
+      onSelect(ActiveSkill.ARROW)
+      onSelect(ActiveSkill.MULTI)
+      onSelect(ActiveSkill.BREAK, 1)
+      onSelect(ActiveSkill.WATERCONDENSE, 7)
+      onSelect(ActiveSkill.LAVACONDENSE, 7)
+      onSelect(ActiveSkill.FLUIDCONDENSE, 10)
+      onSelect(ActiveSkill.ARMOR, 10)
 
       //ページ変更処理
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
@@ -389,42 +310,50 @@ class PlayerInventoryListener : Listener {
               StickMenu.firstPage.open
           ).runFor(player)
         }
-      } else if (itemstackcurrent.type == Material.STONE_BUTTON) {
-        if (itemstackcurrent.itemMeta.displayName.contains("リセット")) {
-          //経験値変更用のクラスを設定
-          //経験値が足りなかったら処理を終了
-          if (!expman.hasExp(10000)) {
-            player.sendMessage(ChatColor.RED.toString() + "必要な経験値が足りません")
-            player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-            return
+      } else {
+        val type = itemstackcurrent.type
+        when (type) {
+          Material.STONE_BUTTON -> {
+            if (itemstackcurrent.itemMeta.displayName.contains("リセット")) {
+              //経験値変更用のクラスを設定
+              //経験値が足りなかったら処理を終了
+              if (!expman.hasExp(10000)) {
+                player.sendMessage(ChatColor.RED.toString() + "必要な経験値が足りません")
+                player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
+                return
+              }
+              //経験値消費
+              expman.changeExp(-10000)
+
+              //リセット処理
+              playerdata.activeskilldata.reset()
+              //スキルポイント更新
+              playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
+              //リセット音を流す
+              player.playSound(player.location, Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1f, 0.1.toFloat())
+              //メッセージを流す
+              player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "アクティブスキルポイントをリセットしました")
+              //メニューを開く
+              player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
+            }
           }
-          //経験値消費
-          expman.changeExp(-10000)
 
-          //リセット処理
-          playerdata.activeskilldata.reset()
-          //スキルポイント更新
-          playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
-          //リセット音を流す
-          player.playSound(player.location, Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1f, 0.1.toFloat())
-          //メッセージを流す
-          player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "アクティブスキルポイントをリセットしました")
-          //メニューを開く
-          player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
-        }
-      } else if (itemstackcurrent.type == Material.GLASS) {
-        if (playerdata.activeskilldata.skilltype == 0 && playerdata.activeskilldata.skillnum == 0
-            && playerdata.activeskilldata.assaulttype == 0 && playerdata.activeskilldata.assaultnum == 0) {
-          player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-          player.sendMessage(ChatColor.YELLOW.toString() + "既に全ての選択は削除されています")
-        } else {
-          playerdata.activeskilldata.clearSellect(player)
+          Material.GLASS -> {
+            if (playerdata.activeskilldata.skilltype == 0 && playerdata.activeskilldata.skillnum == 0
+                && playerdata.activeskilldata.assaulttype == 0 && playerdata.activeskilldata.assaultnum == 0) {
+              player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
+              player.sendMessage(ChatColor.YELLOW.toString() + "既に全ての選択は削除されています")
+            } else {
+              playerdata.activeskilldata.clearSellect(player)
+            }
+          }
 
+          Material.BOOKSHELF -> {
+            //開く音を再生
+            player.playSound(player.location, Sound.BLOCK_BREWING_STAND_BREW, 1f, 0.5.toFloat())
+            player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player))
+          }
         }
-      } else if (itemstackcurrent.type == Material.BOOKSHELF) {
-        //開く音を再生
-        player.playSound(player.location, Sound.BLOCK_BREWING_STAND_BREW, 1f, 0.5.toFloat())
-        player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player))
       }
     }
   }
@@ -440,7 +369,7 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
@@ -459,22 +388,23 @@ class PlayerInventoryListener : Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
-      val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
       //ページ変更処理
+      val currentType = itemstackcurrent.type
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         //開く音を再生
         player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1.toFloat())
         player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
         return
-      } else if (itemstackcurrent.type == Material.GLASS) {
+      } else if (currentType === Material.GLASS) {
         if (playerdata.activeskilldata.effectnum == 0) {
           player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           player.sendMessage(ChatColor.YELLOW.toString() + "既に選択されています")
@@ -484,7 +414,7 @@ class PlayerInventoryListener : Listener {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
         }
         return
-      } else if (itemstackcurrent.type == Material.BOOK_AND_QUILL) {
+      } else if (currentType === Material.BOOK_AND_QUILL) {
         //開く音を再生
         player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1.toFloat())
         player.openInventory(MenuInventoryData.getBuyRecordMenuData(player))
@@ -492,7 +422,7 @@ class PlayerInventoryListener : Listener {
       } else {
         val skilleffect = ActiveSkillEffect.values()
         for (activeSkillEffect in skilleffect) {
-          if (itemstackcurrent.type == activeSkillEffect.material) {
+          if (currentType === activeSkillEffect.material) {
             if (playerdata.activeskilldata.effectnum == activeSkillEffect.num) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
               player.sendMessage(ChatColor.YELLOW.toString() + "既に選択されています")
@@ -505,7 +435,7 @@ class PlayerInventoryListener : Listener {
         }
         val premiumeffect = ActiveSkillPremiumEffect.values()
         for (activeSkillPremiumEffect in premiumeffect) {
-          if (itemstackcurrent.type == activeSkillPremiumEffect.material) {
+          if (currentType === activeSkillPremiumEffect.material) {
             if (playerdata.activeskilldata.effectnum == activeSkillPremiumEffect.num) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
               player.sendMessage(ChatColor.YELLOW.toString() + "既に選択されています")
@@ -520,11 +450,11 @@ class PlayerInventoryListener : Listener {
 
 
       //ここからエフェクト開放の処理
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (currentType === Material.BEDROCK) {
         val itemmeta = itemstackcurrent.itemMeta
         val skilleffect = ActiveSkillEffect.values()
         for (activeSkillEffect in skilleffect) {
-          if (itemmeta.displayName.contains(activeSkillEffect.getName())) {
+          if (activeSkillEffect.getName() in itemmeta.displayName) {
             if (playerdata.activeskilldata.effectpoint < activeSkillEffect.usePoint) {
               player.sendMessage(ChatColor.DARK_RED.toString() + "エフェクトポイントが足りません")
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.5.toFloat())
@@ -538,8 +468,9 @@ class PlayerInventoryListener : Listener {
           }
         }
       }
+
       //ここからプレミアムエフェクト開放の処理
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (currentType === Material.BEDROCK) {
         val itemmeta = itemstackcurrent.itemMeta
         val premiumeffect = ActiveSkillPremiumEffect.values()
         for (activeSkillPremiumEffect in premiumeffect) {
@@ -550,7 +481,7 @@ class PlayerInventoryListener : Listener {
             } else {
               playerdata.activeskilldata.obtainedSkillPremiumEffects.add(activeSkillPremiumEffect)
               player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました")
-              if (databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
+              if (databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) === Fail) {
                 player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。")
               }
               player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
@@ -575,7 +506,7 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
@@ -593,13 +524,13 @@ class PlayerInventoryListener : Listener {
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地スキル選択") {
       event.isCancelled = true
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (itemstackcurrent.type === Material.BEDROCK) {
         val itemmeta = itemstackcurrent.itemMeta
         val skilllevel: Int
         val skilltype: Int
@@ -1092,25 +1023,25 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
-    //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    //インベントリサイズが54でない時終了
+    if (topinventory.size != 6 * 9) {
       return
     }
     val player = he as Player
 
-    val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
+    val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地神ランキング") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -1159,25 +1090,25 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
-    //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    //インベントリサイズが6列でない時終了
+    if (topinventory.size != 6 * 9) {
       return
     }
     val player = he as Player
 
-    val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
+    val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "ログイン神ランキング") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -1226,25 +1157,25 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
-    //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    //インベントリサイズが54でない時終了
+    if (topinventory.size != 6 * 9) {
       return
     }
     val player = he as Player
 
-    val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
+    val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "投票神ランキング") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -1293,14 +1224,14 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
-    //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    //インベントリサイズが54でない時終了
+    if (topinventory.size != 6 * 9) {
       return
     }
     val player = he as Player
@@ -1310,11 +1241,11 @@ class PlayerInventoryListener : Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
-      val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
@@ -1360,14 +1291,14 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 36) {
+    if (topinventory.size != 4 * 9) {
       return
     }
     val player = he as Player
@@ -1377,11 +1308,11 @@ class PlayerInventoryListener : Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
-      val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
@@ -1406,7 +1337,7 @@ class PlayerInventoryListener : Listener {
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
-    if (inventory.size != 36) {
+    if (inventory.size != 4 * 9) {
       return
     }
     if (inventory.title == ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "交換したい景品を入れてください") {
@@ -1440,7 +1371,7 @@ class PlayerInventoryListener : Listener {
           //丁重にお返しする
           dropitem.add(m)
           continue
-        } else if (m.type == Material.SKULL_ITEM) {
+        } else if (m.type === Material.SKULL_ITEM) {
           //丁重にお返しする
           dropitem.add(m)
           continue
@@ -1534,20 +1465,22 @@ class PlayerInventoryListener : Listener {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
-    val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    val view = event.view
+
+    val he = view.player
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
-    val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
+    val topinventory = view.topInventory ?: return
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 36) {
+    if (topinventory.size != 4 * 9) {
       return
     }
+    val itemstackcurrent = event.currentItem
+
     val player = he as Player
     val uuid = player.uniqueId
     val playerdata = playermap[uuid]!!
@@ -1555,61 +1488,87 @@ class PlayerInventoryListener : Listener {
     //経験値変更用のクラスを設定
     //ExperienceManager expman = new ExperienceManager(player);
 
-
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "実績・二つ名システム") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
+
+      val current = itemstackcurrent.type
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
+      val isSkull = current === Material.SKULL_ITEM
 
       //表示内容をLVに変更
-      if (itemstackcurrent.type == Material.REDSTONE_TORCH_ON) {
-        playerdata.displayTitle1No = 0
-        playerdata.displayTitle2No = 0
-        playerdata.displayTitle3No = 0
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        player.openInventory(MenuInventoryData.getTitleMenuData(player))
-      } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_Present2") {
-        SeichiAchievement.tryAchieve(player, playerdata.giveachvNo)
-        playerdata.giveachvNo = 0
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        player.openInventory(MenuInventoryData.getTitleMenuData(player))
-      } else if (itemstackcurrent.type == Material.ANVIL) {
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-        player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-      } else if (itemstackcurrent.type == Material.GOLD_PICKAXE) {
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-        playerdata.titlepage = 1
-        player.openInventory(MenuInventoryData.getTitleSeichi(player))
-      } else if (itemstackcurrent.type == Material.COMPASS) {
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-        playerdata.titlepage = 1
-        player.openInventory(MenuInventoryData.getTitleLogin(player))
-      } else if (itemstackcurrent.type == Material.BLAZE_POWDER) {
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-        playerdata.titlepage = 1
-        player.openInventory(MenuInventoryData.getTitleSuperTry(player))
-      } else if (itemstackcurrent.type == Material.EYE_OF_ENDER) {
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-        playerdata.titlepage = 1
-        player.openInventory(MenuInventoryData.getTitleSpecial(player))
-      } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-        GlobalScope.launch(Schedulers.async) {
-          sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              StickMenu.firstPage.open
-          ).runFor(player)
+      if (isSkull) {
+        when ((itemstackcurrent.itemMeta as SkullMeta).owner) {
+          "MHF_Present2" -> {
+            SeichiAchievement.tryAchieve(player, playerdata.giveachvNo)
+            playerdata.giveachvNo = 0
+            player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+            player.openInventory(MenuInventoryData.getTitleMenuData(player))
+          }
+
+          "MHF_ArrowLeft" -> {
+            GlobalScope.launch(Schedulers.async) {
+              sequentialEffect(
+                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                  StickMenu.firstPage.open
+              ).runFor(player)
+            }
+            return
+          }
         }
-        return
-      }//ホームメニューに戻る
+      } else {
+        when (current) {
+          Material.REDSTONE_TORCH_ON -> {
+            playerdata.displayTitle1No = 0
+            playerdata.displayTitle2No = 0
+            playerdata.displayTitle3No = 0
+            player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+            player.openInventory(MenuInventoryData.getTitleMenuData(player))
+          }
+
+          Material.ANVIL -> {
+            player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+          }
+
+          Material.GOLD_PICKAXE -> {
+            player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+            playerdata.titlepage = 1
+            player.openInventory(MenuInventoryData.getTitleSeichi(player))
+          }
+
+          Material.COMPASS -> {
+            player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+            playerdata.titlepage = 1
+            player.openInventory(MenuInventoryData.getTitleLogin(player))
+          }
+
+          Material.BLAZE_POWDER -> {
+            player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+            playerdata.titlepage = 1
+            player.openInventory(MenuInventoryData.getTitleSuperTry(player))
+          }
+
+          Material.EYE_OF_ENDER -> {
+            player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+            playerdata.titlepage = 1
+            player.openInventory(MenuInventoryData.getTitleSpecial(player))
+          }
+
+          else -> {
+            // NOP
+          }
+        }
+      }
+      //ホームメニューに戻る
       //カテゴリ「特殊」を開く
       //カテゴリ「やりこみ」を開く
       /*
@@ -1625,7 +1584,7 @@ class PlayerInventoryListener : Listener {
       //予約付与システム受け取り処理
     }
 
-    val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
+    val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "カテゴリ「整地」") {
       event.isCancelled = true
@@ -1633,21 +1592,21 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
       //クリックしたボタンに応じた各処理内容の記述ここから
 
       //実績「整地量」
-      if (itemstackcurrent.type == Material.IRON_PICKAXE) {
+      if (itemstackcurrent.type === Material.IRON_PICKAXE) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         player.openInventory(MenuInventoryData.getTitleAmountData(player))
       }
 
       //実績「整地神ランキング」
-      if (itemstackcurrent.type == Material.DIAMOND_PICKAXE) {
+      if (itemstackcurrent.type === Material.DIAMOND_PICKAXE) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         player.openInventory(MenuInventoryData.getTitleRankData(player))
@@ -1685,21 +1644,22 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
-      } else if (itemstackcurrent.type == Material.COMPASS) {
+        // NOTE: WHEN
+      } else if (itemstackcurrent.type === Material.COMPASS) {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         playerdata.titlepage = 1
         player.openInventory(MenuInventoryData.getTitleTimeData(player))
-      } else if (itemstackcurrent.type == Material.BOOK) {
+      } else if (itemstackcurrent.type === Material.BOOK) {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         playerdata.titlepage = 1
         player.openInventory(MenuInventoryData.getTitleJoinAmountData(player))
-      } else if (itemstackcurrent.type == Material.BOOK_AND_QUILL) {
+      } else if (itemstackcurrent.type === Material.BOOK_AND_QUILL) {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         playerdata.titlepage = 1
         player.openInventory(MenuInventoryData.getTitleJoinChainData(player))
-      } else if (itemstackcurrent.type == Material.NETHER_STAR) {
+      } else if (itemstackcurrent.type === Material.NETHER_STAR) {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         playerdata.titlepage = 1
         player.openInventory(MenuInventoryData.getTitleExtraData(player))
@@ -1723,7 +1683,7 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
@@ -1742,17 +1702,17 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
-      } else if (itemstackcurrent.type == Material.BLAZE_POWDER) {
+      } else if (itemstackcurrent.type === Material.BLAZE_POWDER) {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         playerdata.titlepage = 1
         player.openInventory(MenuInventoryData.getTitleEventData(player))
-      } else if (itemstackcurrent.type == Material.YELLOW_FLOWER) {
+      } else if (itemstackcurrent.type === Material.YELLOW_FLOWER) {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         playerdata.titlepage = 1
         player.openInventory(MenuInventoryData.getTitleSupportData(player))
-      } else if (itemstackcurrent.type == Material.DIAMOND_BARDING) {
+      } else if (itemstackcurrent.type === Material.DIAMOND_BARDING) {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         playerdata.titlepage = 1
         player.openInventory(MenuInventoryData.getTitleSecretData(player))
@@ -1775,80 +1735,79 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-
-      //実績ポイント最新化
-      if (itemstackcurrent.type == Material.EMERALD_ORE) {
-        //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerdata.achvPointMAX = 0
-        for (i in 1000..9799) {
-          if (playerdata.TitleFlags.get(i)) {
-            playerdata.achvPointMAX = playerdata.achvPointMAX + 10
+      when (itemstackcurrent.type) {
+        //実績ポイント最新化
+        Material.EMERALD_ORE -> {
+          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+          playerdata.achvPointMAX = 0
+          for (i in 1000..9799) {
+            if (playerdata.TitleFlags.get(i)) {
+              playerdata.achvPointMAX = playerdata.achvPointMAX + 10
+            }
           }
+          playerdata.achvPoint = playerdata.achvPointMAX + playerdata.achvChangenum * 3 - playerdata.achvPointUSE
+          player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         }
-        playerdata.achvPoint = playerdata.achvPointMAX + playerdata.achvChangenum * 3 - playerdata.achvPointUSE
-        player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-      }
 
-      //エフェクトポイント→実績ポイント変換
-      if (itemstackcurrent.type == Material.EMERALD) {
-        val itemmeta = itemstackcurrent.itemMeta
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        //不足してたらスルー
-        if (playerdata.activeskilldata.effectpoint < 10) {
-          player.sendMessage("エフェクトポイントが不足しています。")
-        } else {
-          playerdata.achvChangenum = playerdata.achvChangenum + 1
-          playerdata.activeskilldata.effectpoint -= 10
-        }
-        //データ最新化
-        playerdata.achvPointMAX = 0
-        for (i in 1000..9799) {
-          if (playerdata.TitleFlags.get(i)) {
-            playerdata.achvPointMAX = playerdata.achvPointMAX + 10
+        //エフェクトポイント→実績ポイント変換
+        Material.EMERALD -> {
+          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+          //不足してたらスルー
+          if (playerdata.activeskilldata.effectpoint < 10) {
+            player.sendMessage("エフェクトポイントが不足しています。")
+          } else {
+            playerdata.achvChangenum = playerdata.achvChangenum + 1
+            playerdata.activeskilldata.effectpoint -= 10
           }
+          //データ最新化
+          playerdata.achvPointMAX = 0
+          for (i in 1000..9799) {
+            if (playerdata.TitleFlags[i]) {
+              playerdata.achvPointMAX = playerdata.achvPointMAX + 10
+            }
+          }
+          playerdata.achvPoint = playerdata.achvPointMAX + playerdata.achvChangenum * 3 - playerdata.achvPointUSE
+
+          player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         }
-        playerdata.achvPoint = playerdata.achvPointMAX + playerdata.achvChangenum * 3 - playerdata.achvPointUSE
 
-        player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+        //パーツショップ
+        Material.ITEM_FRAME -> {
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.openInventory(MenuInventoryData.setTitleShopData(player))
+        }
 
+        // 前パーツ
+        Material.WATER_BUCKET -> {
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
+        }
 
+        // 中パーツ
+        Material.MILK_BUCKET -> {
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
+        }
+
+        //後パーツ
+        Material.LAVA_BUCKET -> {
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
+        }
+
+        else -> {
+          // NOP
+        }
       }
 
-      //パーツショップ
-      if (itemstackcurrent.type == Material.ITEM_FRAME) {
-        //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-        player.openInventory(MenuInventoryData.setTitleShopData(player))
-      }
-
-      //前パーツ
-      if (itemstackcurrent.type == Material.WATER_BUCKET) {
-        //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-        player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
-      }
-
-      //中パーツ
-      if (itemstackcurrent.type == Material.MILK_BUCKET) {
-        //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-        player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
-      }
-
-      //後パーツ
-      if (itemstackcurrent.type == Material.LAVA_BUCKET) {
-        //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-        player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
-      } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+      if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         player.openInventory(MenuInventoryData.getTitleMenuData(player))
         return
@@ -1863,9 +1822,10 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
-      } else if (itemstackcurrent.type == Material.WATER_BUCKET) {
+        // NOTE: WHEN
+      } else if (itemstackcurrent.type === Material.WATER_BUCKET) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
@@ -1878,12 +1838,12 @@ class PlayerInventoryListener : Listener {
         } else {
           player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
         }
-      } else if (itemstackcurrent.type == Material.GRASS) {
+      } else if (itemstackcurrent.type === Material.GRASS) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.displayTitle1No = 0
         player.sendMessage("前パーツの選択を解除しました。")
         return
-      } else if (itemstackcurrent.type == Material.BARRIER) {
+      } else if (itemstackcurrent.type === Material.BARRIER) {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         return
@@ -1905,9 +1865,10 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
-      } else if (itemstackcurrent.type == Material.MILK_BUCKET) {
+        // NOTE: WHEN
+      } else if (itemstackcurrent.type === Material.MILK_BUCKET) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
@@ -1920,12 +1881,12 @@ class PlayerInventoryListener : Listener {
         } else {
           player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
         }
-      } else if (itemstackcurrent.type == Material.GRASS) {
+      } else if (itemstackcurrent.type === Material.GRASS) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.displayTitle2No = 0
         player.sendMessage("中パーツの選択を解除しました。")
         return
-      } else if (itemstackcurrent.type == Material.BARRIER) {
+      } else if (itemstackcurrent.type === Material.BARRIER) {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         return
@@ -1947,9 +1908,10 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      // NOTE: when
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
-      } else if (itemstackcurrent.type == Material.LAVA_BUCKET) {
+      } else if (itemstackcurrent.type === Material.LAVA_BUCKET) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
@@ -1962,12 +1924,12 @@ class PlayerInventoryListener : Listener {
         } else {
           player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
         }
-      } else if (itemstackcurrent.type == Material.GRASS) {
+      } else if (itemstackcurrent.type === Material.GRASS) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.displayTitle3No = 0
         player.sendMessage("後パーツの選択を解除しました。")
         return
-      } else if (itemstackcurrent.type == Material.BARRIER) {
+      } else if (itemstackcurrent.type === Material.BARRIER) {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         return
@@ -1989,7 +1951,7 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -1998,7 +1960,7 @@ class PlayerInventoryListener : Listener {
 			 */
 
       //実績ポイント最新化
-      if (itemstackcurrent.type == Material.EMERALD_ORE) {
+      if (itemstackcurrent.type === Material.EMERALD_ORE) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.achvPointMAX = 0
@@ -2013,7 +1975,7 @@ class PlayerInventoryListener : Listener {
       }
 
       //購入処理
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (itemstackcurrent.type === Material.BEDROCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
@@ -2042,7 +2004,7 @@ class PlayerInventoryListener : Listener {
         }
 
 
-      } else if (itemstackcurrent.type == Material.BARRIER) {
+      } else if (itemstackcurrent.type === Material.BARRIER) {
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         return
@@ -2063,7 +2025,7 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -2071,12 +2033,12 @@ class PlayerInventoryListener : Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (itemstackcurrent.type === Material.BEDROCK) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
         player.openInventory(MenuInventoryData.getTitleRankData(player))
-      } else if (itemstackcurrent.type == Material.DIAMOND_BLOCK) {
+      } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         if (itemmeta.displayName.contains("No1001「" + SeichiAssist.seichiAssistConfig.getTitle1(1001) + "」")) {
@@ -2168,7 +2130,7 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -2176,12 +2138,12 @@ class PlayerInventoryListener : Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (itemstackcurrent.type === Material.BEDROCK) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
         player.openInventory(MenuInventoryData.getTitleAmountData(player))
-      } else if (itemstackcurrent.type == Material.DIAMOND_BLOCK) {
+      } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         if (itemmeta.displayName.contains("No3001「" + SeichiAssist.seichiAssistConfig.getTitle1(3001) + "」")) {
@@ -2313,7 +2275,7 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -2321,12 +2283,12 @@ class PlayerInventoryListener : Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (itemstackcurrent.type === Material.BEDROCK) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
         player.openInventory(MenuInventoryData.getTitleTimeData(player))
-      } else if (itemstackcurrent.type == Material.DIAMOND_BLOCK) {
+      } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         if (itemmeta.displayName.contains("No4001「" + SeichiAssist.seichiAssistConfig.getTitle1(4001)
@@ -2488,7 +2450,7 @@ class PlayerInventoryListener : Listener {
               + SeichiAssist.seichiAssistConfig.getTitle3(4023) + "」が設定されました。")
         }
         player.openInventory(MenuInventoryData.getTitleTimeData(player))
-      } else if (itemstackcurrent.type == Material.EMERALD_BLOCK) {
+      } else if (itemstackcurrent.type === Material.EMERALD_BLOCK) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.TitleFlags.set(8003)
@@ -2507,7 +2469,7 @@ class PlayerInventoryListener : Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -2515,12 +2477,12 @@ class PlayerInventoryListener : Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (itemstackcurrent.type === Material.BEDROCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
         player.openInventory(MenuInventoryData.getTitleJoinAmountData(player))
-      } else if (itemstackcurrent.type == Material.DIAMOND_BLOCK) {
+      } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         if (itemmeta.displayName.contains("No5101「" + SeichiAssist.seichiAssistConfig.getTitle1(5101)
@@ -2670,7 +2632,7 @@ class PlayerInventoryListener : Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -2678,12 +2640,12 @@ class PlayerInventoryListener : Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (itemstackcurrent.type === Material.BEDROCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
         player.openInventory(MenuInventoryData.getTitleJoinChainData(player))
-      } else if (itemstackcurrent.type == Material.DIAMOND_BLOCK) {
+      } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         if (itemmeta.displayName.contains("No5001「" + SeichiAssist.seichiAssistConfig.getTitle1(5001)
@@ -2756,7 +2718,7 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -2764,12 +2726,12 @@ class PlayerInventoryListener : Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (itemstackcurrent.type === Material.BEDROCK) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
         player.openInventory(MenuInventoryData.getTitleSupportData(player))
-      } else if (itemstackcurrent.type == Material.DIAMOND_BLOCK) {
+      } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         if (itemmeta.displayName.contains("No6001「" + SeichiAssist.seichiAssistConfig.getTitle1(6001) + "」")) {
@@ -2837,7 +2799,7 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -2845,12 +2807,12 @@ class PlayerInventoryListener : Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (itemstackcurrent.type === Material.BEDROCK) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.sendMessage("この実績は配布解禁式です。運営チームからの配布タイミングを逃さないようご注意ください。")
         player.openInventory(MenuInventoryData.getTitleEventData(player))
-      } else if (itemstackcurrent.type == Material.DIAMOND_BLOCK) {
+      } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         if (itemmeta.displayName.contains("No7001「" + SeichiAssist.seichiAssistConfig.getTitle1(7001)
@@ -3094,14 +3056,14 @@ class PlayerInventoryListener : Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (itemstackcurrent.type === Material.BEDROCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         if (itemmeta.displayName.contains("No9001「???」")) {
@@ -3179,7 +3141,7 @@ class PlayerInventoryListener : Listener {
         }
 
         player.openInventory(MenuInventoryData.getTitleExtraData(player))
-      } else if (itemstackcurrent.type == Material.DIAMOND_BLOCK) {
+      } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
         val itemmeta = itemstackcurrent.itemMeta
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         if (itemmeta.displayName.contains("No9001「" + SeichiAssist.seichiAssistConfig.getTitle1(9001) + "」")) {
@@ -3440,7 +3402,7 @@ class PlayerInventoryListener : Listener {
       //実績解除処理部分の読みこみ
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -3448,7 +3410,7 @@ class PlayerInventoryListener : Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 
-      if (itemstackcurrent.type == Material.BEDROCK) {
+      if (itemstackcurrent.type === Material.BEDROCK) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.sendMessage("この実績は「極秘実績」です。いろいろやってみましょう！")
@@ -3492,7 +3454,6 @@ class PlayerInventoryListener : Listener {
   fun onOreTradeEvent(event: InventoryCloseEvent) {
     val player = event.player as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
     //エラー分岐
     val inventory = event.inventory
 
@@ -3509,55 +3470,44 @@ class PlayerInventoryListener : Listener {
       //ガチャ景品交換インベントリの中身を取得
       val item = inventory.contents
       //ドロップ用アイテムリスト(返却box)作成
-      val dropitem = ArrayList<ItemStack>()
+      val drop = ArrayList<ItemStack>()
       //余剰鉱石返却用アイテムリスト
       val retore = ArrayList<ItemStack>()
-      //個数計算用変数(このやり方以外に効率的なやり方があるかもしれません)
-      var coalore = 0 //石炭
-      var ironore = 0 //鉄
-      var goldore = 0 //金
-      var lapisore = 0 //ラピスラズリ
-      var diamondore = 0 //ダイアモンド
-      var redstoneore = 0 //レッドストーン
-      var emeraldore = 0 //エメラルド
-      var quartzore = 0 //ネザー水晶
+      val amount = EnumMap<Material, Int>(Material::class.java)
+      val seek = EnumMap<Material, Int>(Material::class.java)
+      seek[Material.COAL_ORE] = 128
+      seek[Material.IRON_ORE] = 64
+      seek[Material.GOLD_ORE] = 8
+      seek[Material.LAPIS_ORE] = 8
+      seek[Material.DIAMOND_ORE] = 4
+      seek[Material.REDSTONE_ORE] = 32
+      seek[Material.EMERALD_ORE] = 4
+      seek[Material.QUARTZ_ORE] = 16
       //for文でインベントリ内のアイテムを1つずつ見る
       //鉱石・交換券変換インベントリスロットを1つずつ見る
       for (m in item) {
         //ないなら次へ
+        val type = m.type
         if (m == null) {
           continue
-        } else if (m.type == Material.COAL_ORE) {
-          //石炭なら個数分だけcoaloreを増やす(以下同様)
-          coalore += m.amount
-          continue
-        } else if (m.type == Material.IRON_ORE) {
-          ironore += m.amount
-          continue
-        } else if (m.type == Material.GOLD_ORE) {
-          goldore += m.amount
-          continue
-        } else if (m.type == Material.LAPIS_ORE) {
-          lapisore += m.amount
-          continue
-        } else if (m.type == Material.DIAMOND_ORE) {
-          diamondore += m.amount
-          continue
-        } else if (m.type == Material.REDSTONE_ORE) {
-          redstoneore += m.amount
-          continue
-        } else if (m.type == Material.EMERALD_ORE) {
-          emeraldore += m.amount
-          continue
-        } else if (m.type == Material.QUARTZ_ORE) {
-          quartzore += m.amount
-          continue
         } else {
-          dropitem.add(m)
+          when (type) {
+            in seek.keys -> {
+              amount.putIfAbsent(type, 0)
+              amount[type] = amount[type]?.plus(m.amount)
+            }
+
+            else -> {
+              drop += m
+            }
+          }
         }
       }
+
       //チケット計算
-      giveticket = giveticket + coalore / 128 + ironore / 64 + goldore / 8 + lapisore / 8 + diamondore / 4 + redstoneore / 32 + emeraldore / 4 + quartzore / 16
+      for (k in amount.keys) {
+        giveticket += (amount[k] ?: 0) / seek[k]!!
+      }
 
       //プレイヤー通知
       if (giveticket == 0) {
@@ -3577,7 +3527,7 @@ class PlayerInventoryListener : Listener {
 
       var count = 0
       while (giveticket > 0) {
-        if (player.inventory.contains(exchangeticket) || !Util.isPlayerInventoryFull(player)) {
+        if (exchangeticket in player.inventory || !Util.isPlayerInventoryFull(player)) {
           Util.addItem(player, exchangeticket)
         } else {
           Util.dropItem(player, exchangeticket)
@@ -3592,79 +3542,18 @@ class PlayerInventoryListener : Listener {
       /*
 			 * step3 非対象商品・余剰鉱石の返却
 			 */
-      if (coalore - coalore / 128 * 128 != 0) {
-        val c = ItemStack(Material.COAL_ORE)
-        val citemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE)
-        c.itemMeta = citemmeta
-        c.amount = coalore - coalore / 128 * 128
-        retore.add(c)
-      }
-
-      if (ironore - ironore / 64 * 64 != 0) {
-        val i = ItemStack(Material.IRON_ORE)
-        val iitemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_ORE)
-        i.itemMeta = iitemmeta
-        i.amount = ironore - ironore / 64 * 64
-        retore.add(i)
-      }
-
-      if (goldore - goldore / 8 * 8 != 0) {
-        val g = ItemStack(Material.GOLD_ORE)
-        val gitemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_ORE)
-        g.itemMeta = gitemmeta
-        g.amount = goldore - goldore / 8 * 8
-        retore.add(g)
-      }
-
-      if (lapisore - lapisore / 8 * 8 != 0) {
-        val l = ItemStack(Material.LAPIS_ORE)
-        val litemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE)
-        l.itemMeta = litemmeta
-        l.amount = lapisore - lapisore / 8 * 8
-        retore.add(l)
-      }
-
-      if (diamondore - diamondore / 4 * 4 != 0) {
-        val d = ItemStack(Material.DIAMOND_ORE)
-        val ditemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE)
-        d.itemMeta = ditemmeta
-        d.amount = diamondore - diamondore / 4 * 4
-        retore.add(d)
-      }
-
-      if (redstoneore - redstoneore / 32 * 32 != 0) {
-        val r = ItemStack(Material.REDSTONE_ORE)
-        val ritemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE)
-        r.itemMeta = ritemmeta
-        r.amount = redstoneore - redstoneore / 32 * 32
-        retore.add(r)
-      }
-
-      if (emeraldore - emeraldore / 4 * 4 != 0) {
-        val e = ItemStack(Material.EMERALD_ORE)
-        val eitemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE)
-        e.itemMeta = eitemmeta
-        e.amount = emeraldore - emeraldore / 4 * 4
-        retore.add(e)
-      }
-
-      if (quartzore - quartzore / 16 * 16 != 0) {
-        val q = ItemStack(Material.QUARTZ_ORE)
-        val qitemmeta = Bukkit.getItemFactory().getItemMeta(Material.QUARTZ_ORE)
-        q.itemMeta = qitemmeta
-        q.amount = quartzore - quartzore / 16 * 16
-        retore.add(q)
+      for (k in amount.keys) {
+        val amount1 = (amount[k] ?: 0)
+        if (amount1 % seek[k]!! != 0) {
+          val f = ItemStack(k)
+          f.itemMeta = Bukkit.getItemFactory().getItemMeta(k)
+          f.amount = amount1
+          drop += f
+        }
       }
 
       //返却処理
-      for (m in dropitem) {
-        if (!Util.isPlayerInventoryFull(player)) {
-          Util.addItem(player, m)
-        } else {
-          Util.dropItem(player, m)
-        }
-      }
-      for (m in retore) {
+      for (m in drop) {
         if (!Util.isPlayerInventoryFull(player)) {
           Util.addItem(player, m)
         } else {
@@ -3685,7 +3574,7 @@ class PlayerInventoryListener : Listener {
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
-    if (inventory.size != 36) {
+    if (inventory.size != 4 * 9) {
       return
     }
     if (inventory.title == ChatColor.GOLD.toString() + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ") {
@@ -3718,7 +3607,7 @@ class PlayerInventoryListener : Listener {
           //丁重にお返しする
           dropitem.add(m)
           continue
-        } else if (m.type == Material.SKULL_ITEM) {
+        } else if (m.type === Material.SKULL_ITEM) {
           //丁重にお返しする
           dropitem.add(m)
           continue
@@ -3806,7 +3695,7 @@ class PlayerInventoryListener : Listener {
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
-    if (inventory.size != 36) {
+    if (inventory.size != 4 * 9) {
       return
     }
     if (inventory.title == ChatColor.GOLD.toString() + "" + ChatColor.BOLD + "修繕したい限定タイタンを入れてネ") {
@@ -3854,7 +3743,7 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
@@ -3872,18 +3761,18 @@ class PlayerInventoryListener : Listener {
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "投票ptメニュー") {
       event.isCancelled = true
 
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
-      val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 
       //投票pt受取
-      if (itemstackcurrent.type == Material.DIAMOND) {
+      if (itemstackcurrent.type === Material.DIAMOND) {
         //nは特典をまだ受け取ってない投票分
         var n = databaseGateway.playerDataManipulator.compareVotePoint(player, playerdata)
         //投票数に変化が無ければ処理終了
@@ -3939,7 +3828,7 @@ class PlayerInventoryListener : Listener {
         val itemmeta = itemstackcurrent.itemMeta
         itemstackcurrent.itemMeta = itemmeta
         player.openInventory(MenuInventoryData.getVotingMenuData(player))
-      } else if (itemstackcurrent.type == Material.BOOK_AND_QUILL) {
+      } else if (itemstackcurrent.type === Material.BOOK_AND_QUILL) {
         // 投票リンク表示
         player.sendMessage(ChatColor.RED.toString() + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote")
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -3951,19 +3840,20 @@ class PlayerInventoryListener : Listener {
               StickMenu.firstPage.open
           ).runFor(player)
         }
-      } else if (itemstackcurrent.type == Material.WATCH) {
+        // NOTE: WHEN
+      } else if (itemstackcurrent.type === Material.WATCH) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.toggleVotingFairy = playerdata.toggleVotingFairy % 4 + 1
         player.openInventory(MenuInventoryData.getVotingMenuData(player))
-      } else if (itemstackcurrent.type == Material.PAPER) {
+      } else if (itemstackcurrent.type === Material.PAPER) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.toggleGiveApple = playerdata.toggleGiveApple % 4 + 1
         player.openInventory(MenuInventoryData.getVotingMenuData(player))
-      } else if (itemstackcurrent.type == Material.JUKEBOX) {
+      } else if (itemstackcurrent.type === Material.JUKEBOX) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.toggleVFSound = !playerdata.toggleVFSound
         player.openInventory(MenuInventoryData.getVotingMenuData(player))
-      } else if (itemstackcurrent.type == Material.GHAST_TEAR) {
+      } else if (itemstackcurrent.type === Material.GHAST_TEAR) {
         player.closeInventory()
 
         //プレイヤーレベルが10に達していないとき
@@ -3989,7 +3879,7 @@ class PlayerInventoryListener : Listener {
 
         VotingFairyListener.summon(player)
         player.closeInventory()
-      } else if (itemstackcurrent.type == Material.COMPASS) {
+      } else if (itemstackcurrent.type === Material.COMPASS) {
         VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.VotingFairyEndTime!!) + "には帰るよー。", playerdata.toggleVFSound)
         player.closeInventory()
       }//妖精召喚
@@ -4019,7 +3909,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが27でない時終了
-    if (topinventory.size != 27) {
+    if (topinventory.size != 3 * 9) {
       return
     }
     val player = he as Player
@@ -4030,7 +3920,7 @@ class PlayerInventoryListener : Listener {
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "ホームメニュー") {
       event.isCancelled = true
 
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -4064,7 +3954,7 @@ class PlayerInventoryListener : Listener {
     } else if (topinventory.title.contains("ホームポイントを変更しますか?")) {
       event.isCancelled = true
 
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.type === InventoryType.PLAYER) {
         return
       }
 
@@ -4093,14 +3983,14 @@ class PlayerInventoryListener : Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.type !== EntityType.PLAYER) {
       return
     }
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
-    if (topinventory.size != 54) {
+    if (topinventory.size != 6 * 9) {
       return
     }
     val player = he as Player
@@ -4109,7 +3999,7 @@ class PlayerInventoryListener : Listener {
 
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "スキルを進化させますか?") {
       event.isCancelled = true
-      if (itemstackcurrent.type == Material.NETHER_STAR) {
+      if (itemstackcurrent.type === Material.NETHER_STAR) {
         playerdata.GBstage = playerdata.GBstage + 1
         playerdata.GBlevel = 0
         playerdata.GBexp = 0
