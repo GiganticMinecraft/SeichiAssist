@@ -1784,18 +1784,6 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 
-			if (itemstackcurrent.getType() == Material.COMPASS) {
-				/*
-				player.playSound(player.getLocation(), Sound.BLOCK_LAVA_POP, 1, (float) 1);
-				playerdata.isSearching = true;
-				player.closeInventory();
-				player.sendMessage(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "<MineStackアイテム検索>");
-				player.sendMessage(ChatColor.GRAY + "検索したいアイテムの名前を" + ChatColor.RED + "日本語で" + ChatColor.GRAY + "入力しよう");
-				player.sendMessage(ChatColor.GRAY + "前方一部分でも大丈夫！(前方一致で検索します)");
-				player.sendMessage(ChatColor.GREEN + "検索を終了したいときはendと入力してください");
-				*/
-			}
-
 			if (itemstackcurrent.getType() == Material.IRON_PICKAXE) {
 				playerdata.setMinestackflag(!playerdata.getMinestackflag());
 				if (playerdata.getMinestackflag()) {

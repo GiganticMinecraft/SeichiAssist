@@ -96,7 +96,7 @@ public class RegionInventoryListener implements Listener {
 			//土地保護メニュー
 			if (itemstackcurrent.getType() == Material.DIAMOND_AXE && itemstackcurrent.getItemMeta().getDisplayName().contains("土地保護メニュー")) {
 				player.openInventory(RegionMenuData.getRegionMenuData(player));
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.5);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.5f);
 			}
 		}
 	}
@@ -167,11 +167,11 @@ public class RegionInventoryListener implements Listener {
 					return;
 				}else if (selection == null) {
 					player.sendMessage(ChatColor.RED + "先に木の斧で範囲を指定してからこのボタンを押してください");
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.5f);
 					return;
 				}else if(selection.getLength() < 10||selection.getWidth() < 10){
 					player.sendMessage(ChatColor.RED + "指定された範囲が狭すぎます。1辺当たり最低10ブロック以上にしてください");
-					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float)0.5);
+					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.5f);
 					return;
 				}
 
@@ -179,12 +179,12 @@ public class RegionInventoryListener implements Listener {
 				player.chat("/rg claim " + player.getName() + "_" + playerdata.getRgnum());
 				playerdata.setRgnum(playerdata.getRgnum() + 1);
 				player.chat("//sel");
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f);
 			}
 
 			else if(itemstackcurrent.getType() == Material.STONE_AXE){
 				// 保護リストの表示
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f);
 				player.closeInventory();
 				player.sendMessage(ChatColor.GRAY + "--------------------\n"
 						+ ChatColor.GRAY + "複数ページの場合… " + ChatColor.RESET + "" +  ChatColor.RED + "" + ChatColor.BOLD + "/rg list -p " + player.getName() + " ページNo\n"
@@ -270,18 +270,18 @@ public class RegionInventoryListener implements Listener {
 				player.chat("//expand vert");
 				createRegion(player);
 				playerData.setRgnum(playerData.getRgnum() + 1);
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f);
 				player.closeInventory();
 			} else if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 4) {
 				gridResetFunction(player);
-				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_DESTROY, (float) 0.5, 1);
+				player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f);
 				player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
 			} else if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 0) {
 				playerData.toggleUnitPerGrid();
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f);
 				player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
 			} else if (itemstackcurrent.getType() == Material.CHEST) {
-				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
+				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f);
 				player.openInventory(RegionMenuData.getGridTemplateInventory(player));
 			}
 		}
