@@ -19,7 +19,7 @@ class PlayerPickupItemListener : Listener {
   fun onPickupMineStackItem(event: PlayerPickupItemEvent) {
     val player = event.player
 
-    if (player.gameMode != GameMode.SURVIVAL) return
+    if (player.gameMode !== GameMode.SURVIVAL) return
 
     val playerData = playermap[player.uniqueId] ?: return
 
