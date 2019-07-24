@@ -184,7 +184,7 @@ class SeichiAssist : JavaPlugin() {
       PlayerDataSaveTask(playerdata, true, true).run()
     }
 
-    if (databaseGateway.disconnect() == Fail) {
+    if (databaseGateway.disconnect() === Fail) {
       logger.info("データベース切断に失敗しました")
     }
 
@@ -282,7 +282,7 @@ class SeichiAssist : JavaPlugin() {
       val minestacklist = ArrayList<MineStackObj>()
       for (i in msgachadatalist.indices) {
         val g = msgachadatalist[i]
-        if (g.itemStack.type != Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外
+        if (g.itemStack.type !== Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外
           minestacklist.add(MineStackObj(g.objName, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES))
         }
       }
