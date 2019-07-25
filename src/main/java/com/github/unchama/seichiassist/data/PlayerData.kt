@@ -4,6 +4,8 @@ import com.github.unchama.seichiassist.LevelThresholds
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.Worlds
+import com.github.unchama.seichiassist.data.playerdata.ClaimUnit
+import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -82,6 +84,7 @@ class PlayerData(val player: Player) {
     //ワールドガード保護自動設定用
     var rgnum: Int = 0
 
+    // var starLevels = ---
     //スターレベル用数値
     //スターレベル(合計値)
     var starlevel: Int = 0
@@ -145,6 +148,7 @@ class PlayerData(val player: Player) {
     var votecooldownflag: Boolean = false
 
     //連続・通算ログイン用
+    // var loginStatus = ---
     var lastcheckdate: String? = null
     var ChainJoin: Int = 0
     var TotalJoin: Int = 0
@@ -173,6 +177,7 @@ class PlayerData(val player: Player) {
     private val subHomeMap = HashMap<Int, SubHome>()
     var isSubHomeNameChange: Boolean = false
 
+    // var nickName = ---
     //LV・二つ名表示切替用
     var displayTypeLv: Boolean = false
     //表示二つ名の指定用
@@ -208,10 +213,7 @@ class PlayerData(val player: Player) {
     private var halfBreakFlag: Boolean = false
 
     //グリッド式保護関連
-    private var aheadUnit: Int = 0
-    private var behindUnit: Int = 0
-    private var rightUnit: Int = 0
-    private var leftUnit: Int = 0
+    private var claimUnit = ClaimUnit(0, 0, 0, 0)
     private var canCreateRegion: Boolean = false
     var unitPerClick: Int = 0
         private set
@@ -246,10 +248,12 @@ class PlayerData(val player: Player) {
     //MineStack検索保存用Map
     var indexMap: Map<Int, MineStackObj>
 
+    var giganticBerserk = GiganticBerserk()
     var GBstage: Int = 0
     var GBexp: Int = 0
     var GBlevel: Int = 0
     var isGBStageUp: Boolean = false
+    // ???
     var GBcd: Int = 0
 
 
@@ -283,16 +287,16 @@ class PlayerData(val player: Player) {
         get() {
             val unitMap = HashMap<DirectionType, Int>()
 
-            unitMap[DirectionType.AHEAD] = this.aheadUnit
-            unitMap[DirectionType.BEHIND] = this.behindUnit
-            unitMap[DirectionType.RIGHT] = this.rightUnit
-            unitMap[DirectionType.LEFT] = this.leftUnit
+            unitMap[DirectionType.AHEAD] = this.claimUnit.ahead
+            unitMap[DirectionType.BEHIND] = this.claimUnit.behind
+            unitMap[DirectionType.RIGHT] = this.claimUnit.right
+            unitMap[DirectionType.LEFT] = this.claimUnit.left
 
             return unitMap
         }
 
     val gridChunkAmount: Int
-        get() = (this.aheadUnit + 1 + this.behindUnit) * (this.rightUnit + 1 + this.leftUnit)
+        get() = (this.claimUnit.ahead + 1 + this.claimUnit.behind) * (this.claimUnit.right + 1 + this.claimUnit.left)
 
 
     init {
@@ -364,10 +368,7 @@ class PlayerData(val player: Player) {
 
         this.halfBreakFlag = false
 
-        this.aheadUnit = 0
-        this.behindUnit = 0
-        this.rightUnit = 0
-        this.leftUnit = 0
+        this.claimUnit = ClaimUnit(0, 0, 0, 0)
         this.canCreateRegion = true
         this.unitPerClick = 1
         this.templateMap = HashMap()
@@ -838,19 +839,19 @@ class PlayerData(val player: Player) {
 
     fun setUnitAmount(directionType: DirectionType, amount: Int) {
         when (directionType) {
-            DirectionType.AHEAD -> this.aheadUnit = amount
-            DirectionType.BEHIND -> this.behindUnit = amount
-            DirectionType.RIGHT -> this.rightUnit = amount
-            DirectionType.LEFT -> this.leftUnit = amount
+            DirectionType.AHEAD -> this.claimUnit = this.claimUnit.copy(ahead = amount)
+            DirectionType.BEHIND -> this.claimUnit = this.claimUnit.copy(behind = amount)
+            DirectionType.RIGHT -> this.claimUnit = this.claimUnit.copy(right = amount)
+            DirectionType.LEFT -> this.claimUnit = this.claimUnit.copy(left = amount)
         }//わざと何もしない
     }
 
-    fun addUnitAmount(directionType: DirectionType, addAmount: Int) {
+    fun addUnitAmount(directionType: DirectionType, amount: Int) {
         when (directionType) {
-            DirectionType.AHEAD -> this.aheadUnit += addAmount
-            DirectionType.BEHIND -> this.behindUnit += addAmount
-            DirectionType.RIGHT -> this.rightUnit += addAmount
-            DirectionType.LEFT -> this.leftUnit += addAmount
+            DirectionType.AHEAD -> this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
+            DirectionType.BEHIND -> this.claimUnit = this.claimUnit.copy(behind = this.claimUnit.behind + amount)
+            DirectionType.RIGHT -> this.claimUnit = this.claimUnit.copy(right = this.claimUnit.right + amount)
+            DirectionType.LEFT -> this.claimUnit = this.claimUnit.copy(left = this.claimUnit.left + amount)
         }//わざと何もしない
     }
 
