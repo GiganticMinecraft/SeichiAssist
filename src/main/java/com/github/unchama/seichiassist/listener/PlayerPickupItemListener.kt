@@ -39,7 +39,7 @@ class PlayerPickupItemListener : Listener {
     var i = 0
     while (i < MineStackObjectList.minestacklist!!.size) {
       val mineStackObj = MineStackObjectList.minestacklist!![i]
-      if (material == mineStackObj.material && itemstack.durability.toInt() == mineStackObj.durability) {
+      if (material === mineStackObj.material && itemstack.durability.toInt() == mineStackObj.durability) {
         //この時点でIDとサブIDが一致している
         if (!mineStackObj.hasNameLore && !itemstack.itemMeta.hasLore() && !itemstack.itemMeta.hasDisplayName()) {//名前と説明文が無いアイテム
           if (playerData.level < config.getMineStacklevel(mineStackObj.level)) {
