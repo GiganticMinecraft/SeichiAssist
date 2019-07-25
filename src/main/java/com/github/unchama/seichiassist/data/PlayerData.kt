@@ -18,6 +18,7 @@ import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.ops.plus
 import com.github.unchama.targetedeffect.player.asTargetedEffect
+import com.github.unchama.util.newChestInventory
 import org.bukkit.*
 import org.bukkit.ChatColor.*
 import org.bukkit.command.CommandSender
@@ -313,7 +314,7 @@ class PlayerData(val player: Player) {
         this.level = 1
         this.mebius = MebiusTask(this)
         this.numofsorryforbug = 0
-        this.inventory = Bukkit.createInventory(null, 9 * 1, DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
+        this.inventory = newChestInventory(row = 1, title = DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
         this.rgnum = 0
         this.minestackflag = true
         this.servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK)
