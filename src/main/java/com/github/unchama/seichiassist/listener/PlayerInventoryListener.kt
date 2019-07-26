@@ -1307,7 +1307,7 @@ class PlayerInventoryListener : Listener {
 
   //ランキングメニュー
   @EventHandler
-  fun onPlayerClickSeichiRankingMenuEvent3(event: InventoryClickEvent) {
+  fun onOpenDonationRanking(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
     if (event.clickedInventory == null) {
       return
