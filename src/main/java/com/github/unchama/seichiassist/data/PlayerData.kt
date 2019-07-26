@@ -6,6 +6,8 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.Worlds
 import com.github.unchama.seichiassist.data.playerdata.ClaimUnit
 import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
+import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
+import com.github.unchama.seichiassist.data.playerdata.StarLevel
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -84,14 +86,13 @@ class PlayerData(val player: Player) {
     //ワールドガード保護自動設定用
     var rgnum: Int = 0
 
-    // var starLevels = ---
+    var starLevels = StarLevel(0, 0, 0)
     //スターレベル用数値
-    //スターレベル(合計値)
-    var starlevel: Int = 0
-    //各項目別の取得スターレベル
-    var starlevel_Break: Int = 0 //整地量
-    var starlevel_Time: Int = 0 //参加時間
-    var starlevel_Event: Int = 0  //イベント実績
+    /**
+     * スターレベルの合計を返すショートカットフィールド。
+     */
+    val totalStarLevel: Int
+        get() = starLevels.sum()
 
     //MineStack
     //public MineStack minestack;
@@ -177,13 +178,27 @@ class PlayerData(val player: Player) {
     private val subHomeMap = HashMap<Int, SubHome>()
     var isSubHomeNameChange: Boolean = false
 
-    // var nickName = ---
-    //LV・二つ名表示切替用
-    var displayTypeLv: Boolean = false
+    var nickName = PlayerNickName()
     //表示二つ名の指定用
-    var displayTitle1No: Int = 0
-    var displayTitle2No: Int = 0
-    var displayTitle3No: Int = 0
+    @Deprecated(replaceWith = ReplaceWith("nickName.id1"), message = "わかりにくい上に代入が無駄", level = DeprecationLevel.WARNING)
+    var displayTitle1No: Int
+        set(value) {
+            nickName = nickName.copy(id1 = value)
+        }
+        get() = nickName.id1
+    @Deprecated(replaceWith = ReplaceWith("nickName.id2"), message = "わかりにくい上に代入が無駄", level = DeprecationLevel.WARNING)
+    var displayTitle2No: Int
+        set(value) {
+            nickName = nickName.copy(id2 = value)
+        }
+        get() = nickName.id2
+    @Deprecated(replaceWith = ReplaceWith("nickName.id3"), message = "わかりにくい上に代入が無駄", level = DeprecationLevel.WARNING)
+    var displayTitle3No: Int
+        set(value) {
+            nickName = nickName.copy(id3 = value)
+        }
+
+        get() = nickName.id3
     //二つ名解禁フラグ保存用
     var TitleFlags: BitSet
     //二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
@@ -345,10 +360,7 @@ class PlayerData(val player: Player) {
         this.shareinvcooldownflag = true
         this.chestflag = true
 
-        this.displayTypeLv = true
-        this.displayTitle1No = 0
-        this.displayTitle2No = 0
-        this.displayTitle3No = 0
+        this.nickName = PlayerNickName(PlayerNickName.Style.Level, 0, 0, 0)
         this.TitleFlags = BitSet(10000)
         this.TitleFlags.set(1)
         this.p_vote_forT = 0
@@ -356,10 +368,7 @@ class PlayerData(val player: Player) {
         this.titlepage = 1
         this.LimitedLoginCount = 0
 
-        this.starlevel = 0
-        this.starlevel_Break = 0
-        this.starlevel_Time = 0
-        this.starlevel_Event = 0
+        this.starLevels = StarLevel(0, 0, 0)
 
         this.build_lv = 1
         this.build_count = BigDecimal.ZERO
@@ -487,17 +496,17 @@ class PlayerData(val player: Player) {
         var displayname = Util.getName(p)
 
         //表示を追加する処理
-        if (displayTitle1No == 0 && displayTitle2No == 0 && displayTitle3No == 0) {
-            if (starlevel <= 0) {
-                displayname = "[ Lv" + level + " ]" + displayname + WHITE
+        displayname = if (displayTitle1No == 0 && displayTitle2No == 0 && displayTitle3No == 0) {
+            if (totalStarLevel <= 0) {
+                "[ Lv$level ]$displayname$WHITE"
             } else {
-                displayname = "[Lv" + level + "☆" + starlevel + "]" + displayname + WHITE
+                "[Lv$level☆$totalStarLevel]$displayname$WHITE"
             }
         } else {
-            val displayTitle1 = SeichiAssist.seichiAssistConfig.getTitle1(displayTitle1No)
-            val displayTitle2 = SeichiAssist.seichiAssistConfig.getTitle2(displayTitle2No)
-            val displayTitle3 = SeichiAssist.seichiAssistConfig.getTitle3(displayTitle3No)
-            displayname = "[" + displayTitle1 + displayTitle2 + displayTitle3 + "]" + displayname + WHITE
+            val displayTitle1 = SeichiAssist.seichiAssistConfig.getTitle1(nickName.id1)
+            val displayTitle2 = SeichiAssist.seichiAssistConfig.getTitle2(nickName.id2)
+            val displayTitle3 = SeichiAssist.seichiAssistConfig.getTitle3(nickName.id3)
+            "[$displayTitle1$displayTitle2$displayTitle3]$displayname$WHITE"
         }
         //放置時に色を変える
         if (idletime >= 10) {

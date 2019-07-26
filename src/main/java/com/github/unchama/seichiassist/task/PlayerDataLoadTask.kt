@@ -8,6 +8,8 @@ import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.MineStack
 import com.github.unchama.seichiassist.data.PlayerData
+import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
+import com.github.unchama.seichiassist.data.playerdata.StarLevel
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.BukkitSerialization
@@ -254,10 +256,12 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         playerdata.isSubHomeNameChange = false
 
         //実績、二つ名の情報
-        playerdata.displayTypeLv = rs.getBoolean("displayTypeLv")
-        playerdata.displayTitle1No = rs.getInt("displayTitle1No")
-        playerdata.displayTitle2No = rs.getInt("displayTitle2No")
-        playerdata.displayTitle3No = rs.getInt("displayTitle3No")
+        playerdata.nickName = PlayerNickName(
+            PlayerNickName.Style.marshal(rs.getBoolean("displayTypeLv")),
+            rs.getInt("displayTitle1No"),
+            rs.getInt("displayTitle2No"),
+            rs.getInt("displayTitle3No")
+        )
         playerdata.p_vote_forT = rs.getInt("p_vote")
         playerdata.giveachvNo = rs.getInt("giveachvNo")
         playerdata.achvPointMAX = rs.getInt("achvPointMAX")
@@ -266,10 +270,11 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         playerdata.achvPoint = playerdata.achvPointMAX + playerdata.achvChangenum * 3 - playerdata.achvPointUSE
 
         //スターレベルの情報
-        playerdata.starlevel = rs.getInt("starlevel")
-        playerdata.starlevel_Break = rs.getInt("starlevel_Break")
-        playerdata.starlevel_Time = rs.getInt("starlevel_Time")
-        playerdata.starlevel_Event = rs.getInt("starlevel_Event")
+        playerdata.starLevels = StarLevel(
+            rs.getInt("starlevel_Break"),
+            rs.getInt("starlevel_Time"),
+            rs.getInt("starlevel_Event")
+        )
 
         //期間限定ログインイベント専用の累計ログイン日数
         playerdata.LimitedLoginCount = rs.getInt("LimitedLoginCount")

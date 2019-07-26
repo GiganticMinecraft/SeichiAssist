@@ -203,18 +203,18 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         + ",everysound = " + playerdata.everysoundflag
         + ",everymessage = " + playerdata.everymessageflag
 
-        + ",displayTypeLv = " + playerdata.displayTypeLv
-        + ",displayTitle1No = " + playerdata.displayTitle1No
-        + ",displayTitle2No = " + playerdata.displayTitle2No
-        + ",displayTitle3No = " + playerdata.displayTitle3No
+        + ",displayTypeLv = " + playerdata.nickName.style.displayLevel
+        + ",displayTitle1No = " + playerdata.nickName.id1
+        + ",displayTitle2No = " + playerdata.nickName.id2
+        + ",displayTitle3No = " + playerdata.nickName.id3
         + ",giveachvNo = " + playerdata.giveachvNo
         + ",achvPointMAX = " + playerdata.achvPointMAX
         + ",achvPointUSE = " + playerdata.achvPointUSE
         + ",achvChangenum = " + playerdata.achvChangenum
-        + ",starlevel = " + playerdata.starlevel
-        + ",starlevel_Break = " + playerdata.starlevel_Break
-        + ",starlevel_Time = " + playerdata.starlevel_Time
-        + ",starlevel_Event = " + playerdata.starlevel_Event
+        + ",starlevel = " + playerdata.totalStarLevel
+        + ",starlevel_Break = " + playerdata.starLevels.fromBreakAmount
+        + ",starlevel_Time = " + playerdata.starLevels.fromConnectionTime
+        + ",starlevel_Event = " + playerdata.starLevels.fromEventAchievement
 
         + ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
         + ",ChainJoin = " + playerdata.ChainJoin
