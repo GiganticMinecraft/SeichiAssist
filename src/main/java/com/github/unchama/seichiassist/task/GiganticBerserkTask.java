@@ -90,17 +90,20 @@ public class GiganticBerserkTask {
 	 * マナ回復確率を返す
 	 * @param playerdata
 	 */
+	@Deprecated
 	public double getProb(PlayerData pd){
-		if (pd.getGBlevel() < 2) return 0.05;
-		else if (pd.getGBlevel() < 4) return 0.06;
-		else if (pd.getGBlevel() < 6) return 0.07;
-		else if (pd.getGBlevel() < 8) return 0.08;
-		else if (pd.getGBlevel() < 9) return 0.09;
+		final int level = pd.getGiganticBerserk().getLevel();
+		if (level < 2) return 0.05;
+		else if (level < 4) return 0.06;
+		else if (level < 6) return 0.07;
+		else if (level < 8) return 0.08;
+		else if (level < 9) return 0.09;
 		else return 0.10;
 	}
 
 	public double getRecoveryValue(PlayerData playerdata){
-		double i,l;
+		double i;
+		final double l;
 		Random rnd = new Random();
 
 		final int level = playerdata.getGiganticBerserk().getLevel();
