@@ -264,12 +264,37 @@ class PlayerData(val player: Player) {
     var indexMap: Map<Int, MineStackObj>
 
     var giganticBerserk = GiganticBerserk()
-    var GBstage: Int = 0
-    var GBexp: Int = 0
-    var GBlevel: Int = 0
-    var isGBStageUp: Boolean = false
-    // ???
-    var GBcd: Int = 0
+    var GBstage: Int
+        set(value) {
+            giganticBerserk = giganticBerserk.copy(stage = value)
+        }
+
+        get() = giganticBerserk.stage
+    var GBexp: Int
+        set (value) {
+            giganticBerserk = giganticBerserk.copy(exp = value)
+        }
+
+        get() = giganticBerserk.exp
+    var GBlevel: Int
+        set (value) {
+            giganticBerserk = giganticBerserk.copy(level = value)
+        }
+
+        get() = giganticBerserk.level
+    var isGBStageUp: Boolean
+        set (value) {
+            giganticBerserk = giganticBerserk.copy(canEvolution = value)
+        }
+
+        get() = giganticBerserk.canEvolution
+    // FIXME: BAD NAME; not clear meaning
+    var GBcd: Int
+        set (value) {
+            giganticBerserk = giganticBerserk.copy(cd = value)
+        }
+
+        get() = giganticBerserk.cd
 
 
     //オフラインかどうか
@@ -496,7 +521,7 @@ class PlayerData(val player: Player) {
         var displayname = Util.getName(p)
 
         //表示を追加する処理
-        displayname = if (displayTitle1No == 0 && displayTitle2No == 0 && displayTitle3No == 0) {
+        displayname = if (nickName.id1 == 0 && nickName.id2 == 0 && nickName.id3 == 0) {
             if (totalStarLevel <= 0) {
                 "[ Lv$level ]$displayname$WHITE"
             } else {
