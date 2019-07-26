@@ -472,7 +472,7 @@ class PlayerData(val player: Player) {
     //レベルを更新
     fun updateLevel(p: Player) {
         calcPlayerLevel(p)
-        calcStarLevel(p)
+        updateStarLevel(p)
         setDisplayName(p)
         expbar.calculate()
     }
@@ -556,41 +556,35 @@ class PlayerData(val player: Player) {
     }
 
     //スターレベルの計算、更新
-    fun calcStarLevel(p: Player) {
+    /**
+     * スターレベルの計算、更新を行う。
+     * このメソッドはスター数が増えたときにメッセージを送信する副作用を持つ。
+     */
+    fun updateStarLevel(p: Player) {
         //処理前の各レベルを取得
-        var i = starlevel
-        val iB = starlevel_Break
-        val iT = starlevel_Time
-        val iE = starlevel_Event
+        val oldStars = starLevels.sum()
+        val oldBreakStars = starLevels.fromBreakAmount
+        val oldTimeStars = starLevels.fromConnectionTime
         //処理後のレベルを保存する入れ物
-        val i2: Int
-        val iB2 = (totalbreaknum / 87115000).toInt()
-        val iT2 = 0
-        val iE2 = 0
+        val newBreakStars = (totalbreaknum / 87115000).toInt()
 
         //整地量の確認
-        if (iB < iB2) {
-            p.sendMessage(GOLD.toString() + "ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆(" + iB + ")→☆(" + iB2 + ")】")
-            starlevel_Break = iB2
+        if (oldBreakStars < newBreakStars) {
+            p.sendMessage(GOLD.toString() + "ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆(" + oldBreakStars + ")→☆(" + newBreakStars + ")】")
+            starLevels = starLevels.copy(fromBreakAmount = newBreakStars)
         }
 
         //参加時間の確認(19/4/3撤廃)
-        if (iT > 0) {
-            starlevel -= iT
-            i = starlevel
-            starlevel_Time = 0
+        if (oldTimeStars > 0) {
+            starLevels = starLevels.copy(fromConnectionTime = 0)
         }
 
-        //イベント入手分の確認
+        //TODO: イベント入手分スターの確認
 
-        //今後実装予定。
-
-
+        val newStars: Int = starLevels.sum()
         //合計値の確認
-        i2 = iB2 + iT2 + iE2
-        if (i < i2) {
-            p.sendMessage(GOLD.toString() + "★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆(" + i + ")→☆(" + i2 + ")】")
-            starlevel = i2
+        if (oldStars < newStars) {
+            p.sendMessage("$GOLD★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆($oldStars)→☆($newStars)】")
         }
     }
 

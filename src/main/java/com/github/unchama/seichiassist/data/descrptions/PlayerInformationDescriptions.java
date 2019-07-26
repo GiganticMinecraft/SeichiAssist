@@ -57,7 +57,7 @@ public final class PlayerInformationDescriptions {
      */
     @NotNull
     private static String seichiLevelDescription(@NotNull PlayerData playerData) {
-        final int starLevel = playerData.getStarlevel();
+        final int starLevel = playerData.getTotalStarLevel();
         final int level = playerData.getLevel();
 
         if (starLevel <= 0) {

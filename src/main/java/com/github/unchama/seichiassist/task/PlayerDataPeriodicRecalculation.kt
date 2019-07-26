@@ -63,7 +63,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       playerData.calcPlayTick(player)
 
       //スターレベル更新
-      playerData.calcStarLevel(player)
+      playerData.updateStarLevel(player)
 
       //effectの大きさ
       var amplifier: Double
