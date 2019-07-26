@@ -40,6 +40,7 @@ class PlayerInventoryListener : Listener {
   internal var gachadatalist = SeichiAssist.gachadatalist
   internal var plugin = SeichiAssist.instance
   private val databaseGateway = SeichiAssist.databaseGateway
+
   //サーバー選択メニュー
   @EventHandler
   fun onPlayerClickServerSwitchMenuEvent(event: InventoryClickEvent) {
@@ -151,6 +152,7 @@ class PlayerInventoryListener : Listener {
 
       //ページ変更処理
       // ->
+      // val swords = EnumSet.of(Material.WOOD_SWORD, Material.STONE_SWORD, Material.GOLD_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD)
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
