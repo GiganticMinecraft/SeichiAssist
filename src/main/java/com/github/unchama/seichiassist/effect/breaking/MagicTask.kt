@@ -16,17 +16,15 @@ import java.util.*
 class MagicTask(// プレイヤー情報
     private val player: Player, // 使用するツール
     private val tool: ItemStack, // 破壊するブロックリスト
-    private val blocks: List<Block>, start: Coordinate,
+    private val blocks: List<Block>,
+    start: Coordinate,
     end: Coordinate, skillCenter: Location) : AbstractRoundedTask() {
   // 破壊するブロックの中心位置
   private val centerBreak: Location
   // スキルが発動される中心位置
-  private val skillCenter: Location
+  private val skillCenter: Location = skillCenter.clone()
 
   init {
-    // スキルで破壊される相対座標
-    this.skillCenter = skillCenter.clone()
-
     centerBreak = this.skillCenter.add(relativeAverage(start.x, end.x), relativeAverage(start.y, end.y), relativeAverage(start.z, end.z))
   }
 

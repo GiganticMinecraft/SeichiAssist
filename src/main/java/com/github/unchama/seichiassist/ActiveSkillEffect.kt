@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.BlizzardTask
 import com.github.unchama.seichiassist.effect.breaking.ExplosionTask
 import com.github.unchama.seichiassist.effect.breaking.MeteoTask
+import com.github.unchama.seichiassist.effect.toXYZTuple
 import com.okkero.skedule.BukkitSchedulerController
 import com.okkero.skedule.SynchronizationContext
 import com.okkero.skedule.schedule
@@ -35,7 +36,7 @@ enum class ActiveSkillEffect constructor(val num: Int, private val sql_name: Str
   //エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
   fun runBreakEffect(player: Player, playerdata: PlayerData, tool: ItemStack, breaklist: List<Block>, start: Coordinate, end: Coordinate, standard: Location) {
     when (this) {
-      EXPLOSION -> ExplosionTask(player, playerdata, tool, breaklist, start, end, standard).runTaskLater(plugin, 0)
+      EXPLOSION -> ExplosionTask(player, playerdata, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTaskLater(plugin, 0)
       BLIZZARD -> if (playerdata.activeskilldata.skillnum < 3) {
         BlizzardTask(player, playerdata, tool, breaklist, start, end, standard).runTaskLater(plugin, 1)
       } else {

@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist.effect.breaking
 
-import com.github.unchama.seichiassist.effect.XYZIterator
+import com.github.unchama.seichiassist.effect.AxisAlignedCuboid
 import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.effect.forEachGridPoint
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.scheduler.BukkitRunnable
-import kotlin.jvm.internal.Ref
 
 abstract class AbstractBreakTask2 : BukkitRunnable() {
   protected abstract val blocks: List<Block>
@@ -18,15 +18,26 @@ abstract class AbstractBreakTask2 : BukkitRunnable() {
   protected fun isBreakBlock(loc: Location): Boolean {
     val b = loc.block
     if (blocks.contains(b)) return true
-    // needs final rule
-    val ret = Ref.BooleanRef()
-    val ll = { xyzTuple: XYZTuple ->
-      if (blocks.contains(b.getRelative(xyzTuple.x, xyzTuple.y, xyzTuple.z))) {
-        ret.element = true
-      }
-      Unit
+
+    AxisAlignedCuboid(XYZTuple(-1, -1, -1), XYZTuple(1, 1, 1)).forEachGridPoint { (x, y, z) ->
+      if (blocks.contains(b.getRelative(x, y, z))) return true
     }
-    XYZIterator(XYZTuple(-1, -1, -1), XYZTuple(1, 1, 1), ll).doAction()
-    return ret.element
+
+    return false
   }
+}
+
+/**
+ * [location]を中心としたチェビシェフ距離が[distance]以下の領域に
+ * [matchAgainst]のブロックが一つでも含まれているかを返す
+ */
+fun containsBlockAround(location: Location, distance: Int, matchAgainst: Set<Block>): Boolean {
+  val cuboidToLookFor =
+      AxisAlignedCuboid(XYZTuple(-distance, -distance, -distance), XYZTuple(distance, distance, distance))
+
+  cuboidToLookFor.forEachGridPoint { (x, y, z) ->
+    if (matchAgainst.contains(location.block.getRelative(x, y, z))) return true
+  }
+
+  return false
 }
