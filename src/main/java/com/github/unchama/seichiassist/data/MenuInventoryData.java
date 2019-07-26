@@ -127,7 +127,7 @@ public class MenuInventoryData {
 		}
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk");
 
-		if (playerdata.isGBStageUp() || (playerdata.getGBstage() == 4 && playerdata.getGBlevel() == 9)){
+		if (playerdata.getGiganticBerserk().getCanEvolution() || playerdata.getGiganticBerserk().reachedLimit()){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		}
@@ -220,11 +220,13 @@ public class MenuInventoryData {
 				lore.add(ChatColor.GRAY + "MOBの魂を極限まで吸収し最大限の力を発揮する");
 			}else {
 				lore.add(ChatColor.GRAY + "MOBの魂を" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n) + "回吸収すると更なる力が得られる");
-				lore.add(ChatColor.GRAY + "" + playerdata.getGBexp() + "/" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n));
+				//exp
+				lore.add(ChatColor.GRAY + "" + playerdata.getGiganticBerserk().getExp() + "/" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n));
 			}
-			lore.add(ChatColor.GRAY + "現在" + (playerdata.getGBlevel() + 1) + "レベル,回復率 " + (int)(100 * GBTR.getProb(playerdata)) + ".0%");
+			//level
+			lore.add(ChatColor.GRAY + "現在" + (playerdata.getGiganticBerserk().getLevel() + 1) + "レベル,回復率 " + (int)(100 * playerdata.getGiganticBerserk().regeneMadaProbability()) + ".0%");
 
-			if (playerdata.isGBStageUp()){
+			if (playerdata.getGiganticBerserk().getCanEvolution()){
 				lore.add("");
 				lore.add(ChatColor.DARK_RED + "沢山の魂を吸収したことで");
 				lore.add(ChatColor.DARK_RED + "スキルの秘めたる力を解放できそうだ…！");
@@ -6212,22 +6214,27 @@ public class MenuInventoryData {
 		ItemMeta itemmeta;
 		List<String> lore;
 
-		switch(playerdata.getGBstage()){
-		case 0:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)12);
-			break;
-		case 1:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)15);
-			break;
-		case 2:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)4);
-			break;
-		case 3:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)0);
-			break;
-		default:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)12);
-			break;
+		// stage
+		{
+			final byte b;
+			switch (playerdata.getGiganticBerserk().getStage()) {
+				case 0:
+					b = 12;
+					break;
+				case 1:
+					b = 15;
+					break;
+				case 2:
+					b = 4;
+					break;
+				case 3:
+					b = 0;
+					break;
+				default:
+					b = 12;
+					break;
+			}
+			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, b);
 		}
 
 		itemmeta = itemstack.getItemMeta();
@@ -6284,22 +6291,28 @@ public class MenuInventoryData {
 		ItemMeta itemmeta;
 		List<String> lore;
 
-		switch(playerdata.getGBstage()){
-		case 1:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)15);
-			break;
-		case 2:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)4);
-			break;
-		case 3:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)0);
-			break;
-		case 4:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)3);
-			break;
-		default:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)12);
-			break;
+		{
+			final byte b;
+			// stage
+			switch (playerdata.getGiganticBerserk().getStage()) {
+				case 1:
+					b = 15;
+					break;
+				case 2:
+					b = 4;
+					break;
+				case 3:
+					b = 0;
+					break;
+				case 4:
+					b = 3;
+					break;
+				default:
+					b = 12;
+					break;
+			}
+
+			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, b);
 		}
 
 		itemmeta = itemstack.getItemMeta();

@@ -238,10 +238,10 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         //貢献度pt
         + ",added_mana = " + playerdata.added_mana
 
-        + ",GBstage = " + playerdata.GBstage
-        + ",GBexp = " + playerdata.GBexp
-        + ",GBlevel = " + playerdata.GBlevel
-        + ",isGBStageUp = " + playerdata.isGBStageUp
+        + ",GBstage = " + playerdata.giganticBerserk.stage
+        + ",GBexp = " + playerdata.giganticBerserk.exp
+        + ",GBlevel = " + playerdata.giganticBerserk.level
+        + ",isGBStageUp = " + playerdata.giganticBerserk.canEvolution
         + ",TitleFlags = '" + flagString + "'"
 
         //正月イベント

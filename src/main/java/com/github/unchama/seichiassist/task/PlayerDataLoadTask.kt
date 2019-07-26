@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.MineStack
 import com.github.unchama.seichiassist.data.PlayerData
+import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
 import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
 import com.github.unchama.seichiassist.data.playerdata.StarLevel
 import com.github.unchama.seichiassist.database.DatabaseConstants
@@ -371,10 +372,12 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         playerdata.contribute_point = rs.getInt("contribute_point")
         playerdata.added_mana = rs.getInt("added_mana")
 
-        playerdata.GBstage = rs.getInt("GBstage")
-        playerdata.GBexp = rs.getInt("GBexp")
-        playerdata.GBlevel = rs.getInt("GBlevel")
-        playerdata.isGBStageUp = rs.getBoolean("isGBStageUp")
+        playerdata.giganticBerserk = GiganticBerserk(
+            rs.getInt("GBlevel"),
+            rs.getInt("GBexp"),
+            rs.getInt("GBstage"),
+            rs.getBoolean("isGBStageUp")
+        )
         playerdata.anniversary = rs.getBoolean("anniversary")
 
         // 1周年記念

@@ -191,7 +191,7 @@ class PlayerInventoryListener : Listener {
         player.sendMessage(ChatColor.WHITE.toString() + "パッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk" + ChatColor.WHITE + "はレベル10以上から使用可能です")
         player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
       } else if (itemstackcurrent.type == Material.WOOD_SWORD || itemstackcurrent.type == Material.STONE_SWORD || itemstackcurrent.type == Material.GOLD_SWORD || itemstackcurrent.type == Material.IRON_SWORD || itemstackcurrent.type == Material.DIAMOND_SWORD) {
-        if (!playerdata.isGBStageUp) {
+        if (!playerdata.giganticBerserk.canEvolution) {
           player.sendMessage(ChatColor.RED.toString() + "進化条件を満たしていません")
         } else {
           player.openInventory(MenuInventoryData.getGiganticBerserkEvolutionMenu(player))
