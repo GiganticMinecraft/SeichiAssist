@@ -4167,4 +4167,11 @@ class PlayerInventoryListener : Listener {
       event.isCancelled = true
     }
   }
+
+  private fun getTitle(where: Int, id: Int): String = when (where) {
+    1 -> SeichiAssist.seichiAssistConfig.getTitle1(id)
+    2 -> SeichiAssist.seichiAssistConfig.getTitle2(id)
+    3 -> SeichiAssist.seichiAssistConfig.getTitle3(id)
+    else -> throw RuntimeException("メソッドの呼び出し規約違反: whereは、1..3のいずれかでなければいけません。")
+  }
 }
