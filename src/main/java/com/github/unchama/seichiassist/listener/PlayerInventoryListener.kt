@@ -39,7 +39,6 @@ class PlayerInventoryListener : Listener {
   internal var playermap = SeichiAssist.playermap
   internal var gachadatalist = SeichiAssist.gachadatalist
   internal var plugin = SeichiAssist.instance
-  private val config = SeichiAssist.seichiAssistConfig
   private val databaseGateway = SeichiAssist.databaseGateway
   //サーバー選択メニュー
   @EventHandler
