@@ -1581,8 +1581,21 @@ class PlayerInventoryListener : Listener {
       return
     }
     val player = he as Player
-    val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playermap[player.uniqueId]!!
+    fun setTitleId(first: Int = 0, second: Int = 0, third: Int = 0) {
+      playerdata.displayTitle1No = first
+      playerdata.displayTitle2No = second
+      playerdata.displayTitle3No = third
+    }
+
+    fun setTitle(first: Int = 0, second: Int = 0, third: Int = 0, message: String = """二つ名$first「
+          |${getTitle(1, first)}
+          |${if (second != 0) getTitle(2, second) else ""}
+          |${if (third != 0) getTitle(3, third) else ""}
+          |」が設定されました。""".trimMargin()) {
+      setTitleId(first, second, third)
+      player.sendMessage(message)
+    }
 
     //経験値変更用のクラスを設定
     //ExperienceManager expman = new ExperienceManager(player);
