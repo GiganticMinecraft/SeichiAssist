@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.effect.AxisAlignedCuboid
 import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.effect.containsBlockAround
 import com.github.unchama.seichiassist.effect.forEachGridPoint
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.Location

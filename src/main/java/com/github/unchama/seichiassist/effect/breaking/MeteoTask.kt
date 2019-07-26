@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.data.Coordinate
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.effect.AxisAlignedCuboid
 import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.effect.containsBlockAround
 import com.github.unchama.seichiassist.effect.forEachGridPoint
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.Effect
@@ -13,15 +14,16 @@ import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
 class MeteoTask(
     private val player: Player,
     private val playerdata: PlayerData,
     private val tool: ItemStack,
-    override val blocks: List<Block>,
+    private val blocks: List<Block>,
     private val start: Coordinate,
-    private val end: Coordinate, droploc: Location) : AbstractBreakTask2() {
+    private val end: Coordinate, droploc: Location) : BukkitRunnable() {
   //破壊するブロックの中心位置
   private val centerbreakloc: Location
   //スキルが発動される中心位置
@@ -36,14 +38,16 @@ class MeteoTask(
       //逐一更新が必要な位置
       val effectloc = droploc.clone().add(xyzTuple.x.toDouble(), xyzTuple.y.toDouble(), xyzTuple.z.toDouble())
 
-      if (isBreakBlock(effectloc)) {
+      if (containsBlockAround(effectloc, 1, blocks.toSet())) {
         // TODO: Effect.EXPLOSION_HUGE -> Particle.EXPLOSION_HUGE
         player.world.playEffect(effectloc, Effect.EXPLOSION_HUGE, 1)
       }
     }
-    // 0..1 -> 0..0.4 -> 0.8..1.2
+
+    // [0.8, 1.2)
     val vol = Random().nextFloat() * 0.4f + 0.8f
     player.world.playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol)
+
     val stepflag = playerdata.activeskilldata.skillnum <= 2
     for (b in blocks) {
       BreakUtil.breakBlock(player, b, droploc, tool, stepflag)
