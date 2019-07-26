@@ -1119,30 +1119,45 @@ class PlayerInventoryListener : Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
       //ページ変更処理
-      if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-        GlobalScope.launch(Schedulers.async) {
-          sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              StickMenu.firstPage.open
-          ).runFor(player)
-        }
-      } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowDown") {
-        val itemmeta = itemstackcurrent.itemMeta
-        if (itemmeta.displayName.contains("整地神ランキング") && itemmeta.displayName.contains("ページ目")) {//移動するページの種類を判定
-          val page_display = Integer.parseInt(itemmeta.displayName.replace("[^0-9]".toRegex(), "")) //数字以外を全て消す
+      if (isSkull) {
+        // safe cast
+        val skullMeta = itemstackcurrent.itemMeta as SkullMeta
+        val name = skullMeta.displayName
+        when (skullMeta.owner) {
+          "MHF_ArrowLeft" -> {
+            GlobalScope.launch(Schedulers.async) {
+              sequentialEffect(
+                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                  StickMenu.firstPage.open
+              ).runFor(player)
+            }
+          }
 
-          //開く音を再生
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList(page_display - 1))
-        }
-      } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowUp") {
-        val itemmeta = itemstackcurrent.itemMeta
-        if (itemmeta.displayName.contains("整地神ランキング") && itemmeta.displayName.contains("ページ目")) {//移動するページの種類を判定
-          val page_display = Integer.parseInt(itemmeta.displayName.replace("[^0-9]".toRegex(), "")) //数字以外を全て消す
+          "MHF_ArrowDown" -> {
+            itemstackcurrent.itemMeta
+            if (name.contains("整地神ランキング") && name.contains("ページ目")) {//移動するページの種類を判定
+              val page_display = Integer.parseInt(name.replace("[^0-9]".toRegex(), "")) //数字以外を全て消す
 
-          //開く音を再生
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList(page_display - 1))
+              //開く音を再生
+              player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+              player.openInventory(MenuInventoryData.getRankingList(page_display - 1))
+            }
+          }
+
+          "MHF_ArrowUp" -> {
+            itemstackcurrent.itemMeta
+            if (name.contains("整地神ランキング") && name.contains("ページ目")) {//移動するページの種類を判定
+              val page_display = Integer.parseInt(name.replace("[^0-9]".toRegex(), "")) //数字以外を全て消す
+
+              //開く音を再生
+              player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+              player.openInventory(MenuInventoryData.getRankingList(page_display - 1))
+            }
+          }
+
+          else -> {
+            // NOP
+          }
         }
       }
     }
@@ -1253,30 +1268,39 @@ class PlayerInventoryListener : Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
       //ページ変更処理
-      if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-        GlobalScope.launch(Schedulers.async) {
-          sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-              StickMenu.firstPage.open
-          ).runFor(player)
-        }
-      } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowDown") {
-        val itemmeta = itemstackcurrent.itemMeta
-        if (itemmeta.displayName.contains("投票神ランキング") && itemmeta.displayName.contains("ページ目")) {//移動するページの種類を判定
-          val page_display = Integer.parseInt(itemmeta.displayName.replace("[^0-9]".toRegex(), "")) //数字以外を全て消す
+      if (isSkull) {
+        val skullMeta = (itemstackcurrent.itemMeta as SkullMeta)
+        when (skullMeta.owner) {
+          "MHF_ArrowLeft" -> {
+            GlobalScope.launch(Schedulers.async) {
+              sequentialEffect(
+                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                  StickMenu.firstPage.open
+              ).runFor(player)
+            }
+          }
 
-          //開く音を再生
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList_p_vote(page_display - 1))
-        }
-      } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowUp") {
-        val itemmeta = itemstackcurrent.itemMeta
-        if (itemmeta.displayName.contains("投票神ランキング") && itemmeta.displayName.contains("ページ目")) {//移動するページの種類を判定
-          val page_display = Integer.parseInt(itemmeta.displayName.replace("[^0-9]".toRegex(), "")) //数字以外を全て消す
+          "MHF_ArrowDown" -> {
+            val itemmeta = itemstackcurrent.itemMeta
+            if (itemmeta.displayName.contains("投票神ランキング") && itemmeta.displayName.contains("ページ目")) {//移動するページの種類を判定
+              val page_display = Integer.parseInt(itemmeta.displayName.replace("[^0-9]".toRegex(), "")) //数字以外を全て消す
 
-          //開く音を再生
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getRankingList_p_vote(page_display - 1))
+              //開く音を再生
+              player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+              player.openInventory(MenuInventoryData.getRankingList_p_vote(page_display - 1))
+            }
+          }
+
+          "MHF_ArrowUp" -> {
+            val itemmeta = itemstackcurrent.itemMeta
+            if (itemmeta.displayName.contains("投票神ランキング") && itemmeta.displayName.contains("ページ目")) {//移動するページの種類を判定
+              val page_display = Integer.parseInt(itemmeta.displayName.replace("[^0-9]".toRegex(), "")) //数字以外を全て消す
+
+              //開く音を再生
+              player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+              player.openInventory(MenuInventoryData.getRankingList_p_vote(page_display - 1))
+            }
+          }
         }
       }
     }
