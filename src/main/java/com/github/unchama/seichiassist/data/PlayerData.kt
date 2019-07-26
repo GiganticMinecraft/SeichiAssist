@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.data
 
 import com.github.unchama.seichiassist.LevelThresholds
+import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.Worlds
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -649,7 +649,7 @@ class PlayerData(val player: Player) {
         } else {
             val worldName = p.world.name
             val sw_mining_coefficient = 0.8
-            if (worldName.equals(Worlds.WORLD_SW.alphabetName, ignoreCase = true)) {
+            if (worldName.equals(ManagedWorld.WORLD_SW.alphabetName, ignoreCase = true)) {
                 result *= sw_mining_coefficient
             }
         }
