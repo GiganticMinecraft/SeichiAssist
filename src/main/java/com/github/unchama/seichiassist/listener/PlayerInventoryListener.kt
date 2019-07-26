@@ -1,9 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-import com.github.unchama.seichiassist.ActiveSkill
-import com.github.unchama.seichiassist.ActiveSkillEffect
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.*
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.data.ItemData
@@ -18,7 +15,8 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.util.ActionStatus.Fail
 import com.google.common.io.ByteStreams
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -155,7 +153,7 @@ class PlayerInventoryListener : Listener {
       //ページ変更処理
       // ->
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-        runBlocking {
+        GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
               StickMenu.firstPage.open
@@ -385,7 +383,7 @@ class PlayerInventoryListener : Listener {
 
       //ページ変更処理
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-        runBlocking {
+        GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
               StickMenu.firstPage.open
@@ -1121,7 +1119,7 @@ class PlayerInventoryListener : Listener {
 			 */
       //ページ変更処理
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-        runBlocking {
+        GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
               StickMenu.firstPage.open
@@ -1188,7 +1186,7 @@ class PlayerInventoryListener : Listener {
 			 */
       //ページ変更処理
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-        runBlocking {
+        GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
               StickMenu.firstPage.open
@@ -1255,7 +1253,7 @@ class PlayerInventoryListener : Listener {
 			 */
       //ページ変更処理
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-        runBlocking {
+        GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
               StickMenu.firstPage.open
@@ -1322,7 +1320,7 @@ class PlayerInventoryListener : Listener {
 			 */
       //ページ変更処理
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-        runBlocking {
+        GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
               StickMenu.firstPage.open
@@ -1604,7 +1602,7 @@ class PlayerInventoryListener : Listener {
         playerdata.titlepage = 1
         player.openInventory(MenuInventoryData.getTitleSpecial(player))
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-        runBlocking {
+        GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
               StickMenu.firstPage.open
@@ -3947,7 +3945,7 @@ class PlayerInventoryListener : Listener {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.closeInventory()
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-        runBlocking {
+        GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
               StickMenu.firstPage.open

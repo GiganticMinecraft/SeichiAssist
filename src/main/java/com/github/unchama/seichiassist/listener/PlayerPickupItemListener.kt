@@ -41,7 +41,7 @@ class PlayerPickupItemListener : Listener {
       val mineStackObj = MineStackObjectList.minestacklist!![i]
       if (material == mineStackObj.material && itemstack.durability.toInt() == mineStackObj.durability) {
         //この時点でIDとサブIDが一致している
-        if (!mineStackObj.nameLoreFlag && !itemstack.itemMeta.hasLore() && !itemstack.itemMeta.hasDisplayName()) {//名前と説明文が無いアイテム
+        if (!mineStackObj.hasNameLore && !itemstack.itemMeta.hasLore() && !itemstack.itemMeta.hasDisplayName()) {//名前と説明文が無いアイテム
           if (playerData.level < config.getMineStacklevel(mineStackObj.level)) {
             //レベルを満たしていない
             return
@@ -49,7 +49,7 @@ class PlayerPickupItemListener : Listener {
             playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong())
             break
           }
-        } else if (mineStackObj.nameLoreFlag && itemstack.itemMeta.hasDisplayName() && itemstack.itemMeta.hasLore()) {
+        } else if (mineStackObj.hasNameLore && itemstack.itemMeta.hasDisplayName() && itemstack.itemMeta.hasLore()) {
           //名前・説明文付き
           val meta = itemstack.itemMeta
           //この時点で名前と説明文がある

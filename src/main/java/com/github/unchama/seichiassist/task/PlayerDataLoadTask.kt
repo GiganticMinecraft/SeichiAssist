@@ -21,6 +21,7 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import java.io.IOException
 import java.math.BigDecimal
+import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Statement
 import java.text.ParseException
@@ -77,21 +78,19 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         + "player_uuid like '" + stringUuid + "' and "
         + "server_id = " + config.serverNum)
 
-    stmt.executeQuery(subHomeDataQuery).use { resultSet ->
-      while (resultSet.next()) {
-        val subHomeId = resultSet.getInt("id")
-        val subHomeName = resultSet.getString("name")
-        val locationX = resultSet.getInt("location_x")
-        val locationY = resultSet.getInt("location_y")
-        val locationZ = resultSet.getInt("location_z")
-        val worldName = resultSet.getString("world_name")
+    stmt.executeQuery(subHomeDataQuery).recordIteration {
+      val subHomeId = getInt("id")
+      val subHomeName = getString("name")
+      val locationX = getInt("location_x")
+      val locationY = getInt("location_y")
+      val locationZ = getInt("location_z")
+      val worldName = getString("world_name")
 
-        val world = Bukkit.getWorld(worldName)
-        val location = Location(world, locationX.toDouble(), locationY.toDouble(), locationZ.toDouble())
+      val world = Bukkit.getWorld(worldName)
+      val location = Location(world, locationX.toDouble(), locationY.toDouble(), locationZ.toDouble())
 
-        playerdata.setSubHomeLocation(location, subHomeId)
-        playerdata.setSubHomeName(subHomeName, subHomeId)
-      }
+      playerdata.setSubHomeLocation(location, subHomeId)
+      playerdata.setSubHomeName(subHomeName, subHomeId)
     }
   }
 
@@ -101,38 +100,34 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         + db + "." + DatabaseConstants.MINESTACK_TABLENAME + " where "
         + "player_uuid like '" + stringUuid + "'")
 
-    /* TODO これはここにあるべきではない
-         * 格納可能なアイテムのリストはプラグインインスタンスの中に動的に持たれるべきで、
-         * そのリストをラップするオブジェクトに同期された形でこのオブジェクトがもたれるべきであり、
-         * ロードされるたびに再計算されるべきではない
-         */
-    val nameObjectMappings: Map<String, MineStackObj>
-    run {
-      val resultMap = HashMap<String, MineStackObj>()
+    /**
+     * TODO これはここにあるべきではない
+     * 格納可能なアイテムのリストはプラグインインスタンスの中に動的に持たれるべきで、
+     * そのリストをラップするオブジェクトに同期された形でこのオブジェクトがもたれるべきであり、
+     * ロードされるたびに再計算されるべきではない
+     */
+    val nameObjectMappings: Map<String, MineStackObj> =
+        MineStackObjectList.minestacklist!!
+            .map { it.mineStackObjName to it }
+            .toMap()
 
-      MineStackObjectList.minestacklist!!
-          .forEach { `object` -> resultMap[`object`.mineStackObjName] = `object` }
+    val objectAmounts = HashMap<MineStackObj, Long>()
 
-      nameObjectMappings = resultMap
-    }
+    stmt.executeQuery(mineStackDataQuery).recordIteration {
+      val objectName = getString("object_name")
+      val objectAmount = getLong("amount")
+      val mineStackObj = nameObjectMappings[objectName]
 
-    stmt.executeQuery(mineStackDataQuery).use { resultSet ->
-      val objectAmounts = HashMap<MineStackObj, Long>()
-      while (resultSet.next()) {
-        val objectName = resultSet.getString("object_name")
-        val objectAmount = resultSet.getLong("amount")
-        val mineStackObj = nameObjectMappings[objectName]
-
-        if (mineStackObj != null) {
-          objectAmounts[mineStackObj] = objectAmount
-        } else {
-          val message = "プレーヤー " + p.name + " のMineStackオブジェクト " + objectName + " は収納可能リストに見つかりませんでした。"
-          Bukkit.getLogger().warning(message)
-        }
+      if (mineStackObj != null) {
+        objectAmounts[mineStackObj] = objectAmount
+      } else {
+        Bukkit
+            .getLogger()
+            .warning("プレーヤー ${p.name} のMineStackオブジェクト $objectName は収納可能リストに見つかりませんでした。")
       }
-
-      playerdata.minestack = MineStack(objectAmounts)
     }
+
+    playerdata.minestack = MineStack(objectAmounts)
   }
 
   @Throws(SQLException::class)
@@ -409,7 +404,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
     }
 
     //ログインフラグの確認を行う
-    val table = SeichiAssist.PLAYERDATA_TABLENAME
+    val table = DatabaseConstants.PLAYERDATA_TABLENAME
     val loginFlagSelectionQuery = "select loginflag from " +
         db + "." + table + " " +
         "where uuid = '" + stringUuid + "'"
@@ -490,5 +485,13 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
 
   companion object {
     private val config = SeichiAssist.seichiAssistConfig
+  }
+}
+
+inline fun ResultSet.recordIteration(operation: ResultSet.() -> Unit) {
+  use {
+    while (next()) {
+      operation()
+    }
   }
 }
