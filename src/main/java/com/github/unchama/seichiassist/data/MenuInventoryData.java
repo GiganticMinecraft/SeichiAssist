@@ -99,31 +99,28 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.STICK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STICK);
 		}else {
-			switch(playerdata.getGBstage()){
+			final Material m;
+			switch(playerdata.getGiganticBerserk().getStage()) {
 			case 0:
-				itemstack = new ItemStack(Material.WOOD_SWORD,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD_SWORD);
+				m = Material.WOOD_SWORD;
 				break;
 			case 1:
-				itemstack = new ItemStack(Material.STONE_SWORD,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_SWORD);
+				m = Material.STONE_SWORD;
 				break;
 			case 2:
-				itemstack = new ItemStack(Material.GOLD_SWORD,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_SWORD);
+				m = Material.GOLD_SWORD;
 				break;
 			case 3:
-				itemstack = new ItemStack(Material.IRON_SWORD,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_SWORD);
+				m = Material.IRON_SWORD;
 				break;
 			case 4:
-				itemstack = new ItemStack(Material.DIAMOND_SWORD,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_SWORD);
+				m = Material.DIAMOND_SWORD;
 				break;
 			default:
-				itemstack = new ItemStack(Material.STICK,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STICK);
+				m = Material.STICK;
 			}
+			itemstack = new ItemStack(m, 1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(m);
 		}
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk");
 
