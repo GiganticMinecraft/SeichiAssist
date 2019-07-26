@@ -546,14 +546,14 @@ class PlayerInventoryListener : Listener {
           if (itemmeta.displayName.contains(activeSkillPremiumEffect.getName())) {
             if (playerdata.activeskilldata.premiumeffectpoint < activeSkillPremiumEffect.usePoint) {
               player.sendMessage(ChatColor.DARK_RED.toString() + "プレミアムエフェクトポイントが足りません")
-              player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.5.toFloat())
+              player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.5f)
             } else {
               playerdata.activeskilldata.obtainedSkillPremiumEffects.add(activeSkillPremiumEffect)
               player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました")
               if (databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
                 player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。")
               }
-              player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
+              player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2f)
               playerdata.activeskilldata.premiumeffectpoint -= activeSkillPremiumEffect.usePoint
               player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player))
             }
