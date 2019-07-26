@@ -145,7 +145,7 @@ class SeichiAssist : JavaPlugin() {
     }
 
     //ランキングリストを最新情報に更新する
-    if (!databaseGateway.playerDataManipulator.updateAllRankingList()) {
+    if (!databaseGateway.playerDataManipulator.successRankingUpdate()) {
       logger.info("ランキングデータの作成に失敗しました")
       Bukkit.shutdown()
     }
@@ -225,10 +225,10 @@ class SeichiAssist : JavaPlugin() {
     lateinit var seichiAssistConfig: Config
 
     //Gachadataに依存するデータリスト
-    val gachadatalist: List<GachaPrize> = ArrayList()
+    val gachadatalist: MutableList<GachaPrize> = ArrayList()
 
     //(minestackに格納する)Gachadataに依存するデータリスト
-    var msgachadatalist: List<MineStackGachaData> = ArrayList()
+    var msgachadatalist: MutableList<MineStackGachaData> = ArrayList()
 
     //Playerdataに依存するデータリスト
     val playermap = HashMap<UUID, PlayerData>()
