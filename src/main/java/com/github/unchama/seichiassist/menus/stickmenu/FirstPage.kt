@@ -617,12 +617,12 @@ private object FirstPage: Menu {
 
       val iconItemStack = run {
         val breakNumRequiredToNextStarLevel =
-            (playerData.starlevel_Break.toLong() + 1) * 87115000 - playerData.totalbreaknum
+            (playerData.starLevels.fromBreakAmount.toLong() + 1) * 87115000 - playerData.totalbreaknum
 
         val lore = listOf(
-            "$RESET$AQUA${BOLD}整地量：☆${playerData.starlevel_Break}",
+            "$RESET$AQUA${BOLD}整地量：☆${playerData.starLevels.fromBreakAmount}",
             "$RESET${AQUA}次の☆まで：あと$breakNumRequiredToNextStarLevel",
-            "$RESET$GREEN$UNDERLINE${BOLD}合計：☆${playerData.starlevel}"
+            "$RESET$GREEN$UNDERLINE${BOLD}合計：☆${playerData.starLevels.sum()}"
         )
 
         IconItemStackBuilder(Material.GOLD_INGOT)
