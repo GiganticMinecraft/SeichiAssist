@@ -603,7 +603,8 @@ class PlayerInventoryListener : Listener {
         val itemmeta = itemstackcurrent.itemMeta
         val skilllevel: Int
         val skilltype: Int
-        if (itemmeta.displayName.contains("エビフライ・ドライブ")) {
+        val name = itemmeta.displayName
+        if (name.contains("エビフライ・ドライブ")) {
           skilllevel = 4
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -619,7 +620,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ホーリー・ショット")) {
+        } else if (name.contains("ホーリー・ショット")) {
           skilllevel = 5
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -635,7 +636,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ツァーリ・ボンバ")) {
+        } else if (name.contains("ツァーリ・ボンバ")) {
           skilllevel = 6
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -651,7 +652,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("アーク・ブラスト")) {
+        } else if (name.contains("アーク・ブラスト")) {
           skilllevel = 7
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -667,7 +668,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ファンタズム・レイ")) {
+        } else if (name.contains("ファンタズム・レイ")) {
           skilllevel = 8
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -683,7 +684,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("スーパー・ノヴァ")) {
+        } else if (name.contains("スーパー・ノヴァ")) {
           skilllevel = 9
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -704,7 +705,7 @@ class PlayerInventoryListener : Listener {
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("トム・ボウイ")) {
+        } else if (name.contains("トム・ボウイ")) {
           skilllevel = 4
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -720,7 +721,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("サンダー・ストーム")) {
+        } else if (name.contains("サンダー・ストーム")) {
           skilllevel = 5
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -736,7 +737,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("スターライト・ブレイカー")) {
+        } else if (name.contains("スターライト・ブレイカー")) {
           skilllevel = 6
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -752,7 +753,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("アース・ディバイド")) {
+        } else if (name.contains("アース・ディバイド")) {
           skilllevel = 7
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -768,7 +769,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ヘヴン・ゲイボルグ")) {
+        } else if (name.contains("ヘヴン・ゲイボルグ")) {
           skilllevel = 8
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -784,7 +785,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ディシジョン")) {
+        } else if (name.contains("ディシジョン")) {
           skilllevel = 9
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -805,7 +806,7 @@ class PlayerInventoryListener : Listener {
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("デュアル・ブレイク")) {
+        } else if (name.contains("デュアル・ブレイク")) {
           skilllevel = 1
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -818,7 +819,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("トリアル・ブレイク")) {
+        } else if (name.contains("トリアル・ブレイク")) {
           skilllevel = 2
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -834,7 +835,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("エクスプロージョン")) {
+        } else if (name.contains("エクスプロージョン")) {
           skilllevel = 3
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -850,7 +851,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ミラージュ・フレア")) {
+        } else if (name.contains("ミラージュ・フレア")) {
           skilllevel = 4
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -866,7 +867,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ドッ・カーン")) {
+        } else if (name.contains("ドッ・カーン")) {
           skilllevel = 5
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -882,7 +883,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ギガンティック・ボム")) {
+        } else if (name.contains("ギガンティック・ボム")) {
           skilllevel = 6
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -898,7 +899,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ブリリアント・デトネーション")) {
+        } else if (name.contains("ブリリアント・デトネーション")) {
           skilllevel = 7
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -914,7 +915,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("レムリア・インパクト")) {
+        } else if (name.contains("レムリア・インパクト")) {
           skilllevel = 8
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -930,7 +931,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("エターナル・ヴァイス")) {
+        } else if (name.contains("エターナル・ヴァイス")) {
           skilllevel = 9
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -951,7 +952,7 @@ class PlayerInventoryListener : Listener {
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ホワイト・ブレス")) {
+        } else if (name.contains("ホワイト・ブレス")) {
           skilllevel = 7
           skilltype = 4
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -967,7 +968,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("アブソリュート・ゼロ")) {
+        } else if (name.contains("アブソリュート・ゼロ")) {
           skilllevel = 8
           skilltype = 4
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -983,7 +984,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ダイアモンド・ダスト")) {
+        } else if (name.contains("ダイアモンド・ダスト")) {
           skilllevel = 9
           skilltype = 4
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -1004,7 +1005,7 @@ class PlayerInventoryListener : Listener {
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("ラヴァ・コンデンセーション")) {
+        } else if (name.contains("ラヴァ・コンデンセーション")) {
           skilllevel = 7
           skilltype = 5
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -1023,7 +1024,7 @@ class PlayerInventoryListener : Listener {
 						player.sendMessage(ChatColor.DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}*/
-        } else if (itemmeta.displayName.contains("モエラキ・ボールダーズ")) {
+        } else if (name.contains("モエラキ・ボールダーズ")) {
           skilllevel = 8
           skilltype = 5
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -1039,7 +1040,7 @@ class PlayerInventoryListener : Listener {
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("エルト・フェットル")) {
+        } else if (name.contains("エルト・フェットル")) {
           skilllevel = 9
           skilltype = 5
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
@@ -1060,9 +1061,9 @@ class PlayerInventoryListener : Listener {
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
-        } else if (itemmeta.displayName.contains("アサルト・アーマー")) {
+        } else if (name.contains("アサルト・アーマー")) {
 
-        } else if (itemmeta.displayName.contains("ヴェンダー・ブリザード")) {
+        } else if (name.contains("ヴェンダー・ブリザード")) {
           if (playerdata.activeskilldata.skillpoint < 110) {
             player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
