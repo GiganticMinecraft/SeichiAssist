@@ -173,10 +173,10 @@ class PlayerData(val player: Player) {
     //インベントリ共有ボタン連打防止用
     var shareinvcooldownflag: Boolean = false
 
-    var selectHomeNum: Int = 0
-    var setHomeNameNum: Int = 0
+    var selectHomeNum = 0
+    var setHomeNameNum = 0
     private val subHomeMap = HashMap<Int, SubHome>()
-    var isSubHomeNameChange: Boolean = false
+    var isSubHomeNameChange = false
 
     var nickName = PlayerNickName()
     //表示二つ名の指定用
@@ -335,7 +335,7 @@ class PlayerData(val player: Player) {
         this.inventory = Bukkit.createInventory(null, 9 * 1, DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
         this.rgnum = 0
         this.minestackflag = true
-        this.servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK)
+        this.servertick = player.getStatistic(Statistic.PLAY_ONE_TICK)
         this.playtick = 0
         this.dispkilllogflag = false
         this.dispworldguardlogflag = true
@@ -590,7 +590,7 @@ class PlayerData(val player: Player) {
 
     //総プレイ時間を更新する
     fun calcPlayTick(p: Player) {
-        val getservertick = p.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK)
+        val getservertick = p.getStatistic(Statistic.PLAY_ONE_TICK)
         //前回との差分を算出
         val getincrease = getservertick - servertick
         servertick = getservertick
