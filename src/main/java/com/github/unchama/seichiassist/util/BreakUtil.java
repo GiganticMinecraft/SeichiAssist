@@ -18,7 +18,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Dye;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -77,8 +76,9 @@ public final class BreakUtil {
 		return true;
 	}
 	private static boolean equalsIgnoreNameCaseWorld(String name) {
-		List<String> ignoreworldlist = SeichiAssist.Companion.getIgnoreWorldlist();
-		return ignoreworldlist.stream().anyMatch(s -> name.equalsIgnoreCase(s.toLowerCase()));
+		ManagedWorld world = ManagedWorld.Companion.fromName(name);
+
+		return world != null && ManagedWorldKt.getShouldMuteCoreProtect(world);
 	}
 	//ブロックを破壊する処理、ドロップも含む、統計増加も含む
 	public static void breakBlock(Player player, Block breakblock, Location centerofblock, ItemStack tool, boolean stepflag) {

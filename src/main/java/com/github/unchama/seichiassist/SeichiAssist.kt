@@ -19,7 +19,6 @@ import com.github.unchama.seichiassist.task.PlayerDataPeriodicRecalculation
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.ActionStatus.Fail
-import com.github.unchama.util.collection.ImmutableListFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -258,22 +257,6 @@ class SeichiAssist : JavaPlugin() {
 
     //プレイヤーがスキルで破壊するブロックリスト
     val allblocklist: MutableList<Block> = ArrayList()
-
-    //スキル破壊ブロック分のcoreprotectログ保存処理を除外するワールドリスト(coreprotectログデータ肥大化の軽減が目的)
-    //スキル自体はメインワールドと各整地ワールドのみ(world_SWで始まるワールドのみ)で発動する(ここの設定は無視する)
-    val ignoreWorldlist = ImmutableListFactory.of(
-        "world_SW", "world_SW_2", "world_SW_3", "world_SW_nether", "world_SW_the_end"
-    )
-
-    //保護を掛けて整地するワールドのリスト
-    val rgSeichiWorldlist = ImmutableListFactory.of(
-        "world_SW_2"
-    )
-
-    //整地ワールドのリスト(保護の有無は問わない)
-    val seichiWorldList = ImmutableListFactory.of(
-        "world_SW", "world_SW_2", "world_SW_3", "world_SW_nether", "world_SW_the_end"
-    )
 
     private fun creategachaminestacklist(): List<MineStackObj> {
       val minestacklist = ArrayList<MineStackObj>()

@@ -9,10 +9,12 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
+import com.github.unchama.seichiassist.ManagedWorld
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.isRegionSeichi
+import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.targetedeffect.ops.asSequentialEffect
-import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.util.data.merge
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import net.md_5.bungee.api.ChatColor
@@ -63,7 +65,7 @@ object RmpCommand {
         val world = context.args.parsed[0] as World
         val days = context.args.parsed[1] as Int
 
-        if (!SeichiAssist.rgSeichiWorldlist.contains(world.name)) {
+        if (ManagedWorld.fromBukkitWorld(world)?.isRegionSeichi == false) {
           return@execution "removeコマンドは保護をかけて整地する整地ワールドでのみ使用出来ます".asMessageEffect()
         }
 
