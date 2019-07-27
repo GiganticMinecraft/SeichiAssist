@@ -113,7 +113,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
     stmt.executeUpdate(removeCommand)
 
     for (activeSkillEffect in activeSkillEffects) {
-      val effectName = activeSkillEffect.getsqlName()
+      val effectName = activeSkillEffect.sql_name
       val isEffectUnlocked = obtainedEffects.contains(activeSkillEffect)
 
       if (isEffectUnlocked) {

@@ -15,10 +15,11 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class BlizzardTask(private val player: Player, private val playerdata: PlayerData, private val tool: ItemStack, //破壊するブロックリスト
-                   private val blocks: List<Block>, //スキルで破壊される相対座標
+class BlizzardTask(private val player: Player, private val playerdata: PlayerData,
+                   private val tool: ItemStack,
+                   private val blocks: List<Block>,
                    private val start: Coordinate,
-                   private val end: Coordinate, //スキルが発動される中心位置
+                   private val end: Coordinate,
                    private val droploc: Location) : AbstractRoundedTask() {
   //音の聞こえる距離
   private var soundRadius: Int = 0

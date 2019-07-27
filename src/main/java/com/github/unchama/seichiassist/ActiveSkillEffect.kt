@@ -7,34 +7,37 @@ import com.github.unchama.seichiassist.effect.breaking.BlizzardTask
 import com.github.unchama.seichiassist.effect.breaking.ExplosionTask
 import com.github.unchama.seichiassist.effect.breaking.MeteoTask
 import com.github.unchama.seichiassist.effect.toXYZTuple
-import com.okkero.skedule.BukkitSchedulerController
-import com.okkero.skedule.SynchronizationContext
-import com.okkero.skedule.schedule
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.bukkit.*
+import org.bukkit.ChatColor
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-enum class ActiveSkillEffect constructor(val num: Int, private val sql_name: String, val desc: String, val explain: String, val usePoint: Int, val material: Material) {
+enum class ActiveSkillEffect constructor(val num: Int, val sql_name: String, val desc: String, val explain: String, val usePoint: Int, val material: Material) {
 
   EXPLOSION(1, "ef_explosion", ChatColor.RED.toString() + "エクスプロージョン", "単純な爆発", 50, Material.TNT),
   BLIZZARD(2, "ef_blizzard", ChatColor.AQUA.toString() + "ブリザード", "凍らせる", 70, Material.PACKED_ICE),
   METEO(3, "ef_meteo", ChatColor.DARK_RED.toString() + "メテオ", "隕石を落とす", 100, Material.FIREBALL);
 
   internal var plugin = SeichiAssist.instance
-  fun getsqlName(): String {
-    return this.sql_name
-  }
 
   fun getName(): String {
     return desc
   }
 
   //エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
-  fun runBreakEffect(player: Player, playerdata: PlayerData, tool: ItemStack, breaklist: List<Block>, start: Coordinate, end: Coordinate, standard: Location) {
+  fun runBreakEffect(player: Player,
+                     playerdata: PlayerData,
+                     tool: ItemStack,
+                     breaklist: List<Block>,
+                     start: Coordinate, end: Coordinate,
+                     standard: Location) {
     when (this) {
       EXPLOSION -> ExplosionTask(player, playerdata, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTaskLater(plugin, 0)
       BLIZZARD -> if (playerdata.activeskilldata.skillnum < 3) {
@@ -63,11 +66,10 @@ enum class ActiveSkillEffect constructor(val num: Int, private val sql_name: Str
       METEO -> ArrowEffects.singleArrowMeteoEffect
     }
 
-    async {
-      // https://discordapp.com/channels/237758724121427969/565935041574731807/589097781088616500
+    GlobalScope.launch(Schedulers.async) {
       repeat (100) {
-        waitFor(1)
-        GlobalScope.launch { effect.runFor(player) }
+        effect.runFor(player)
+        delay(50)
       }
     }
   }
@@ -82,13 +84,7 @@ enum class ActiveSkillEffect constructor(val num: Int, private val sql_name: Str
     }
   }
 
-  private fun async(action: suspend BukkitSchedulerController.() -> Unit) {
-    Bukkit.getScheduler().schedule(SeichiAssist.instance, SynchronizationContext.ASYNC, action)
-  }
-
   companion object {
-
-
     fun getNamebyNum(effectnum: Int): String {
       val skilleffect = values()
       return Arrays.stream(skilleffect)
