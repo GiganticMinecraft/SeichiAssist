@@ -20,9 +20,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
  */
 public class PlayerDataUpdateOnJoin extends BukkitRunnable{
 
-	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
-
-	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
+	private HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 
 	String name;
 	Player p;

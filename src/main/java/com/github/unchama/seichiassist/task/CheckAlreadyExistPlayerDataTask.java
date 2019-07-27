@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.database.DatabaseConstants;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,15 +25,15 @@ import com.github.unchama.seichiassist.data.PlayerData;
  */
 public class CheckAlreadyExistPlayerDataTask extends BukkitRunnable{
 
-	private SeichiAssist plugin = SeichiAssist.instance;
-	private Config config = SeichiAssist.config;
+	private SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	private Config config = SeichiAssist.Companion.getSeichiAssistConfig();
 
-	private DatabaseGateway databaseGateway = SeichiAssist.databaseGateway;
+	private DatabaseGateway databaseGateway = SeichiAssist.Companion.getDatabaseGateway();
 	private Connection con = databaseGateway.con;
-	private final String table = SeichiAssist.PLAYERDATA_TABLENAME;
+	private final String table = DatabaseConstants.PLAYERDATA_TABLENAME;
 	private String db = config.getDB();
 
-	private HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	private HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 
 	private PlayerData playerData;
 	private String name;

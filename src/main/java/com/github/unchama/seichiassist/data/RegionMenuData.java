@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +35,7 @@ import java.util.Map;
 public class RegionMenuData {
 	static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
 	static WorldEditPlugin We = ExternalPlugins.getWorldEdit();
-	static Config config = SeichiAssist.config;
+	static Config config = SeichiAssist.Companion.getSeichiAssistConfig();
 	static NumberFormat nfNum = NumberFormat.getNumberInstance();
 
 	/**
@@ -89,7 +89,7 @@ public class RegionMenuData {
 		}
 
 		if(player.hasPermission("worldguard.region.claim")){
-			PlayerData playerdata = SeichiAssist.playermap.get(player.getUniqueId());
+			PlayerData playerdata = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 			lore1.addAll(ImmutableListFactory.of(ChatColor.DARK_GRAY + "Y座標は自動で全範囲保護されます"
 					, ChatColor.RESET + "" + ChatColor.YELLOW + "" + "A new region has been claimed"
 					, ChatColor.RESET + "" + ChatColor.YELLOW + "" + "named '" + player.getName() + "_" + playerdata.getRgnum() + "'."
@@ -159,7 +159,7 @@ public class RegionMenuData {
 	 * @return
 	 */
 	public static Inventory getGridWorldGuardMenu(Player player) {
-		PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
+		PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		Map<DirectionType, Integer> unitMap = playerData.getUnitMap();
 		Map<DirectionType, String> directionMap = getPlayerDirectionString(player);
 
@@ -291,7 +291,7 @@ public class RegionMenuData {
 
 	private static Map<DirectionType, String> getPlayerDirectionString(Player player) {
 		double rotation = (player.getLocation().getYaw() + 180) % 360;
-		Map<DirectionType, String> directionMap = new HashMap<>();
+		Map<DirectionType, String> directionMap = new EnumMap<>(DirectionType.class);
 
 		if (rotation < 0) {
 			rotation += 360;
@@ -372,7 +372,7 @@ public class RegionMenuData {
 	 * @return メニューアイコン
 	 */
 	private static ItemStack getGridtempMenuicon(int i, Player player) {
-		PlayerData playerData = SeichiAssist.playermap.get(player.getUniqueId());
+		PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		@Nullable GridTemplate template = playerData.getTemplateMap().get(i);
 
 		if (template != null) {

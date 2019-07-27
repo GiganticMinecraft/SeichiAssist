@@ -43,7 +43,7 @@ public class WorldRegenListener implements Listener {
 
 
 	public WorldRegenListener() {
-		Config config = SeichiAssist.config;
+		Config config = SeichiAssist.Companion.getSeichiAssistConfig();
 		this.roadY = config.getRoadY();
 		this.roadLength = config.getRoadLength();
 		this.spaceHeight = config.getSpaceHeight();

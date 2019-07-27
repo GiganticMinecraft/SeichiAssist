@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.PlayerData;
 
 public class CoolDownTask extends BukkitRunnable{
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	private Player player;
 	UUID uuid;
 	PlayerData playerdata;
@@ -90,7 +90,7 @@ public class CoolDownTask extends BukkitRunnable{
 			}
 		}
 		//デバッグ用
-		if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getDEBUG()){
 			player.sendMessage("クールダウンタイム終了");
 		}
 	}

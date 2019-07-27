@@ -1,21 +1,31 @@
 package com.github.unchama.seichiassist.data
 
-import com.github.unchama.messaging.MessageToSender
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.seichiassist.LevelThresholds
+import com.github.unchama.seichiassist.ManagedWorld
+import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.Worlds
+import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
+import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
-import com.github.unchama.seichiassist.minestack.MineStackHistoryData
 import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.MebiusTask
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
+import com.github.unchama.seichiassist.util.exp.ExperienceManager
+import com.github.unchama.targetedeffect.*
+import com.github.unchama.targetedeffect.ops.plus
+import com.github.unchama.targetedeffect.player.asTargetedEffect
+import com.github.unchama.util.newChestInventory
 import org.bukkit.*
+import org.bukkit.ChatColor.*
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
@@ -23,6 +33,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.experimental.and
 import kotlin.experimental.or
+import kotlin.math.roundToInt
 
 
 class PlayerData(val player: Player) {
@@ -33,8 +44,9 @@ class PlayerData(val player: Player) {
     var name: String
     //UUID
     var uuid: UUID
-    //エフェクトのフラグ
-    var effectflag: Int = 0
+
+    val fastDiggingEffectSuppressor = FastDiggingEffectSuppressor()
+
     //内訳メッセージを出すフラグ
     var messageflag: Boolean = false
     //1分間のデータを保存するincrease:１分間の採掘量
@@ -52,13 +64,23 @@ class PlayerData(val player: Player) {
     //前回の採掘速度上昇レベルを格納
     var lastminespeedlv: Int = 0
     //持ってるポーションエフェクト全てを格納する．
-    var effectdatalist: MutableList<EffectData>
+    var effectdatalist: MutableList<FastDiggingEffect>
     //現在のプレイヤーレベル
     var level: Int = 0
     //詫び券をあげる数
     var numofsorryforbug: Int = 0
     //拡張インベントリ
     var inventory: Inventory
+        get() {
+            // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
+            if (field.size < pocketSize) {
+                field = Bukkit.getServer()
+                    .createInventory(null, pocketSize, "$DARK_PURPLE${BOLD}4次元ポケット")
+                    .also { field.forEachIndexed(it::setItem) }
+            }
+
+            return field
+        }
     //ワールドガード保護自動設定用
     var rgnum: Int = 0
 
@@ -80,13 +102,20 @@ class PlayerData(val player: Player) {
     var servertick: Int = 0
     //プレイ時間
     var playtick: Int = 0
+
     //キルログ表示トグル
+    @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayDeathMessages"))
     var dispkilllogflag: Boolean = false
+
     //全体通知音消音トグル
+    @Deprecated("BroadcastMutingSettingsを使え。")
     var everysoundflag: Boolean = false
     //全体メッセージ非表示トグル
+    @Deprecated("BroadcastMutingSettingsを使え。")
     var everymessageflag: Boolean = false
+
     //ワールドガード保護ログ表示トグル
+    @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayWorldGuardLogs"))
     var dispworldguardlogflag: Boolean = false
     //複数種類破壊トグル
     var multipleidbreakflag: Boolean = false
@@ -188,7 +217,7 @@ class PlayerData(val player: Player) {
     private var canCreateRegion: Boolean = false
     var unitPerClick: Int = 0
         private set
-    var templateMap: Map<Int, GridTemplate>? = null
+    var templateMap: MutableMap<Int, GridTemplate>? = null
 
     //投票妖精関連
     var usingVotingFairy: Boolean = false
@@ -213,7 +242,7 @@ class PlayerData(val player: Player) {
     var hasChocoGave: Boolean = false
 
     //MineStackの履歴
-    var hisotryData: MineStackHistoryData
+    var hisotryData: MineStackUsageHistory
     //MineStack検索機能使用中かどうか
     var isSearching: Boolean = false
     //MineStack検索保存用Map
@@ -231,22 +260,15 @@ class PlayerData(val player: Player) {
         get() = SeichiAssist.instance.server.getPlayer(uuid) == null
     //四次元ポケットのサイズを取得
     val pocketSize: Int
-        get() = if (level < 6) {
-            9 * 3
-        } else if (level < 16) {
-            9 * 3
-        } else if (level < 26) {
-            9 * 3
-        } else if (level < 36) {
-            9 * 3
-        } else if (level < 46) {
-            9 * 3
-        } else if (level < 56) {
-            9 * 4
-        } else if (level < 66) {
-            9 * 5
-        } else {
-            9 * 6
+        get() = when {
+          level < 6 -> 9 * 3
+          level < 16 -> 9 * 3
+          level < 26 -> 9 * 3
+          level < 36 -> 9 * 3
+          level < 46 -> 9 * 3
+          level < 56 -> 9 * 4
+          level < 66 -> 9 * 5
+          else -> 9 * 6
         }
 
     val subHomeEntries: Set<Map.Entry<Int, SubHome>>
@@ -273,7 +295,7 @@ class PlayerData(val player: Player) {
         this.loaded = false
         this.name = Util.getName(player)
         this.uuid = player.uniqueId
-        this.effectflag = 0
+        this.fastDiggingEffectSuppressor.internalValue = 0
         this.messageflag = false
         //this.minuteblock = new MineBlock();
         this.halfhourblock = MineBlock()
@@ -286,9 +308,8 @@ class PlayerData(val player: Player) {
         this.level = 1
         this.mebius = MebiusTask(this)
         this.numofsorryforbug = 0
-        this.inventory = Bukkit.createInventory(null, 9 * 1, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "4次元ポケット")
+        this.inventory = newChestInventory(row = 1, title = DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
         this.rgnum = 0
-        this.minestack = MineStack()
         this.minestackflag = true
         this.servertick = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK)
         this.playtick = 0
@@ -300,7 +321,7 @@ class PlayerData(val player: Player) {
         this.idletime = 0
         this.staticdata = ArrayList()
         this.totalbreaknum = 0
-        for (m in SeichiAssist.materiallist) {
+        for (m in MaterialSets.materials) {
             //統計にないため除外
             if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
                 staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m))
@@ -363,7 +384,7 @@ class PlayerData(val player: Player) {
 
         this.hasChocoGave = false
 
-        this.hisotryData = MineStackHistoryData()
+        this.hisotryData = MineStackUsageHistory()
         this.isSearching = false
         this.indexMap = HashMap()
 
@@ -411,18 +432,18 @@ class PlayerData(val player: Player) {
     fun NotifySorryForBug(player: Player) {
         if (numofsorryforbug > 0) {
             player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-            player.sendMessage(ChatColor.GREEN.toString() + "運営チームから" + numofsorryforbug + "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "が届いています！\n木の棒メニューから受け取ってください")
+            player.sendMessage(GREEN.toString() + "運営チームから" + numofsorryforbug + "枚の" + GOLD + "ガチャ券" + WHITE + "が届いています！\n木の棒メニューから受け取ってください")
         }
     }
 
     //エフェクトデータのdurationを60秒引く
     fun calcEffectData() {
         //tmplistを作成
-        val tmplist = ArrayList<EffectData>()
+        val tmplist = ArrayList<FastDiggingEffect>()
         //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
         for (ed in effectdatalist) {
             ed.duration -= 1200
-            tmplist.add(ed)
+            tmplist += ed
         }
         //tmplistのdurationが3秒以下（60tick）のものはeffectdatalistから削除
         for (ed in tmplist) {
@@ -451,7 +472,7 @@ class PlayerData(val player: Player) {
      */
     fun setLevelandTotalbreaknum(_level: Int) {
         level = _level
-        totalbreaknum = SeichiAssist.levellist[_level - 1].toLong()
+        totalbreaknum = LevelThresholds.levelExpThresholds[_level - 1].toLong()
     }
 
 
@@ -462,21 +483,21 @@ class PlayerData(val player: Player) {
         //表示を追加する処理
         if (displayTitle1No == 0 && displayTitle2No == 0 && displayTitle3No == 0) {
             if (starlevel <= 0) {
-                displayname = "[ Lv" + level + " ]" + displayname + ChatColor.WHITE
+                displayname = "[ Lv" + level + " ]" + displayname + WHITE
             } else {
-                displayname = "[Lv" + level + "☆" + starlevel + "]" + displayname + ChatColor.WHITE
+                displayname = "[Lv" + level + "☆" + starlevel + "]" + displayname + WHITE
             }
         } else {
-            val displayTitle1 = SeichiAssist.config.getTitle1(displayTitle1No)
-            val displayTitle2 = SeichiAssist.config.getTitle2(displayTitle2No)
-            val displayTitle3 = SeichiAssist.config.getTitle3(displayTitle3No)
-            displayname = "[" + displayTitle1 + displayTitle2 + displayTitle3 + "]" + displayname + ChatColor.WHITE
+            val displayTitle1 = SeichiAssist.seichiAssistConfig.getTitle1(displayTitle1No)
+            val displayTitle2 = SeichiAssist.seichiAssistConfig.getTitle2(displayTitle2No)
+            val displayTitle3 = SeichiAssist.seichiAssistConfig.getTitle3(displayTitle3No)
+            displayname = "[" + displayTitle1 + displayTitle2 + displayTitle3 + "]" + displayname + WHITE
         }
         //放置時に色を変える
         if (idletime >= 10) {
-            displayname = ChatColor.DARK_GRAY.toString() + displayname
+            displayname = DARK_GRAY.toString() + displayname
         } else if (idletime >= 3) {
-            displayname = ChatColor.GRAY.toString() + displayname
+            displayname = GRAY.toString() + displayname
         }
 
         p.displayName = displayname
@@ -489,22 +510,22 @@ class PlayerData(val player: Player) {
         //現在のランクを取得
         var i = level
         //既にレベル上限に達していたら終了
-        if (i >= SeichiAssist.levellist.size) {
+        if (i >= LevelThresholds.levelExpThresholds.size) {
             return
         }
         //ランクが上がらなくなるまで処理
-        while (SeichiAssist.levellist[i] <= totalbreaknum && i + 1 <= SeichiAssist.levellist.size) {
+        while (LevelThresholds.levelExpThresholds[i] <= totalbreaknum && i + 1 <= LevelThresholds.levelExpThresholds.size) {
 
             //レベルアップ時のメッセージ
-            p.sendMessage(ChatColor.GOLD.toString() + "ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv(" + i + ")→Lv(" + (i + 1) + ")】")
+            p.sendMessage(GOLD.toString() + "ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv(" + i + ")→Lv(" + (i + 1) + ")】")
             //レベルアップイベント着火
             Bukkit.getPluginManager().callEvent(SeichiLevelUpEvent(p, this, i + 1))
             //レベルアップ時の花火の打ち上げ
             val loc = p.location
             Util.launchFireWorks(loc)
-            val lvmessage = SeichiAssist.config.getLvMessage(i + 1)
-            if (!lvmessage.isEmpty()) {
-                p.sendMessage(ChatColor.AQUA.toString() + lvmessage)
+            val lvmessage = SeichiAssist.seichiAssistConfig.getLvMessage(i + 1)
+            if (lvmessage.isNotEmpty()) {
+                p.sendMessage(AQUA.toString() + lvmessage)
             }
             i++
             if (activeskilldata.mana.isLoaded) {
@@ -512,7 +533,7 @@ class PlayerData(val player: Player) {
                 activeskilldata.mana.onLevelUp(p, i)
             }
             //レベル上限に達したら終了
-            if (i >= SeichiAssist.levellist.size) {
+            if (i >= LevelThresholds.levelExpThresholds.size) {
                 break
             }
         }
@@ -525,7 +546,6 @@ class PlayerData(val player: Player) {
         var i = starlevel
         val iB = starlevel_Break
         val iT = starlevel_Time
-        val iE = starlevel_Event
         //処理後のレベルを保存する入れ物
         val i2: Int
         val iB2 = (totalbreaknum / 87115000).toInt()
@@ -534,7 +554,7 @@ class PlayerData(val player: Player) {
 
         //整地量の確認
         if (iB < iB2) {
-            p.sendMessage(ChatColor.GOLD.toString() + "ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆(" + iB + ")→☆(" + iB2 + ")】")
+            p.sendMessage(GOLD.toString() + "ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆(" + iB + ")→☆(" + iB2 + ")】")
             starlevel_Break = iB2
         }
 
@@ -553,7 +573,7 @@ class PlayerData(val player: Player) {
         //合計値の確認
         i2 = iB2 + iT2 + iE2
         if (i < i2) {
-            p.sendMessage(ChatColor.GOLD.toString() + "★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆(" + i + ")→☆(" + i2 + ")】")
+            p.sendMessage(GOLD.toString() + "★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆(" + i + ")→☆(" + i2 + ")】")
             starlevel = i2
         }
     }
@@ -572,7 +592,7 @@ class PlayerData(val player: Player) {
     fun calcMineBlock(p: Player): Int {
         var i = 0
         var sum = 0.0
-        for (m in SeichiAssist.materiallist) {
+        for (m in MaterialSets.materials) {
             if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
                 val getstat = p.getStatistic(Statistic.MINE_BLOCK, m)
                 val getincrease = getstat - staticdata[i]
@@ -587,11 +607,11 @@ class PlayerData(val player: Player) {
             }
         }
         //double値を四捨五入し、整地量に追加する整数xを出す
-        val x = Math.round(sum)
+        val x = sum.roundToInt()
 
         //xを整地量に追加
         totalbreaknum += x
-        return x.toInt()
+        return x
     }
 
     //ブロック別整地数反映量の調節
@@ -630,7 +650,7 @@ class PlayerData(val player: Player) {
         } else {
             val worldName = p.world.name
             val sw_mining_coefficient = 0.8
-            if (worldName.equals(Worlds.WORLD_SW.alphabetName, ignoreCase = true)) {
+            if (worldName.equals(ManagedWorld.WORLD_SW.alphabetName, ignoreCase = true)) {
                 result *= sw_mining_coefficient
             }
         }
@@ -672,34 +692,24 @@ class PlayerData(val player: Player) {
 
     //パッシブスキルの獲得量表示
     fun dispPassiveExp(): Double {
-        return if (level < 8) {
-            0.0
-        } else if (level < 18) {
-            SeichiAssist.config.getDropExplevel(1)
-        } else if (level < 28) {
-            SeichiAssist.config.getDropExplevel(2)
-        } else if (level < 38) {
-            SeichiAssist.config.getDropExplevel(3)
-        } else if (level < 48) {
-            SeichiAssist.config.getDropExplevel(4)
-        } else if (level < 58) {
-            SeichiAssist.config.getDropExplevel(5)
-        } else if (level < 68) {
-            SeichiAssist.config.getDropExplevel(6)
-        } else if (level < 78) {
-            SeichiAssist.config.getDropExplevel(7)
-        } else if (level < 88) {
-            SeichiAssist.config.getDropExplevel(8)
-        } else if (level < 98) {
-            SeichiAssist.config.getDropExplevel(9)
-        } else {
-            SeichiAssist.config.getDropExplevel(10)
+        return when {
+          level < 8 -> 0.0
+          level < 18 -> SeichiAssist.seichiAssistConfig.getDropExplevel(1)
+          level < 28 -> SeichiAssist.seichiAssistConfig.getDropExplevel(2)
+          level < 38 -> SeichiAssist.seichiAssistConfig.getDropExplevel(3)
+          level < 48 -> SeichiAssist.seichiAssistConfig.getDropExplevel(4)
+          level < 58 -> SeichiAssist.seichiAssistConfig.getDropExplevel(5)
+          level < 68 -> SeichiAssist.seichiAssistConfig.getDropExplevel(6)
+          level < 78 -> SeichiAssist.seichiAssistConfig.getDropExplevel(7)
+          level < 88 -> SeichiAssist.seichiAssistConfig.getDropExplevel(8)
+          level < 98 -> SeichiAssist.seichiAssistConfig.getDropExplevel(9)
+          else -> SeichiAssist.seichiAssistConfig.getDropExplevel(10)
         }
     }
 
     //サブホームの位置をセットする
     fun setSubHomeLocation(location: Location, subHomeIndex: Int) {
-        if ((subHomeIndex >= 0) and (subHomeIndex < SeichiAssist.config.subHomeMax)) {
+        if ((subHomeIndex >= 0) and (subHomeIndex < SeichiAssist.seichiAssistConfig.subHomeMax)) {
             val currentSubHome = this.subHomeMap[subHomeIndex]
             val currentSubHomeName = currentSubHome?.name
 
@@ -708,7 +718,7 @@ class PlayerData(val player: Player) {
     }
 
     fun setSubHomeName(name: String?, subHomeIndex: Int) {
-        if ((subHomeIndex >= 0) and (subHomeIndex < SeichiAssist.config.subHomeMax)) {
+        if ((subHomeIndex >= 0) and (subHomeIndex < SeichiAssist.seichiAssistConfig.subHomeMax)) {
             val currentSubHome = this.subHomeMap[subHomeIndex]
             if (currentSubHome != null) {
                 this.subHomeMap[subHomeIndex] = SubHome(currentSubHome.location, name)
@@ -757,7 +767,7 @@ class PlayerData(val player: Player) {
     }
 
     private fun loadTotalExp() {
-        val server_num = SeichiAssist.config.serverNum
+        val server_num = SeichiAssist.seichiAssistConfig.serverNum
         //経験値が統合されてない場合は統合する
         if (expmarge.toInt() != 0x07 && server_num >= 1 && server_num <= 3) {
             if (expmarge and (0x01 shl server_num - 1).toByte() == 0.toByte()) {
@@ -837,33 +847,31 @@ class PlayerData(val player: Player) {
     }
 
     fun toggleUnitPerGrid() {
-        if (this.unitPerClick == 1) {
-            this.unitPerClick = 10
-        } else if (this.unitPerClick == 10) {
-            this.unitPerClick = 100
-        } else if (this.unitPerClick == 100) {
-            this.unitPerClick = 1
+        when {
+          this.unitPerClick == 1 -> this.unitPerClick = 10
+          this.unitPerClick == 10 -> this.unitPerClick = 100
+          this.unitPerClick == 100 -> this.unitPerClick = 1
         }
     }
 
     fun VotingFairyTimeToString(): String {
         val cal = this.VotingFairyStartTime
         var s = ""
-        if (this.VotingFairyStartTime == null) {
+        s += if (this.VotingFairyStartTime == null) {
             //設定されてない場合
-            s += ",,,,,"
+            ",,,,,"
         } else {
             //設定されてる場合
             val date = cal!!.time
             val format = SimpleDateFormat("yyyy,MM,dd,HH,mm,")
-            s += format.format(date)
+            format.format(date)
         }
         return s
     }
 
     fun SetVotingFairyTime(str: String, p: Player) {
         val s = str.split(",".toRegex()).toTypedArray()
-        if (s[0].length > 0 && s[1].length > 0 && s[2].length > 0 && s[3].length > 0 && s[4].length > 0) {
+        if (s[0].isNotEmpty() && s[1].isNotEmpty() && s[2].isNotEmpty() && s[3].isNotEmpty() && s[4].isNotEmpty()) {
             val startTime = GregorianCalendar(Integer.parseInt(s[0]), Integer.parseInt(s[1]) - 1, Integer.parseInt(s[2]), Integer.parseInt(s[3]), Integer.parseInt(s[4]))
 
             var min = Integer.parseInt(s[4]) + 1
@@ -886,9 +894,9 @@ class PlayerData(val player: Player) {
 
     fun isVotingFairy(p: Player) {
         //効果は継続しているか
-        if (this.usingVotingFairy && Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime) == false) {
+        if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime)) {
             this.usingVotingFairy = false
-            p.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "妖精は何処かへ行ってしまったようだ...")
+            p.sendMessage(LIGHT_PURPLE.toString() + "" + BOLD + "妖精は何処かへ行ってしまったようだ...")
         } else if (this.usingVotingFairy) {
             VotingFairyTask.speak(p, "おかえり！" + p.name, true)
         }
@@ -899,11 +907,11 @@ class PlayerData(val player: Player) {
 
         //負数(入力ミスによるやり直し中プレイヤーがオンラインだった場合)の時
         if (addMana < 0) {
-            p.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "入力者のミスによって得た不正なマナを" + -10 * addMana + "分減少させました.")
-            p.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "申し訳ございません.")
+            p.sendMessage(GREEN.toString() + "" + BOLD + "入力者のミスによって得た不正なマナを" + -10 * addMana + "分減少させました.")
+            p.sendMessage(GREEN.toString() + "" + BOLD + "申し訳ございません.")
         } else {
-            p.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "運営からあなたの整地鯖への貢献報酬として")
-            p.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "マナの上限値が" + 10 * addMana + "上昇しました．(永久)")
+            p.sendMessage(GREEN.toString() + "" + BOLD + "運営からあなたの整地鯖への貢献報酬として")
+            p.sendMessage(GREEN.toString() + "" + BOLD + "マナの上限値が" + 10 * addMana + "上昇しました．(永久)")
         }
         this.added_mana += addMana
 
@@ -911,42 +919,26 @@ class PlayerData(val player: Player) {
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun toggleEffect(): MessageToSender {
-        effectflag = (effectflag + 1) % 6
-
-        val responseMessage = when (effectflag) {
-            0 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(無制限)"
-            1 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(127制限)"
-            2 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(200制限)"
-            3 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(400制限)"
-            4 -> "${ChatColor.GREEN}採掘速度上昇効果:ON(600制限)"
-            else -> "${ChatColor.GREEN}採掘速度上昇効果:OFF"
-        }
-
-        return responseMessage.asResponseToSender()
-    }
-
-    @Suppress("RedundantSuspendModifier")
-    suspend fun toggleMessageFlag(): MessageToSender {
+    suspend fun toggleMessageFlag(): TargetedEffect<Player> {
         messageflag = !messageflag
 
         val responseMessage = if (messageflag) {
-            "${ChatColor.GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
+            "${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
         } else {
-            "${ChatColor.GREEN}内訳表示:OFF"
+            "${GREEN}内訳表示:OFF"
         }
 
-        return responseMessage.asResponseToSender()
+        return responseMessage.asMessageEffect()
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend fun toggleHalfBreakFlag(): MessageToSender {
+    suspend fun toggleHalfBreakFlag(): TargetedEffect<Player> {
         halfBreakFlag = !halfBreakFlag
 
-        val newStatus = if (halfBreakFlag) "${ChatColor.GREEN}破壊可能" else "${ChatColor.RED}破壊不可能"
-        val responseMessage = "現在ハーフブロックは$newStatus${ChatColor.RESET}です."
+        val newStatus = if (halfBreakFlag) "${GREEN}破壊可能" else "${RED}破壊不可能"
+        val responseMessage = "現在ハーフブロックは$newStatus${RESET}です."
 
-        return responseMessage.asResponseToSender()
+        return responseMessage.asMessageEffect()
     }
 
     /**
@@ -957,14 +949,14 @@ class PlayerData(val player: Player) {
      * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
      */
     @Suppress("RedundantSuspendModifier")
-    suspend fun tryForcefullyUnlockAchievement(number: Int): MessageToSender =
+    suspend fun tryForcefullyUnlockAchievement(number: Int): TargetedEffect<CommandSender> =
         if (!TitleFlags.get(number)) {
             TitleFlags.set(number)
             Bukkit.getPlayer(uuid)?.sendMessage("運営チームよりNo${number}の実績が配布されました。")
 
-            "$name に実績No. $number を${ChatColor.GREEN}付与${ChatColor.RESET}しました。".asResponseToSender()
+            "$name に実績No. $number を${GREEN}付与${RESET}しました。".asMessageEffect()
         } else {
-            "${ChatColor.GRAY}$name は既に実績No. $number を獲得しています。".asResponseToSender()
+            "$GRAY$name は既に実績No. $number を獲得しています。".asMessageEffect()
         }
 
     /**
@@ -972,23 +964,45 @@ class PlayerData(val player: Player) {
      * 実績剥奪の通知はプレーヤーには行われない。
      *
      * @param number 解除対象の実績番号
-     * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
+     * @return この作用の実行者に向け操作の結果を記述する[TargetedEffect]
      */
     @Suppress("RedundantSuspendModifier")
-    suspend fun forcefullyDepriveAchievement(number: Int): MessageToSender =
+    suspend fun forcefullyDepriveAchievement(number: Int): TargetedEffect<CommandSender> =
         if (!TitleFlags.get(number)) {
             TitleFlags.set(number, false)
 
-            "$name から実績No. $number を${ChatColor.RED}剥奪${ChatColor.GREEN}しました。".asResponseToSender()
+            "$name から実績No. $number を${RED}剥奪${GREEN}しました。".asMessageEffect()
         } else {
-            "${ChatColor.GRAY}$name は実績No. $number を獲得していません。".asResponseToSender()
+            "$GRAY$name は実績No. $number を獲得していません。".asMessageEffect()
         }
 
+    /**
+     * プレーヤーに付与されるべき採掘速度上昇効果を適用する[TargetedEffect].
+     */
+    suspend fun computeFastDiggingEffect(): TargetedEffect<Player> {
+        val activeEffects = effectdatalist.toList()
+
+        val amplifierSum = activeEffects.map { it.amplifier }.sum()
+        val maxDuration = activeEffects.map { it.duration }.max() ?: 0
+        val computedAmplifier = Math.floor(amplifierSum - 1).toInt()
+
+        val maxSpeed: Int = fastDiggingEffectSuppressor.maximumAllowedEffectAmplifier()
+
+        // 実際に適用されるeffect量
+        val amplifier = Math.min(computedAmplifier, maxSpeed)
+
+        return if (amplifier >= 0) {
+            PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
+        } else {
+            // 実際のeffect値が0より小さいときはeffectを適用しない
+            PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
+        }.asTargetedEffect()
+    }
 
     /**
      * 整地量を表すEXPパーを表示なら非表示に,非表示なら表示に切り替えます.
      */
-    fun toggleExpBarVisibility() {
+    fun toggleExpBarVisibility__old() {
         this.expbar.isVisible = !this.expbar.isVisible
     }
 
@@ -998,15 +1012,54 @@ class PlayerData(val player: Player) {
     fun notifyExpBarVisibility() {
         if (this.expbar.isVisible) {
             this.player.playSound(this.player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-            this.player.sendMessage("${ChatColor.GREEN}整地量バー表示")
+            this.player.sendMessage("${GREEN}整地量バー表示")
         } else {
             this.player.playSound(this.player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
-            this.player.sendMessage("${ChatColor.RED}整地量バー非表示")
+            this.player.sendMessage("${RED}整地量バー非表示")
         }
     }
 
+    val toggleExpBarVisibility: TargetedEffect<Player> =
+        unfocusedEffect {
+            this.expbar.isVisible = !this.expbar.isVisible
+        } + deferredEffect {
+            when {
+                this.expbar.isVisible -> "${GREEN}整地量バー表示"
+                else -> "${RED}整地量バー非表示"
+            }.asMessageEffect()
+        }
+
+    val toggleAutoMineStack: UnfocusedEffect =
+        unfocusedEffect {
+            this.minestackflag = !this.minestackflag
+        }
+
+    val toggleWorldGuardLogEffect: UnfocusedEffect =
+        unfocusedEffect {
+            this.dispworldguardlogflag = !this.dispworldguardlogflag
+        }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun shouldDisplayWorldGuardLogs(): Boolean = this.dispworldguardlogflag
+
+    val toggleDeathMessageMutingSettings: UnfocusedEffect =
+        unfocusedEffect {
+            this.dispkilllogflag = !this.dispkilllogflag
+        }
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun shouldDisplayDeathMessages(): Boolean = this.dispkilllogflag
+
+    /**
+     * 保護申請の番号を更新させる[UnfocusedEffect]
+     */
+    val incrementRegionNumber: UnfocusedEffect =
+        unfocusedEffect {
+          this.rgnum += 1
+        }
+
     companion object {
-        internal var config = SeichiAssist.config
+        internal var config = SeichiAssist.seichiAssistConfig
 
         //TODO:もちろんここにあるべきではない
         const val passiveSkillProbability = 10

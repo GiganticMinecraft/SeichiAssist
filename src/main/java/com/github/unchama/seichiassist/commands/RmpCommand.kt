@@ -2,23 +2,25 @@ package com.github.unchama.seichiassist.commands
 
 import arrow.core.left
 import arrow.core.right
-import arrow.data.extensions.list.foldable.fold
 import com.github.unchama.contextualexecutor.asNonBlockingTabExecutor
 import com.github.unchama.contextualexecutor.builder.ArgumentParserScope.ScopeProvider.parser
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers
-import com.github.unchama.contextualexecutor.builder.ResponseOrResult
+import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.messaging.MessageToSender
-import com.github.unchama.messaging.asResponseToSender
+import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.isRegionSeichi
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
+import com.github.unchama.targetedeffect.asMessageEffect
+import com.github.unchama.targetedeffect.ops.asSequentialEffect
 import com.github.unchama.util.data.merge
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.World
+import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
 
 object RmpCommand {
@@ -29,7 +31,7 @@ object RmpCommand {
         "",
         "${ChatColor.RED}/rmp list <world名> <日数>",
         "全Ownerが<日数>間ログインしていないRegionを表示します"
-    ).asResponseToSender()
+    ).asMessageEffect()
   )
 
   private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
@@ -40,14 +42,14 @@ object RmpCommand {
                 ?.let { world -> succeedWith(world) }
                 ?: failWith("存在しないワールドです: $it")
           },
-          Parsers.nonNegativeInteger("${ChatColor.RED}<日数>には非負整数を入力してください".asResponseToSender())
+          Parsers.nonNegativeInteger("${ChatColor.RED}<日数>には非負整数を入力してください".asMessageEffect())
       ), onMissingArguments = printDescriptionExecutor)
 
-  private suspend fun getOldRegionsIn(world: World, daysThreshold: Int): ResponseOrResult<List<ProtectedRegion>> {
+  private suspend fun getOldRegionsIn(world: World, daysThreshold: Int): ResponseEffectOrResult<CommandSender, List<ProtectedRegion>> {
     val databaseGateway = SeichiAssist.databaseGateway
 
     val leavers = databaseGateway.playerDataManipulator.selectLeaversUUIDs(daysThreshold)
-        ?: return "${ChatColor.RED}データベースアクセスに失敗しました。".asResponseToSender().left()
+        ?: return "${ChatColor.RED}データベースアクセスに失敗しました。".asMessageEffect().left()
 
     val regions = ExternalPlugins.getWorldGuard().regionContainer.get(world)!!.regions.toMap()
     val oldRegions = regions.values.filter { region ->
@@ -63,8 +65,8 @@ object RmpCommand {
         val world = context.args.parsed[0] as World
         val days = context.args.parsed[1] as Int
 
-        if (!SeichiAssist.rgSeichiWorldlist.contains(world.name)) {
-          return@execution "removeコマンドは保護をかけて整地する整地ワールドでのみ使用出来ます".asResponseToSender()
+        if (ManagedWorld.fromBukkitWorld(world)?.isRegionSeichi == false) {
+          return@execution "removeコマンドは保護をかけて整地する整地ワールドでのみ使用出来ます".asMessageEffect()
         }
 
         getOldRegionsIn(world, days).map { removalTargets ->
@@ -75,11 +77,11 @@ object RmpCommand {
 
           // メッセージ生成
           if (removalTargets.isEmpty()) {
-            "${ChatColor.GREEN}該当Regionは存在しません".asResponseToSender()
+            "${ChatColor.GREEN}該当Regionは存在しません".asMessageEffect()
           } else {
             removalTargets
-                .map { "${ChatColor.YELLOW}[rmp] Deleted Region -> ${world.name}.${it.id}".asResponseToSender() }
-                .fold(MessageToSender.monoid)
+                .map { "${ChatColor.YELLOW}[rmp] Deleted Region -> ${world.name}.${it.id}".asMessageEffect() }
+                .asSequentialEffect()
           }
         }.merge()
       }
@@ -92,11 +94,11 @@ object RmpCommand {
 
         getOldRegionsIn(world, days).map { removalTargets ->
           if (removalTargets.isEmpty()) {
-            "${ChatColor.GREEN}該当Regionは存在しません".asResponseToSender()
+            "${ChatColor.GREEN}該当Regionは存在しません".asMessageEffect()
           } else {
             removalTargets
-                .map { ("${ChatColor.GREEN}[rmp] List Region -> ${world.name}.${it.id}").asResponseToSender() }
-                .fold(MessageToSender.monoid)
+                .map { ("${ChatColor.GREEN}[rmp] List Region -> ${world.name}.${it.id}").asMessageEffect() }
+                .asSequentialEffect()
           }
         }.merge()
       }

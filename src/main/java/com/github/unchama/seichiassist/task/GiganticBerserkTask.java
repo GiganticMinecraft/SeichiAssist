@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.LevelThresholds;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Sound;
@@ -15,7 +16,7 @@ import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 
 public class GiganticBerserkTask {
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap;
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	Player player;
 	PlayerData playerdata;
 
@@ -26,8 +27,8 @@ public class GiganticBerserkTask {
 		Mana mana = playerdata.getActiveskilldata().mana;
 
 		playerdata.setGBcd(playerdata.getGBcd() + 1);
-		if (playerdata.getGBcd() >= SeichiAssist.config.getGiganticBerserkLimit()){
-			if(SeichiAssist.DEBUG){
+		if (playerdata.getGBcd() >= SeichiAssist.Companion.getSeichiAssistConfig().getGiganticBerserkLimit()){
+			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage("上限到達");
 			}
 			return;
@@ -62,7 +63,7 @@ public class GiganticBerserkTask {
 
 		playerdata.setGBexp(playerdata.getGBexp() + 1);
 		//レベルアップするかどうか判定
-		if(SeichiAssist.GBlevellist.get(n) <= playerdata.getGBexp()){
+		if(LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n) <= playerdata.getGBexp()){
 			if(playerdata.getGBlevel() <= 8){
 				playerdata.setGBexp(0);
 				playerdata.setGBlevel(playerdata.getGBlevel() + 1);

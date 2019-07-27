@@ -41,7 +41,7 @@ public class BungeeReceiver implements PluginMessageListener {
 		// 受信UUIDからプレイヤーを特定
 		Player p = Bukkit.getServer().getPlayer(UUID.fromString(uuid));
 		// プレイヤーデータを取得
-		PlayerData pd = SeichiAssist.playermap.get(UUID.fromString(uuid));
+		PlayerData pd = SeichiAssist.Companion.getPlayermap().get(UUID.fromString(uuid));
 
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
