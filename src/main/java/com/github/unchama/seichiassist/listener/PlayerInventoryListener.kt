@@ -14,6 +14,7 @@ import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.util.ActionStatus.Fail
+import com.github.unchama.util.row
 import com.google.common.io.ByteStreams
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -60,7 +61,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 2 * 9) {
+    if (topinventory.row != 2) {
       return
     }
     val player = he as Player
@@ -81,26 +82,32 @@ class PlayerInventoryListener : Listener {
       val byteArrayDataOutput = ByteStreams
           .newDataOutput()
       //ページ変更処理
-      if (meta.displayName.contains("アルカディアサーバー")) {
-        byteArrayDataOutput.writeUTF("Connect")
-        byteArrayDataOutput.writeUTF("s1")
-        player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-            byteArrayDataOutput.toByteArray())
-      } else if (meta.displayName.contains("エデンサーバー")) {
-        byteArrayDataOutput.writeUTF("Connect")
-        byteArrayDataOutput.writeUTF("s2")
-        player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-            byteArrayDataOutput.toByteArray())
-      } else if (meta.displayName.contains("ヴァルハラサーバー")) {
-        byteArrayDataOutput.writeUTF("Connect")
-        byteArrayDataOutput.writeUTF("s3")
-        player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-            byteArrayDataOutput.toByteArray())
-      } else if (meta.displayName.contains("公共施設サーバー")) {
-        byteArrayDataOutput.writeUTF("Connect")
-        byteArrayDataOutput.writeUTF("s7")
-        player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-            byteArrayDataOutput.toByteArray())
+      val displayName = meta.displayName
+      when {
+        "アルカディアサーバー" in displayName -> {
+          byteArrayDataOutput.writeUTF("Connect")
+          byteArrayDataOutput.writeUTF("s1")
+          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
+              byteArrayDataOutput.toByteArray())
+        }
+        "エデンサーバー" in displayName -> {
+          byteArrayDataOutput.writeUTF("Connect")
+          byteArrayDataOutput.writeUTF("s2")
+          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
+              byteArrayDataOutput.toByteArray())
+        }
+        "ヴァルハラサーバー" in displayName -> {
+          byteArrayDataOutput.writeUTF("Connect")
+          byteArrayDataOutput.writeUTF("s3")
+          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
+              byteArrayDataOutput.toByteArray())
+        }
+        "公共施設サーバー" in displayName -> {
+          byteArrayDataOutput.writeUTF("Connect")
+          byteArrayDataOutput.writeUTF("s7")
+          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
+              byteArrayDataOutput.toByteArray())
+        }
       }
     }
   }
@@ -125,7 +132,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 36) {
+    if (topinventory.row != 4) {
       return
     }
     val player = he as Player
@@ -221,7 +228,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが45でない時終了
-    if (topinventory.size != 45) {
+    if (topinventory.row != 5) {
       return
     }
     val player = he as Player
@@ -447,7 +454,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズ終了
-    if (topinventory.size != 9 * 6) {
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
@@ -543,7 +550,7 @@ class PlayerInventoryListener : Listener {
         val itemmeta = itemstackcurrent.itemMeta
         val premiumeffect = ActiveSkillPremiumEffect.values()
         for (activeSkillPremiumEffect in premiumeffect) {
-          if (itemmeta.displayName.contains(activeSkillPremiumEffect.desc)) {
+          if (activeSkillPremiumEffect.desc in itemmeta.displayName) {
             if (playerdata.activeskilldata.premiumeffectpoint < activeSkillPremiumEffect.usePoint) {
               player.sendMessage(ChatColor.DARK_RED.toString() + "プレミアムエフェクトポイントが足りません")
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.5.toFloat())
@@ -582,7 +589,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 45) {
+    if (topinventory.row != 5) {
       return
     }
     val player = he as Player
@@ -1099,7 +1106,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
@@ -1166,7 +1173,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
@@ -1233,7 +1240,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
@@ -1300,7 +1307,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
@@ -1367,7 +1374,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 36) {
+    if (topinventory.row != 4) {
       return
     }
     val player = he as Player
@@ -1406,7 +1413,7 @@ class PlayerInventoryListener : Listener {
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
-    if (inventory.size != 36) {
+    if (inventory.row != 4) {
       return
     }
     if (inventory.title == ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "交換したい景品を入れてください") {
@@ -1545,7 +1552,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 36) {
+    if (topinventory.row != 4) {
       return
     }
     val player = he as Player
@@ -3497,7 +3504,7 @@ class PlayerInventoryListener : Listener {
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
-    if (inventory.size != 36) {
+    if (inventory.row != 4) {
       return
     }
     if (inventory.title == ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "交換したい鉱石を入れてください") {
@@ -3684,8 +3691,8 @@ class PlayerInventoryListener : Listener {
     val name = playerdata.name
     val inventory = event.inventory
 
-    //インベントリサイズが36でない時終了
-    if (inventory.size != 36) {
+    //インベントリサイズが4列でない時終了
+    if (inventory.row != 4) {
       return
     }
     if (inventory.title == ChatColor.GOLD.toString() + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ") {
@@ -3806,7 +3813,7 @@ class PlayerInventoryListener : Listener {
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
-    if (inventory.size != 36) {
+    if (inventory.row != 4) {
       return
     }
     if (inventory.title == ChatColor.GOLD.toString() + "" + ChatColor.BOLD + "修繕したい限定タイタンを入れてネ") {
@@ -3860,8 +3867,8 @@ class PlayerInventoryListener : Listener {
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
-    //インベントリサイズが36でない時終了
-    if (topinventory.size != 36) {
+    //インベントリサイズが4列でない時終了
+    if (topinventory.row != 4) {
       return
     }
     val player = he as Player
@@ -4018,8 +4025,8 @@ class PlayerInventoryListener : Listener {
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
-    //インベントリサイズが27でない時終了
-    if (topinventory.size != 27) {
+    //インベントリサイズが3列でない時終了
+    if (topinventory.row != 3) {
       return
     }
     val player = he as Player
@@ -4099,8 +4106,8 @@ class PlayerInventoryListener : Listener {
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
-    //インベントリサイズが54でない時終了
-    if (topinventory.size != 54) {
+    //インベントリが6列でない時終了
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
