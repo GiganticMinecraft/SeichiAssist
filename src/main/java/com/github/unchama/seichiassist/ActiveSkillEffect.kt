@@ -19,17 +19,19 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-enum class ActiveSkillEffect constructor(val num: Int, val sql_name: String, val desc: String, val explain: String, val usePoint: Int, val material: Material) {
+enum class ActiveSkillEffect constructor(
+    val num: Int,
+    val nameOnDatabase: String,
+    val nameOnUI: String,
+    val explanation: String,
+    val usePoint: Int,
+    val material: Material) {
 
-  EXPLOSION(1, "ef_explosion", ChatColor.RED.toString() + "エクスプロージョン", "単純な爆発", 50, Material.TNT),
-  BLIZZARD(2, "ef_blizzard", ChatColor.AQUA.toString() + "ブリザード", "凍らせる", 70, Material.PACKED_ICE),
-  METEO(3, "ef_meteo", ChatColor.DARK_RED.toString() + "メテオ", "隕石を落とす", 100, Material.FIREBALL);
+  EXPLOSION(1, "ef_explosion", "${ChatColor.RED}エクスプロージョン", "単純な爆発", 50, Material.TNT),
+  BLIZZARD(2, "ef_blizzard", "${ChatColor.AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE),
+  METEO(3, "ef_meteo", "${ChatColor.DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL);
 
   internal var plugin = SeichiAssist.instance
-
-  fun getName(): String {
-    return desc
-  }
 
   //エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
   fun runBreakEffect(player: Player,
@@ -85,21 +87,11 @@ enum class ActiveSkillEffect constructor(val num: Int, val sql_name: String, val
   }
 
   companion object {
-    fun getNamebyNum(effectnum: Int): String {
-      val skilleffect = values()
-      return Arrays.stream(skilleffect)
-          .filter { activeSkillEffect -> activeSkillEffect.num == effectnum }
-          .findFirst()
-          .map { it.getName() }
-          .orElse("未設定")
-    }
+    fun getNamebyNum(effectnum: Int): String = values()
+        .find { activeSkillEffect -> activeSkillEffect.num == effectnum }
+        ?.let { it.nameOnUI } ?: "未設定"
 
-    fun fromSqlName(sqlName: String): ActiveSkillEffect? {
-      return Arrays
-          .stream(values())
-          .filter { effect -> sqlName == effect.sql_name }
-          .findFirst()
-          .orElse(null)
-    }
+    fun fromSqlName(sqlName: String): ActiveSkillEffect? = values()
+        .find { effect -> sqlName == effect.nameOnDatabase }
   }
 }
