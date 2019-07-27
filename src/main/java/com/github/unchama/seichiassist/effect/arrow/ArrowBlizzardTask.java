@@ -32,7 +32,7 @@ public class ArrowBlizzardTask extends SkeletonEffectTask<Snowball> {
 		this.playerdata = playermap.get(uuid);
 
 		//発射する音を再生する.
-		player.playSound(ploc, Sound.ENTITY_SNOWBALL_THROW, 1, (float)1.3);
+		player.playSound(ploc, Sound.ENTITY_SNOWBALL_THROW, 1, 1.3f);
 
 		//スキルを実行する処理
 		Location loc = player.getLocation().clone();

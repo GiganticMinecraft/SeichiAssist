@@ -138,7 +138,7 @@ public class PlayerBlockBreakListener implements Listener {
 		if(!playerdata.getActiveskilldata().skillcanbreakflag){
 			//SEを再生
 			if(SeichiAssist.Companion.getDEBUG()) player.sendMessage(ChatColor.RED + "クールタイムの破壊");
-			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
+			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1);
 			return;
 		}
 
