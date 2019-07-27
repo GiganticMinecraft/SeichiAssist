@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.effect.breaking
 
 import org.bukkit.scheduler.BukkitRunnable
 
-abstract class AbstractRoundedTask : BukkitRunnable() {
+abstract class RoundedTask : BukkitRunnable() {
   private var round = 0
 
   abstract fun firstAction()
