@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.effect.arrow
 
 import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.effect.FixedMetadataValueHolder
+import com.github.unchama.seichiassist.effect.FixedMetadataValues
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import kotlinx.coroutines.delay
@@ -34,7 +34,7 @@ inline fun <reified P: Projectile> arrowEffect(spawnConfiguration: ProjectileSpa
                   .apply {
                     shooter = player
                     setGravity(spawnConfiguration.gravity)
-                    setMetadata("ArrowSkill", FixedMetadataValueHolder.TRUE)
+                    setMetadata("ArrowSkill", FixedMetadataValues.TRUE)
                     velocity = playerLocation.direction.clone().multiply(spawnConfiguration.speed)
                   }
                   .apply(projectileModifier)
