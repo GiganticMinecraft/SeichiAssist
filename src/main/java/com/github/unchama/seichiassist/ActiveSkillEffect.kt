@@ -41,21 +41,22 @@ enum class ActiveSkillEffect constructor(
                      start: Coordinate, end: Coordinate,
                      standard: Location) {
     when (this) {
-      EXPLOSION -> ExplosionTask(player, playerdata, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTaskLater(plugin, 0)
-      BLIZZARD -> if (playerdata.activeskilldata.skillnum < 3) {
-        BlizzardTask(player, playerdata, tool, breaklist, start, end, standard).runTaskLater(plugin, 1)
-      } else {
-        if (SeichiAssist.DEBUG) {
-          BlizzardTask(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 100)
-        } else {
-          BlizzardTask(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 10)
-        }
+      EXPLOSION -> ExplosionTask(player, playerdata, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
+      BLIZZARD -> {
+        val effect = BlizzardTask(player, playerdata, tool, breaklist, start, end, standard)
 
+        if (playerdata.activeskilldata.skillnum < 3) {
+          effect.runTaskLater(plugin, 1)
+        } else {
+          val period = if (SeichiAssist.DEBUG) 100L else 10L
+          effect.runTaskTimer(plugin, 0, period)
+        }
       }
-      METEO -> if (playerdata.activeskilldata.skillnum < 3) {
-        MeteoTask(player, playerdata, tool, breaklist, start, end, standard).runTaskLater(plugin, 1)
-      } else {
-        MeteoTask(player, playerdata, tool, breaklist, start, end, standard).runTaskLater(plugin, 10)
+      METEO -> {
+        val delay = if (playerdata.activeskilldata.skillnum < 3) 1L else 10L
+
+        MeteoTask(player, playerdata, tool, breaklist, start, end, standard)
+            .runTaskLater(plugin, delay)
       }
     }
   }
