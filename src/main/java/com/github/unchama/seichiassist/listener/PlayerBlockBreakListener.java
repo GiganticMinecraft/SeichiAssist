@@ -507,7 +507,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//選択されたブロックを破壊する処理
 
 		//自身のみしか壊さない時自然に処理する
-		if(breaklist.size()==0){
+		if(breaklist.isEmpty()){
 			BreakUtil.breakBlock(player, block, centerofblock, tool,true);
 			return;
 		}//エフェクトが指定されていないときの処理
