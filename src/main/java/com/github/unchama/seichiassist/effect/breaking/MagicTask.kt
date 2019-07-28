@@ -21,7 +21,7 @@ import java.util.Random
 class MagicTask(// プレイヤー情報
     private val player: Player, // 使用するツール
     private val tool: ItemStack, // 破壊するブロックリスト
-    private val blocks: List<Block>,
+    private val blocks: Set<Block>,
     start: Coordinate,
     end: Coordinate, skillCenter: Location) : RoundedTask() {
   // 破壊するブロックの中心位置

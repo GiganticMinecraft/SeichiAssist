@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable
 class ExplosionTask(private val player: Player,
                     private val playerdata: PlayerData,
                     private val tool: ItemStack,
-                    private val blocks: List<Block>,
+                    private val blocks: Set<Block>,
                     private val start: XYZTuple,
                     private val end: XYZTuple,
                     private val droploc: Location) : BukkitRunnable() {

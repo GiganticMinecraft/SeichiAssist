@@ -21,7 +21,7 @@ class MeteoTask(
     private val player: Player,
     private val playerdata: PlayerData,
     private val tool: ItemStack,
-    private val blocks: List<Block>,
+    private val blocks: Set<Block>,
     private val start: Coordinate,
     private val end: Coordinate, droploc: Location) : BukkitRunnable() {
   //破壊するブロックの中心位置

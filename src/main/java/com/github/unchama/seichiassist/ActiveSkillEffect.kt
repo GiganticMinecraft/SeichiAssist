@@ -37,7 +37,7 @@ enum class ActiveSkillEffect constructor(
   fun runBreakEffect(player: Player,
                      playerdata: PlayerData,
                      tool: ItemStack,
-                     breaklist: List<Block>,
+                     breaklist: Set<Block>,
                      start: Coordinate, end: Coordinate,
                      standard: Location) {
     when (this) {
