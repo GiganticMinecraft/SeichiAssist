@@ -613,8 +613,8 @@ public class MenuInventoryData {
 					if (playerdata.getActiveskilldata().obtainedSkillEffects.contains(skilleffect[i])) {
 						itemstack = new ItemStack(skilleffect[i].getMaterial(),1);
 						itemmeta = Bukkit.getItemFactory().getItemMeta(skilleffect[i].getMaterial());
-						itemmeta.setDisplayName(skilleffect[i].getName());
-						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + skilleffect[i].getExplain()
+						itemmeta.setDisplayName(skilleffect[i].getNameOnUI());
+						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + skilleffect[i].getExplanation()
 								, ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
 								);
 						itemmeta.setLore(lore);
@@ -624,8 +624,8 @@ public class MenuInventoryData {
 					else{
 						itemstack = new ItemStack(Material.BEDROCK,1);
 						itemmeta = ItemMetaFactory.BEDROCK.getValue();
-						itemmeta.setDisplayName(skilleffect[i].getName());
-						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + skilleffect[i].getExplain()
+						itemmeta.setDisplayName(skilleffect[i].getNameOnUI());
+						lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + skilleffect[i].getExplanation()
 								, ChatColor.RESET + "" +  ChatColor.YELLOW + "必要エフェクトポイント：" + skilleffect[i].getUsePoint()
 								, ChatColor.RESET + "" +  ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
 						itemmeta.setLore(lore);

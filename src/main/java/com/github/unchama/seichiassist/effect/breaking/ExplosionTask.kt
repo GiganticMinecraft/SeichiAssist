@@ -1,36 +1,41 @@
 package com.github.unchama.seichiassist.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.Coordinate
 import com.github.unchama.seichiassist.data.PlayerData
-import com.github.unchama.seichiassist.effect.XYZIterator2
+import com.github.unchama.seichiassist.effect.AxisAlignedCuboid
 import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.effect.containsBlockAround
+import com.github.unchama.seichiassist.effect.forEachGridPoint
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.Location
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
 
-class ExplosionTask(private val player: Player, private val playerdata: PlayerData, private val tool: ItemStack, //破壊するブロックリスト
-                    private val blocks11: List<Block>, //スキルで破壊される相対座標
-                    private val start: Coordinate,
-                    private val end: Coordinate, //スキルが発動される中心位置
-                    private val droploc: Location) : AbstractBreakTask2() {
+class ExplosionTask(private val player: Player,
+                    private val playerdata: PlayerData,
+                    private val tool: ItemStack,
+                    private val blocks: List<Block>,
+                    private val start: XYZTuple,
+                    private val end: XYZTuple,
+                    private val droploc: Location) : BukkitRunnable() {
 
   override fun run() {
-    XYZIterator2(XYZTuple(start.x, start.y, start.z), XYZTuple(end.x, end.y, end.z)) { xyzTuple ->
-      val explosionloc = droploc.clone()
-      explosionloc.add(xyzTuple.x.toDouble(), xyzTuple.y.toDouble(), xyzTuple.z.toDouble())
-      if (isBreakBlock(explosionloc)) {
-        player.world.createExplosion(explosionloc, 0f, false)
+    AxisAlignedCuboid(start, end).forEachGridPoint(2) { (x, y, z) ->
+      val explosionLocation = droploc.clone()
+      explosionLocation.add(x.toDouble(), y.toDouble(), z.toDouble())
+
+      if (containsBlockAround(explosionLocation, 1, blocks.toSet())) {
+        player.world.createExplosion(explosionLocation, 0f, false)
       }
     }
 
     val stepflag = playerdata.activeskilldata.skillnum <= 2
-    for (b in blocks11) {
-      BreakUtil.breakBlock(player, b, droploc, tool, stepflag)
-      SeichiAssist.allblocklist.remove(b)
+
+    for (block in blocks) {
+      BreakUtil.breakBlock(player, block, droploc, tool, stepflag)
+      SeichiAssist.allblocklist.remove(block)
     }
   }
 }
-

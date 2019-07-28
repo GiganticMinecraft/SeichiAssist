@@ -6,50 +6,57 @@ import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.BlizzardTask
 import com.github.unchama.seichiassist.effect.breaking.ExplosionTask
 import com.github.unchama.seichiassist.effect.breaking.MeteoTask
-import com.okkero.skedule.BukkitSchedulerController
-import com.okkero.skedule.SynchronizationContext
-import com.okkero.skedule.schedule
+import com.github.unchama.seichiassist.effect.toXYZTuple
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.bukkit.*
+import org.bukkit.ChatColor
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-enum class ActiveSkillEffect constructor(val num: Int, private val sql_name: String, val desc: String, val explain: String, val usePoint: Int, val material: Material) {
+enum class ActiveSkillEffect constructor(
+    val num: Int,
+    val nameOnDatabase: String,
+    val nameOnUI: String,
+    val explanation: String,
+    val usePoint: Int,
+    val material: Material) {
 
-  EXPLOSION(1, "ef_explosion", ChatColor.RED.toString() + "エクスプロージョン", "単純な爆発", 50, Material.TNT),
-  BLIZZARD(2, "ef_blizzard", ChatColor.AQUA.toString() + "ブリザード", "凍らせる", 70, Material.PACKED_ICE),
-  METEO(3, "ef_meteo", ChatColor.DARK_RED.toString() + "メテオ", "隕石を落とす", 100, Material.FIREBALL);
+  EXPLOSION(1, "ef_explosion", "${ChatColor.RED}エクスプロージョン", "単純な爆発", 50, Material.TNT),
+  BLIZZARD(2, "ef_blizzard", "${ChatColor.AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE),
+  METEO(3, "ef_meteo", "${ChatColor.DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL);
 
   internal var plugin = SeichiAssist.instance
-  fun getsqlName(): String {
-    return this.sql_name
-  }
-
-  fun getName(): String {
-    return desc
-  }
 
   //エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
-  fun runBreakEffect(player: Player, playerdata: PlayerData, tool: ItemStack, breaklist: List<Block>, start: Coordinate, end: Coordinate, standard: Location) {
+  fun runBreakEffect(player: Player,
+                     playerdata: PlayerData,
+                     tool: ItemStack,
+                     breaklist: List<Block>,
+                     start: Coordinate, end: Coordinate,
+                     standard: Location) {
     when (this) {
-      EXPLOSION -> ExplosionTask(player, playerdata, tool, breaklist, start, end, standard).runTaskLater(plugin, 0)
-      BLIZZARD -> if (playerdata.activeskilldata.skillnum < 3) {
-        BlizzardTask(player, playerdata, tool, breaklist, start, end, standard).runTaskLater(plugin, 1)
-      } else {
-        if (SeichiAssist.DEBUG) {
-          BlizzardTask(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 100)
-        } else {
-          BlizzardTask(player, playerdata, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 10)
-        }
+      EXPLOSION -> ExplosionTask(player, playerdata, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
+      BLIZZARD -> {
+        val effect = BlizzardTask(player, playerdata, tool, breaklist, start, end, standard)
 
+        if (playerdata.activeskilldata.skillnum < 3) {
+          effect.runTaskLater(plugin, 1)
+        } else {
+          val period = if (SeichiAssist.DEBUG) 100L else 10L
+          effect.runTaskTimer(plugin, 0, period)
+        }
       }
-      METEO -> if (playerdata.activeskilldata.skillnum < 3) {
-        MeteoTask(player, playerdata, tool, breaklist, start, end, standard).runTaskLater(plugin, 1)
-      } else {
-        MeteoTask(player, playerdata, tool, breaklist, start, end, standard).runTaskLater(plugin, 10)
+      METEO -> {
+        val delay = if (playerdata.activeskilldata.skillnum < 3) 1L else 10L
+
+        MeteoTask(player, playerdata, tool, breaklist, start, end, standard)
+            .runTaskLater(plugin, delay)
       }
     }
   }
@@ -62,11 +69,10 @@ enum class ActiveSkillEffect constructor(val num: Int, private val sql_name: Str
       METEO -> ArrowEffects.singleArrowMeteoEffect
     }
 
-    async {
-      // https://discordapp.com/channels/237758724121427969/565935041574731807/589097781088616500
+    GlobalScope.launch(Schedulers.async) {
       repeat (100) {
-        waitFor(1)
-        GlobalScope.launch { effect.runFor(player) }
+        effect.runFor(player)
+        delay(50)
       }
     }
   }
@@ -81,28 +87,12 @@ enum class ActiveSkillEffect constructor(val num: Int, private val sql_name: Str
     }
   }
 
-  private fun async(action: suspend BukkitSchedulerController.() -> Unit) {
-    Bukkit.getScheduler().schedule(SeichiAssist.instance, SynchronizationContext.ASYNC, action)
-  }
-
   companion object {
+    fun getNamebyNum(effectnum: Int): String = values()
+        .find { activeSkillEffect -> activeSkillEffect.num == effectnum }
+        ?.let { it.nameOnUI } ?: "未設定"
 
-
-    fun getNamebyNum(effectnum: Int): String {
-      val skilleffect = values()
-      return Arrays.stream(skilleffect)
-          .filter { activeSkillEffect -> activeSkillEffect.num == effectnum }
-          .findFirst()
-          .map { it.getName() }
-          .orElse("未設定")
-    }
-
-    fun fromSqlName(sqlName: String): ActiveSkillEffect? {
-      return Arrays
-          .stream(values())
-          .filter { effect -> sqlName == effect.sql_name }
-          .findFirst()
-          .orElse(null)
-    }
+    fun fromSqlName(sqlName: String): ActiveSkillEffect? = values()
+        .find { effect -> sqlName == effect.nameOnDatabase }
   }
 }

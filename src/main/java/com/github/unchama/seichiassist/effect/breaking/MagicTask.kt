@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.Coordinate
-import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.task.AsyncEntityRemover
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.DyeColor
@@ -12,7 +11,6 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Sound
 import org.bukkit.block.Block
-import org.bukkit.block.BlockState
 import org.bukkit.entity.Chicken
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -23,16 +21,15 @@ import java.util.Random
 class MagicTask(// プレイヤー情報
     private val player: Player, // 使用するツール
     private val tool: ItemStack, // 破壊するブロックリスト
-    private val blocks: List<Block>, start: Coordinate,
-    end: Coordinate, skillCenter: Location) : AbstractRoundedTask() {
+    private val blocks: List<Block>,
+    start: Coordinate,
+    end: Coordinate, skillCenter: Location) : RoundedTask() {
   // 破壊するブロックの中心位置
   private val centerBreak: Location
   // スキルが発動される中心位置
   private val skillCenter: Location = skillCenter.clone()
 
   init {
-    // スキルで破壊される相対座標
-
     centerBreak = this.skillCenter.add(relativeAverage(start.x, end.x), relativeAverage(start.y, end.y), relativeAverage(start.z, end.z))
   }
 

@@ -206,7 +206,7 @@ public class ActiveSkillData {
 			this.updateAssaultSkill(player,this.assaulttype,this.assaultnum,this.mineflagnum);
 			String name = ActiveSkill.getActiveSkillName(this.assaulttype, this.assaultnum);
 			player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル:" + name + "  を選択しています。");
-			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
 		}
 
 		//通常スキルの実行
@@ -214,7 +214,7 @@ public class ActiveSkillData {
 			this.updateSkill(player, this.skilltype, this.skillnum,this.mineflagnum);
 			String name = ActiveSkill.getActiveSkillName(this.skilltype, this.skillnum);
 			player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  を選択しています。");
-			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
 		}
 
 
@@ -228,7 +228,7 @@ public class ActiveSkillData {
 		this.assaultflag = false;
 		try{this.assaulttask.cancel();}catch(NullPointerException e){}
 		player.sendMessage(ChatColor.GREEN + "全ての選択を削除しました。");
-		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
 
 	}
 	public void updateonJoin(Player player, int level) {

@@ -6,6 +6,8 @@ import com.github.unchama.seichiassist.data.Coordinate
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.effect.XYZIterator
 import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.effect.AxisAlignedCuboid
+import com.github.unchama.seichiassist.effect.forEachGridPoint
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.Effect
 import org.bukkit.Location
@@ -14,11 +16,12 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class BlizzardTask(private val player: Player, private val playerdata: PlayerData, private val tool: ItemStack, //破壊するブロックリスト
-                   private val blocks: List<Block>, //スキルで破壊される相対座標
+class BlizzardTask(private val player: Player, private val playerdata: PlayerData,
+                   private val tool: ItemStack,
+                   private val blocks: List<Block>,
                    private val start: Coordinate,
-                   private val end: Coordinate, //スキルが発動される中心位置
-                   private val droploc: Location) : AbstractRoundedTask() {
+                   private val end: Coordinate,
+                   private val droploc: Location) : RoundedTask() {
   //音の聞こえる距離
   private var soundRadius: Int = 0
   private var setRadius: Boolean = false
@@ -43,13 +46,12 @@ class BlizzardTask(private val player: Player, private val playerdata: PlayerDat
 
   override fun secondAction() {
     //2回目のrun
-    XYZIterator(XYZTuple(start.x, start.y, start.z), XYZTuple(end.x, end.y, end.z)) { xyzTuple ->
+    AxisAlignedCuboid(XYZTuple(start.x, start.y, start.z), XYZTuple(end.x, end.y, end.z)).forEachGridPoint { xyzTuple ->
       //逐一更新が必要な位置
       val effectloc = droploc.clone().add(xyzTuple.x.toDouble(), xyzTuple.y.toDouble(), xyzTuple.z.toDouble())
       if (blocks.contains(effectloc.block)) {
         player.world.playEffect(effectloc, Effect.SNOWBALL_BREAK, 1)
       }
-      Unit
     }
 
     if (playerdata.activeskilldata.skillnum > 2) {

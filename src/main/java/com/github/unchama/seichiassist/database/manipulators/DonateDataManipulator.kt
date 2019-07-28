@@ -83,7 +83,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
               "" + ChatColor.RESET + ChatColor.GOLD + "日時：" + lrs.getString("date")
           )
           itemstack.itemMeta = Bukkit.getItemFactory().getItemMeta(material).apply {
-            displayName = "" + ChatColor.RESET.toString() + ChatColor.YELLOW + "購入エフェクト：" + effect[num].getName()
+            displayName = "" + ChatColor.RESET.toString() + ChatColor.YELLOW + "購入エフェクト：" + effect[num].desc
             lore = lore2
           }
           inventory.setItem(count, itemstack)
