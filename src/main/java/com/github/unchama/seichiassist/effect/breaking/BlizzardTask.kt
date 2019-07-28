@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.effect.breaking
 
 import com.github.unchama.seichiassist.ActiveSkill
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.ActiveSkillData
 import com.github.unchama.seichiassist.data.Coordinate
-import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.effect.AxisAlignedCuboid
 import com.github.unchama.seichiassist.effect.forEachGridPoint
@@ -15,7 +15,7 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class BlizzardTask(private val player: Player, private val playerdata: PlayerData,
+class BlizzardTask(private val player: Player, private val skillData: ActiveSkillData,
                    private val tool: ItemStack,
                    private val blocks: Set<Block>,
                    private val start: Coordinate,
@@ -27,7 +27,7 @@ class BlizzardTask(private val player: Player, private val playerdata: PlayerDat
 
   override fun firstAction() {
     //1回目のrun
-    if (playerdata.activeskilldata.skillnum > 2) {
+    if (skillData.skillnum > 2) {
       for (b in blocks) {
         BreakUtil.breakBlock(player, b, droploc, tool, false)
         b.type = Material.PACKED_ICE
@@ -40,7 +40,7 @@ class BlizzardTask(private val player: Player, private val playerdata: PlayerDat
       cancel()
     }
     soundRadius = 5
-    setRadius = playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum()
+    setRadius = skillData.skilltype == ActiveSkill.BREAK.gettypenum()
   }
 
   override fun secondAction() {
@@ -53,7 +53,7 @@ class BlizzardTask(private val player: Player, private val playerdata: PlayerDat
       }
     }
 
-    if (playerdata.activeskilldata.skillnum > 2) {
+    if (skillData.skillnum > 2) {
       for (b in blocks) {
         b.type = Material.AIR
         if (setRadius) {

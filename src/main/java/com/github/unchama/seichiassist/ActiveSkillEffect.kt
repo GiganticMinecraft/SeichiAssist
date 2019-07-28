@@ -13,11 +13,9 @@ import kotlinx.coroutines.launch
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.util.*
 
 enum class ActiveSkillEffect constructor(
     val num: Int,
@@ -40,10 +38,11 @@ enum class ActiveSkillEffect constructor(
                      breaklist: Set<Block>,
                      start: Coordinate, end: Coordinate,
                      standard: Location) {
+    val skill = playerdata.activeskilldata
     when (this) {
-      EXPLOSION -> ExplosionTask(player, playerdata, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
+      EXPLOSION -> ExplosionTask(player, skill.skillnum <= 2, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
       BLIZZARD -> {
-        val effect = BlizzardTask(player, playerdata, tool, breaklist, start, end, standard)
+        val effect = BlizzardTask(player, skill, tool, breaklist, start, end, standard)
 
         if (playerdata.activeskilldata.skillnum < 3) {
           effect.runTaskLater(plugin, 1)
