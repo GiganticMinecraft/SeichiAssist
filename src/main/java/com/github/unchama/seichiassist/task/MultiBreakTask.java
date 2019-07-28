@@ -28,7 +28,6 @@ public class MultiBreakTask extends BukkitRunnable{
 	private List<Coordinate> startlist;
 	private List<Coordinate> endlist;
 	private int breaknum;
-	private UUID uuid;
 	private PlayerData playerdata;
 	private int count;
 
@@ -45,10 +44,8 @@ public class MultiBreakTask extends BukkitRunnable{
 		this.breaknum = multibreaklist.size();
 		this.count = 0;
 		//this.key = key;
-		//UUIDを取得
-		uuid = player.getUniqueId();
 		//playerdataを取得
-		playerdata = playermap.get(uuid);
+		playerdata = playermap.get(player.getUniqueId());
 	}
 
 	@Override
@@ -62,6 +59,9 @@ public class MultiBreakTask extends BukkitRunnable{
 				multilavalist.get(count).get(lavanum).setType(Material.AIR);
 			}
 
+			final Set<Block> converted = new HashSet<>(multibreaklist.get(count));
+			final Coordinate startPoint = startlist.get(count);
+			final Coordinate endPoint = endlist.get(count);
 			//エフェクトが選択されていない時の通常処理
 			if(playerdata.getActiveskilldata().effectnum == 0){
 				//ブロックを破壊する処理
@@ -74,13 +74,13 @@ public class MultiBreakTask extends BukkitRunnable{
 			//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
 			else if(playerdata.getActiveskilldata().effectnum <= 100){
 				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-				skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player,playerdata,tool,multibreaklist.get(count), startlist.get(count), endlist.get(count),droploc);
+				skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player, playerdata, tool, converted, startPoint, endPoint, droploc);
 			}
 
 			//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
 			else if(playerdata.getActiveskilldata().effectnum > 100){
 				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-				premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player, tool, multibreaklist.get(count), startlist.get(count), endlist.get(count),droploc);
+				premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player, tool, converted, startPoint, endPoint, droploc);
 			}
 			count++;
 		}else{
