@@ -53,7 +53,7 @@ class MagicTask(// プレイヤー情報
     //2回目のrun
     if (SeichiAssist.entitylist.isEmpty()) {
       val e = player.world.spawnEntity(centerBreak, EntityType.CHICKEN) as Chicken
-      SeichiAssist.entitylist.add(e)
+      SeichiAssist.entitylist += e
       e.playEffect(EntityEffect.WITCH_MAGIC)
       e.isInvulnerable = true
       AsyncEntityRemover(e).runTaskLater(SeichiAssist.instance, 100)
