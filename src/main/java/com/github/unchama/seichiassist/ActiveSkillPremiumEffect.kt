@@ -1,8 +1,10 @@
 package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist.data.Coordinate
+import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.MagicTask
+import com.github.unchama.seichiassist.effect.toXYZTuple
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.bukkit.ChatColor
@@ -23,7 +25,16 @@ enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, 
 
   //エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
 
+  @Deprecated(message = "Coordinate deprecation", level = DeprecationLevel.WARNING,
+      replaceWith = ReplaceWith("runBreakEffect(player, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard)",
+          "com.github.unchama.seichiassist.effect.toXYZTuple",
+          "com.github.unchama.seichiassist.effect.toXYZTuple")
+  )
   fun runBreakEffect(player: Player, tool: ItemStack, breaklist: Set<Block>, start: Coordinate, end: Coordinate, standard: Location) {
+    runBreakEffect(player, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard)
+  }
+
+  fun runBreakEffect(player: Player, tool: ItemStack, breaklist: Set<Block>, start: XYZTuple, end: XYZTuple, standard: Location) {
     when (this) {
       MAGIC -> if (SeichiAssist.DEBUG) {
         MagicTask(player, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 100)

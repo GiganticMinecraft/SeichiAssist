@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.Coordinate
+import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.task.AsyncEntityRemover
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.DyeColor
@@ -22,8 +23,8 @@ class MagicTask(// プレイヤー情報
     private val player: Player, // 使用するツール
     private val tool: ItemStack, // 破壊するブロックリスト
     private val blocks: Set<Block>,
-    start: Coordinate,
-    end: Coordinate, skillCenter: Location) : RoundedTask() {
+    start: XYZTuple,
+    end: XYZTuple, skillCenter: Location) : RoundedTask() {
   // 破壊するブロックの中心位置
   private val centerBreak: Location
   // スキルが発動される中心位置
