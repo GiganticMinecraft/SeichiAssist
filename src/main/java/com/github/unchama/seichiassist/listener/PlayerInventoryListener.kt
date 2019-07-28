@@ -1623,7 +1623,7 @@ class PlayerInventoryListener : Listener {
         //表示内容をLVに変更
         if (itemstackcurrent.type == Material.REDSTONE_TORCH_ON) {
           // Zero clear
-          playerdata.nickName = playerdata.nickName.copy(style = playerdata.nickName.style)
+          playerdata.displayTypeLv = true
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_Present2") {
