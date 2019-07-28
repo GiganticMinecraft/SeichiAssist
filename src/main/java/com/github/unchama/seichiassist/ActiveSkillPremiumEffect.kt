@@ -11,7 +11,6 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.util.*
 
 enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, val desc: String, val explain: String, val usePoint: Int, val material: Material) {
   MAGIC(1, "ef_magic", ChatColor.RED.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マジック", "鶏が出る手品", 10, Material.RED_ROSE);
@@ -48,11 +47,7 @@ enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, 
   companion object {
 
     fun fromSqlName(sqlName: String): ActiveSkillPremiumEffect? {
-      return Arrays
-          .stream(values())
-          .filter { effect -> sqlName == effect.sql_name }
-          .findFirst()
-          .orElse(null)
+      return values().find { effect -> sqlName == effect.sql_name }
     }
   }
 }
