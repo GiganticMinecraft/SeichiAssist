@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist
 
+import com.github.unchama.seichiassist.data.ActiveSkillData
 import com.github.unchama.seichiassist.data.Coordinate
-import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.BlizzardTask
 import com.github.unchama.seichiassist.effect.breaking.ExplosionTask
@@ -33,18 +33,18 @@ enum class ActiveSkillEffect constructor(
 
   //エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
   fun runBreakEffect(player: Player,
-                     playerdata: PlayerData,
+                     skillData: ActiveSkillData,
                      tool: ItemStack,
                      breaklist: Set<Block>,
                      start: Coordinate, end: Coordinate,
                      standard: Location) {
-    val skill = playerdata.activeskilldata
+    val skillId = skillData.skillnum
     when (this) {
-      EXPLOSION -> ExplosionTask(player, skill.skillnum <= 2, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
+      EXPLOSION -> ExplosionTask(player, skillId <= 2, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
       BLIZZARD -> {
-        val effect = BlizzardTask(player, skill, tool, breaklist, start, end, standard)
+        val effect = BlizzardTask(player, skillData, tool, breaklist, start, end, standard)
 
-        if (playerdata.activeskilldata.skillnum < 3) {
+        if (skillId < 3) {
           effect.runTaskLater(plugin, 1)
         } else {
           val period = if (SeichiAssist.DEBUG) 100L else 10L
@@ -52,9 +52,9 @@ enum class ActiveSkillEffect constructor(
         }
       }
       METEO -> {
-        val delay = if (playerdata.activeskilldata.skillnum < 3) 1L else 10L
+        val delay = if (skillId < 3) 1L else 10L
 
-        MeteoTask(player, playerdata, tool, breaklist, start, end, standard)
+        MeteoTask(player, skillData, tool, breaklist, start, end, standard)
             .runTaskLater(plugin, delay)
       }
     }

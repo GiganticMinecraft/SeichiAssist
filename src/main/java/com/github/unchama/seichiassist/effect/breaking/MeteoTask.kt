@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.ActiveSkillData
 import com.github.unchama.seichiassist.data.Coordinate
-import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.effect.AxisAlignedCuboid
 import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.effect.containsBlockAround
@@ -19,7 +19,7 @@ import java.util.*
 
 class MeteoTask(
     private val player: Player,
-    private val playerdata: PlayerData,
+    private val skillData: ActiveSkillData,
     private val tool: ItemStack,
     private val blocks: Set<Block>,
     private val start: Coordinate,
@@ -48,7 +48,7 @@ class MeteoTask(
     val vol = Random().nextFloat() * 0.4f + 0.8f
     player.world.playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol)
 
-    val stepflag = playerdata.activeskilldata.skillnum <= 2
+    val stepflag = skillData.skillnum <= 2
     for (b in blocks) {
       BreakUtil.breakBlock(player, b, droploc, tool, stepflag)
       SeichiAssist.allblocklist -= b

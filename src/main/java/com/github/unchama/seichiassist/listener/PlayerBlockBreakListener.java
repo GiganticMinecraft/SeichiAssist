@@ -524,7 +524,7 @@ public class PlayerBlockBreakListener implements Listener {
 			breaklist.add(block);
 			SeichiAssist.Companion.getAllblocklist().add(block);
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player,playerdata,tool, breaklist, start, end,centerofblock);
+			skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player,playerdata.getActiveskilldata(), tool, breaklist, start, end,centerofblock);
 		}
 
 		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）

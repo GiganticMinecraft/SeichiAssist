@@ -76,7 +76,7 @@ public class MultiBreakTask extends BukkitRunnable{
 			//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
 			else if(playerdata.getActiveskilldata().effectnum <= 100){
 				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-				skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player, playerdata, tool, converted, startPoint, endPoint, droploc);
+				skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player, playerdata.getActiveskilldata(), tool, converted, startPoint, endPoint, droploc);
 			}
 
 			//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
