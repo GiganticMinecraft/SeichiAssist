@@ -36,7 +36,7 @@ class BlizzardTask(private val player: Player, private val playerdata: PlayerDat
     } else {
       for (b in blocks) {
         BreakUtil.breakBlock(player, b, droploc, tool, true)
-        SeichiAssist.allblocklist.remove(b)
+        SeichiAssist.allblocklist -= b
       }
       cancel()
     }
@@ -62,7 +62,7 @@ class BlizzardTask(private val player: Player, private val playerdata: PlayerDat
         } else {
           b.world.playEffect(b.location, Effect.STEP_SOUND, Material.PACKED_ICE)
         }
-        SeichiAssist.allblocklist.remove(b)
+        SeichiAssist.allblocklist -= b
       }
     }
   }
