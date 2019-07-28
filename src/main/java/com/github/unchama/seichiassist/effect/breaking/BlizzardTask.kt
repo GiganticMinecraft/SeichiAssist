@@ -4,7 +4,6 @@ import com.github.unchama.seichiassist.ActiveSkill
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.Coordinate
 import com.github.unchama.seichiassist.data.PlayerData
-import com.github.unchama.seichiassist.effect.XYZIterator
 import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.effect.AxisAlignedCuboid
 import com.github.unchama.seichiassist.effect.forEachGridPoint
