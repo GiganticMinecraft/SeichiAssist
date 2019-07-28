@@ -22,16 +22,6 @@ enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, 
     return this.sql_name
   }
 
-  //プレイヤーが所持しているかどうか
-  fun isObtained(flagmap: Map<Int, Boolean>): Boolean? {
-    return flagmap[num]
-  }
-
-  //獲得させる処理
-  fun setObtained(flagmap: MutableMap<Int, Boolean>) {
-    flagmap[num] = true
-  }
-
   //エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
 
   fun runBreakEffect(player: Player, tool: ItemStack, breaklist: Set<Block>, start: Coordinate, end: Coordinate, standard: Location) {
