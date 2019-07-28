@@ -51,7 +51,7 @@ class MeteoTask(
     val stepflag = playerdata.activeskilldata.skillnum <= 2
     for (b in blocks) {
       BreakUtil.breakBlock(player, b, droploc, tool, stepflag)
-      SeichiAssist.allblocklist.remove(b)
+      SeichiAssist.allblocklist -= b
     }
   }
 

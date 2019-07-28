@@ -63,7 +63,7 @@ class MagicTask(// プレイヤー情報
     for (b in blocks) {
       b.type = Material.AIR
       b.world.spawnParticle(Particle.NOTE, b.location.add(0.5, 0.5, 0.5), 1)
-      SeichiAssist.allblocklist.remove(b)
+      SeichiAssist.allblocklist -= b
     }
     cancel()
   }
