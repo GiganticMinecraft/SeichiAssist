@@ -77,16 +77,6 @@ enum class ActiveSkillEffect constructor(
     }
   }
 
-  fun runAssaultEffect(player: Player, playerdata: PlayerData,
-                       tool: ItemStack, arrayList: ArrayList<Block>, start: Coordinate,
-                       end: Coordinate, centerofblock: Location) {
-    when (this) {
-      EXPLOSION -> player.world.spawnParticle(Particle.EXPLOSION_NORMAL, player.eyeLocation, 1, 3.0, 3.0, 3.0, 1.0)
-      BLIZZARD -> player.world.spawnParticle(Particle.SNOW_SHOVEL, player.eyeLocation, 1, 3.0, 3.0, 3.0, 1.0)
-      METEO -> player.world.spawnParticle(Particle.DRIP_LAVA, player.eyeLocation, 1, 3.0, 3.0, 3.0, 1.0)
-    }
-  }
-
   companion object {
     fun getNamebyNum(effectnum: Int): String = values()
         .find { activeSkillEffect -> activeSkillEffect.num == effectnum }
