@@ -20,10 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class AssaultTask extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
@@ -195,9 +192,9 @@ public class AssaultTask extends BukkitRunnable{
 			idletime = 0;
 		}
 
-		List<Block> breaklist = new ArrayList<>();
-		List<Block> lavalist = new ArrayList<>();
-		List<Block> waterlist = new ArrayList<>();
+		Set<Block> blocks = new HashSet<>();
+		Set<Block> lavas = new HashSet<>();
+		Set<Block> waters = new HashSet<>();
 
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
@@ -242,11 +239,11 @@ public class AssaultTask extends BukkitRunnable{
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block) || !breakflag){
 							if(BreakUtil.canBreak(player, breakblock)){
 								if(lava_materialflag){
-									lavalist.add(breakblock);
+									lavas.add(breakblock);
 								}else if(water_materialflag){
-									waterlist.add(breakblock);
+									waters.add(breakblock);
 								}else{
-									breaklist.add(breakblock);
+									blocks.add(breakblock);
 									SeichiAssist.Companion.getAllblocklist().add(breakblock);
 								}
 							}
@@ -261,13 +258,13 @@ public class AssaultTask extends BukkitRunnable{
 		// 実際に破壊するブロック数の計算分岐
 		int breaksum = 0;
 		if(waterflag){
-			breaksum = waterlist.size();
+			breaksum = waters.size();
 		}else if(lavaflag){
-			breaksum = lavalist.size();
+			breaksum = lavas.size();
 		}else if(fluidflag){
-			breaksum = waterlist.size() + lavalist.size();
+			breaksum = waters.size() + lavas.size();
 		}else if(breakflag){
-			breaksum = waterlist.size() + lavalist.size() + breaklist.size();
+			breaksum = waters.size() + lavas.size() + blocks.size();
 		}
 
 		//減る経験値計算
@@ -286,7 +283,7 @@ public class AssaultTask extends BukkitRunnable{
 		//重力値の判定
 		if(gravity > 15){
 			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-			SeichiAssist.Companion.getAllblocklist().removeAll(breaklist);
+			SeichiAssist.Companion.getAllblocklist().removeAll(blocks);
 			setCancel();
 			return;
 		}
@@ -297,7 +294,7 @@ public class AssaultTask extends BukkitRunnable{
 			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
-			SeichiAssist.Companion.getAllblocklist().removeAll(breaklist);
+			SeichiAssist.Companion.getAllblocklist().removeAll(blocks);
 			setCancel();
 			return;
 		}
@@ -309,7 +306,7 @@ public class AssaultTask extends BukkitRunnable{
 			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
-			SeichiAssist.Companion.getAllblocklist().removeAll(breaklist);
+			SeichiAssist.Companion.getAllblocklist().removeAll(blocks);
 			setCancel();
 			return;
 		}
@@ -327,37 +324,37 @@ public class AssaultTask extends BukkitRunnable{
 
 		//破壊する処理分岐
 		if(waterflag){
-			for (Block value : waterlist) {
+			for (Block value : waters) {
 				value.setType(Material.PACKED_ICE);
 				BreakUtil.logRemove(player, value);
 			}
 		}else if(lavaflag){
-			for (Block value : lavalist) {
+			for (Block value : lavas) {
 				value.setType(Material.MAGMA);
 				BreakUtil.logRemove(player, value);
 			}
 		}else if(fluidflag) {
-			for (Block item : waterlist) {
+			for (Block item : waters) {
 				item.setType(Material.PACKED_ICE);
 				BreakUtil.logRemove(player, item);
 			}
-			for (Block value : lavalist) {
+			for (Block value : lavas) {
 				value.setType(Material.MAGMA);
 				BreakUtil.logRemove(player, value);
 			}
 		}else if(breakflag){
-			for (Block item : waterlist) {
+			for (Block item : waters) {
 				item.setType(Material.AIR);
 			}
-			for (Block value : lavalist) {
+			for (Block value : lavas) {
 				value.setType(Material.AIR);
 			}
-			for(Block b:breaklist){
+			for(Block b:blocks){
 				BreakUtil.breakBlock(player, b, player.getLocation(), tool,false);
 				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}
-		SeichiAssist.Companion.getAllblocklist().removeAll(breaklist);
+		SeichiAssist.Companion.getAllblocklist().removeAll(blocks);
 	}
 
 	private boolean isCanceled() {
