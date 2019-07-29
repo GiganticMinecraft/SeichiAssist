@@ -1,23 +1,17 @@
 package com.github.unchama.seichiassist.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.Coordinate
 import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.task.AsyncEntityRemover
 import com.github.unchama.seichiassist.util.BreakUtil
-import org.bukkit.DyeColor
-import org.bukkit.EntityEffect
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.Particle
-import org.bukkit.Sound
+import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.entity.Chicken
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Wool
-import java.util.Random
+import java.util.*
 
 class MagicTask(// プレイヤー情報
     private val player: Player, // 使用するツール
