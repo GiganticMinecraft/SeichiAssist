@@ -12,7 +12,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerPickupItemEvent
 
 class PlayerPickupItemListener : Listener {
-  internal var playermap = SeichiAssist.playermap
+  private val playerMap = SeichiAssist.playermap
   private val config = SeichiAssist.seichiAssistConfig
 
   @EventHandler
@@ -21,7 +21,7 @@ class PlayerPickupItemListener : Listener {
 
     if (player.gameMode != GameMode.SURVIVAL) return
 
-    val playerData = playermap[player.uniqueId] ?: return
+    val playerData = playerMap[player.uniqueId] ?: return
 
     if (playerData.level < config.getMineStacklevel(1)) return
 

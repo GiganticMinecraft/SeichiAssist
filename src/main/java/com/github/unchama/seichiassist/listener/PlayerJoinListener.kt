@@ -17,8 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 
 class PlayerJoinListener : Listener {
-  private val plugin = SeichiAssist.instance
-  private val playermap = SeichiAssist.playermap
+  private val playerMap = SeichiAssist.playermap
   private val databaseGateway = SeichiAssist.databaseGateway
 
   // プレイヤーがjoinした時に実行
@@ -67,7 +66,7 @@ class PlayerJoinListener : Listener {
     // 整地ワールドから他のワールドに移動したとき
     if (ManagedWorld.fromBukkitWorld(event.from)?.isSeichi == true) {
       val p = event.player
-      val pd = playermap[p.uniqueId]!!
+      val pd = playerMap[p.uniqueId]!!
 
       // coreprotectを切る
       // inspectマップにtrueで登録されている場合

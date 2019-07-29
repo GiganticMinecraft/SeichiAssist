@@ -37,11 +37,10 @@ import org.bukkit.inventory.meta.SkullMeta
 import java.util.*
 
 class PlayerInventoryListener : Listener {
-  internal var playermap = SeichiAssist.playermap
-  internal var gachadatalist = SeichiAssist.gachadatalist
-  internal var plugin = SeichiAssist.instance
-  private val config = SeichiAssist.seichiAssistConfig
+  private val playerMap = SeichiAssist.playermap
+  private val gachaDataList = SeichiAssist.gachadatalist
   private val databaseGateway = SeichiAssist.databaseGateway
+
   //サーバー選択メニュー
   @EventHandler
   fun onPlayerClickServerSwitchMenuEvent(event: InventoryClickEvent) {
@@ -137,7 +136,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //経験値変更用のクラスを設定
     //ExperienceManager expman = new ExperienceManager(player);
@@ -233,7 +232,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //経験値変更用のクラスを設定
     val expman = ExperienceManager(player)
@@ -459,7 +458,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地スキルエフェクト選択") {
@@ -594,7 +593,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地スキル選択") {
@@ -1407,7 +1406,7 @@ class PlayerInventoryListener : Listener {
   fun onGachaTradeEvent(event: InventoryCloseEvent) {
     val player = event.player as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
     //エラー分岐
     val name = playerdata.name
     val inventory = event.inventory
@@ -1455,7 +1454,7 @@ class PlayerInventoryListener : Listener {
         //ガチャ景品リストにアイテムがあった時にtrueになるフラグ
         var flag = false
         //ガチャ景品リストを一個ずつ見ていくfor文
-        for (gachadata in gachadatalist) {
+        for (gachadata in gachaDataList) {
           if (!gachadata.itemStack.hasItemMeta()) {
             continue
           } else if (!gachadata.itemStack.itemMeta.hasLore()) {
@@ -1557,7 +1556,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //経験値変更用のクラスを設定
     //ExperienceManager expman = new ExperienceManager(player);
@@ -3499,7 +3498,7 @@ class PlayerInventoryListener : Listener {
   fun onOreTradeEvent(event: InventoryCloseEvent) {
     val player = event.player as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
     //エラー分岐
     val inventory = event.inventory
 
@@ -3686,7 +3685,7 @@ class PlayerInventoryListener : Listener {
   fun onGachaRingoEvent(event: InventoryCloseEvent) {
     val player = event.player as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
     //エラー分岐
     val name = playerdata.name
     val inventory = event.inventory
@@ -3733,7 +3732,7 @@ class PlayerInventoryListener : Listener {
         //ガチャ景品リストにアイテムがあった時にtrueになるフラグ
         var flag = false
         //ガチャ景品リストを一個ずつ見ていくfor文
-        for (gachadata in gachadatalist) {
+        for (gachadata in gachaDataList) {
           if (!gachadata.itemStack.hasItemMeta()) {
             continue
           } else if (!gachadata.itemStack.itemMeta.hasLore()) {
@@ -3808,7 +3807,7 @@ class PlayerInventoryListener : Listener {
   fun onTitanRepairEvent(event: InventoryCloseEvent) {
     val player = event.player as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
     //エラー分岐
     val inventory = event.inventory
 
@@ -3873,7 +3872,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "投票ptメニュー") {
@@ -4031,7 +4030,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
     val itemmeta = itemstackcurrent.itemMeta
 
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "ホームメニュー") {
@@ -4112,7 +4111,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "スキルを進化させますか?") {
       event.isCancelled = true
