@@ -305,7 +305,7 @@ class PlayerData(val player: Player) {
 
     val unitMap: Map<DirectionType, Int>
         get() {
-            val unitMap = HashMap<DirectionType, Int>()
+            val unitMap = EnumMap<DirectionType, Int>(DirectionType::class.java) //HashMap<DirectionType, Int>()
 
             unitMap[DirectionType.AHEAD] = this.claimUnit.ahead
             unitMap[DirectionType.BEHIND] = this.claimUnit.behind
@@ -442,6 +442,28 @@ class PlayerData(val player: Player) {
         expbar.remove()
         //クライアント経験値をサーバー保管
         saveTotalExp()
+    }
+
+    fun giganticBerserkLevelUp() {
+        val currentLevel = giganticBerserk.level
+        giganticBerserk = if (currentLevel >= 10) giganticBerserk else giganticBerserk.copy(level = currentLevel + 1, exp = 0)
+    }
+
+    fun recalculateAchievePoint() {
+        val max = TitleFlags
+            .stream() // index
+            .filter { it in 1000..9799 }
+            .count().toInt() /* Safe Conversation: BitSet indexes -> Int */ * 10
+        achievePoint = achievePoint.copy(totallyGet = max)
+    }
+
+    fun consumeAchievePoint(amount: Int) {
+        achievePoint = achievePoint.copy(used = achievePoint.used + amount)
+    }
+
+    fun convertEffectPointToAchievePoint() {
+        achievePoint = achievePoint.copy(convertCount = achievePoint.convertCount + 1)
+        activeskilldata.effectpoint -= 10
     }
 
     //詫びガチャの通知
