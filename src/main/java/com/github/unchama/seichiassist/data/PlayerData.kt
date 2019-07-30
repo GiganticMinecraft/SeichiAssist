@@ -8,6 +8,8 @@ import com.github.unchama.seichiassist.data.playerdata.ClaimUnit
 import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
 import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
 import com.github.unchama.seichiassist.data.playerdata.StarLevel
+import com.github.unchama.seichiassist.data.playerdata.AchievePoint
+import com.github.unchama.seichiassist.data.playerdata.LoginStatus
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -128,13 +130,13 @@ class PlayerData(val player: Player) {
     //現在座標
     var loc: Location? = null
     //放置時間
-    var idletime: Int = 0
+    var idletime = 0
     //トータル破壊ブロック
-    var totalbreaknum: Long = 0
+    var totalbreaknum = 0.toLong()
     //整地量バー
     var expbar: ExpBar
     //合計経験値
-    var totalexp: Int = 0
+    var totalexp = 0
     //経験値マネージャ
     var expmanager: ExperienceManager
     //合計経験値統合済みフラグ
@@ -149,6 +151,7 @@ class PlayerData(val player: Player) {
     //連続・通算ログイン用
     // var loginStatus = ---
     var lastcheckdate: String? = null
+    var loginStatus = LoginStatus(null, 0, 0)
     var ChainJoin: Int = 0
     var TotalJoin: Int = 0
 
@@ -204,10 +207,8 @@ class PlayerData(val player: Player) {
     //二つ名配布予約NOの保存
     var giveachvNo: Int = 0
     //実績ポイント用
-    var achvPointMAX: Int = 0//累計取得量
-    var achvPointUSE: Int = 0//消費量
-    var achvPoint: Int = 0//現在の残量
-    var achvChangenum: Int = 0//投票ptからの変換回数
+    var achievePoint = AchievePoint(totallyGet = 0, used = 0, convertCount = 0)
+
     var titlepage: Int = 0 //実績メニュー用汎用ページ指定
     var samepageflag: Boolean = false//実績ショップ用
 
@@ -262,25 +263,13 @@ class PlayerData(val player: Player) {
     var indexMap: Map<Int, MineStackObj>
 
     var giganticBerserk = GiganticBerserk()
-    var GBstage: Int
-        set(value) {
-            giganticBerserk = giganticBerserk.copy(stage = value)
-        }
-
-        get() = giganticBerserk.stage
-    var GBexp: Int
+    var GBexp
         set (value) {
             giganticBerserk = giganticBerserk.copy(exp = value)
         }
 
         get() = giganticBerserk.exp
-    var GBlevel: Int
-        set (value) {
-            giganticBerserk = giganticBerserk.copy(level = value)
-        }
-
-        get() = giganticBerserk.level
-    var isGBStageUp: Boolean
+  var isGBStageUp
         set (value) {
             giganticBerserk = giganticBerserk.copy(canEvolution = value)
         }
@@ -425,11 +414,7 @@ class PlayerData(val player: Player) {
         this.setHomeNameNum = 0
         this.isSubHomeNameChange = false
 
-        this.GBstage = 0
-        this.GBlevel = 0
-        this.GBexp = 0
-        this.isGBStageUp = false
-        this.GBcd = 0
+        this.giganticBerserk = GiganticBerserk(0, 0, 0, false, 0)
     }
 
     //join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -895,7 +880,7 @@ class PlayerData(val player: Player) {
         return s
     }
 
-    fun SetVotingFairyTime(str: String, p: Player) {
+    fun setVotingFairyTime(str: String, p: Player) {
         val s = str.split(",".toRegex()).toTypedArray()
         if (s[0].isNotEmpty() && s[1].isNotEmpty() && s[2].isNotEmpty() && s[3].isNotEmpty() && s[4].isNotEmpty()) {
             val startTime = GregorianCalendar(Integer.parseInt(s[0]), Integer.parseInt(s[1]) - 1, Integer.parseInt(s[2]), Integer.parseInt(s[3]), Integer.parseInt(s[4]))
