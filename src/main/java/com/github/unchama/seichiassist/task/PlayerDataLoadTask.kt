@@ -280,22 +280,28 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       //期間限定ログインイベント専用の累計ログイン日数
       playerdata.LimitedLoginCount = rs.getInt("LimitedLoginCount")
 
-        //連続・通算ログインの情報、およびその更新
-        val cal = Calendar.getInstance()
-        val sdf = SimpleDateFormat("yyyy/MM/dd")
-        if (rs.getString("lastcheckdate") == "" || rs.getString("lastcheckdate") == null) {
-          playerdata.lastcheckdate = sdf.format(cal.time)
-        } else {
-          playerdata.lastcheckdate = rs.getString("lastcheckdate")
-        }
-        playerdata.ChainJoin = rs.getInt("ChainJoin")
-        playerdata.TotalJoin = rs.getInt("TotalJoin")
-        if (playerdata.ChainJoin == 0) {
-          playerdata.ChainJoin = 1
-        }
-        if (playerdata.TotalJoin == 0) {
-          playerdata.TotalJoin = 1
-        }
+      //連続・通算ログインの情報、およびその更新
+      val cal = Calendar.getInstance()
+      val sdf = SimpleDateFormat("yyyy/MM/dd")
+      val lastIn = rs.getString("lastcheckdate")
+      playerdata.lastcheckdate = if (lastIn.isNullOrEmpty()) {
+        sdf.format(cal.time)
+      } else {
+        lastIn
+      }
+      val chain = rs.getInt("ChainJoin")
+      playerdata.ChainJoin = if (chain == 0) {
+        1
+      } else {
+        chain
+      }
+      val total = rs.getInt("TotalJoin")
+
+      playerdata.TotalJoin = if (total == 0) {
+        1
+      } else {
+        total
+      }
 
       try {
         val TodayDate = sdf.parse(sdf.format(cal.time))
