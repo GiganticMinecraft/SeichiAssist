@@ -12,8 +12,9 @@ import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.recomputedButton
 import com.github.unchama.seasonalevents.events.valentine.Valentine
+import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.UUIDs
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.*
 import com.github.unchama.seichiassist.data.player.settings.getBroadcastMutingSettings
 import com.github.unchama.seichiassist.data.player.settings.toggleBroadcastMutingSettings
@@ -24,6 +25,7 @@ import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.asCommandEffect
 import com.github.unchama.targetedeffect.player.closeInventoryEffect
+import com.github.unchama.util.newChestInventory
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.*
@@ -157,7 +159,7 @@ object SecondPage: Menu {
                 FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
                 TargetedEffect {
                   // TODO メニューインベントリに差し替える
-                  it.openInventory(Bukkit.createInventory(null, 9 * 4, "$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ"))
+                  it.openInventory(newChestInventory(row = 4, title ="$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ"))
                 }
             )
           }
@@ -188,7 +190,7 @@ object SecondPage: Menu {
                 FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
                 TargetedEffect {
                   // TODO メニューインベントリに差し替える
-                  it.openInventory(Bukkit.createInventory(null, 9 * 4, "$GOLD${BOLD}修繕したい限定タイタンを入れてネ"))
+                  it.openInventory(newChestInventory(row = 4, title ="$GOLD${BOLD}修繕したい限定タイタンを入れてネ"))
                 }
             )
           }
@@ -212,7 +214,7 @@ object SecondPage: Menu {
                 FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
                 TargetedEffect {
                   // TODO メニューインベントリに差し替える
-                  it.openInventory(Bukkit.createInventory(null, 9 * 4, "$RED${BOLD}ゴミ箱(取扱注意)"))
+                  it.openInventory(newChestInventory(row =4, title = "$RED${BOLD}ゴミ箱(取扱注意)"))
                 }
             )
           }
@@ -234,7 +236,7 @@ object SecondPage: Menu {
             sequentialEffect(
                 closeInventoryEffect,
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
-                TargetedEffect { it.performCommand("hub") } // TODO asCommandEffect
+                "hub".asCommandEffect()
             )
           }
       )
@@ -257,7 +259,7 @@ object SecondPage: Menu {
               "$RESET$DARK_RED${UNDERLINE}経験値が足りません"
             }
 
-        SkullItemStackBuilder(UUIDs.MHF_Villager)
+        SkullItemStackBuilder(SkullOwners.MHF_Villager)
             .title("$YELLOW$UNDERLINE${BOLD}自分の頭を召喚")
             .lore(baseLore + actionNavigation)
             .build()
@@ -494,9 +496,12 @@ object SecondPage: Menu {
       }
 
   override val open: TargetedEffect<Player> = computedEffect { player ->
-    val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", player.computeMenuLayout())
+    val session = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー").createNewSession()
 
-    view.createNewSession().open
+    sequentialEffect(
+        session.openEffectThrough(Schedulers.sync),
+        unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+    )
   }
 }
 

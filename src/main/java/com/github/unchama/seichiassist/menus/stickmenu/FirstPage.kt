@@ -12,8 +12,9 @@ import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.recomputedButton
 import com.github.unchama.seasonalevents.events.valentine.Valentine
+import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.UUIDs
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
@@ -26,6 +27,7 @@ import com.github.unchama.seichiassist.util.external.WorldGuard
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.asCommandEffect
+import com.github.unchama.util.newChestInventory
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.*
@@ -164,7 +166,7 @@ private object FirstPage: Menu {
 
     val secondPageButton = run {
       val iconItemStack =
-          SkullItemStackBuilder(UUIDs.MHF_ArrowRight)
+          SkullItemStackBuilder(SkullOwners.MHF_ArrowRight)
               .title("$YELLOW$UNDERLINE${BOLD}2ページ目へ")
               .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
               .build()
@@ -201,10 +203,9 @@ private object FirstPage: Menu {
               // TODO メニューに置き換える
               TargetedEffect {
                 it.openInventory(
-                    Bukkit.createInventory(
-                        null,
-                        9 * 4,
-                        "$LIGHT_PURPLE${BOLD}交換したい景品を入れてください"
+                    newChestInventory(
+                        row = 4,
+                        title = "$LIGHT_PURPLE${BOLD}交換したい景品を入れてください"
                     )
                 )
               }
@@ -319,10 +320,9 @@ private object FirstPage: Menu {
               // TODO メニューに置き換える
               TargetedEffect {
                 it.openInventory(
-                    Bukkit.createInventory(
-                        null,
-                        9 * 4,
-                        "$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください"
+                    newChestInventory(
+                        row = 4,
+                        title = "$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください"
                     )
                 )
               }
@@ -582,7 +582,7 @@ private object FirstPage: Menu {
           explanation + currentStatus
         }
 
-        SkullItemStackBuilder(UUIDs.whitecat_haru)
+        SkullItemStackBuilder(SkullOwners.whitecat_haru)
             .title("$DARK_AQUA$UNDERLINE${BOLD}運営からのガチャ券を受け取る")
             .lore(lore)
             .build()
@@ -681,7 +681,7 @@ private object FirstPage: Menu {
           listOf(gachaTicketStatus, gachaPointStatus)
         }
 
-        SkullItemStackBuilder(UUIDs.unchama)
+        SkullItemStackBuilder(SkullOwners.unchama)
             .title("$DARK_AQUA$UNDERLINE${BOLD}整地報酬ガチャ券を受け取る")
             .lore(lore)
             .build()
@@ -834,9 +834,12 @@ private object FirstPage: Menu {
       }
 
   override val open: TargetedEffect<Player> = computedEffect { player ->
-    val view = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー", player.computeMenuLayout())
+    val session = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー").createNewSession()
 
-    view.createNewSession().open
+    sequentialEffect(
+        session.openEffectThrough(Schedulers.sync),
+        unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+    )
   }
 }
 

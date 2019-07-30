@@ -7,12 +7,15 @@ import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
+import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory.*
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
+import com.github.unchama.targetedeffect.sequentialEffect
+import com.github.unchama.targetedeffect.unfocusedEffect
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -32,7 +35,7 @@ object MineStackMainMenu: Menu {
       val layoutMap = MineStackObjectCategory.values().mapIndexed { index, category ->
         val slotIndex = index + 1 // 0には自動スタック機能トグルが入るので、1から入れ始める
         val iconItemStack = IconItemStackBuilder(iconMaterialFor(category))
-            .lore(listOf("$BLUE$UNDERLINE$BOLD${category.uiLabel}"))
+            .title("$BLUE$UNDERLINE$BOLD${category.uiLabel}")
             .build()
 
         val button = Button(
@@ -74,12 +77,14 @@ object MineStackMainMenu: Menu {
   }
 
   override val open: TargetedEffect<Player> = computedEffect { player ->
-    val view = MenuInventoryView(
+    val session = MenuInventoryView(
         Left(4 * 9),
-        "$DARK_PURPLE${BOLD}MineStackメインメニュー",
-        player.computeMineStackMainMenuLayout()
-    )
+        "$DARK_PURPLE${BOLD}MineStackメインメニュー"
+    ).createNewSession()
 
-    view.createNewSession().open
+    sequentialEffect(
+        session.openEffectThrough(Schedulers.sync),
+        unfocusedEffect { session.overwriteViewWith(player.computeMineStackMainMenuLayout()) }
+    )
   }
 }

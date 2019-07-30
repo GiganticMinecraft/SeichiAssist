@@ -12,13 +12,13 @@ import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.listener.*
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.task.HalfHourRankingRoutine
 import com.github.unchama.seichiassist.task.PlayerDataBackupTask
 import com.github.unchama.seichiassist.task.PlayerDataPeriodicRecalculation
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.ActionStatus.Fail
-import com.github.unchama.util.collection.ImmutableListFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -144,7 +144,7 @@ class SeichiAssist : JavaPlugin() {
     }
 
     //ランキングリストを最新情報に更新する
-    if (!databaseGateway.playerDataManipulator.updateAllRankingList()) {
+    if (!databaseGateway.playerDataManipulator.successRankingUpdate()) {
       logger.info("ランキングデータの作成に失敗しました")
       Bukkit.shutdown()
     }
@@ -216,9 +216,6 @@ class SeichiAssist : JavaPlugin() {
     //ガチャシステムのメンテナンスフラグ
     var gachamente = false
 
-    // TODO これらは DatabaseConstants に移されるべき
-    const val PLAYERDATA_TABLENAME = "playerdata"
-
     val SEICHIWORLDNAME = "world_sw"
     val DEBUGWORLDNAME = "world"
 
@@ -227,10 +224,10 @@ class SeichiAssist : JavaPlugin() {
     lateinit var seichiAssistConfig: Config
 
     //Gachadataに依存するデータリスト
-    val gachadatalist: List<GachaPrize> = ArrayList()
+    val gachadatalist: MutableList<GachaPrize> = ArrayList()
 
     //(minestackに格納する)Gachadataに依存するデータリスト
-    var msgachadatalist: List<MineStackGachaData> = ArrayList()
+    var msgachadatalist: MutableList<MineStackGachaData> = ArrayList()
 
     //Playerdataに依存するデータリスト
     val playermap = HashMap<UUID, PlayerData>()
@@ -261,28 +258,12 @@ class SeichiAssist : JavaPlugin() {
     //プレイヤーがスキルで破壊するブロックリスト
     val allblocklist: MutableList<Block> = ArrayList()
 
-    //スキル破壊ブロック分のcoreprotectログ保存処理を除外するワールドリスト(coreprotectログデータ肥大化の軽減が目的)
-    //スキル自体はメインワールドと各整地ワールドのみ(world_SWで始まるワールドのみ)で発動する(ここの設定は無視する)
-    val ignoreWorldlist = ImmutableListFactory.of(
-        "world_SW", "world_SW_2", "world_SW_3", "world_SW_nether", "world_SW_the_end"
-    )
-
-    //保護を掛けて整地するワールドのリスト
-    val rgSeichiWorldlist = ImmutableListFactory.of(
-        "world_SW_2"
-    )
-
-    //整地ワールドのリスト(保護の有無は問わない)
-    val seichiWorldList = ImmutableListFactory.of(
-        "world_SW", "world_SW_2", "world_SW_3", "world_SW_nether", "world_SW_the_end"
-    )
-
     private fun creategachaminestacklist(): List<MineStackObj> {
       val minestacklist = ArrayList<MineStackObj>()
       for (i in msgachadatalist.indices) {
         val g = msgachadatalist[i]
         if (g.itemStack.type != Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外
-          minestacklist.add(MineStackObj(g.objName, g.level, g.itemStack, true, i, 5))
+          minestacklist.add(MineStackObj(g.objName, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES))
         }
       }
       return minestacklist

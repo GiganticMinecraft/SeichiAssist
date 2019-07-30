@@ -2,6 +2,7 @@ package com.github.unchama.menuinventory
 
 import arrow.core.Either
 import com.github.unchama.menuinventory.slot.Slot
+import com.github.unchama.util.newChestInventory
 import kotlinx.coroutines.runBlocking
 import org.bukkit.Bukkit
 import org.bukkit.inventory.Inventory
@@ -17,11 +18,11 @@ import org.bukkit.inventory.InventoryHolder
  */
 data class MenuInventoryView(private val size: InventorySize,
                              private val title: String,
-                             internal val slotLayout: IndexedSlotLayout) {
+                             internal val slotLayout: IndexedSlotLayout = IndexedSlotLayout()) {
   internal fun createConfiguredInventory(holder: InventoryHolder): Inventory {
     fun createInventory(property: InventorySize, title: String): Inventory =
         when (property) {
-          is Either.Left -> Bukkit.createInventory(holder, property.a, title)
+          is Either.Left -> newChestInventory(holder, property.a, title)
           is Either.Right -> Bukkit.createInventory(holder, property.b, title)
         }
 

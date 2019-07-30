@@ -11,7 +11,8 @@ import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.targetedeffect.unfocusedEffect
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
@@ -32,9 +33,10 @@ import org.bukkit.metadata.FixedMetadataValue
 import java.util.*
 
 class PlayerClickListener : Listener {
-  internal var plugin = SeichiAssist.instance
-  internal var playermap = SeichiAssist.playermap
-  internal var gachadatalist = SeichiAssist.gachadatalist
+  private val plugin = SeichiAssist.instance
+  private val playerMap = SeichiAssist.playermap
+  private val gachaDataList = SeichiAssist.gachadatalist
+
   //アクティブスキル処理
   @EventHandler
   fun onPlayerActiveSkillEvent(event: PlayerInteractEvent) {
@@ -47,7 +49,7 @@ class PlayerClickListener : Listener {
     //UUIDを取得
     val uuid = player.uniqueId
     //プレイヤーデータを取得
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
 
     //playerdataがない場合はreturn
     if (equipmentslot == null) {
@@ -190,7 +192,7 @@ class PlayerClickListener : Listener {
     //UUIDを取得
     val uuid = player.uniqueId
     //プレイヤーデータを取得
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
     //playerdataがない場合はreturn
 
     val name = playerdata.name
@@ -233,7 +235,7 @@ class PlayerClickListener : Listener {
       return
     }
     //ガチャデータが設定されていない場合
-    if (gachadatalist.isEmpty()) {
+    if (gachaDataList.isEmpty()) {
       player.sendMessage("ガチャが設定されていません")
       return
     }
@@ -322,7 +324,7 @@ class PlayerClickListener : Listener {
     //UUIDを取得
     val uuid = player.uniqueId
     //playerdataを取得
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
     //playerdataがない場合はreturn
 
 
@@ -439,7 +441,7 @@ class PlayerClickListener : Listener {
         StickMenu.firstPage.open
     )
 
-    runBlocking {
+    GlobalScope.launch(Schedulers.async) {
       effect.runFor(player)
     }
   }
@@ -460,7 +462,7 @@ class PlayerClickListener : Listener {
       //UUIDを取得
       val uuid = player.uniqueId
       //playerdataを取得
-      val playerdata = playermap[uuid]
+      val playerdata = playerMap[uuid]
       //念のためエラー分岐
       if (playerdata == null) {
         Util.sendPlayerDataNullMessage(player)

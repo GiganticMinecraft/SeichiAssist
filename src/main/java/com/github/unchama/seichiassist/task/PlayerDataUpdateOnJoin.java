@@ -22,8 +22,6 @@ public class PlayerDataUpdateOnJoin extends BukkitRunnable{
 
 	private HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 
-	final String table = SeichiAssist.PLAYERDATA_TABLENAME;
-
 	String name;
 	Player p;
 	final UUID uuid;

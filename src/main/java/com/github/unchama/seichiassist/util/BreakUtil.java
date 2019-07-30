@@ -18,7 +18,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Dye;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -77,8 +76,9 @@ public final class BreakUtil {
 		return true;
 	}
 	private static boolean equalsIgnoreNameCaseWorld(String name) {
-		List<String> ignoreworldlist = SeichiAssist.Companion.getIgnoreWorldlist();
-		return ignoreworldlist.stream().anyMatch(s -> name.equalsIgnoreCase(s.toLowerCase()));
+		ManagedWorld world = ManagedWorld.Companion.fromName(name);
+
+		return world != null && ManagedWorldKt.getShouldMuteCoreProtect(world);
 	}
 	//ブロックを破壊する処理、ドロップも含む、統計増加も含む
 	public static void breakBlock(Player player, Block breakblock, Location centerofblock, ItemStack tool, boolean stepflag) {
@@ -179,7 +179,7 @@ public final class BreakUtil {
 			if(material == mineStackObj.getMaterial() &&
 				itemstack.getDurability() == mineStackObj.getDurability()){
 				//この時点でIDとサブIDが一致している
-				if(!mineStackObj.getNameLoreFlag() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
+				if(!mineStackObj.getHasNameLore() && (!itemstack.getItemMeta().hasLore() && !itemstack.getItemMeta().hasDisplayName() ) ){//名前と説明文が無いアイテム
 					if(playerdata.getLevel() < config.getMineStacklevel(mineStackObj.getLevel())){
 						//レベルを満たしていない
 						return false;
@@ -187,7 +187,7 @@ public final class BreakUtil {
 						playerdata.getMinestack().addStackedAmountOf(mineStackObj, amount);
 						break;
 					}
-				} else if(mineStackObj.getNameLoreFlag() && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
+				} else if(mineStackObj.getHasNameLore() && itemstack.getItemMeta().hasDisplayName() && itemstack.getItemMeta().hasLore()){
 					//名前・説明文付き
 					ItemMeta meta = itemstack.getItemMeta();
 
