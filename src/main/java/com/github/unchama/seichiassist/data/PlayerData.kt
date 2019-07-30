@@ -578,7 +578,7 @@ class PlayerData(val player: Player) {
      */
     fun updateStarLevel(p: Player) {
         //処理前の各レベルを取得
-        val oldStars = starLevels.sum()
+        val oldStars = starLevels.total()
         val oldBreakStars = starLevels.fromBreakAmount
         val oldTimeStars = starLevels.fromConnectionTime
         //処理後のレベルを保存する入れ物
@@ -597,7 +597,7 @@ class PlayerData(val player: Player) {
 
         //TODO: イベント入手分スターの確認
 
-        val newStars: Int = starLevels.sum()
+        val newStars: Int = starLevels.total()
         //合計値の確認
         if (oldStars < newStars) {
             p.sendMessage("$GOLD★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆($oldStars)→☆($newStars)】")
