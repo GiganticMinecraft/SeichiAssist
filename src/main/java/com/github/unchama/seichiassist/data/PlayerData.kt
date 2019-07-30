@@ -348,14 +348,11 @@ class PlayerData(val player: Player) {
         this.pvpflag = false
         this.loc = null
         this.idletime = 0
-        this.staticdata = ArrayList()
         this.totalbreaknum = 0
-        for (m in MaterialSets.materials) {
-            //統計にないため除外
-            if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
-                staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m))
-            }
-        }
+        //統計にないため一部ブロックを除外
+        staticdata = (MaterialSets.materials - Material.GRASS_PATH - Material.SOIL - Material.MOB_SPAWNER)
+            .map { player.getStatistic(Statistic.MINE_BLOCK, it) }
+            .toMutableList()
         this.activeskilldata = ActiveSkillData()
         this.expbar = ExpBar(this, player)
         this.expmanager = ExperienceManager(player)
