@@ -208,9 +208,9 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         + ",displayTitle2No = " + playerdata.nickName.id2
         + ",displayTitle3No = " + playerdata.nickName.id3
         + ",giveachvNo = " + playerdata.giveachvNo
-        + ",achvPointMAX = " + playerdata.achvPointMAX
-        + ",achvPointUSE = " + playerdata.achvPointUSE
-        + ",achvChangenum = " + playerdata.achvChangenum
+        + ",achvPointMAX = " + playerdata.achievePoint.totallyGet
+        + ",achvPointUSE = " + playerdata.achievePoint.used
+        + ",achvChangenum = " + playerdata.achievePoint.convertCount
         + ",starlevel = " + playerdata.totalStarLevel
         + ",starlevel_Break = " + playerdata.starLevels.fromBreakAmount
         + ",starlevel_Time = " + playerdata.starLevels.fromConnectionTime

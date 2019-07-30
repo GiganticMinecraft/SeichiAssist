@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.data.MenuInventoryData
+import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.menus.stickmenu.firstPage
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -1793,13 +1794,7 @@ class PlayerInventoryListener : Listener {
       if (itemstackcurrent.type == Material.EMERALD_ORE) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerdata.achvPointMAX = 0
-        for (i in 1000..9799) {
-          if (playerdata.TitleFlags.get(i)) {
-            playerdata.achvPointMAX = playerdata.achvPointMAX + 10
-          }
-        }
-        playerdata.achvPoint = playerdata.achvPointMAX + playerdata.achvChangenum * 3 - playerdata.achvPointUSE
+        playerdata.recalculateAchievePoint()
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
       }
 
@@ -1811,18 +1806,10 @@ class PlayerInventoryListener : Listener {
         if (playerdata.activeskilldata.effectpoint < 10) {
           player.sendMessage("エフェクトポイントが不足しています。")
         } else {
-          playerdata.achvChangenum = playerdata.achvChangenum + 1
-          playerdata.activeskilldata.effectpoint -= 10
+          playerdata.convertEffectPointToAchievePoint()
         }
         //データ最新化
-        playerdata.achvPointMAX = 0
-        for (i in 1000..9799) {
-          if (playerdata.TitleFlags.get(i)) {
-            playerdata.achvPointMAX = playerdata.achvPointMAX + 10
-          }
-        }
-        playerdata.achvPoint = playerdata.achvPointMAX + playerdata.achvChangenum * 3 - playerdata.achvPointUSE
-
+        playerdata.recalculateAchievePoint()
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
 
 
@@ -2007,13 +1994,7 @@ class PlayerInventoryListener : Listener {
       if (itemstackcurrent.type == Material.EMERALD_ORE) {
         //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerdata.achvPointMAX = 0
-        for (i in 1000..9799) {
-          if (playerdata.TitleFlags.get(i)) {
-            playerdata.achvPointMAX = playerdata.achvPointMAX + 10
-          }
-        }
-        playerdata.achvPoint = playerdata.achvPointMAX + playerdata.achvChangenum * 3 - playerdata.achvPointUSE
+        playerdata.recalculateAchievePoint()
         playerdata.samepageflag = true
         player.openInventory(MenuInventoryData.setTitleShopData(player))
       }
@@ -2024,23 +2005,21 @@ class PlayerInventoryListener : Listener {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
         if (Integer.parseInt(itemmeta.displayName) < 9900) {
-          if (playerdata.achvPoint < 20) {
+          if (playerdata.achievePoint.left < 20) {
             player.sendMessage("実績ポイントが不足しています。")
           } else {
             playerdata.TitleFlags.set(Integer.parseInt(itemmeta.displayName))
-            playerdata.achvPoint = playerdata.achvPoint - 20
-            playerdata.achvPointUSE = playerdata.achvPointUSE + 20
+            playerdata.consumeAchievePoint(20)
             player.sendMessage("パーツ「" + SeichiAssist.seichiAssistConfig.getTitle1(Integer.parseInt(itemmeta.displayName)) + "」を購入しました。")
             playerdata.samepageflag = true
             player.openInventory(MenuInventoryData.setTitleShopData(player))
           }
         } else {
-          if (playerdata.achvPoint < 35) {
+          if (playerdata.achievePoint.left < 35) {
             player.sendMessage("実績ポイントが不足しています。")
           } else {
             playerdata.TitleFlags.set(Integer.parseInt(itemmeta.displayName))
-            playerdata.achvPoint = playerdata.achvPoint - 35
-            playerdata.achvPointUSE = playerdata.achvPointUSE + 35
+            playerdata.consumeAchievePoint(35)
             player.sendMessage("パーツ「" + SeichiAssist.seichiAssistConfig.getTitle2(Integer.parseInt(itemmeta.displayName)) + "」を購入しました。")
             playerdata.samepageflag = true
             player.openInventory(MenuInventoryData.setTitleShopData(player))
@@ -4116,10 +4095,7 @@ class PlayerInventoryListener : Listener {
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "スキルを進化させますか?") {
       event.isCancelled = true
       if (itemstackcurrent.type == Material.NETHER_STAR) {
-        playerdata.GBstage = playerdata.GBstage + 1
-        playerdata.GBlevel = 0
-        playerdata.GBexp = 0
-        playerdata.isGBStageUp = false
+        playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1, false)
         player.playSound(player.location, Sound.BLOCK_END_GATEWAY_SPAWN, 1f, 0.5.toFloat())
         player.playSound(player.location, Sound.ENTITY_ENDERDRAGON_AMBIENT, 1f, 0.8.toFloat())
         player.openInventory(MenuInventoryData.getGiganticBerserkEvolution2Menu(player))
