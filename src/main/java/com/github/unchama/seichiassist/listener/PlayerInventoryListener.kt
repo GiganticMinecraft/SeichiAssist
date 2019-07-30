@@ -14,6 +14,7 @@ import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.util.ActionStatus.Fail
+import com.github.unchama.util.row
 import com.google.common.io.ByteStreams
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,11 +37,10 @@ import org.bukkit.inventory.meta.SkullMeta
 import java.util.*
 
 class PlayerInventoryListener : Listener {
-  internal var playermap = SeichiAssist.playermap
-  internal var gachadatalist = SeichiAssist.gachadatalist
-  internal var plugin = SeichiAssist.instance
-  private val config = SeichiAssist.seichiAssistConfig
+  private val playerMap = SeichiAssist.playermap
+  private val gachaDataList = SeichiAssist.gachadatalist
   private val databaseGateway = SeichiAssist.databaseGateway
+
   //サーバー選択メニュー
   @EventHandler
   fun onPlayerClickServerSwitchMenuEvent(event: InventoryClickEvent) {
@@ -60,7 +60,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 2 * 9) {
+    if (topinventory.row != 2) {
       return
     }
     val player = he as Player
@@ -81,26 +81,32 @@ class PlayerInventoryListener : Listener {
       val byteArrayDataOutput = ByteStreams
           .newDataOutput()
       //ページ変更処理
-      if (meta.displayName.contains("アルカディアサーバー")) {
-        byteArrayDataOutput.writeUTF("Connect")
-        byteArrayDataOutput.writeUTF("s1")
-        player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-            byteArrayDataOutput.toByteArray())
-      } else if (meta.displayName.contains("エデンサーバー")) {
-        byteArrayDataOutput.writeUTF("Connect")
-        byteArrayDataOutput.writeUTF("s2")
-        player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-            byteArrayDataOutput.toByteArray())
-      } else if (meta.displayName.contains("ヴァルハラサーバー")) {
-        byteArrayDataOutput.writeUTF("Connect")
-        byteArrayDataOutput.writeUTF("s3")
-        player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-            byteArrayDataOutput.toByteArray())
-      } else if (meta.displayName.contains("公共施設サーバー")) {
-        byteArrayDataOutput.writeUTF("Connect")
-        byteArrayDataOutput.writeUTF("s7")
-        player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-            byteArrayDataOutput.toByteArray())
+      val displayName = meta.displayName
+      when {
+        "アルカディアサーバー" in displayName -> {
+          byteArrayDataOutput.writeUTF("Connect")
+          byteArrayDataOutput.writeUTF("s1")
+          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
+              byteArrayDataOutput.toByteArray())
+        }
+        "エデンサーバー" in displayName -> {
+          byteArrayDataOutput.writeUTF("Connect")
+          byteArrayDataOutput.writeUTF("s2")
+          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
+              byteArrayDataOutput.toByteArray())
+        }
+        "ヴァルハラサーバー" in displayName -> {
+          byteArrayDataOutput.writeUTF("Connect")
+          byteArrayDataOutput.writeUTF("s3")
+          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
+              byteArrayDataOutput.toByteArray())
+        }
+        "公共施設サーバー" in displayName -> {
+          byteArrayDataOutput.writeUTF("Connect")
+          byteArrayDataOutput.writeUTF("s7")
+          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
+              byteArrayDataOutput.toByteArray())
+        }
       }
     }
   }
@@ -125,12 +131,12 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 36) {
+    if (topinventory.row != 4) {
       return
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //経験値変更用のクラスを設定
     //ExperienceManager expman = new ExperienceManager(player);
@@ -221,12 +227,12 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが45でない時終了
-    if (topinventory.size != 45) {
+    if (topinventory.row != 5) {
       return
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //経験値変更用のクラスを設定
     val expman = ExperienceManager(player)
@@ -447,12 +453,12 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズ終了
-    if (topinventory.size != 9 * 6) {
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地スキルエフェクト選択") {
@@ -498,7 +504,7 @@ class PlayerInventoryListener : Listener {
               player.sendMessage(ChatColor.YELLOW.toString() + "既に選択されています")
             } else {
               playerdata.activeskilldata.effectnum = activeSkillEffect.num
-              player.sendMessage(ChatColor.GREEN.toString() + "エフェクト:" + activeSkillEffect.getName() + ChatColor.RESET + "" + ChatColor.GREEN + " が選択されました")
+              player.sendMessage(ChatColor.GREEN.toString() + "エフェクト:" + activeSkillEffect.nameOnUI + ChatColor.RESET + "" + ChatColor.GREEN + " が選択されました")
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
             }
           }
@@ -511,7 +517,7 @@ class PlayerInventoryListener : Listener {
               player.sendMessage(ChatColor.YELLOW.toString() + "既に選択されています")
             } else {
               playerdata.activeskilldata.effectnum = activeSkillPremiumEffect.num + 100
-              player.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト:" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + " が選択されました")
+              player.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト:" + activeSkillPremiumEffect.desc + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + " が選択されました")
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
             }
           }
@@ -524,13 +530,13 @@ class PlayerInventoryListener : Listener {
         val itemmeta = itemstackcurrent.itemMeta
         val skilleffect = ActiveSkillEffect.values()
         for (activeSkillEffect in skilleffect) {
-          if (itemmeta.displayName.contains(activeSkillEffect.getName())) {
+          if (itemmeta.displayName.contains(activeSkillEffect.nameOnUI)) {
             if (playerdata.activeskilldata.effectpoint < activeSkillEffect.usePoint) {
               player.sendMessage(ChatColor.DARK_RED.toString() + "エフェクトポイントが足りません")
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.5.toFloat())
             } else {
               playerdata.activeskilldata.obtainedSkillEffects.add(activeSkillEffect)
-              player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "エフェクト：" + activeSkillEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました")
+              player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "エフェクト：" + activeSkillEffect.nameOnUI + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました")
               player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
               playerdata.activeskilldata.effectpoint -= activeSkillEffect.usePoint
               player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player))
@@ -543,13 +549,13 @@ class PlayerInventoryListener : Listener {
         val itemmeta = itemstackcurrent.itemMeta
         val premiumeffect = ActiveSkillPremiumEffect.values()
         for (activeSkillPremiumEffect in premiumeffect) {
-          if (itemmeta.displayName.contains(activeSkillPremiumEffect.getName())) {
+          if (activeSkillPremiumEffect.desc in itemmeta.displayName) {
             if (playerdata.activeskilldata.premiumeffectpoint < activeSkillPremiumEffect.usePoint) {
               player.sendMessage(ChatColor.DARK_RED.toString() + "プレミアムエフェクトポイントが足りません")
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.5.toFloat())
             } else {
               playerdata.activeskilldata.obtainedSkillPremiumEffects.add(activeSkillPremiumEffect)
-              player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.getName() + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました")
+              player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.desc + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました")
               if (databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
                 player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。")
               }
@@ -582,12 +588,12 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 45) {
+    if (topinventory.row != 5) {
       return
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地スキル選択") {
@@ -1099,7 +1105,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
@@ -1166,7 +1172,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
@@ -1233,7 +1239,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
@@ -1300,7 +1306,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 54) {
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
@@ -1367,7 +1373,7 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 36) {
+    if (topinventory.row != 4) {
       return
     }
     val player = he as Player
@@ -1400,13 +1406,13 @@ class PlayerInventoryListener : Listener {
   fun onGachaTradeEvent(event: InventoryCloseEvent) {
     val player = event.player as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
     //エラー分岐
     val name = playerdata.name
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
-    if (inventory.size != 36) {
+    if (inventory.row != 4) {
       return
     }
     if (inventory.title == ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "交換したい景品を入れてください") {
@@ -1448,7 +1454,7 @@ class PlayerInventoryListener : Listener {
         //ガチャ景品リストにアイテムがあった時にtrueになるフラグ
         var flag = false
         //ガチャ景品リストを一個ずつ見ていくfor文
-        for (gachadata in gachadatalist) {
+        for (gachadata in gachaDataList) {
           if (!gachadata.itemStack.hasItemMeta()) {
             continue
           } else if (!gachadata.itemStack.itemMeta.hasLore()) {
@@ -1545,12 +1551,12 @@ class PlayerInventoryListener : Listener {
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.size != 36) {
+    if (topinventory.row != 4) {
       return
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //経験値変更用のクラスを設定
     //ExperienceManager expman = new ExperienceManager(player);
@@ -3492,12 +3498,12 @@ class PlayerInventoryListener : Listener {
   fun onOreTradeEvent(event: InventoryCloseEvent) {
     val player = event.player as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
     //エラー分岐
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
-    if (inventory.size != 36) {
+    if (inventory.row != 4) {
       return
     }
     if (inventory.title == ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "交換したい鉱石を入れてください") {
@@ -3679,13 +3685,13 @@ class PlayerInventoryListener : Listener {
   fun onGachaRingoEvent(event: InventoryCloseEvent) {
     val player = event.player as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
     //エラー分岐
     val name = playerdata.name
     val inventory = event.inventory
 
-    //インベントリサイズが36でない時終了
-    if (inventory.size != 36) {
+    //インベントリサイズが4列でない時終了
+    if (inventory.row != 4) {
       return
     }
     if (inventory.title == ChatColor.GOLD.toString() + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ") {
@@ -3726,7 +3732,7 @@ class PlayerInventoryListener : Listener {
         //ガチャ景品リストにアイテムがあった時にtrueになるフラグ
         var flag = false
         //ガチャ景品リストを一個ずつ見ていくfor文
-        for (gachadata in gachadatalist) {
+        for (gachadata in gachaDataList) {
           if (!gachadata.itemStack.hasItemMeta()) {
             continue
           } else if (!gachadata.itemStack.itemMeta.hasLore()) {
@@ -3801,12 +3807,12 @@ class PlayerInventoryListener : Listener {
   fun onTitanRepairEvent(event: InventoryCloseEvent) {
     val player = event.player as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
     //エラー分岐
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
-    if (inventory.size != 36) {
+    if (inventory.row != 4) {
       return
     }
     if (inventory.title == ChatColor.GOLD.toString() + "" + ChatColor.BOLD + "修繕したい限定タイタンを入れてネ") {
@@ -3860,13 +3866,13 @@ class PlayerInventoryListener : Listener {
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
-    //インベントリサイズが36でない時終了
-    if (topinventory.size != 36) {
+    //インベントリサイズが4列でない時終了
+    if (topinventory.row != 4) {
       return
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "投票ptメニュー") {
@@ -4018,13 +4024,13 @@ class PlayerInventoryListener : Listener {
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
-    //インベントリサイズが27でない時終了
-    if (topinventory.size != 27) {
+    //インベントリサイズが3列でない時終了
+    if (topinventory.row != 3) {
       return
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
     val itemmeta = itemstackcurrent.itemMeta
 
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "ホームメニュー") {
@@ -4099,13 +4105,13 @@ class PlayerInventoryListener : Listener {
 
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
-    //インベントリサイズが54でない時終了
-    if (topinventory.size != 54) {
+    //インベントリが6列でない時終了
+    if (topinventory.row != 6) {
       return
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playerMap[uuid]!!
 
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "スキルを進化させますか?") {
       event.isCancelled = true

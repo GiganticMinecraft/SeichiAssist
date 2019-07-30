@@ -23,7 +23,9 @@ import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class PlayerBlockBreakListener implements Listener {
@@ -138,7 +140,7 @@ public class PlayerBlockBreakListener implements Listener {
 		if(!playerdata.getActiveskilldata().skillcanbreakflag){
 			//SEを再生
 			if(SeichiAssist.Companion.getDEBUG()) player.sendMessage(ChatColor.RED + "クールタイムの破壊");
-			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
+			player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1);
 			return;
 		}
 
@@ -385,10 +387,10 @@ public class PlayerBlockBreakListener implements Listener {
 		Coordinate start = area.getStartList().get(0);
 		Coordinate end = area.getEndList().get(0);
 		//エフェクト用に壊されるブロック全てのリストデータ
-		List<Block> breaklist = new ArrayList<>();
+		Set<Block> breaklist = new HashSet<>();
 
 		//壊される溶岩のリストデータ
-		List<Block> lavalist = new ArrayList<>();
+		Set<Block> lavalist = new HashSet<>();
 
 		//範囲内の破壊されるブロックを取得
 		//for(int y = start.y; y <= end.y ; y++){
@@ -505,7 +507,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//選択されたブロックを破壊する処理
 
 		//自身のみしか壊さない時自然に処理する
-		if(breaklist.size()==0){
+		if(breaklist.isEmpty()){
 			BreakUtil.breakBlock(player, block, centerofblock, tool,true);
 			return;
 		}//エフェクトが指定されていないときの処理
@@ -522,7 +524,7 @@ public class PlayerBlockBreakListener implements Listener {
 			breaklist.add(block);
 			SeichiAssist.Companion.getAllblocklist().add(block);
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
-			skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
+			skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player,playerdata.getActiveskilldata(), tool, breaklist, start, end,centerofblock);
 		}
 
 		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
@@ -530,7 +532,7 @@ public class PlayerBlockBreakListener implements Listener {
 			breaklist.add(block);
 			SeichiAssist.Companion.getAllblocklist().add(block);
 			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
-			premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player,playerdata,tool, new ArrayList<>(breaklist), start, end,centerofblock);
+			premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player, tool, breaklist, start, end,centerofblock);
 		}
 
 		//経験値を減らす

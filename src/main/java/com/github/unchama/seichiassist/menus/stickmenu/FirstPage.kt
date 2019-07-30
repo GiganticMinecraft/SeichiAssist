@@ -27,6 +27,7 @@ import com.github.unchama.seichiassist.util.external.WorldGuard
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.asCommandEffect
+import com.github.unchama.util.newChestInventory
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.*
@@ -202,10 +203,9 @@ private object FirstPage: Menu {
               // TODO メニューに置き換える
               TargetedEffect {
                 it.openInventory(
-                    Bukkit.createInventory(
-                        null,
-                        9 * 4,
-                        "$LIGHT_PURPLE${BOLD}交換したい景品を入れてください"
+                    newChestInventory(
+                        row = 4,
+                        title = "$LIGHT_PURPLE${BOLD}交換したい景品を入れてください"
                     )
                 )
               }
@@ -320,10 +320,9 @@ private object FirstPage: Menu {
               // TODO メニューに置き換える
               TargetedEffect {
                 it.openInventory(
-                    Bukkit.createInventory(
-                        null,
-                        9 * 4,
-                        "$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください"
+                    newChestInventory(
+                        row = 4,
+                        title = "$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください"
                     )
                 )
               }

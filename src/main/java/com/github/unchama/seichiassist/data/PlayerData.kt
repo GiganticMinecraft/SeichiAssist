@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.data
 
 import com.github.unchama.seichiassist.LevelThresholds
+import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.Worlds
 import com.github.unchama.seichiassist.data.playerdata.ClaimUnit
 import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
 import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
@@ -22,6 +22,7 @@ import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.ops.plus
 import com.github.unchama.targetedeffect.player.asTargetedEffect
+import com.github.unchama.util.newChestInventory
 import org.bukkit.*
 import org.bukkit.ChatColor.*
 import org.bukkit.command.CommandSender
@@ -36,6 +37,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.experimental.and
 import kotlin.experimental.or
+import kotlin.math.roundToInt
 
 
 class PlayerData(val player: Player) {
@@ -232,7 +234,7 @@ class PlayerData(val player: Player) {
     private var canCreateRegion: Boolean = false
     var unitPerClick: Int = 0
         private set
-    var templateMap: Map<Int, GridTemplate>? = null
+    var templateMap: MutableMap<Int, GridTemplate>? = null
 
     //投票妖精関連
     var usingVotingFairy: Boolean = false
@@ -302,22 +304,15 @@ class PlayerData(val player: Player) {
         get() = SeichiAssist.instance.server.getPlayer(uuid) == null
     //四次元ポケットのサイズを取得
     val pocketSize: Int
-        get() = if (level < 6) {
-            9 * 3
-        } else if (level < 16) {
-            9 * 3
-        } else if (level < 26) {
-            9 * 3
-        } else if (level < 36) {
-            9 * 3
-        } else if (level < 46) {
-            9 * 3
-        } else if (level < 56) {
-            9 * 4
-        } else if (level < 66) {
-            9 * 5
-        } else {
-            9 * 6
+        get() = when {
+          level < 6 -> 9 * 3
+          level < 16 -> 9 * 3
+          level < 26 -> 9 * 3
+          level < 36 -> 9 * 3
+          level < 46 -> 9 * 3
+          level < 56 -> 9 * 4
+          level < 66 -> 9 * 5
+          else -> 9 * 6
         }
 
     val subHomeEntries: Set<Map.Entry<Int, SubHome>>
@@ -357,7 +352,7 @@ class PlayerData(val player: Player) {
         this.level = 1
         this.mebius = MebiusTask(this)
         this.numofsorryforbug = 0
-        this.inventory = Bukkit.createInventory(null, 9 * 1, DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
+        this.inventory = newChestInventory(row = 1, title = DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
         this.rgnum = 0
         this.minestackflag = true
         this.servertick = player.getStatistic(Statistic.PLAY_ONE_TICK)
@@ -483,7 +478,7 @@ class PlayerData(val player: Player) {
         //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
         for (ed in effectdatalist) {
             ed.duration -= 1200
-            tmplist.add(ed)
+            tmplist += ed
         }
         //tmplistのdurationが3秒以下（60tick）のものはeffectdatalistから削除
         for (ed in tmplist) {
@@ -564,7 +559,7 @@ class PlayerData(val player: Player) {
             val loc = p.location
             Util.launchFireWorks(loc)
             val lvmessage = SeichiAssist.seichiAssistConfig.getLvMessage(i + 1)
-            if (!lvmessage.isEmpty()) {
+            if (lvmessage.isNotEmpty()) {
                 p.sendMessage(AQUA.toString() + lvmessage)
             }
             i++
@@ -642,11 +637,11 @@ class PlayerData(val player: Player) {
             }
         }
         //double値を四捨五入し、整地量に追加する整数xを出す
-        val x = Math.round(sum)
+        val x = sum.roundToInt()
 
         //xを整地量に追加
         totalbreaknum += x
-        return x.toInt()
+        return x
     }
 
     //ブロック別整地数反映量の調節
@@ -685,7 +680,7 @@ class PlayerData(val player: Player) {
         } else {
             val worldName = p.world.name
             val sw_mining_coefficient = 0.8
-            if (worldName.equals(Worlds.WORLD_SW.alphabetName, ignoreCase = true)) {
+            if (worldName.equals(ManagedWorld.WORLD_SW.alphabetName, ignoreCase = true)) {
                 result *= sw_mining_coefficient
             }
         }
@@ -727,28 +722,18 @@ class PlayerData(val player: Player) {
 
     //パッシブスキルの獲得量表示
     fun dispPassiveExp(): Double {
-        return if (level < 8) {
-            0.0
-        } else if (level < 18) {
-            SeichiAssist.seichiAssistConfig.getDropExplevel(1)
-        } else if (level < 28) {
-            SeichiAssist.seichiAssistConfig.getDropExplevel(2)
-        } else if (level < 38) {
-            SeichiAssist.seichiAssistConfig.getDropExplevel(3)
-        } else if (level < 48) {
-            SeichiAssist.seichiAssistConfig.getDropExplevel(4)
-        } else if (level < 58) {
-            SeichiAssist.seichiAssistConfig.getDropExplevel(5)
-        } else if (level < 68) {
-            SeichiAssist.seichiAssistConfig.getDropExplevel(6)
-        } else if (level < 78) {
-            SeichiAssist.seichiAssistConfig.getDropExplevel(7)
-        } else if (level < 88) {
-            SeichiAssist.seichiAssistConfig.getDropExplevel(8)
-        } else if (level < 98) {
-            SeichiAssist.seichiAssistConfig.getDropExplevel(9)
-        } else {
-            SeichiAssist.seichiAssistConfig.getDropExplevel(10)
+        return when {
+          level < 8 -> 0.0
+          level < 18 -> SeichiAssist.seichiAssistConfig.getDropExplevel(1)
+          level < 28 -> SeichiAssist.seichiAssistConfig.getDropExplevel(2)
+          level < 38 -> SeichiAssist.seichiAssistConfig.getDropExplevel(3)
+          level < 48 -> SeichiAssist.seichiAssistConfig.getDropExplevel(4)
+          level < 58 -> SeichiAssist.seichiAssistConfig.getDropExplevel(5)
+          level < 68 -> SeichiAssist.seichiAssistConfig.getDropExplevel(6)
+          level < 78 -> SeichiAssist.seichiAssistConfig.getDropExplevel(7)
+          level < 88 -> SeichiAssist.seichiAssistConfig.getDropExplevel(8)
+          level < 98 -> SeichiAssist.seichiAssistConfig.getDropExplevel(9)
+          else -> SeichiAssist.seichiAssistConfig.getDropExplevel(10)
         }
     }
 
@@ -892,33 +877,31 @@ class PlayerData(val player: Player) {
     }
 
     fun toggleUnitPerGrid() {
-        if (this.unitPerClick == 1) {
-            this.unitPerClick = 10
-        } else if (this.unitPerClick == 10) {
-            this.unitPerClick = 100
-        } else if (this.unitPerClick == 100) {
-            this.unitPerClick = 1
+        when {
+          this.unitPerClick == 1 -> this.unitPerClick = 10
+          this.unitPerClick == 10 -> this.unitPerClick = 100
+          this.unitPerClick == 100 -> this.unitPerClick = 1
         }
     }
 
     fun VotingFairyTimeToString(): String {
         val cal = this.VotingFairyStartTime
         var s = ""
-        if (this.VotingFairyStartTime == null) {
+        s += if (this.VotingFairyStartTime == null) {
             //設定されてない場合
-            s += ",,,,,"
+            ",,,,,"
         } else {
             //設定されてる場合
             val date = cal!!.time
             val format = SimpleDateFormat("yyyy,MM,dd,HH,mm,")
-            s += format.format(date)
+            format.format(date)
         }
         return s
     }
 
     fun SetVotingFairyTime(str: String, p: Player) {
         val s = str.split(",".toRegex()).toTypedArray()
-        if (s[0].length > 0 && s[1].length > 0 && s[2].length > 0 && s[3].length > 0 && s[4].length > 0) {
+        if (s[0].isNotEmpty() && s[1].isNotEmpty() && s[2].isNotEmpty() && s[3].isNotEmpty() && s[4].isNotEmpty()) {
             val startTime = GregorianCalendar(Integer.parseInt(s[0]), Integer.parseInt(s[1]) - 1, Integer.parseInt(s[2]), Integer.parseInt(s[3]), Integer.parseInt(s[4]))
 
             var min = Integer.parseInt(s[4]) + 1
@@ -941,7 +924,7 @@ class PlayerData(val player: Player) {
 
     fun isVotingFairy(p: Player) {
         //効果は継続しているか
-        if (this.usingVotingFairy && Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime) == false) {
+        if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime)) {
             this.usingVotingFairy = false
             p.sendMessage(LIGHT_PURPLE.toString() + "" + BOLD + "妖精は何処かへ行ってしまったようだ...")
         } else if (this.usingVotingFairy) {
