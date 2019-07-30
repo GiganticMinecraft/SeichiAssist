@@ -5,7 +5,6 @@ import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.LevelThresholds;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.task.GiganticBerserkTask;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
@@ -199,8 +198,7 @@ public class MenuInventoryData {
 	public static ItemMeta GiganticBerserkMeta(PlayerData playerdata, ItemMeta itemmeta){
 		List<String> lore = new ArrayList<>();
 
-		int n = (playerdata.getGBstage() * 10) + playerdata.getGBlevel();
-		GiganticBerserkTask GBTR = new GiganticBerserkTask();
+		int n = (playerdata.getGiganticBerserk().getStage() * 10) + playerdata.getGiganticBerserk().getLevel();
 
 		if(playerdata.getLevel() < 10){
 			lore.add(ChatColor.WHITE + "このパッシブスキルは");
@@ -213,7 +211,7 @@ public class MenuInventoryData {
 			lore.add(ChatColor.DARK_GRAY + "整地中でなければその効果を発揮しない");
 			lore.add("");
 			lore.add(ChatColor.DARK_GRAY + "実装は試験的であり、変更される場合があります");
-			if(playerdata.getGBstage() == 4 && playerdata.getGBlevel() == 9){
+			if(playerdata.getGiganticBerserk().reachedLimit()){
 				lore.add(ChatColor.GRAY + "MOBの魂を極限まで吸収し最大限の力を発揮する");
 			}else {
 				lore.add(ChatColor.GRAY + "MOBの魂を" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n) + "回吸収すると更なる力が得られる");
@@ -854,9 +852,9 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "クリックで情報を最新化"
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + (playerdata.getAchvPointMAX() + playerdata.getAchvChangenum() * 3)
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.getAchvPointUSE()
-							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.getAchvPoint());
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + playerdata.getAchievePoint().getTotallyGet()
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.getAchievePoint().getUsed()
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.getAchievePoint().getLeft());
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -881,7 +879,7 @@ public class MenuInventoryData {
 							,ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.BOLD + "投票pt 10pt → 実績pt 3pt"
 							,ChatColor.RESET + "" +  ChatColor.AQUA + "クリックで変換を一回行います。"
 							,ChatColor.RESET + "" +  ChatColor.GREEN + "所有投票pt :" + playerdata.getActiveskilldata().effectpoint
-							,ChatColor.RESET + "" +  ChatColor.GREEN + "所有実績pt :" + playerdata.getAchvPoint());
+							,ChatColor.RESET + "" +  ChatColor.GREEN + "所有実績pt :" + playerdata.getAchievePoint().getLeft());
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -1268,9 +1266,9 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "クリックで情報を最新化"
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + (playerdata.getAchvPointMAX() + playerdata.getAchvChangenum() * 3)
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.getAchvPointUSE()
-							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.getAchvPoint());
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + (playerdata.getAchievePoint().getTotallyGet())
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.getAchievePoint().getUsed()
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata..getAchievePoint().getLeft());
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);

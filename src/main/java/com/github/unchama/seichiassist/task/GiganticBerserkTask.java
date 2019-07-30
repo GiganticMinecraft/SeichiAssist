@@ -59,14 +59,14 @@ public class GiganticBerserkTask {
 		}
 
 		// stage * level
-		int n = (playerdata.getGiganticBerserk().getStage() * 10) + playerdata.getGiganticBerserk().getLevel();
+		int level = playerdata.getGiganticBerserk().getLevel();
+		int n = (playerdata.getGiganticBerserk().getStage() * 10) + level;
 
 		playerdata.setGBexp(playerdata.getGiganticBerserk().getExp() + 1);
 		//レベルアップするかどうか判定
 		if(LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n) <= playerdata.getGiganticBerserk().getExp()){
-			if(playerdata.getGiganticBerserk().getLevel() <= 8){
-				playerdata.setGBexp(0);
-				playerdata.setGBlevel(playerdata.getGiganticBerserk().getLevel() + 1);
+			if(level <= 8){
+				playerdata.giganticBerserkLevelUp();
 				//プレイヤーにメッセージ
 				player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.WHITE + "のレベルがアップし、確率が上昇しました");
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f) ;
