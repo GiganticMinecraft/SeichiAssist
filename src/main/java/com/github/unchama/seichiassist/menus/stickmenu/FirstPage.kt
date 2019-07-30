@@ -29,7 +29,6 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.asCommandEffect
 import com.github.unchama.util.newChestInventory
 import net.md_5.bungee.api.ChatColor
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -621,7 +620,7 @@ private object FirstPage: Menu {
         val lore = listOf(
             "$RESET$AQUA${BOLD}整地量：☆${playerData.starLevels.fromBreakAmount}",
             "$RESET${AQUA}次の☆まで：あと$breakNumRequiredToNextStarLevel",
-            "$RESET$GREEN$UNDERLINE${BOLD}合計：☆${playerData.starLevels.sum()}"
+            "$RESET$GREEN$UNDERLINE${BOLD}合計：☆${playerData.starLevels.total()}"
         )
 
         IconItemStackBuilder(Material.GOLD_INGOT)

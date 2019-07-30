@@ -89,15 +89,11 @@ class PlayerData(val player: Player) {
     var rgnum: Int = 0
 
     var starLevels = StarLevel(0, 0, 0)
-    //スターレベル用数値
     /**
      * スターレベルの合計を返すショートカットフィールド。
      */
-    val totalStarLevel: Int
-        get() = starLevels.sum()
-
-    //MineStack
-    //public MineStack minestack;
+    val totalStarLevel
+        get() = starLevels.total()
 
     var minestack = MineStack()
     //MineStackFlag
