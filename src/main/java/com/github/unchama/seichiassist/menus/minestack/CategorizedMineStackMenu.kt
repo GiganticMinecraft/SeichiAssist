@@ -6,7 +6,10 @@ import com.github.unchama.menuinventory.*
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
-import com.github.unchama.seichiassist.*
+import com.github.unchama.seichiassist.MineStackObjectList
+import com.github.unchama.seichiassist.Schedulers
+import com.github.unchama.seichiassist.SkullOwnerReference
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.category
@@ -57,11 +60,11 @@ object CategorizedMineStackMenu {
       val stickMenuButtonSection = singleSlotLayout { (9 * 5) to CommonButtons.openStickMenu }
 
       val previousPageButtonSection = if (page > 0) {
-        singleSlotLayout { 9 * 5 + 7 to buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp.asSkullOwnerReference()) }
+        singleSlotLayout { 9 * 5 + 7 to buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp) }
       } else emptyLayout
 
       val nextPageButtonSection = if (page + 1 < totalNumberOfPages) {
-        singleSlotLayout { 9 * 5 + 8 to buttonToTransferTo(page + 1, SkullOwners.MHF_ArrowDown.asSkullOwnerReference()) }
+        singleSlotLayout { 9 * 5 + 8 to buttonToTransferTo(page + 1, SkullOwners.MHF_ArrowDown) }
       } else emptyLayout
 
       combinedLayout(
