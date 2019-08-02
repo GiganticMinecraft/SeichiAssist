@@ -1,10 +1,17 @@
 package com.github.unchama.menuinventory
 
 import arrow.core.Either
+import arrow.core.left
 import org.bukkit.event.inventory.InventoryType
 
 /**
- * インベントリのサイズを表すデータ型.
- * [Either.Left] にある値はインベントリのスロット数を表し, [Either.Right] にある値は [InventoryType] のいずれかとなる.
+ * チェストインベントリの行数を表すdata class
  */
-typealias InventorySize = Either<Int, InventoryType>
+data class InventoryRowSize(val rows: Int)
+
+/**
+ * インベントリのサイズを表すデータ型.
+ */
+typealias InventorySize = Either<InventoryRowSize, InventoryType>
+
+fun Int.rows(): InventorySize = InventoryRowSize(this).left()

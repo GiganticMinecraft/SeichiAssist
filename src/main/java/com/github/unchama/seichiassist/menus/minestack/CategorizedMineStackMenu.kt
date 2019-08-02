@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.menus.minestack
 
-import arrow.core.Left
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.*
 import com.github.unchama.menuinventory.slot.button.Button
@@ -92,7 +91,7 @@ object CategorizedMineStackMenu {
   fun forCategory(category: MineStackObjectCategory, page: Int = 0): Menu = object: Menu {
     override val open: TargetedEffect<Player> = computedEffect { player ->
       val session = MenuInventoryView(
-          Left(6 * 9),
+          6.rows(),
           "$DARK_BLUE${BOLD}MineStack - ${category.uiLabel} (${page}ページ目)"
       ).createNewSession()
 
