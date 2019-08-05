@@ -217,14 +217,14 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         + ",starlevel_Event = " + playerdata.starLevels.fromEventAchievement
 
         + ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
-        + ",ChainJoin = " + playerdata.ChainJoin
-        + ",TotalJoin = " + playerdata.TotalJoin
+        + ",ChainJoin = " + playerdata.loginStatus.chainLoginDay
+        + ",TotalJoin = " + playerdata.loginStatus.totalLoginDay
         + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
 
         //建築
-        + ",build_lv = " + playerdata.build_lv_get()
-        + ",build_count = " + playerdata.build_count_get()!!.toString()
-        + ",build_count_flg = " + playerdata.build_count_flg_get()
+        + ",build_lv = " + playerdata.buildCount.lv
+        + ",build_count = " + playerdata.buildCount.count//.toString()
+        + ",build_count_flg = " + playerdata.buildCount.migrationFlag
 
         //投票
         + ",canVotingFairyUse = " + playerdata.usingVotingFairy

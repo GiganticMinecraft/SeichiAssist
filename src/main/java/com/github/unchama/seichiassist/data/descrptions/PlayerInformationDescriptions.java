@@ -146,7 +146,7 @@ public final class PlayerInformationDescriptions {
      */
     @NotNull
     private static String totalLoginDaysDescrption(@NotNull PlayerData playerData) {
-        return GRAY +"通算ログイン日数：" + playerData.getTotalJoin() + "日";
+        return GRAY +"通算ログイン日数：" + playerData.getLoginStatus().getTotalLoginDay() + "日";
     }
 
     /**
@@ -154,7 +154,7 @@ public final class PlayerInformationDescriptions {
      */
     @NotNull
     private static String totalChainLoginDaysDescription(@NotNull PlayerData playerData) {
-        return GRAY + "連続ログイン日数：" + playerData.getChainJoin() + "日";
+        return GRAY + "連続ログイン日数：" + playerData.getLoginStatus().getChainLoginDay() + "日";
     }
 
     /**

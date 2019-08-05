@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.MineStack
 import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.playerdata.AchievePoint
+import com.github.unchama.seichiassist.data.playerdata.BuildCount
 import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
 import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
 import com.github.unchama.seichiassist.data.playerdata.StarLevel
@@ -23,6 +24,7 @@ import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
+import org.jetbrains.annotations.NotNull
 import java.io.IOException
 import java.math.BigDecimal
 import java.sql.ResultSet
@@ -361,9 +363,11 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       }
 
       //建築
-      playerdata.build_lv_set(rs.getInt("build_lv"))
-      playerdata.build_count_set(BigDecimal(rs.getString("build_count")))
-      playerdata.build_count_flg_set(rs.getByte("build_count_flg"))
+      playerdata.buildCount = BuildCount(
+          rs.getInt("build_lv"),
+          BigDecimal(rs.getString("build_count")),
+          rs.getByte("build_count_flg")
+      )
 
       //マナ妖精
       playerdata.usingVotingFairy = rs.getBoolean("canVotingFairyUse")

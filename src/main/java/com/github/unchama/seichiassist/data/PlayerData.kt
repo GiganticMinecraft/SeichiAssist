@@ -9,11 +9,13 @@ import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
 import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
 import com.github.unchama.seichiassist.data.playerdata.StarLevel
 import com.github.unchama.seichiassist.data.playerdata.AchievePoint
+import com.github.unchama.seichiassist.data.playerdata.BuildCount
 import com.github.unchama.seichiassist.data.playerdata.LoginStatus
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
+import com.github.unchama.seichiassist.isSeichi
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.MebiusTask
@@ -211,15 +213,7 @@ class PlayerData(val player: Player) {
 
     var titlepage: Int = 0 //実績メニュー用汎用ページ指定
     var samepageflag: Boolean = false//実績ショップ用
-
-
-    //建築LV
-    private var build_lv: Int = 0
-    //設置ブロック数
-    private var build_count: BigDecimal? = null
-    //設置ブロックサーバー統合フラグ
-    private var build_count_flg: Byte = 0
-
+    var buildCount = BuildCount(1, BigDecimal.ZERO, 0)
     // 1周年記念
     var anniversary: Boolean = false
 
@@ -372,9 +366,7 @@ class PlayerData(val player: Player) {
 
         this.starLevels = StarLevel(0, 0, 0)
 
-        this.build_lv = 1
-        this.build_count = BigDecimal.ZERO
-        this.build_count_flg = 0
+        this.buildCount = BuildCount(1, BigDecimal.ZERO, 0)
         this.anniversary = false
 
         this.halfBreakFlag = false
