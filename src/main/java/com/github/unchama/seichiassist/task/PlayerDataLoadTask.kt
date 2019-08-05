@@ -354,7 +354,8 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       //初回nullエラー回避のための分岐
       try {
         val Titlenums = rs.getString("TitleFlags").split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        val Titlearray = Arrays.stream(Titlenums).mapToLong { x -> java.lang.Long.parseUnsignedLong(x, 16) }.toArray()
+        val Titlearray = Arrays.stream(Titlenums).mapToLong { x: String -> java.lang.Long.parseUnsignedLong(x, 16) }.toArray()
+        @NotNull
         val TitleFlags = BitSet.valueOf(Titlearray)
         playerdata.TitleFlags = TitleFlags
       } catch (e: NullPointerException) {
