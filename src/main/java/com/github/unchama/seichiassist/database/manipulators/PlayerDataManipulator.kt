@@ -295,7 +295,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                 val targetPlayerData = SeichiAssist.playermap[targetPlayer.uniqueId] ?: return@let
 
                 targetPlayerData.contribute_point += point
-                targetPlayerData.isContribute(targetPlayer, point)
+                targetPlayerData.setContributionPoint(point)
             }
         }
 

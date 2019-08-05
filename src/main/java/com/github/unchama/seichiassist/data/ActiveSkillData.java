@@ -236,7 +236,7 @@ public class ActiveSkillData {
 		runTask(player);
 		mana.initialize(player,level);
 	}
-	public void updateonQuit(Player player) {
+	public void updateOnQuit() {
 		mana.hide();
 	}
 }

@@ -407,27 +407,27 @@ class PlayerData(val player: Player) {
     }
 
     //join時とonenable時、プレイヤーデータを最新の状態に更新
-    fun updateonJoin(player: Player) {
+    fun updateOnJoin() {
         //破壊量データ(before)を設定
         //minuteblock.before = totalbreaknum;
         halfhourblock.before = totalbreaknum
-        updateLevel(player)
-        NotifySorryForBug(player)
-        activeskilldata.updateonJoin(player, level)
+        updateLevel()
+        notifySorryForBug()
+        activeskilldata.updateOnJoin(player, level)
         //サーバー保管経験値をクライアントに読み込み
         loadTotalExp()
-        isVotingFairy(player)
+        isVotingFairy()
     }
 
 
     //quit時とondisable時、プレイヤーデータを最新の状態に更新
-    fun updateonQuit(player: Player) {
+    fun updateOnQuit() {
         //総整地量を更新
-        calcMineBlock(player)
+        calcMineBlock()
         //総プレイ時間更新
-        calcPlayTick(player)
+        calcPlayTick()
 
-        activeskilldata.updateonQuit(player)
+        activeskilldata.updateOnQuit()
         expbar.remove()
         //クライアント経験値をサーバー保管
         saveTotalExp()
@@ -456,8 +456,8 @@ class PlayerData(val player: Player) {
     }
 
     //詫びガチャの通知
-    fun NotifySorryForBug(player: Player) {
-        if (numofsorryforbug > 0) {
+    fun notifySorryForBug() {
+        if (wabiGacha > 0) {
             player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
             player.sendMessage(GREEN.toString() + "運営チームから" + numofsorryforbug + "枚の" + GOLD + "ガチャ券" + WHITE + "が届いています！\n木の棒メニューから受け取ってください")
         }
@@ -482,10 +482,10 @@ class PlayerData(val player: Player) {
 
 
     //レベルを更新
-    fun updateLevel(p: Player) {
-        calcPlayerLevel(p)
-        updateStarLevel(p)
-        setDisplayName(p)
+    fun updateLevel() {
+        updatePlayerLevel()
+        updateStarLevel()
+        setDisplayName()
         expbar.calculate()
     }
 
@@ -504,11 +504,17 @@ class PlayerData(val player: Player) {
 
 
     //表示される名前に整地レベルor二つ名を追加
-    fun setDisplayName(p: Player) {
-        var displayname = Util.getName(p)
+    fun setDisplayName() {
+      var displayname = Util.getName(player)
+        //放置時に色を変える
+        val idleColor = when {
+            idletime >= 10 -> DARK_GRAY
+            idletime >= 3 -> GRAY
+            else -> ""
+        }.toString()
 
         //表示を追加する処理
-        displayname = if (nickName.id1 == 0 && nickName.id2 == 0 && nickName.id3 == 0) {
+        displayname = idleColor + if (nickName.id1 == 0 && nickName.id2 == 0 && nickName.id3 == 0) {
             if (totalStarLevel <= 0) {
                 "[ Lv$level ]$displayname$WHITE"
             } else {
@@ -527,13 +533,14 @@ class PlayerData(val player: Player) {
             displayname = GRAY.toString() + displayname
         }
 
-        p.displayName = displayname
-        p.playerListName = displayname
+        player.displayName = displayname
+        player.playerListName = displayname
     }
 
 
     //プレイヤーレベルを計算し、更新する。
-    private fun calcPlayerLevel(p: Player) {
+    private fun updatePlayerLevel() {
+        val p = player
         //現在のランクを取得
         var i = level
         //既にレベル上限に達していたら終了
@@ -572,8 +579,8 @@ class PlayerData(val player: Player) {
      * スターレベルの計算、更新を行う。
      * このメソッドはスター数が増えたときにメッセージを送信する副作用を持つ。
      */
-    fun updateStarLevel(p: Player) {
-        //処理前の各レベルを取得
+    fun updateStarLevel() {
+      //処理前の各レベルを取得
         val oldStars = starLevels.total()
         val oldBreakStars = starLevels.fromBreakAmount
         val oldTimeStars = starLevels.fromConnectionTime
@@ -582,7 +589,7 @@ class PlayerData(val player: Player) {
 
         //整地量の確認
         if (oldBreakStars < newBreakStars) {
-            p.sendMessage(GOLD.toString() + "ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆(" + oldBreakStars + ")→☆(" + newBreakStars + ")】")
+            player.sendMessage(GOLD.toString() + "ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆(" + oldBreakStars + ")→☆(" + newBreakStars + ")】")
             starLevels = starLevels.copy(fromBreakAmount = newBreakStars)
         }
 
@@ -596,13 +603,13 @@ class PlayerData(val player: Player) {
         val newStars: Int = starLevels.total()
         //合計値の確認
         if (oldStars < newStars) {
-            p.sendMessage("$GOLD★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆($oldStars)→☆($newStars)】")
+            player.sendMessage("$GOLD★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆($oldStars)→☆($newStars)】")
         }
     }
 
     //総プレイ時間を更新する
-    fun calcPlayTick(p: Player) {
-        val getservertick = p.getStatistic(Statistic.PLAY_ONE_TICK)
+    fun calcPlayTick() {
+        val ticksInStatistic = player.getStatistic(Statistic.PLAY_ONE_TICK)
         //前回との差分を算出
         val getincrease = getservertick - servertick
         servertick = getservertick
@@ -611,17 +618,18 @@ class PlayerData(val player: Player) {
     }
 
     //総破壊ブロック数を更新する
-    fun calcMineBlock(p: Player): Int {
+    fun calcMineBlock(): Int {
         var i = 0
         var sum = 0.0
         for (m in MaterialSets.materials) {
             if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
-                val getstat = p.getStatistic(Statistic.MINE_BLOCK, m)
-                val getincrease = getstat - staticdata[i]
-                sum += calcBlockExp(m, getincrease, p)
+                val getstat = player.getStatistic(Statistic.MINE_BLOCK, m)
+                val increased = getstat - staticdata[i]
+                val amount = calcBlockExp(m, increased)
+                sum += amount
                 if (SeichiAssist.DEBUG) {
-                    if (calcBlockExp(m, getincrease, p) > 0.0) {
-                        p.sendMessage("calcの値:" + calcBlockExp(m, getincrease, p) + "(" + m + ")")
+                    if (amount > 0.0) {
+                        player.sendMessage("calcの値:$amount($m)")
                     }
                 }
                 staticdata[i] = getstat
@@ -637,8 +645,8 @@ class PlayerData(val player: Player) {
     }
 
     //ブロック別整地数反映量の調節
-    private fun calcBlockExp(m: Material, i: Int, p: Player): Double {
-        var result = i.toDouble()
+    private fun calcBlockExp(m: Material, i: Int): Double {
+        val amount = i.toDouble()
         //ブロック別重み分け
         when (m) {
             Material.DIRT ->
@@ -666,21 +674,14 @@ class PlayerData(val player: Player) {
             }
         }
 
-        if (!Util.isSeichiWorld(p)) {
-            //整地ワールド外では整地数が反映されない
-            result *= 0.0
-        } else {
-            val worldName = p.world.name
-            val sw_mining_coefficient = 0.8
-            if (worldName.equals(ManagedWorld.WORLD_SW.alphabetName, ignoreCase = true)) {
-                result *= sw_mining_coefficient
-            }
-        }
-        return result
+        val managedWorld = ManagedWorld.fromBukkitWorld(player.world)
+        val swMult = if (managedWorld?.isSeichi == true) 1.0 else 0.0
+        val sw01PenaltyMult = if (ManagedWorld.WORLD_SW == managedWorld) 0.8 else 1.0
+        return amount * matMult * swMult * sw01PenaltyMult
     }
 
-    //現在の採掘量順位を表示する
-    fun calcPlayerRank(p: Player): Int {
+    //現在の採掘量順位
+    fun calcPlayerRank(): Int {
         //ランク用関数
         var i = 0
         val t = totalbreaknum
@@ -696,7 +697,7 @@ class PlayerData(val player: Player) {
         return i + 1
     }
 
-    fun calcPlayerApple(p: Player): Int {
+    fun calcPlayerApple(): Int {
         //ランク用関数
         var i = 0
         val t = p_apple
@@ -914,30 +915,30 @@ class PlayerData(val player: Player) {
         }
     }
 
-    fun isVotingFairy(p: Player) {
-        //効果は継続しているか
+    private fun isVotingFairy() {
+      //効果は継続しているか
         if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime)) {
             this.usingVotingFairy = false
-            p.sendMessage(LIGHT_PURPLE.toString() + "" + BOLD + "妖精は何処かへ行ってしまったようだ...")
+            player.sendMessage(LIGHT_PURPLE.toString() + "" + BOLD + "妖精は何処かへ行ってしまったようだ...")
         } else if (this.usingVotingFairy) {
-            VotingFairyTask.speak(p, "おかえり！" + p.name, true)
+            VotingFairyTask.speak(player, "おかえり！" + player.name, true)
         }
     }
 
-    fun isContribute(p: Player, addMana: Int) {
-        val mana = Mana()
+    fun setContributionPoint(addAmount: Int) {
+      val mana = Mana()
 
         //負数(入力ミスによるやり直し中プレイヤーがオンラインだった場合)の時
-        if (addMana < 0) {
-            p.sendMessage(GREEN.toString() + "" + BOLD + "入力者のミスによって得た不正なマナを" + -10 * addMana + "分減少させました.")
-            p.sendMessage(GREEN.toString() + "" + BOLD + "申し訳ございません.")
+        if (addAmount < 0) {
+            player.sendMessage(GREEN.toString() + "" + BOLD + "入力者のミスによって得た不正なマナを" + -10 * addAmount + "分減少させました.")
+            player.sendMessage(GREEN.toString() + "" + BOLD + "申し訳ございません.")
         } else {
-            p.sendMessage(GREEN.toString() + "" + BOLD + "運営からあなたの整地鯖への貢献報酬として")
-            p.sendMessage(GREEN.toString() + "" + BOLD + "マナの上限値が" + 10 * addMana + "上昇しました．(永久)")
+            player.sendMessage(GREEN.toString() + "" + BOLD + "運営からあなたの整地鯖への貢献報酬として")
+            player.sendMessage(GREEN.toString() + "" + BOLD + "マナの上限値が" + 10 * addAmount + "上昇しました．(永久)")
         }
-        this.added_mana += addMana
+        this.added_mana += addAmount
 
-        mana.calcAndSetMax(p, this.level)
+        mana.calcAndSetMax(player, this.level)
     }
 
     @Suppress("RedundantSuspendModifier")

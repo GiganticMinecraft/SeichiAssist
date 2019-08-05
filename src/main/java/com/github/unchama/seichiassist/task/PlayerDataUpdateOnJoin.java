@@ -63,7 +63,7 @@ public class PlayerDataUpdateOnJoin extends BukkitRunnable{
 
 		p.sendMessage(ChatColor.GREEN + "プレイヤーデータ取得完了");
 		//join時とonenable時、プレイヤーデータを最新の状態に更新
-		playerdata.updateonJoin(p);
+		playerdata.updateOnJoin();
 
 		//同期処理をしないといけない部分ここまで
 	}

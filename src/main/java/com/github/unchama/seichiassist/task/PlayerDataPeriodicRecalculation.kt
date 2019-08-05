@@ -54,16 +54,16 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       //プレイヤー名を取得
       val name = Util.getName(player)
       //総整地量を更新(返り血で重み分け済みの1分間のブロック破壊量が返ってくる)
-      val increase = playerData.calcMineBlock(player)
+      val increase = playerData.calcMineBlock()
       //Levelを設定(必ず総整地量更新後に実施！)
-      playerData.updateLevel(player)
+      playerData.updateLevel()
       //activeskillpointを設定
       playerData.activeskilldata.updateActiveSkillPoint(player, playerData.level)
       //総プレイ時間更新
-      playerData.calcPlayTick(player)
+      playerData.calcPlayTick()
 
       //スターレベル更新
-      playerData.updateStarLevel(player)
+      playerData.updateStarLevel()
 
       //effectの大きさ
       var amplifier: Double

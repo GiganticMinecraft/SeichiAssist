@@ -5965,7 +5965,7 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(13,itemstack);
 
-			int prank = playerdata.calcPlayerApple(p);
+			int prank = playerdata.calcPlayerApple();
 
 			itemstack = new ItemStack(Material.GOLDEN_APPLE);
 			itemmeta = itemstack.getItemMeta();
