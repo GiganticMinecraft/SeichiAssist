@@ -47,7 +47,7 @@ import kotlin.math.roundToInt
 class PlayerData(val player: Player) {
 
     //読み込み済みフラグ
-    var loaded: Boolean = false
+    var loaded = false
     //プレイヤー名
     var name: String
     //UUID
@@ -56,7 +56,7 @@ class PlayerData(val player: Player) {
     val fastDiggingEffectSuppressor = FastDiggingEffectSuppressor()
 
     //内訳メッセージを出すフラグ
-    var messageflag: Boolean = false
+    var messageflag = false
     //1分間のデータを保存するincrease:１分間の採掘量
     //public MineBlock minuteblock;
     //３０分間のデータを保存する．
@@ -66,7 +66,7 @@ class PlayerData(val player: Player) {
     //最後のガチャポイントデータ
     var lastgachapoint = 0
     //ガチャ受け取りフラグ
-    var gachaflag: Boolean = false
+    var gachaflag = false
     //今回の採掘速度上昇レベルを格納
     var minespeedlv = 0
     //前回の採掘速度上昇レベルを格納
@@ -101,7 +101,7 @@ class PlayerData(val player: Player) {
 
     var minestack = MineStack()
     //MineStackFlag
-    var minestackflag: Boolean = false
+    var minestackflag = false
     //プレイ時間差分計算用int
     var servertick = 0
     //プレイ時間
@@ -109,26 +109,26 @@ class PlayerData(val player: Player) {
 
     //キルログ表示トグル
     @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayDeathMessages"))
-    var dispkilllogflag: Boolean = false
+    var dispkilllogflag = false
 
     //全体通知音消音トグル
     @Deprecated("BroadcastMutingSettingsを使え。")
-    var everysoundflag: Boolean = false
+    var everysoundflag = false
     //全体メッセージ非表示トグル
     @Deprecated("BroadcastMutingSettingsを使え。")
-    var everymessageflag: Boolean = false
+    var everymessageflag = false
 
     //ワールドガード保護ログ表示トグル
     @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayWorldGuardLogs"))
-    var dispworldguardlogflag: Boolean = false
+    var dispworldguardlogflag = false
     //複数種類破壊トグル
-    var multipleidbreakflag: Boolean = false
+    var multipleidbreakflag = false
 
     //チェスト破壊トグル
-    var chestflag: Boolean = false
+    var chestflag = false
 
     //PvPトグル
-    var pvpflag: Boolean = false
+    var pvpflag = false
     //現在座標
     var loc: Location? = null
     //放置時間
@@ -148,7 +148,7 @@ class PlayerData(val player: Player) {
     //特典受け取り済み投票数
     var p_givenvote = 0
     //投票受け取りボタン連打防止用
-    var votecooldownflag: Boolean = false
+    var votecooldownflag = false
 
     //連続・通算ログイン用
     // var loginStatus = ---
@@ -169,12 +169,12 @@ class PlayerData(val player: Player) {
     var mebius: MebiusTask
 
     //ガチャボタン連打防止用
-    var gachacooldownflag: Boolean = false
+    var gachacooldownflag = false
 
     //インベントリ共有トグル
-    var contentsPresentInSharedInventory: Boolean = false
+    var contentsPresentInSharedInventory = false
     //インベントリ共有ボタン連打防止用
-    var shareinvcooldownflag: Boolean = false
+    var shareinvcooldownflag = false
 
     var selectHomeNum = 0
     var setHomeNameNum = 0
@@ -212,23 +212,23 @@ class PlayerData(val player: Player) {
     var achievePoint = AchievePoint(totallyGet = 0, used = 0, convertCount = 0)
 
     var titlepage = 0 //実績メニュー用汎用ページ指定
-    var samepageflag: Boolean = false//実績ショップ用
+    var samepageflag = false//実績ショップ用
     var buildCount = BuildCount(1, BigDecimal.ZERO, 0)
     // 1周年記念
-    var anniversary: Boolean = false
+    var anniversary = false
 
     //ハーフブロック破壊抑制用
-    private var halfBreakFlag: Boolean = false
+    private var halfBreakFlag = false
 
     //グリッド式保護関連
     private var claimUnit = ClaimUnit(0, 0, 0, 0)
-    private var canCreateRegion: Boolean = false
+    private var canCreateRegion = false
     var unitPerClick = 0
         private set
     var templateMap: MutableMap<Int, GridTemplate>? = null
 
     //投票妖精関連
-    var usingVotingFairy: Boolean = false
+    var usingVotingFairy = false
     var VotingFairyStartTime: Calendar? = null
     var VotingFairyEndTime: Calendar? = null
     var hasVotingFairyMana = 0
@@ -236,23 +236,23 @@ class PlayerData(val player: Player) {
     var toggleGiveApple = 0
     var toggleVotingFairy = 0
     var p_apple: Long = 0
-    var toggleVFSound: Boolean = false
+    var toggleVFSound = false
 
     //貢献度pt
     var added_mana = 0
     var contribute_point = 0
 
     //正月イベント用
-    var hasNewYearSobaGive: Boolean = false
+    var hasNewYearSobaGive = false
     var newYearBagAmount = 0
 
     //バレンタインイベント用
-    var hasChocoGave: Boolean = false
+    var hasChocoGave = false
 
     //MineStackの履歴
     var hisotryData: MineStackUsageHistory
     //MineStack検索機能使用中かどうか
-    var isSearching: Boolean = false
+    var isSearching = false
     //MineStack検索保存用Map
     var indexMap: Map<Int, MineStackObj>
 
