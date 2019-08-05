@@ -62,19 +62,19 @@ class PlayerData(val player: Player) {
     //３０分間のデータを保存する．
     var halfhourblock: MineBlock
     //ガチャの基準となるポイント
-    var gachapoint: Int = 0
+    var gachapoint = 0
     //最後のガチャポイントデータ
-    var lastgachapoint: Int = 0
+    var lastgachapoint = 0
     //ガチャ受け取りフラグ
     var gachaflag: Boolean = false
     //今回の採掘速度上昇レベルを格納
-    var minespeedlv: Int = 0
+    var minespeedlv = 0
     //前回の採掘速度上昇レベルを格納
-    var lastminespeedlv: Int = 0
+    var lastminespeedlv = 0
     //持ってるポーションエフェクト全てを格納する．
     var effectdatalist: MutableList<FastDiggingEffect>
     //現在のプレイヤーレベル
-    var level: Int = 0
+    var level = 0
     //詫び券をあげる数
     var wabiGacha = 0
     //拡張インベントリ
@@ -90,7 +90,7 @@ class PlayerData(val player: Player) {
             return field
         }
     //ワールドガード保護自動設定用
-    var rgnum: Int = 0
+    var rgnum = 0
 
     var starLevels = StarLevel(0, 0, 0)
     /**
@@ -103,9 +103,9 @@ class PlayerData(val player: Player) {
     //MineStackFlag
     var minestackflag: Boolean = false
     //プレイ時間差分計算用int
-    var servertick: Int = 0
+    var servertick = 0
     //プレイ時間
-    var playtick: Int = 0
+    var playtick = 0
 
     //キルログ表示トグル
     @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayDeathMessages"))
@@ -146,7 +146,7 @@ class PlayerData(val player: Player) {
     //各統計値差分計算用配列
     private val staticdata: MutableList<Int>
     //特典受け取り済み投票数
-    var p_givenvote: Int = 0
+    var p_givenvote = 0
     //投票受け取りボタン連打防止用
     var votecooldownflag: Boolean = false
 
@@ -154,13 +154,13 @@ class PlayerData(val player: Player) {
     // var loginStatus = ---
     var lastcheckdate: String? = null
     var loginStatus = LoginStatus(null, 0, 0)
-    var ChainJoin: Int = 0
-    var TotalJoin: Int = 0
+    var ChainJoin = 0
+    var TotalJoin = 0
 
     //期間限定ログイン用
-    var LimitedLoginCount: Int = 0
+    var LimitedLoginCount = 0
 
-    var ChainVote: Int = 0
+    var ChainVote = 0
 
     //アクティブスキル関連データ
     var activeskilldata: ActiveSkillData
@@ -205,13 +205,13 @@ class PlayerData(val player: Player) {
     //二つ名解禁フラグ保存用
     var TitleFlags: BitSet
     //二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
-    var p_vote_forT: Int = 0
+    var p_vote_forT = 0
     //二つ名配布予約NOの保存
-    var giveachvNo: Int = 0
+    var giveachvNo = 0
     //実績ポイント用
     var achievePoint = AchievePoint(totallyGet = 0, used = 0, convertCount = 0)
 
-    var titlepage: Int = 0 //実績メニュー用汎用ページ指定
+    var titlepage = 0 //実績メニュー用汎用ページ指定
     var samepageflag: Boolean = false//実績ショップ用
     var buildCount = BuildCount(1, BigDecimal.ZERO, 0)
     // 1周年記念
@@ -223,7 +223,7 @@ class PlayerData(val player: Player) {
     //グリッド式保護関連
     private var claimUnit = ClaimUnit(0, 0, 0, 0)
     private var canCreateRegion: Boolean = false
-    var unitPerClick: Int = 0
+    var unitPerClick = 0
         private set
     var templateMap: MutableMap<Int, GridTemplate>? = null
 
@@ -231,20 +231,20 @@ class PlayerData(val player: Player) {
     var usingVotingFairy: Boolean = false
     var VotingFairyStartTime: Calendar? = null
     var VotingFairyEndTime: Calendar? = null
-    var hasVotingFairyMana: Int = 0
-    var VotingFairyRecoveryValue: Int = 0
-    var toggleGiveApple: Int = 0
-    var toggleVotingFairy: Int = 0
+    var hasVotingFairyMana = 0
+    var VotingFairyRecoveryValue = 0
+    var toggleGiveApple = 0
+    var toggleVotingFairy = 0
     var p_apple: Long = 0
     var toggleVFSound: Boolean = false
 
     //貢献度pt
-    var added_mana: Int = 0
-    var contribute_point: Int = 0
+    var added_mana = 0
+    var contribute_point = 0
 
     //正月イベント用
     var hasNewYearSobaGive: Boolean = false
-    var newYearBagAmount: Int = 0
+    var newYearBagAmount = 0
 
     //バレンタインイベント用
     var hasChocoGave: Boolean = false
@@ -665,13 +665,10 @@ class PlayerData(val player: Player) {
                 result *= 1.0
 
             //氷塊とマグマブロックの整地量を2倍
-            Material.PACKED_ICE -> result *= 2.0
+            Material.PACKED_ICE -> 2.0
+            Material.MAGMA -> 2.0
 
-            Material.MAGMA -> result *= 2.0
-
-
-            else -> {
-            }
+            else -> 1.0
         }
 
         val managedWorld = ManagedWorld.fromBukkitWorld(player.world)
