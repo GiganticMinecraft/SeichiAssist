@@ -49,9 +49,11 @@ class PlayerData(val player: Player) {
     //読み込み済みフラグ
     var loaded = false
     //プレイヤー名
-    var name: String
+    val name: String
+      get() = Util.getName(player)
     //UUID
-    var uuid: UUID
+    val uuid: UUID
+      get() = player.uniqueId
 
     val fastDiggingEffectSuppressor = FastDiggingEffectSuppressor()
 
@@ -316,8 +318,6 @@ class PlayerData(val player: Player) {
     init {
         //初期値を設定
         this.loaded = false
-        this.name = Util.getName(player)
-        this.uuid = player.uniqueId
         this.fastDiggingEffectSuppressor.internalValue = 0
         this.messageflag = false
         //this.minuteblock = new MineBlock();
