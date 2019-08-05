@@ -327,7 +327,7 @@ class PlayerData(val player: Player) {
         this.gachaflag = true
         this.minespeedlv = 0
         this.lastminespeedlv = 0
-        this.effectdatalist = ArrayList()
+        this.effectdatalist = LinkedList()
         this.level = 1
         this.mebius = MebiusTask(this)
         this.wabiGacha = 0
