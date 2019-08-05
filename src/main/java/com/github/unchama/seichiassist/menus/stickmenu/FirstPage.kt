@@ -571,7 +571,7 @@ private object FirstPage: Menu {
               "$RESET${GRAY}・各種謝礼として"
           )
 
-          val obtainableApologyItems = playerData.numofsorryforbug
+          val obtainableApologyItems = playerData.wabiGacha
           val currentStatus =
               if (obtainableApologyItems != 0)
                 "$RESET${AQUA}未獲得ガチャ券：${obtainableApologyItems}枚"
@@ -599,7 +599,7 @@ private object FirstPage: Menu {
                   sequentialEffect(
                       unfocusedEffect {
                         repeat(numberOfItemsToGive) { Util.addItemToPlayerSafely(this, itemToGive) }
-                        playerData.numofsorryforbug = 0
+                        playerData.wabiGacha = 0
                       },
                       FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
                       "${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()

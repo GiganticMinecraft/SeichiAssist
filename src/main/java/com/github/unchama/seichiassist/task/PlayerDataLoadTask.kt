@@ -228,7 +228,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       playerdata.gachapoint = rs.getInt("gachapoint")
       playerdata.gachaflag = rs.getBoolean("gachaflag")
       playerdata.level = rs.getInt("level")
-      playerdata.numofsorryforbug = rs.getInt("numofsorryforbug")
+      playerdata.wabiGacha = rs.getInt("numofsorryforbug")
       playerdata.rgnum = rs.getInt("rgnum")
       playerdata.inventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
       playerdata.dispkilllogflag = rs.getBoolean("killlogflag")
@@ -292,18 +292,18 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         lastIn
       }
       val chain = rs.getInt("ChainJoin")
-      playerdata.ChainJoin = if (chain == 0) {
-        1
-      } else {
-        chain
-      }
+      playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = if (chain == 0) {
+  1
+} else {
+  chain
+})
       val total = rs.getInt("TotalJoin")
 
-      playerdata.TotalJoin = if (total == 0) {
-        1
-      } else {
-        total
-      }
+      playerdata.loginStatus = playerdata.loginStatus.copy(totalLoginDay = if (total == 0) {
+  1
+} else {
+  total
+})
 
       try {
         val TodayDate = sdf.parse(sdf.format(cal.time))
@@ -314,11 +314,11 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         val datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
         if (datediff > 0) {
           LLE.getLastcheck(playerdata.lastcheckdate)
-          playerdata.TotalJoin = playerdata.TotalJoin + 1
+          playerdata.loginStatus = playerdata.loginStatus.copy(totalLoginDay = playerdata.loginStatus.totalLoginDay + 1)
           if (datediff == 1L) {
-            playerdata.ChainJoin = playerdata.ChainJoin + 1
+            playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = playerdata.loginStatus.chainLoginDay + 1)
           } else {
-            playerdata.ChainJoin = 1
+            playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = 1)
           }
         }
       } catch (e: ParseException) {
@@ -375,7 +375,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       playerdata.hasVotingFairyMana = rs.getInt("hasVotingFairyMana")
       playerdata.toggleGiveApple = rs.getInt("toggleGiveApple")
       playerdata.toggleVotingFairy = rs.getInt("toggleVotingFairy")
-      playerdata.setVotingFairyTime(rs.getString("newVotingFairyTime"), p)
+      playerdata.setVotingFairyTime(rs.getString("newVotingFairyTime"))
       playerdata.p_apple = rs.getLong("p_apple")
 
 
@@ -500,7 +500,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
     if (playerdata.added_mana < playerdata.contribute_point) {
       val addMana: Int
       addMana = playerdata.contribute_point - playerdata.added_mana
-      playerdata.isContribute(p, addMana)
+      playerdata.setContributionPoint(addMana)
     }
     timer.sendLapTimeMessage(ChatColor.GREEN.toString() + p.name + "のプレイヤーデータ読込完了")
   }

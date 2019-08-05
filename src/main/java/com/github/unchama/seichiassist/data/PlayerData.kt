@@ -76,7 +76,7 @@ class PlayerData(val player: Player) {
     //現在のプレイヤーレベル
     var level: Int = 0
     //詫び券をあげる数
-    var numofsorryforbug: Int = 0
+    var wabiGacha = 0
     //拡張インベントリ
     var inventory: Inventory
         get() {
@@ -330,7 +330,7 @@ class PlayerData(val player: Player) {
         this.effectdatalist = ArrayList()
         this.level = 1
         this.mebius = MebiusTask(this)
-        this.numofsorryforbug = 0
+        this.wabiGacha = 0
         this.inventory = newChestInventory(row = 1, title = DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
         this.rgnum = 0
         this.minestackflag = true
@@ -459,7 +459,7 @@ class PlayerData(val player: Player) {
     fun notifySorryForBug() {
         if (wabiGacha > 0) {
             player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-            player.sendMessage(GREEN.toString() + "運営チームから" + numofsorryforbug + "枚の" + GOLD + "ガチャ券" + WHITE + "が届いています！\n木の棒メニューから受け取ってください")
+            player.sendMessage(GREEN.toString() + "運営チームから" + wabiGacha + "枚の" + GOLD + "ガチャ券" + WHITE + "が届いています！\n木の棒メニューから受け取ってください")
         }
     }
 
@@ -611,10 +611,10 @@ class PlayerData(val player: Player) {
     fun calcPlayTick() {
         val ticksInStatistic = player.getStatistic(Statistic.PLAY_ONE_TICK)
         //前回との差分を算出
-        val getincrease = getservertick - servertick
-        servertick = getservertick
+        val pastTime = ticksInStatistic - servertick
+        servertick = ticksInStatistic
         //総プレイ時間に追加
-        playtick += getincrease
+        playtick += pastTime
     }
 
     //総破壊ブロック数を更新する
@@ -714,7 +714,7 @@ class PlayerData(val player: Player) {
     }
 
     //パッシブスキルの獲得量表示
-    fun dispPassiveExp(): Double {
+    fun getPassiveExp(): Double {
         return when {
           level < 8 -> 0.0
           level < 18 -> SeichiAssist.seichiAssistConfig.getDropExplevel(1)
@@ -877,7 +877,7 @@ class PlayerData(val player: Player) {
         }
     }
 
-    fun VotingFairyTimeToString(): String {
+    fun getVotingFairyStartTimeAsString(): String {
         val cal = this.VotingFairyStartTime
         var s = ""
         s += if (this.VotingFairyStartTime == null) {
@@ -892,7 +892,7 @@ class PlayerData(val player: Player) {
         return s
     }
 
-    fun setVotingFairyTime(str: String, p: Player) {
+    fun setVotingFairyTime(str: String) {
         val s = str.split(",".toRegex()).toTypedArray()
         if (s[0].isNotEmpty() && s[1].isNotEmpty() && s[2].isNotEmpty() && s[3].isNotEmpty() && s[4].isNotEmpty()) {
             val startTime = GregorianCalendar(Integer.parseInt(s[0]), Integer.parseInt(s[1]) - 1, Integer.parseInt(s[2]), Integer.parseInt(s[3]), Integer.parseInt(s[4]))

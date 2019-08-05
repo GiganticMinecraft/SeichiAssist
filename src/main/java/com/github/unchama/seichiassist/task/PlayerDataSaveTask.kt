@@ -228,7 +228,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
 
         //投票
         + ",canVotingFairyUse = " + playerdata.usingVotingFairy
-        + ",newVotingFairyTime = '" + playerdata.VotingFairyTimeToString() + "'"
+        + ",newVotingFairyTime = '" + playerdata.getVotingFairyStartTimeAsString() + "'"
         + ",VotingFairyRecoveryValue = " + playerdata.VotingFairyRecoveryValue
         + ",hasVotingFairyMana = " + playerdata.hasVotingFairyMana
         + ",toggleGiveApple = " + playerdata.toggleGiveApple

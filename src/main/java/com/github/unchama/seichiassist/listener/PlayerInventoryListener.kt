@@ -425,7 +425,7 @@ class PlayerInventoryListener : Listener {
           player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           player.sendMessage(ChatColor.YELLOW.toString() + "既に全ての選択は削除されています")
         } else {
-          playerdata.activeskilldata.clearSellect(player)
+          playerdata.activeskilldata.clearSelection(player)
 
         }
       } else if (itemstackcurrent.type == Material.BOOKSHELF) {

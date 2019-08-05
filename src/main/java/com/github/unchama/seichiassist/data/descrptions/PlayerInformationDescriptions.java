@@ -91,7 +91,7 @@ public final class PlayerInformationDescriptions {
             DARK_GRAY + "パッシブスキル効果：",
             DARK_GRAY + "1ブロック整地ごとに",
             DARK_GRAY + "" + PlayerData.passiveSkillProbability + "%の確率で",
-            DARK_GRAY + "" + playerData.dispPassiveExp() + "のマナを獲得"
+            DARK_GRAY + "" + playerData.getPassiveExp() + "のマナを獲得"
         );
     }
 

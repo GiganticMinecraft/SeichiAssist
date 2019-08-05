@@ -219,7 +219,7 @@ public class ActiveSkillData {
 
 
 	}
-	public void clearSellect(Player player) {
+	public void clearSelection(Player player) {
 		this.skilltype = 0;
 		this.skillnum = 0;
 		this.mineflagnum = 0;
@@ -231,7 +231,7 @@ public class ActiveSkillData {
 		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
 
 	}
-	public void updateonJoin(Player player, int level) {
+	public void updateOnJoin(Player player, int level) {
 		updateActiveSkillPoint(player, level);
 		runTask(player);
 		mana.initialize(player,level);
