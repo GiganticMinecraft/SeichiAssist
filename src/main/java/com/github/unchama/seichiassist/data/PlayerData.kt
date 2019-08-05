@@ -540,8 +540,7 @@ class PlayerData(val player: Player) {
 
     //プレイヤーレベルを計算し、更新する。
     private fun updatePlayerLevel() {
-        val p = player
-        //現在のランクを取得
+      //現在のランクを取得
         var i = level
         //既にレベル上限に達していたら終了
         if (i >= LevelThresholds.levelExpThresholds.size) {
@@ -551,20 +550,20 @@ class PlayerData(val player: Player) {
         while (LevelThresholds.levelExpThresholds[i] <= totalbreaknum && i + 1 <= LevelThresholds.levelExpThresholds.size) {
 
             //レベルアップ時のメッセージ
-            p.sendMessage(GOLD.toString() + "ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv(" + i + ")→Lv(" + (i + 1) + ")】")
+            player.sendMessage(GOLD.toString() + "ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv(" + i + ")→Lv(" + (i + 1) + ")】")
             //レベルアップイベント着火
-            Bukkit.getPluginManager().callEvent(SeichiLevelUpEvent(p, this, i + 1))
+            Bukkit.getPluginManager().callEvent(SeichiLevelUpEvent(player, this, i + 1))
             //レベルアップ時の花火の打ち上げ
-            val loc = p.location
+            val loc = player.location
             Util.launchFireWorks(loc)
             val lvmessage = SeichiAssist.seichiAssistConfig.getLvMessage(i + 1)
             if (lvmessage.isNotEmpty()) {
-                p.sendMessage(AQUA.toString() + lvmessage)
+                player.sendMessage(AQUA.toString() + lvmessage)
             }
             i++
             if (activeskilldata.mana.isLoaded) {
                 //マナ最大値の更新
-                activeskilldata.mana.onLevelUp(p, i)
+                activeskilldata.mana.onLevelUp(player, i)
             }
             //レベル上限に達したら終了
             if (i >= LevelThresholds.levelExpThresholds.size) {
