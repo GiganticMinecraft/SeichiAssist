@@ -747,30 +747,6 @@ class PlayerData(val player: Player) {
         return subHomeName ?: "サブホームポイント$subHomeIndex"
     }
 
-    fun build_count_flg_set(x: Byte) {
-        build_count_flg = x
-    }
-
-    fun build_count_flg_get(): Byte {
-        return build_count_flg
-    }
-
-    fun build_lv_set(lv: Int) {
-        build_lv = lv
-    }
-
-    fun build_lv_get(): Int {
-        return build_lv
-    }
-
-    fun build_count_set(count: BigDecimal) {
-        build_count = count
-    }
-
-    fun build_count_get(): BigDecimal? {
-        return build_count
-    }
-
     private fun saveTotalExp() {
         totalexp = expmanager.currentExp
     }
