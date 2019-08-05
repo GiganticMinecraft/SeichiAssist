@@ -648,21 +648,10 @@ class PlayerData(val player: Player) {
     private fun calcBlockExp(m: Material, i: Int): Double {
         val amount = i.toDouble()
         //ブロック別重み分け
-        when (m) {
-            Material.DIRT ->
-                //DIRTとGRASSは二重カウントされているので半分に
-                result *= 0.5
-            Material.GRASS ->
-                //DIRTとGRASSは二重カウントされているので半分に
-                result *= 0.5
-
-            Material.NETHERRACK ->
-                //ネザーラックの重み分け
-                result *= 1.0
-
-            Material.ENDER_STONE ->
-                //エンドストーンの重み分け
-                result *= 1.0
+        val matMult = when (m) {
+            //DIRTとGRASSは二重カウントされているので半分に
+            Material.DIRT -> 0.5
+            Material.GRASS -> 0.5
 
             //氷塊とマグマブロックの整地量を2倍
             Material.PACKED_ICE -> 2.0
