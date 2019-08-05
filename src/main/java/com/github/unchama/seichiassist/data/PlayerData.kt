@@ -479,8 +479,7 @@ class PlayerData(val player: Player) {
             }
         }
     }
-
-
+  
     //レベルを更新
     fun updateLevel() {
         updatePlayerLevel()
@@ -488,20 +487,6 @@ class PlayerData(val player: Player) {
         setDisplayName()
         expbar.calculate()
     }
-
-
-    //プレイヤーのレベルからレベルと総整地量を指定された値に設定
-    /**
-     * @param _level
-     * レベル
-     *
-     * ※レベルと総整地量を変更します(取扱注意)
-     */
-    fun setLevelandTotalbreaknum(_level: Int) {
-        level = _level
-        totalbreaknum = LevelThresholds.levelExpThresholds[_level - 1].toLong()
-    }
-
 
     //表示される名前に整地レベルor二つ名を追加
     fun setDisplayName() {
