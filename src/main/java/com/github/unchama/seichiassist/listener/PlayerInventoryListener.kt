@@ -3975,7 +3975,7 @@ class PlayerInventoryListener : Listener {
         VotingFairyListener.summon(player)
         player.closeInventory()
       } else if (itemstackcurrent.type == Material.COMPASS) {
-        VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.VotingFairyEndTime!!) + "には帰るよー。", playerdata.toggleVFSound)
+        VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.votingFairyEndTime!!) + "には帰るよー。", playerdata.toggleVFSound)
         player.closeInventory()
       }//妖精召喚
       //妖精音トグル

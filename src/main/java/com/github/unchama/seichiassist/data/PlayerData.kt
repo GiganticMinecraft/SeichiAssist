@@ -188,19 +188,19 @@ class PlayerData(val player: Player) {
     @Deprecated(replaceWith = ReplaceWith("nickName.id1"), message = "わかりにくい上に代入が無駄", level = DeprecationLevel.WARNING)
     var displayTitle1No: Int
         set(value) {
-            nickName = nickName.copy(id1 = value)
+            updateNickname(id1 = value)
         }
         get() = nickName.id1
     @Deprecated(replaceWith = ReplaceWith("nickName.id2"), message = "わかりにくい上に代入が無駄", level = DeprecationLevel.WARNING)
     var displayTitle2No: Int
         set(value) {
-            nickName = nickName.copy(id2 = value)
+            updateNickname(id2 = value)
         }
         get() = nickName.id2
     @Deprecated(replaceWith = ReplaceWith("nickName.id3"), message = "わかりにくい上に代入が無駄", level = DeprecationLevel.WARNING)
     var displayTitle3No: Int
         set(value) {
-            nickName = nickName.copy(id3 = value)
+            updateNickname(id3 = value)
         }
 
         get() = nickName.id3
@@ -231,8 +231,9 @@ class PlayerData(val player: Player) {
 
     //投票妖精関連
     var usingVotingFairy = false
-    var VotingFairyStartTime: Calendar? = null
-    var VotingFairyEndTime: Calendar? = null
+    var votingFairyStartTime: Calendar? = null
+    var votingFairyEndTime: Calendar? = null
+    val voteFairyPeriod = null
     var hasVotingFairyMana = 0
     var VotingFairyRecoveryValue = 0
     var toggleGiveApple = 0
@@ -265,7 +266,7 @@ class PlayerData(val player: Player) {
         }
 
         get() = giganticBerserk.exp
-  var isGBStageUp
+    var isGBStageUp
         set (value) {
             giganticBerserk = giganticBerserk.copy(canEvolution = value)
         }
@@ -379,8 +380,8 @@ class PlayerData(val player: Player) {
         this.hasVotingFairyMana = 0
         this.VotingFairyRecoveryValue = 0
         this.toggleGiveApple = 1
-        this.VotingFairyStartTime = null
-        this.VotingFairyEndTime = null
+        this.votingFairyStartTime = null
+        this.votingFairyEndTime = null
         this.toggleVotingFairy = 1
         this.p_apple = 0
         this.toggleVFSound = true
@@ -419,6 +420,10 @@ class PlayerData(val player: Player) {
         isVotingFairy()
     }
 
+    @JvmOverloads
+    fun updateNickname(id1: Int = nickName.id1, id2: Int = nickName.id2, id3: Int = nickName.id3, style: PlayerNickName.Style = nickName.style) {
+        nickName = nickName.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
+    }
 
     //quit時とondisable時、プレイヤーデータを最新の状態に更新
     fun updateOnQuit() {
@@ -824,9 +829,9 @@ class PlayerData(val player: Player) {
     }
 
     fun getVotingFairyStartTimeAsString(): String {
-        val cal = this.VotingFairyStartTime
+        val cal = this.votingFairyStartTime
         var s = ""
-        s += if (this.VotingFairyStartTime == null) {
+        s += if (this.votingFairyStartTime == null) {
             //設定されてない場合
             ",,,,,"
         } else {
@@ -856,14 +861,14 @@ class PlayerData(val player: Player) {
 
             val EndTime = GregorianCalendar(Integer.parseInt(s[0]), Integer.parseInt(s[1]) - 1, Integer.parseInt(s[2]), hour, min)
 
-            this.VotingFairyStartTime = startTime
-            this.VotingFairyEndTime = EndTime
+            this.votingFairyStartTime = startTime
+            this.votingFairyEndTime = EndTime
         }
     }
 
     private fun isVotingFairy() {
       //効果は継続しているか
-        if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime)) {
+        if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.votingFairyStartTime, this.votingFairyEndTime)) {
             this.usingVotingFairy = false
             player.sendMessage(LIGHT_PURPLE.toString() + "" + BOLD + "妖精は何処かへ行ってしまったようだ...")
         } else if (this.usingVotingFairy) {
