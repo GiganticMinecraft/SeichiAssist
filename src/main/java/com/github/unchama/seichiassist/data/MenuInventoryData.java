@@ -890,7 +890,7 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認" );
 		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(playerdata.getNickName().getId1())
-				+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(playerdata.getDisplayTitle2No()) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(playerdata.getDisplayTitle3No()) + "」");
+				+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(playerdata.getNickName().getId2()) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(playerdata.getNickName().getId3()) + "」");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -1268,7 +1268,7 @@ public class MenuInventoryData {
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "クリックで情報を最新化"
 							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + (playerdata.getAchievePoint().getTotallyGet())
 							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.getAchievePoint().getUsed()
-							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata..getAchievePoint().getLeft());
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.getAchievePoint().getLeft());
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
