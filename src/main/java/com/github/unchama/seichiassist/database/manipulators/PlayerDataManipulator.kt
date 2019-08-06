@@ -417,7 +417,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         val ranklist = ArrayList<RankData>()
         SeichiAssist.allplayerbreakblockint = 0
         val command = ("select name,level,totalbreaknum from " + tableReference
-                + " order by totalbreaknum desc")
+            + " order by totalbreaknum desc")
         try {
             gateway.executeQuery(command).recordIteration {
                 val lrs = this
