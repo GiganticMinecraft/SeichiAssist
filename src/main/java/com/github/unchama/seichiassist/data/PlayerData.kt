@@ -212,9 +212,22 @@ class PlayerData(val player: Player) {
 
     //投票妖精関連
     var usingVotingFairy = false
-    var votingFairyStartTime: Calendar? = null
-    var votingFairyEndTime: Calendar? = null
-    val voteFairyPeriod = null
+    var votingFairyStartTime
+        get() = voteFairyPeriod.start
+        set(value) {
+            voteFairyPeriod = ClosedRangeWithComparator(value, voteFairyPeriod.endInclusive, voteFairyPeriod.comparator)
+        }
+
+    var votingFairyEndTime
+        get() = voteFairyPeriod.endInclusive
+        set(value) {
+            voteFairyPeriod = ClosedRangeWithComparator(voteFairyPeriod.start, value, voteFairyPeriod.comparator)
+        }
+    private val dummyDate = GregorianCalendar(2100, 1, 1, 0, 0, 0)
+
+    var voteFairyPeriod = ClosedRangeWithComparator(dummyDate, dummyDate, Comparator { o1, o2 ->
+        o1.timeInMillis.compareTo(o2.timeInMillis)
+    })
     var hasVotingFairyMana = 0
     var VotingFairyRecoveryValue = 0
     var toggleGiveApple = 0
