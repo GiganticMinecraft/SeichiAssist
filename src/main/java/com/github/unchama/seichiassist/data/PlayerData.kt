@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.MebiusTask
 import com.github.unchama.seichiassist.task.VotingFairyTask
+import com.github.unchama.seichiassist.util.ClosedRangeWithComparator
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
@@ -184,26 +185,6 @@ class PlayerData(val player: Player) {
     var isSubHomeNameChange = false
 
     var nickName = PlayerNickName()
-    //表示二つ名の指定用
-    @Deprecated(replaceWith = ReplaceWith("nickName.id1"), message = "わかりにくい上に代入が無駄", level = DeprecationLevel.WARNING)
-    var displayTitle1No: Int
-        set(value) {
-            updateNickname(id1 = value)
-        }
-        get() = nickName.id1
-    @Deprecated(replaceWith = ReplaceWith("nickName.id2"), message = "わかりにくい上に代入が無駄", level = DeprecationLevel.WARNING)
-    var displayTitle2No: Int
-        set(value) {
-            updateNickname(id2 = value)
-        }
-        get() = nickName.id2
-    @Deprecated(replaceWith = ReplaceWith("nickName.id3"), message = "わかりにくい上に代入が無駄", level = DeprecationLevel.WARNING)
-    var displayTitle3No: Int
-        set(value) {
-            updateNickname(id3 = value)
-        }
-
-        get() = nickName.id3
     //二つ名解禁フラグ保存用
     var TitleFlags: BitSet
     //二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
@@ -428,7 +409,7 @@ class PlayerData(val player: Player) {
     //quit時とondisable時、プレイヤーデータを最新の状態に更新
     fun updateOnQuit() {
         //総整地量を更新
-        calcMineBlock()
+        updateAndCalcMinedBlockAmount()
         //総プレイ時間更新
         calcPlayTick()
 
@@ -607,8 +588,7 @@ class PlayerData(val player: Player) {
     }
 
     //総破壊ブロック数を更新する
-    fun calcMineBlock(): Int {
-        var i = 0
+    fun updateAndCalcMinedBlockAmount(): Int {
         var sum = 0.0
         for (m in MaterialSets.materials) {
             if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
