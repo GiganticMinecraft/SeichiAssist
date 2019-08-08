@@ -161,8 +161,6 @@ class PlayerData(val player: Player) {
     // var loginStatus = ---
     var lastcheckdate: String? = null
     var loginStatus = LoginStatus(null, 0, 0)
-    var ChainJoin = 0
-    var TotalJoin = 0
 
     //期間限定ログイン用
     var LimitedLoginCount = 0
