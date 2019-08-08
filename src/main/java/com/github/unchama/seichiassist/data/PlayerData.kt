@@ -374,8 +374,8 @@ class PlayerData(val player: Player) {
         this.hasVotingFairyMana = 0
         this.VotingFairyRecoveryValue = 0
         this.toggleGiveApple = 1
-        this.votingFairyStartTime = null
-        this.votingFairyEndTime = null
+        this.votingFairyStartTime = dummyDate
+        this.votingFairyEndTime = dummyDate
         this.toggleVotingFairy = 1
         this.p_apple = 0
         this.toggleVFSound = true
@@ -489,7 +489,7 @@ class PlayerData(val player: Player) {
 
     //表示される名前に整地レベルor二つ名を追加
     fun setDisplayName() {
-      var displayname = Util.getName(player)
+        var displayname = Util.getName(player)
         //放置時に色を変える
         val idleColor = when {
             idletime >= 10 -> DARK_GRAY
@@ -603,20 +603,18 @@ class PlayerData(val player: Player) {
     //総破壊ブロック数を更新する
     fun updateAndCalcMinedBlockAmount(): Int {
         var sum = 0.0
-        for (m in MaterialSets.materials) {
-            if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
-                val getstat = player.getStatistic(Statistic.MINE_BLOCK, m)
-                val increased = getstat - staticdata[i]
-                val amount = calcBlockExp(m, increased)
-                sum += amount
-                if (SeichiAssist.DEBUG) {
-                    if (amount > 0.0) {
-                        player.sendMessage("calcの値:$amount($m)")
-                    }
+        val p = MaterialSets.materials - Material.GRASS_PATH - Material.SOIL - Material.MOB_SPAWNER
+        for ((i, m) in p.withIndex()) {
+            val getstat = player.getStatistic(Statistic.MINE_BLOCK, m)
+            val increased = getstat - staticdata[i]
+            val amount = calcBlockExp(m, increased)
+            sum += amount
+            if (SeichiAssist.DEBUG) {
+                if (amount > 0.0) {
+                    player.sendMessage("calcの値:$amount($m)")
                 }
-                staticdata[i] = getstat
-                i++
             }
+            staticdata[i] = getstat
         }
         //double値を四捨五入し、整地量に追加する整数xを出す
         val x = sum.roundToInt()
