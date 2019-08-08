@@ -455,7 +455,7 @@ class PlayerData(val player: Player) {
     }
 
     //詫びガチャの通知
-    fun notifySorryForBug() {
+    private fun notifySorryForBug() {
         if (wabiGacha > 0) {
             player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
             player.sendMessage(GREEN.toString() + "運営チームから" + wabiGacha + "枚の" + GOLD + "ガチャ券" + WHITE + "が届いています！\n木の棒メニューから受け取ってください")
