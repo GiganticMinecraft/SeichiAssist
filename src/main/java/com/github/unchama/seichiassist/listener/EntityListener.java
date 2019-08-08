@@ -7,8 +7,8 @@ import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.task.GiganticBerserkTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -18,19 +18,17 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class EntityListener implements Listener {
-	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 
 	@EventHandler
@@ -355,43 +353,6 @@ public class EntityListener implements Listener {
 			}
 		}
 	}
-
-	/*
-	@EventHandler
-	public void PvPToggleEvent(EntityDamageByEntityEvent event){
-		Entity damager = event.getDamager();
-		Entity entity = event.getEntity();
-		if(damager instanceof Player && entity instanceof Player){
-			UUID uuid_damager = damager.getUniqueId();
-			PlayerData playerdata_damager = playermap.get(uuid_damager);
-			//念のためエラー分岐
-			if(playerdata_damager == null){
-				damager.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-				instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[PvP処理]でエラー発生");
-				instance.getLogger().warning(damager.getName()+ "のplayerdataがありません。開発者に報告してください");
-				return;
-			}
-			if(!playerdata_damager.pvpflag){
-				event.setCancelled(true);
-				return;
-			}
-
-			UUID uuid_entity = entity.getUniqueId();
-			PlayerData playerdata_entity = playermap.get(uuid_entity);
-			//念のためエラー分岐
-			if(playerdata_entity == null){
-				entity.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-				instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[PvP処理]でエラー発生");
-				instance.getLogger().warning(entity.getName()+ "のplayerdataがありません。開発者に報告してください");
-				return;
-			}
-			if(!playerdata_entity.pvpflag){
-				event.setCancelled(true);
-				return;
-			}
-		}
-	}
-	*/
 
 	@EventHandler
 	public void onDeath(EntityDeathEvent event) {

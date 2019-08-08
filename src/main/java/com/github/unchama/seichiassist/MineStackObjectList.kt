@@ -3,10 +3,7 @@ package com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.minestack.objects.*
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
-import com.github.unchama.util.collection.ImmutableListFactory
 import org.bukkit.Material
-
-import java.util.ArrayList
 
 object MineStackObjectList {
   // 採掘可能ブロック

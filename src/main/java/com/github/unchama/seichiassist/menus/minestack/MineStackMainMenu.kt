@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.menus.minestack
 
-import arrow.core.Left
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
 import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.MenuInventoryView
+import com.github.unchama.menuinventory.rows
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.seichiassist.Schedulers
@@ -78,7 +78,7 @@ object MineStackMainMenu: Menu {
 
   override val open: TargetedEffect<Player> = computedEffect { player ->
     val session = MenuInventoryView(
-        Left(4 * 9),
+        4.rows(),
         "$DARK_PURPLE${BOLD}MineStackメインメニュー"
     ).createNewSession()
 

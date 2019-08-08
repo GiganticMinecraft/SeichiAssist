@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.data
 
+import com.github.unchama.menuinventory.rows
 import com.github.unchama.seichiassist.LevelThresholds
 import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.seichiassist.MaterialSets
@@ -27,7 +28,8 @@ import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.ops.plus
 import com.github.unchama.targetedeffect.player.asTargetedEffect
-import com.github.unchama.util.newChestInventory
+import com.github.unchama.util.createInventory
+import com.github.unchama.util.createInventory
 import org.bukkit.*
 import org.bukkit.ChatColor.*
 import org.bukkit.command.CommandSender
@@ -326,7 +328,7 @@ class PlayerData(val player: Player) {
         this.level = 1
         this.mebius = MebiusTask(this)
         this.wabiGacha = 0
-        this.inventory = newChestInventory(row = 1, title = DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
+        this.inventory = createInventory(size = 1.rows(), title = DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
         this.rgnum = 0
         this.minestackflag = true
         this.servertick = player.getStatistic(Statistic.PLAY_ONE_TICK)
@@ -478,7 +480,7 @@ class PlayerData(val player: Player) {
             }
         }
     }
-  
+
     //レベルを更新
     fun updateLevel() {
         updatePlayerLevel()

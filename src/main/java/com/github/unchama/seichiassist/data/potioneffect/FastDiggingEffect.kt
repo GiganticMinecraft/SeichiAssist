@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.data.potioneffect
 
 import com.github.unchama.seichiassist.util.TypeConverter
-import org.bukkit.potion.PotionEffectType
 
 /**
  * @param duration 持続ティック数

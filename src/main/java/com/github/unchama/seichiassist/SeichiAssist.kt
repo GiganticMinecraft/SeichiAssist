@@ -256,7 +256,7 @@ class SeichiAssist : JavaPlugin() {
     val entitylist: MutableList<Entity> = ArrayList()
 
     //プレイヤーがスキルで破壊するブロックリスト
-    val allblocklist: MutableList<Block> = ArrayList()
+    val allblocklist: MutableList<Block> = LinkedList()
 
     private fun creategachaminestacklist(): List<MineStackObj> {
       val minestacklist = ArrayList<MineStackObj>()

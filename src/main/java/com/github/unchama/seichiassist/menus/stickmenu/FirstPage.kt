@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import arrow.core.Left
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.IndexedSlotLayout
 import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.MenuInventoryView
+import com.github.unchama.menuinventory.rows
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
@@ -27,7 +27,7 @@ import com.github.unchama.seichiassist.util.external.WorldGuard
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.asCommandEffect
-import com.github.unchama.util.newChestInventory
+import com.github.unchama.util.createInventory
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
@@ -202,8 +202,8 @@ private object FirstPage: Menu {
               // TODO メニューに置き換える
               TargetedEffect {
                 it.openInventory(
-                    newChestInventory(
-                        row = 4,
+                    createInventory(
+                        size = 4.rows(),
                         title = "$LIGHT_PURPLE${BOLD}交換したい景品を入れてください"
                     )
                 )
@@ -319,8 +319,8 @@ private object FirstPage: Menu {
               // TODO メニューに置き換える
               TargetedEffect {
                 it.openInventory(
-                    newChestInventory(
-                        row = 4,
+                    createInventory(
+                        size = 4.rows(),
                         title = "$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください"
                     )
                 )
@@ -833,7 +833,7 @@ private object FirstPage: Menu {
       }
 
   override val open: TargetedEffect<Player> = computedEffect { player ->
-    val session = MenuInventoryView(Left(4 * 9), "${LIGHT_PURPLE}木の棒メニュー").createNewSession()
+    val session = MenuInventoryView(4.rows(), "${LIGHT_PURPLE}木の棒メニュー").createNewSession()
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
