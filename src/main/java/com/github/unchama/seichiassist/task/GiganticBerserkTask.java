@@ -33,7 +33,7 @@ public class GiganticBerserkTask {
 			}
 			return;
 		}
-		if(playerdata.getIdletime() >= 3){
+		if(playerdata.getIdleMinute() >= 3){
 			return;
 		}
 

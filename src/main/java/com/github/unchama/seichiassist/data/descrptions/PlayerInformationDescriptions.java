@@ -137,7 +137,7 @@ public final class PlayerInformationDescriptions {
     @NotNull
     private static String totalLoginTimeDescrpition(@NotNull PlayerData playerData) {
         return GRAY + "総ログイン時間：" +
-            TypeConverter.toTimeString(TypeConverter.toSecond(playerData.getPlaytick()));
+            TypeConverter.toTimeString(TypeConverter.toSecond(playerData.getPlayTick()));
     }
 
     /**

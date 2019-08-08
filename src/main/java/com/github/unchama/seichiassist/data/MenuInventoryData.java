@@ -3090,7 +3090,7 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(8,itemstack);
 		}
-		if(playerdata.getPlaytick() % 576000 >= 0 && playerdata.getPlaytick() % 576000 <= 1199 && !(playerdata.getTitleFlags().get(8003))){
+		if(playerdata.getPlayTick() % 576000 >= 0 && playerdata.getPlayTick() % 576000 <= 1199 && !(playerdata.getTitleFlags().get(8003))){
 			itemstack = new ItemStack(Material.EMERALD_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "タイムカード、切りましょ？" );
@@ -5770,7 +5770,7 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(2,itemstack);
 		}else{
-			if(playerdata.getPlaytick() % 72000 >= 0 && playerdata.getPlaytick() % 72000 <= 1199){
+			if(playerdata.getPlayTick() % 72000 >= 0 && playerdata.getPlayTick() % 72000 <= 1199){
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = ItemMetaFactory.BEDROCK.getValue();
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8003「???」" );

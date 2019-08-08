@@ -182,12 +182,12 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         + ",lavacondenskill = " + playerdata.activeskilldata.lavacondenskill
         + ",effectnum = " + playerdata.activeskilldata.effectnum
         + ",gachapoint = " + playerdata.gachapoint
-        + ",gachaflag = " + playerdata.gachaflag
+        + ",gachaflag = " + playerdata.tookGachaTicket
         + ",level = " + playerdata.level
-        + ",rgnum = " + playerdata.rgnum
+        + ",rgnum = " + playerdata.regionCount
         + ",totalbreaknum = " + playerdata.totalbreaknum
         + ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
-        + ",playtick = " + playerdata.playtick
+        + ",playtick = " + playerdata.playTick
         + ",lastquit = cast( now() as datetime )"
         + ",killlogflag = " + playerdata.dispkilllogflag
         + ",worldguardlogflag = " + playerdata.dispworldguardlogflag

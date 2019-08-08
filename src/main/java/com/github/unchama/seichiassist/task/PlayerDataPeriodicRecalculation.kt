@@ -43,12 +43,12 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       //放置判定
       if (player.location == playerData.loc) {
         // idletime加算
-        playerData.idletime = playerData.idletime + 1
+        playerData.idleMinute = playerData.idleMinute + 1
       } else {
         // 現在地点再取得
         playerData.loc = player.location
         // idletimeリセット
-        playerData.idletime = 0
+        playerData.idleMinute = 0
       }
 
       //プレイヤー名を取得
@@ -144,7 +144,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       //ガチャポイントに合算
       playerData.gachapoint = playerData.gachapoint + increase
 
-      if (playerData.gachapoint >= config.gachaPresentInterval && playerData.gachaflag) {
+      if (playerData.gachapoint >= config.gachaPresentInterval && playerData.tookGachaTicket) {
         val skull = Util.getskull(name)
         playerData.gachapoint = playerData.gachapoint - config.gachaPresentInterval
         if (player.inventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
@@ -156,7 +156,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
           player.sendMessage(ChatColor.GOLD.toString() + "ガチャ券" + ChatColor.WHITE + "がドロップしました。右クリックで使えるゾ")
         }
       } else {
-        if (increase != 0 && playerData.gachaflag) {
+        if (increase != 0 && playerData.tookGachaTicket) {
           player.sendMessage("あと" + ChatColor.AQUA + (config.gachaPresentInterval - playerData.gachapoint % config.gachaPresentInterval) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ")
         }
       }

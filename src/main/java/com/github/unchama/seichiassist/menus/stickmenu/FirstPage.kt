@@ -716,7 +716,7 @@ private object FirstPage: Menu {
       val iconItemStack = run {
         val lore = run {
           val settingsStatus =
-              if (playerData.gachaflag)
+              if (playerData.tookGachaTicket)
                 "$RESET${GREEN}毎分受け取ります"
               else
                 "$RESET${RED}後でまとめて受け取ります"
@@ -736,10 +736,10 @@ private object FirstPage: Menu {
           iconItemStack,
           LeftClickButtonEffect(
               unfocusedEffect {
-                playerData.gachaflag = !playerData.gachaflag
+                playerData.tookGachaTicket = !playerData.tookGachaTicket
               },
               deferredEffect {
-                if (playerData.gachaflag) {
+                if (playerData.tookGachaTicket) {
                   sequentialEffect(
                       "${ChatColor.GREEN}毎分のガチャ券受け取り:ON".asMessageEffect(),
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)

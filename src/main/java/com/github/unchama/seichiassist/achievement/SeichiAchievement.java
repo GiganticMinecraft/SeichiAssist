@@ -236,7 +236,7 @@ public enum SeichiAchievement {
     }
 
     private static long getSpentTicks(Player player) {
-        return getPlayerData(player).getPlaytick();
+        return getPlayerData(player).getPlayTick();
     }
 
     private static int getDaysChaining(Player player) {
