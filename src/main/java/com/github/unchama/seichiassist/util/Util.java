@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.util;
 import com.github.unchama.seichiassist.MineStackObjectList;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.github.unchama.util.collection.ReadonlyListFactory;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
 import org.bukkit.FireworkEffect.Builder;
@@ -90,7 +90,7 @@ public final class Util {
 		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
-		List<String> lore = ReadonlyListFactory.INSTANCE.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者:" + name);
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("unchama");
@@ -428,7 +428,7 @@ public final class Util {
 		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
-		List<String> lore = ReadonlyListFactory.INSTANCE.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name
 				, ChatColor.RESET + "" +  ChatColor.DARK_RED + "運営から不具合のお詫びです");
 		skullmeta.setLore(lore);
@@ -443,7 +443,7 @@ public final class Util {
 		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
-		List<String> lore = ReadonlyListFactory.INSTANCE.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name
 				,ChatColor.RESET + "" +  ChatColor.LIGHT_PURPLE + "投票ありがとナス♡");
 		skullmeta.setLore(lore);
@@ -458,7 +458,7 @@ public final class Util {
 		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
-		List<String> lore = ReadonlyListFactory.INSTANCE.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者：" + name
 				,ChatColor.RESET + "" +  ChatColor.GRAY + "ガチャ景品と交換しました。");
 		skullmeta.setLore(lore);

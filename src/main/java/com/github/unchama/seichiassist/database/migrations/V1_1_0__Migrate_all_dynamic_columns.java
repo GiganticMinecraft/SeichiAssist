@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.database.migrations;
 
 import com.github.unchama.seichiassist.PackagePrivate;
-import com.github.unchama.util.collection.ReadonlyListFactory;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import com.github.unchama.util.collection.SetFactory;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -42,7 +42,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
             playerDataColumnNames.add(columnNamesResult.getString("Field"));
         }
 
-        final List<Migration> migrations = ReadonlyListFactory.INSTANCE.of(
+        final List<Migration> migrations = ImmutableListFactory.of(
                 new MineStackMigration(),
                 new GridTemplateMigration(),
                 new SubHomeMigration(),
@@ -314,14 +314,14 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
 
         private List<Optional<SubHomeDTO>> parseRawData(@NotNull String homePointRawData,
                                                         @Nullable String parsedSubHomeNameData) {
-            final List<String> homePointSplitData = ReadonlyListFactory.INSTANCE.of(homePointRawData.split(","));
+            final List<String> homePointSplitData = ImmutableListFactory.of(homePointRawData.split(","));
             final List<List<String>> rawHomePoints = chunk(homePointSplitData, 4);
 
             final int subHomeCount = rawHomePoints.size();
 
             final List<@NotNull String> rawSubHomesNames = parsedSubHomeNameData == null
                     ? Collections.nCopies(subHomeCount, "")
-                    : ReadonlyListFactory.INSTANCE.of(parsedSubHomeNameData.split(","));
+                    : ImmutableListFactory.of(parsedSubHomeNameData.split(","));
 
             return IntStream
                     .range(0, subHomeCount)
@@ -384,7 +384,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
         }
 
         private static void deleteSubHomeColumns(final Statement statement, final String serverId) throws SQLException {
-            for (String baseTableName : ReadonlyListFactory.INSTANCE.of("homepoint", "subhome_name")) {
+            for (String baseTableName : ImmutableListFactory.of("homepoint", "subhome_name")) {
                 statement.executeUpdate("alter table playerdata drop column " + baseTableName + "_" + serverId);
             }
         }
