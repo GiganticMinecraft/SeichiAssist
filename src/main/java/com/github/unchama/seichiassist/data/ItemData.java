@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
-import com.github.unchama.util.collection.ImmutableListFactory;
+import com.github.unchama.util.collection.ReadonlyListFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,7 +20,7 @@ public class ItemData {
 		ItemStack itemstack = new ItemStack(Material.DIAMOND_PICKAXE, amount);
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "Thanks for Voting!");
-		List<String> lore = ImmutableListFactory.of("投票ありがとナス♡");
+		List<String> lore = ReadonlyListFactory.INSTANCE.of("投票ありがとナス♡");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 3, true);
 		itemmeta.addEnchant(Enchantment.DURABILITY, 3, true);
 		itemmeta.setLore(lore);
@@ -36,7 +36,7 @@ public class ItemData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		skull.setDurability((short) 3);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
-		List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
+		List<String> lore = ReadonlyListFactory.INSTANCE.of(ChatColor.RESET + "" +  ChatColor.GREEN + "右クリックで使えます"
 				, ChatColor.RESET + "" + ChatColor.DARK_GREEN + "所有者：" + name
 				, ChatColor.RESET + "" + ChatColor.DARK_RED + "レベルアップ記念です");
 		skullmeta.setLore(lore);
@@ -61,7 +61,7 @@ public class ItemData {
 		ItemStack elsa = new ItemStack(Material.DIAMOND_BOOTS, amount);
 		ItemMeta elsaMeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BOOTS);
 		elsaMeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.ITALIC + "エルサ");
-		List<String> lore = ImmutableListFactory.of("",
+		List<String> lore = ReadonlyListFactory.INSTANCE.of("",
 				ChatColor.GREEN + "装備中の移動速度" + ChatColor.YELLOW + "(中)" + ChatColor.GREEN,
 				"",
 				ChatColor.YELLOW + "金床" + ChatColor.RED + "不可",
@@ -80,7 +80,7 @@ public class ItemData {
 		ItemStack gift = new ItemStack(Material.PAPER, amount);
 		ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
 		itemMeta.setDisplayName(ChatColor.AQUA  + "投票ギフト券");
-		List<String> lore = ImmutableListFactory.of("",
+		List<String> lore = ReadonlyListFactory.INSTANCE.of("",
 				ChatColor.WHITE + "公共施設鯖にある" ,
 				ChatColor.WHITE + "デパートで買い物ができます");
 		itemMeta.setLore(lore);
