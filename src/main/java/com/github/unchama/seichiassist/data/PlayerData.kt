@@ -26,6 +26,7 @@ import com.github.unchama.seichiassist.util.ClosedRangeWithComparator
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
+import com.github.unchama.seichiassist.util.exp.IExperienceManager
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.ops.plus
 import com.github.unchama.targetedeffect.player.asTargetedEffect
@@ -67,7 +68,7 @@ class PlayerData(val player: Player) {
     //1分間のデータを保存するincrease:１分間の採掘量
     //public MineBlock minuteblock;
     //３０分間のデータを保存する．
-    var halfhourblock: MineBlock
+    val halfhourblock: MineBlock
     //ガチャの基準となるポイント
     var gachapoint = 0
     //最後のガチャポイントデータ
@@ -79,7 +80,7 @@ class PlayerData(val player: Player) {
     //前回の採掘速度上昇レベルを格納
     var lastminespeedlv = 0
     //持ってるポーションエフェクト全てを格納する．
-    var effectdatalist: MutableList<FastDiggingEffect>
+    val effectdatalist: MutableList<FastDiggingEffect>
     //現在のプレイヤーレベル
     var level = 0
     //詫び券をあげる数
@@ -106,7 +107,7 @@ class PlayerData(val player: Player) {
     val totalStarLevel
         get() = starLevels.total()
 
-    var minestack = MineStack()
+    val minestack = MineStack()
     //MineStackFlag
     var minestackflag = false
     //プレイ時間差分計算用int
@@ -143,11 +144,11 @@ class PlayerData(val player: Player) {
     //トータル破壊ブロック
     var totalbreaknum = 0.toLong()
     //整地量バー
-    var expbar: ExpBar
+    val expbar: ExpBar
     //合計経験値
     var totalexp = 0
     //経験値マネージャ
-    var expmanager: ExperienceManager
+    private val expmanager: IExperienceManager
     //合計経験値統合済みフラグ
     var expmarge: Byte = 0
     //各統計値差分計算用配列
@@ -171,7 +172,7 @@ class PlayerData(val player: Player) {
     var activeskilldata: ActiveSkillData
 
     //MebiusTask
-    var mebius: MebiusTask
+    val mebius: MebiusTask
 
     //ガチャボタン連打防止用
     var gachacooldownflag = false
