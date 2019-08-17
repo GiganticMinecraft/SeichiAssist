@@ -135,7 +135,7 @@ object SecondPage: Menu {
     }
 
     val appleConversionButton: Button = run {
-      val iconItemStack = IconItemStackBuilder(Material.GOLDEN_APPLE)
+      val iconItemStack = IconItemStackBuilder(Material.GOLDEN_APPLE, durability = 1)
           .title("$YELLOW$UNDERLINE${BOLD}GT景品→椎名林檎変換システム")
           .lore(listOf(
               "$RESET${GREEN}不必要なGT大当り景品を",
@@ -166,7 +166,7 @@ object SecondPage: Menu {
     }
 
     val titanConversionButton: Button = run {
-      val iconItemStack = IconItemStackBuilder(Material.DIAMOND_AXE)
+      val iconItemStack = IconItemStackBuilder(Material.DIAMOND_AXE, durability = 1)
           .title("$YELLOW$UNDERLINE${BOLD}限定タイタン修繕システム")
           .lore(listOf(
               "$RESET${GREEN}不具合によりテクスチャが反映されなくなってしまった",
