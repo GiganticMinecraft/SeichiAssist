@@ -34,6 +34,11 @@ protected constructor(material: Material, durability: Short) : ItemStackBuilder 
     return this as T
   }
 
+  override fun unbreakable(): T {
+    this.component.isUnbreakable = true
+    return this as T
+  }
+
   override fun amount(amount: Int): T {
     this.component.amount = amount
     return this as T

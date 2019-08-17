@@ -179,7 +179,7 @@ object SecondPage: Menu {
               "$RESET${DARK_GRAY}神に祈りながら交換しよう",
               "$RESET$DARK_RED${UNDERLINE}クリックで開く"
           ))
-          .enchanted()
+          .unbreakable()
           .build()
 
       Button(

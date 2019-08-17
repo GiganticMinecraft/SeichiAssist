@@ -39,6 +39,13 @@ interface ItemStackBuilder {
   fun amount(amount: Int): ItemStackBuilder
 
   /**
+   * [ItemStack] にunbreakableを付与する
+   *
+   * @return このBuilder
+   */
+  fun unbreakable(): ItemStackBuilder
+
+  /**
    * Builderによって指定された各引数を用いて [ItemStack] を生成します
    *
    * @return 生成された [ItemStack]

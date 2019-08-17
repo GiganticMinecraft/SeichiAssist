@@ -17,6 +17,8 @@ class IconComponent constructor(val material: Material, private val durability: 
   var title: String? = Bukkit.getItemFactory().getItemMeta(material)?.displayName
   var lore: List<String> = emptyList()
 
+  var isUnbreakable: Boolean = false
+
   var isEnchanted: Boolean = false
   var amount = 1
 
@@ -30,6 +32,8 @@ class IconComponent constructor(val material: Material, private val durability: 
         meta.displayName = it
       }
       meta.lore = lore
+
+      meta.isUnbreakable = isUnbreakable
 
       if (isEnchanted) {
         meta.addEnchant(Enchantment.DIG_SPEED, 100, false)
