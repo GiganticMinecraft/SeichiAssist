@@ -1,15 +1,15 @@
 package com.github.unchama.util.collection
 
-import java.util.Arrays
-import java.util.Collections
 
 object ImmutableListFactory {
 
   @JvmStatic
+  // Checked, no kotlin usage found
   fun <E> of(): List<E> {
     return emptyList()
   }
 
+  // Checked, no kotlin usage found
   @JvmStatic
   fun <E> of(o: E): List<E> {
     return listOf(o)
@@ -17,6 +17,7 @@ object ImmutableListFactory {
 
   @SafeVarargs
   @JvmStatic
+  // Checked, no kotlin usage found
   fun <E> of(vararg o: E): List<E> {
     return listOf(*o)
   }
