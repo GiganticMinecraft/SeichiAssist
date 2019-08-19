@@ -13,10 +13,9 @@ import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.targetedeffect.unfocusedEffect
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
-import org.bukkit.ChatColor
+import org.bukkit.ChatColor.*
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -30,7 +29,6 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.metadata.FixedMetadataValue
-import java.util.*
 
 class PlayerClickListener : Listener {
   private val plugin = SeichiAssist.instance
@@ -187,126 +185,123 @@ class PlayerClickListener : Listener {
   //プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
   @EventHandler
   fun onPlayerRightClickGachaEvent(event: PlayerInteractEvent) {
-    //プレイヤー型を取得
     val player = event.player
-    //UUIDを取得
     val uuid = player.uniqueId
-    //プレイヤーデータを取得
-    val playerdata = playerMap[uuid] ?: return
-    //playerdataがない場合はreturn
+    val playerData = playerMap[uuid] ?: return
+    val name = playerData.name
 
-    val name = playerdata.name
-    //プレイヤーが起こしたアクションを取得
-    val action = event.action
-    //使った手を取得
-    val equipmentslot = event.hand
     //もしサバイバルでなければ処理を終了
-    if (player.gameMode != GameMode.SURVIVAL) {
-      return
-    }
-    //使ったアイテムを取得
-    if (event.item == null) {
-      return
-    }
-    val itemstack = event.item
+    if (player.gameMode != GameMode.SURVIVAL) return
+
+    val clickedItemStack = event.item ?: return
+
     //ガチャ用の頭でなければ終了
-    if (!Util.isGachaTicket(itemstack)) {
-      return
-    }
+    if (!Util.isGachaTicket(clickedItemStack)) return
+
     event.isCancelled = true
 
-    //以下サバイバル時のガチャ券の処理↓
-
     //連打防止クールダウン処理
-    if (!playerdata.gachacooldownflag) {
-      return
-    } else {
-      //連打による負荷防止の為クールダウン処理
-      CoolDownTask(player, false, false, true).runTaskLater(plugin, 4)
-    }
+    if (!playerData.gachacooldownflag) return
+
+    //連打による負荷防止の為クールダウン処理
+    CoolDownTask(player, false, false, true).runTaskLater(plugin, 4)
 
     //オフハンドから実行された時処理を終了
-    if (equipmentslot == EquipmentSlot.OFF_HAND) {
-      return
-    }
+    if (event.hand == EquipmentSlot.OFF_HAND) return
+
     //ガチャシステムメンテナンス中は処理を終了
     if (SeichiAssist.gachamente) {
       player.sendMessage("現在ガチャシステムはメンテナンス中です。\nしばらく経ってからもう一度お試しください")
       return
     }
+
     //ガチャデータが設定されていない場合
     if (gachaDataList.isEmpty()) {
       player.sendMessage("ガチャが設定されていません")
       return
     }
 
-    if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-      var count = 1
-      if (player.isSneaking) {
-        count = itemstack.amount
-        player.sendMessage(ChatColor.AQUA.toString() + "" + count + "回ガチャを回しました。")
-      }
+    val action = event.action
+    if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
 
-      if (!Util.removeItemfromPlayerInventory(player.inventory, itemstack, count)) {
-        player.sendMessage(ChatColor.RED.toString() + "ガチャ券の数が不正です。")
-        return
-      }
-      for (c in 0 until count) {
-        //プレゼント用ガチャデータ作成
-        val present: GachaPrize = GachaPrize.runGacha()
-        //ガチャ実行
-        if (present.probability < 0.1) {
-          present.appendOwnerLore(name)
+    val count =
+        if (player.isSneaking) {
+          clickedItemStack.amount
+              .also {
+                player.sendMessage("$AQUA${it}回ガチャを回しました。")
+              }
         }
-        //メッセージ設定
-        var str = ""
+        else 1
 
-        //プレゼントを格納orドロップ
-        if (!Util.isPlayerInventoryFull(player)) {
-          Util.addItem(player, present.itemStack)
-        } else {
-          Util.dropItem(player, present.itemStack)
-          str += ChatColor.AQUA.toString() + "プレゼントがドロップしました。"
-        }
-
-        //確率に応じてメッセージを送信
-        if (present.probability < 0.001) {
-          Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat(), 2f)
-          if (!playerdata.everysoundflag) {
-            player.playSound(player.location, Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat(), 2f)
-          }
-          val enchantname = ArrayList<String>()
-          val lore = present.itemStack.itemMeta.lore
-          val enchantment = present.itemStack.itemMeta.enchants
-
-          for (enchant in enchantment.keys) {
-            enchantname.add(ChatColor.GRAY.toString() + Util.getEnchantName(enchant.name, enchantment[enchant]!!))
-          }
-          lore.remove("§r§2所有者：" + player.name)
-
-          val message = TextComponent()
-          message.text = ChatColor.AQUA.toString() + present.itemStack.itemMeta.displayName + ChatColor.GOLD + "を引きました！おめでとうございます！"
-          message.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ComponentBuilder(" " + present.itemStack.itemMeta.displayName + "\n" + Util.getDescFormat(enchantname) + Util.getDescFormat(lore)).create())
-
-          player.sendMessage(ChatColor.RED.toString() + "おめでとう！！！！！Gigantic☆大当たり！" + str)
-          Util.sendEveryMessageWithoutIgnore(ChatColor.GOLD.toString() + player.displayName + "がガチャでGigantic☆大当たり！")
-          Util.sendEveryMessageWithoutIgnore(message)
-        } else if (present.probability < 0.01) {
-          //大当たり時にSEを鳴らす(自分だけ)
-          player.playSound(player.location, Sound.ENTITY_WITHER_SPAWN, 0.8.toFloat(), 1f)
-          //ver 0.3.1以降 大当たり時の全体通知を削除
-          player.sendMessage(ChatColor.GOLD.toString() + "おめでとう！！大当たり！" + str)
-
-        } else if (present.probability < 0.1) {
-          player.sendMessage(ChatColor.YELLOW.toString() + "おめでとう！当たり！" + str)
-        } else {
-          if (count == 1) {
-            player.sendMessage(ChatColor.WHITE.toString() + "はずれ！また遊んでね！" + str)
-          }
-        }
-      }
-      player.playSound(player.location, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 0.1.toFloat())
+    if (!Util.removeItemfromPlayerInventory(player.inventory, clickedItemStack, count)) {
+      player.sendMessage(RED.toString() + "ガチャ券の数が不正です。")
+      return
     }
+
+    repeat(count) {
+      //プレゼント用ガチャデータ作成
+      val present: GachaPrize = GachaPrize.runGacha()
+
+      //ガチャ実行
+      if (present.probability < 0.1) {
+        present.appendOwnerLore(name)
+      }
+
+      //メッセージ設定
+      val additionalMessage =
+          if (!Util.isPlayerInventoryFull(player)) {
+            Util.addItem(player, present.itemStack)
+            ""
+          } else {
+            Util.dropItem(player, present.itemStack)
+            "${AQUA}プレゼントがドロップしました。"
+          }
+
+      //確率に応じてメッセージを送信
+      if (present.probability < 0.001) {
+        Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat(), 2f)
+        if (!playerData.everysoundflag) {
+          player.playSound(player.location, Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat(), 2f)
+        }
+
+        val loreWithoutOwnerName = present.itemStack.itemMeta.lore
+            .filterNot { it == "§r§2所有者：${player.name}" }
+
+        val localizedEnchantmentList = present.itemStack.itemMeta.enchants
+            .map { (enchantment, level) ->
+              "$GRAY${Util.getEnchantName(enchantment.name, level)}"
+            }
+
+        val message =
+            TextComponent().apply {
+              text = "$AQUA${present.itemStack.itemMeta.displayName}${GOLD}を引きました！おめでとうございます！"
+              hoverEvent = HoverEvent(
+                  HoverEvent.Action.SHOW_TEXT,
+                  arrayOf(
+                      TextComponent(
+                          " ${present.itemStack.itemMeta.displayName}\n" +
+                              Util.getDescFormat(localizedEnchantmentList) +
+                              Util.getDescFormat(loreWithoutOwnerName)
+                      )
+                  )
+              )
+            }
+
+        player.sendMessage("${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
+        Util.sendEveryMessageWithoutIgnore("$GOLD${player.displayName}がガチャでGigantic☆大当たり！")
+        Util.sendEveryMessageWithoutIgnore(message)
+      } else if (present.probability < 0.01) {
+        player.playSound(player.location, Sound.ENTITY_WITHER_SPAWN, 0.8.toFloat(), 1f)
+        player.sendMessage("${GOLD}おめでとう！！大当たり！$additionalMessage")
+      } else if (present.probability < 0.1) {
+        player.sendMessage("${YELLOW}おめでとう！当たり！$additionalMessage")
+      } else {
+        if (count == 1) {
+          player.sendMessage("${WHITE}はずれ！また遊んでね！$additionalMessage")
+        }
+      }
+    }
+    player.playSound(player.location, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 0.1.toFloat())
   }
 
   //スキル切り替えのイベント
@@ -379,9 +374,9 @@ class PlayerClickListener : Listener {
 
           activemineflagnum = (activemineflagnum + 1) % 3
           when (activemineflagnum) {
-            0 -> player.sendMessage(ChatColor.GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) + "：OFF")
-            1 -> player.sendMessage(ChatColor.GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) + ":ON-Above(上向き）")
-            2 -> player.sendMessage(ChatColor.GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) + ":ON-Under(下向き）")
+            0 -> player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) + "：OFF")
+            1 -> player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) + ":ON-Above(上向き）")
+            2 -> player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) + ":ON-Under(下向き）")
           }
           playerdata.activeskilldata.updateSkill(player, playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum, activemineflagnum)
           player.playSound(player.location, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
@@ -389,8 +384,8 @@ class PlayerClickListener : Listener {
             && playerdata.activeskilldata.skilltype < 4) {
           activemineflagnum = (activemineflagnum + 1) % 2
           when (activemineflagnum) {
-            0 -> player.sendMessage(ChatColor.GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) + "：OFF")
-            1 -> player.sendMessage(ChatColor.GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) + ":ON")
+            0 -> player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) + "：OFF")
+            1 -> player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) + ":ON")
           }
           playerdata.activeskilldata.updateSkill(player, playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum, activemineflagnum)
           player.playSound(player.location, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
@@ -410,9 +405,9 @@ class PlayerClickListener : Listener {
             activemineflagnum = (activemineflagnum + 1) % 2
           }
           if (activemineflagnum == 0) {
-            player.sendMessage(ChatColor.GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum) + ":OFF")
+            player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum) + ":OFF")
           } else {
-            player.sendMessage(ChatColor.GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum) + ":ON")
+            player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum) + ":ON")
           }
           playerdata.activeskilldata.updateAssaultSkill(player, playerdata.activeskilldata.assaulttype, playerdata.activeskilldata.assaultnum, activemineflagnum)
           player.playSound(player.location, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
@@ -472,7 +467,7 @@ class PlayerClickListener : Listener {
       }
       //パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
       if (playerdata.level < SeichiAssist.seichiAssistConfig.passivePortalInventorylevel) {
-        player.sendMessage(ChatColor.GREEN.toString() + "4次元ポケットを入手するには整地レベルが" + SeichiAssist.seichiAssistConfig.passivePortalInventorylevel + "以上必要です。")
+        player.sendMessage(GREEN.toString() + "4次元ポケットを入手するには整地レベルが" + SeichiAssist.seichiAssistConfig.passivePortalInventorylevel + "以上必要です。")
         return
       }
       if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
@@ -532,7 +527,7 @@ class PlayerClickListener : Listener {
     }          //壊せない場合無視
 
     if (Util.isPlayerInventoryFull(p)) {                  //インベントリに空がない場合無視
-      p.sendMessage(ChatColor.RED.toString() + "インベントリがいっぱいです")
+      p.sendMessage(RED.toString() + "インベントリがいっぱいです")
       return
     }
 
