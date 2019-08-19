@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.task.AsyncEntityRemover
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.ops.appendOwnerInformation
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.targetedeffect.unfocusedEffect
@@ -240,46 +241,49 @@ class PlayerClickListener : Listener {
 
     repeat(count) {
       //プレゼント用ガチャデータ作成
-      val present: GachaPrize = GachaPrize.runGacha()
+      val present = GachaPrize.runGacha()
+
+      val probabilityOfItem = present.probability
+      val givenItem = present.itemStack
 
       //ガチャ実行
-      if (present.probability < 0.1) {
-        present.appendOwnerLore(name)
+      if (probabilityOfItem < 0.1) {
+        givenItem.appendOwnerInformation(player)
       }
 
       //メッセージ設定
       val additionalMessage =
           if (!Util.isPlayerInventoryFull(player)) {
-            Util.addItem(player, present.itemStack)
+            Util.addItem(player, givenItem)
             ""
           } else {
-            Util.dropItem(player, present.itemStack)
+            Util.dropItem(player, givenItem)
             "${AQUA}プレゼントがドロップしました。"
           }
 
       //確率に応じてメッセージを送信
-      if (present.probability < 0.001) {
+      if (probabilityOfItem < 0.001) {
         Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat(), 2f)
         if (!playerData.everysoundflag) {
           player.playSound(player.location, Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat(), 2f)
         }
 
-        val loreWithoutOwnerName = present.itemStack.itemMeta.lore
+        val loreWithoutOwnerName = givenItem.itemMeta.lore
             .filterNot { it == "§r§2所有者：${player.name}" }
 
-        val localizedEnchantmentList = present.itemStack.itemMeta.enchants
+        val localizedEnchantmentList = givenItem.itemMeta.enchants
             .map { (enchantment, level) ->
               "$GRAY${Util.getEnchantName(enchantment.name, level)}"
             }
 
         val message =
             TextComponent().apply {
-              text = "$AQUA${present.itemStack.itemMeta.displayName}${GOLD}を引きました！おめでとうございます！"
+              text = "$AQUA${givenItem.itemMeta.displayName}${GOLD}を引きました！おめでとうございます！"
               hoverEvent = HoverEvent(
                   HoverEvent.Action.SHOW_TEXT,
                   arrayOf(
                       TextComponent(
-                          " ${present.itemStack.itemMeta.displayName}\n" +
+                          " ${givenItem.itemMeta.displayName}\n" +
                               Util.getDescFormat(localizedEnchantmentList) +
                               Util.getDescFormat(loreWithoutOwnerName)
                       )
@@ -290,10 +294,10 @@ class PlayerClickListener : Listener {
         player.sendMessage("${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
         Util.sendEveryMessageWithoutIgnore("$GOLD${player.displayName}がガチャでGigantic☆大当たり！")
         Util.sendEveryMessageWithoutIgnore(message)
-      } else if (present.probability < 0.01) {
+      } else if (probabilityOfItem < 0.01) {
         player.playSound(player.location, Sound.ENTITY_WITHER_SPAWN, 0.8.toFloat(), 1f)
         player.sendMessage("${GOLD}おめでとう！！大当たり！$additionalMessage")
-      } else if (present.probability < 0.1) {
+      } else if (probabilityOfItem < 0.1) {
         player.sendMessage("${YELLOW}おめでとう！当たり！$additionalMessage")
       } else {
         if (count == 1) {
