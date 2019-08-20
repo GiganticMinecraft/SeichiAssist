@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist
 
+import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands.*
@@ -27,6 +28,8 @@ import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.RED
 import org.bukkit.Material
 import org.bukkit.block.Block
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -116,19 +119,19 @@ class SeichiAssist : JavaPlugin() {
 
     //リスナーの登録
     listOf(
-      PlayerJoinListener(),
-      PlayerQuitListener(),
-      PlayerClickListener(),
-      PlayerChatEventListener(),
-      PlayerBlockBreakListener(),
-      PlayerInventoryListener(),
-      EntityListener(),
-      PlayerPickupItemListener(),
-      PlayerDeathEventListener(),
-      GachaItemListener(),
-      MebiusListener(),
-      RegionInventoryListener(),
-      WorldRegenListener()
+        PlayerJoinListener(),
+        PlayerQuitListener(),
+        PlayerClickListener(),
+        PlayerChatEventListener(),
+        PlayerBlockBreakListener(),
+        PlayerInventoryListener(),
+        EntityListener(),
+        PlayerPickupItemListener(),
+        PlayerDeathEventListener(),
+        GachaItemListener(),
+        MebiusListener(),
+        RegionInventoryListener(),
+        WorldRegenListener()
     ).forEach { server.pluginManager.registerEvents(it, this) }
 
     //正月イベント用
@@ -152,6 +155,8 @@ class SeichiAssist : JavaPlugin() {
     startRepeatedJobs()
 
     logger.info("SeichiAssist is Enabled!")
+
+    buildAssist = BuildAssist(this).apply { onEnable() }
   }
 
   override fun onDisable() {
@@ -188,7 +193,12 @@ class SeichiAssist : JavaPlugin() {
     }
 
     logger.info("SeichiAssist is Disabled!")
+
+    buildAssist.onDisable()
   }
+
+  override fun onCommand(sender: CommandSender?, command: Command?, label: String?, args: Array<out String>?)
+      = buildAssist.onCommand(sender, command, label, args)
 
   private fun startRepeatedJobs() {
     repeatedJobCoroutine = CoroutineScope(Schedulers.sync).launch {
@@ -222,6 +232,8 @@ class SeichiAssist : JavaPlugin() {
     // TODO staticであるべきではない
     lateinit var databaseGateway: DatabaseGateway
     lateinit var seichiAssistConfig: Config
+
+    lateinit var buildAssist: BuildAssist
 
     //Gachadataに依存するデータリスト
     val gachadatalist: MutableList<GachaPrize> = ArrayList()
