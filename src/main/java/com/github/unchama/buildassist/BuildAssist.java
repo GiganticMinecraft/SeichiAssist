@@ -297,7 +297,7 @@ public class BuildAssist {
 
             PlayerData playerdata = new PlayerData(p);
 
-            playerdata.levelupdata(p);
+            playerdata.updateLevel(p);
 
             playermap.put(uuid, playerdata);
         }

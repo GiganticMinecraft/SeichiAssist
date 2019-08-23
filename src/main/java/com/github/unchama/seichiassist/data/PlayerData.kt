@@ -96,7 +96,7 @@ class PlayerData(val player: Player) {
     val totalStarLevel
         get() = starLevels.total()
 
-    val minestack = MineStack()
+    var minestack = MineStack()
     //MineStackFlag
     var minestackflag = false
     //プレイ時間差分計算用int
@@ -197,7 +197,7 @@ class PlayerData(val player: Player) {
 
     //グリッド式保護関連
     private var claimUnit = ClaimUnit(0, 0, 0, 0)
-  @get:JvmName("canCreateRegion")
+    @get:JvmName("canCreateRegion")
     var canCreateRegion = false
     var unitPerClick = 0
         private set

@@ -1,11 +1,13 @@
 package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.*
+import com.github.unchama.seichiassist.SeichiAssist.Companion.playermap
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
+import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.menus.stickmenu.firstPage
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -1591,18 +1593,13 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val playerdata = playermap[player.uniqueId]!!
-    fun setTitleId(first: Int = 0, second: Int = 0, third: Int = 0) {
-      playerdata.displayTitle1No = first
-      playerdata.displayTitle2No = second
-      playerdata.displayTitle3No = third
-    }
 
     fun setTitle(first: Int = 0, second: Int = 0, third: Int = 0, message: String = """二つ名$first「
           |${getTitle(1, first)}
           |${if (second != 0) getTitle(2, second) else ""}
           |${if (third != 0) getTitle(3, third) else ""}
           |」が設定されました。""".trimMargin()) {
-      setTitleId(first, second, third)
+      playerdata.updateNickname(first, second, third)
       player.sendMessage(message)
     }
 
@@ -1630,7 +1627,7 @@ class PlayerInventoryListener : Listener {
         //表示内容をLVに変更
         if (itemstackcurrent.type == Material.REDSTONE_TORCH_ON) {
           // Zero clear
-          playerdata.displayTypeLv = true
+          playerdata.updateNickname(style = PlayerNickName.Style.Level)
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_Present2") {
@@ -1903,17 +1900,17 @@ class PlayerInventoryListener : Listener {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
           val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(Integer.parseInt(itemmeta.displayName))
-              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.displayTitle2No)
-              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.displayTitle3No))
+              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.nickName.id2)
+              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.nickName.id3))
           if (forcheck.length < 9) {
-            playerdata.displayTitle1No = Integer.parseInt(itemmeta.displayName)
-            player.sendMessage("前パーツ「" + SeichiAssist.seichiAssistConfig.getTitle1(playerdata.displayTitle1No) + "」をセットしました。")
+            playerdata.updateNickname(id1 = Integer.parseInt(itemmeta.displayName))
+            player.sendMessage("前パーツ「" + SeichiAssist.seichiAssistConfig.getTitle1(playerdata.nickName.id1) + "」をセットしました。")
           } else {
             player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
           }
         } else if (itemstackcurrent.type == Material.GRASS) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          playerdata.displayTitle1No = 0
+          playerdata.updateNickname(id1 = 0)
           player.sendMessage("前パーツの選択を解除しました。")
           return
         } else if (itemstackcurrent.type == Material.BARRIER) {
@@ -1943,18 +1940,18 @@ class PlayerInventoryListener : Listener {
           val itemmeta = itemstackcurrent.itemMeta
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
-          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.displayTitle1No)
+          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.nickName.id1)
               + SeichiAssist.seichiAssistConfig.getTitle2(Integer.parseInt(itemmeta.displayName))
-              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.displayTitle3No))
+              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.nickName.id3))
           if (forcheck.length < 9) {
-            playerdata.displayTitle2No = Integer.parseInt(itemmeta.displayName)
-            player.sendMessage("中パーツ「" + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.displayTitle2No) + "」をセットしました。")
+            playerdata.updateNickname(id2 = Integer.parseInt(itemmeta.displayName))
+            player.sendMessage("中パーツ「" + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.nickName.id2) + "」をセットしました。")
           } else {
             player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
           }
         } else if (itemstackcurrent.type == Material.GRASS) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          playerdata.displayTitle2No = 0
+          playerdata.updateNickname(id2 = 0)
           player.sendMessage("中パーツの選択を解除しました。")
           return
         } else if (itemstackcurrent.type == Material.BARRIER) {
@@ -1984,18 +1981,18 @@ class PlayerInventoryListener : Listener {
           val itemmeta = itemstackcurrent.itemMeta
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
-          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.displayTitle1No)
-              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.displayTitle2No)
+          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.nickName.id1)
+              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.nickName.id2)
               + SeichiAssist.seichiAssistConfig.getTitle3(Integer.parseInt(itemmeta.displayName)))
           if (forcheck.length < 9) {
-            playerdata.displayTitle3No = Integer.parseInt(itemmeta.displayName)
-            player.sendMessage("後パーツ「" + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.displayTitle3No) + "」をセットしました。")
+            playerdata.updateNickname(id3 = Integer.parseInt(itemmeta.displayName))
+            player.sendMessage("後パーツ「" + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.nickName.id3) + "」をセットしました。")
           } else {
             player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
           }
         } else if (itemstackcurrent.type == Material.GRASS) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          playerdata.displayTitle3No = 0
+          playerdata.updateNickname(id3 = 0)
           player.sendMessage("後パーツの選択を解除しました。")
           return
         } else if (itemstackcurrent.type == Material.BARRIER) {

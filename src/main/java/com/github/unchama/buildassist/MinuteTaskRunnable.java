@@ -1,16 +1,15 @@
 /*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package com.github.unchama.buildassist;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.SeichiAssist;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class MinuteTaskRunnable extends BukkitRunnable {
 	private Plugin plugin = BuildAssist.plugin;
@@ -56,11 +55,11 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 
 //				player.sendMessage("累計設置数:" + playerdata.totalbuildnum);
 
-				playerdata.levelupdata(player);
+				playerdata.updateLevel(player);
 				playerdata.buildsave(player);
 
 				if (playerdata.Endlessfly) {
-					if (playerdata_s.getIdletime() >= 10) {
+					if (playerdata_s.getIdleMinute() >= 10) {
 						player.setAllowFlight(true);
 						player.sendMessage(ChatColor.GRAY + "放置時間中のFLYは無期限で継続中です(経験値は消費しません)");
 					} else if (!expman.hasExp(BuildAssist.config.getFlyExp())) {
@@ -79,7 +78,7 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 					}
 				}else if (playerdata.flyflag) {
 					int flytime = playerdata.flytime;
-					if (playerdata_s.getIdletime() >= 10) {
+					if (playerdata_s.getIdleMinute() >= 10) {
 						player.setAllowFlight(true);
 						player.sendMessage(ChatColor.GRAY + "放置時間中のFLYは無期限で継続中です(経験値は消費しません)");
 					} else if (flytime <= 0) {
