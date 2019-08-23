@@ -20,7 +20,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class AssaultTask extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
@@ -85,7 +88,7 @@ public class AssaultTask extends BukkitRunnable{
 		}
 
 		//整地ワールドではない時スキルを発動しない。
-		if(!Util.isSkillEnable(player)){
+		if(!Util.INSTANCE.isSkillEnable(player)){
 			player.sendMessage(ChatColor.GREEN + "スキルは整地ワールドでのみ使用可能です。");
 			errorflag = true;
 			return;
@@ -162,7 +165,7 @@ public class AssaultTask extends BukkitRunnable{
 		}
 
 		//整地ワールドではない時スキルを発動しない。
-		if(!Util.isSkillEnable(player)){
+		if(!Util.INSTANCE.isSkillEnable(player)){
 			player.sendMessage(ChatColor.GREEN + "スキルは整地ワールドでのみ使用可能です。");
 			setCancel();
 			return;

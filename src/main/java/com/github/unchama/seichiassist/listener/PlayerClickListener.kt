@@ -14,6 +14,7 @@ import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.targetedeffect.unfocusedEffect
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.ChatColor.*
@@ -264,8 +265,11 @@ class PlayerClickListener : Listener {
       //確率に応じてメッセージを送信
       if (probabilityOfItem < 0.001) {
         Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat(), 2f)
-        if (!playerData.everysoundflag) {
-          player.playSound(player.location, Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat(), 2f)
+
+        runBlocking {
+          if (!playerData.getBroadcastMutingSettings().shouldMuteMessages()) {
+            player.playSound(player.location, Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat(), 2f)
+          }
         }
 
         val loreWithoutOwnerName = givenItem.itemMeta.lore

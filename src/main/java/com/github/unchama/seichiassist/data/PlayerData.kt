@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.data
 
 import com.github.unchama.menuinventory.rows
 import com.github.unchama.seichiassist.*
+import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.data.playerdata.*
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
@@ -110,16 +111,27 @@ class PlayerData(val player: Player) {
     @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayDeathMessages"))
     var dispkilllogflag = false
 
-    //全体通知音消音トグル
-    @Deprecated("BroadcastMutingSettingsを使え。")
-    var everysoundflag = false
-    //全体メッセージ非表示トグル
-    @Deprecated("BroadcastMutingSettingsを使え。")
-    var everymessageflag = false
+    @Suppress("RedundantSuspendModifier")
+    suspend fun shouldDisplayDeathMessages(): Boolean = this.dispkilllogflag
+
+    lateinit var broadcastMutingSettings: BroadcastMutingSettings
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun getBroadcastMutingSettings(): BroadcastMutingSettings = broadcastMutingSettings
+
+    val toggleBroadcastMutingSettings
+        get() = unfocusedEffect {
+            broadcastMutingSettings = getBroadcastMutingSettings().nextSettingsOption()
+        }
 
     //ワールドガード保護ログ表示トグル
     @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayWorldGuardLogs"))
     var dispworldguardlogflag = false
+
+    @Suppress("RedundantSuspendModifier")
+    suspend fun shouldDisplayWorldGuardLogs(): Boolean = this.dispworldguardlogflag
+
+
     //複数種類破壊トグル
     var multipleidbreakflag = false
 
@@ -988,16 +1000,10 @@ class PlayerData(val player: Player) {
             this.dispworldguardlogflag = !this.dispworldguardlogflag
         }
 
-    @Suppress("RedundantSuspendModifier")
-    suspend fun shouldDisplayWorldGuardLogs(): Boolean = this.dispworldguardlogflag
-
     val toggleDeathMessageMutingSettings: UnfocusedEffect =
         unfocusedEffect {
             this.dispkilllogflag = !this.dispkilllogflag
         }
-
-    @Suppress("RedundantSuspendModifier")
-    suspend fun shouldDisplayDeathMessages(): Boolean = this.dispkilllogflag
 
     /**
      * 保護申請の番号を更新させる[UnfocusedEffect]

@@ -91,7 +91,7 @@ public class GachaCommand implements CommandExecutor {
 				//引数が3の時の処理
 
 				//プレイヤー名を取得
-				String name = Util.getName(args[1]);
+				String name = Util.INSTANCE.getName(args[1]);
 				//個数取得
 				int num = TypeConverter.toInt(args[2]);
 
@@ -136,7 +136,7 @@ public class GachaCommand implements CommandExecutor {
 			}else{
 				//引数が2つの時の処理
 
-				String lowerCasePlayerName = Util.getName(args[1]);
+				String lowerCasePlayerName = Util.INSTANCE.getName(args[1]);
 
 				//プレイヤーオンライン、オフラインにかかわらずsqlに送信(マルチ鯖におけるコンフリクト防止の為)
 				sender.sendMessage(ChatColor.YELLOW + lowerCasePlayerName + "の投票特典配布処理開始…");
@@ -165,7 +165,7 @@ public class GachaCommand implements CommandExecutor {
 				//引数が3の時の処理
 
 				//プレイヤー名を取得(小文字にする)
-				String name = Util.getName(args[1]);
+				String name = Util.INSTANCE.getName(args[1]);
 				//配布ポイント数取得
 				int num = TypeConverter.toInt(args[2]);
 
@@ -448,10 +448,10 @@ public class GachaCommand implements CommandExecutor {
 			}
 
 			//プレゼントを格納orドロップ
-			if(!Util.isPlayerInventoryFull(player)){
-				Util.addItem(player, present.getItemStack());
+			if(!Util.INSTANCE.isPlayerInventoryFull(player)){
+				Util.INSTANCE.addItem(player, present.getItemStack());
 			}else{
-				Util.dropItem(player, present.getItemStack());
+				Util.INSTANCE.dropItem(player, present.getItemStack());
 				//str += ChatColor.AQUA + "ガチャアイテムがドロップしました。";
 			}
 		}

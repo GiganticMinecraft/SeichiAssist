@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.MineStack
 import com.github.unchama.seichiassist.data.PlayerData
+import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.data.playerdata.*
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.minestack.MineStackObj
@@ -246,8 +247,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
 
       playerdata.expmarge = rs.getByte("expmarge")
       playerdata.contentsPresentInSharedInventory = !rs.getString("shareinv").isNullOrEmpty()
-      playerdata.everysoundflag = rs.getBoolean("everysound")
-      playerdata.everymessageflag = rs.getBoolean("everymessage")
+      playerdata.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
 
       playerdata.selectHomeNum = 0
       playerdata.setHomeNameNum = 0

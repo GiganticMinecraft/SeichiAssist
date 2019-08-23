@@ -67,7 +67,7 @@ public final class BreakUtil {
 			if(!playerdata.getChestflag()){
 				player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は無効化されています");
 				return false;
-			}else if(!Util.isSeichiWorld(player)){
+			}else if(!Util.INSTANCE.isSeichiWorld(player)){
 				player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は整地ワールドでのみ有効です");
 				return false;
 			}
@@ -209,7 +209,7 @@ public final class BreakUtil {
 						MineStackGachaData g = SeichiAssist.Companion.getMsgachadatalist().get(mineStackObj.getGachaType());
 						String name = playerdata.getLowercaseName(); //プレイヤーのネームを見る
 						if(g.getProbability() <0.1){ //カタログギフト券を除く(名前があるアイテム)
-							if(!Util.ItemStackContainsOwnerName(itemstack, name)){
+							if(!Util.INSTANCE.ItemStackContainsOwnerName(itemstack, name)){
 								//所有者の名前が無ければreturn
 								return false;
 							}
@@ -495,7 +495,7 @@ public final class BreakUtil {
 
 		// 1. 重力値を適用すべきか判定
 		// 整地ワールド判定
-		if (!Util.isSeichiWorld(player)) {
+		if (!Util.INSTANCE.isSeichiWorld(player)) {
 			return 0;
 		}
 

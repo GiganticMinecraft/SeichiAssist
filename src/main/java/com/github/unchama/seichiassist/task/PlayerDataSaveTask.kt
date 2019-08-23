@@ -160,101 +160,103 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
     val titleArray = playerdata.TitleFlags.toLongArray()
     val flagString = titleArray.joinToString(",") { it.toULong().toString(16) }
 
-    val command = ("update seichiassist.playerdata set"
-        //名前更新処理
-        + " name = '" + playerdata.lowercaseName + "'"
+    val command = runBlocking {
+      ("update seichiassist.playerdata set"
+          //名前更新処理
+          + " name = '" + playerdata.lowercaseName + "'"
 
-        //各種数値更新処理
-        + ",effectflag = " + runBlocking { playerdata.fastDiggingEffectSuppressor.serialized() }
-        + ",minestackflag = " + playerdata.minestackflag
-        + ",messageflag = " + playerdata.messageflag
-        + ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum
-        + ",assaultflag = " + playerdata.activeskilldata.assaultflag
-        + ",activeskilltype = " + playerdata.activeskilldata.skilltype
-        + ",activeskillnum = " + playerdata.activeskilldata.skillnum
-        + ",assaultskilltype = " + playerdata.activeskilldata.assaulttype
-        + ",assaultskillnum = " + playerdata.activeskilldata.assaultnum
-        + ",arrowskill = " + playerdata.activeskilldata.arrowskill
-        + ",multiskill = " + playerdata.activeskilldata.multiskill
-        + ",breakskill = " + playerdata.activeskilldata.breakskill
-        + ",fluidcondenskill = " + playerdata.activeskilldata.fluidcondenskill
-        + ",watercondenskill = " + playerdata.activeskilldata.watercondenskill
-        + ",lavacondenskill = " + playerdata.activeskilldata.lavacondenskill
-        + ",effectnum = " + playerdata.activeskilldata.effectnum
-        + ",gachapoint = " + playerdata.gachapoint
-        + ",gachaflag = " + playerdata.receiveGachaTicketEveryMinute
-        + ",level = " + playerdata.level
-        + ",rgnum = " + playerdata.regionCount
-        + ",totalbreaknum = " + playerdata.totalbreaknum
-        + ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
-        + ",playtick = " + playerdata.playTick
-        + ",lastquit = cast( now() as datetime )"
-        + ",killlogflag = " + playerdata.dispkilllogflag
-        + ",worldguardlogflag = " + playerdata.dispworldguardlogflag
+          //各種数値更新処理
+          + ",effectflag = " + runBlocking { playerdata.fastDiggingEffectSuppressor.serialized() }
+          + ",minestackflag = " + playerdata.minestackflag
+          + ",messageflag = " + playerdata.messageflag
+          + ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum
+          + ",assaultflag = " + playerdata.activeskilldata.assaultflag
+          + ",activeskilltype = " + playerdata.activeskilldata.skilltype
+          + ",activeskillnum = " + playerdata.activeskilldata.skillnum
+          + ",assaultskilltype = " + playerdata.activeskilldata.assaulttype
+          + ",assaultskillnum = " + playerdata.activeskilldata.assaultnum
+          + ",arrowskill = " + playerdata.activeskilldata.arrowskill
+          + ",multiskill = " + playerdata.activeskilldata.multiskill
+          + ",breakskill = " + playerdata.activeskilldata.breakskill
+          + ",fluidcondenskill = " + playerdata.activeskilldata.fluidcondenskill
+          + ",watercondenskill = " + playerdata.activeskilldata.watercondenskill
+          + ",lavacondenskill = " + playerdata.activeskilldata.lavacondenskill
+          + ",effectnum = " + playerdata.activeskilldata.effectnum
+          + ",gachapoint = " + playerdata.gachapoint
+          + ",gachaflag = " + playerdata.receiveGachaTicketEveryMinute
+          + ",level = " + playerdata.level
+          + ",rgnum = " + playerdata.regionCount
+          + ",totalbreaknum = " + playerdata.totalbreaknum
+          + ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
+          + ",playtick = " + playerdata.playTick
+          + ",lastquit = cast( now() as datetime )"
+          + ",killlogflag = " + playerdata.dispkilllogflag
+          + ",worldguardlogflag = " + playerdata.dispworldguardlogflag
 
-        + ",multipleidbreakflag = " + playerdata.multipleidbreakflag
+          + ",multipleidbreakflag = " + playerdata.multipleidbreakflag
 
-        + ",pvpflag = " + playerdata.pvpflag
-        + ",effectpoint = " + playerdata.activeskilldata.effectpoint
-        + ",mana = " + playerdata.activeskilldata.mana.mana
-        + ",expvisible = " + playerdata.expbar.isVisible
-        + ",totalexp = " + playerdata.totalexp
-        + ",expmarge = " + playerdata.expmarge
-        + ",everysound = " + playerdata.everysoundflag
-        + ",everymessage = " + playerdata.everymessageflag
+          + ",pvpflag = " + playerdata.pvpflag
+          + ",effectpoint = " + playerdata.activeskilldata.effectpoint
+          + ",mana = " + playerdata.activeskilldata.mana.mana
+          + ",expvisible = " + playerdata.expbar.isVisible
+          + ",totalexp = " + playerdata.totalexp
+          + ",expmarge = " + playerdata.expmarge
+          + ",everysound = " + playerdata.getBroadcastMutingSettings().shouldMuteSounds()
+          + ",everymessage = " + playerdata.getBroadcastMutingSettings().shouldMuteMessages()
 
-        + ",displayTypeLv = " + playerdata.nickName.style.displayLevel
-        + ",displayTitle1No = " + playerdata.nickName.id1
-        + ",displayTitle2No = " + playerdata.nickName.id2
-        + ",displayTitle3No = " + playerdata.nickName.id3
-        + ",giveachvNo = " + playerdata.giveachvNo
-        + ",achvPointMAX = " + playerdata.achievePoint.cumulativeTotal
-        + ",achvPointUSE = " + playerdata.achievePoint.used
-        + ",achvChangenum = " + playerdata.achievePoint.conversionCount
-        + ",starlevel = " + playerdata.totalStarLevel
-        + ",starlevel_Break = " + playerdata.starLevels.fromBreakAmount
-        + ",starlevel_Time = " + playerdata.starLevels.fromConnectionTime
-        + ",starlevel_Event = " + playerdata.starLevels.fromEventAchievement
+          + ",displayTypeLv = " + playerdata.nickName.style.displayLevel
+          + ",displayTitle1No = " + playerdata.nickName.id1
+          + ",displayTitle2No = " + playerdata.nickName.id2
+          + ",displayTitle3No = " + playerdata.nickName.id3
+          + ",giveachvNo = " + playerdata.giveachvNo
+          + ",achvPointMAX = " + playerdata.achievePoint.cumulativeTotal
+          + ",achvPointUSE = " + playerdata.achievePoint.used
+          + ",achvChangenum = " + playerdata.achievePoint.conversionCount
+          + ",starlevel = " + playerdata.totalStarLevel
+          + ",starlevel_Break = " + playerdata.starLevels.fromBreakAmount
+          + ",starlevel_Time = " + playerdata.starLevels.fromConnectionTime
+          + ",starlevel_Event = " + playerdata.starLevels.fromEventAchievement
 
-        + ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
-        + ",ChainJoin = " + playerdata.loginStatus.chainLoginDay
-        + ",TotalJoin = " + playerdata.loginStatus.totalLoginDay
-        + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
+          + ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
+          + ",ChainJoin = " + playerdata.loginStatus.chainLoginDay
+          + ",TotalJoin = " + playerdata.loginStatus.totalLoginDay
+          + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
 
-        //建築
-        + ",build_lv = " + playerdata.buildCount.lv
-        + ",build_count = " + playerdata.buildCount.count//.toString()
-        + ",build_count_flg = " + playerdata.buildCount.migrationFlag
+          //建築
+          + ",build_lv = " + playerdata.buildCount.lv
+          + ",build_count = " + playerdata.buildCount.count//.toString()
+          + ",build_count_flg = " + playerdata.buildCount.migrationFlag
 
-        //投票
-        + ",canVotingFairyUse = " + playerdata.usingVotingFairy
-        + ",newVotingFairyTime = '" + playerdata.getVotingFairyStartTimeAsString() + "'"
-        + ",VotingFairyRecoveryValue = " + playerdata.VotingFairyRecoveryValue
-        + ",hasVotingFairyMana = " + playerdata.hasVotingFairyMana
-        + ",toggleGiveApple = " + playerdata.toggleGiveApple
-        + ",toggleVotingFairy = " + playerdata.toggleVotingFairy
-        + ",p_apple = " + playerdata.p_apple
+          //投票
+          + ",canVotingFairyUse = " + playerdata.usingVotingFairy
+          + ",newVotingFairyTime = '" + playerdata.getVotingFairyStartTimeAsString() + "'"
+          + ",VotingFairyRecoveryValue = " + playerdata.VotingFairyRecoveryValue
+          + ",hasVotingFairyMana = " + playerdata.hasVotingFairyMana
+          + ",toggleGiveApple = " + playerdata.toggleGiveApple
+          + ",toggleVotingFairy = " + playerdata.toggleVotingFairy
+          + ",p_apple = " + playerdata.p_apple
 
-        //貢献度pt
-        + ",added_mana = " + playerdata.added_mana
+          //貢献度pt
+          + ",added_mana = " + playerdata.added_mana
 
-        + ",GBstage = " + playerdata.giganticBerserk.stage
-        + ",GBexp = " + playerdata.giganticBerserk.exp
-        + ",GBlevel = " + playerdata.giganticBerserk.level
-        + ",isGBStageUp = " + playerdata.giganticBerserk.canEvolve
-        + ",TitleFlags = '" + flagString + "'"
+          + ",GBstage = " + playerdata.giganticBerserk.stage
+          + ",GBexp = " + playerdata.giganticBerserk.exp
+          + ",GBlevel = " + playerdata.giganticBerserk.level
+          + ",isGBStageUp = " + playerdata.giganticBerserk.canEvolve
+          + ",TitleFlags = '" + flagString + "'"
 
-        //正月イベント
-        + ",hasNewYearSobaGive = " + playerdata.hasNewYearSobaGive
-        + ",newYearBagAmount = " + playerdata.newYearBagAmount
+          //正月イベント
+          + ",hasNewYearSobaGive = " + playerdata.hasNewYearSobaGive
+          + ",newYearBagAmount = " + playerdata.newYearBagAmount
 
-        //バレンタインイベント
-        + ",hasChocoGave = " + playerdata.hasChocoGave
+          //バレンタインイベント
+          + ",hasChocoGave = " + playerdata.hasChocoGave
 
-        //loginflagを折る
-        + ", loginflag = " + !logoutflag
+          //loginflagを折る
+          + ", loginflag = " + !logoutflag
 
-        + " where uuid like '" + playerUuid + "'")
+          + " where uuid like '" + playerUuid + "'")
+    }
 
     stmt.executeUpdate(command)
   }

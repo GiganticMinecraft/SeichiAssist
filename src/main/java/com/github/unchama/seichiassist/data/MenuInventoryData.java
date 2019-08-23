@@ -5856,7 +5856,7 @@ public class MenuInventoryData {
 
 	private static boolean sendWarningToLogger(Player p, PlayerData playerdata) {
 		if(playerdata == null){
-			Util.sendPlayerDataNullMessage(p);
+			Util.INSTANCE.sendPlayerDataNullMessage(p);
 			Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
 			Bukkit.getLogger().warning("MenuInventoryData.getMenuData");
 			return true;
@@ -6132,7 +6132,7 @@ public class MenuInventoryData {
 							ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています",
 							ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更",
 							ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x+1) + "]",
-							ChatColor.RESET + "" + ChatColor.GRAY + "" + Util.getWorldName(l.getWorld().getName()) + " x:" + (int)l.getX() + " y:" + (int)l.getY() + " z:" + (int)l.getZ())
+							ChatColor.RESET + "" + ChatColor.GRAY + "" + Util.INSTANCE.getWorldName(l.getWorld().getName()) + " x:" + (int)l.getX() + " y:" + (int)l.getY() + " z:" + (int)l.getZ())
 					: Arrays.asList(ChatColor.GRAY + "サブホームポイント" + (x + 1), ChatColor.GRAY + "ポイント未設定");
 			itemmeta.setLore(subHomeLore);
 			itemstack.setItemMeta(itemmeta);

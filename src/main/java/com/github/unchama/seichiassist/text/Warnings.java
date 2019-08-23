@@ -24,7 +24,7 @@ public final class Warnings {
      */
     @NotNull
     public static List<String> noRewardsOutsideSeichiWorld(@NotNull Player player) {
-        if (Util.isSeichiWorld(player)) {
+        if (Util.INSTANCE.isSeichiWorld(player)) {
             return Collections.emptyList();
         } else {
             return Arrays.asList(

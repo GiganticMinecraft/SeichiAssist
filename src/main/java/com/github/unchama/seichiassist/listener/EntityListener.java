@@ -84,7 +84,7 @@ public class EntityListener implements Listener {
 		PlayerData playerdata = SeichiAssist.Companion.getPlayermap().get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
-			Util.sendPlayerDataNullMessage(player);
+			Util.INSTANCE.sendPlayerDataNullMessage(player);
 			Bukkit.getLogger().warning(player.getName() + " -> PlayerData not found.");
 			Bukkit.getLogger().warning("EntityListener.onPlayerActiveSkillEvent");
 			return;
@@ -96,7 +96,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 		//スキル発動条件がそろってなければ終了
-		if(!Util.isSkillEnable(player)){
+		if(!Util.INSTANCE.isSkillEnable(player)){
 			return;
 		}
 
@@ -359,7 +359,7 @@ public class EntityListener implements Listener {
 		/*GiganticBerserk用*/
 
 		//死んだMOBがGiganticBerserkの対象MOBでなければ終了
-		if(!Util.isEnemy(event.getEntity().getType())){
+		if(!Util.INSTANCE.isEnemy(event.getEntity().getType())){
 			return;
 		}
 
@@ -369,7 +369,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 		//プレイヤーが整地ワールドに居ない場合終了
-		if (!Util.isSeichiWorld(player)){
+		if (!Util.INSTANCE.isSeichiWorld(player)){
 			return;
 		}
 
