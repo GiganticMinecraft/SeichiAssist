@@ -1,21 +1,20 @@
 package com.github.unchama.seichiassist.task;
 
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.database.DatabaseConstants;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.UUID;
-
-import com.github.unchama.seichiassist.database.DatabaseConstants;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.data.PlayerData;
 
 /**
  * 初見確認とプレイヤーデータのロードを行うタスク(非同期で実行すること)
@@ -45,7 +44,7 @@ public class CheckAlreadyExistPlayerDataTask extends BukkitRunnable{
 
 	public CheckAlreadyExistPlayerDataTask(PlayerData playerData) {
 		this.playerData = playerData;
-		name = playerData.getName();
+		name = playerData.getLowercaseName();
 		uuid = playerData.getUuid();
 		struuid = uuid.toString().toLowerCase();
 	}

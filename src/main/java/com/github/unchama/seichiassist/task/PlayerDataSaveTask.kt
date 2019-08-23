@@ -162,7 +162,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
 
     val command = ("update seichiassist.playerdata set"
         //名前更新処理
-        + " name = '" + playerdata.name + "'"
+        + " name = '" + playerdata.lowercaseName + "'"
 
         //各種数値更新処理
         + ",effectflag = " + runBlocking { playerdata.fastDiggingEffectSuppressor.serialized() }
@@ -283,9 +283,9 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
 
   override fun run() {
     val resultMessage = if (executeUpdate() === Ok)
-      ChatColor.GREEN.toString() + playerdata.name + "のプレイヤーデータ保存完了"
+      ChatColor.GREEN.toString() + playerdata.lowercaseName + "のプレイヤーデータ保存完了"
     else
-      ChatColor.RED.toString() + playerdata.name + "のプレイヤーデータ保存失敗"
+      ChatColor.RED.toString() + playerdata.lowercaseName + "のプレイヤーデータ保存失敗"
     plugin.server.consoleSender.sendMessage(resultMessage)
     if (!isOnDisable) cancel()
   }

@@ -6,7 +6,6 @@ import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.task.recordIteration
 import com.github.unchama.util.ActionStatus
-import com.github.unchama.util.collection.ImmutableListFactory
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -26,7 +25,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
     val command = ("insert into " + tableReference
         + " (playername,playeruuid,effectnum,effectname,usepoint,date) "
         + "value("
-        + "'" + playerdata.name + "',"
+        + "'" + playerdata.lowercaseName + "',"
         + "'" + playerdata.uuid.toString() + "',"
         + effect.num + ","
         + "'" + effect.getsqlName() + "',"
@@ -56,7 +55,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
     var count = 0
     val effect = ActiveSkillPremiumEffect.values()
 
-    val command = "select * from " + tableReference + " where playername = '" + playerdata.name + "'"
+    val command = "select * from " + tableReference + " where playername = '" + playerdata.lowercaseName + "'"
     try {
       gateway.executeQuery(command).recordIteration {
         val lrs = this

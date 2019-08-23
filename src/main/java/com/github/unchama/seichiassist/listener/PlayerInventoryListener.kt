@@ -642,7 +642,7 @@ class PlayerInventoryListener : Listener {
             if (playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
               player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -743,7 +743,7 @@ class PlayerInventoryListener : Listener {
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
               player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -889,7 +889,7 @@ class PlayerInventoryListener : Listener {
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
               player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -942,7 +942,7 @@ class PlayerInventoryListener : Listener {
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
               player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -998,7 +998,7 @@ class PlayerInventoryListener : Listener {
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
               player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -1376,7 +1376,7 @@ class PlayerInventoryListener : Listener {
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid] ?: return
     //エラー分岐
-    val name = playerdata.name
+    val name = playerdata.lowercaseName
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
@@ -2874,7 +2874,7 @@ when (itemstackcurrent.type) {
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid] ?: return
     //エラー分岐
-    val name = playerdata.name
+    val name = playerdata.lowercaseName
     val inventory = event.inventory
 
     //インベントリサイズが4列でない時終了

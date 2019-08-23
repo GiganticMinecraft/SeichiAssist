@@ -207,7 +207,7 @@ public final class BreakUtil {
 					} else {
 						//ガチャ品
 						MineStackGachaData g = SeichiAssist.Companion.getMsgachadatalist().get(mineStackObj.getGachaType());
-						String name = playerdata.getName(); //プレイヤーのネームを見る
+						String name = playerdata.getLowercaseName(); //プレイヤーのネームを見る
 						if(g.getProbability() <0.1){ //カタログギフト券を除く(名前があるアイテム)
 							if(!Util.ItemStackContainsOwnerName(itemstack, name)){
 								//所有者の名前が無ければreturn

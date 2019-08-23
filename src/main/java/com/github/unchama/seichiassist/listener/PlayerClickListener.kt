@@ -189,7 +189,7 @@ class PlayerClickListener : Listener {
     val player = event.player
     val uuid = player.uniqueId
     val playerData = playerMap[uuid] ?: return
-    val name = playerData.name
+    val name = playerData.lowercaseName
 
     //もしサバイバルでなければ処理を終了
     if (player.gameMode != GameMode.SURVIVAL) return

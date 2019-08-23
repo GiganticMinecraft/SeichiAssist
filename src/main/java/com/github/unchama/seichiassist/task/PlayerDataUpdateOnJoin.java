@@ -1,15 +1,14 @@
 package com.github.unchama.seichiassist.task;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * プレイヤーデータ読み込み完了を確認したあと、一度だけ後の処理が実行される
@@ -29,7 +28,7 @@ public class PlayerDataUpdateOnJoin extends BukkitRunnable{
 	int i;
 
 	public PlayerDataUpdateOnJoin(PlayerData playerData) {
-		name = playerData.getName();
+		name = playerData.getLowercaseName();
 		uuid = playerData.getUuid();
 		p = Bukkit.getPlayer(uuid);
 		struuid = uuid.toString().toLowerCase();

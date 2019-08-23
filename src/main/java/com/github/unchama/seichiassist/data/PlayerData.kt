@@ -40,12 +40,13 @@ import kotlin.math.roundToInt
 
 
 class PlayerData(val player: Player) {
-
     //読み込み済みフラグ
     var loaded = false
+
     //プレイヤー名
-    val name: String
+    val lowercaseName: String
       get() = Util.getName(player)
+
     //UUID
     val uuid: UUID
       get() = player.uniqueId
@@ -90,6 +91,7 @@ class PlayerData(val player: Player) {
     var regionCount = 0
 
     var starLevels = StarLevel(0, 0, 0)
+
     /**
      * スターレベルの合計を返すショートカットフィールド。
      */
@@ -901,9 +903,9 @@ class PlayerData(val player: Player) {
             TitleFlags.set(number)
             Bukkit.getPlayer(uuid)?.sendMessage("運営チームよりNo${number}の実績が配布されました。")
 
-            "$name に実績No. $number を${GREEN}付与${RESET}しました。".asMessageEffect()
+            "$lowercaseName に実績No. $number を${GREEN}付与${RESET}しました。".asMessageEffect()
         } else {
-            "$GRAY$name は既に実績No. $number を獲得しています。".asMessageEffect()
+            "$GRAY$lowercaseName は既に実績No. $number を獲得しています。".asMessageEffect()
         }
 
     /**
@@ -918,9 +920,9 @@ class PlayerData(val player: Player) {
         if (!TitleFlags[number]) {
           TitleFlags[number] = false
 
-            "$name から実績No. $number を${RED}剥奪${GREEN}しました。".asMessageEffect()
+            "$lowercaseName から実績No. $number を${RED}剥奪${GREEN}しました。".asMessageEffect()
         } else {
-            "$GRAY$name は実績No. $number を獲得していません。".asMessageEffect()
+            "$GRAY$lowercaseName は実績No. $number を獲得していません。".asMessageEffect()
         }
 
     /**
