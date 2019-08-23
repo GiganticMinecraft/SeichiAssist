@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 public enum SeichiAchievement {
 
     // 整地ランキング
-    NO_1001(1001, player -> getPlayerData(player).calcPlayerRank(player) == 1),
+    NO_1001(1001, player -> getPlayerData(player).calcPlayerRank() == 1),
     NO_1002(1002, player -> getRank(player) < 6), // maybe wrong, not `<` but `>`
     NO_1003(1003, player -> getRank(player) < 28),
     NO_1004(1004, player -> getRank(player) < 51),
@@ -228,7 +228,7 @@ public enum SeichiAchievement {
     }
 
     private static int getRank(Player player) {
-        return getPlayerData(player).calcPlayerRank(player);
+        return getPlayerData(player).calcPlayerRank();
     }
 
     private static long getBrokenBlockAmount(Player player) {
@@ -236,15 +236,15 @@ public enum SeichiAchievement {
     }
 
     private static long getSpentTicks(Player player) {
-        return getPlayerData(player).getPlaytick();
+        return getPlayerData(player).getPlayTick();
     }
 
     private static int getDaysChaining(Player player) {
-        return getPlayerData(player).getChainJoin();
+        return getPlayerData(player).getLoginStatus().getChainLoginDay();
     }
 
     private static int getTotalPlayedDays(Player player) {
-        return getPlayerData(player).getTotalJoin();
+        return getPlayerData(player).getLoginStatus().getTotalLoginDay();
     }
 
     private static int getVotingCounts(Player player) {

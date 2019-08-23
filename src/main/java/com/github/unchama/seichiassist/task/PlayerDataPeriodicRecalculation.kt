@@ -43,27 +43,27 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       //放置判定
       if (player.location == playerData.loc) {
         // idletime加算
-        playerData.idletime = playerData.idletime + 1
+        playerData.idleMinute = playerData.idleMinute + 1
       } else {
         // 現在地点再取得
         playerData.loc = player.location
         // idletimeリセット
-        playerData.idletime = 0
+        playerData.idleMinute = 0
       }
 
       //プレイヤー名を取得
       val name = Util.getName(player)
       //総整地量を更新(返り血で重み分け済みの1分間のブロック破壊量が返ってくる)
-      val increase = playerData.calcMineBlock(player)
+      val increase = playerData.updateAndCalcMinedBlockAmount()
       //Levelを設定(必ず総整地量更新後に実施！)
-      playerData.updateLevel(player)
+      playerData.updateLevel()
       //activeskillpointを設定
       playerData.activeskilldata.updateActiveSkillPoint(player, playerData.level)
       //総プレイ時間更新
-      playerData.calcPlayTick(player)
+      playerData.calcPlayTick()
 
       //スターレベル更新
-      playerData.calcStarLevel(player)
+      playerData.updateStarLevel()
 
       //effectの大きさ
       var amplifier: Double
@@ -144,7 +144,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       //ガチャポイントに合算
       playerData.gachapoint = playerData.gachapoint + increase
 
-      if (playerData.gachapoint >= config.gachaPresentInterval && playerData.gachaflag) {
+      if (playerData.gachapoint >= config.gachaPresentInterval && playerData.receiveGachaTicketEveryMinute) {
         val skull = Util.getskull(name)
         playerData.gachapoint = playerData.gachapoint - config.gachaPresentInterval
         if (player.inventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
@@ -156,7 +156,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
           player.sendMessage(ChatColor.GOLD.toString() + "ガチャ券" + ChatColor.WHITE + "がドロップしました。右クリックで使えるゾ")
         }
       } else {
-        if (increase != 0 && playerData.gachaflag) {
+        if (increase != 0 && playerData.receiveGachaTicketEveryMinute) {
           player.sendMessage("あと" + ChatColor.AQUA + (config.gachaPresentInterval - playerData.gachapoint % config.gachaPresentInterval) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ")
         }
       }

@@ -34,7 +34,7 @@ public class PlayerQuitListener implements Listener {
 			return;
 		}
 		//quit時とondisable時、プレイヤーデータを最新の状態に更新
-		playerdata.updateonQuit(player);
+		playerdata.updateOnQuit();
 		//タスクをすべて終了する
 		playerdata.getActiveskilldata().RemoveAllTask();
 		//saveplayerdata

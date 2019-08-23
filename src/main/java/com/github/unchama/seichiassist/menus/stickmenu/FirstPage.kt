@@ -571,7 +571,7 @@ private object FirstPage: Menu {
               "$RESET${GRAY}・各種謝礼として"
           )
 
-          val obtainableApologyItems = playerData.numofsorryforbug
+          val obtainableApologyItems = playerData.wabiGacha
           val currentStatus =
               if (obtainableApologyItems != 0)
                 "$RESET${AQUA}未獲得ガチャ券：${obtainableApologyItems}枚"
@@ -599,7 +599,7 @@ private object FirstPage: Menu {
                   sequentialEffect(
                       unfocusedEffect {
                         repeat(numberOfItemsToGive) { Util.addItemToPlayerSafely(this, itemToGive) }
-                        playerData.numofsorryforbug = 0
+                        playerData.wabiGacha = 0
                       },
                       FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
                       "${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
@@ -615,12 +615,12 @@ private object FirstPage: Menu {
 
       val iconItemStack = run {
         val breakNumRequiredToNextStarLevel =
-            (playerData.starlevel_Break.toLong() + 1) * 87115000 - playerData.totalbreaknum
+            (playerData.starLevels.fromBreakAmount.toLong() + 1) * 87115000 - playerData.totalbreaknum
 
         val lore = listOf(
-            "$RESET$AQUA${BOLD}整地量：☆${playerData.starlevel_Break}",
+            "$RESET$AQUA${BOLD}整地量：☆${playerData.starLevels.fromBreakAmount}",
             "$RESET${AQUA}次の☆まで：あと$breakNumRequiredToNextStarLevel",
-            "$RESET$GREEN$UNDERLINE${BOLD}合計：☆${playerData.starlevel}"
+            "$RESET$GREEN$UNDERLINE${BOLD}合計：☆${playerData.starLevels.total()}"
         )
 
         IconItemStackBuilder(Material.GOLD_INGOT)
@@ -716,7 +716,7 @@ private object FirstPage: Menu {
       val iconItemStack = run {
         val lore = run {
           val settingsStatus =
-              if (playerData.gachaflag)
+              if (playerData.receiveGachaTicketEveryMinute)
                 "$RESET${GREEN}毎分受け取ります"
               else
                 "$RESET${RED}後でまとめて受け取ります"
@@ -736,10 +736,10 @@ private object FirstPage: Menu {
           iconItemStack,
           LeftClickButtonEffect(
               unfocusedEffect {
-                playerData.gachaflag = !playerData.gachaflag
+                playerData.receiveGachaTicketEveryMinute = !playerData.receiveGachaTicketEveryMinute
               },
               deferredEffect {
-                if (playerData.gachaflag) {
+                if (playerData.receiveGachaTicketEveryMinute) {
                   sequentialEffect(
                       "${ChatColor.GREEN}毎分のガチャ券受け取り:ON".asMessageEffect(),
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)

@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.MineStack
 import com.github.unchama.seichiassist.data.PlayerData
+import com.github.unchama.seichiassist.data.playerdata.*
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.BukkitSerialization
@@ -19,6 +20,7 @@ import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
+import org.jetbrains.annotations.NotNull
 import java.io.IOException
 import java.math.BigDecimal
 import java.sql.ResultSet
@@ -194,192 +196,209 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
     val command = ("select * from " + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME
         + " where uuid like '" + stringUuid + "'")
 
-    stmt.executeQuery(command).use { rs ->
-      while (rs.next()) {
-        //各種数値
-        playerdata.loaded = true
-        runBlocking {
-          playerdata.fastDiggingEffectSuppressor.setStateFromSerializedValue(rs.getInt("effectflag"))
+    stmt.executeQuery(command).recordIteration {
+      val rs = this
+      //各種数値
+      playerdata.loaded = true
+      runBlocking {
+        playerdata.fastDiggingEffectSuppressor.setStateFromSerializedValue(rs.getInt("effectflag"))
+      }
+      playerdata.minestackflag = rs.getBoolean("minestackflag")
+      playerdata.messageflag = rs.getBoolean("messageflag")
+      playerdata.activeskilldata.apply {
+        mineflagnum = rs.getInt("activemineflagnum")
+        assaultflag = rs.getBoolean("assaultflag")
+        skilltype = rs.getInt("activeskilltype")
+        skillnum = rs.getInt("activeskillnum")
+        assaulttype = rs.getInt("assaultskilltype")
+        assaultnum = rs.getInt("assaultskillnum")
+        arrowskill = rs.getInt("arrowskill")
+        multiskill = rs.getInt("multiskill")
+        breakskill = rs.getInt("breakskill")
+        fluidcondenskill = rs.getInt("fluidcondenskill")
+        watercondenskill = rs.getInt("watercondenskill")
+        lavacondenskill = rs.getInt("lavacondenskill")
+        effectnum = rs.getInt("effectnum")
+      }
+
+      playerdata.gachapoint = rs.getInt("gachapoint")
+      playerdata.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
+      playerdata.level = rs.getInt("level")
+      playerdata.wabiGacha = rs.getInt("numofsorryforbug")
+      playerdata.regionCount = rs.getInt("rgnum")
+      playerdata.inventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
+      playerdata.dispkilllogflag = rs.getBoolean("killlogflag")
+      playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag")
+
+      playerdata.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
+
+      playerdata.pvpflag = rs.getBoolean("pvpflag")
+      playerdata.totalbreaknum = rs.getLong("totalbreaknum")
+      playerdata.playTick = rs.getInt("playtick")
+      playerdata.p_givenvote = rs.getInt("p_givenvote")
+      playerdata.activeskilldata.effectpoint = rs.getInt("effectpoint")
+      playerdata.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint")
+      //マナの情報
+      playerdata.activeskilldata.mana.mana = rs.getDouble("mana")
+      playerdata.expbar.isVisible = rs.getBoolean("expvisible")
+
+      playerdata.totalexp = rs.getInt("totalexp")
+
+      playerdata.expmarge = rs.getByte("expmarge")
+      playerdata.contentsPresentInSharedInventory = !rs.getString("shareinv").isNullOrEmpty()
+      playerdata.everysoundflag = rs.getBoolean("everysound")
+      playerdata.everymessageflag = rs.getBoolean("everymessage")
+
+      playerdata.selectHomeNum = 0
+      playerdata.setHomeNameNum = 0
+      playerdata.isSubHomeNameChange = false
+
+      //実績、二つ名の情報
+      playerdata.nickName = PlayerNickName(
+          PlayerNickName.Style.marshal(rs.getBoolean("displayTypeLv")),
+          rs.getInt("displayTitle1No"),
+          rs.getInt("displayTitle2No"),
+          rs.getInt("displayTitle3No")
+      )
+      playerdata.p_vote_forT = rs.getInt("p_vote")
+      playerdata.giveachvNo = rs.getInt("giveachvNo")
+      playerdata.achievePoint = AchievementPoint(
+          rs.getInt("achvPointMAX"),
+          rs.getInt("achvPointUSE"),
+          rs.getInt("achvChangenum")
+      )
+
+      //スターレベルの情報
+      playerdata.starLevels = StarLevel(
+          rs.getInt("starlevel_Break"),
+          rs.getInt("starlevel_Time"),
+          rs.getInt("starlevel_Event")
+      )
+
+      //期間限定ログインイベント専用の累計ログイン日数
+      playerdata.LimitedLoginCount = rs.getInt("LimitedLoginCount")
+
+      //連続・通算ログインの情報、およびその更新
+      val cal = Calendar.getInstance()
+      val sdf = SimpleDateFormat("yyyy/MM/dd")
+      val lastIn = rs.getString("lastcheckdate")
+      playerdata.lastcheckdate = if (lastIn.isNullOrEmpty()) {
+        sdf.format(cal.time)
+      } else {
+        lastIn
+      }
+      val chain = rs.getInt("ChainJoin")
+      playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = if (chain == 0) {
+  1
+} else {
+  chain
+})
+      val total = rs.getInt("TotalJoin")
+
+      playerdata.loginStatus = playerdata.loginStatus.copy(totalLoginDay = if (total == 0) {
+  1
+} else {
+  total
+})
+
+      try {
+        val TodayDate = sdf.parse(sdf.format(cal.time))
+        val LastDate = sdf.parse(playerdata.lastcheckdate)
+        val TodayLong = TodayDate.time
+        val LastLong = LastDate.time
+
+        val datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
+        if (datediff > 0) {
+          LLE.getLastcheck(playerdata.lastcheckdate)
+          playerdata.loginStatus = playerdata.loginStatus.copy(totalLoginDay = playerdata.loginStatus.totalLoginDay + 1)
+          if (datediff == 1L) {
+            playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = playerdata.loginStatus.chainLoginDay + 1)
+          } else {
+            playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = 1)
+          }
         }
-        playerdata.minestackflag = rs.getBoolean("minestackflag")
-        playerdata.messageflag = rs.getBoolean("messageflag")
-        playerdata.activeskilldata.mineflagnum = rs.getInt("activemineflagnum")
-        playerdata.activeskilldata.assaultflag = rs.getBoolean("assaultflag")
-        playerdata.activeskilldata.skilltype = rs.getInt("activeskilltype")
-        playerdata.activeskilldata.skillnum = rs.getInt("activeskillnum")
-        playerdata.activeskilldata.assaulttype = rs.getInt("assaultskilltype")
-        playerdata.activeskilldata.assaultnum = rs.getInt("assaultskillnum")
-        playerdata.activeskilldata.arrowskill = rs.getInt("arrowskill")
-        playerdata.activeskilldata.multiskill = rs.getInt("multiskill")
-        playerdata.activeskilldata.breakskill = rs.getInt("breakskill")
-        playerdata.activeskilldata.fluidcondenskill = rs.getInt("fluidcondenskill")
-        playerdata.activeskilldata.watercondenskill = rs.getInt("watercondenskill")
-        playerdata.activeskilldata.lavacondenskill = rs.getInt("lavacondenskill")
-        playerdata.activeskilldata.effectnum = rs.getInt("effectnum")
-        playerdata.gachapoint = rs.getInt("gachapoint")
-        playerdata.gachaflag = rs.getBoolean("gachaflag")
-        playerdata.level = rs.getInt("level")
-        playerdata.numofsorryforbug = rs.getInt("numofsorryforbug")
-        playerdata.rgnum = rs.getInt("rgnum")
-        playerdata.inventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
-        playerdata.dispkilllogflag = rs.getBoolean("killlogflag")
-        playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag")
+      } catch (e: ParseException) {
+        e.printStackTrace()
+      }
 
-        playerdata.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
+      playerdata.lastcheckdate = sdf.format(cal.time)
 
-        playerdata.pvpflag = rs.getBoolean("pvpflag")
-        playerdata.totalbreaknum = rs.getLong("totalbreaknum")
-        playerdata.playtick = rs.getInt("playtick")
-        playerdata.p_givenvote = rs.getInt("p_givenvote")
-        playerdata.activeskilldata.effectpoint = rs.getInt("effectpoint")
-        playerdata.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint")
-        //マナの情報
-        playerdata.activeskilldata.mana.mana = rs.getDouble("mana")
-        playerdata.expbar.isVisible = rs.getBoolean("expvisible")
-
-        playerdata.totalexp = rs.getInt("totalexp")
-
-        playerdata.expmarge = rs.getByte("expmarge")
-        playerdata.contentsPresentInSharedInventory = "" != rs.getString("shareinv") && rs.getString("shareinv") != null
-        playerdata.everysoundflag = rs.getBoolean("everysound")
-        playerdata.everymessageflag = rs.getBoolean("everymessage")
-
-        playerdata.selectHomeNum = 0
-        playerdata.setHomeNameNum = 0
-        playerdata.isSubHomeNameChange = false
-
-        //実績、二つ名の情報
-        playerdata.displayTypeLv = rs.getBoolean("displayTypeLv")
-        playerdata.displayTitle1No = rs.getInt("displayTitle1No")
-        playerdata.displayTitle2No = rs.getInt("displayTitle2No")
-        playerdata.displayTitle3No = rs.getInt("displayTitle3No")
-        playerdata.p_vote_forT = rs.getInt("p_vote")
-        playerdata.giveachvNo = rs.getInt("giveachvNo")
-        playerdata.achvPointMAX = rs.getInt("achvPointMAX")
-        playerdata.achvPointUSE = rs.getInt("achvPointUSE")
-        playerdata.achvChangenum = rs.getInt("achvChangenum")
-        playerdata.achvPoint = playerdata.achvPointMAX + playerdata.achvChangenum * 3 - playerdata.achvPointUSE
-
-        //スターレベルの情報
-        playerdata.starlevel = rs.getInt("starlevel")
-        playerdata.starlevel_Break = rs.getInt("starlevel_Break")
-        playerdata.starlevel_Time = rs.getInt("starlevel_Time")
-        playerdata.starlevel_Event = rs.getInt("starlevel_Event")
-
-        //期間限定ログインイベント専用の累計ログイン日数
-        playerdata.LimitedLoginCount = rs.getInt("LimitedLoginCount")
-
-        //連続・通算ログインの情報、およびその更新
-        val cal = Calendar.getInstance()
-        val sdf = SimpleDateFormat("yyyy/MM/dd")
-        if (rs.getString("lastcheckdate") == "" || rs.getString("lastcheckdate") == null) {
-          playerdata.lastcheckdate = sdf.format(cal.time)
-        } else {
-          playerdata.lastcheckdate = rs.getString("lastcheckdate")
-        }
-        playerdata.ChainJoin = rs.getInt("ChainJoin")
-        playerdata.TotalJoin = rs.getInt("TotalJoin")
-        if (playerdata.ChainJoin == 0) {
-          playerdata.ChainJoin = 1
-        }
-        if (playerdata.TotalJoin == 0) {
-          playerdata.TotalJoin = 1
-        }
-
+      //連続投票の更新
+      val lastvote = rs.getString("lastvote")
+      if (lastvote.isNullOrEmpty()) {
+        playerdata.ChainVote = 0
+      } else {
         try {
           val TodayDate = sdf.parse(sdf.format(cal.time))
-          val LastDate = sdf.parse(playerdata.lastcheckdate)
+          val LastDate = sdf.parse(lastvote)
           val TodayLong = TodayDate.time
           val LastLong = LastDate.time
 
           val datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-          if (datediff > 0) {
-            LLE.getLastcheck(playerdata.lastcheckdate)
-            playerdata.TotalJoin = playerdata.TotalJoin + 1
-            if (datediff == 1L) {
-              playerdata.ChainJoin = playerdata.ChainJoin + 1
-            } else {
-              playerdata.ChainJoin = 1
-            }
+          playerdata.ChainVote =if (datediff <= 1 || datediff >= 0) {
+             rs.getInt("chainvote")
+          } else {
+             0
           }
         } catch (e: ParseException) {
           e.printStackTrace()
         }
 
-        playerdata.lastcheckdate = sdf.format(cal.time)
-
-        //連続投票の更新
-        val lastvote = rs.getString("lastvote")
-        if ("" == lastvote || lastvote == null) {
-          playerdata.ChainVote = 0
-        } else {
-          try {
-            val TodayDate = sdf.parse(sdf.format(cal.time))
-            val LastDate = sdf.parse(lastvote)
-            val TodayLong = TodayDate.time
-            val LastLong = LastDate.time
-
-            val datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-            if (datediff <= 1 || datediff >= 0) {
-              playerdata.ChainVote = rs.getInt("chainvote")
-            } else {
-              playerdata.ChainVote = 0
-            }
-          } catch (e: ParseException) {
-            e.printStackTrace()
-          }
-
-        }
-
-        //実績解除フラグのBitSet型への復元処理
-        //初回nullエラー回避のための分岐
-        try {
-          val Titlenums = rs.getString("TitleFlags").split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-          val Titlearray = Arrays.stream(Titlenums).mapToLong { x -> java.lang.Long.parseUnsignedLong(x, 16) }.toArray()
-          val TitleFlags = BitSet.valueOf(Titlearray)
-          playerdata.TitleFlags = TitleFlags
-        } catch (e: NullPointerException) {
-          playerdata.TitleFlags = BitSet(10000)
-          playerdata.TitleFlags.set(1)
-        }
-
-        //建築
-        playerdata.build_lv_set(rs.getInt("build_lv"))
-        playerdata.build_count_set(BigDecimal(rs.getString("build_count")))
-        playerdata.build_count_flg_set(rs.getByte("build_count_flg"))
-
-        //マナ妖精
-        playerdata.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
-        playerdata.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
-        playerdata.hasVotingFairyMana = rs.getInt("hasVotingFairyMana")
-        playerdata.toggleGiveApple = rs.getInt("toggleGiveApple")
-        playerdata.toggleVotingFairy = rs.getInt("toggleVotingFairy")
-        playerdata.SetVotingFairyTime(rs.getString("newVotingFairyTime"), p)
-        playerdata.p_apple = rs.getLong("p_apple")
-
-
-        playerdata.contribute_point = rs.getInt("contribute_point")
-        playerdata.added_mana = rs.getInt("added_mana")
-
-        playerdata.GBstage = rs.getInt("GBstage")
-        playerdata.GBexp = rs.getInt("GBexp")
-        playerdata.GBlevel = rs.getInt("GBlevel")
-        playerdata.isGBStageUp = rs.getBoolean("isGBStageUp")
-        playerdata.anniversary = rs.getBoolean("anniversary")
-
-        // 1周年記念
-        if (playerdata.anniversary) {
-          p.sendMessage("整地サーバー1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。http://seichi.click/wiki/anniversary")
-          p.playSound(p.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-        }
-
-        //正月イベント用
-        playerdata.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive")
-        playerdata.newYearBagAmount = rs.getInt("newYearBagAmount")
-
-        //バレンタインイベント用
-        playerdata.hasChocoGave = rs.getBoolean("hasChocoGave")
       }
+
+      //実績解除フラグのBitSet型への復元処理
+      //初回nullエラー回避のための分岐
+      try {
+        val Titlenums = rs.getString("TitleFlags").split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val Titlearray = Arrays.stream(Titlenums).mapToLong { x: String -> java.lang.Long.parseUnsignedLong(x, 16) }.toArray()
+        @NotNull
+        val TitleFlags = BitSet.valueOf(Titlearray)
+        playerdata.TitleFlags = TitleFlags
+      } catch (e: NullPointerException) {
+        playerdata.TitleFlags = BitSet(10000)
+        playerdata.TitleFlags.set(1)
+      }
+
+      //建築
+      playerdata.buildCount = BuildCount(
+          rs.getInt("build_lv"),
+          BigDecimal(rs.getString("build_count")),
+          rs.getByte("build_count_flg")
+      )
+
+      //マナ妖精
+      playerdata.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
+      playerdata.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
+      playerdata.hasVotingFairyMana = rs.getInt("hasVotingFairyMana")
+      playerdata.toggleGiveApple = rs.getInt("toggleGiveApple")
+      playerdata.toggleVotingFairy = rs.getInt("toggleVotingFairy")
+      playerdata.setVotingFairyTime(rs.getString("newVotingFairyTime"))
+      playerdata.p_apple = rs.getLong("p_apple")
+
+
+      playerdata.contribute_point = rs.getInt("contribute_point")
+      playerdata.added_mana = rs.getInt("added_mana")
+
+      playerdata.giganticBerserk = GiganticBerserk(
+          rs.getInt("GBlevel"),
+          rs.getInt("GBexp"),
+          rs.getInt("GBstage"),
+          rs.getBoolean("isGBStageUp")
+      )
+      playerdata.anniversary = rs.getBoolean("anniversary")
+
+      // 1周年記念
+      if (playerdata.anniversary) {
+        p.sendMessage("整地サーバー1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。http://seichi.click/wiki/anniversary")
+        p.playSound(p.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
+      }
+
+      //正月イベント用
+      playerdata.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive")
+      playerdata.newYearBagAmount = rs.getInt("newYearBagAmount")
+
+      //バレンタインイベント用
+      playerdata.hasChocoGave = rs.getBoolean("hasChocoGave")
     }
   }
 
@@ -478,7 +497,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
     if (playerdata.added_mana < playerdata.contribute_point) {
       val addMana: Int
       addMana = playerdata.contribute_point - playerdata.added_mana
-      playerdata.isContribute(p, addMana)
+      playerdata.setContributionPoint(addMana)
     }
     timer.sendLapTimeMessage(ChatColor.GREEN.toString() + p.name + "のプレイヤーデータ読込完了")
   }

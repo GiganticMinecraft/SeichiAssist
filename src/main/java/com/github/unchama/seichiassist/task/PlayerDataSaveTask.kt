@@ -182,12 +182,12 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         + ",lavacondenskill = " + playerdata.activeskilldata.lavacondenskill
         + ",effectnum = " + playerdata.activeskilldata.effectnum
         + ",gachapoint = " + playerdata.gachapoint
-        + ",gachaflag = " + playerdata.gachaflag
+        + ",gachaflag = " + playerdata.receiveGachaTicketEveryMinute
         + ",level = " + playerdata.level
-        + ",rgnum = " + playerdata.rgnum
+        + ",rgnum = " + playerdata.regionCount
         + ",totalbreaknum = " + playerdata.totalbreaknum
         + ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
-        + ",playtick = " + playerdata.playtick
+        + ",playtick = " + playerdata.playTick
         + ",lastquit = cast( now() as datetime )"
         + ",killlogflag = " + playerdata.dispkilllogflag
         + ",worldguardlogflag = " + playerdata.dispworldguardlogflag
@@ -203,32 +203,32 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         + ",everysound = " + playerdata.everysoundflag
         + ",everymessage = " + playerdata.everymessageflag
 
-        + ",displayTypeLv = " + playerdata.displayTypeLv
-        + ",displayTitle1No = " + playerdata.displayTitle1No
-        + ",displayTitle2No = " + playerdata.displayTitle2No
-        + ",displayTitle3No = " + playerdata.displayTitle3No
+        + ",displayTypeLv = " + playerdata.nickName.style.displayLevel
+        + ",displayTitle1No = " + playerdata.nickName.id1
+        + ",displayTitle2No = " + playerdata.nickName.id2
+        + ",displayTitle3No = " + playerdata.nickName.id3
         + ",giveachvNo = " + playerdata.giveachvNo
-        + ",achvPointMAX = " + playerdata.achvPointMAX
-        + ",achvPointUSE = " + playerdata.achvPointUSE
-        + ",achvChangenum = " + playerdata.achvChangenum
-        + ",starlevel = " + playerdata.starlevel
-        + ",starlevel_Break = " + playerdata.starlevel_Break
-        + ",starlevel_Time = " + playerdata.starlevel_Time
-        + ",starlevel_Event = " + playerdata.starlevel_Event
+        + ",achvPointMAX = " + playerdata.achievePoint.cumulativeTotal
+        + ",achvPointUSE = " + playerdata.achievePoint.used
+        + ",achvChangenum = " + playerdata.achievePoint.conversionCount
+        + ",starlevel = " + playerdata.totalStarLevel
+        + ",starlevel_Break = " + playerdata.starLevels.fromBreakAmount
+        + ",starlevel_Time = " + playerdata.starLevels.fromConnectionTime
+        + ",starlevel_Event = " + playerdata.starLevels.fromEventAchievement
 
         + ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
-        + ",ChainJoin = " + playerdata.ChainJoin
-        + ",TotalJoin = " + playerdata.TotalJoin
+        + ",ChainJoin = " + playerdata.loginStatus.chainLoginDay
+        + ",TotalJoin = " + playerdata.loginStatus.totalLoginDay
         + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
 
         //建築
-        + ",build_lv = " + playerdata.build_lv_get()
-        + ",build_count = " + playerdata.build_count_get()!!.toString()
-        + ",build_count_flg = " + playerdata.build_count_flg_get()
+        + ",build_lv = " + playerdata.buildCount.lv
+        + ",build_count = " + playerdata.buildCount.count//.toString()
+        + ",build_count_flg = " + playerdata.buildCount.migrationFlag
 
         //投票
         + ",canVotingFairyUse = " + playerdata.usingVotingFairy
-        + ",newVotingFairyTime = '" + playerdata.VotingFairyTimeToString() + "'"
+        + ",newVotingFairyTime = '" + playerdata.getVotingFairyStartTimeAsString() + "'"
         + ",VotingFairyRecoveryValue = " + playerdata.VotingFairyRecoveryValue
         + ",hasVotingFairyMana = " + playerdata.hasVotingFairyMana
         + ",toggleGiveApple = " + playerdata.toggleGiveApple
@@ -238,10 +238,10 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         //貢献度pt
         + ",added_mana = " + playerdata.added_mana
 
-        + ",GBstage = " + playerdata.GBstage
-        + ",GBexp = " + playerdata.GBexp
-        + ",GBlevel = " + playerdata.GBlevel
-        + ",isGBStageUp = " + playerdata.isGBStageUp
+        + ",GBstage = " + playerdata.giganticBerserk.stage
+        + ",GBexp = " + playerdata.giganticBerserk.exp
+        + ",GBlevel = " + playerdata.giganticBerserk.level
+        + ",isGBStageUp = " + playerdata.giganticBerserk.canEvolve
         + ",TitleFlags = '" + flagString + "'"
 
         //正月イベント

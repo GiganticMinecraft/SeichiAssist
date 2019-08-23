@@ -98,7 +98,7 @@ object RegionMenu: Menu {
           listOf(
               "${GRAY}Y座標は自動で全範囲保護されます",
               "${YELLOW}A new region has been claimed",
-              "${YELLOW}named '${player.name}_${openerData.rgnum}'.",
+              "${YELLOW}named '${player.name}_${openerData.regionCount}'.",
               "${GRAY}と出れば保護設定完了です",
               "${RED}赤色で別の英文が出た場合",
               "${GRAY}保護の設定に失敗しています",
@@ -117,7 +117,7 @@ object RegionMenu: Menu {
       val leftClickEffect = if (canMakeRegion) {
         sequentialEffect(
             "/expand vert".asCommandEffect(),
-            "rg claim ${player.name}_${openerData.rgnum}".asCommandEffect(),
+            "rg claim ${player.name}_${openerData.regionCount}".asCommandEffect(),
             deferredEffect { openerData.incrementRegionNumber },
             "/sel".asCommandEffect(),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)

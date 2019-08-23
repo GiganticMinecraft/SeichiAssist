@@ -1,10 +1,8 @@
 package com.github.unchama.seichiassist.data
 
 import com.github.unchama.menuinventory.rows
-import com.github.unchama.seichiassist.LevelThresholds
-import com.github.unchama.seichiassist.ManagedWorld
-import com.github.unchama.seichiassist.MaterialSets
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.*
+import com.github.unchama.seichiassist.data.playerdata.*
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -13,9 +11,11 @@ import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.MebiusTask
 import com.github.unchama.seichiassist.task.VotingFairyTask
+import com.github.unchama.seichiassist.util.ClosedRangeWithComparator
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
+import com.github.unchama.seichiassist.util.exp.IExperienceManager
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.ops.plus
 import com.github.unchama.targetedeffect.player.asTargetedEffect
@@ -34,42 +34,46 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.experimental.and
 import kotlin.experimental.or
+import kotlin.math.floor
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 
 class PlayerData(val player: Player) {
 
     //読み込み済みフラグ
-    var loaded: Boolean = false
+    var loaded = false
     //プレイヤー名
-    var name: String
+    val name: String
+      get() = Util.getName(player)
     //UUID
-    var uuid: UUID
+    val uuid: UUID
+      get() = player.uniqueId
 
     val fastDiggingEffectSuppressor = FastDiggingEffectSuppressor()
 
     //内訳メッセージを出すフラグ
-    var messageflag: Boolean = false
+    var messageflag = false
     //1分間のデータを保存するincrease:１分間の採掘量
     //public MineBlock minuteblock;
     //３０分間のデータを保存する．
-    var halfhourblock: MineBlock
+    val halfhourblock: MineBlock
     //ガチャの基準となるポイント
-    var gachapoint: Int = 0
+    var gachapoint = 0
     //最後のガチャポイントデータ
-    var lastgachapoint: Int = 0
-    //ガチャ受け取りフラグ
-    var gachaflag: Boolean = false
+    var lastgachapoint = 0
+    //ガチャ受け取り方法設定
+    var receiveGachaTicketEveryMinute = false
     //今回の採掘速度上昇レベルを格納
-    var minespeedlv: Int = 0
+    var minespeedlv = 0
     //前回の採掘速度上昇レベルを格納
-    var lastminespeedlv: Int = 0
+    var lastminespeedlv = 0
     //持ってるポーションエフェクト全てを格納する．
-    var effectdatalist: MutableList<FastDiggingEffect>
+    val effectdatalist: MutableList<FastDiggingEffect>
     //現在のプレイヤーレベル
-    var level: Int = 0
+    var level = 0
     //詫び券をあげる数
-    var numofsorryforbug: Int = 0
+    var wabiGacha = 0
     //拡張インベントリ
     var inventory: Inventory
         get() {
@@ -83,177 +87,185 @@ class PlayerData(val player: Player) {
             return field
         }
     //ワールドガード保護自動設定用
-    var rgnum: Int = 0
+    var regionCount = 0
 
-    //スターレベル用数値
-    //スターレベル(合計値)
-    var starlevel: Int = 0
-    //各項目別の取得スターレベル
-    var starlevel_Break: Int = 0 //整地量
-    var starlevel_Time: Int = 0 //参加時間
-    var starlevel_Event: Int = 0  //イベント実績
+    var starLevels = StarLevel(0, 0, 0)
+    /**
+     * スターレベルの合計を返すショートカットフィールド。
+     */
+    val totalStarLevel
+        get() = starLevels.total()
 
-    //MineStack
-    //public MineStack minestack;
-
-    var minestack = MineStack()
+    val minestack = MineStack()
     //MineStackFlag
-    var minestackflag: Boolean = false
+    var minestackflag = false
     //プレイ時間差分計算用int
-    var servertick: Int = 0
+    var totalPlayTick = 0
     //プレイ時間
-    var playtick: Int = 0
+    var playTick = 0
 
     //キルログ表示トグル
     @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayDeathMessages"))
-    var dispkilllogflag: Boolean = false
+    var dispkilllogflag = false
 
     //全体通知音消音トグル
     @Deprecated("BroadcastMutingSettingsを使え。")
-    var everysoundflag: Boolean = false
+    var everysoundflag = false
     //全体メッセージ非表示トグル
     @Deprecated("BroadcastMutingSettingsを使え。")
-    var everymessageflag: Boolean = false
+    var everymessageflag = false
 
     //ワールドガード保護ログ表示トグル
     @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayWorldGuardLogs"))
-    var dispworldguardlogflag: Boolean = false
+    var dispworldguardlogflag = false
     //複数種類破壊トグル
-    var multipleidbreakflag: Boolean = false
+    var multipleidbreakflag = false
 
     //チェスト破壊トグル
-    var chestflag: Boolean = false
+    var chestflag = false
 
     //PvPトグル
-    var pvpflag: Boolean = false
+    var pvpflag = false
     //現在座標
     var loc: Location? = null
     //放置時間
-    var idletime: Int = 0
+    var idleMinute = 0
     //トータル破壊ブロック
-    var totalbreaknum: Long = 0
+    var totalbreaknum = 0.toLong()
     //整地量バー
-    var expbar: ExpBar
+    val expbar: ExpBar
     //合計経験値
-    var totalexp: Int = 0
+    var totalexp = 0
     //経験値マネージャ
-    var expmanager: ExperienceManager
+    private val expmanager: IExperienceManager
     //合計経験値統合済みフラグ
     var expmarge: Byte = 0
     //各統計値差分計算用配列
     private val staticdata: MutableList<Int>
     //特典受け取り済み投票数
-    var p_givenvote: Int = 0
+    var p_givenvote = 0
     //投票受け取りボタン連打防止用
-    var votecooldownflag: Boolean = false
+    var votecooldownflag = false
 
     //連続・通算ログイン用
+    // var loginStatus = ---
     var lastcheckdate: String? = null
-    var ChainJoin: Int = 0
-    var TotalJoin: Int = 0
+    var loginStatus = LoginStatus(null, 0, 0)
 
     //期間限定ログイン用
-    var LimitedLoginCount: Int = 0
+    var LimitedLoginCount = 0
 
-    var ChainVote: Int = 0
+    var ChainVote = 0
 
     //アクティブスキル関連データ
     var activeskilldata: ActiveSkillData
 
     //MebiusTask
-    var mebius: MebiusTask
+    val mebius: MebiusTask
 
     //ガチャボタン連打防止用
-    var gachacooldownflag: Boolean = false
+    var gachacooldownflag = false
 
     //インベントリ共有トグル
-    var contentsPresentInSharedInventory: Boolean = false
+    var contentsPresentInSharedInventory = false
     //インベントリ共有ボタン連打防止用
-    var shareinvcooldownflag: Boolean = false
+    var shareinvcooldownflag = false
 
-    var selectHomeNum: Int = 0
-    var setHomeNameNum: Int = 0
+    var selectHomeNum = 0
+    var setHomeNameNum = 0
     private val subHomeMap = HashMap<Int, SubHome>()
-    var isSubHomeNameChange: Boolean = false
+    var isSubHomeNameChange = false
 
-    //LV・二つ名表示切替用
-    var displayTypeLv: Boolean = false
-    //表示二つ名の指定用
-    var displayTitle1No: Int = 0
-    var displayTitle2No: Int = 0
-    var displayTitle3No: Int = 0
+    var nickName = PlayerNickName()
     //二つ名解禁フラグ保存用
     var TitleFlags: BitSet
     //二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
-    var p_vote_forT: Int = 0
+    var p_vote_forT = 0
     //二つ名配布予約NOの保存
-    var giveachvNo: Int = 0
+    var giveachvNo = 0
     //実績ポイント用
-    var achvPointMAX: Int = 0//累計取得量
-    var achvPointUSE: Int = 0//消費量
-    var achvPoint: Int = 0//現在の残量
-    var achvChangenum: Int = 0//投票ptからの変換回数
-    var titlepage: Int = 0 //実績メニュー用汎用ページ指定
-    var samepageflag: Boolean = false//実績ショップ用
+    var achievePoint = AchievementPoint(cumulativeTotal = 0, used = 0, conversionCount = 0)
 
-
-    //建築LV
-    private var build_lv: Int = 0
-    //設置ブロック数
-    private var build_count: BigDecimal? = null
-    //設置ブロックサーバー統合フラグ
-    private var build_count_flg: Byte = 0
-
+    var titlepage = 0 //実績メニュー用汎用ページ指定
+    var samepageflag = false//実績ショップ用
+    var buildCount = BuildCount(1, BigDecimal.ZERO, 0)
     // 1周年記念
-    var anniversary: Boolean = false
+    var anniversary = false
 
     //ハーフブロック破壊抑制用
-    private var halfBreakFlag: Boolean = false
+    private var halfBreakFlag = false
 
     //グリッド式保護関連
-    private var aheadUnit: Int = 0
-    private var behindUnit: Int = 0
-    private var rightUnit: Int = 0
-    private var leftUnit: Int = 0
-    private var canCreateRegion: Boolean = false
-    var unitPerClick: Int = 0
+    private var claimUnit = ClaimUnit(0, 0, 0, 0)
+  @get:JvmName("canCreateRegion")
+    var canCreateRegion = false
+    var unitPerClick = 0
         private set
     var templateMap: MutableMap<Int, GridTemplate>? = null
 
     //投票妖精関連
-    var usingVotingFairy: Boolean = false
-    var VotingFairyStartTime: Calendar? = null
-    var VotingFairyEndTime: Calendar? = null
-    var hasVotingFairyMana: Int = 0
-    var VotingFairyRecoveryValue: Int = 0
-    var toggleGiveApple: Int = 0
-    var toggleVotingFairy: Int = 0
+    var usingVotingFairy = false
+    var votingFairyStartTime
+        get() = voteFairyPeriod.start
+        set(value) {
+            voteFairyPeriod = ClosedRangeWithComparator(value, voteFairyPeriod.endInclusive, voteFairyPeriod.comparator)
+        }
+
+    var votingFairyEndTime
+        get() = voteFairyPeriod.endInclusive
+        set(value) {
+            voteFairyPeriod = ClosedRangeWithComparator(voteFairyPeriod.start, value, voteFairyPeriod.comparator)
+        }
+    private val dummyDate = GregorianCalendar(2100, 1, 1, 0, 0, 0)
+
+    var voteFairyPeriod = ClosedRangeWithComparator(dummyDate, dummyDate, Comparator { o1, o2 ->
+        o1.timeInMillis.compareTo(o2.timeInMillis)
+    })
+    var hasVotingFairyMana = 0
+    var VotingFairyRecoveryValue = 0
+    var toggleGiveApple = 0
+    var toggleVotingFairy = 0
     var p_apple: Long = 0
-    var toggleVFSound: Boolean = false
+    var toggleVFSound = false
 
     //貢献度pt
-    var added_mana: Int = 0
-    var contribute_point: Int = 0
+    var added_mana = 0
+    var contribute_point = 0
 
     //正月イベント用
-    var hasNewYearSobaGive: Boolean = false
-    var newYearBagAmount: Int = 0
+    var hasNewYearSobaGive = false
+    var newYearBagAmount = 0
 
     //バレンタインイベント用
-    var hasChocoGave: Boolean = false
+    var hasChocoGave = false
 
     //MineStackの履歴
     var hisotryData: MineStackUsageHistory
     //MineStack検索機能使用中かどうか
-    var isSearching: Boolean = false
+    var isSearching = false
     //MineStack検索保存用Map
     var indexMap: Map<Int, MineStackObj>
 
-    var GBstage: Int = 0
-    var GBexp: Int = 0
-    var GBlevel: Int = 0
-    var isGBStageUp: Boolean = false
-    var GBcd: Int = 0
+    var giganticBerserk = GiganticBerserk()
+    var GBexp
+        set (value) {
+            giganticBerserk = giganticBerserk.copy(exp = value)
+        }
+
+        get() = giganticBerserk.exp
+    var isGBStageUp
+        set (value) {
+            giganticBerserk = giganticBerserk.copy(canEvolve = value)
+        }
+
+        get() = giganticBerserk.canEvolve
+    // FIXME: BAD NAME; not clear meaning
+    var GBcd: Int
+        set (value) {
+            giganticBerserk = giganticBerserk.copy(cd = value)
+        }
+
+        get() = giganticBerserk.cd
 
 
     //オフラインかどうか
@@ -277,57 +289,52 @@ class PlayerData(val player: Player) {
 
     val unitMap: Map<DirectionType, Int>
         get() {
-            val unitMap = HashMap<DirectionType, Int>()
+            val unitMap = EnumMap<DirectionType, Int>(DirectionType::class.java) //HashMap<DirectionType, Int>()
 
-            unitMap[DirectionType.AHEAD] = this.aheadUnit
-            unitMap[DirectionType.BEHIND] = this.behindUnit
-            unitMap[DirectionType.RIGHT] = this.rightUnit
-            unitMap[DirectionType.LEFT] = this.leftUnit
+            unitMap[DirectionType.AHEAD] = this.claimUnit.ahead
+            unitMap[DirectionType.BEHIND] = this.claimUnit.behind
+            unitMap[DirectionType.RIGHT] = this.claimUnit.right
+            unitMap[DirectionType.LEFT] = this.claimUnit.left
 
             return unitMap
         }
 
     val gridChunkAmount: Int
-        get() = (this.aheadUnit + 1 + this.behindUnit) * (this.rightUnit + 1 + this.leftUnit)
+        get() = (this.claimUnit.ahead + 1 + this.claimUnit.behind) * (this.claimUnit.right + 1 + this.claimUnit.left)
 
 
     init {
         //初期値を設定
         this.loaded = false
-        this.name = Util.getName(player)
-        this.uuid = player.uniqueId
         this.fastDiggingEffectSuppressor.internalValue = 0
         this.messageflag = false
         //this.minuteblock = new MineBlock();
         this.halfhourblock = MineBlock()
         this.gachapoint = 0
         this.lastgachapoint = 0
-        this.gachaflag = true
+        this.receiveGachaTicketEveryMinute = true
         this.minespeedlv = 0
         this.lastminespeedlv = 0
-        this.effectdatalist = ArrayList()
+        this.effectdatalist = LinkedList()
         this.level = 1
         this.mebius = MebiusTask(this)
-        this.numofsorryforbug = 0
+        this.wabiGacha = 0
         this.inventory = createInventory(size = 1.rows(), title = DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
-        this.rgnum = 0
+        this.regionCount = 0
         this.minestackflag = true
-        this.servertick = player.getStatistic(Statistic.PLAY_ONE_TICK)
-        this.playtick = 0
+        this.totalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK)
+        this.playTick = 0
         this.dispkilllogflag = false
         this.dispworldguardlogflag = true
         this.multipleidbreakflag = false
         this.pvpflag = false
         this.loc = null
-        this.idletime = 0
-        this.staticdata = ArrayList()
+        this.idleMinute = 0
         this.totalbreaknum = 0
-        for (m in MaterialSets.materials) {
-            //統計にないため除外
-            if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
-                staticdata.add(player.getStatistic(Statistic.MINE_BLOCK, m))
-            }
-        }
+        //統計にないため一部ブロックを除外
+        staticdata = (MaterialSets.materials - Material.GRASS_PATH - Material.SOIL - Material.MOB_SPAWNER)
+            .map { player.getStatistic(Statistic.MINE_BLOCK, it) }
+            .toMutableList()
         this.activeskilldata = ActiveSkillData()
         this.expbar = ExpBar(this, player)
         this.expmanager = ExperienceManager(player)
@@ -337,10 +344,7 @@ class PlayerData(val player: Player) {
         this.shareinvcooldownflag = true
         this.chestflag = true
 
-        this.displayTypeLv = true
-        this.displayTitle1No = 0
-        this.displayTitle2No = 0
-        this.displayTitle3No = 0
+        this.nickName = PlayerNickName(PlayerNickName.Style.Level, 0, 0, 0)
         this.TitleFlags = BitSet(10000)
         this.TitleFlags.set(1)
         this.p_vote_forT = 0
@@ -348,22 +352,14 @@ class PlayerData(val player: Player) {
         this.titlepage = 1
         this.LimitedLoginCount = 0
 
-        this.starlevel = 0
-        this.starlevel_Break = 0
-        this.starlevel_Time = 0
-        this.starlevel_Event = 0
+        this.starLevels = StarLevel(0, 0, 0)
 
-        this.build_lv = 1
-        this.build_count = BigDecimal.ZERO
-        this.build_count_flg = 0
+        this.buildCount = BuildCount(1, BigDecimal.ZERO, 0)
         this.anniversary = false
 
         this.halfBreakFlag = false
 
-        this.aheadUnit = 0
-        this.behindUnit = 0
-        this.rightUnit = 0
-        this.leftUnit = 0
+        this.claimUnit = ClaimUnit(0, 0, 0, 0)
         this.canCreateRegion = true
         this.unitPerClick = 1
         this.templateMap = HashMap()
@@ -371,8 +367,8 @@ class PlayerData(val player: Player) {
         this.hasVotingFairyMana = 0
         this.VotingFairyRecoveryValue = 0
         this.toggleGiveApple = 1
-        this.VotingFairyStartTime = null
-        this.VotingFairyEndTime = null
+        this.votingFairyStartTime = dummyDate
+        this.votingFairyEndTime = dummyDate
         this.toggleVotingFairy = 1
         this.p_apple = 0
         this.toggleVFSound = true
@@ -395,45 +391,67 @@ class PlayerData(val player: Player) {
         this.setHomeNameNum = 0
         this.isSubHomeNameChange = false
 
-        this.GBstage = 0
-        this.GBlevel = 0
-        this.GBexp = 0
-        this.isGBStageUp = false
-        this.GBcd = 0
+        this.giganticBerserk = GiganticBerserk(0, 0, 0, false, 0)
     }
 
     //join時とonenable時、プレイヤーデータを最新の状態に更新
-    fun updateonJoin(player: Player) {
+    fun updateOnJoin() {
         //破壊量データ(before)を設定
         //minuteblock.before = totalbreaknum;
         halfhourblock.before = totalbreaknum
-        updateLevel(player)
-        NotifySorryForBug(player)
-        activeskilldata.updateonJoin(player, level)
+        updateLevel()
+        notifySorryForBug()
+        activeskilldata.updateOnJoin(player, level)
         //サーバー保管経験値をクライアントに読み込み
         loadTotalExp()
-        isVotingFairy(player)
+        isVotingFairy()
     }
 
+    @JvmOverloads
+    fun updateNickname(id1: Int = nickName.id1, id2: Int = nickName.id2, id3: Int = nickName.id3, style: PlayerNickName.Style = nickName.style) {
+        nickName = nickName.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
+    }
 
     //quit時とondisable時、プレイヤーデータを最新の状態に更新
-    fun updateonQuit(player: Player) {
+    fun updateOnQuit() {
         //総整地量を更新
-        calcMineBlock(player)
+        updateAndCalcMinedBlockAmount()
         //総プレイ時間更新
-        calcPlayTick(player)
+        calcPlayTick()
 
-        activeskilldata.updateonQuit(player)
+        activeskilldata.updateOnQuit()
         expbar.remove()
         //クライアント経験値をサーバー保管
         saveTotalExp()
     }
 
+    fun giganticBerserkLevelUp() {
+        val currentLevel = giganticBerserk.level
+        giganticBerserk = if (currentLevel >= 10) giganticBerserk else giganticBerserk.copy(level = currentLevel + 1, exp = 0)
+    }
+
+    fun recalculateAchievePoint() {
+        val max = TitleFlags
+            .stream() // index
+            .filter { it in 1000..9799 }
+            .count().toInt() /* Safe Conversation: BitSet indexes -> Int */ * 10
+        achievePoint = achievePoint.copy(cumulativeTotal = max)
+    }
+
+    fun consumeAchievePoint(amount: Int) {
+        achievePoint = achievePoint.copy(used = achievePoint.used + amount)
+    }
+
+    fun convertEffectPointToAchievePoint() {
+        achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
+        activeskilldata.effectpoint -= 10
+    }
+
     //詫びガチャの通知
-    fun NotifySorryForBug(player: Player) {
-        if (numofsorryforbug > 0) {
+    private fun notifySorryForBug() {
+        if (wabiGacha > 0) {
             player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-            player.sendMessage(GREEN.toString() + "運営チームから" + numofsorryforbug + "枚の" + GOLD + "ガチャ券" + WHITE + "が届いています！\n木の棒メニューから受け取ってください")
+            player.sendMessage(GREEN.toString() + "運営チームから" + wabiGacha + "枚の" + GOLD + "ガチャ券" + WHITE + "が届いています！\n木の棒メニューから受け取ってください")
         }
     }
 
@@ -454,61 +472,46 @@ class PlayerData(val player: Player) {
         }
     }
 
-
     //レベルを更新
-    fun updateLevel(p: Player) {
-        calcPlayerLevel(p)
-        calcStarLevel(p)
-        setDisplayName(p)
+    fun updateLevel() {
+        updatePlayerLevel()
+        updateStarLevel()
+        setDisplayName()
         expbar.calculate()
     }
 
-
-    //プレイヤーのレベルからレベルと総整地量を指定された値に設定
-    /**
-     * @param _level
-     * レベル
-     *
-     * ※レベルと総整地量を変更します(取扱注意)
-     */
-    fun setLevelandTotalbreaknum(_level: Int) {
-        level = _level
-        totalbreaknum = LevelThresholds.levelExpThresholds[_level - 1].toLong()
-    }
-
-
     //表示される名前に整地レベルor二つ名を追加
-    fun setDisplayName(p: Player) {
-        var displayname = Util.getName(p)
+    fun setDisplayName() {
+        var displayname = Util.getName(player)
+        //放置時に色を変える
+        val idleColor = when {
+            idleMinute >= 10 -> DARK_GRAY
+            idleMinute >= 3 -> GRAY
+            else -> ""
+        }.toString()
 
         //表示を追加する処理
-        if (displayTitle1No == 0 && displayTitle2No == 0 && displayTitle3No == 0) {
-            if (starlevel <= 0) {
-                displayname = "[ Lv" + level + " ]" + displayname + WHITE
+        displayname = idleColor + if (nickName.id1 == 0 && nickName.id2 == 0 && nickName.id3 == 0) {
+            if (totalStarLevel <= 0) {
+                "[ Lv$level ]$displayname$WHITE"
             } else {
-                displayname = "[Lv" + level + "☆" + starlevel + "]" + displayname + WHITE
+                "[Lv$level☆$totalStarLevel]$displayname$WHITE"
             }
         } else {
-            val displayTitle1 = SeichiAssist.seichiAssistConfig.getTitle1(displayTitle1No)
-            val displayTitle2 = SeichiAssist.seichiAssistConfig.getTitle2(displayTitle2No)
-            val displayTitle3 = SeichiAssist.seichiAssistConfig.getTitle3(displayTitle3No)
-            displayname = "[" + displayTitle1 + displayTitle2 + displayTitle3 + "]" + displayname + WHITE
-        }
-        //放置時に色を変える
-        if (idletime >= 10) {
-            displayname = DARK_GRAY.toString() + displayname
-        } else if (idletime >= 3) {
-            displayname = GRAY.toString() + displayname
+            val displayTitle1 = SeichiAssist.seichiAssistConfig.getTitle1(nickName.id1)
+            val displayTitle2 = SeichiAssist.seichiAssistConfig.getTitle2(nickName.id2)
+            val displayTitle3 = SeichiAssist.seichiAssistConfig.getTitle3(nickName.id3)
+            "[$displayTitle1$displayTitle2$displayTitle3]$displayname$WHITE"
         }
 
-        p.displayName = displayname
-        p.playerListName = displayname
+        player.displayName = displayname
+        player.playerListName = displayname
     }
 
 
     //プレイヤーレベルを計算し、更新する。
-    private fun calcPlayerLevel(p: Player) {
-        //現在のランクを取得
+    private fun updatePlayerLevel() {
+      //現在のランクを取得
         var i = level
         //既にレベル上限に達していたら終了
         if (i >= LevelThresholds.levelExpThresholds.size) {
@@ -518,20 +521,20 @@ class PlayerData(val player: Player) {
         while (LevelThresholds.levelExpThresholds[i] <= totalbreaknum && i + 1 <= LevelThresholds.levelExpThresholds.size) {
 
             //レベルアップ時のメッセージ
-            p.sendMessage(GOLD.toString() + "ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv(" + i + ")→Lv(" + (i + 1) + ")】")
+            player.sendMessage(GOLD.toString() + "ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv(" + i + ")→Lv(" + (i + 1) + ")】")
             //レベルアップイベント着火
-            Bukkit.getPluginManager().callEvent(SeichiLevelUpEvent(p, this, i + 1))
+            Bukkit.getPluginManager().callEvent(SeichiLevelUpEvent(player, this, i + 1))
             //レベルアップ時の花火の打ち上げ
-            val loc = p.location
+            val loc = player.location
             Util.launchFireWorks(loc)
             val lvmessage = SeichiAssist.seichiAssistConfig.getLvMessage(i + 1)
             if (lvmessage.isNotEmpty()) {
-                p.sendMessage(AQUA.toString() + lvmessage)
+                player.sendMessage(AQUA.toString() + lvmessage)
             }
             i++
             if (activeskilldata.mana.isLoaded) {
                 //マナ最大値の更新
-                activeskilldata.mana.onLevelUp(p, i)
+                activeskilldata.mana.onLevelUp(player, i)
             }
             //レベル上限に達したら終了
             if (i >= LevelThresholds.levelExpThresholds.size) {
@@ -542,70 +545,63 @@ class PlayerData(val player: Player) {
     }
 
     //スターレベルの計算、更新
-    fun calcStarLevel(p: Player) {
-        //処理前の各レベルを取得
-        var i = starlevel
-        val iB = starlevel_Break
-        val iT = starlevel_Time
+    /**
+     * スターレベルの計算、更新を行う。
+     * このメソッドはスター数が増えたときにメッセージを送信する副作用を持つ。
+     */
+    fun updateStarLevel() {
+      //処理前の各レベルを取得
+        val oldStars = starLevels.total()
+        val oldBreakStars = starLevels.fromBreakAmount
+        val oldTimeStars = starLevels.fromConnectionTime
         //処理後のレベルを保存する入れ物
-        val i2: Int
-        val iB2 = (totalbreaknum / 87115000).toInt()
-        val iT2 = 0
-        val iE2 = 0
+        val newBreakStars = (totalbreaknum / 87115000).toInt()
 
         //整地量の確認
-        if (iB < iB2) {
-            p.sendMessage(GOLD.toString() + "ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆(" + iB + ")→☆(" + iB2 + ")】")
-            starlevel_Break = iB2
+        if (oldBreakStars < newBreakStars) {
+            player.sendMessage(GOLD.toString() + "ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆(" + oldBreakStars + ")→☆(" + newBreakStars + ")】")
+            starLevels = starLevels.copy(fromBreakAmount = newBreakStars)
         }
 
         //参加時間の確認(19/4/3撤廃)
-        if (iT > 0) {
-            starlevel -= iT
-            i = starlevel
-            starlevel_Time = 0
+        if (oldTimeStars > 0) {
+            starLevels = starLevels.copy(fromConnectionTime = 0)
         }
 
-        //イベント入手分の確認
+        //TODO: イベント入手分スターの確認
 
-        //今後実装予定。
-
-
+        val newStars: Int = starLevels.total()
         //合計値の確認
-        i2 = iB2 + iT2 + iE2
-        if (i < i2) {
-            p.sendMessage(GOLD.toString() + "★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆(" + i + ")→☆(" + i2 + ")】")
-            starlevel = i2
+        if (oldStars < newStars) {
+            player.sendMessage("$GOLD★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆($oldStars)→☆($newStars)】")
         }
     }
 
     //総プレイ時間を更新する
-    fun calcPlayTick(p: Player) {
-        val getservertick = p.getStatistic(org.bukkit.Statistic.PLAY_ONE_TICK)
+    fun calcPlayTick() {
+        val ticksInStatistic = player.getStatistic(Statistic.PLAY_ONE_TICK)
         //前回との差分を算出
-        val getincrease = getservertick - servertick
-        servertick = getservertick
+        val pastTime = ticksInStatistic - totalPlayTick
+        totalPlayTick = ticksInStatistic
         //総プレイ時間に追加
-        playtick += getincrease
+        playTick += pastTime
     }
 
     //総破壊ブロック数を更新する
-    fun calcMineBlock(p: Player): Int {
-        var i = 0
+    fun updateAndCalcMinedBlockAmount(): Int {
         var sum = 0.0
-        for (m in MaterialSets.materials) {
-            if (m != Material.GRASS_PATH && m != Material.SOIL && m != Material.MOB_SPAWNER) {
-                val getstat = p.getStatistic(Statistic.MINE_BLOCK, m)
-                val getincrease = getstat - staticdata[i]
-                sum += calcBlockExp(m, getincrease, p)
-                if (SeichiAssist.DEBUG) {
-                    if (calcBlockExp(m, getincrease, p) > 0.0) {
-                        p.sendMessage("calcの値:" + calcBlockExp(m, getincrease, p) + "(" + m + ")")
-                    }
+        val p = MaterialSets.materials - Material.GRASS_PATH - Material.SOIL - Material.MOB_SPAWNER
+        for ((i, m) in p.withIndex()) {
+            val getstat = player.getStatistic(Statistic.MINE_BLOCK, m)
+            val increased = getstat - staticdata[i]
+            val amount = calcBlockExp(m, increased)
+            sum += amount
+            if (SeichiAssist.DEBUG) {
+                if (amount > 0.0) {
+                    player.sendMessage("calcの値:$amount($m)")
                 }
-                staticdata[i] = getstat
-                i++
             }
+            staticdata[i] = getstat
         }
         //double値を四捨五入し、整地量に追加する整数xを出す
         val x = sum.roundToInt()
@@ -616,50 +612,29 @@ class PlayerData(val player: Player) {
     }
 
     //ブロック別整地数反映量の調節
-    private fun calcBlockExp(m: Material, i: Int, p: Player): Double {
-        var result = i.toDouble()
+    private fun calcBlockExp(m: Material, i: Int): Double {
+        val amount = i.toDouble()
         //ブロック別重み分け
-        when (m) {
-            Material.DIRT ->
-                //DIRTとGRASSは二重カウントされているので半分に
-                result *= 0.5
-            Material.GRASS ->
-                //DIRTとGRASSは二重カウントされているので半分に
-                result *= 0.5
-
-            Material.NETHERRACK ->
-                //ネザーラックの重み分け
-                result *= 1.0
-
-            Material.ENDER_STONE ->
-                //エンドストーンの重み分け
-                result *= 1.0
+        val matMult = when (m) {
+            //DIRTとGRASSは二重カウントされているので半分に
+            Material.DIRT -> 0.5
+            Material.GRASS -> 0.5
 
             //氷塊とマグマブロックの整地量を2倍
-            Material.PACKED_ICE -> result *= 2.0
+            Material.PACKED_ICE -> 2.0
+            Material.MAGMA -> 2.0
 
-            Material.MAGMA -> result *= 2.0
-
-
-            else -> {
-            }
+            else -> 1.0
         }
 
-        if (!Util.isSeichiWorld(p)) {
-            //整地ワールド外では整地数が反映されない
-            result *= 0.0
-        } else {
-            val worldName = p.world.name
-            val sw_mining_coefficient = 0.8
-            if (worldName.equals(ManagedWorld.WORLD_SW.alphabetName, ignoreCase = true)) {
-                result *= sw_mining_coefficient
-            }
-        }
-        return result
+        val managedWorld = ManagedWorld.fromBukkitWorld(player.world)
+        val swMult = if (managedWorld?.isSeichi == true) 1.0 else 0.0
+        val sw01PenaltyMult = if (ManagedWorld.WORLD_SW == managedWorld) 0.8 else 1.0
+        return amount * matMult * swMult * sw01PenaltyMult
     }
 
-    //現在の採掘量順位を表示する
-    fun calcPlayerRank(p: Player): Int {
+    //現在の採掘量順位
+    fun calcPlayerRank(): Int {
         //ランク用関数
         var i = 0
         val t = totalbreaknum
@@ -675,7 +650,7 @@ class PlayerData(val player: Player) {
         return i + 1
     }
 
-    fun calcPlayerApple(p: Player): Int {
+    fun calcPlayerApple(): Int {
         //ランク用関数
         var i = 0
         val t = p_apple
@@ -692,7 +667,7 @@ class PlayerData(val player: Player) {
     }
 
     //パッシブスキルの獲得量表示
-    fun dispPassiveExp(): Double {
+    fun getPassiveExp(): Double {
         return when {
           level < 8 -> 0.0
           level < 18 -> SeichiAssist.seichiAssistConfig.getDropExplevel(1)
@@ -710,7 +685,7 @@ class PlayerData(val player: Player) {
 
     //サブホームの位置をセットする
     fun setSubHomeLocation(location: Location, subHomeIndex: Int) {
-        if ((subHomeIndex >= 0) and (subHomeIndex < SeichiAssist.seichiAssistConfig.subHomeMax)) {
+        if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.subHomeMax) {
             val currentSubHome = this.subHomeMap[subHomeIndex]
             val currentSubHomeName = currentSubHome?.name
 
@@ -719,7 +694,7 @@ class PlayerData(val player: Player) {
     }
 
     fun setSubHomeName(name: String?, subHomeIndex: Int) {
-        if ((subHomeIndex >= 0) and (subHomeIndex < SeichiAssist.seichiAssistConfig.subHomeMax)) {
+        if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.subHomeMax) {
             val currentSubHome = this.subHomeMap[subHomeIndex]
             if (currentSubHome != null) {
                 this.subHomeMap[subHomeIndex] = SubHome(currentSubHome.location, name)
@@ -739,46 +714,22 @@ class PlayerData(val player: Player) {
         return subHomeName ?: "サブホームポイント$subHomeIndex"
     }
 
-    fun build_count_flg_set(x: Byte) {
-        build_count_flg = x
-    }
-
-    fun build_count_flg_get(): Byte {
-        return build_count_flg
-    }
-
-    fun build_lv_set(lv: Int) {
-        build_lv = lv
-    }
-
-    fun build_lv_get(): Int {
-        return build_lv
-    }
-
-    fun build_count_set(count: BigDecimal) {
-        build_count = count
-    }
-
-    fun build_count_get(): BigDecimal? {
-        return build_count
-    }
-
     private fun saveTotalExp() {
         totalexp = expmanager.currentExp
     }
 
     private fun loadTotalExp() {
-        val server_num = SeichiAssist.seichiAssistConfig.serverNum
+        val internalServerId = SeichiAssist.seichiAssistConfig.serverNum
         //経験値が統合されてない場合は統合する
-        if (expmarge.toInt() != 0x07 && server_num >= 1 && server_num <= 3) {
-            if (expmarge and (0x01 shl server_num - 1).toByte() == 0.toByte()) {
+        if (expmarge.toInt() != 0x07 && internalServerId in 1..3) {
+            if (expmarge and (0x01 shl internalServerId - 1).toByte() == 0.toByte()) {
                 if (expmarge.toInt() == 0) {
                     // 初回は加算じゃなくベースとして代入にする
                     totalexp = expmanager.currentExp
                 } else {
                     totalexp += expmanager.currentExp
                 }
-                expmarge = expmarge or (0x01 shl server_num - 1).toByte()
+                expmarge = expmarge or (0x01 shl internalServerId - 1).toByte()
             }
         }
         expmanager.setExp(totalexp)
@@ -789,17 +740,17 @@ class PlayerData(val player: Player) {
     }
 
     fun canGridExtend(directionType: DirectionType, world: String): Boolean {
-        val LIMIT = config.getGridLimitPerWorld(world)
+        val limit = config.getGridLimitPerWorld(world)
         val chunkMap = unitMap
 
         //チャンクを拡大すると仮定する
-        val assumedAmoont = chunkMap[directionType]!! + this.unitPerClick
+        val assumedAmoont = chunkMap.getValue(directionType) + this.unitPerClick
 
         //一応すべての拡張値を出しておく
-        val ahead = chunkMap[DirectionType.AHEAD]!!
-        val behind = chunkMap[DirectionType.BEHIND]!!
-        val right = chunkMap[DirectionType.RIGHT]!!
-        val left = chunkMap[DirectionType.LEFT]!!
+        val ahead = chunkMap.getValue(DirectionType.AHEAD)
+        val behind = chunkMap.getValue(DirectionType.BEHIND)
+        val right = chunkMap.getValue(DirectionType.RIGHT)
+        val left = chunkMap.getValue(DirectionType.LEFT)
 
         //合計チャンク再計算値
         val assumedUnitAmount = when (directionType) {
@@ -809,7 +760,7 @@ class PlayerData(val player: Player) {
             DirectionType.LEFT -> (ahead + 1 + behind) * (right + 1 + assumedAmoont)
         }
 
-        return assumedUnitAmount <= LIMIT
+        return assumedUnitAmount <= limit
 
     }
 
@@ -817,34 +768,26 @@ class PlayerData(val player: Player) {
         val chunkMap = unitMap
 
         //減らしたと仮定する
-        val assumedAmount = chunkMap[directionType]!! - unitPerClick
+        val assumedAmount = chunkMap.getValue(directionType) - unitPerClick
         return assumedAmount >= 0
     }
 
     fun setUnitAmount(directionType: DirectionType, amount: Int) {
         when (directionType) {
-            DirectionType.AHEAD -> this.aheadUnit = amount
-            DirectionType.BEHIND -> this.behindUnit = amount
-            DirectionType.RIGHT -> this.rightUnit = amount
-            DirectionType.LEFT -> this.leftUnit = amount
-        }//わざと何もしない
+            DirectionType.AHEAD -> this.claimUnit = this.claimUnit.copy(ahead = amount)
+            DirectionType.BEHIND -> this.claimUnit = this.claimUnit.copy(behind = amount)
+            DirectionType.RIGHT -> this.claimUnit = this.claimUnit.copy(right = amount)
+            DirectionType.LEFT -> this.claimUnit = this.claimUnit.copy(left = amount)
+        }
     }
 
-    fun addUnitAmount(directionType: DirectionType, addAmount: Int) {
+    fun addUnitAmount(directionType: DirectionType, amount: Int) {
         when (directionType) {
-            DirectionType.AHEAD -> this.aheadUnit += addAmount
-            DirectionType.BEHIND -> this.behindUnit += addAmount
-            DirectionType.RIGHT -> this.rightUnit += addAmount
-            DirectionType.LEFT -> this.leftUnit += addAmount
-        }//わざと何もしない
-    }
-
-    fun setCanCreateRegion(flag: Boolean) {
-        this.canCreateRegion = flag
-    }
-
-    fun canCreateRegion(): Boolean {
-        return this.canCreateRegion
+            DirectionType.AHEAD -> this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
+            DirectionType.BEHIND -> this.claimUnit = this.claimUnit.copy(behind = this.claimUnit.behind + amount)
+            DirectionType.RIGHT -> this.claimUnit = this.claimUnit.copy(right = this.claimUnit.right + amount)
+            DirectionType.LEFT -> this.claimUnit = this.claimUnit.copy(left = this.claimUnit.left + amount)
+        }
     }
 
     fun toggleUnitPerGrid() {
@@ -855,25 +798,27 @@ class PlayerData(val player: Player) {
         }
     }
 
-    fun VotingFairyTimeToString(): String {
-        val cal = this.VotingFairyStartTime
-        var s = ""
-        s += if (this.VotingFairyStartTime == null) {
-            //設定されてない場合
-            ",,,,,"
+    @AntiTypesafe
+    fun getVotingFairyStartTimeAsString(): String {
+        val cal = this.votingFairyStartTime
+        return if (votingFairyStartTime == dummyDate) {
+          //設定されてない場合
+          ",,,,,"
         } else {
             //設定されてる場合
-            val date = cal!!.time
+            val date = cal.time
             val format = SimpleDateFormat("yyyy,MM,dd,HH,mm,")
             format.format(date)
         }
-        return s
     }
 
-    fun SetVotingFairyTime(str: String, p: Player) {
+    fun setVotingFairyTime(@AntiTypesafe str: String) {
         val s = str.split(",".toRegex()).toTypedArray()
-        if (s[0].isNotEmpty() && s[1].isNotEmpty() && s[2].isNotEmpty() && s[3].isNotEmpty() && s[4].isNotEmpty()) {
-            val startTime = GregorianCalendar(Integer.parseInt(s[0]), Integer.parseInt(s[1]) - 1, Integer.parseInt(s[2]), Integer.parseInt(s[3]), Integer.parseInt(s[4]))
+        if (s.slice(0..4).all(String::isNotEmpty)) {
+            val year = s[0].toInt()
+            val month = s[1].toInt() - 1
+            val dayOfMonth = s[2].toInt()
+            val starts = GregorianCalendar(year, month, dayOfMonth, Integer.parseInt(s[3]), Integer.parseInt(s[4]))
 
             var min = Integer.parseInt(s[4]) + 1
             var hour = Integer.parseInt(s[3])
@@ -886,37 +831,37 @@ class PlayerData(val player: Player) {
             else
                 hour
 
-            val EndTime = GregorianCalendar(Integer.parseInt(s[0]), Integer.parseInt(s[1]) - 1, Integer.parseInt(s[2]), hour, min)
+            val ends = GregorianCalendar(year, month, dayOfMonth, hour, min)
 
-            this.VotingFairyStartTime = startTime
-            this.VotingFairyEndTime = EndTime
+            this.votingFairyStartTime = starts
+            this.votingFairyEndTime = ends
         }
     }
 
-    fun isVotingFairy(p: Player) {
-        //効果は継続しているか
-        if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.VotingFairyStartTime, this.VotingFairyEndTime)) {
+    private fun isVotingFairy() {
+      //効果は継続しているか
+        if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.votingFairyStartTime, this.votingFairyEndTime)) {
             this.usingVotingFairy = false
-            p.sendMessage(LIGHT_PURPLE.toString() + "" + BOLD + "妖精は何処かへ行ってしまったようだ...")
+            player.sendMessage(LIGHT_PURPLE.toString() + "" + BOLD + "妖精は何処かへ行ってしまったようだ...")
         } else if (this.usingVotingFairy) {
-            VotingFairyTask.speak(p, "おかえり！" + p.name, true)
+            VotingFairyTask.speak(player, "おかえり！" + player.name, true)
         }
     }
 
-    fun isContribute(p: Player, addMana: Int) {
-        val mana = Mana()
+    fun setContributionPoint(addAmount: Int) {
+      val mana = Mana()
 
         //負数(入力ミスによるやり直し中プレイヤーがオンラインだった場合)の時
-        if (addMana < 0) {
-            p.sendMessage(GREEN.toString() + "" + BOLD + "入力者のミスによって得た不正なマナを" + -10 * addMana + "分減少させました.")
-            p.sendMessage(GREEN.toString() + "" + BOLD + "申し訳ございません.")
+        if (addAmount < 0) {
+            player.sendMessage(GREEN.toString() + "" + BOLD + "入力者のミスによって得た不正なマナを" + -10 * addAmount + "分減少させました.")
+            player.sendMessage(GREEN.toString() + "" + BOLD + "申し訳ございません.")
         } else {
-            p.sendMessage(GREEN.toString() + "" + BOLD + "運営からあなたの整地鯖への貢献報酬として")
-            p.sendMessage(GREEN.toString() + "" + BOLD + "マナの上限値が" + 10 * addMana + "上昇しました．(永久)")
+            player.sendMessage(GREEN.toString() + "" + BOLD + "運営からあなたの整地鯖への貢献報酬として")
+            player.sendMessage(GREEN.toString() + "" + BOLD + "マナの上限値が" + 10 * addAmount + "上昇しました．(永久)")
         }
-        this.added_mana += addMana
+        this.added_mana += addAmount
 
-        mana.calcAndSetMax(p, this.level)
+        mana.calcAndSetMax(player, this.level)
     }
 
     @Suppress("RedundantSuspendModifier")
@@ -951,7 +896,7 @@ class PlayerData(val player: Player) {
      */
     @Suppress("RedundantSuspendModifier")
     suspend fun tryForcefullyUnlockAchievement(number: Int): TargetedEffect<CommandSender> =
-        if (!TitleFlags.get(number)) {
+        if (!TitleFlags[number]) {
             TitleFlags.set(number)
             Bukkit.getPlayer(uuid)?.sendMessage("運営チームよりNo${number}の実績が配布されました。")
 
@@ -969,8 +914,8 @@ class PlayerData(val player: Player) {
      */
     @Suppress("RedundantSuspendModifier")
     suspend fun forcefullyDepriveAchievement(number: Int): TargetedEffect<CommandSender> =
-        if (!TitleFlags.get(number)) {
-            TitleFlags.set(number, false)
+        if (!TitleFlags[number]) {
+          TitleFlags[number] = false
 
             "$name から実績No. $number を${RED}剥奪${GREEN}しました。".asMessageEffect()
         } else {
@@ -985,12 +930,12 @@ class PlayerData(val player: Player) {
 
         val amplifierSum = activeEffects.map { it.amplifier }.sum()
         val maxDuration = activeEffects.map { it.duration }.max() ?: 0
-        val computedAmplifier = Math.floor(amplifierSum - 1).toInt()
+        val computedAmplifier = floor(amplifierSum - 1).toInt()
 
         val maxSpeed: Int = fastDiggingEffectSuppressor.maximumAllowedEffectAmplifier()
 
         // 実際に適用されるeffect量
-        val amplifier = Math.min(computedAmplifier, maxSpeed)
+        val amplifier = min(computedAmplifier, maxSpeed)
 
         return if (amplifier >= 0) {
             PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
@@ -1056,7 +1001,7 @@ class PlayerData(val player: Player) {
      */
     val incrementRegionNumber: UnfocusedEffect =
         unfocusedEffect {
-          this.rgnum += 1
+          this.regionCount += 1
         }
 
     companion object {

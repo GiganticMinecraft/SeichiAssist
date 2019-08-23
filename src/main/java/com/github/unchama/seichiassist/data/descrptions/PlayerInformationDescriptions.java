@@ -57,7 +57,7 @@ public final class PlayerInformationDescriptions {
      */
     @NotNull
     private static String seichiLevelDescription(@NotNull PlayerData playerData) {
-        final int starLevel = playerData.getStarlevel();
+        final int starLevel = playerData.getTotalStarLevel();
         final int level = playerData.getLevel();
 
         if (starLevel <= 0) {
@@ -91,7 +91,7 @@ public final class PlayerInformationDescriptions {
             DARK_GRAY + "パッシブスキル効果：",
             DARK_GRAY + "1ブロック整地ごとに",
             DARK_GRAY + "" + PlayerData.passiveSkillProbability + "%の確率で",
-            DARK_GRAY + "" + playerData.dispPassiveExp() + "のマナを獲得"
+            DARK_GRAY + "" + playerData.getPassiveExp() + "のマナを獲得"
         );
     }
 
@@ -108,7 +108,7 @@ public final class PlayerInformationDescriptions {
      */
     @NotNull
     private static String rankingDescription(@NotNull PlayerData playerData) {
-        return GOLD + "ランキング：" + playerData.calcPlayerRank(playerData.getPlayer()) + "位" +
+        return GOLD + "ランキング：" + playerData.calcPlayerRank() + "位" +
             GRAY + "(" + SeichiAssist.Companion.getRanklist().size() + "人中)";
     }
 
@@ -120,9 +120,8 @@ public final class PlayerInformationDescriptions {
      */
     @Nullable
     private static String rankingDiffDescription(@NotNull PlayerData playerData) {
-        final Player player = playerData.getPlayer();
-        if (playerData.calcPlayerRank(player) > 1) {
-            final int playerRanking = playerData.calcPlayerRank(player);
+        if (playerData.calcPlayerRank() > 1) {
+            final int playerRanking = playerData.calcPlayerRank();
             final RankData rankData = SeichiAssist.Companion.getRanklist().get(playerRanking - 2);
             return AQUA + "" + (playerRanking - 1) + "位(" + rankData.name + ")との差：" +
                 (rankData.totalbreaknum - playerData.getTotalbreaknum());
@@ -138,7 +137,7 @@ public final class PlayerInformationDescriptions {
     @NotNull
     private static String totalLoginTimeDescrpition(@NotNull PlayerData playerData) {
         return GRAY + "総ログイン時間：" +
-            TypeConverter.toTimeString(TypeConverter.toSecond(playerData.getPlaytick()));
+            TypeConverter.toTimeString(TypeConverter.toSecond(playerData.getPlayTick()));
     }
 
     /**
@@ -146,7 +145,7 @@ public final class PlayerInformationDescriptions {
      */
     @NotNull
     private static String totalLoginDaysDescrption(@NotNull PlayerData playerData) {
-        return GRAY +"通算ログイン日数：" + playerData.getTotalJoin() + "日";
+        return GRAY +"通算ログイン日数：" + playerData.getLoginStatus().getTotalLoginDay() + "日";
     }
 
     /**
@@ -154,7 +153,7 @@ public final class PlayerInformationDescriptions {
      */
     @NotNull
     private static String totalChainLoginDaysDescription(@NotNull PlayerData playerData) {
-        return GRAY + "連続ログイン日数：" + playerData.getChainJoin() + "日";
+        return GRAY + "連続ログイン日数：" + playerData.getLoginStatus().getChainLoginDay() + "日";
     }
 
     /**

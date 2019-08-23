@@ -183,7 +183,7 @@ class SeichiAssist : JavaPlugin() {
         continue
       }
       //quit時とondisable時、プレイヤーデータを最新の状態に更新
-      playerdata.updateonQuit(p)
+      playerdata.updateOnQuit()
 
       PlayerDataSaveTask(playerdata, true, true).run()
     }

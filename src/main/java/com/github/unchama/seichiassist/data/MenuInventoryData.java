@@ -5,7 +5,6 @@ import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.LevelThresholds;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.task.GiganticBerserkTask;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
@@ -99,35 +98,32 @@ public class MenuInventoryData {
 			itemstack = new ItemStack(Material.STICK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STICK);
 		}else {
-			switch(playerdata.getGBstage()){
+			final Material m;
+			switch(playerdata.getGiganticBerserk().getStage()) {
 			case 0:
-				itemstack = new ItemStack(Material.WOOD_SWORD,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD_SWORD);
+				m = Material.WOOD_SWORD;
 				break;
 			case 1:
-				itemstack = new ItemStack(Material.STONE_SWORD,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_SWORD);
+				m = Material.STONE_SWORD;
 				break;
 			case 2:
-				itemstack = new ItemStack(Material.GOLD_SWORD,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_SWORD);
+				m = Material.GOLD_SWORD;
 				break;
 			case 3:
-				itemstack = new ItemStack(Material.IRON_SWORD,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_SWORD);
+				m = Material.IRON_SWORD;
 				break;
 			case 4:
-				itemstack = new ItemStack(Material.DIAMOND_SWORD,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_SWORD);
+				m = Material.DIAMOND_SWORD;
 				break;
 			default:
-				itemstack = new ItemStack(Material.STICK,1);
-				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STICK);
+				m = Material.STICK;
 			}
+			itemstack = new ItemStack(m, 1);
+			itemmeta = Bukkit.getItemFactory().getItemMeta(m);
 		}
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk");
 
-		if (playerdata.isGBStageUp() || (playerdata.getGBstage() == 4 && playerdata.getGBlevel() == 9)){
+		if (playerdata.getGiganticBerserk().getCanEvolve() || playerdata.getGiganticBerserk().reachedLimit()){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		}
@@ -202,8 +198,7 @@ public class MenuInventoryData {
 	public static ItemMeta GiganticBerserkMeta(PlayerData playerdata, ItemMeta itemmeta){
 		List<String> lore = new ArrayList<>();
 
-		int n = (playerdata.getGBstage() * 10) + playerdata.getGBlevel();
-		GiganticBerserkTask GBTR = new GiganticBerserkTask();
+		int n = (playerdata.getGiganticBerserk().getStage() * 10) + playerdata.getGiganticBerserk().getLevel();
 
 		if(playerdata.getLevel() < 10){
 			lore.add(ChatColor.WHITE + "このパッシブスキルは");
@@ -216,15 +211,17 @@ public class MenuInventoryData {
 			lore.add(ChatColor.DARK_GRAY + "整地中でなければその効果を発揮しない");
 			lore.add("");
 			lore.add(ChatColor.DARK_GRAY + "実装は試験的であり、変更される場合があります");
-			if(playerdata.getGBstage() == 4 && playerdata.getGBlevel() == 9){
+			if(playerdata.getGiganticBerserk().reachedLimit()){
 				lore.add(ChatColor.GRAY + "MOBの魂を極限まで吸収し最大限の力を発揮する");
 			}else {
 				lore.add(ChatColor.GRAY + "MOBの魂を" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n) + "回吸収すると更なる力が得られる");
-				lore.add(ChatColor.GRAY + "" + playerdata.getGBexp() + "/" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n));
+				//exp
+				lore.add(ChatColor.GRAY + "" + playerdata.getGiganticBerserk().getExp() + "/" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n));
 			}
-			lore.add(ChatColor.GRAY + "現在" + (playerdata.getGBlevel() + 1) + "レベル,回復率 " + (int)(100 * GBTR.getProb(playerdata)) + ".0%");
+			//level
+			lore.add(ChatColor.GRAY + "現在" + (playerdata.getGiganticBerserk().getLevel() + 1) + "レベル,回復率 " + (int)(100 * playerdata.getGiganticBerserk().manaRegenerationProbability()) + ".0%");
 
-			if (playerdata.isGBStageUp()){
+			if (playerdata.getGiganticBerserk().getCanEvolve()){
 				lore.add("");
 				lore.add(ChatColor.DARK_RED + "沢山の魂を吸収したことで");
 				lore.add(ChatColor.DARK_RED + "スキルの秘めたる力を解放できそうだ…！");
@@ -855,9 +852,9 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "クリックで情報を最新化"
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + (playerdata.getAchvPointMAX() + playerdata.getAchvChangenum() * 3)
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.getAchvPointUSE()
-							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.getAchvPoint());
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + playerdata.getAchievePoint().getCumulativeTotal()
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.getAchievePoint().getUsed()
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.getAchievePoint().getLeft());
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -882,7 +879,7 @@ public class MenuInventoryData {
 							,ChatColor.RESET + "" +  ChatColor.YELLOW + "" + ChatColor.BOLD + "投票pt 10pt → 実績pt 3pt"
 							,ChatColor.RESET + "" +  ChatColor.AQUA + "クリックで変換を一回行います。"
 							,ChatColor.RESET + "" +  ChatColor.GREEN + "所有投票pt :" + playerdata.getActiveskilldata().effectpoint
-							,ChatColor.RESET + "" +  ChatColor.GREEN + "所有実績pt :" + playerdata.getAchvPoint());
+							,ChatColor.RESET + "" +  ChatColor.GREEN + "所有実績pt :" + playerdata.getAchievePoint().getLeft());
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -892,8 +889,8 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BOOK,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認" );
-		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(playerdata.getDisplayTitle1No())
-				+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(playerdata.getDisplayTitle2No()) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(playerdata.getDisplayTitle3No()) + "」");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(playerdata.getNickName().getId1())
+				+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(playerdata.getNickName().getId2()) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(playerdata.getNickName().getId3()) + "」");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -1269,9 +1266,9 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "クリックで情報を最新化"
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + (playerdata.getAchvPointMAX() + playerdata.getAchvChangenum() * 3)
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.getAchvPointUSE()
-							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.getAchvPoint());
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + (playerdata.getAchievePoint().getCumulativeTotal())
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.getAchievePoint().getUsed()
+							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.getAchievePoint().getLeft());
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -3093,7 +3090,7 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(8,itemstack);
 		}
-		if(playerdata.getPlaytick() % 576000 >= 0 && playerdata.getPlaytick() % 576000 <= 1199 && !(playerdata.getTitleFlags().get(8003))){
+		if(playerdata.getPlayTick() % 576000 >= 0 && playerdata.getPlayTick() % 576000 <= 1199 && !(playerdata.getTitleFlags().get(8003))){
 			itemstack = new ItemStack(Material.EMERALD_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "タイムカード、切りましょ？" );
@@ -5773,7 +5770,7 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(2,itemstack);
 		}else{
-			if(playerdata.getPlaytick() % 72000 >= 0 && playerdata.getPlaytick() % 72000 <= 1199){
+			if(playerdata.getPlayTick() % 72000 >= 0 && playerdata.getPlayTick() % 72000 <= 1199){
 			itemstack = new ItemStack(Material.BEDROCK,1);
 			itemmeta = ItemMetaFactory.BEDROCK.getValue();
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8003「???」" );
@@ -5968,7 +5965,7 @@ public class MenuInventoryData {
 			itemstack.setItemMeta(itemmeta);
 			inventory.setItem(13,itemstack);
 
-			int prank = playerdata.calcPlayerApple(p);
+			int prank = playerdata.calcPlayerApple();
 
 			itemstack = new ItemStack(Material.GOLDEN_APPLE);
 			itemmeta = itemstack.getItemMeta();
@@ -6212,22 +6209,27 @@ public class MenuInventoryData {
 		ItemMeta itemmeta;
 		List<String> lore;
 
-		switch(playerdata.getGBstage()){
-		case 0:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)12);
-			break;
-		case 1:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)15);
-			break;
-		case 2:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)4);
-			break;
-		case 3:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)0);
-			break;
-		default:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)12);
-			break;
+		// stage
+		{
+			final byte b;
+			switch (playerdata.getGiganticBerserk().getStage()) {
+				case 0:
+					b = 12;
+					break;
+				case 1:
+					b = 15;
+					break;
+				case 2:
+					b = 4;
+					break;
+				case 3:
+					b = 0;
+					break;
+				default:
+					b = 12;
+					break;
+			}
+			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, b);
 		}
 
 		itemmeta = itemstack.getItemMeta();
@@ -6284,22 +6286,28 @@ public class MenuInventoryData {
 		ItemMeta itemmeta;
 		List<String> lore;
 
-		switch(playerdata.getGBstage()){
-		case 1:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)15);
-			break;
-		case 2:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)4);
-			break;
-		case 3:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)0);
-			break;
-		case 4:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)3);
-			break;
-		default:
-			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)12);
-			break;
+		{
+			final byte b;
+			// stage
+			switch (playerdata.getGiganticBerserk().getStage()) {
+				case 1:
+					b = 15;
+					break;
+				case 2:
+					b = 4;
+					break;
+				case 3:
+					b = 0;
+					break;
+				case 4:
+					b = 3;
+					break;
+				default:
+					b = 12;
+					break;
+			}
+
+			itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, b);
 		}
 
 		itemmeta = itemstack.getItemMeta();

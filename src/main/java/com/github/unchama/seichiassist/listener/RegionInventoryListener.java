@@ -176,8 +176,8 @@ public class RegionInventoryListener implements Listener {
 				}
 
 				player.chat("//expand vert");
-				player.chat("/rg claim " + player.getName() + "_" + playerdata.getRgnum());
-				playerdata.setRgnum(playerdata.getRgnum() + 1);
+				player.chat("/rg claim " + player.getName() + "_" + playerdata.getRegionCount());
+				playerdata.setRegionCount(playerdata.getRegionCount() + 1);
 				player.chat("//sel");
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f);
 			}
@@ -269,7 +269,7 @@ public class RegionInventoryListener implements Listener {
 			} else if (itemstackcurrent.getType() == Material.WOOL && itemstackcurrent.getDurability() == 11) {
 				player.chat("//expand vert");
 				createRegion(player);
-				playerData.setRgnum(playerData.getRgnum() + 1);
+				playerData.setRegionCount(playerData.getRegionCount() + 1);
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f);
 				player.closeInventory();
 			} else if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 4) {
@@ -387,7 +387,7 @@ public class RegionInventoryListener implements Listener {
 			playerData.setCanCreateRegion(false);
 		}
 
-		ProtectedRegion region = new ProtectedCuboidRegion(player.getName() + "_" + playerData.getRgnum(),
+		ProtectedRegion region = new ProtectedCuboidRegion(player.getName() + "_" + playerData.getRegionCount(),
 				selection.getNativeMinimumPoint().toBlockVector(), selection.getNativeMaximumPoint().toBlockVector());
 		ApplicableRegionSet regions = manager.getApplicableRegions(region);
 
@@ -409,7 +409,7 @@ public class RegionInventoryListener implements Listener {
 		PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		Selection selection = We.getSelection(player);
 
-		ProtectedRegion region = new ProtectedCuboidRegion(player.getName() + "_" + playerData.getRgnum(),
+		ProtectedRegion region = new ProtectedCuboidRegion(player.getName() + "_" + playerData.getRegionCount(),
 				selection.getNativeMinimumPoint().toBlockVector(), selection.getNativeMaximumPoint().toBlockVector());
 		RegionManager manager = Wg.getRegionManager(player.getWorld());
 
@@ -418,7 +418,7 @@ public class RegionInventoryListener implements Listener {
 		task.setOwnersInput(new String[]{player.getName()});
 		ListenableFuture<?> future = Wg.getExecutorService().submit(task);
 
-		AsyncCommandHelper.wrap(future, Wg, player).formatUsing(player.getName() + "_" + playerData.getRgnum())
+		AsyncCommandHelper.wrap(future, Wg, player).formatUsing(player.getName() + "_" + playerData.getRegionCount())
 				.registerWithSupervisor("保護申請中").thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗");
 	}
 
