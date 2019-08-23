@@ -70,7 +70,7 @@ internal object MineStackButtons {
           sequentialEffect(
               withDrawOneStackEffect(mineStackObj),
               unfocusedEffect {
-                if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
+                if (mineStackObj.category() !== MineStackObjectCategory.GACHA_PRIZES) {
                   playerData.hisotryData.add(mineStackObj)
                 }
               }

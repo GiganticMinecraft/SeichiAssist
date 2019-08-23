@@ -332,7 +332,7 @@ class PlayerData(val player: Player) {
         this.idleMinute = 0
         this.totalbreaknum = 0
         //統計にないため一部ブロックを除外
-        staticdata = (MaterialSets.materials - Material.GRASS_PATH - Material.SOIL - Material.MOB_SPAWNER)
+        staticdata = (MaterialSets.materials - exclude)
             .map { player.getStatistic(Statistic.MINE_BLOCK, it) }
             .toMutableList()
         this.activeskilldata = ActiveSkillData()
@@ -570,6 +570,8 @@ class PlayerData(val player: Player) {
 
         //TODO: イベント入手分スターの確認
 
+        //TODO: 今後実装予定。
+
         val newStars: Int = starLevels.total()
         //合計値の確認
         if (oldStars < newStars) {
@@ -590,18 +592,17 @@ class PlayerData(val player: Player) {
     //総破壊ブロック数を更新する
     fun updateAndCalcMinedBlockAmount(): Int {
         var sum = 0.0
-        val p = MaterialSets.materials - Material.GRASS_PATH - Material.SOIL - Material.MOB_SPAWNER
-        for ((i, m) in p.withIndex()) {
-            val getstat = player.getStatistic(Statistic.MINE_BLOCK, m)
-            val increased = getstat - staticdata[i]
-            val amount = calcBlockExp(m, increased)
+        for ((i, m) in (MaterialSets.materials - exclude).withIndex()) {
+            val materialStatistics = player.getStatistic(Statistic.MINE_BLOCK, m)
+            val increase = materialStatistics - staticdata[i]
+            val amount = calcBlockExp(m, increase)
             sum += amount
             if (SeichiAssist.DEBUG) {
                 if (amount > 0.0) {
-                    player.sendMessage("calcの値:$amount($m)")
+                  player.sendMessage("calcの値:$amount($m)")
                 }
             }
-            staticdata[i] = getstat
+            staticdata[i] = materialStatistics
         }
         //double値を四捨五入し、整地量に追加する整数xを出す
         val x = sum.roundToInt()
@@ -1009,5 +1010,7 @@ class PlayerData(val player: Player) {
 
         //TODO:もちろんここにあるべきではない
         const val passiveSkillProbability = 10
+
+        val exclude = EnumSet.of(Material.GRASS_PATH, Material.SOIL, Material.MOB_SPAWNER)
     }
 }
