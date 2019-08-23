@@ -123,7 +123,7 @@ public class MenuInventoryData {
 		}
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk");
 
-		if (playerdata.getGiganticBerserk().getCanEvolution() || playerdata.getGiganticBerserk().reachedLimit()){
+		if (playerdata.getGiganticBerserk().getCanEvolve() || playerdata.getGiganticBerserk().reachedLimit()){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		}
@@ -219,9 +219,9 @@ public class MenuInventoryData {
 				lore.add(ChatColor.GRAY + "" + playerdata.getGiganticBerserk().getExp() + "/" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n));
 			}
 			//level
-			lore.add(ChatColor.GRAY + "現在" + (playerdata.getGiganticBerserk().getLevel() + 1) + "レベル,回復率 " + (int)(100 * playerdata.getGiganticBerserk().regeneMadaProbability()) + ".0%");
+			lore.add(ChatColor.GRAY + "現在" + (playerdata.getGiganticBerserk().getLevel() + 1) + "レベル,回復率 " + (int)(100 * playerdata.getGiganticBerserk().manaRegenerationProbability()) + ".0%");
 
-			if (playerdata.getGiganticBerserk().getCanEvolution()){
+			if (playerdata.getGiganticBerserk().getCanEvolve()){
 				lore.add("");
 				lore.add(ChatColor.DARK_RED + "沢山の魂を吸収したことで");
 				lore.add(ChatColor.DARK_RED + "スキルの秘めたる力を解放できそうだ…！");
@@ -852,7 +852,7 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "クリックで情報を最新化"
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + playerdata.getAchievePoint().getTotallyGet()
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + playerdata.getAchievePoint().getCumulativeTotal()
 							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.getAchievePoint().getUsed()
 							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.getAchievePoint().getLeft());
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -1266,7 +1266,7 @@ public class MenuInventoryData {
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報" );
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "クリックで情報を最新化"
-							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + (playerdata.getAchievePoint().getTotallyGet())
+							,ChatColor.RESET + "" +  ChatColor.RED + "累計獲得量：" + (playerdata.getAchievePoint().getCumulativeTotal())
 							,ChatColor.RESET + "" +  ChatColor.RED + "累計消費量：" + playerdata.getAchievePoint().getUsed()
 							,ChatColor.RESET + "" +  ChatColor.AQUA + "使用可能量：" + playerdata.getAchievePoint().getLeft());
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

@@ -8,11 +8,7 @@ import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.MineStack
 import com.github.unchama.seichiassist.data.PlayerData
-import com.github.unchama.seichiassist.data.playerdata.AchievePoint
-import com.github.unchama.seichiassist.data.playerdata.BuildCount
-import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
-import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
-import com.github.unchama.seichiassist.data.playerdata.StarLevel
+import com.github.unchama.seichiassist.data.playerdata.*
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.BukkitSerialization
@@ -226,7 +222,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       }
 
       playerdata.gachapoint = rs.getInt("gachapoint")
-      playerdata.tookGachaTicket = rs.getBoolean("gachaflag")
+      playerdata.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
       playerdata.level = rs.getInt("level")
       playerdata.wabiGacha = rs.getInt("numofsorryforbug")
       playerdata.regionCount = rs.getInt("rgnum")
@@ -266,7 +262,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       )
       playerdata.p_vote_forT = rs.getInt("p_vote")
       playerdata.giveachvNo = rs.getInt("giveachvNo")
-      playerdata.achievePoint = AchievePoint(
+      playerdata.achievePoint = AchievementPoint(
           rs.getInt("achvPointMAX"),
           rs.getInt("achvPointUSE"),
           rs.getInt("achvChangenum")

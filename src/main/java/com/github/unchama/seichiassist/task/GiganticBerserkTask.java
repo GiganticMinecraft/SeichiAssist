@@ -1,19 +1,17 @@
 package com.github.unchama.seichiassist.task;
 
-import java.util.HashMap;
-import java.util.Random;
-import java.util.UUID;
-
 import com.github.unchama.seichiassist.LevelThresholds;
-import net.md_5.bungee.api.ChatColor;
-
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.Random;
+import java.util.UUID;
 
 public class GiganticBerserkTask {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
@@ -39,7 +37,7 @@ public class GiganticBerserkTask {
 
 		//確率でマナを回復させる
 		double d = Math.random();
-		if(d < playerdata.getGiganticBerserk().regeneMadaProbability()){
+		if(d < playerdata.getGiganticBerserk().manaRegenerationProbability()){
 
 			double i = getRecoveryValue(playerdata);
 
@@ -54,7 +52,7 @@ public class GiganticBerserkTask {
 		}
 
 		//進化待機状態の場合終了
-		if(playerdata.getGiganticBerserk().getCanEvolution()){
+		if(playerdata.getGiganticBerserk().getCanEvolve()){
 			return;
 		}
 

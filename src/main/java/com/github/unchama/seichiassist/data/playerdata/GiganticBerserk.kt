@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist.data.playerdata
 
-data class GiganticBerserk(val level: Int = 0, val exp: Int = 0, val stage: Int = 0, val canEvolution: Boolean = false, val cd: Int = 0) {
+data class GiganticBerserk(val level: Int = 0, val exp: Int = 0, val stage: Int = 0, val canEvolve: Boolean = false, val cd: Int = 0) {
   fun reachedLimit(): Boolean {
     return stage == 4 && level == 9
   }
 
-  fun regeneMadaProbability(): Double {
+  fun manaRegenerationProbability(): Double {
     val level = level
     return when {
       level < 2 -> 0.05

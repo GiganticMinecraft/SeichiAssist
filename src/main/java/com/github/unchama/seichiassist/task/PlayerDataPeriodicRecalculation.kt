@@ -144,7 +144,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       //ガチャポイントに合算
       playerData.gachapoint = playerData.gachapoint + increase
 
-      if (playerData.gachapoint >= config.gachaPresentInterval && playerData.tookGachaTicket) {
+      if (playerData.gachapoint >= config.gachaPresentInterval && playerData.receiveGachaTicketEveryMinute) {
         val skull = Util.getskull(name)
         playerData.gachapoint = playerData.gachapoint - config.gachaPresentInterval
         if (player.inventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
@@ -156,7 +156,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
           player.sendMessage(ChatColor.GOLD.toString() + "ガチャ券" + ChatColor.WHITE + "がドロップしました。右クリックで使えるゾ")
         }
       } else {
-        if (increase != 0 && playerData.tookGachaTicket) {
+        if (increase != 0 && playerData.receiveGachaTicketEveryMinute) {
           player.sendMessage("あと" + ChatColor.AQUA + (config.gachaPresentInterval - playerData.gachapoint % config.gachaPresentInterval) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ")
         }
       }

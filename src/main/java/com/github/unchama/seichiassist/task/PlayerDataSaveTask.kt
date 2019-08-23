@@ -182,7 +182,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         + ",lavacondenskill = " + playerdata.activeskilldata.lavacondenskill
         + ",effectnum = " + playerdata.activeskilldata.effectnum
         + ",gachapoint = " + playerdata.gachapoint
-        + ",gachaflag = " + playerdata.tookGachaTicket
+        + ",gachaflag = " + playerdata.receiveGachaTicketEveryMinute
         + ",level = " + playerdata.level
         + ",rgnum = " + playerdata.regionCount
         + ",totalbreaknum = " + playerdata.totalbreaknum
@@ -208,9 +208,9 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         + ",displayTitle2No = " + playerdata.nickName.id2
         + ",displayTitle3No = " + playerdata.nickName.id3
         + ",giveachvNo = " + playerdata.giveachvNo
-        + ",achvPointMAX = " + playerdata.achievePoint.totallyGet
+        + ",achvPointMAX = " + playerdata.achievePoint.cumulativeTotal
         + ",achvPointUSE = " + playerdata.achievePoint.used
-        + ",achvChangenum = " + playerdata.achievePoint.convertCount
+        + ",achvChangenum = " + playerdata.achievePoint.conversionCount
         + ",starlevel = " + playerdata.totalStarLevel
         + ",starlevel_Break = " + playerdata.starLevels.fromBreakAmount
         + ",starlevel_Time = " + playerdata.starLevels.fromConnectionTime
@@ -241,7 +241,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
         + ",GBstage = " + playerdata.giganticBerserk.stage
         + ",GBexp = " + playerdata.giganticBerserk.exp
         + ",GBlevel = " + playerdata.giganticBerserk.level
-        + ",isGBStageUp = " + playerdata.giganticBerserk.canEvolution
+        + ",isGBStageUp = " + playerdata.giganticBerserk.canEvolve
         + ",TitleFlags = '" + flagString + "'"
 
         //正月イベント

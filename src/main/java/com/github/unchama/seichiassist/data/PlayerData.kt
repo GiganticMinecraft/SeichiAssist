@@ -1,23 +1,12 @@
 package com.github.unchama.seichiassist.data
 
 import com.github.unchama.menuinventory.rows
-import com.github.unchama.seichiassist.AntiTypesafe
-import com.github.unchama.seichiassist.LevelThresholds
-import com.github.unchama.seichiassist.ManagedWorld
-import com.github.unchama.seichiassist.MaterialSets
-import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.playerdata.ClaimUnit
-import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
-import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
-import com.github.unchama.seichiassist.data.playerdata.StarLevel
-import com.github.unchama.seichiassist.data.playerdata.AchievePoint
-import com.github.unchama.seichiassist.data.playerdata.BuildCount
-import com.github.unchama.seichiassist.data.playerdata.LoginStatus
+import com.github.unchama.seichiassist.*
+import com.github.unchama.seichiassist.data.playerdata.*
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
-import com.github.unchama.seichiassist.isSeichi
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.MebiusTask
@@ -73,8 +62,8 @@ class PlayerData(val player: Player) {
     var gachapoint = 0
     //最後のガチャポイントデータ
     var lastgachapoint = 0
-    //ガチャ受け取りフラグ
-    var tookGachaTicket = false
+    //ガチャ受け取り方法設定
+    var receiveGachaTicketEveryMinute = false
     //今回の採掘速度上昇レベルを格納
     var minespeedlv = 0
     //前回の採掘速度上昇レベルを格納
@@ -195,7 +184,7 @@ class PlayerData(val player: Player) {
     //二つ名配布予約NOの保存
     var giveachvNo = 0
     //実績ポイント用
-    var achievePoint = AchievePoint(totallyGet = 0, used = 0, convertCount = 0)
+    var achievePoint = AchievementPoint(cumulativeTotal = 0, used = 0, conversionCount = 0)
 
     var titlepage = 0 //実績メニュー用汎用ページ指定
     var samepageflag = false//実績ショップ用
@@ -266,10 +255,10 @@ class PlayerData(val player: Player) {
         get() = giganticBerserk.exp
     var isGBStageUp
         set (value) {
-            giganticBerserk = giganticBerserk.copy(canEvolution = value)
+            giganticBerserk = giganticBerserk.copy(canEvolve = value)
         }
 
-        get() = giganticBerserk.canEvolution
+        get() = giganticBerserk.canEvolve
     // FIXME: BAD NAME; not clear meaning
     var GBcd: Int
         set (value) {
@@ -323,7 +312,7 @@ class PlayerData(val player: Player) {
         this.halfhourblock = MineBlock()
         this.gachapoint = 0
         this.lastgachapoint = 0
-        this.tookGachaTicket = true
+        this.receiveGachaTicketEveryMinute = true
         this.minespeedlv = 0
         this.lastminespeedlv = 0
         this.effectdatalist = LinkedList()
@@ -446,7 +435,7 @@ class PlayerData(val player: Player) {
             .stream() // index
             .filter { it in 1000..9799 }
             .count().toInt() /* Safe Conversation: BitSet indexes -> Int */ * 10
-        achievePoint = achievePoint.copy(totallyGet = max)
+        achievePoint = achievePoint.copy(cumulativeTotal = max)
     }
 
     fun consumeAchievePoint(amount: Int) {
@@ -454,7 +443,7 @@ class PlayerData(val player: Player) {
     }
 
     fun convertEffectPointToAchievePoint() {
-        achievePoint = achievePoint.copy(convertCount = achievePoint.convertCount + 1)
+        achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
         activeskilldata.effectpoint -= 10
     }
 
