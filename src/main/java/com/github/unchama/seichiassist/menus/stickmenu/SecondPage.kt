@@ -15,7 +15,7 @@ import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.*
+import com.github.unchama.seichiassist.data.playerdata.settings.BroadcastMutingSettings.*
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager

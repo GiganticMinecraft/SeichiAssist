@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.data
 
 import com.github.unchama.menuinventory.rows
 import com.github.unchama.seichiassist.*
-import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.data.playerdata.*
+import com.github.unchama.seichiassist.data.playerdata.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
 import com.github.unchama.seichiassist.data.subhome.SubHome

@@ -8,8 +8,8 @@ import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.MineStack
 import com.github.unchama.seichiassist.data.PlayerData
-import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.data.playerdata.*
+import com.github.unchama.seichiassist.data.playerdata.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.BukkitSerialization
