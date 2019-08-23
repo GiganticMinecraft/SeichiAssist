@@ -28,7 +28,7 @@ class PlayerJoinListener : Listener {
 
     // プレイヤーデータ作成
     // 新しく作成したPlayerDataを引数とする
-    databaseGateway.playerDataManipulator.loadPlayerData(PlayerData(player))
+    databaseGateway.playerDataManipulator.loadPlayerData(PlayerData(player.uniqueId))
 
     // 初見さんへの処理
 

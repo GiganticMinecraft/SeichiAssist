@@ -40,17 +40,16 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 
-class PlayerData(private val player: Player) {
+class PlayerData constructor(val uuid: UUID) {
     //読み込み済みフラグ
     var loaded = false
+
+    val player: Player
+      get() = Bukkit.getPlayer(uuid)
 
     //プレイヤー名
     val lowercaseName: String
       get() = Util.getName(player)
-
-    //UUID
-    val uuid: UUID
-      get() = player.uniqueId
 
     val fastDiggingEffectSuppressor = FastDiggingEffectSuppressor()
 
