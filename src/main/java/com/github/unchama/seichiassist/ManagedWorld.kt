@@ -38,3 +38,5 @@ val ManagedWorld.isRegionSeichi: Boolean
 
 val ManagedWorld.shouldMuteCoreProtect: Boolean
   get() = this.isRegionSeichi
+
+fun World.asManagedWorld(): ManagedWorld? = Companion.fromBukkitWorld(this)

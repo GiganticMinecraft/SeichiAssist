@@ -17,7 +17,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.data.MenuInventoryData
-import com.github.unchama.seichiassist.data.descrptions.PlayerInformationDescriptions
+import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.menus.RegionMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.task.CoolDownTask
@@ -355,7 +355,7 @@ private object FirstPage: Menu {
       Button(
           SkullItemStackBuilder(uniqueId)
               .title("$YELLOW$BOLD$UNDERLINE${name}の統計データ")
-              .lore(PlayerInformationDescriptions.playerInfoLore(openerData))
+              .lore(PlayerStatsLoreGenerator(openerData).computeLore())
               .build(),
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(

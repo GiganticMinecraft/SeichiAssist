@@ -40,7 +40,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 
-class PlayerData(val player: Player) {
+class PlayerData(private val player: Player) {
     //読み込み済みフラグ
     var loaded = false
 
