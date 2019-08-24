@@ -77,7 +77,7 @@ public class PlayerRightClickListener implements Listener  {
 				//場合分け
 				if(offhandtoolflag){
 					//スキルフラグON以外のときは終了
-					if(!playerdata.ZoneSetSkillFlag == true ){
+					if(!playerdata.ZoneSetSkillFlag){
 						return;
 					}
 					//オフハンドの時
@@ -169,11 +169,11 @@ public class PlayerRightClickListener implements Listener  {
 					}
 
 					//上の処理で「スキル条件を満たしていない」と判断された場合、処理終了
-					if(SetReady == false){
+					if(!SetReady){
 						player.sendMessage(ChatColor.RED + "発動条件が満たされませんでした。");
 					}
 
-					if(SetReady == true){
+					if(SetReady){
 				//実際に範囲内にブロックを設置する処理
 						//設置範囲の基準となる座標
 						int setblockX = playerlocx - AREAint ;
@@ -233,7 +233,7 @@ public class PlayerRightClickListener implements Listener  {
 									break;
 								}else {
 									//ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
-									if(playerdata.zs_minestack_flag == true)minestack:{//label指定は基本的に禁じ手だが、今回は後付けなので使わせてもらう。(解読性向上のため、1箇所のみの利用)
+									if(playerdata.zs_minestack_flag)minestack:{//label指定は基本的に禁じ手だが、今回は後付けなので使わせてもらう。(解読性向上のため、1箇所のみの利用)
 										for(int cnt = 0; cnt < MineStackObjectList.INSTANCE.getMinestacklist().size() ; cnt++ ){
 											if(offhanditem.getType().equals(MineStackObjectList.INSTANCE.getMinestacklist().get(cnt).getMaterial()) &&
 													offhanditem.getData().getData() == MineStackObjectList.INSTANCE.getMinestacklist().get(cnt).getDurability()){
@@ -359,7 +359,7 @@ public class PlayerRightClickListener implements Listener  {
 					//終了ログがうるさいので無くす
 					//player.sendMessage(ChatColor.RED + "敷き詰めスキル：処理終了" ) ;
 
-					if( Util.isBlockCount(player) == true){
+					if(Util.isBlockCount(player)){
 						Util.addBuild1MinAmount(player, new BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag()));	//設置した数を足す
 					}
 

@@ -59,7 +59,7 @@ public class BlockLineUp implements Listener{
 		}
 
 		//スキル利用可能でないワールドの場合終了
-		if(Util.isSkillEnable(player) == false ){
+		if(!Util.isSkillEnable(player)){
 			return;
 		}
 		//左クリックの処理
@@ -75,7 +75,7 @@ public class BlockLineUp implements Listener{
 //			player.sendMessage(""+mainhanditem.getAmount());	//持ってる数
 
 			//メインハンドにブロックがあるとき
-			if( BuildAssist.materiallist2.contains(mainhanditem.getType()) == true || BuildAssist.material_slab2.contains(mainhanditem.getType()) == true ) {
+			if(BuildAssist.materiallist2.contains(mainhanditem.getType()) || BuildAssist.material_slab2.contains(mainhanditem.getType())) {
 				if(offhanditem.getType() != Material.STICK){//オフハンドに木の棒を持ってるときのみ発動する
 					return;
 				}
@@ -150,7 +150,7 @@ public class BlockLineUp implements Listener{
 				}
 
 				//手に持ってるのがハーフブロックの場合
-				if(BuildAssist.material_slab2.contains(m) == true ){
+				if(BuildAssist.material_slab2.contains(m)){
 					if(playerdata.line_up_step_flg == 0){
 						d += 8;	//上設置設定の場合は上側のデータに書き換え
 					}else if(playerdata.line_up_step_flg == 2){
@@ -184,13 +184,13 @@ public class BlockLineUp implements Listener{
 					//空気以外にぶつかったら設置終わり
 					if (b.getType() != Material.AIR){
 //						player.sendMessage(":"+b.getType().toString());
-						if(BuildAssist.material_destruction.contains(b.getType()) == false || playerdata.line_up_des_flg == 0){
+						if(!BuildAssist.material_destruction.contains(b.getType()) || playerdata.line_up_des_flg == 0){
 //							player.sendMessage("stop:"+b.getType().toString());
 							break;
 						}
 						Collection<ItemStack> i = b.getDrops();
 
-						if(i.iterator().hasNext() == true){
+						if(i.iterator().hasNext()){
 							b.getLocation().getWorld().dropItemNaturally(pl, i.iterator().next());
 						}
 					}
@@ -206,7 +206,7 @@ public class BlockLineUp implements Listener{
 				}
 				v *= double_mag;	//ハーフ2段重ねの場合は2倍
 				//カウント対象ワールドの場合カウント値を足す
-				if( Util.isBlockCount(player) == true){	//対象ワールドかチェック
+				if(Util.isBlockCount(player)){	//対象ワールドかチェック
 					Util.addBuild1MinAmount(player, new BigDecimal(v * BuildAssist.config.getBlockCountMag()));	//設置した数を足す
 				}
 

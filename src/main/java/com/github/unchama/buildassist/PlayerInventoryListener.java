@@ -133,11 +133,11 @@ public class PlayerInventoryListener implements Listener {
 				if(playerdata.level < BuildAssist.config.getZoneSetSkillLevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
-					if(playerdata.ZoneSetSkillFlag == false){
+					if(!playerdata.ZoneSetSkillFlag){
 						playerdata.ZoneSetSkillFlag = true ;
 						player.sendMessage(ChatColor.RED + "範囲設置スキルON" ) ;
 						player.openInventory(MenuInventoryData.getMenuData(player));
-					}else if (playerdata.ZoneSetSkillFlag == true ){
+					}else if (playerdata.ZoneSetSkillFlag){
 						playerdata.ZoneSetSkillFlag = false ;
 						player.sendMessage(ChatColor.RED + "範囲設置スキルOFF" ) ;
 						player.openInventory(MenuInventoryData.getMenuData(player));
@@ -253,11 +253,11 @@ public class PlayerInventoryListener implements Listener {
 				if(playerdata.level < BuildAssist.config.getZoneSetSkillLevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
-					if(playerdata.ZoneSetSkillFlag == false){
+					if(!playerdata.ZoneSetSkillFlag){
 						playerdata.ZoneSetSkillFlag = true ;
 						player.sendMessage(ChatColor.RED + "範囲設置スキルON" ) ;
 						player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
-					}else if (playerdata.ZoneSetSkillFlag == true ){
+					}else if (playerdata.ZoneSetSkillFlag){
 						playerdata.ZoneSetSkillFlag = false ;
 						player.sendMessage(ChatColor.RED + "範囲設置スキルOFF" ) ;
 						player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
@@ -268,11 +268,11 @@ public class PlayerInventoryListener implements Listener {
 			} else if (itemstackcurrent.getType().equals(Material.DIRT)){
 				//範囲設置スキル、土設置 ON/OFF
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				if(playerdata.zsSkillDirtFlag == false){
+				if(!playerdata.zsSkillDirtFlag){
 					playerdata.zsSkillDirtFlag = true ;
 					player.sendMessage(ChatColor.RED + "土設置機能ON" ) ;
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
-				}else if (playerdata.zsSkillDirtFlag == true ){
+				}else if (playerdata.zsSkillDirtFlag){
 					playerdata.zsSkillDirtFlag = false ;
 					player.sendMessage(ChatColor.RED + "土設置機能OFF" ) ;
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
@@ -283,7 +283,7 @@ public class PlayerInventoryListener implements Listener {
 				if(playerdata.level < BuildAssist.config.getZoneskillMinestacklevel()){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
-					if(playerdata.zs_minestack_flag == true){
+					if(playerdata.zs_minestack_flag){
 						playerdata.zs_minestack_flag = false;
 						player.sendMessage(ChatColor.RED + "MineStack優先設定OFF");
 						player.openInventory(MenuInventoryData.getSetBlockSkillData(player));

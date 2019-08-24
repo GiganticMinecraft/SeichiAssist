@@ -24,7 +24,7 @@ public class BlockPlaceEventListener implements Listener {
         //playerを取得
         Player player = event.getPlayer();
         //カウント対象ワールドかチェック
-        if (Util.isBlockCount(player) == false) {
+        if (!Util.isBlockCount(player)) {
             return;
         }
 
