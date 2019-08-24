@@ -1,8 +1,12 @@
 package com.github.unchama.buildassist;
 
 import java.math.BigDecimal;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import com.github.unchama.seichiassist.MineStackObjectList;
 import org.bukkit.ChatColor;
@@ -190,23 +194,22 @@ public class PlayerRightClickListener implements Listener  {
 
 						for(;setblockZ < playerlocz + SEARCHint ;){
 							//ブロック設置座標のブロック判別
-							if(player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType() == Material.AIR||
-								player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType() == Material.SNOW||
-								player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType() == Material.LONG_GRASS||
-								player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType() == Material.DEAD_BUSH||
-								player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType() == Material.YELLOW_FLOWER||
-								player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType() == Material.RED_ROSE||
-								player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType() == Material.RED_MUSHROOM||
-								player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType() == Material.BROWN_MUSHROOM){
+							final Material mt = player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType();
+							final Set<Material> k6 = EnumSet.of(
+									Material.AIR, Material.SNOW, Material.LONG_GRASS, Material.DEAD_BUSH, Material.YELLOW_FLOWER,
+									Material.RED_ROSE, Material.RED_MUSHROOM, Material.BROWN_MUSHROOM
+									);
+							if(k6.contains(mt)) {
 								setunder = 1;
 								if(playerdata.zsSkillDirtFlag){
 								for(;setunder < 5;){
 									//設置対象の[setunder]分の下のブロックが空気かどうか
-									if(player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).getType() == Material.AIR||
-										player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).getType() == Material.LAVA||
-										player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).getType() == Material.STATIONARY_LAVA||
-										player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).getType() == Material.WATER||
-										player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).getType() == Material.STATIONARY_WATER){
+									final Material m2 = player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).getType();
+									if(m2 == Material.AIR||
+										m2 == Material.LAVA||
+										m2 == Material.STATIONARY_LAVA||
+										m2 == Material.WATER||
+										m2 == Material.STATIONARY_WATER){
 										WGloc.setX(setblockX);
 										WGloc.setY(setblockY - setunder);
 										WGloc.setZ(setblockZ);
