@@ -133,14 +133,9 @@ public class PlayerRightClickListener implements Listener  {
 					//MineStack No.用
 					int no = -1;
 
-					//MineStack設置できる最大量取得しておく
-					int max = 0;
-
 					//オフハンドアイテムと、範囲内のブロックに一致する物があるかどうか判別
 					//同じ物がない場合・同じ物が3か所以上のY軸で存在する場合→SetReady = false
 					for(;searchY < playerlocy + 2 ;){
-						BlockState block = player.getWorld().getBlockAt(searchX,searchY,searchZ).getState();
-
 						if(offhanditem.getType() == player.getWorld().getBlockAt(searchX,searchY,searchZ).getType()&&
 							offhanditem.getData().getData() == player.getWorld().getBlockAt(searchX,searchY,searchZ).getData()){
 

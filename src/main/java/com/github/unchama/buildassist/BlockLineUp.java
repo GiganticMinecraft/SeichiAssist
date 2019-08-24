@@ -42,12 +42,8 @@ public class BlockLineUp implements Listener{
 		Player player = e.getPlayer();
 		//UUID取得
 		UUID uuid = player.getUniqueId();
-		//ワールドデータを取得
-		World playerworld = player.getWorld();
 		//プレイヤーが起こしたアクションを取得
 		Action action = e.getAction();
-		//アクションを起こした手を取得
-		EquipmentSlot equipmentslot = e.getHand();
 		//プレイヤーデータ
 		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 		PlayerData playerdata = BuildAssist.playermap.get(uuid);
