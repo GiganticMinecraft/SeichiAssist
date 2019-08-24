@@ -491,7 +491,7 @@ class PlayerClickListener : Listener {
         //開く音を再生
         player.playSound(player.location, Sound.BLOCK_ENDERCHEST_OPEN, 1f, 0.1.toFloat())
         //インベントリを開く
-        player.openInventory(playerdata.inventory)
+        player.openInventory(playerdata.pocketInventory)
       }
     }
   }

@@ -167,8 +167,8 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
 
           //各種数値更新処理
           + ",effectflag = " + runBlocking { playerdata.fastDiggingEffectSuppression.serialized() }
-          + ",minestackflag = " + playerdata.minestackflag
-          + ",messageflag = " + playerdata.messageflag
+          + ",minestackflag = " + playerdata.autoMineStack
+          + ",messageflag = " + playerdata.receiveFastDiggingEffectStats
           + ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum
           + ",assaultflag = " + playerdata.activeskilldata.assaultflag
           + ",activeskilltype = " + playerdata.activeskilldata.skilltype
@@ -187,7 +187,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
           + ",level = " + playerdata.level
           + ",rgnum = " + playerdata.regionCount
           + ",totalbreaknum = " + playerdata.totalbreaknum
-          + ",inventory = '" + BukkitSerialization.toBase64(playerdata.inventory) + "'"
+          + ",inventory = '" + BukkitSerialization.toBase64(playerdata.pocketInventory) + "'"
           + ",playtick = " + playerdata.playTick
           + ",lastquit = cast( now() as datetime )"
           + ",killlogflag = " + playerdata.dispkilllogflag

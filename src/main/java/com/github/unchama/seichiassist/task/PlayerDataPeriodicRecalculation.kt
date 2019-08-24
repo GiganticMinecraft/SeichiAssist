@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
+import org.bukkit.ChatColor.*
 import org.bukkit.Sound
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -122,13 +122,13 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
         playerData.minespeedlv = minespeedlv
       }
 
-      //プレイヤーにメッセージ送信
-      if (playerData.lastminespeedlv != minespeedlv || playerData.messageflag) {//前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
-        player.sendMessage(ChatColor.YELLOW.toString() + "★" + ChatColor.WHITE + "採掘速度上昇レベルが" + ChatColor.YELLOW + (minespeedlv + 1) + ChatColor.WHITE + "になりました")
-        if (playerData.messageflag) {
+      //前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
+      if (playerData.lastminespeedlv != minespeedlv || playerData.receiveFastDiggingEffectStats) {
+        player.sendMessage("${YELLOW}★${WHITE}採掘速度上昇レベルが$YELLOW${minespeedlv + 1}${WHITE}になりました")
+        if (playerData.receiveFastDiggingEffectStats) {
           player.sendMessage("----------------------------内訳-----------------------------")
           for (ed in playerData.effectdatalist) {
-            player.sendMessage(ChatColor.RESET.toString() + "" + ChatColor.RED + "" + ed.effectDescription)
+            player.sendMessage("$RESET$RED${ed.effectDescription}")
           }
           player.sendMessage("-------------------------------------------------------------")
         }
@@ -149,19 +149,17 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
         playerData.gachapoint = playerData.gachapoint - config.gachaPresentInterval
         if (player.inventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
           Util.addItem(player, skull)
-          player.sendMessage(ChatColor.GOLD.toString() + "ガチャ券" + ChatColor.WHITE + "プレゼントフォーユー。右クリックで使えるゾ")
+          player.sendMessage(GOLD.toString() + "ガチャ券" + WHITE + "プレゼントフォーユー。右クリックで使えるゾ")
         } else {
           Util.dropItem(player, skull)
           player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-          player.sendMessage(ChatColor.GOLD.toString() + "ガチャ券" + ChatColor.WHITE + "がドロップしました。右クリックで使えるゾ")
+          player.sendMessage(GOLD.toString() + "ガチャ券" + WHITE + "がドロップしました。右クリックで使えるゾ")
         }
       } else {
         if (increase != 0 && playerData.receiveGachaTicketEveryMinute) {
-          player.sendMessage("あと" + ChatColor.AQUA + (config.gachaPresentInterval - playerData.gachapoint % config.gachaPresentInterval) + ChatColor.WHITE + "ブロック整地すると" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "獲得ダヨ")
+          player.sendMessage("あと" + AQUA + (config.gachaPresentInterval - playerData.gachapoint % config.gachaPresentInterval) + WHITE + "ブロック整地すると" + GOLD + "ガチャ券" + WHITE + "獲得ダヨ")
         }
       }
-      //プレイヤーデータを更新
-      playerData.lastgachapoint = playerData.gachapoint
 
 
       /*

@@ -494,7 +494,7 @@ private object FirstPage: Menu {
         )
         val loreHeading = if (playerData.level >= minimumRequiredLevel) {
           listOf(
-              "$RESET${GRAY}ポケットサイズ:${playerData.inventory.size}スタック",
+              "$RESET${GRAY}ポケットサイズ:${playerData.pocketInventory.size}スタック",
               "$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
           )
         } else {
@@ -514,7 +514,7 @@ private object FirstPage: Menu {
                 if (playerData.level >= minimumRequiredLevel) {
                   sequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 0.1f),
-                    TargetedEffect { it.openInventory(playerData.inventory) }
+                    TargetedEffect { it.openInventory(playerData.pocketInventory) }
                   )
                 } else FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
               }
@@ -571,7 +571,7 @@ private object FirstPage: Menu {
               "$RESET${GRAY}・各種謝礼として"
           )
 
-          val obtainableApologyItems = playerData.wabiGacha
+          val obtainableApologyItems = playerData.unclaimedApologyItems
           val currentStatus =
               if (obtainableApologyItems != 0)
                 "$RESET${AQUA}未獲得ガチャ券：${obtainableApologyItems}枚"
@@ -599,7 +599,7 @@ private object FirstPage: Menu {
                   sequentialEffect(
                       unfocusedEffect {
                         repeat(numberOfItemsToGive) { Util.addItemToPlayerSafely(this, itemToGive) }
-                        playerData.wabiGacha = 0
+                        playerData.unclaimedApologyItems = 0
                       },
                       FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
                       "${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()

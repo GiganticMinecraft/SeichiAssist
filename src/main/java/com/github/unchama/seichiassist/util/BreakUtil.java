@@ -156,7 +156,7 @@ public final class BreakUtil {
 			return false;
 		}
 		//minestackflagがfalseの時は処理を終了
-		if(!playerdata.getMinestackflag()){
+		if(!playerdata.getAutoMineStack()){
 			return false;
 		}
 

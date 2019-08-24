@@ -204,8 +204,8 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       runBlocking {
         playerdata.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag"))
       }
-      playerdata.minestackflag = rs.getBoolean("minestackflag")
-      playerdata.messageflag = rs.getBoolean("messageflag")
+      playerdata.autoMineStack = rs.getBoolean("minestackflag")
+      playerdata.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
       playerdata.activeskilldata.apply {
         mineflagnum = rs.getInt("activemineflagnum")
         assaultflag = rs.getBoolean("assaultflag")
@@ -225,9 +225,9 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       playerdata.gachapoint = rs.getInt("gachapoint")
       playerdata.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
       playerdata.level = rs.getInt("level")
-      playerdata.wabiGacha = rs.getInt("numofsorryforbug")
+      playerdata.unclaimedApologyItems = rs.getInt("numofsorryforbug")
       playerdata.regionCount = rs.getInt("rgnum")
-      playerdata.inventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
+      playerdata.pocketInventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
       playerdata.dispkilllogflag = rs.getBoolean("killlogflag")
       playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag")
 

@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.data.player.settings.FastDiggingEffectSup
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
-import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.MebiusTask
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -44,37 +43,158 @@ class PlayerData constructor(val uuid: UUID) {
   //読み込み済みフラグ
   var loaded = false
 
-  private val player: Player
-    get() = Bukkit.getPlayer(uuid)
-
-  //プレイヤー名
-  val lowercaseName: String
-    get() = Util.getName(player)
+  //region Configurations
 
   val fastDiggingEffectSuppression = FastDiggingEffectSuppression()
 
+  var autoMineStack = false
+
   //内訳メッセージを出すフラグ
-  var messageflag = false
-  //３０分間のデータを保存する．
-  val halfhourblock: MineBlock
-  //ガチャの基準となるポイント
-  var gachapoint = 0
-  //最後のガチャポイントデータ
-  var lastgachapoint = 0
+  var receiveFastDiggingEffectStats = false
+
   //ガチャ受け取り方法設定
   var receiveGachaTicketEveryMinute = false
+
+  //キルログ表示トグル
+  @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayDeathMessages"))
+  var dispkilllogflag = false
+
+  //ワールドガード保護ログ表示トグル
+  @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayWorldGuardLogs"))
+  var dispworldguardlogflag = false
+
+  lateinit var broadcastMutingSettings: BroadcastMutingSettings
+
+  //インベントリ共有トグル
+  var contentsPresentInSharedInventory = false
+
+  //ハーフブロック破壊抑制用
+  private var allowBreakingHalfBlocks = false
+
+  //複数種類破壊トグル
+  var multipleidbreakflag = false
+
+  //チェスト破壊トグル
+  var chestflag = false
+
+  //PvPトグル
+  var pvpflag = false
+
+  var nickName = PlayerNickName()
+
+  //region accessors and modifiers
+
+  @Suppress("RedundantSuspendModifier")
+  suspend fun shouldDisplayDeathMessages(): Boolean = this.dispkilllogflag
+
+  val toggleExpBarVisibility: TargetedEffect<Player> =
+      unfocusedEffect {
+        this.expbar.isVisible = !this.expbar.isVisible
+      } + deferredEffect {
+        when {
+          this.expbar.isVisible -> "${GREEN}整地量バー表示"
+          else -> "${RED}整地量バー非表示"
+        }.asMessageEffect()
+      }
+
+  val toggleAutoMineStack: UnfocusedEffect =
+      unfocusedEffect {
+        this.autoMineStack = !this.autoMineStack
+      }
+
+  val toggleWorldGuardLogEffect: UnfocusedEffect =
+      unfocusedEffect {
+        this.dispworldguardlogflag = !this.dispworldguardlogflag
+      }
+
+  val toggleDeathMessageMutingSettings: UnfocusedEffect =
+      unfocusedEffect {
+        this.dispkilllogflag = !this.dispkilllogflag
+      }
+
+  @Suppress("RedundantSuspendModifier")
+  suspend fun getBroadcastMutingSettings(): BroadcastMutingSettings = broadcastMutingSettings
+
+  val toggleBroadcastMutingSettings
+    get() = unfocusedEffect {
+      broadcastMutingSettings = getBroadcastMutingSettings().nextSettingsOption()
+    }
+
+  @Suppress("RedundantSuspendModifier")
+  suspend fun shouldDisplayWorldGuardLogs(): Boolean = this.dispworldguardlogflag
+
+
+  @Suppress("RedundantSuspendModifier")
+  suspend fun toggleHalfBreakFlag(): TargetedEffect<Player> {
+    allowBreakingHalfBlocks = !allowBreakingHalfBlocks
+
+    val newStatus = if (allowBreakingHalfBlocks) "${GREEN}破壊可能" else "${RED}破壊不可能"
+    val responseMessage = "現在ハーフブロックは$newStatus${RESET}です."
+
+    return responseMessage.asMessageEffect()
+  }
+
+  //endregion
+  //endregion
+
+  //region session-specific data
+  // TODO many properties here might not be right to belong here
+
+  //各統計値差分計算用配列
+  private val statisticsData: MutableList<Int>
+
+  @get:JvmName("canCreateRegion")
+  var canCreateRegion = false
+  var unitPerClick = 0
+    private set
+
+  //３０分間のデータを保存する．
+  val halfhourblock: MineBlock
+
   //今回の採掘速度上昇レベルを格納
   var minespeedlv = 0
   //前回の採掘速度上昇レベルを格納
   var lastminespeedlv = 0
+
   //持ってるポーションエフェクト全てを格納する．
   val effectdatalist: MutableList<FastDiggingEffect>
+
+  //プレイ時間差分計算用int
+  private var totalPlayTick = 0
+
+  //投票受け取りボタン連打防止用
+  var votecooldownflag = false
+
+  //ガチャボタン連打防止用
+  var gachacooldownflag = false
+
+  //インベントリ共有ボタン連打防止用
+  var shareinvcooldownflag = false
+
+  var selectHomeNum = 0
+  var setHomeNameNum = 0
+  var isSubHomeNameChange = false
+
+  var samepageflag = false//実績ショップ用
+
+  //MineStackの履歴
+  var hisotryData: MineStackUsageHistory
+
+  //経験値マネージャ
+  private val expmanager: IExperienceManager
+
+  var titlepage = 0 //実績メニュー用汎用ページ指定
+  //endregion
+
+  //ガチャの基準となるポイント
+  var gachapoint = 0
+
   //現在のプレイヤーレベル
   var level = 0
   //詫び券をあげる数
-  var wabiGacha = 0
+  var unclaimedApologyItems = 0
   //拡張インベントリ
-  var inventory: Inventory
+  var pocketInventory: Inventory
     get() {
       // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
       if (field.size < pocketSize) {
@@ -85,58 +205,16 @@ class PlayerData constructor(val uuid: UUID) {
 
       return field
     }
+
   //ワールドガード保護自動設定用
   var regionCount = 0
 
   var starLevels = StarLevel(0, 0, 0)
 
-  /**
-   * スターレベルの合計を返すショートカットフィールド。
-   */
-  val totalStarLevel
-    get() = starLevels.total()
-
   var minestack = MineStack()
-  //MineStackFlag
-  var minestackflag = false
-  //プレイ時間差分計算用int
-  var totalPlayTick = 0
+
   //プレイ時間
   var playTick = 0
-
-  //キルログ表示トグル
-  @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayDeathMessages"))
-  var dispkilllogflag = false
-
-  @Suppress("RedundantSuspendModifier")
-  suspend fun shouldDisplayDeathMessages(): Boolean = this.dispkilllogflag
-
-  lateinit var broadcastMutingSettings: BroadcastMutingSettings
-
-  @Suppress("RedundantSuspendModifier")
-  suspend fun getBroadcastMutingSettings(): BroadcastMutingSettings = broadcastMutingSettings
-
-  val toggleBroadcastMutingSettings
-    get() = unfocusedEffect {
-      broadcastMutingSettings = getBroadcastMutingSettings().nextSettingsOption()
-    }
-
-  //ワールドガード保護ログ表示トグル
-  @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayWorldGuardLogs"))
-  var dispworldguardlogflag = false
-
-  @Suppress("RedundantSuspendModifier")
-  suspend fun shouldDisplayWorldGuardLogs(): Boolean = this.dispworldguardlogflag
-
-
-  //複数種類破壊トグル
-  var multipleidbreakflag = false
-
-  //チェスト破壊トグル
-  var chestflag = false
-
-  //PvPトグル
-  var pvpflag = false
   //現在座標
   var loc: Location? = null
   //放置時間
@@ -147,16 +225,10 @@ class PlayerData constructor(val uuid: UUID) {
   val expbar: ExpBar
   //合計経験値
   var totalexp = 0
-  //経験値マネージャ
-  private val expmanager: IExperienceManager
   //合計経験値統合済みフラグ
   var expmarge: Byte = 0
-  //各統計値差分計算用配列
-  private val staticdata: MutableList<Int>
   //特典受け取り済み投票数
   var p_givenvote = 0
-  //投票受け取りボタン連打防止用
-  var votecooldownflag = false
 
   //連続・通算ログイン用
   // var loginStatus = ---
@@ -171,23 +243,10 @@ class PlayerData constructor(val uuid: UUID) {
   //アクティブスキル関連データ
   var activeskilldata: ActiveSkillData
 
-  //MebiusTask
   val mebius: MebiusTask
 
-  //ガチャボタン連打防止用
-  var gachacooldownflag = false
-
-  //インベントリ共有トグル
-  var contentsPresentInSharedInventory = false
-  //インベントリ共有ボタン連打防止用
-  var shareinvcooldownflag = false
-
-  var selectHomeNum = 0
-  var setHomeNameNum = 0
   private val subHomeMap = HashMap<Int, SubHome>()
-  var isSubHomeNameChange = false
 
-  var nickName = PlayerNickName()
   //二つ名解禁フラグ保存用
   var TitleFlags: BitSet
   //二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
@@ -197,36 +256,16 @@ class PlayerData constructor(val uuid: UUID) {
   //実績ポイント用
   var achievePoint = AchievementPoint(cumulativeTotal = 0, used = 0, conversionCount = 0)
 
-  var titlepage = 0 //実績メニュー用汎用ページ指定
-  var samepageflag = false//実績ショップ用
   var buildCount = BuildCount(1, BigDecimal.ZERO, 0)
   // 1周年記念
   var anniversary = false
 
-  //ハーフブロック破壊抑制用
-  private var halfBreakFlag = false
-
   //グリッド式保護関連
   private var claimUnit = ClaimUnit(0, 0, 0, 0)
-  @get:JvmName("canCreateRegion")
-  var canCreateRegion = false
-  var unitPerClick = 0
-    private set
   var templateMap: MutableMap<Int, GridTemplate>? = null
 
   //投票妖精関連
   var usingVotingFairy = false
-  var votingFairyStartTime
-    get() = voteFairyPeriod.start
-    set(value) {
-      voteFairyPeriod = ClosedRangeWithComparator(value, voteFairyPeriod.endInclusive, voteFairyPeriod.comparator)
-    }
-
-  var votingFairyEndTime
-    get() = voteFairyPeriod.endInclusive
-    set(value) {
-      voteFairyPeriod = ClosedRangeWithComparator(voteFairyPeriod.start, value, voteFairyPeriod.comparator)
-    }
   private val dummyDate = GregorianCalendar(2100, 1, 1, 0, 0, 0)
 
   var voteFairyPeriod = ClosedRangeWithComparator(dummyDate, dummyDate, Comparator { o1, o2 ->
@@ -250,47 +289,35 @@ class PlayerData constructor(val uuid: UUID) {
   //バレンタインイベント用
   var hasChocoGave = false
 
-  //MineStackの履歴
-  var hisotryData: MineStackUsageHistory
-  //MineStack検索機能使用中かどうか
-  var isSearching = false
-  //MineStack検索保存用Map
-  var indexMap: Map<Int, MineStackObj>
-
   var giganticBerserk = GiganticBerserk()
-  var GBexp
-    set(value) {
-      giganticBerserk = giganticBerserk.copy(exp = value)
-    }
-    get() = giganticBerserk.exp
-  var isGBStageUp
-    set(value) {
-      giganticBerserk = giganticBerserk.copy(canEvolve = value)
-    }
-    get() = giganticBerserk.canEvolve
-  // FIXME: BAD NAME; not clear meaning
-  var GBcd: Int
-    set(value) {
-      giganticBerserk = giganticBerserk.copy(cd = value)
-    }
-    get() = giganticBerserk.cd
 
+  //region calculated
+  // TODO many properties here may be inlined and deleted
 
-  //オフラインかどうか
-  val isOffline: Boolean
-    get() = SeichiAssist.instance.server.getPlayer(uuid) == null
-  //四次元ポケットのサイズを取得
-  val pocketSize: Int
-    get() = when {
-      level < 6 -> 9 * 3
-      level < 16 -> 9 * 3
-      level < 26 -> 9 * 3
-      level < 36 -> 9 * 3
-      level < 46 -> 9 * 3
-      level < 56 -> 9 * 4
-      level < 66 -> 9 * 5
-      else -> 9 * 6
+  var votingFairyStartTime
+    get() = voteFairyPeriod.start
+    set(value) {
+      voteFairyPeriod = ClosedRangeWithComparator(value, voteFairyPeriod.endInclusive, voteFairyPeriod.comparator)
     }
+
+  var votingFairyEndTime
+    get() = voteFairyPeriod.endInclusive
+    set(value) {
+      voteFairyPeriod = ClosedRangeWithComparator(voteFairyPeriod.start, value, voteFairyPeriod.comparator)
+    }
+
+  private val player: Player
+    get() = Bukkit.getPlayer(uuid)
+
+  //プレイヤー名
+  val lowercaseName: String
+    get() = Util.getName(player)
+
+  /**
+   * スターレベルの合計を返すショートカットフィールド。
+   */
+  val totalStarLevel
+    get() = starLevels.total()
 
   val subHomeEntries: Set<Map.Entry<Int, SubHome>>
     get() = subHomeMap.toMap().entries
@@ -310,24 +337,59 @@ class PlayerData constructor(val uuid: UUID) {
   val gridChunkAmount: Int
     get() = (this.claimUnit.ahead + 1 + this.claimUnit.behind) * (this.claimUnit.right + 1 + this.claimUnit.left)
 
+  //オフラインかどうか
+  val isOffline: Boolean
+    get() = SeichiAssist.instance.server.getPlayer(uuid) == null
+
+  //四次元ポケットのサイズを取得
+  private val pocketSize: Int
+    get() = when {
+      level < 6 -> 9 * 3
+      level < 16 -> 9 * 3
+      level < 26 -> 9 * 3
+      level < 36 -> 9 * 3
+      level < 46 -> 9 * 3
+      level < 56 -> 9 * 4
+      level < 66 -> 9 * 5
+      else -> 9 * 6
+    }
+
+  var GBexp
+    set(value) {
+      giganticBerserk = giganticBerserk.copy(exp = value)
+    }
+    get() = giganticBerserk.exp
+
+  var isGBStageUp
+    set(value) {
+      giganticBerserk = giganticBerserk.copy(canEvolve = value)
+    }
+    get() = giganticBerserk.canEvolve
+
+  // FIXME: BAD NAME; not clear meaning
+  var GBcd: Int
+    set(value) {
+      giganticBerserk = giganticBerserk.copy(cd = value)
+    }
+    get() = giganticBerserk.cd
+  //endregion
 
   init {
     //初期値を設定
     this.loaded = false
-    this.messageflag = false
+    this.receiveFastDiggingEffectStats = false
     this.halfhourblock = MineBlock()
     this.gachapoint = 0
-    this.lastgachapoint = 0
     this.receiveGachaTicketEveryMinute = true
     this.minespeedlv = 0
     this.lastminespeedlv = 0
     this.effectdatalist = LinkedList()
     this.level = 1
     this.mebius = MebiusTask(this)
-    this.wabiGacha = 0
-    this.inventory = createInventory(size = 1.rows(), title = DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
+    this.unclaimedApologyItems = 0
+    this.pocketInventory = createInventory(size = 1.rows(), title = DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
     this.regionCount = 0
-    this.minestackflag = true
+    this.autoMineStack = true
     this.totalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK)
     this.playTick = 0
     this.dispkilllogflag = false
@@ -338,7 +400,7 @@ class PlayerData constructor(val uuid: UUID) {
     this.idleMinute = 0
     this.totalbreaknum = 0
     //統計にないため一部ブロックを除外
-    staticdata = (MaterialSets.materials - exclude)
+    statisticsData = (MaterialSets.materials - exclude)
         .map { player.getStatistic(Statistic.MINE_BLOCK, it) }
         .toMutableList()
     this.activeskilldata = ActiveSkillData()
@@ -363,7 +425,7 @@ class PlayerData constructor(val uuid: UUID) {
     this.buildCount = BuildCount(1, BigDecimal.ZERO, 0)
     this.anniversary = false
 
-    this.halfBreakFlag = false
+    this.allowBreakingHalfBlocks = false
 
     this.claimUnit = ClaimUnit(0, 0, 0, 0)
     this.canCreateRegion = true
@@ -388,8 +450,6 @@ class PlayerData constructor(val uuid: UUID) {
     this.hasChocoGave = false
 
     this.hisotryData = MineStackUsageHistory()
-    this.isSearching = false
-    this.indexMap = HashMap()
 
     this.ChainVote = 0
 
@@ -455,9 +515,9 @@ class PlayerData constructor(val uuid: UUID) {
 
   //詫びガチャの通知
   private fun notifySorryForBug() {
-    if (wabiGacha > 0) {
+    if (unclaimedApologyItems > 0) {
       player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      player.sendMessage(GREEN.toString() + "運営チームから" + wabiGacha + "枚の" + GOLD + "ガチャ券" + WHITE + "が届いています！\n木の棒メニューから受け取ってください")
+      player.sendMessage(GREEN.toString() + "運営チームから" + unclaimedApologyItems + "枚の" + GOLD + "ガチャ券" + WHITE + "が届いています！\n木の棒メニューから受け取ってください")
     }
   }
 
@@ -600,7 +660,7 @@ class PlayerData constructor(val uuid: UUID) {
     var sum = 0.0
     for ((i, m) in (MaterialSets.materials - exclude).withIndex()) {
       val materialStatistics = player.getStatistic(Statistic.MINE_BLOCK, m)
-      val increase = materialStatistics - staticdata[i]
+      val increase = materialStatistics - statisticsData[i]
       val amount = calcBlockExp(m, increase)
       sum += amount
       if (SeichiAssist.DEBUG) {
@@ -608,7 +668,7 @@ class PlayerData constructor(val uuid: UUID) {
           player.sendMessage("calcの値:$amount($m)")
         }
       }
-      staticdata[i] = materialStatistics
+      statisticsData[i] = materialStatistics
     }
     //double値を四捨五入し、整地量に追加する整数xを出す
     val x = sum.roundToInt()
@@ -743,7 +803,7 @@ class PlayerData constructor(val uuid: UUID) {
   }
 
   fun canBreakHalfBlock(): Boolean {
-    return this.halfBreakFlag
+    return this.allowBreakingHalfBlocks
   }
 
   fun canGridExtend(directionType: DirectionType, world: String): Boolean {
@@ -873,23 +933,13 @@ class PlayerData constructor(val uuid: UUID) {
 
   @Suppress("RedundantSuspendModifier")
   suspend fun toggleMessageFlag(): TargetedEffect<Player> {
-    messageflag = !messageflag
+    receiveFastDiggingEffectStats = !receiveFastDiggingEffectStats
 
-    val responseMessage = if (messageflag) {
+    val responseMessage = if (receiveFastDiggingEffectStats) {
       "${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
     } else {
       "${GREEN}内訳表示:OFF"
     }
-
-    return responseMessage.asMessageEffect()
-  }
-
-  @Suppress("RedundantSuspendModifier")
-  suspend fun toggleHalfBreakFlag(): TargetedEffect<Player> {
-    halfBreakFlag = !halfBreakFlag
-
-    val newStatus = if (halfBreakFlag) "${GREEN}破壊可能" else "${RED}破壊不可能"
-    val responseMessage = "現在ハーフブロックは$newStatus${RESET}です."
 
     return responseMessage.asMessageEffect()
   }
@@ -951,51 +1001,6 @@ class PlayerData constructor(val uuid: UUID) {
       PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
     }.asTargetedEffect()
   }
-
-  /**
-   * 整地量を表すEXPパーを表示なら非表示に,非表示なら表示に切り替えます.
-   */
-  fun toggleExpBarVisibility__old() {
-    this.expbar.isVisible = !this.expbar.isVisible
-  }
-
-  /**
-   * 整地量を表すExpバーの表示・非表示を [player] におしらせします.
-   */
-  fun notifyExpBarVisibility() {
-    if (this.expbar.isVisible) {
-      this.player.playSound(this.player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-      this.player.sendMessage("${GREEN}整地量バー表示")
-    } else {
-      this.player.playSound(this.player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
-      this.player.sendMessage("${RED}整地量バー非表示")
-    }
-  }
-
-  val toggleExpBarVisibility: TargetedEffect<Player> =
-      unfocusedEffect {
-        this.expbar.isVisible = !this.expbar.isVisible
-      } + deferredEffect {
-        when {
-          this.expbar.isVisible -> "${GREEN}整地量バー表示"
-          else -> "${RED}整地量バー非表示"
-        }.asMessageEffect()
-      }
-
-  val toggleAutoMineStack: UnfocusedEffect =
-      unfocusedEffect {
-        this.minestackflag = !this.minestackflag
-      }
-
-  val toggleWorldGuardLogEffect: UnfocusedEffect =
-      unfocusedEffect {
-        this.dispworldguardlogflag = !this.dispworldguardlogflag
-      }
-
-  val toggleDeathMessageMutingSettings: UnfocusedEffect =
-      unfocusedEffect {
-        this.dispkilllogflag = !this.dispkilllogflag
-      }
 
   /**
    * 保護申請の番号を更新させる[UnfocusedEffect]

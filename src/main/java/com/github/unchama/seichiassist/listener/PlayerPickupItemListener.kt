@@ -25,7 +25,7 @@ class PlayerPickupItemListener : Listener {
 
     if (playerData.level < config.getMineStacklevel(1)) return
 
-    if (!playerData.minestackflag) return
+    if (!playerData.autoMineStack) return
 
     val item = event.item
     val itemstack = item.itemStack
