@@ -2,7 +2,7 @@
 package com.github.unchama.buildassist;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.playerdata.BuildCount;
+import com.github.unchama.seichiassist.data.player.BuildCount;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

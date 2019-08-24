@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.data.potioneffect
+package com.github.unchama.seichiassist.data.player.settings
 
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.asMessageEffect

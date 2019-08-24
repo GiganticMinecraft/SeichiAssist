@@ -6,8 +6,8 @@ import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.data.MenuInventoryData
-import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
-import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
+import com.github.unchama.seichiassist.data.player.GiganticBerserk
+import com.github.unchama.seichiassist.data.player.PlayerNickName
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.menus.stickmenu.firstPage
 import com.github.unchama.seichiassist.task.VotingFairyTask

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.data.playerdata.settings
+package com.github.unchama.seichiassist.data.player.settings
 
 /**
  * 全体メッセージとそれに伴う効果音の抑制をするためのプレーヤー向け設定項目の状態を表すEnum.

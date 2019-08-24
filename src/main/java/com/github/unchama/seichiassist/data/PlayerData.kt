@@ -2,10 +2,10 @@ package com.github.unchama.seichiassist.data
 
 import com.github.unchama.menuinventory.rows
 import com.github.unchama.seichiassist.*
-import com.github.unchama.seichiassist.data.playerdata.*
-import com.github.unchama.seichiassist.data.playerdata.settings.BroadcastMutingSettings
+import com.github.unchama.seichiassist.data.player.*
+import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
+import com.github.unchama.seichiassist.data.player.settings.FastDiggingEffectSuppression
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
-import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppression
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackObj

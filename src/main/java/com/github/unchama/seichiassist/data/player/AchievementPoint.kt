@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.data.playerdata
+package com.github.unchama.seichiassist.data.player
 
 data class AchievementPoint(val cumulativeTotal: Int = 0, val used: Int = 0, val conversionCount: Int = 0) {
   // いちいち変更するのは冗長
