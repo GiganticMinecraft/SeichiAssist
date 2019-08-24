@@ -194,36 +194,32 @@ public class PlayerRightClickListener implements Listener  {
 
 						for(;setblockZ < playerlocz + SEARCHint ;){
 							//ブロック設置座標のブロック判別
-							final Material mt = player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType();
-							final Set<Material> k6 = EnumSet.of(
+							final Material m1 = player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType();
+							final Set<Material> s1 = EnumSet.of(
 									Material.AIR, Material.SNOW, Material.LONG_GRASS, Material.DEAD_BUSH, Material.YELLOW_FLOWER,
 									Material.RED_ROSE, Material.RED_MUSHROOM, Material.BROWN_MUSHROOM
 									);
-							if(k6.contains(mt)) {
+							if(s1.contains(m1)) {
 								setunder = 1;
 								if(playerdata.zsSkillDirtFlag){
-								for(;setunder < 5;){
-									//設置対象の[setunder]分の下のブロックが空気かどうか
-									final Material m2 = player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).getType();
-									if(m2 == Material.AIR||
-										m2 == Material.LAVA||
-										m2 == Material.STATIONARY_LAVA||
-										m2 == Material.WATER||
-										m2 == Material.STATIONARY_WATER){
-										WGloc.setX(setblockX);
-										WGloc.setY(setblockY - setunder);
-										WGloc.setZ(setblockZ);
-										//他人の保護がかかっている場合は処理を終了
-										if(!Util.getWorldGuard().canBuild(player, WGloc)){
-											player.sendMessage(ChatColor.RED + "付近に誰かの保護がかかっているようです" ) ;
-										}else {
-											//保護のない場合、土を設置する処理
-												player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).setType(Material.DIRT);
-										}
-									}
-									setunder ++;
-
-								}
+                                    for(;setunder < 5;){
+                                        //設置対象の[setunder]分の下のブロックが空気かどうか
+                                        final Material m2 = player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).getType();
+                                        final Set<Material> s2 = EnumSet.of(Material.AIR, Material.LAVA, Material.STATIONARY_LAVA, Material.WATER, Material.STATIONARY_WATER);
+                                        if(s2.contains(m2)){
+                                            WGloc.setX(setblockX);
+                                            WGloc.setY(setblockY - setunder);
+                                            WGloc.setZ(setblockZ);
+                                            //他人の保護がかかっている場合は処理を終了
+                                            if(!Util.getWorldGuard().canBuild(player, WGloc)){
+                                                player.sendMessage(ChatColor.RED + "付近に誰かの保護がかかっているようです" ) ;
+                                            }else {
+                                                //保護のない場合、土を設置する処理
+                                                player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).setType(Material.DIRT);
+                                            }
+                                        }
+                                        setunder ++;
+                                    }
 								}
 
 								//他人の保護がかかっている場合は処理を終了
