@@ -12,8 +12,8 @@ import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.jetbrains.annotations.Nullable;
 
-public class Util {
-	public Util() {
+public final class Util {
+	private Util() {
 	}
 
 	public static int toInt(String s) {
