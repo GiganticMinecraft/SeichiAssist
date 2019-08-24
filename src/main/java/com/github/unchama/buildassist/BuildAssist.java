@@ -298,7 +298,7 @@ public class BuildAssist {
         registerEvent(new BlockPlaceEventListener());    //ブロックを置いた時
 
 
-        for (final Player p : plugin.getServer().getOnlinePlayers()) {
+        for (final Player p : Bukkit.getServer().getOnlinePlayers()) {
             final UUID uuid = p.getUniqueId();
 
             final PlayerData playerdata = new PlayerData(p);
