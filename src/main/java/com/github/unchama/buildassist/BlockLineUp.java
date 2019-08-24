@@ -23,6 +23,7 @@ import org.bukkit.inventory.PlayerInventory;
 import com.github.unchama.buildassist.util.ExternalPlugins;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
+import org.jetbrains.annotations.Nullable;
 //import org.bukkit.metadata.FixedMetadataValue;
 //import org.bukkit.plugin.java.JavaPlugin;
 //import com.github.unchama.seichiassist.util.Util;
@@ -146,14 +147,14 @@ public class BlockLineUp implements Listener{
 					*/
 				}
 				//マナが途中で足りなくなる場合はマナの最大にする
-				if ( playerdata_s.getActiveskilldata().mana.getMana()- (double)(max) * mana_mag < 0.0 ){
+				if ( playerdata_s.getActiveskilldata().mana.getMana()- (max) * mana_mag < 0.0 ){
 					max = (int) (playerdata_s.getActiveskilldata().mana.getMana()/ mana_mag);
 				}
 
 				//手に持ってるのがハーフブロックの場合
 				Material m2 = null;
 				if(BuildAssist.material_slab2.contains(m)){
-					if(playerdata.line_up_step_flg == 0){
+					if(playerdata.line_up_step_flg == 0) {
 						d += 8;	//上設置設定の場合は上側のデータに書き換え
 					} else if(playerdata.line_up_step_flg == 2) {
 						final Map<Material, Material> mapping = new EnumMap<>(Material.class);
@@ -172,8 +173,8 @@ public class BlockLineUp implements Listener{
 				if( max > 64 ){
 					max = 64;
 				}
-				int v = 0;	//設置した数
-				for( v = 0 ; v < max ; v++){//設置ループ
+				int v;
+				for(v = 0 ; v < max ; v++) {//設置ループ
 					px += step_x;
 					py += step_y;
 					pz += step_z;
