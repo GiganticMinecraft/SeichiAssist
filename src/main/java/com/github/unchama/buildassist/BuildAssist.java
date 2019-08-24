@@ -295,10 +295,10 @@ public class BuildAssist {
         registerEvent(new BlockPlaceEventListener());    //ブロックを置いた時
 
 
-        for (Player p : plugin.getServer().getOnlinePlayers()) {
-            UUID uuid = p.getUniqueId();
+        for (final Player p : plugin.getServer().getOnlinePlayers()) {
+            final UUID uuid = p.getUniqueId();
 
-            PlayerData playerdata = new PlayerData(p);
+            final PlayerData playerdata = new PlayerData(p);
 
             playerdata.updateLevel(p);
 
