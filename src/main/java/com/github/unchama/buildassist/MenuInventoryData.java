@@ -22,46 +22,46 @@ import com.github.unchama.seichiassist.SeichiAssist;
 public class MenuInventoryData {
 
 
-	public static Inventory getMenuData(Player p){
+	public static Inventory getMenuData(final Player p){
 		//プレイヤーを取得
-		Player player = p.getPlayer();
+		final Player player = p.getPlayer();
 		//UUID取得
-		UUID uuid = player.getUniqueId();
+		final UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
-		PlayerData playerdata = BuildAssist.playermap.get(uuid);
+		final PlayerData playerdata = BuildAssist.playermap.get(uuid);
 		//プレイヤーデータが無い場合は処理終了
 		if(playerdata == null){
 			return null;
 		}
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "木の棒メニューB");
+		final Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "木の棒メニューB");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
 		List<String> lore = new ArrayList<>();
 
 		//flyflag/flytimeのメニュー表示用変換
-		String Flyallows ;
+		final String Flyallows ;
 		if(playerdata.flyflag){
 			Flyallows = "ON" ;
 		}else{
 			Flyallows = "OFF" ;
 		}
-		String FlyTime ;
+		final String FlyTime ;
 		if(playerdata.Endlessfly){
 			FlyTime = "∞" ;
 		}else {
 			FlyTime = String.valueOf(playerdata.flytime);
 		}
 
-		String ZSSkill ;
+		final String ZSSkill ;
 		if(playerdata.ZoneSetSkillFlag){
 			ZSSkill = "ON" ;
 		}else {
 			ZSSkill = "OFF" ;
 		}
 
-		String ZSSkill_Minestack;
+		final String ZSSkill_Minestack;
 		if(playerdata.zs_minestack_flag){
 			ZSSkill_Minestack = "ON";
 		}else{
@@ -223,21 +223,21 @@ public class MenuInventoryData {
 	}
 
 
-	public static Inventory getSetBlockSkillData(Player p){
+	public static Inventory getSetBlockSkillData(final Player p){
 		//プレイヤーを取得
-		Player player = p.getPlayer();
+		final Player player = p.getPlayer();
 		//UUID取得
-		UUID uuid = player.getUniqueId();
+		final UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
-		PlayerData playerdata = BuildAssist.playermap.get(uuid);
+		final PlayerData playerdata = BuildAssist.playermap.get(uuid);
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "「範囲設置スキル」設定画面");
+		final Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "「範囲設置スキル」設定画面");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
 		List<String> lore = new ArrayList<>();
 
-		String ZSSkill ;
+		final String ZSSkill ;
 		if(playerdata.ZoneSetSkillFlag){
 			ZSSkill = "ON" ;
 		}else {
@@ -245,21 +245,21 @@ public class MenuInventoryData {
 		}
 
 
-		String ZSDirt ;
+		final String ZSDirt ;
 		if(playerdata.zsSkillDirtFlag){
 			ZSDirt = "ON" ;
 		}else {
 			ZSDirt = "OFF" ;
 		}
 
-		String ZSSkill_Minestack;
+		final String ZSSkill_Minestack;
 		if(playerdata.zs_minestack_flag){
 			ZSSkill_Minestack = "ON";
 		}else{
 			ZSSkill_Minestack = "OFF";
 		}
 
-		int ZSSkillA =(playerdata.AREAint) * 2 + 1;
+		final int ZSSkillA =(playerdata.AREAint) * 2 + 1;
 
 
 
@@ -381,18 +381,18 @@ public class MenuInventoryData {
 	}
 
 	//ブロックを並べる設定メニュー
-	public static Inventory getBlockLineUpData(Player p){
+	public static Inventory getBlockLineUpData(final Player p){
 		//プレイヤーを取得
-		Player player = p.getPlayer();
+		final Player player = p.getPlayer();
 		//UUID取得
-		UUID uuid = player.getUniqueId();
+		final UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
-		PlayerData playerdata = BuildAssist.playermap.get(uuid);
+		final PlayerData playerdata = BuildAssist.playermap.get(uuid);
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "「ブロックを並べるスキル（仮）」設定");
+		final Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "「ブロックを並べるスキル（仮）」設定");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
-		SkullMeta skullmeta;
+		final SkullMeta skullmeta;
 		List<String> lore = new ArrayList<>();
 
 		// ホームを開く
@@ -463,16 +463,16 @@ public class MenuInventoryData {
 
 
 	//MineStackブロック一括クラフトメニュー
-	public static Inventory getBlockCraftData(Player p){
+	public static Inventory getBlockCraftData(final Player p){
 		//プレイヤーを取得
-		Player player = p.getPlayer();
+		final Player player = p.getPlayer();
 		//UUID取得
-		UUID uuid = player.getUniqueId();
+		final UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
 //		PlayerData playerdata = BuildAssist.playermap.get(uuid);
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト1");
+		final Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト1");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
@@ -650,16 +650,16 @@ public class MenuInventoryData {
 	}
 
 	//MineStackブロック一括クラフトメニュー2
-	public static Inventory getBlockCraftData2(Player p){
+	public static Inventory getBlockCraftData2(final Player p){
 		//プレイヤーを取得
-		Player player = p.getPlayer();
+		final Player player = p.getPlayer();
 		//UUID取得
-		UUID uuid = player.getUniqueId();
+		final UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
 //		PlayerData playerdata = BuildAssist.playermap.get(uuid);
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト2");
+		final Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト2");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
@@ -892,19 +892,19 @@ public class MenuInventoryData {
 	}
 
 	//MineStackブロック一括クラフトメニュー3
-	public static Inventory getBlockCraftData3(Player p){
+	public static Inventory getBlockCraftData3(final Player p){
 		//プレイヤーを取得
-		Player player = p.getPlayer();
+		final Player player = p.getPlayer();
 		//UUID取得
-		UUID uuid = player.getUniqueId();
+		final UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
 //		PlayerData playerdata = BuildAssist.playermap.get(uuid);
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
-		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト3");
+		final Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト3");
 		ItemStack itemstack;
 		ItemMeta itemmeta;
-		SkullMeta skullmeta;
+		final SkullMeta skullmeta;
 		List<String> lore = new ArrayList<>();
 
 		// 2ページ目を開く
