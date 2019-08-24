@@ -315,7 +315,6 @@ class PlayerData constructor(val uuid: UUID) {
     //初期値を設定
     this.loaded = false
     this.messageflag = false
-    //this.minuteblock = new MineBlock();
     this.halfhourblock = MineBlock()
     this.gachapoint = 0
     this.lastgachapoint = 0
