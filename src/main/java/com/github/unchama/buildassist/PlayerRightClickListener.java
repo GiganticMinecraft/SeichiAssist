@@ -67,12 +67,8 @@ public class PlayerRightClickListener implements Listener  {
 
 				//プレイヤーインベントリを取得
 				final PlayerInventory inventory = player.getInventory();
-				//メインハンドとオフハンドを取得
-				final ItemStack mainhanditem = inventory.getItemInMainHand();
 				final ItemStack offhanditem = inventory.getItemInOffHand();
 
-				//メインハンドにブロックがあるか
-				final boolean mainhandtoolflag = BuildAssist.materiallist.contains(mainhanditem.getType());
 				//オフハンドにブロックがあるか
 				final boolean offhandtoolflag = BuildAssist.materiallist.contains(offhanditem.getType());
 

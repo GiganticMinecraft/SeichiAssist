@@ -2,6 +2,9 @@ package com.github.unchama.buildassist;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.github.unchama.seichiassist.MineStackObjectList;
@@ -165,7 +168,6 @@ public class BlockLineUp implements Listener{
 						max /= 2;
 						double_mag = 2;
 					}
-
 				}
 //				player.sendMessage("max:" + max );
 				//ループ数を64に制限
@@ -181,9 +183,7 @@ public class BlockLineUp implements Listener{
 
 					//空気以外にぶつかったら設置終わり
 					if (b.getType() != Material.AIR){
-//						player.sendMessage(":"+b.getType().toString());
 						if(!BuildAssist.material_destruction.contains(b.getType()) || playerdata.line_up_des_flg == 0){
-//							player.sendMessage("stop:"+b.getType().toString());
 							break;
 						}
 						Collection<ItemStack> i = b.getDrops();
@@ -238,19 +238,12 @@ public class BlockLineUp implements Listener{
 
 				//アイテム数が0ならメインハンドのアイテムをクリア
 				if (mainhanditem.getAmount() - v <= 0 ){
-//					mainhanditem.setType(Material.AIR);
-//					mainhanditem.setAmount(-1);
 					inventory.setItemInMainHand(new ItemStack(Material.AIR,-1));//アイテム数が0になっても消えないので自前で消す
 				}else{	//0じゃないなら設置した分を引く
 					mainhanditem.setAmount(mainhanditem.getAmount() - v );
 
 				}
-//				playerdata_s.activeskilldata.mana.decreaseMana((double)(v) * mana_mag , player, playerdata_s.level);
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_PLACE, 1, 1);
-
-//				player.sendMessage("v:" + v +" d:" + d);
-//				player.sendMessage("マナ:" + playerdata_s.activeskilldata.mana.getMana() );
-
 			}
 		}
 	}
