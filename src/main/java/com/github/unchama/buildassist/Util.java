@@ -40,7 +40,11 @@ public final class Util {
 		return (WorldGuardPlugin) plugin;
 	}
 
-	//スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
+	/**
+	 * プレイヤーの要るワールドでスキルが発動できるか判定する
+	 * @param player 対象となるプレイヤー
+	 * @return 発動できる場合はtrue、できない場合はfalse
+	 */
 	public static boolean isSkillEnable(Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
 		String worldname = SeichiAssist.Companion.getSEICHIWORLDNAME();
@@ -65,7 +69,11 @@ public final class Util {
 		return false;
 	}
 
-	//設置ブロックカウント対象ワールドかを確認(対象ならtrue、対象外ならfalse)
+	/**
+	 * ブロックがカウントされるワールドにプレイヤーが居るか判定する
+	 * @param player 対象のプレイヤー
+	 * @return いる場合はtrue、いない場合はfalse
+	 */
 	public static boolean inTrackedWorld(Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
 		if(SeichiAssist.Companion.getDEBUG()){
@@ -96,8 +104,9 @@ public final class Util {
 				.filter(obj -> name.equals(obj.getMineStackObjName()))
 				.findFirst().orElse(null);
 	}
+
 	/**
-	 * 1分間の設置料を指定量増加させます。
+	 * 1分間の設置量を指定量増加させます。
 	 * ワールドによって倍率も加味されます。
 	 *
 	 * @param player 増加させるプレイヤー
