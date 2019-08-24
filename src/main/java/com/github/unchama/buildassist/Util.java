@@ -30,7 +30,7 @@ public final class Util {
 
 	//ワールドガードAPIを返す
 	public static WorldGuardPlugin getWorldGuard() {
-		Plugin plugin = BuildAssist.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+		final Plugin plugin = BuildAssist.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
 
 		// WorldGuard may not be loaded
 		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
