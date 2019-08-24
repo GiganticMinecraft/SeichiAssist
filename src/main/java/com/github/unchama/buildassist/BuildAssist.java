@@ -313,13 +313,13 @@ public class BuildAssist {
         tasklist.add(new MinuteTaskRunnable().runTaskTimer(plugin, 0, 1200));
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
         return commandlist.get(cmd.getName()).onCommand(sender, cmd, label, args);
     }
 
 
     public void onDisable() {
-        for (BukkitTask task : tasklist) {
+        for (final BukkitTask task : tasklist) {
             task.cancel();
         }
     }
