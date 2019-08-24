@@ -126,11 +126,11 @@ public class BlockLineUp implements Listener{
 
 				int max = mainhanditem.getAmount();//メインハンドのアイテム数を最大値に
 				//マインスタック優先の場合最大値をマインスタックの数を足す
-				if( playerdata.line_up_minestack_flg == 1 ){
-					for(int cnt = 0; cnt < MineStackObjectList.INSTANCE.getMinestacklist().size() ; cnt++){
+				if( playerdata.line_up_minestack_flg == 1 ) {
+					final List<MineStackObj> t = MineStackObjectList.INSTANCE.getMinestacklist();
+					for(int cnt = 0; cnt < t.size() ; cnt++){
 						final MineStackObj mineStackObj = MineStackObjectList.INSTANCE.getMinestacklist().get(cnt);
-						if( m.equals( MineStackObjectList.INSTANCE.getMinestacklist().get(cnt).getMaterial() ) &&
-								d == MineStackObjectList.INSTANCE.getMinestacklist().get(cnt).getDurability()){
+						if(m == t.get(cnt).getMaterial() && d == t.get(cnt).getDurability()){
 							max += playerdata_s.getMinestack().getStackedAmountOf(mineStackObj);
 							no = cnt;
 //							player.sendMessage("マインスタックNo.：" + no + "　max：" + max);
@@ -151,20 +151,18 @@ public class BlockLineUp implements Listener{
 				}
 
 				//手に持ってるのがハーフブロックの場合
+				Material m2 = null;
 				if(BuildAssist.material_slab2.contains(m)){
 					if(playerdata.line_up_step_flg == 0){
 						d += 8;	//上設置設定の場合は上側のデータに書き換え
-					}else if(playerdata.line_up_step_flg == 2){
-						//両方設置の場合マテリアルの種類を変える
-						if (m == Material.STONE_SLAB2){
-							m = Material.DOUBLE_STONE_SLAB2;//赤砂岩
-						}else if (m == Material.PURPUR_SLAB){
-							m = Material.PURPUR_DOUBLE_SLAB;//プルパー
-						}else if (m == Material.WOOD_STEP){
-							m = Material.WOOD_DOUBLE_STEP;//木
-						}else if (m == Material.STEP){
-							m = Material.DOUBLE_STEP;//石
-						}
+					} else if(playerdata.line_up_step_flg == 2) {
+						final Map<Material, Material> mapping = new EnumMap<>(Material.class);
+						mapping.put(Material.STONE_SLAB2, Material.DOUBLE_STONE_SLAB2);
+						mapping.put(Material.PURPUR_SLAB, Material.PURPUR_DOUBLE_SLAB);
+						mapping.put(Material.WOOD_STEP, Material.WOOD_DOUBLE_STEP);
+						mapping.put(Material.STEP, Material.DOUBLE_STEP);
+						final @Nullable Material m1 = mapping.get(m);
+						m2 = m1 != null ? m1 : m;
 						max /= 2;
 						double_mag = 2;
 					}
@@ -198,7 +196,9 @@ public class BlockLineUp implements Listener{
 						break;
 					}
 
-					pl.getWorld().getBlockAt(px , py , pz ).setType(m);
+					if (m2 != null) {
+						pl.getWorld().getBlockAt(px , py , pz ).setType(m2);
+					}
 					pl.getWorld().getBlockAt(px , py , pz ).setData(d);		//ブロックのデータを設定
 
 				}
