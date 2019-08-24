@@ -51,13 +51,13 @@ public class PlayerRightClickListener implements Listener  {
 			return;
 		}
 
-		if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
+		if(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK){
 			//左クリックの処理
-			if(player.getInventory().getItemInMainHand().getType().equals(Material.STICK)){
+			if(player.getInventory().getItemInMainHand().getType() == Material.STICK){
 				//メインハンドに棒を持っているときの処理
 
 				//オフハンドのアクション実行時処理を終了
-				if(equipmentslot.equals(EquipmentSlot.OFF_HAND)){
+				if(equipmentslot == EquipmentSlot.OFF_HAND){
 					return;
 				}
 				//開く音を再生
@@ -236,7 +236,7 @@ public class PlayerRightClickListener implements Listener  {
 										final List<MineStackObj> i1 = MineStackObjectList.INSTANCE.getMinestacklist();
 										no = IntStream.range(0, MineStackObjectList.INSTANCE.getMinestacklist().size())
 												.filter(cnt ->
-														offhanditem.getType().equals(i1.get(cnt).getMaterial()) &&
+														offhanditem.getType() == i1.get(cnt).getMaterial() &&
 														offhanditem.getData().getData() == i1.get(cnt).getDurability()
 												)
 												.findFirst()
