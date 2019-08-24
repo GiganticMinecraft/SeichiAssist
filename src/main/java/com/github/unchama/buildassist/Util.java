@@ -48,15 +48,16 @@ public class Util {
 			worldname = SeichiAssist.Companion.getDEBUGWORLDNAME();
 		}
 		//プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)または各種TTワールドにいる場合
-		if(player.getWorld().getName().toLowerCase().startsWith(worldname)
-				|| player.getWorld().getName().equalsIgnoreCase("world")
-				|| player.getWorld().getName().equalsIgnoreCase("world_2")
-				|| player.getWorld().getName().equalsIgnoreCase("world_nether")
-				|| player.getWorld().getName().equalsIgnoreCase("world_the_end")
-				|| player.getWorld().getName().equalsIgnoreCase("world_TT")
-				|| player.getWorld().getName().equalsIgnoreCase("world_nether_TT")
-				|| player.getWorld().getName().equalsIgnoreCase("world_the_end_TT")
-				|| player.getWorld().getName().equalsIgnoreCase("world_dot")
+		final String name = player.getWorld().getName();
+		if(name.toLowerCase().startsWith(worldname)
+				|| name.equalsIgnoreCase("world")
+				|| name.equalsIgnoreCase("world_2")
+				|| name.equalsIgnoreCase("world_nether")
+				|| name.equalsIgnoreCase("world_the_end")
+				|| name.equalsIgnoreCase("world_TT")
+				|| name.equalsIgnoreCase("world_nether_TT")
+				|| name.equalsIgnoreCase("world_the_end_TT")
+				|| name.equalsIgnoreCase("world_dot")
 				){
 			return true;
 		}
@@ -70,13 +71,14 @@ public class Util {
 		if(SeichiAssist.Companion.getDEBUG()){
 			return true;
 		}
+		final String name = player.getWorld().getName();
 		//プレイヤーの場所がメインワールド(world)または各種整地ワールド(world_SW)にいる場合
-		if(player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.Companion.getSEICHIWORLDNAME())
-			|| player.getWorld().getName().equalsIgnoreCase("world")
-			|| player.getWorld().getName().equalsIgnoreCase("world_2")
-			|| player.getWorld().getName().equalsIgnoreCase("world_nether")
-			|| player.getWorld().getName().equalsIgnoreCase("world_the_end")
-            || player.getWorld().getName().equalsIgnoreCase("world_dot")
+		if(name.toLowerCase().startsWith(SeichiAssist.Companion.getSEICHIWORLDNAME())
+			|| name.equalsIgnoreCase("world")
+			|| name.equalsIgnoreCase("world_2")
+			|| name.equalsIgnoreCase("world_nether")
+			|| name.equalsIgnoreCase("world_the_end")
+            || name.equalsIgnoreCase("world_dot")
 		){
 			return true;
 		}
