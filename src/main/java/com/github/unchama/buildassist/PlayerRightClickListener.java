@@ -61,7 +61,7 @@ public class PlayerRightClickListener implements Listener  {
 					return;
 				}
 				//開く音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 			}else if(player.isSneaking()){
 
@@ -85,9 +85,9 @@ public class PlayerRightClickListener implements Listener  {
 					//Block block = player.getWorld().getBlockAt(playerloc.getBlockX(), playerloc.getBlockY() -1 , playerloc.getBlockZ());
 
 					//プレイヤーの足の座標を取得
-					final int playerlocx = player.getLocation().getBlockX() ;
-					final int playerlocy = player.getLocation().getBlockY() ;
-					final int playerlocz = player.getLocation().getBlockZ() ;
+					final int playerlocx = player.getLocation().getBlockX();
+					final int playerlocy = player.getLocation().getBlockY();
+					final int playerlocz = player.getLocation().getBlockZ();
 
 					/*Coordinate start,end;
 					Block placelocblock;
