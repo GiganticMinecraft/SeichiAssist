@@ -8,10 +8,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 
 public class BuildAssist {
@@ -55,9 +60,7 @@ public class BuildAssist {
     );
 
     //範囲設置ブロックの対象リスト
-    static final List<Material> materiallist = Arrays.asList(
-
-
+    static final Set<Material> materiallist = EnumSet.of(
             Material.STONE//石
             , Material.GRASS//草
             , Material.DIRT//土
@@ -146,13 +149,13 @@ public class BuildAssist {
     );
 
     //ハーフブロックまとめ
-    public static final List<Material> material_slab = Arrays.asList(
+    public static final Set<Material> material_slab = EnumSet.of(
             Material.STONE_SLAB2, Material.PURPUR_SLAB, Material.WOOD_STEP, Material.STEP
     );
 
 
     //直列設置ブロックの対象リスト
-    static final List<Material> materiallist2 = Arrays.asList(
+    static final Set<Material> materiallist2 = EnumSet.of(
             Material.STONE//石
             , Material.GRASS//草
             , Material.DIRT//土
@@ -247,14 +250,14 @@ public class BuildAssist {
 */
     );
 
-    static final List<Material> material_slab2 = Arrays.asList(
+    static final Set<Material> material_slab2 = EnumSet.of(
             Material.STONE_SLAB2    //赤砂岩
             , Material.PURPUR_SLAB    //プルパー
             , Material.WOOD_STEP        //木
             , Material.STEP            //石
     );
 
-    static final List<Material> material_destruction = Arrays.asList(
+    static final Set<Material> material_destruction = EnumSet.of(
             Material.LONG_GRASS            //草
             , Material.DEAD_BUSH            //枯れ木
             , Material.YELLOW_FLOWER        //タンポポ
@@ -304,6 +307,7 @@ public class BuildAssist {
 
             playermap.put(uuid, playerdata);
         }
+
         plugin.getLogger().info("BuildAssist is Enabled!");
 
         tasklist.add(new MinuteTaskRunnable().runTaskTimer(plugin, 0, 1200));
@@ -323,5 +327,4 @@ public class BuildAssist {
     private void registerEvent(final Listener listener) {
         Bukkit.getServer().getPluginManager().registerEvents(listener, SeichiAssist.instance);
     }
-
 }
