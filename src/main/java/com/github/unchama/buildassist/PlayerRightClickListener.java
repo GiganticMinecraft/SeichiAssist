@@ -232,14 +232,15 @@ public class PlayerRightClickListener implements Listener  {
 								}else {
 									//ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
 									if(playerdata.zs_minestack_flag)minestack:{//label指定は基本的に禁じ手だが、今回は後付けなので使わせてもらう。(解読性向上のため、1箇所のみの利用)
-										for(int cnt = 0; cnt < MineStackObjectList.INSTANCE.getMinestacklist().size() ; cnt++ ){
-											if(offhanditem.getType().equals(MineStackObjectList.INSTANCE.getMinestacklist().get(cnt).getMaterial()) &&
-													offhanditem.getData().getData() == MineStackObjectList.INSTANCE.getMinestacklist().get(cnt).getDurability()){
-												no = cnt;
-												break;
-												//no:設置するブロック・max:設置できる最大量
-											}
-										}
+										//no:設置するブロック・max:設置できる最大量
+										final List<MineStackObj> i1 = MineStackObjectList.INSTANCE.getMinestacklist();
+										no = IntStream.range(0, MineStackObjectList.INSTANCE.getMinestacklist().size())
+												.filter(cnt ->
+														offhanditem.getType().equals(i1.get(cnt).getMaterial()) &&
+														offhanditem.getData().getData() == i1.get(cnt).getDurability()
+												)
+												.findFirst()
+												.orElse(no);
 										if(no > 0){
 											//設置するブロックがMineStackに登録済み
 											//1引く
