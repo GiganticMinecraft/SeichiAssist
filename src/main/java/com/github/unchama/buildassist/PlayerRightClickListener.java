@@ -177,7 +177,7 @@ public class PlayerRightClickListener implements Listener  {
 					}
 
 					if(SetReady){
-				//実際に範囲内にブロックを設置する処理
+				        //実際に範囲内にブロックを設置する処理
 						//設置範囲の基準となる座標
 						int setblockX = playerlocx - AREAint ;
 						int setblockY = Y1 ;
@@ -278,11 +278,10 @@ public class PlayerRightClickListener implements Listener  {
 									for(; searchedInv < 36 ;){
 										//該当スロットのアイテムデータ取得
 										ItemInInv = player.getInventory().getItem(searchedInv) ;
-										if(ItemInInv == null ){
-										}else {
-											ItemInInvAmount = ItemInInv.getAmount() ;
-										}
-										//スロットのアイテムが空白だった場合の処理(エラー回避のため)
+                                        if (ItemInInv != null) {
+                                            ItemInInvAmount = ItemInInv.getAmount();
+                                        }
+                                        //スロットのアイテムが空白だった場合の処理(エラー回避のため)
 										if(ItemInInv == null ){
 											//確認したスロットが空気だった場合に次スロットへ移動
 											if(searchedInv == 35){
@@ -331,26 +330,25 @@ public class PlayerRightClickListener implements Listener  {
 											//確認したスロットが違うアイテムだった場合に、次のスロットへと対象を移す
 											if(searchedInv == 35){
 												searchedInv = 0 ;
-											}else if(searchedInv == 8 ){
+											}else if(searchedInv == 8) {
 												searchedInv = 36 ;
 												player.sendMessage(ChatColor.RED + "アイテムが不足しています!" ) ;
 											}else {
-												searchedInv ++ ;
+												searchedInv ++;
 											}
 										}
 									}
 								}
 							}
-							if(searchedInv == 36){
+							if(searchedInv == 36) {
 								break;
 							}
 
-							setblockX ++ ;
+							setblockX++;
 
-							if(setblockX > playerlocx + AREAint){
-								setblockX = setblockX - AREAintB ;
-								setblockZ ++ ;
-
+							if(setblockX > playerlocx + AREAint) {
+								setblockX = setblockX - AREAintB;
+								setblockZ ++;
 							}
 						}
 					}
@@ -360,19 +358,8 @@ public class PlayerRightClickListener implements Listener  {
 					if(Util.inTrackedWorld(player)){
 						Util.addBuild1MinAmount(player, new BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag()));	//設置した数を足す
 					}
-
-					return;
-
-
-				}else if(mainhandtoolflag){
-					//メインハンドの時
-					return;
-				}else{
-					//どちらにももっていない時処理を終了
-					return;
-				}
-
-			}
+                }
+            }
 		}
 	}
 }
