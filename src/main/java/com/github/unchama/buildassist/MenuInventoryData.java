@@ -38,7 +38,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		//flyflag/flytimeのメニュー表示用変換
 		String Flyallows ;
@@ -235,7 +235,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		String ZSSkill ;
 		if(playerdata.ZoneSetSkillFlag){
@@ -393,7 +393,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		// ホームを開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1);
@@ -476,7 +476,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		// ホーム目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
@@ -663,7 +663,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
@@ -905,7 +905,7 @@ public class MenuInventoryData {
 		ItemStack itemstack;
 		ItemMeta itemmeta;
 		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 
 		// 2ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
