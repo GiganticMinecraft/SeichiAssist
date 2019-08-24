@@ -9,7 +9,7 @@ import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 
 class FastDiggingEffectSuppression {
-  var internalValue = 0
+  private var internalValue = 0
 
   val suppressionDegreeToggleEffect: TargetedEffect<CommandSender> =
       unfocusedEffect {

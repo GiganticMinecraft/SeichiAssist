@@ -314,7 +314,6 @@ class PlayerData constructor(val uuid: UUID) {
   init {
     //初期値を設定
     this.loaded = false
-    this.fastDiggingEffectSuppression.internalValue = 0
     this.messageflag = false
     //this.minuteblock = new MineBlock();
     this.halfhourblock = MineBlock()
