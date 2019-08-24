@@ -1,10 +1,13 @@
 package com.github.unchama.buildassist;
 
+import com.github.unchama.seichiassist.SeichiAssist;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -283,13 +286,13 @@ public class BuildAssist {
         commandlist = new HashMap<>();
         commandlist.put("fly", new flyCommand(plugin));
 
-        plugin.getServer().getPluginManager().registerEvents(new PlayerJoinListener(), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new EntityListener(), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new PlayerRightClickListener(), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new PlayerInventoryListener(), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new BlockLineUp(), plugin);        //クリックイベント登録
-        plugin.getServer().getPluginManager().registerEvents(new PlayerQuitListener(), plugin);    //退出時
-        plugin.getServer().getPluginManager().registerEvents(new BlockPlaceEventListener(), plugin);    //ブロックを置いた時
+        registerEvent(new PlayerJoinListener());
+        registerEvent(new EntityListener());
+        registerEvent(new PlayerRightClickListener());
+        registerEvent(new PlayerInventoryListener());
+        registerEvent(new BlockLineUp());        //クリックイベント登録
+        registerEvent(new PlayerQuitListener());    //退出時
+        registerEvent(new BlockPlaceEventListener());    //ブロックを置いた時
 
 
         for (Player p : plugin.getServer().getOnlinePlayers()) {
@@ -315,6 +318,10 @@ public class BuildAssist {
         for (BukkitTask task : this.tasklist) {
             task.cancel();
         }
+    }
+
+    private void registerEvent(final Listener listener) {
+        Bukkit.getServer().getPluginManager().registerEvents(listener, SeichiAssist.instance);
     }
 
 }
