@@ -178,11 +178,11 @@ public class PlayerRightClickListener implements Listener  {
 						int setblockX = playerlocx - AREAint ;
 						final int setblockY = Y1 ;
 						int setblockZ = playerlocz - AREAint ;
-						int setunder = 1 ;
+						int setunder;
 
 						int searchedInv = 9 ;
 
-						ItemStack ItemInInv = null ;
+						ItemStack ItemInInv;
 						int ItemInInvAmount = 0 ;
 
 						final Location WGloc = new Location(playerworld,0,0,0)  ;

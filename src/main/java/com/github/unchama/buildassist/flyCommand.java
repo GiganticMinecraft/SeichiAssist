@@ -67,14 +67,12 @@ public class flyCommand implements TabExecutor {
 
             ExperienceManager expman = new ExperienceManager(player);
 
-            boolean flyflag = playerdata.flyflag;
+            boolean flyflag;
             int flytime = playerdata.flytime;
             boolean Endlessfly = playerdata.Endlessfly;
 
             if (args[0].equalsIgnoreCase("finish")) {
                 flyflag = false;
-                flytime = 0;
-                Endlessfly = false;
                 playerdata.flyflag = flyflag;
                 playerdata.flytime = 0;
                 playerdata.Endlessfly = false;
@@ -88,9 +86,6 @@ public class flyCommand implements TabExecutor {
                     sender.sendMessage(ChatColor.GREEN
                             + "所持している経験値が、必要経験値量(" + BuildAssist.config.getFlyExp() + ")に達していません。");
                 } else {
-                    flyflag = true;
-                    Endlessfly = true;
-                    flytime = 0;
                     playerdata.flyflag = true;
                     playerdata.Endlessfly = true;
                     playerdata.flytime = 0;
