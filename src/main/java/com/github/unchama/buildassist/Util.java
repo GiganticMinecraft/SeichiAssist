@@ -66,7 +66,7 @@ public final class Util {
 	}
 
 	//設置ブロックカウント対象ワールドかを確認(対象ならtrue、対象外ならfalse)
-	public static boolean isBlockCount(Player player){
+	public static boolean inTrackedWorld(Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
 		if(SeichiAssist.Companion.getDEBUG()){
 			return true;

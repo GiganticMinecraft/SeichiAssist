@@ -10,7 +10,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -359,7 +358,7 @@ public class PlayerRightClickListener implements Listener  {
 					//終了ログがうるさいので無くす
 					//player.sendMessage(ChatColor.RED + "敷き詰めスキル：処理終了" ) ;
 
-					if(Util.isBlockCount(player)){
+					if(Util.inTrackedWorld(player)){
 						Util.addBuild1MinAmount(player, new BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag()));	//設置した数を足す
 					}
 

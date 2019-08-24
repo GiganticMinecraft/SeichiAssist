@@ -8,14 +8,12 @@ import com.github.unchama.seichiassist.MineStackObjectList;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -206,7 +204,7 @@ public class BlockLineUp implements Listener{
 				}
 				v *= double_mag;	//ハーフ2段重ねの場合は2倍
 				//カウント対象ワールドの場合カウント値を足す
-				if(Util.isBlockCount(player)){	//対象ワールドかチェック
+				if(Util.inTrackedWorld(player)){	//対象ワールドかチェック
 					Util.addBuild1MinAmount(player, new BigDecimal(v * BuildAssist.config.getBlockCountMag()));	//設置した数を足す
 				}
 

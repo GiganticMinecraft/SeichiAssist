@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +23,7 @@ public class BlockPlaceEventListener implements Listener {
         //playerを取得
         Player player = event.getPlayer();
         //カウント対象ワールドかチェック
-        if (!Util.isBlockCount(player)) {
+        if (!Util.inTrackedWorld(player)) {
             return;
         }
 
