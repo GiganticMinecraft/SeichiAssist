@@ -31,20 +31,20 @@ public class PlayerRightClickListener implements Listener  {
 
 	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void onPlayerMenuUIEvent(PlayerInteractEvent event){
+	public void onPlayerMenuUIEvent(final PlayerInteractEvent event){
 		//プレイヤーを取得
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		//UUID取得
-		UUID uuid = player.getUniqueId();
+		final UUID uuid = player.getUniqueId();
 		//ワールドデータを取得
-		World playerworld = player.getWorld();
+		final World playerworld = player.getWorld();
 		//プレイヤーが起こしたアクションを取得
-		Action action = event.getAction();
+		final Action action = event.getAction();
 		//アクションを起こした手を取得
-		EquipmentSlot equipmentslot = event.getHand();
+		final EquipmentSlot equipmentslot = event.getHand();
 		//プレイヤーデータ
-		PlayerData playerdata = BuildAssist.playermap.get(uuid);
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final PlayerData playerdata = BuildAssist.playermap.get(uuid);
+		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 		//プレイヤーデータが無い場合は処理終了
 		if(playerdata == null){
@@ -66,15 +66,15 @@ public class PlayerRightClickListener implements Listener  {
 			}else if(player.isSneaking()){
 
 				//プレイヤーインベントリを取得
-				PlayerInventory inventory = player.getInventory();
+				final PlayerInventory inventory = player.getInventory();
 				//メインハンドとオフハンドを取得
-				ItemStack mainhanditem = inventory.getItemInMainHand();
-				ItemStack offhanditem = inventory.getItemInOffHand();
+				final ItemStack mainhanditem = inventory.getItemInMainHand();
+				final ItemStack offhanditem = inventory.getItemInOffHand();
 
 				//メインハンドにブロックがあるか
-				boolean mainhandtoolflag = BuildAssist.materiallist.contains(mainhanditem.getType());
+				final boolean mainhandtoolflag = BuildAssist.materiallist.contains(mainhanditem.getType());
 				//オフハンドにブロックがあるか
-				boolean offhandtoolflag = BuildAssist.materiallist.contains(offhanditem.getType());
+				final boolean offhandtoolflag = BuildAssist.materiallist.contains(offhanditem.getType());
 
 
 				//場合分け
@@ -89,9 +89,9 @@ public class PlayerRightClickListener implements Listener  {
 					//Block block = player.getWorld().getBlockAt(playerloc.getBlockX(), playerloc.getBlockY() -1 , playerloc.getBlockZ());
 
 					//プレイヤーの足の座標を取得
-					int playerlocx = player.getLocation().getBlockX() ;
-					int playerlocy = player.getLocation().getBlockY() ;
-					int playerlocz = player.getLocation().getBlockZ() ;
+					final int playerlocx = player.getLocation().getBlockX() ;
+					final int playerlocy = player.getLocation().getBlockY() ;
+					final int playerlocz = player.getLocation().getBlockZ() ;
 
 					/*Coordinate start,end;
 					Block placelocblock;
@@ -111,10 +111,10 @@ public class PlayerRightClickListener implements Listener  {
 					*/
 
 					//スキルの範囲設定用
-					int AREAint = playerdata.AREAint ;
-					int SEARCHint = AREAint + 1 ;
-					int AREAintB = (AREAint * 2)+ 1 ;
-					int SEARCHintB = (SEARCHint * 2)+ 1;
+					final int AREAint = playerdata.AREAint ;
+					final int SEARCHint = AREAint + 1 ;
+					final int AREAintB = (AREAint * 2)+ 1 ;
+					final int SEARCHintB = (SEARCHint * 2)+ 1;
 
 
 					//同ブロック探索(7*6*7)の開始座標を計算
@@ -180,7 +180,7 @@ public class PlayerRightClickListener implements Listener  {
 				        //実際に範囲内にブロックを設置する処理
 						//設置範囲の基準となる座標
 						int setblockX = playerlocx - AREAint ;
-						int setblockY = Y1 ;
+						final int setblockY = Y1 ;
 						int setblockZ = playerlocz - AREAint ;
 						int setunder = 1 ;
 
@@ -189,7 +189,7 @@ public class PlayerRightClickListener implements Listener  {
 						ItemStack ItemInInv = null ;
 						int ItemInInvAmount = 0 ;
 
-						Location WGloc = new Location(playerworld,0,0,0)  ;
+						final Location WGloc = new Location(playerworld,0,0,0)  ;
 
 
 						for(;setblockZ < playerlocz + SEARCHint ;){
@@ -296,8 +296,8 @@ public class PlayerRightClickListener implements Listener  {
 											//スロットアイテムがオフハンドと一致した場合
 										}else if(ItemInInv.getType() == offhanditem.getType() ){
 											//数量以外のデータ(各種メタ)が一致するかどうか検知(仮)
-											ItemStack ItemInInvCheck = ItemInInv ;
-											ItemStack offhandCheck = offhanditem ;
+											final ItemStack ItemInInvCheck = ItemInInv ;
+											final ItemStack offhandCheck = offhanditem ;
 											ItemInInvCheck.setAmount(1);
 											offhandCheck.setAmount(1);
 
