@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.*
 import com.github.unchama.seichiassist.data.playerdata.*
 import com.github.unchama.seichiassist.data.playerdata.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
-import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppressor
+import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffectSuppression
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackObj
@@ -51,12 +51,10 @@ class PlayerData constructor(val uuid: UUID) {
   val lowercaseName: String
     get() = Util.getName(player)
 
-  val fastDiggingEffectSuppressor = FastDiggingEffectSuppressor()
+  val fastDiggingEffectSuppression = FastDiggingEffectSuppression()
 
   //内訳メッセージを出すフラグ
   var messageflag = false
-  //1分間のデータを保存するincrease:１分間の採掘量
-  //public MineBlock minuteblock;
   //３０分間のデータを保存する．
   val halfhourblock: MineBlock
   //ガチャの基準となるポイント
@@ -316,7 +314,7 @@ class PlayerData constructor(val uuid: UUID) {
   init {
     //初期値を設定
     this.loaded = false
-    this.fastDiggingEffectSuppressor.internalValue = 0
+    this.fastDiggingEffectSuppression.internalValue = 0
     this.messageflag = false
     //this.minuteblock = new MineBlock();
     this.halfhourblock = MineBlock()
@@ -943,7 +941,7 @@ class PlayerData constructor(val uuid: UUID) {
     val maxDuration = activeEffects.map { it.duration }.max() ?: 0
     val computedAmplifier = floor(amplifierSum - 1).toInt()
 
-    val maxSpeed: Int = fastDiggingEffectSuppressor.maximumAllowedEffectAmplifier()
+    val maxSpeed: Int = fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
 
     // 実際に適用されるeffect量
     val amplifier = min(computedAmplifier, maxSpeed)

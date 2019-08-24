@@ -81,7 +81,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       var minespeedlv = 0
 
       //effectflag ONの時のみ実行
-      if (playerData.fastDiggingEffectSuppressor.isSuppressionActive()) {
+      if (playerData.fastDiggingEffectSuppression.isSuppressionActive()) {
         //合計effect量
         var sum = 0.0
         //最大持続時間
@@ -99,7 +99,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
         minespeedlv = (sum - 1).toInt()
 
         //effect上限値を判定
-        val maxSpeed = playerData.fastDiggingEffectSuppressor.maximumAllowedEffectAmplifier()
+        val maxSpeed = playerData.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
 
         //effect追加の処理
         //実際のeffect値が0より小さいときはeffectを適用しない

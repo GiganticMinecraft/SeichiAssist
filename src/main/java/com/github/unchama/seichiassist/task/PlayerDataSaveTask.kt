@@ -166,7 +166,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
           + " name = '" + playerdata.lowercaseName + "'"
 
           //各種数値更新処理
-          + ",effectflag = " + runBlocking { playerdata.fastDiggingEffectSuppressor.serialized() }
+          + ",effectflag = " + runBlocking { playerdata.fastDiggingEffectSuppression.serialized() }
           + ",minestackflag = " + playerdata.minestackflag
           + ",messageflag = " + playerdata.messageflag
           + ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum

@@ -202,7 +202,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       //各種数値
       playerdata.loaded = true
       runBlocking {
-        playerdata.fastDiggingEffectSuppressor.setStateFromSerializedValue(rs.getInt("effectflag"))
+        playerdata.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag"))
       }
       playerdata.minestackflag = rs.getBoolean("minestackflag")
       playerdata.messageflag = rs.getBoolean("messageflag")

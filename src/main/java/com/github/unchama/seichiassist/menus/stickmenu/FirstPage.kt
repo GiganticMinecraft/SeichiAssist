@@ -374,8 +374,8 @@ private object FirstPage: Menu {
 
       val buttonLore: List<String> = run {
         val toggleNavigation = listOf(
-            openerData.fastDiggingEffectSuppressor.currentStatus(),
-            "$RESET$DARK_RED${UNDERLINE}クリックで" + openerData.fastDiggingEffectSuppressor.nextToggledStatus()
+            openerData.fastDiggingEffectSuppression.currentStatus(),
+            "$RESET$DARK_RED${UNDERLINE}クリックで" + openerData.fastDiggingEffectSuppression.nextToggledStatus()
         )
 
         val explanation = listOf(
@@ -401,7 +401,7 @@ private object FirstPage: Menu {
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                openerData.fastDiggingEffectSuppressor.suppressionDegreeToggleEffect,
+                openerData.fastDiggingEffectSuppression.suppressionDegreeToggleEffect,
                 deferredEffect { openerData.computeFastDiggingEffect() }
             )
           }
