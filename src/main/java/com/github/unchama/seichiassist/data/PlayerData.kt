@@ -44,7 +44,7 @@ class PlayerData constructor(val uuid: UUID) {
   //読み込み済みフラグ
   var loaded = false
 
-  val player: Player
+  private val player: Player
     get() = Bukkit.getPlayer(uuid)
 
   //プレイヤー名
