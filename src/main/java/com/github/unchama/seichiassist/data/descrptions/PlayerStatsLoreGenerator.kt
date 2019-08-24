@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.data.descrptions
 
 import com.github.unchama.seichiassist.LevelThresholds
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.PlayerData
+import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.text.Templates
 import com.github.unchama.seichiassist.text.WarningsGenerator
 import com.github.unchama.seichiassist.util.TypeConverter

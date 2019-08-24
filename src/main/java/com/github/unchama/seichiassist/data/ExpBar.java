@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.seichiassist.LevelThresholds;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;

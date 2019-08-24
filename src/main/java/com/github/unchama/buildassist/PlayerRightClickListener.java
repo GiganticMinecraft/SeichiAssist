@@ -1,15 +1,9 @@
 package com.github.unchama.buildassist;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.UUID;
-
 import com.github.unchama.seichiassist.MineStackObjectList;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
+import org.bukkit.*;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,8 +14,9 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.minestack.MineStackObj;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class PlayerRightClickListener implements Listener  {
 	HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
@@ -41,7 +36,7 @@ public class PlayerRightClickListener implements Listener  {
 		EquipmentSlot equipmentslot = event.getHand();
 		//プレイヤーデータ
 		PlayerData playerdata = BuildAssist.playermap.get(uuid);
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 		//プレイヤーデータが無い場合は処理終了
 		if(playerdata == null){

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.data
+package com.github.unchama.seichiassist.data.player
 
 // FIXME semantics is not clear
 class MineBlock {

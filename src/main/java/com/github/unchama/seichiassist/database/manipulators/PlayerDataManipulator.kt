@@ -5,8 +5,8 @@ import arrow.core.left
 import arrow.core.right
 import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.PlayerData
 import com.github.unchama.seichiassist.data.RankData
+import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTask

@@ -1,8 +1,11 @@
-package com.github.unchama.seichiassist.data
+package com.github.unchama.seichiassist.data.player
 
 import com.github.unchama.menuinventory.rows
 import com.github.unchama.seichiassist.*
-import com.github.unchama.seichiassist.data.player.*
+import com.github.unchama.seichiassist.data.ActiveSkillData
+import com.github.unchama.seichiassist.data.ExpBar
+import com.github.unchama.seichiassist.data.GridTemplate
+import com.github.unchama.seichiassist.data.Mana
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.data.player.settings.FastDiggingEffectSuppression
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect

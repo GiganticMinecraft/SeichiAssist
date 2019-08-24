@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.task;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.listener.VotingFairyListener;
 import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.ChatColor;

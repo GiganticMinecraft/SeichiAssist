@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.listener;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -12,8 +11,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class PlayerDeathEventListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();

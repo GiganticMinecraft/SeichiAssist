@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.ActiveSkillEffect
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect
 import com.github.unchama.seichiassist.MineStackObjectList
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.PlayerData
+import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.util.ActionStatus
 import com.github.unchama.util.ActionStatus.Fail

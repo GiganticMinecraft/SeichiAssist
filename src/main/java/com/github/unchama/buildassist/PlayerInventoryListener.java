@@ -1,10 +1,8 @@
 package com.github.unchama.buildassist;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
@@ -19,8 +17,8 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.minestack.MineStackObj;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class PlayerInventoryListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = BuildAssist.playermap;
@@ -461,7 +459,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("stone");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("step0");
@@ -482,7 +480,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("stone");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("smooth_brick0");
@@ -505,7 +503,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("granite");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("polished_granite");
@@ -526,7 +524,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("diorite");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("polished_diorite");
@@ -547,7 +545,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("andesite");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("polished_andesite");
@@ -568,7 +566,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("quartz");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("quartz_block");
@@ -589,7 +587,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("brick_item");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("brick");
@@ -609,7 +607,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("nether_brick_item");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("nether_brick");
@@ -692,7 +690,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("snow_ball");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("snow_block");
@@ -713,7 +711,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("nether_stalk");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("red_nether_brick");
@@ -736,7 +734,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("iron_ore");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("iron_ingot");
@@ -759,7 +757,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("iron_ore");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("iron_ingot");
@@ -785,7 +783,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("gold_ore");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("gold_ingot");
@@ -808,7 +806,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("gold_ore");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("gold_ingot");
@@ -834,7 +832,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("sand");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("glass");
@@ -857,7 +855,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("sand");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("glass");
@@ -883,7 +881,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("netherrack");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("nether_brick_item");
@@ -906,7 +904,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("netherrack");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("nether_brick_item");
@@ -990,7 +988,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("clay_ball");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("brick_item");
@@ -1013,7 +1011,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
 					final MineStackObj id_1 = Util.findMineStackObjectByName("clay_ball");
 					final MineStackObj id_2 = Util.findMineStackObjectByName("brick_item");

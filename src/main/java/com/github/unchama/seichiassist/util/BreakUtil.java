@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.util;
 import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.util.external.CoreProtectWrapper;
 import com.github.unchama.seichiassist.util.external.ExternalPlugins;
