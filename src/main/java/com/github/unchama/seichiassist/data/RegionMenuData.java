@@ -177,10 +177,10 @@ public class RegionMenuData {
 		gridInv.setItem(0, menuicon0);
 
 		//1マス目
-		List<String> lore1 = getGridLore(directionMap.get(INSTANCE.DirectionType.AHEAD), unitMap.get(INSTANCE.DirectionType.AHEAD));
-		if (!playerData.canGridExtend(INSTANCE.DirectionType.AHEAD,player.getWorld().getName())) {
+		List<String> lore1 = getGridLore(directionMap.get(DirectionType.AHEAD), unitMap.get(DirectionType.AHEAD));
+		if (!playerData.canGridExtend(DirectionType.AHEAD,player.getWorld().getName())) {
 			lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-		} else if (!playerData.canGridReduce(INSTANCE.DirectionType.AHEAD)) {
+		} else if (!playerData.canGridReduce(DirectionType.AHEAD)) {
 			lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
 		}
 		ItemStack menuicon1 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 14,
@@ -195,10 +195,10 @@ public class RegionMenuData {
 		gridInv.setItem(2, menuicon2);
 
 		//3マス目
-		List<String> lore3 = getGridLore(directionMap.get(INSTANCE.DirectionType.LEFT), unitMap.get(INSTANCE.DirectionType.LEFT));
-		if (!playerData.canGridExtend(INSTANCE.DirectionType.LEFT,player.getWorld().getName())) {
+		List<String> lore3 = getGridLore(directionMap.get(DirectionType.LEFT), unitMap.get(DirectionType.LEFT));
+		if (!playerData.canGridExtend(DirectionType.LEFT,player.getWorld().getName())) {
 			lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-		} else if (!playerData.canGridReduce(INSTANCE.DirectionType.LEFT)) {
+		} else if (!playerData.canGridReduce(DirectionType.LEFT)) {
 			lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
 		}
 		ItemStack menuicon3 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 10,
@@ -208,14 +208,14 @@ public class RegionMenuData {
 		//4マス目
 		List<String> lore4 = new ArrayList<>();
 		lore4.add(ChatColor.GRAY + "現在の設定");
-		lore4.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + unitMap.get(INSTANCE.DirectionType.AHEAD) + ChatColor.GRAY + "ユニット"
-				+ "(" + ChatColor.AQUA + nfNum.format(unitMap.get(INSTANCE.DirectionType.AHEAD) * 15) + ChatColor.GRAY + "ブロック)");
-		lore4.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + unitMap.get(INSTANCE.DirectionType.BEHIND) + ChatColor.GRAY + "ユニット"
-				+ "(" + ChatColor.AQUA + nfNum.format(unitMap.get(INSTANCE.DirectionType.BEHIND) * 15) + ChatColor.GRAY + "ブロック)");
-		lore4.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + unitMap.get(INSTANCE.DirectionType.RIGHT) + ChatColor.GRAY + "ユニット"
-				+ "(" + ChatColor.AQUA + nfNum.format(unitMap.get(INSTANCE.DirectionType.RIGHT) * 15) + ChatColor.GRAY + "ブロック)");
-		lore4.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + unitMap.get(INSTANCE.DirectionType.LEFT) + ChatColor.GRAY + "ユニット"
-				+ "(" + ChatColor.AQUA + nfNum.format(unitMap.get(INSTANCE.DirectionType.LEFT) * 15) + ChatColor.GRAY + "ブロック)");
+		lore4.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + unitMap.get(DirectionType.AHEAD) + ChatColor.GRAY + "ユニット"
+				+ "(" + ChatColor.AQUA + nfNum.format(unitMap.get(DirectionType.AHEAD) * 15) + ChatColor.GRAY + "ブロック)");
+		lore4.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + unitMap.get(DirectionType.BEHIND) + ChatColor.GRAY + "ユニット"
+				+ "(" + ChatColor.AQUA + nfNum.format(unitMap.get(DirectionType.BEHIND) * 15) + ChatColor.GRAY + "ブロック)");
+		lore4.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + unitMap.get(DirectionType.RIGHT) + ChatColor.GRAY + "ユニット"
+				+ "(" + ChatColor.AQUA + nfNum.format(unitMap.get(DirectionType.RIGHT) * 15) + ChatColor.GRAY + "ブロック)");
+		lore4.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + unitMap.get(DirectionType.LEFT) + ChatColor.GRAY + "ユニット"
+				+ "(" + ChatColor.AQUA + nfNum.format(unitMap.get(DirectionType.LEFT) * 15) + ChatColor.GRAY + "ブロック)");
 		lore4.add(ChatColor.GRAY + "保護ユニット数：" + ChatColor.AQUA + playerData.getGridChunkAmount());
 		lore4.add(ChatColor.GRAY + "保護ユニット上限値：" + ChatColor.RED + config.getGridLimitPerWorld(player.getWorld().getName()));
 		ItemStack menuicon4 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, ChatColor.DARK_GREEN + "設定",
@@ -223,10 +223,10 @@ public class RegionMenuData {
 		gridInv.setItem(4, menuicon4);
 
 		//5マス目
-		List<String> lore5 = getGridLore(directionMap.get(INSTANCE.DirectionType.RIGHT), unitMap.get(INSTANCE.DirectionType.RIGHT));
-		if (!playerData.canGridExtend(INSTANCE.DirectionType.RIGHT,player.getWorld().getName())) {
+		List<String> lore5 = getGridLore(directionMap.get(DirectionType.RIGHT), unitMap.get(DirectionType.RIGHT));
+		if (!playerData.canGridExtend(DirectionType.RIGHT,player.getWorld().getName())) {
 			lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-		} else if (!playerData.canGridReduce(INSTANCE.DirectionType.RIGHT)) {
+		} else if (!playerData.canGridReduce(DirectionType.RIGHT)) {
 			lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
 		}
 		ItemStack menuicon5 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5,
@@ -241,10 +241,10 @@ public class RegionMenuData {
 		gridInv.setItem(6, menuicon6);
 
 		//7マス目
-		List<String> lore7 = getGridLore(directionMap.get(INSTANCE.DirectionType.BEHIND), unitMap.get(INSTANCE.DirectionType.BEHIND));
-		if (!playerData.canGridExtend(INSTANCE.DirectionType.BEHIND,player.getWorld().getName())) {
+		List<String> lore7 = getGridLore(directionMap.get(DirectionType.BEHIND), unitMap.get(DirectionType.BEHIND));
+		if (!playerData.canGridExtend(DirectionType.BEHIND,player.getWorld().getName())) {
 			lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-		} else if (!playerData.canGridReduce(INSTANCE.DirectionType.BEHIND)) {
+		} else if (!playerData.canGridReduce(DirectionType.BEHIND)) {
 			lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
 		}
 		ItemStack menuicon7 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 13,
@@ -300,34 +300,34 @@ public class RegionMenuData {
 		//0,360:south 90:west 180:north 270:east
 		if (0.0 <= rotation && rotation < 45.0) {
 			//前が北(North)
-			directionMap.put(INSTANCE.DirectionType.BEHIND, "南(South)");
-			directionMap.put(INSTANCE.DirectionType.AHEAD, "北(North)");
-			directionMap.put(INSTANCE.DirectionType.LEFT, "西(West)");
-			directionMap.put(INSTANCE.DirectionType.RIGHT, "東(East)");
+			directionMap.put(DirectionType.BEHIND, "南(South)");
+			directionMap.put(DirectionType.AHEAD, "北(North)");
+			directionMap.put(DirectionType.LEFT, "西(West)");
+			directionMap.put(DirectionType.RIGHT, "東(East)");
 		} else if (45.0 <= rotation && rotation < 135.0) {
 			//前が東(East)
-			directionMap.put(INSTANCE.DirectionType.RIGHT, "南(South)");
-			directionMap.put(INSTANCE.DirectionType.LEFT, "北(North)");
-			directionMap.put(INSTANCE.DirectionType.BEHIND, "西(West)");
-			directionMap.put(INSTANCE.DirectionType.AHEAD, "東(East)");
+			directionMap.put(DirectionType.RIGHT, "南(South)");
+			directionMap.put(DirectionType.LEFT, "北(North)");
+			directionMap.put(DirectionType.BEHIND, "西(West)");
+			directionMap.put(DirectionType.AHEAD, "東(East)");
 		} else if (135.0 <= rotation && rotation < 225.0) {
 			//前が南(South)
-			directionMap.put(INSTANCE.DirectionType.AHEAD, "南(South)");
-			directionMap.put(INSTANCE.DirectionType.BEHIND, "北(North)");
-			directionMap.put(INSTANCE.DirectionType.RIGHT, "西(West)");
-			directionMap.put(INSTANCE.DirectionType.LEFT, "東(East)");
+			directionMap.put(DirectionType.AHEAD, "南(South)");
+			directionMap.put(DirectionType.BEHIND, "北(North)");
+			directionMap.put(DirectionType.RIGHT, "西(West)");
+			directionMap.put(DirectionType.LEFT, "東(East)");
 		} else if (225.0 <= rotation && rotation < 315.0) {
 			//前が西(West)
-			directionMap.put(INSTANCE.DirectionType.LEFT, "南(South)");
-			directionMap.put(INSTANCE.DirectionType.RIGHT, "北(North)");
-			directionMap.put(INSTANCE.DirectionType.AHEAD, "西(West)");
-			directionMap.put(INSTANCE.DirectionType.BEHIND, "東(East)");
+			directionMap.put(DirectionType.LEFT, "南(South)");
+			directionMap.put(DirectionType.RIGHT, "北(North)");
+			directionMap.put(DirectionType.AHEAD, "西(West)");
+			directionMap.put(DirectionType.BEHIND, "東(East)");
 		} else if (315.0 <= rotation && rotation < 360.0) {
 			//前が北(North)
-			directionMap.put(INSTANCE.DirectionType.BEHIND, "南(South)");
-			directionMap.put(INSTANCE.DirectionType.AHEAD, "北(North)");
-			directionMap.put(INSTANCE.DirectionType.LEFT, "西(West)");
-			directionMap.put(INSTANCE.DirectionType.RIGHT, "東(East)");
+			directionMap.put(DirectionType.BEHIND, "南(South)");
+			directionMap.put(DirectionType.AHEAD, "北(North)");
+			directionMap.put(DirectionType.LEFT, "西(West)");
+			directionMap.put(DirectionType.RIGHT, "東(East)");
 		}
 		return directionMap;
 	}
