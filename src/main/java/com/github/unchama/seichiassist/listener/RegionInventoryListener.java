@@ -259,13 +259,13 @@ public class RegionInventoryListener implements Listener {
 
 			//チャンク延長
 			if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 14) {
-				gridChangeFunction(player, INSTANCE.DirectionType.AHEAD, event);
+				gridChangeFunction(player, DirectionType.AHEAD, event);
 			} else if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 10) {
-				gridChangeFunction(player, INSTANCE.DirectionType.LEFT, event);
+				gridChangeFunction(player, DirectionType.LEFT, event);
 			} else if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 5) {
-				gridChangeFunction(player, INSTANCE.DirectionType.RIGHT, event);
+				gridChangeFunction(player, DirectionType.RIGHT, event);
 			} else if (itemstackcurrent.getType() == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability() == 13) {
-				gridChangeFunction(player, INSTANCE.DirectionType.BEHIND, event);
+				gridChangeFunction(player, DirectionType.BEHIND, event);
 			} else if (itemstackcurrent.getType() == Material.WOOL && itemstackcurrent.getDurability() == 11) {
 				player.chat("//expand vert");
 				createRegion(player);
@@ -289,10 +289,10 @@ public class RegionInventoryListener implements Listener {
 
 	private static void gridResetFunction(Player player) {
 		PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
-		playerData.setUnitAmount(INSTANCE.DirectionType.AHEAD, 0);
-		playerData.setUnitAmount(INSTANCE.DirectionType.BEHIND, 0);
-		playerData.setUnitAmount(INSTANCE.DirectionType.RIGHT, 0);
-		playerData.setUnitAmount(INSTANCE.DirectionType.LEFT, 0);
+		playerData.setUnitAmount(DirectionType.AHEAD, 0);
+		playerData.setUnitAmount(DirectionType.BEHIND, 0);
+		playerData.setUnitAmount(DirectionType.RIGHT, 0);
+		playerData.setUnitAmount(DirectionType.LEFT, 0);
 		//始点座標Map(最短)
 		Map<String, Double> start = getNearlyUnitStart(player);
 		//終点座標Map(最短)
@@ -330,10 +330,10 @@ public class RegionInventoryListener implements Listener {
 		Direction direction = Util.INSTANCE.getPlayerDirection(player);
 		World world = player.getWorld();
 
-		int aheadUnitAmount = unitMap.get(INSTANCE.DirectionType.AHEAD);
-		int leftsideUnitAmount = unitMap.get(INSTANCE.DirectionType.LEFT);
-		int rightsideUnitAmount = unitMap.get(INSTANCE.DirectionType.RIGHT);
-		int behindUnitAmount = unitMap.get(INSTANCE.DirectionType.BEHIND);
+		int aheadUnitAmount = unitMap.get(DirectionType.AHEAD);
+		int leftsideUnitAmount = unitMap.get(DirectionType.LEFT);
+		int rightsideUnitAmount = unitMap.get(DirectionType.RIGHT);
+		int behindUnitAmount = unitMap.get(DirectionType.BEHIND);
 
 		//0ユニット指定の始点/終点のx,z座標
 		double start_x = getNearlyUnitStart(player).get("x");
@@ -484,10 +484,10 @@ public class RegionInventoryListener implements Listener {
 				if (event.isLeftClick()) {
 					player.sendMessage(ChatColor.GREEN + "グリッド式保護設定データ読み込み完了");
 					player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-					playerData.setUnitAmount(INSTANCE.DirectionType.AHEAD, template.getAheadAmount());
-					playerData.setUnitAmount(INSTANCE.DirectionType.BEHIND, template.getBehindAmount());
-					playerData.setUnitAmount(INSTANCE.DirectionType.RIGHT, template.getRightAmount());
-					playerData.setUnitAmount(INSTANCE.DirectionType.LEFT, template.getLeftAmount());
+					playerData.setUnitAmount(DirectionType.AHEAD, template.getAheadAmount());
+					playerData.setUnitAmount(DirectionType.BEHIND, template.getBehindAmount());
+					playerData.setUnitAmount(DirectionType.RIGHT, template.getRightAmount());
+					playerData.setUnitAmount(DirectionType.LEFT, template.getLeftAmount());
 					setWGSelection(player);
 					canCreateRegion(player);
 					player.openInventory(RegionMenuData.getGridWorldGuardMenu(player));
@@ -508,8 +508,8 @@ public class RegionInventoryListener implements Listener {
 
 		player.sendMessage(ChatColor.GREEN + "グリッド式保護の現在の設定を保存しました。");
 		player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
-		GridTemplate template = new GridTemplate(unitMap.get(INSTANCE.DirectionType.AHEAD), unitMap.get(INSTANCE.DirectionType.BEHIND),
-				unitMap.get(INSTANCE.DirectionType.RIGHT), unitMap.get(INSTANCE.DirectionType.LEFT));
+		GridTemplate template = new GridTemplate(unitMap.get(DirectionType.AHEAD), unitMap.get(DirectionType.BEHIND),
+				unitMap.get(DirectionType.RIGHT), unitMap.get(DirectionType.LEFT));
 		playerData.getTemplateMap().put(i, template);
 	}
 
