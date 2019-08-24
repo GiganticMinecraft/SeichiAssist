@@ -20,7 +20,7 @@ import java.util.UUID;
 
 
 public class BuildAssist {
-    public static Plugin plugin;
+    private static SeichiAssist plugin;
     static Boolean DEBUG = false;
 
     //起動するタスクリスト
@@ -275,7 +275,7 @@ public class BuildAssist {
     static String[] line_up_step_str = {"上側", "下側", "両方"};
     static String[] line_up_off_on_str = {"OFF", "ON"};
 
-    public BuildAssist(Plugin plugin) {
+    public BuildAssist(final SeichiAssist plugin) {
         BuildAssist.plugin = plugin;
     }
 
@@ -319,7 +319,7 @@ public class BuildAssist {
 
 
     public void onDisable() {
-        for (BukkitTask task : this.tasklist) {
+        for (BukkitTask task : tasklist) {
             task.cancel();
         }
     }
