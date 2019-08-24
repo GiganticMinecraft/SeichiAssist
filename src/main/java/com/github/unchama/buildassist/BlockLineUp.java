@@ -39,16 +39,16 @@ public class BlockLineUp implements Listener{
 
 
 	@EventHandler
-	public void onPlayerClick(PlayerInteractEvent e){
+	public void onPlayerClick(final PlayerInteractEvent e){
 		//プレイヤーを取得
-		Player player = e.getPlayer();
+		final Player player = e.getPlayer();
 		//UUID取得
-		UUID uuid = player.getUniqueId();
+		final UUID uuid = player.getUniqueId();
 		//プレイヤーが起こしたアクションを取得
-		Action action = e.getAction();
+		final Action action = e.getAction();
 		//プレイヤーデータ
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
-		PlayerData playerdata = BuildAssist.playermap.get(uuid);
+		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final PlayerData playerdata = BuildAssist.playermap.get(uuid);
 
 		//プレイヤーデータが無い場合は処理終了
 		if(playerdata == null){
@@ -67,10 +67,10 @@ public class BlockLineUp implements Listener{
 		//左クリックの処理
 		if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
 			//プレイヤーインベントリを取得
-			PlayerInventory inventory = player.getInventory();
+			final PlayerInventory inventory = player.getInventory();
 			//メインハンドとオフハンドを取得
-			ItemStack mainhanditem = inventory.getItemInMainHand();
-			ItemStack offhanditem = inventory.getItemInOffHand();
+			final ItemStack mainhanditem = inventory.getItemInMainHand();
+			final ItemStack offhanditem = inventory.getItemInOffHand();
 
 //			player.sendMessage(mainhanditem.getType().toString());
 //			player.sendMessage(mainhanditem.getData().toString());
@@ -82,14 +82,14 @@ public class BlockLineUp implements Listener{
 					return;
 				}
 
-				Location pl = player.getLocation();
-				Material m = mainhanditem.getType();
+				final Location pl = player.getLocation();
+				final Material m = mainhanditem.getType();
 				byte d = mainhanditem.getData().getData();
 
 				//仰角は下向きがプラスで上向きがマイナス
 				//方角は南を0度として時計回りに360度、何故か偶にマイナスの値になる
-				float pitch = pl.getPitch();
-				float yaw = (pl.getYaw() + 360) % 360;
+				final float pitch = pl.getPitch();
+				final float yaw = (pl.getYaw() + 360) % 360;
 //				player.sendMessage("方角：" + Float.toString(yaw) + "　仰角：" + Float.toString(pitch));
 //				player.sendMessage("マナ:" + playerdata_s.activeskilldata.mana.getMana() );
 				int step_x = 0;
@@ -123,7 +123,7 @@ public class BlockLineUp implements Listener{
 						step_x = 1;
 					}
 				}
-				double mana_mag = BuildAssist.config.getblocklineupmana_mag();
+				final double mana_mag = BuildAssist.config.getblocklineupmana_mag();
 
 				int max = mainhanditem.getAmount();//メインハンドのアイテム数を最大値に
 				//マインスタック優先の場合最大値をマインスタックの数を足す
@@ -178,14 +178,14 @@ public class BlockLineUp implements Listener{
 					px += step_x;
 					py += step_y;
 					pz += step_z;
-					Block b = pl.getWorld().getBlockAt(px , py , pz );
+					final Block b = pl.getWorld().getBlockAt(px , py , pz );
 
 					//空気以外にぶつかったら設置終わり
 					if (b.getType() != Material.AIR){
 						if(!BuildAssist.material_destruction.contains(b.getType()) || playerdata.line_up_des_flg == 0){
 							break;
 						}
-						Collection<ItemStack> i = b.getDrops();
+						final Collection<ItemStack> i = b.getDrops();
 
 						if(i.iterator().hasNext()){
 							b.getLocation().getWorld().dropItemNaturally(pl, i.iterator().next());
@@ -219,7 +219,7 @@ public class BlockLineUp implements Listener{
 					 * TODO 変数vの意味が以下の様に変わっているので可読性が宜しくない
 					 * (設置した数 -> 設置した数のうち、MineStack上で足りなかったブロック数)
 					 */
-					long num = playerdata_s.getMinestack().getStackedAmountOf(mineStackObj) - v;
+					final long num = playerdata_s.getMinestack().getStackedAmountOf(mineStackObj) - v;
 					if( num < 0 ){ // minestack上の残数では足りない場合
 						//minestackは0にする
 						playerdata_s.getMinestack().subtractStackedAmountOf
