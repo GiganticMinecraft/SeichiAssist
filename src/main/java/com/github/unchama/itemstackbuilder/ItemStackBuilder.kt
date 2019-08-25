@@ -1,5 +1,6 @@
 package com.github.unchama.itemstackbuilder
 
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -53,6 +54,27 @@ interface ItemStackBuilder {
    * @return このBuilder
    */
   fun unbreakable(): ItemStackBuilder
+
+  /**
+   * [ItemStack] に与えられた [ItemFlag] を付与する.
+   *
+   * @return このBuilder
+   */
+  fun flagged(flag: ItemFlag): ItemStackBuilder
+
+  /**
+   * [ItemStack] に [Set] で与えられた [ItemFlag] を全て付与する.
+   *
+   * @return このBuilder
+   */
+  fun flagged(flagSet: Set<ItemFlag>): ItemStackBuilder = flagSet.fold(this) { acc, flag -> acc.flagged(flag) }
+
+  /**
+   * [ItemStack] に与えられた全ての [ItemFlag] を付与する.
+   *
+   * @return このBuilder
+   */
+  fun flagged(vararg flags: ItemFlag): ItemStackBuilder = flagged(flags.toSet())
 
   /**
    * Builderによって指定された各引数を用いて [ItemStack] を生成します
