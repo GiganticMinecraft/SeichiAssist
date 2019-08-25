@@ -85,16 +85,6 @@ class PlayerData constructor(val uuid: UUID) {
 
   //region accessors and modifiers
 
-  val toggleExpBarVisibility: TargetedEffect<Player> =
-      unfocusedEffect {
-        this.expbar.isVisible = !this.expbar.isVisible
-      } + deferredEffect {
-        when {
-          this.expbar.isVisible -> "${GREEN}整地量バー表示"
-          else -> "${RED}整地量バー非表示"
-        }.asMessageEffect()
-      }
-
   val toggleAutoMineStack: UnfocusedEffect =
       unfocusedEffect {
         this.autoMineStack = !this.autoMineStack
@@ -921,6 +911,16 @@ class PlayerData constructor(val uuid: UUID) {
   val incrementRegionNumber: UnfocusedEffect =
       unfocusedEffect {
         this.regionCount += 1
+      }
+
+  val toggleExpBarVisibility: TargetedEffect<Player> =
+      unfocusedEffect {
+        this.expbar.isVisible = !this.expbar.isVisible
+      } + deferredEffect {
+        when {
+          this.expbar.isVisible -> "${GREEN}整地量バー表示"
+          else -> "${RED}整地量バー非表示"
+        }.asMessageEffect()
       }
 
   companion object {
