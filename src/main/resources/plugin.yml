@@ -59,3 +59,8 @@ commands:
     usage: /<command> [region name] [new owner name]
     permission: multiseichiplugin.x-transfer
     permission-message: You don't have <permission>
+  fly:
+    description: This is a fly command.
+    usage: /<command> <finish/amount/endless>
+    permission-message: You don't have <permission>
+    permission: multibuildplugin.build
