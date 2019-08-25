@@ -24,7 +24,7 @@ public class BuildAssist {
     //Playerdataに依存するデータリスト
     public static final HashMap<UUID, PlayerData> playermap = new HashMap<>();
     private HashMap<String, TabExecutor> commandlist;
-    static BuildAssistConfig config;
+    public static BuildAssistConfig config;
 
     //lvの閾値
     static final List<Integer> levellist = Arrays.asList(
