@@ -24,7 +24,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import java.util.*
 
-private object BuildMainMenu : Menu {
+object BuildMainMenu : Menu {
 
   private object ButtonComputations {
 
@@ -209,7 +209,7 @@ private object BuildMainMenu : Menu {
       )
     }
 
-    suspend fun Player.computeButtonToLineUpBlocks() = run {
+    suspend fun Player.computeButtonToLineUpBlocks() = recomputedButton {
       val openerData = BuildAssist.playermap[uniqueId]!!
       val iconItemStack = IconItemStackBuilder(Material.WOOD)
           .title("$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}")
@@ -236,8 +236,7 @@ private object BuildMainMenu : Menu {
                       }
                     },
                     "${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}".asMessageEffect(),
-                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                    TargetedEffect { openInventory(MenuInventoryData.getMenuData(player)) })
+                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f))
               }
             }
           }
