@@ -44,12 +44,6 @@ class PlayerInventoryListener : Listener {
     val uuid = player.uniqueId
     val playerdata = playermap[uuid] ?: return
 
-    //プレイヤーデータが無い場合は処理終了
-
-    //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "木の棒メニューB") {
-
-    }
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "「範囲設置スキル」設定画面") {
       event.isCancelled = true
