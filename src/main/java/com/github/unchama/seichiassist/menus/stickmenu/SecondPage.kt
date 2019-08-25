@@ -294,7 +294,7 @@ object SecondPage: Menu {
     suspend fun Player.computeBroadcastMessageToggleButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]!!
       val iconItemStack = run {
-        val currentSettings = playerData.getBroadcastMutingSettings()
+        val currentSettings = playerData.settings.getBroadcastMutingSettings()
 
         val soundConfigurationState =
             if (currentSettings.shouldMuteSounds()) {
@@ -324,10 +324,10 @@ object SecondPage: Menu {
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
-                playerData.toggleBroadcastMutingSettings,
+                playerData.settings.toggleBroadcastMutingSettings,
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
                 deferredEffect {
-                  when (playerData.getBroadcastMutingSettings()) {
+                  when (playerData.settings.getBroadcastMutingSettings()) {
                     RECEIVE_MESSAGE_AND_SOUND -> "${GREEN}非表示/消音設定を解除しました"
                     RECEIVE_MESSAGE_ONLY -> "${RED}消音可能な全体通知音を消音します"
                     MUTE_MESSAGE_AND_SOUND -> "${RED}非表示可能な全体メッセージを非表示にします"
@@ -366,7 +366,7 @@ object SecondPage: Menu {
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
-                playerData.toggleDeathMessageMutingSettings,
+                playerData.settings.toggleDeathMessageMutingSettings,
                 deferredEffect {
                   val (soundPitch, message) =
                       if (playerData.shouldDisplayDeathMessages)
@@ -415,7 +415,7 @@ object SecondPage: Menu {
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
-                playerData.toggleWorldGuardLogEffect,
+                playerData.settings.toggleWorldGuardLogEffect,
                 deferredEffect {
                   val (soundPitch, message) =
                       if (playerData.shouldDisplayWorldGuardLogs)

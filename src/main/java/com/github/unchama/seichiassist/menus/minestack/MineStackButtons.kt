@@ -105,7 +105,7 @@ internal object MineStackButtons {
 
     val buttonEffect = FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
       sequentialEffect(
-          playerData.toggleAutoMineStack,
+          playerData.settings.toggleAutoMineStack,
           deferredEffect {
             val message: String
             val soundPitch: Float

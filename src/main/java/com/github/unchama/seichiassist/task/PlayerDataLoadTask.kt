@@ -200,10 +200,10 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       //各種数値
       playerdata.loaded = true
       runBlocking {
-        playerdata.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag"))
+        playerdata.settings.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag"))
       }
       playerdata.autoMineStack = rs.getBoolean("minestackflag")
-      playerdata.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
+      playerdata.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
       playerdata.activeskilldata.apply {
         mineflagnum = rs.getInt("activemineflagnum")
         assaultflag = rs.getBoolean("assaultflag")
@@ -221,7 +221,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       }
 
       playerdata.gachapoint = rs.getInt("gachapoint")
-      playerdata.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
+      playerdata.settings.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
       playerdata.level = rs.getInt("level")
       playerdata.unclaimedApologyItems = rs.getInt("numofsorryforbug")
       playerdata.regionCount = rs.getInt("rgnum")
@@ -231,7 +231,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
 
       playerdata.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
 
-      playerdata.pvpflag = rs.getBoolean("pvpflag")
+      playerdata.settings.pvpflag = rs.getBoolean("pvpflag")
       playerdata.totalbreaknum = rs.getLong("totalbreaknum")
       playerdata.playTick = rs.getInt("playtick")
       playerdata.p_givenvote = rs.getInt("p_givenvote")
@@ -245,7 +245,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
 
       playerdata.expmarge = rs.getByte("expmarge")
       playerdata.contentsPresentInSharedInventory = !rs.getString("shareinv").isNullOrEmpty()
-      playerdata.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
+      playerdata.settings.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
 
       playerdata.selectHomeNum = 0
       playerdata.setHomeNameNum = 0

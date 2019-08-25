@@ -267,7 +267,7 @@ class PlayerClickListener : Listener {
         Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat(), 2f)
 
         runBlocking {
-          if (!playerData.getBroadcastMutingSettings().shouldMuteMessages()) {
+          if (!playerData.settings.getBroadcastMutingSettings().shouldMuteMessages()) {
             player.playSound(player.location, Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat(), 2f)
           }
         }

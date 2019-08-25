@@ -166,9 +166,9 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
           + " name = '" + playerdata.lowercaseName + "'"
 
           //各種数値更新処理
-          + ",effectflag = " + runBlocking { playerdata.fastDiggingEffectSuppression.serialized() }
+          + ",effectflag = " + runBlocking { playerdata.settings.fastDiggingEffectSuppression.serialized() }
           + ",minestackflag = " + playerdata.autoMineStack
-          + ",messageflag = " + playerdata.receiveFastDiggingEffectStats
+          + ",messageflag = " + playerdata.settings.receiveFastDiggingEffectStats
           + ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum
           + ",assaultflag = " + playerdata.activeskilldata.assaultflag
           + ",activeskilltype = " + playerdata.activeskilldata.skilltype
@@ -183,7 +183,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
           + ",lavacondenskill = " + playerdata.activeskilldata.lavacondenskill
           + ",effectnum = " + playerdata.activeskilldata.effectnum
           + ",gachapoint = " + playerdata.gachapoint
-          + ",gachaflag = " + playerdata.receiveGachaTicketEveryMinute
+          + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute
           + ",level = " + playerdata.level
           + ",rgnum = " + playerdata.regionCount
           + ",totalbreaknum = " + playerdata.totalbreaknum
@@ -195,14 +195,14 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
 
           + ",multipleidbreakflag = " + playerdata.multipleidbreakflag
 
-          + ",pvpflag = " + playerdata.pvpflag
+          + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.activeskilldata.effectpoint
           + ",mana = " + playerdata.activeskilldata.mana.mana
           + ",expvisible = " + playerdata.expbar.isVisible
           + ",totalexp = " + playerdata.totalexp
           + ",expmarge = " + playerdata.expmarge
-          + ",everysound = " + playerdata.getBroadcastMutingSettings().shouldMuteSounds()
-          + ",everymessage = " + playerdata.getBroadcastMutingSettings().shouldMuteMessages()
+          + ",everysound = " + playerdata.settings.getBroadcastMutingSettings().shouldMuteSounds()
+          + ",everymessage = " + playerdata.settings.getBroadcastMutingSettings().shouldMuteMessages()
 
           + ",displayTypeLv = " + playerdata.nickName.style.displayLevel
           + ",displayTitle1No = " + playerdata.nickName.id1

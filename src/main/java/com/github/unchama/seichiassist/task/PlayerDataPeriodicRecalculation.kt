@@ -81,7 +81,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       var minespeedlv = 0
 
       //effectflag ONの時のみ実行
-      if (playerData.fastDiggingEffectSuppression.isSuppressionActive()) {
+      if (playerData.settings.fastDiggingEffectSuppression.isSuppressionActive()) {
         //合計effect量
         var sum = 0.0
         //最大持続時間
@@ -99,7 +99,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
         minespeedlv = (sum - 1).toInt()
 
         //effect上限値を判定
-        val maxSpeed = playerData.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
+        val maxSpeed = playerData.settings.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
 
         //effect追加の処理
         //実際のeffect値が0より小さいときはeffectを適用しない
@@ -123,9 +123,9 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       }
 
       //前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
-      if (playerData.lastminespeedlv != minespeedlv || playerData.receiveFastDiggingEffectStats) {
+      if (playerData.lastminespeedlv != minespeedlv || playerData.settings.receiveFastDiggingEffectStats) {
         player.sendMessage("${YELLOW}★${WHITE}採掘速度上昇レベルが$YELLOW${minespeedlv + 1}${WHITE}になりました")
-        if (playerData.receiveFastDiggingEffectStats) {
+        if (playerData.settings.receiveFastDiggingEffectStats) {
           player.sendMessage("----------------------------内訳-----------------------------")
           for (ed in playerData.effectdatalist) {
             player.sendMessage("$RESET$RED${ed.effectDescription}")
@@ -144,7 +144,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       //ガチャポイントに合算
       playerData.gachapoint = playerData.gachapoint + increase
 
-      if (playerData.gachapoint >= config.gachaPresentInterval && playerData.receiveGachaTicketEveryMinute) {
+      if (playerData.gachapoint >= config.gachaPresentInterval && playerData.settings.receiveGachaTicketEveryMinute) {
         val skull = Util.getskull(name)
         playerData.gachapoint = playerData.gachapoint - config.gachaPresentInterval
         if (player.inventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
@@ -156,7 +156,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
           player.sendMessage(GOLD.toString() + "ガチャ券" + WHITE + "がドロップしました。右クリックで使えるゾ")
         }
       } else {
-        if (increase != 0 && playerData.receiveGachaTicketEveryMinute) {
+        if (increase != 0 && playerData.settings.receiveGachaTicketEveryMinute) {
           player.sendMessage("あと" + AQUA + (config.gachaPresentInterval - playerData.gachapoint % config.gachaPresentInterval) + WHITE + "ブロック整地すると" + GOLD + "ガチャ券" + WHITE + "獲得ダヨ")
         }
       }

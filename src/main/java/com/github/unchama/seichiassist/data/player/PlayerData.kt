@@ -6,8 +6,7 @@ import com.github.unchama.seichiassist.data.ActiveSkillData
 import com.github.unchama.seichiassist.data.ExpBar
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.Mana
-import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
-import com.github.unchama.seichiassist.data.player.settings.FastDiggingEffectSuppression
+import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
@@ -48,81 +47,41 @@ class PlayerData constructor(val uuid: UUID) {
 
   //region Configurations
 
-  val fastDiggingEffectSuppression = FastDiggingEffectSuppression()
+  val settings = PlayerSettings()
 
-  var autoMineStack = true
-
-  //内訳メッセージを出すフラグ
-  var receiveFastDiggingEffectStats = false
-
-  //ガチャ受け取り方法設定
-  var receiveGachaTicketEveryMinute = true
+  var autoMineStack
+    get() = settings.autoMineStack
+    set(value) { settings.autoMineStack = value }
 
   //キルログ表示トグル
-  var shouldDisplayDeathMessages = false
+  var shouldDisplayDeathMessages
+    get() = settings.shouldDisplayDeathMessages
+    set(value) { settings.shouldDisplayDeathMessages = value }
 
   //ワールドガード保護ログ表示トグル
-  var shouldDisplayWorldGuardLogs = true
-
-  lateinit var broadcastMutingSettings: BroadcastMutingSettings
-
-  //インベントリ共有トグル
-  var contentsPresentInSharedInventory = false
-
-  //ハーフブロック破壊抑制用
-  private var allowBreakingHalfBlocks = false
+  var shouldDisplayWorldGuardLogs
+    get() = settings.shouldDisplayWorldGuardLogs
+    set(value) { settings.shouldDisplayWorldGuardLogs = value }
 
   //複数種類破壊トグル
-  var multipleidbreakflag = false
+  var multipleidbreakflag
+    get() = settings.multipleidbreakflag
+    set(value) { settings.multipleidbreakflag = value }
 
-  //チェスト破壊トグル
-  var chestflag = true
+  var nickName
+    get() = settings.nickName
+    set(value) { settings.nickName = value }
 
-  //PvPトグル
-  var pvpflag = false
-
-  var nickName = PlayerNickName(PlayerNickName.Style.Level, 0, 0, 0)
-
-  //region accessors and modifiers
-
-  val toggleAutoMineStack: UnfocusedEffect =
-      unfocusedEffect {
-        this.autoMineStack = !this.autoMineStack
-      }
-
-  val toggleWorldGuardLogEffect: UnfocusedEffect =
-      unfocusedEffect {
-        this.shouldDisplayWorldGuardLogs = !this.shouldDisplayWorldGuardLogs
-      }
-
-  val toggleDeathMessageMutingSettings: UnfocusedEffect =
-      unfocusedEffect {
-        this.shouldDisplayDeathMessages = !this.shouldDisplayDeathMessages
-      }
-
-  @Suppress("RedundantSuspendModifier")
-  suspend fun getBroadcastMutingSettings(): BroadcastMutingSettings = broadcastMutingSettings
-
-  val toggleBroadcastMutingSettings
-    get() = unfocusedEffect {
-      broadcastMutingSettings = getBroadcastMutingSettings().nextSettingsOption()
-    }
-
-  @Suppress("RedundantSuspendModifier")
-  suspend fun toggleHalfBreakFlag(): TargetedEffect<Player> {
-    allowBreakingHalfBlocks = !allowBreakingHalfBlocks
-
-    val newStatus = if (allowBreakingHalfBlocks) "${GREEN}破壊可能" else "${RED}破壊不可能"
-    val responseMessage = "現在ハーフブロックは$newStatus${RESET}です."
-
-    return responseMessage.asMessageEffect()
-  }
-
-  //endregion
   //endregion
 
   //region session-specific data
   // TODO many properties here might not be right to belong here
+
+  //ハーフブロック破壊抑制用
+  private var allowBreakingHalfBlocks = false
+
+  //チェスト破壊トグル
+  var chestflag = true
 
   //各統計値差分計算用配列
   private val statisticsData: MutableList<Int> = (MaterialSets.materials - exclude)
@@ -176,6 +135,9 @@ class PlayerData constructor(val uuid: UUID) {
   var loc: Location? = null
 
   //endregion
+
+  //インベントリ共有トグル
+  var contentsPresentInSharedInventory = false
 
   //ガチャの基準となるポイント
   var gachapoint = 0
@@ -836,9 +798,9 @@ class PlayerData constructor(val uuid: UUID) {
 
   @Suppress("RedundantSuspendModifier")
   suspend fun toggleMessageFlag(): TargetedEffect<Player> {
-    receiveFastDiggingEffectStats = !receiveFastDiggingEffectStats
+    settings.receiveFastDiggingEffectStats = !settings.receiveFastDiggingEffectStats
 
-    val responseMessage = if (receiveFastDiggingEffectStats) {
+    val responseMessage = if (settings.receiveFastDiggingEffectStats) {
       "${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
     } else {
       "${GREEN}内訳表示:OFF"
@@ -892,7 +854,7 @@ class PlayerData constructor(val uuid: UUID) {
     val maxDuration = activeEffects.map { it.duration }.max() ?: 0
     val computedAmplifier = floor(amplifierSum - 1).toInt()
 
-    val maxSpeed: Int = fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
+    val maxSpeed: Int = settings.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
 
     // 実際に適用されるeffect量
     val amplifier = min(computedAmplifier, maxSpeed)
