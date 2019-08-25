@@ -13,21 +13,15 @@ import com.github.unchama.seichiassist.SeichiAssist;
 
 
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
+	private final HashMap<UUID,PlayerData> playermap = BuildAssist.playermap;
+	private final Player p;
+	private final UUID uuid;
+	private int retryCount;
 
-	private Plugin plugin = BuildAssist.plugin;
-	private HashMap<UUID,PlayerData> playermap = BuildAssist.playermap;
-
-
-	String name;
-	Player p;
-	final UUID uuid;
-	int i;
-
-	public LoadPlayerDataTaskRunnable(Player _p) {
-		p = _p;
-		name = Util.getName(p);
-		uuid = p.getUniqueId();
-		i = 0;
+	LoadPlayerDataTaskRunnable(final Player p) {
+		this.p = p;
+		uuid = this.p.getUniqueId();
+		retryCount = 0;
 	}
 
 	@Override
@@ -41,7 +35,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			return;
 		}
 		//読み込み失敗が規定回数超えたら終わる
- 		if(i >= 7){
+ 		if(retryCount >= 7){
 			cancel();
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "の建築系データが読み込めませんでした");
  			p.sendMessage(ChatColor.RED + "建築系データが読み込めませんでした。再接続をお願いします。改善されない場合はお手数ですがお問い合わせください");
@@ -49,14 +43,14 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  			return;
  		}
  		//DBから読み込み終わるまで待つ
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 		if(playerdata_s == null){
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "の建築系データ取得待機…(" + (i+1) + "回目)");
  			i++;
  			return;
 		}
 		cancel();
-		PlayerData playerdata = null;
+		final PlayerData playerdata;
 		if (!playermap.containsKey(uuid)) {
 			//リストにplayerdataが無い場合は新規作成
 			playerdata = new PlayerData(p);
