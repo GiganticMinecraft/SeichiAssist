@@ -24,7 +24,7 @@ public class BuildAssist {
     static Boolean DEBUG = false;
 
     //起動するタスクリスト
-    private List<BukkitTask> tasklist = new LinkedList<>();
+    private final List<BukkitTask> tasklist = new LinkedList<>();
 
     //総建築量ランキング表示用データリスト
     //public static final List<Integer> ranklist = new ArrayList<>();

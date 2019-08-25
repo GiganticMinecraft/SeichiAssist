@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 import java.math.BigDecimal;
 
 public class BuildBlock {
-	public int after;
-	public int before;
+	private final int after;
+	private final int before;
 	public int increase;
 
 	BuildBlock() {
@@ -22,9 +22,9 @@ public class BuildBlock {
 		this.increase = (this.after - this.before);
 	}
 
-	public static BigDecimal calcBuildBlock(Player player) {
+	static BigDecimal calcBuildBlock(final Player player) {
 		BigDecimal sum = BigDecimal.ZERO;
-		for (Material m : BuildAssist.materiallist) {
+		for (final Material m : BuildAssist.materiallist) {
 			sum = new BigDecimal(player.getStatistic(Statistic.USE_ITEM, m));
 		}
 		return sum;

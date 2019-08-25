@@ -14,18 +14,15 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 public class EntityListener implements Listener {
 	HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
 
-	public EntityListener() {
-	}
-
 	@EventHandler
-	public void onEntityExplodeEvent(EntityExplodeEvent event) {
+	public void onEntityExplodeEvent(final EntityExplodeEvent event) {
 		if ((event.getEntity() instanceof LargeFireball)) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler
-	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+	public void onEntityDamageByEntityEvent(final EntityDamageByEntityEvent event) {
 		if (((event.getDamager() instanceof LargeFireball))
 				&& ((event.getEntity() instanceof Player))) {
 			event.setCancelled(true);
