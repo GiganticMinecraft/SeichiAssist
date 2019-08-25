@@ -279,6 +279,7 @@ public class BuildAssist {
         BuildAssist.plugin = plugin;
     }
 
+    @SuppressWarnings("unused")
     public void onEnable() {
         //コンフィグ系の設定は全てConfig.javaに移動
         config = new BuildAssistConfig(plugin);
@@ -313,11 +314,12 @@ public class BuildAssist {
         tasklist.add(new MinuteTaskRunnable().runTaskTimer(plugin, 0, 1200));
     }
 
+    @SuppressWarnings("unused")
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
         return commandlist.get(cmd.getName()).onCommand(sender, cmd, label, args);
     }
 
-
+    @SuppressWarnings("unused")
     public void onDisable() {
         for (final BukkitTask task : tasklist) {
             task.cancel();
