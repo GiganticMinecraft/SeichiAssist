@@ -24,7 +24,7 @@ public class BuildAssist {
     //Playerdataに依存するデータリスト
     public static final HashMap<UUID, PlayerData> playermap = new HashMap<>();
     private HashMap<String, TabExecutor> commandlist;
-    static BuildAssistConfig config;
+    public static BuildAssistConfig config;
 
     //lvの閾値
     static final List<Integer> levellist = Arrays.asList(
@@ -265,9 +265,9 @@ public class BuildAssist {
             , Material.STATIONARY_WATER    //水
     );
 
-    static String[] line_up_str = {"OFF", "上側", "下側"};
-    static String[] line_up_step_str = {"上側", "下側", "両方"};
-    static String[] line_up_off_on_str = {"OFF", "ON"};
+    public static String[] line_up_str = {"OFF", "上側", "下側"};
+    public static String[] line_up_step_str = {"上側", "下側", "両方"};
+    public static String[] line_up_off_on_str = {"OFF", "ON"};
 
     public BuildAssist(Plugin plugin) {
         BuildAssist.plugin = plugin;
