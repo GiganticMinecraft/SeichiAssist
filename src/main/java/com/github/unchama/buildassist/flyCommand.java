@@ -15,30 +15,30 @@ import org.bukkit.plugin.Plugin;
 public class flyCommand implements TabExecutor {
     Plugin plugin;
 
-    public flyCommand(Plugin _plugin) {
+    public flyCommand(final Plugin _plugin) {
         this.plugin = _plugin;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender arg0, Command arg1,
-                                      String arg2, String[] arg3) {
+    public List<String> onTabComplete(final CommandSender arg0, final Command arg1,
+                                      final String arg2, final String[] arg3) {
         return null;
     }
 
 
-    public boolean isInt(String num) {
+    public boolean isInt(final String num) {
         try {
             Integer.parseInt(num);
             return true;
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
         }
         return false;
     }
 
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label,
-                             String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command cmd, final String label,
+                             final String[] args) {
         //プレイヤーからの送信でない時処理終了
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.GREEN + "このコマンドはゲーム内から実行してください。");
@@ -53,21 +53,21 @@ public class flyCommand implements TabExecutor {
         }
         if (args.length == 1) {
             //プレイヤーを取得
-            Player player = (Player) sender;
+            final Player player = (Player) sender;
             //プレイヤーネーム
-            String name = Util.getName(player);
+            final String name = Util.getName(player);
             //UUIDを取得
-            UUID uuid = player.getUniqueId();
+            final UUID uuid = player.getUniqueId();
             //playerdataを取得
-            PlayerData playerdata = BuildAssist.playermap.get(uuid);
+            final PlayerData playerdata = BuildAssist.playermap.get(uuid);
             //プレイヤーデータが無い場合は処理終了
             if (playerdata == null) {
                 return false;
             }
 
-            ExperienceManager expman = new ExperienceManager(player);
+            final ExperienceManager expman = new ExperienceManager(player);
 
-            boolean flyflag;
+            final boolean flyflag;
             int flytime = playerdata.flytime;
             boolean Endlessfly = playerdata.Endlessfly;
 

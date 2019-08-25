@@ -1,8 +1,10 @@
 /*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package com.github.unchama.buildassist;
 
+import com.github.unchama.seichiassist.PackagePrivate;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.playerdata.BuildCount;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -13,28 +15,55 @@ public class PlayerData {
 	public String name;
 	public UUID uuid;
 	public int level;
-	//トータル設置ブロック数
-	public BigDecimal totalbuildnum;
+	/**
+	 * トータル設置ブロック数
+	 */
+	@PackagePrivate
+	BigDecimal totalbuildnum;
 
-	public boolean flyflag;
-	public int flytime;
-	public boolean Endlessfly ;
-	public boolean ZoneSetSkillFlag ;
-	public boolean zsSkillDirtFlag;
-	public int AREAint ;
+	@PackagePrivate
+	boolean flyflag;
 
-	public BigDecimal build_num_1min;			//1分のブロック設置数
+	@PackagePrivate
+	int flytime;
 
-	//ブロックを並べるスキル設定フラグ
-	public int line_up_flg;
-	public int line_up_step_flg;
-	public int line_up_des_flg;
-	public int line_up_minestack_flg;
-	//ブロック範囲設置スキル設定フラグ
-	public boolean zs_minestack_flag;
+	@PackagePrivate
+	boolean Endlessfly;
+
+	@PackagePrivate
+	boolean ZoneSetSkillFlag;
+
+	@PackagePrivate
+	boolean zsSkillDirtFlag;
+
+	@PackagePrivate
+	int AREAint;
+
+	/**
+	 * 1分のブロック設置数
+	 */
+	@PackagePrivate
+	BigDecimal build_num_1min;
+
+	/**
+	 * ブロックを並べるスキル設定フラグ
+	 */
+	@PackagePrivate
+	int line_up_flg;
+	@PackagePrivate
+	int line_up_step_flg;
+	@PackagePrivate
+	int line_up_des_flg;
+	@PackagePrivate
+	int line_up_minestack_flg;
+	/**
+	 * ブロック範囲設置スキル設定フラグ
+	 */
+	@PackagePrivate
+	boolean zs_minestack_flag;
 
 	//プレイヤーデータクラスのコンストラクタ
-	public PlayerData(Player player){
+	public PlayerData(final Player player){
 		//初期値を設定
 		name = Util.getName(player);
 		uuid = player.getUniqueId();
@@ -57,17 +86,17 @@ public class PlayerData {
 		build_num_1min = BigDecimal.ZERO;
 
 	}
-	//レベルを更新
-	public void updateLevel(Player player) {
+	/** レベルを更新 */
+	void updateLevel(final Player player) {
 		calcPlayerLevel(player);
 	}
 
-	//プレイヤーレベルを計算し、更新する。
-	private void calcPlayerLevel(Player player){
+	/** プレイヤーレベルを計算し、更新する。 */
+	private void calcPlayerLevel(final Player player){
 		//現在のランクの次を取得
 		int i = level;
 		//ランクが上がらなくなるまで処理
-		while(BuildAssist.levellist.get(i).intValue() <= totalbuildnum.doubleValue() && (i+2) <= BuildAssist.levellist.size()){
+		while(BuildAssist.levellist.get(i) <= totalbuildnum.doubleValue() && (i+2) <= BuildAssist.levellist.size()){
 			if(!BuildAssist.DEBUG){
 				//レベルアップ時のメッセージ
 				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(" + i +")→建築Lv(" + (i+1) + ")】");
@@ -80,18 +109,22 @@ public class PlayerData {
 		level = i;
 	}
 
-	//オフラインかどうか
-	public boolean isOffline() {
-		return BuildAssist.plugin.getServer().getPlayer(uuid) == null;
+	/** オフラインかどうか */
+	boolean isOffline() {
+		return Bukkit.getServer().getPlayer(uuid) == null;
 	}
 
-	//建築系データを読み込む　ture:読み込み成功　false:読み込み失敗
-	public boolean buildload(Player player){
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+	/**
+	 * 建築系データを読み込む　
+	 * @param player
+	 * @return ture:読み込み成功　false:読み込み失敗
+	 */
+	boolean buildload(final Player player){
+		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 		if(playerdata_s == null){
 			return false;
 		}
-		int server_num = SeichiAssist.Companion.getSeichiAssistConfig().getServerNum();
+		final int server_num = SeichiAssist.Companion.getSeichiAssistConfig().getServerNum();
 
 		final BuildCount oldBuildCount = playerdata_s.getBuildCount();
 
@@ -121,9 +154,9 @@ public class PlayerData {
 		return true;
 	}
 
-	//建築系データを保存
-	public void buildsave(Player player){
-		com.github.unchama.seichiassist.data.PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(uuid);
+	/** 建築系データを保存 */
+	void buildsave(final Player player){
+		final com.github.unchama.seichiassist.data.PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(uuid);
 		if (playerData == null){
 			player.sendMessage(ChatColor.RED+"建築系データ保存失敗しました");
 			return;

@@ -2,6 +2,8 @@
 package com.github.unchama.buildassist;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.util.exp.IExperienceManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -12,37 +14,26 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class MinuteTaskRunnable extends BukkitRunnable {
-	private Plugin plugin = BuildAssist.plugin;
-	private HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
-
-
-	public MinuteTaskRunnable() {
-	}
+	private final HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
 
 	@Override
 	public void run() {
-		this.playermap = BuildAssist.playermap;
-		this.plugin = BuildAssist.plugin;
 		if (this.playermap.isEmpty()) {
 			return;
 		}
-		for (PlayerData playerdata : this.playermap.values()) {
+		for (final PlayerData playerdata : this.playermap.values()) {
 			if (!playerdata.isOffline()) {
-				Player player = this.plugin.getServer().getPlayer(
+				final Player player = Bukkit.getServer().getPlayer(
 						playerdata.uuid);
 				//SeichiAssistのデータを取得
-				UUID uuid = player.getUniqueId();
-				com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+				final UUID uuid = player.getUniqueId();
+				final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 				//経験値変更用のクラスを設定
-				ExperienceManager expman = new ExperienceManager(player);
+				final IExperienceManager expman = new ExperienceManager(player);
 
-				int minus = -BuildAssist.config.getFlyExp();
+				final int minus = -BuildAssist.config.getFlyExp();
 
 				//1分間の建築量を加算する
-//				player.sendMessage("1分の設置数:" + playerdata.build_num_1min);
-//				player.sendMessage("累計設置数:" + playerdata.totalbuildnum);
-
-				//player.sendMessage("建築量計算処理開始。1分の設置量:" + playerdata.build_num_1min.doubleValue() + ",累計設置量(before):" + playerdata.totalbuildnum.doubleValue());
 
 				if(playerdata.build_num_1min.doubleValue() > BuildAssist.config.getBuildNum1minLimit()){
 					playerdata.totalbuildnum = playerdata.totalbuildnum.add(new BigDecimal(BuildAssist.config.getBuildNum1minLimit()));
@@ -50,11 +41,6 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 					playerdata.totalbuildnum = playerdata.totalbuildnum.add(playerdata.build_num_1min);
 				}
 				playerdata.build_num_1min = BigDecimal.ZERO;
-
-				//player.sendMessage("設置量計算処理終了。累計設置量(after):" + playerdata.totalbuildnum.doubleValue());
-
-//				player.sendMessage("累計設置数:" + playerdata.totalbuildnum);
-
 				playerdata.updateLevel(player);
 				playerdata.buildsave(player);
 
@@ -68,7 +54,7 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 						player.sendMessage(ChatColor.RED + "Fly効果を終了しました");
 						playerdata.flytime = 0;
 						playerdata.flyflag = false;
-						playerdata.Endlessfly = false ;
+						playerdata.Endlessfly = false;
 						player.setAllowFlight(false);
 						player.setFlying(false);
 					} else {
@@ -77,7 +63,7 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 						expman.changeExp(minus);
 					}
 				}else if (playerdata.flyflag) {
-					int flytime = playerdata.flytime;
+					final int flytime = playerdata.flytime;
 					if (playerdata_s.getIdleMinute() >= 10) {
 						player.setAllowFlight(true);
 						player.sendMessage(ChatColor.GRAY + "放置時間中のFLYは無期限で継続中です(経験値は消費しません)");
