@@ -26,12 +26,9 @@ import java.util.*
 
 private object BuildMainMenu : Menu {
 
-  private object ConstantButtons {
-  }
-
   private object ButtonComputations {
 
-    suspend fun Player.computeStatsButton(): Button = recomputedButton {
+    suspend fun Player.computeNotationOfStats(): Button = recomputedButton {
       val openerData = BuildAssist.playermap[uniqueId]!!
       val iconItemStack = SkullItemStackBuilder(uniqueId)
           .enchanted()
@@ -59,7 +56,7 @@ private object BuildMainMenu : Menu {
       Button(iconItemStack)
     }
 
-    val flyFor1MinuteButton = run {
+    val buttonToFlyFor1Minute = run {
       val iconItemStack = IconItemStackBuilder(Material.FEATHER)
           .amount(1)
           .title("$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(1分)")
@@ -82,7 +79,7 @@ private object BuildMainMenu : Menu {
       )
     }
 
-    val flyFor5MinutesButton = run {
+    val buttonToFlyFor5Minutes = run {
       val iconItemStack = IconItemStackBuilder(Material.FEATHER)
           .amount(5)
           .title("$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(5分)")
@@ -105,7 +102,7 @@ private object BuildMainMenu : Menu {
       )
     }
 
-    val flyEndlesslyButton = run {
+    val buttonToFlyEndlessly = run {
       val iconItemStack = IconItemStackBuilder(Material.ELYTRA)
           .title("$YELLOW${EMPHASIZE}FLY機能、ON$RED$EMPHASIZE(無制限)")
           .lore(
@@ -127,7 +124,7 @@ private object BuildMainMenu : Menu {
       )
     }
 
-    val terminateFlightButton = run {
+    val buttonToTerminateFlight = run {
       val iconItemStack = IconItemStackBuilder(Material.CHAINMAIL_BOOTS)
           .title("$YELLOW${EMPHASIZE}FLY機能、OFF")
           .lore(
@@ -204,7 +201,7 @@ private object BuildMainMenu : Menu {
                   if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
                     "${RED}建築LVが足りません".asMessageEffect()
                   } else {
-                    unfocusedEffect { openInventory(MenuInventoryData.getSetBlockSkillData(player)) }
+                    TargetedEffect { openInventory(MenuInventoryData.getSetBlockSkillData(player)) }
                   }
                 }
             )
@@ -212,26 +209,98 @@ private object BuildMainMenu : Menu {
       )
     }
 
+    suspend fun Player.computeButtonToLineUpBlocks() = run {
+      val openerData = BuildAssist.playermap[uniqueId]!!
+      val iconItemStack = IconItemStackBuilder(Material.WOOD)
+          .title("$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}")
+          .lore(
+              "$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
+              "$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
+              "$RESET${GRAY}建築LV${BuildAssist.config.getblocklineuplevel()}以上で利用可能",
+              "$RESET${GRAY}クリックで切り替え"
+          )
+          .build()
+
+      Button(iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
+            deferredEffect {
+              if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
+                "${RED}建築LVが足りません".asMessageEffect()
+              } else {
+                sequentialEffect(
+                    TargetedEffect {
+                      if (openerData.line_up_flg >= 2) {
+                        openerData.line_up_flg = 0
+                      } else {
+                        openerData.line_up_flg++
+                      }
+                    },
+                    "${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}".asMessageEffect(),
+                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+                    TargetedEffect { openInventory(MenuInventoryData.getMenuData(player)) })
+              }
+            }
+          }
+      )
+    }
+
+    suspend fun Player.computeButtonToOpenLineUpBlocksMenu() = run {
+      val openerData = BuildAssist.playermap[uniqueId]!!
+      val iconItemStack = IconItemStackBuilder(Material.PAPER)
+          .title("$YELLOW${EMPHASIZE}「ブロックを並べるスキル（仮） 」設定画面へ")
+          .lore(
+              "$RESET${GRAY}現在の設定",
+              "$RESET${GRAY}スキル設定: ${BuildAssist.line_up_str[openerData.line_up_flg]}",
+              "$RESET${GRAY}ハーフブロック設定: ${BuildAssist.line_up_step_str[openerData.line_up_step_flg]}",
+              "$RESET${GRAY}破壊設定: ${BuildAssist.line_up_off_on_str[openerData.line_up_des_flg]}",
+              "$RESET${GRAY}MineStack優先設定: ${BuildAssist.line_up_off_on_str[openerData.line_up_minestack_flg]}"
+          )
+          .build()
+
+      Button(iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
+            sequentialEffect(
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+                TargetedEffect { MenuInventoryData.getBlockLineUpData(this@run) }
+            )
+          }
+      )
+    }
+
+    suspend fun Player.computeButtonToOpenMenuToCraftItemsWhereMineStack() = run {
+      val iconItemStackBuilder = IconItemStackBuilder(Material.WORKBENCH)
+          .title("$YELLOW${EMPHASIZE}MineStackブロック一括クラフト画面へ")
+          .lore("$RESET$DARK_RED${UNDERLINE}クリックで移動")
+          .build()
+
+      Button(iconItemStackBuilder,
+          FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
+            sequentialEffect(FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+                TargetedEffect { openInventory(MenuInventoryData.getBlockCraftData(this@run)) })
+          })
+    }
+
   }
 
   private suspend fun Player.computeMenuLayout(): IndexedSlotLayout =
-      with(ConstantButtons) {
-        with(ButtonComputations) {
-          IndexedSlotLayout(
-              0 to computeStatsButton(),
-              2 to computeButtonToShowStateOfFlying(),
-              3 to flyFor1MinuteButton,
-              4 to flyFor5MinutesButton,
-              5 to flyEndlesslyButton,
-              6 to terminateFlightButton,
-              18 to computeButtonToToggleRangedPlaceSkill(),
-              19 to computeButtonToOpenRangedPlaceSkillMenu()
-          )
-        }
+      with(ButtonComputations) {
+        IndexedSlotLayout(
+            0 to computeNotationOfStats(),
+            2 to computeButtonToShowStateOfFlying(),
+            3 to buttonToFlyFor1Minute,
+            4 to buttonToFlyFor5Minutes,
+            5 to buttonToFlyEndlessly,
+            6 to buttonToTerminateFlight,
+            18 to computeButtonToToggleRangedPlaceSkill(),
+            19 to computeButtonToOpenRangedPlaceSkillMenu(),
+            27 to computeButtonToLineUpBlocks(),
+            28 to computeButtonToOpenLineUpBlocksMenu(),
+            35 to computeButtonToOpenMenuToCraftItemsWhereMineStack()
+        )
       }
 
   override val open: TargetedEffect<Player> = computedEffect { player ->
-    val session = MenuInventoryView(4.rows(), "${LIGHT_PURPLE}木の棒メニュー").createNewSession()
+    val session = MenuInventoryView(4.rows(), "${LIGHT_PURPLE}木の棒メニューB").createNewSession()
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
