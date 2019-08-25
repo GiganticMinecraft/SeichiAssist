@@ -905,8 +905,6 @@ public final class MenuInventoryData {
 		final Player player = p.getPlayer();
 		//UUID取得
 		final UUID uuid = player.getUniqueId();
-		//プレイヤーデータ
-//		PlayerData playerdata = BuildAssist.playermap.get(uuid);
 		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 		final Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト3");
@@ -969,6 +967,11 @@ public final class MenuInventoryData {
 		return inventory;
 	}
 
+	/*
+	 * 10^11 > 2^32 > 10^10
+	 */
+	private static final int limit = 10;
+
 	/**
 	 * インデックス0 = 10 ** 0 (-> 1)
 	 * インデックス1 = 10 ** 1 (-> 10)
@@ -976,7 +979,6 @@ public final class MenuInventoryData {
 	 * ...
 	 * インデックスn = 10 ** n
 	 */
-	private static final int limit = 10;
 	private static final List<Integer> power10 = IntStream.iterate(1, operand -> operand * 10)
 			.limit(limit)
 			.collect(() -> new ArrayList<>(limit), ArrayList::add, ArrayList::addAll);
