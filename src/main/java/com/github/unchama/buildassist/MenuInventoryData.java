@@ -2,6 +2,8 @@ package com.github.unchama.buildassist;
 
 import com.github.unchama.buildassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.util.ItemMetaFactory;
+import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -478,8 +480,7 @@ public final class MenuInventoryData {
 		itemstack = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowLeft");
 		itemstack.setItemMeta(skullmeta);
@@ -668,10 +669,9 @@ public final class MenuInventoryData {
 
 		// 1ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "1ページ目へ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowUp");
 		itemstack.setItemMeta(skullmeta);
@@ -679,11 +679,9 @@ public final class MenuInventoryData {
 
 		// 3ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-//		itemstack.setDurability((short) 3);
+		skullmeta = ItemMetaFactory.SKULL.getValue();
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "3ページ目へ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowDown");
 		itemstack.setItemMeta(skullmeta);
@@ -698,7 +696,7 @@ public final class MenuInventoryData {
 			itemstack = new ItemStack(Material.SNOW_BLOCK,x);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SNOW_BLOCK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "雪玉を雪（ブロック）に変換します" );
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "雪玉"+ (p10 * 4) +"個→雪（ブロック）"+ p10 +"個"
+			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GRAY + "雪玉"+ (p10 * 4) +"個→雪（ブロック）"+ p10 +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "雪玉の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "雪（ブロック）の数:" + String.format("%,d",num_2)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能"
@@ -740,7 +738,7 @@ public final class MenuInventoryData {
 			itemstack = new ItemStack(Material.IRON_INGOT,x);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_INGOT);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "石炭を消費して鉄鉱石を鉄インゴットに変換します" );
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "鉄鉱石"+ (p10 * 4) +"個+石炭"+ p10 +"個→鉄インゴット"+ (p10 * 4) +"個"
+			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GRAY + "鉄鉱石"+ (p10 * 4) +"個+石炭"+ p10 +"個→鉄インゴット"+ (p10 * 4) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "鉄鉱石の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石炭の数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "鉄インゴットの数:" + String.format("%,d",num_2)
@@ -761,7 +759,7 @@ public final class MenuInventoryData {
 			itemstack = new ItemStack(Material.IRON_INGOT,x);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_INGOT);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "溶岩バケツを消費して鉄鉱石を鉄インゴットに変換します" );
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "鉄鉱石"+ (p10 * 50) +"個+溶岩バケツ"+ p10 +"個→鉄インゴット"+ (p10 * 50) +"個"
+			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GRAY + "鉄鉱石"+ (p10 * 50) +"個+溶岩バケツ"+ p10 +"個→鉄インゴット"+ (p10 * 50) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "鉄鉱石の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "溶岩バケツの数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "鉄インゴットの数:" + String.format("%,d",num_2)
@@ -782,7 +780,7 @@ public final class MenuInventoryData {
 			itemstack = new ItemStack(Material.GOLD_INGOT,x);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_INGOT);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "石炭を消費して金鉱石を金インゴットに変換します" );
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "金鉱石"+ (p10 * 4) +"個+石炭"+ p10 +"個→金インゴット"+ (p10 * 4) +"個"
+			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GRAY + "金鉱石"+ (p10 * 4) +"個+石炭"+ p10 +"個→金インゴット"+ (p10 * 4) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "金鉱石の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石炭の数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "金インゴットの数:" + String.format("%,d",num_2)
@@ -803,7 +801,7 @@ public final class MenuInventoryData {
 			itemstack = new ItemStack(Material.GOLD_INGOT,x);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_INGOT);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "溶岩バケツを消費して金鉱石を金インゴットに変換します" );
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "金鉱石"+ (p10 * 50) +"個+溶岩バケツ"+ p10 +"個→金インゴット"+ (p10 * 50) +"個"
+			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GRAY + "金鉱石"+ (p10 * 50) +"個+溶岩バケツ"+ p10 +"個→金インゴット"+ (p10 * 50) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "金鉱石の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "溶岩バケツの数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "金インゴットの数:" + String.format("%,d",num_2)
@@ -824,7 +822,7 @@ public final class MenuInventoryData {
 			itemstack = new ItemStack(Material.GLASS,x);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "石炭を消費して砂をガラスに変換します" );
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "砂"+ (p10 * 4) +"個+石炭"+ p10 +"個→ガラス"+ (p10 * 4) +"個"
+			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GRAY + "砂"+ (p10 * 4) +"個+石炭"+ p10 +"個→ガラス"+ (p10 * 4) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "砂の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石炭の数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ガラスの数:" + String.format("%,d",num_2)
@@ -845,7 +843,7 @@ public final class MenuInventoryData {
 			itemstack = new ItemStack(Material.GLASS,x);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "溶岩バケツを消費して砂をガラスに変換します" );
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "砂"+ (p10 * 50) +"個+溶岩バケツ"+ p10 +"個→ガラス"+ (p10 * 50) +"個"
+			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GRAY + "砂"+ (p10 * 50) +"個+溶岩バケツ"+ p10 +"個→ガラス"+ (p10 * 50) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "砂の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "溶岩バケツの数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ガラスの数:" + String.format("%,d",num_2)
@@ -866,7 +864,7 @@ public final class MenuInventoryData {
 			itemstack = new ItemStack(Material.NETHER_BRICK_ITEM,x);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_BRICK_ITEM);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "石炭を消費してネザーラックをネザーレンガに変換します" );
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "ネザーラック"+ (p10 * 4) +"個+石炭"+ p10 +"個→ネザーレンガ"+ (p10 * 4) +"個"
+			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GRAY + "ネザーラック"+ (p10 * 4) +"個+石炭"+ p10 +"個→ネザーレンガ"+ (p10 * 4) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーラックの数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石炭の数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーレンガの数:" + String.format("%,d",num_2)
@@ -887,7 +885,7 @@ public final class MenuInventoryData {
 			itemstack = new ItemStack(Material.NETHER_BRICK_ITEM,x);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_BRICK_ITEM);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "溶岩バケツを消費してネザーラックをネザーレンガに変換します" );
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "ネザーラック"+ (p10 * 50) +"個+溶岩バケツ"+ p10 +"個→ネザーレンガ"+ (p10 * 50) +"個"
+			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GRAY + "ネザーラック"+ (p10 * 50) +"個+溶岩バケツ"+ p10 +"個→ネザーレンガ"+ (p10 * 50) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーラックの数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "溶岩バケツの数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーレンガの数:" + String.format("%,d",num_2)
@@ -919,11 +917,9 @@ public final class MenuInventoryData {
 
 		// 2ページ目を開く
 		itemstack = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-//		itemstack.setDurability((short) 3);
+		skullmeta = ItemMetaFactory.SKULL.getValue(); // (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "2ページ目へ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
 		skullmeta.setLore(lore);
 		skullmeta.setOwner("MHF_ArrowUp");
 		itemstack.setItemMeta(skullmeta);
@@ -959,7 +955,7 @@ public final class MenuInventoryData {
 			itemstack = new ItemStack(Material.CLAY_BRICK,x);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CLAY_BRICK);
 			itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "溶岩バケツを消費して粘土をレンガに変換します" );
-			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "粘土"+ (p10 * 50) +"個+溶岩バケツ"+ p10 +"個→レンガ"+ (p10 * 50) +"個"
+			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GRAY + "粘土"+ (p10 * 50) +"個+溶岩バケツ"+ p10 +"個→レンガ"+ (p10 * 50) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "粘土の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "溶岩バケツの数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "レンガの数:" + String.format("%,d",num_2)
