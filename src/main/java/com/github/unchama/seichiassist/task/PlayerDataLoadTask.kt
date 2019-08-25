@@ -202,7 +202,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       runBlocking {
         playerdata.settings.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag"))
       }
-      playerdata.autoMineStack = rs.getBoolean("minestackflag")
+      playerdata.settings.autoMineStack = rs.getBoolean("minestackflag")
       playerdata.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
       playerdata.activeskilldata.apply {
         mineflagnum = rs.getInt("activemineflagnum")
@@ -226,10 +226,10 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       playerdata.unclaimedApologyItems = rs.getInt("numofsorryforbug")
       playerdata.regionCount = rs.getInt("rgnum")
       playerdata.pocketInventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
-      playerdata.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
-      playerdata.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
+      playerdata.settings.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
+      playerdata.settings.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
 
-      playerdata.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
+      playerdata.settings.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
 
       playerdata.settings.pvpflag = rs.getBoolean("pvpflag")
       playerdata.totalbreaknum = rs.getLong("totalbreaknum")
@@ -252,12 +252,12 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       playerdata.isSubHomeNameChange = false
 
       //実績、二つ名の情報
-      playerdata.nickName = PlayerNickName(
-          PlayerNickName.Style.marshal(rs.getBoolean("displayTypeLv")),
-          rs.getInt("displayTitle1No"),
-          rs.getInt("displayTitle2No"),
-          rs.getInt("displayTitle3No")
-      )
+      playerdata.settings.nickName = PlayerNickName(
+                PlayerNickName.Style.marshal(rs.getBoolean("displayTypeLv")),
+                rs.getInt("displayTitle1No"),
+                rs.getInt("displayTitle2No"),
+                rs.getInt("displayTitle3No")
+            )
       playerdata.p_vote_forT = rs.getInt("p_vote")
       playerdata.giveachvNo = rs.getInt("giveachvNo")
       playerdata.achievePoint = AchievementPoint(

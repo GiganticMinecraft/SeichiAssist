@@ -43,7 +43,7 @@ public final class BreakUtil {
 
 		//壊されるブロックがワールドガード範囲だった場合処理を終了
 		if(!ExternalPlugins.getWorldGuard().canBuild(player, breakblock.getLocation())){
-			if(playerdata.getShouldDisplayWorldGuardLogs()){
+			if(playerdata.getSettings().getShouldDisplayWorldGuardLogs()){
 				player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
 			}
 			return false;
@@ -156,7 +156,7 @@ public final class BreakUtil {
 			return false;
 		}
 		//minestackflagがfalseの時は処理を終了
-		if(!playerdata.getAutoMineStack()){
+		if(!playerdata.getSettings().getAutoMineStack()){
 			return false;
 		}
 

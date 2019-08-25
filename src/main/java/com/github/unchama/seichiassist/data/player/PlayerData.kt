@@ -45,34 +45,7 @@ class PlayerData constructor(val uuid: UUID) {
   //読み込み済みフラグ
   var loaded = false
 
-  //region Configurations
-
   val settings = PlayerSettings()
-
-  var autoMineStack
-    get() = settings.autoMineStack
-    set(value) { settings.autoMineStack = value }
-
-  //キルログ表示トグル
-  var shouldDisplayDeathMessages
-    get() = settings.shouldDisplayDeathMessages
-    set(value) { settings.shouldDisplayDeathMessages = value }
-
-  //ワールドガード保護ログ表示トグル
-  var shouldDisplayWorldGuardLogs
-    get() = settings.shouldDisplayWorldGuardLogs
-    set(value) { settings.shouldDisplayWorldGuardLogs = value }
-
-  //複数種類破壊トグル
-  var multipleidbreakflag
-    get() = settings.multipleidbreakflag
-    set(value) { settings.multipleidbreakflag = value }
-
-  var nickName
-    get() = settings.nickName
-    set(value) { settings.nickName = value }
-
-  //endregion
 
   //region session-specific data
   // TODO many properties here might not be right to belong here
@@ -339,8 +312,8 @@ class PlayerData constructor(val uuid: UUID) {
   }
 
   @JvmOverloads
-  fun updateNickname(id1: Int = nickName.id1, id2: Int = nickName.id2, id3: Int = nickName.id3, style: PlayerNickName.Style = nickName.style) {
-    nickName = nickName.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
+  fun updateNickname(id1: Int = settings.nickName.id1, id2: Int = settings.nickName.id2, id3: Int = settings.nickName.id3, style: PlayerNickName.Style = settings.nickName.style) {
+    settings.nickName = settings.nickName.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
   }
 
   //quit時とondisable時、プレイヤーデータを最新の状態に更新
@@ -422,16 +395,16 @@ class PlayerData constructor(val uuid: UUID) {
     }.toString()
 
     //表示を追加する処理
-    displayname = idleColor + if (nickName.id1 == 0 && nickName.id2 == 0 && nickName.id3 == 0) {
+    displayname = idleColor + if (settings.nickName.id1 == 0 && settings.nickName.id2 == 0 && settings.nickName.id3 == 0) {
       if (totalStarLevel <= 0) {
         "[ Lv$level ]$displayname$WHITE"
       } else {
         "[Lv$level☆$totalStarLevel]$displayname$WHITE"
       }
     } else {
-      val displayTitle1 = SeichiAssist.seichiAssistConfig.getTitle1(nickName.id1)
-      val displayTitle2 = SeichiAssist.seichiAssistConfig.getTitle2(nickName.id2)
-      val displayTitle3 = SeichiAssist.seichiAssistConfig.getTitle3(nickName.id3)
+      val displayTitle1 = SeichiAssist.seichiAssistConfig.getTitle1(settings.nickName.id1)
+      val displayTitle2 = SeichiAssist.seichiAssistConfig.getTitle2(settings.nickName.id2)
+      val displayTitle3 = SeichiAssist.seichiAssistConfig.getTitle3(settings.nickName.id3)
       "[$displayTitle1$displayTitle2$displayTitle3]$displayname$WHITE"
     }
 

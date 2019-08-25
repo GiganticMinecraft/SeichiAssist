@@ -149,7 +149,7 @@ public class MenuInventoryData {
 	// 複数種類ブロック同時破壊トグルボタン(追加)
 	public static ItemMeta MultipleIDBlockBreakToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<>();
-		if(playerdata.getMultipleidbreakflag()){
+		if(playerdata.getSettings().getMultipleidbreakflag()){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "複数種類ブロック同時破壊");
 			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
@@ -890,8 +890,8 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BOOK,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認" );
-		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(playerdata.getNickName().getId1())
-				+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(playerdata.getNickName().getId2()) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(playerdata.getNickName().getId3()) + "」");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(playerdata.getSettings().getNickName().getId1())
+				+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(playerdata.getSettings().getNickName().getId2()) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(playerdata.getSettings().getNickName().getId3()) + "」");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);

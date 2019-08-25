@@ -229,7 +229,7 @@ public class PlayerBlockBreakListener implements Listener {
 						breakblock = block.getRelative(x, y, z);
 						if(x == 0 && y == 0 && z == 0)continue;
 
-						if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
+						if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getSettings().getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
 							if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
 								if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 									if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
@@ -395,7 +395,7 @@ public class PlayerBlockBreakListener implements Listener {
 					breakblock = block.getRelative(x, y, z);
 					if(x == 0 && y == 0 && z == 0)continue;
 
-					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && (Util.INSTANCE.isSeichiWorld(player) || playerdata.getMultipleidbreakflag())) { //追加テスト(複数種類一括破壊スキル)
+					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && (Util.INSTANCE.isSeichiWorld(player) || playerdata.getSettings().getMultipleidbreakflag())) { //追加テスト(複数種類一括破壊スキル)
 						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
 							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 								if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){

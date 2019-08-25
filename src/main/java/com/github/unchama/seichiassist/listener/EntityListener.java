@@ -192,7 +192,7 @@ public class EntityListener implements Listener {
 				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
 
-					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
+					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getSettings().getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
 						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
 							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 								if(BreakUtil.canBreak(player, breakblock)){

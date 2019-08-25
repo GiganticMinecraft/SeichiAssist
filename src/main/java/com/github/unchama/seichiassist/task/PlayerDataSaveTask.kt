@@ -167,7 +167,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
 
           //各種数値更新処理
           + ",effectflag = " + runBlocking { playerdata.settings.fastDiggingEffectSuppression.serialized() }
-          + ",minestackflag = " + playerdata.autoMineStack
+          + ",minestackflag = " + playerdata.settings.autoMineStack
           + ",messageflag = " + playerdata.settings.receiveFastDiggingEffectStats
           + ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum
           + ",assaultflag = " + playerdata.activeskilldata.assaultflag
@@ -190,10 +190,10 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
           + ",inventory = '" + BukkitSerialization.toBase64(playerdata.pocketInventory) + "'"
           + ",playtick = " + playerdata.playTick
           + ",lastquit = cast( now() as datetime )"
-          + ",killlogflag = " + playerdata.shouldDisplayDeathMessages
-          + ",worldguardlogflag = " + playerdata.shouldDisplayWorldGuardLogs
+          + ",killlogflag = " + playerdata.settings.shouldDisplayDeathMessages
+          + ",worldguardlogflag = " + playerdata.settings.shouldDisplayWorldGuardLogs
 
-          + ",multipleidbreakflag = " + playerdata.multipleidbreakflag
+          + ",multipleidbreakflag = " + playerdata.settings.multipleidbreakflag
 
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.activeskilldata.effectpoint
@@ -204,10 +204,10 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
           + ",everysound = " + playerdata.settings.getBroadcastMutingSettings().shouldMuteSounds()
           + ",everymessage = " + playerdata.settings.getBroadcastMutingSettings().shouldMuteMessages()
 
-          + ",displayTypeLv = " + playerdata.nickName.style.displayLevel
-          + ",displayTitle1No = " + playerdata.nickName.id1
-          + ",displayTitle2No = " + playerdata.nickName.id2
-          + ",displayTitle3No = " + playerdata.nickName.id3
+          + ",displayTypeLv = " + playerdata.settings.nickName.style.displayLevel
+          + ",displayTitle1No = " + playerdata.settings.nickName.id1
+          + ",displayTitle2No = " + playerdata.settings.nickName.id2
+          + ",displayTitle3No = " + playerdata.settings.nickName.id3
           + ",giveachvNo = " + playerdata.giveachvNo
           + ",achvPointMAX = " + playerdata.achievePoint.cumulativeTotal
           + ",achvPointUSE = " + playerdata.achievePoint.used

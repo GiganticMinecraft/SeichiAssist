@@ -87,7 +87,7 @@ internal object MineStackButtons {
           IconItemStackBuilder(Material.IRON_PICKAXE)
               .title("$YELLOW$UNDERLINE${BOLD}対象ブロック自動スタック機能")
 
-      if (playerData.autoMineStack) {
+      if (playerData.settings.autoMineStack) {
         baseBuilder
             .enchanted()
             .lore(listOf(
@@ -110,7 +110,7 @@ internal object MineStackButtons {
             val message: String
             val soundPitch: Float
             when {
-              playerData.autoMineStack -> {
+              playerData.settings.autoMineStack -> {
                 message = "${GREEN}対象ブロック自動スタック機能:ON"
                 soundPitch = 1.0f
               }
