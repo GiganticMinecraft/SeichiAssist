@@ -109,7 +109,7 @@ class PlayerData constructor(val uuid: UUID) {
 
   //endregion
 
-  //インベントリ共有トグル
+  //共有インベントリにアイテムが入っているかどうか
   var contentsPresentInSharedInventory = false
 
   //ガチャの基準となるポイント
