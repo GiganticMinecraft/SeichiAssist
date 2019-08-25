@@ -4,9 +4,9 @@ package com.github.unchama.buildassist;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.github.unchama.seichiassist.SeichiAssist;
@@ -62,11 +62,9 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 			playerdata = new PlayerData(p);
 			//PlayerDataをリストに登録
 			playermap.put(uuid, playerdata);
-// 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "new");
 		} else {
 			//リストにある場合はそれを読み込む
-			playerdata = (PlayerData) playermap.get(uuid);
-// 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "読み込み");
+			playerdata = playermap.get(uuid);
 		}
 		//建築系データ読み込み
 		playerdata.buildload(p);
@@ -74,5 +72,4 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "建築系データ読み込み完了");
 		return;
 	}
-
 }
