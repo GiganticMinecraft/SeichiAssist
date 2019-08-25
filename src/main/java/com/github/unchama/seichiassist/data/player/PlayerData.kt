@@ -107,6 +107,11 @@ class PlayerData constructor(val uuid: UUID) {
   //現在座標
   var loc: Location? = null
 
+  val mebius: MebiusTask = MebiusTask(this)
+
+  //放置時間
+  var idleMinute = 0
+
   //endregion
 
   //共有インベントリにアイテムが入っているかどうか
@@ -141,8 +146,6 @@ class PlayerData constructor(val uuid: UUID) {
 
   //プレイ時間
   var playTick = 0
-  //放置時間
-  var idleMinute = 0
   //トータル破壊ブロック
   var totalbreaknum = 0.toLong()
   //整地量バー
@@ -155,7 +158,6 @@ class PlayerData constructor(val uuid: UUID) {
   var p_givenvote = 0
 
   //連続・通算ログイン用
-  // var loginStatus = ---
   var lastcheckdate: String? = null
   var loginStatus = LoginStatus(null, 0, 0)
 
@@ -166,8 +168,6 @@ class PlayerData constructor(val uuid: UUID) {
 
   //アクティブスキル関連データ
   var activeskilldata: ActiveSkillData = ActiveSkillData()
-
-  val mebius: MebiusTask = MebiusTask(this)
 
   private val subHomeMap = HashMap<Int, SubHome>()
 
