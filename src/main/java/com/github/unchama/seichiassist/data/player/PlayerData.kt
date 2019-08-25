@@ -50,13 +50,13 @@ class PlayerData constructor(val uuid: UUID) {
 
   val fastDiggingEffectSuppression = FastDiggingEffectSuppression()
 
-  var autoMineStack = false
+  var autoMineStack = true
 
   //内訳メッセージを出すフラグ
   var receiveFastDiggingEffectStats = false
 
   //ガチャ受け取り方法設定
-  var receiveGachaTicketEveryMinute = false
+  var receiveGachaTicketEveryMinute = true
 
   //キルログ表示トグル
   @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayDeathMessages"))
@@ -64,7 +64,7 @@ class PlayerData constructor(val uuid: UUID) {
 
   //ワールドガード保護ログ表示トグル
   @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayWorldGuardLogs"))
-  var dispworldguardlogflag = false
+  var dispworldguardlogflag = true
 
   lateinit var broadcastMutingSettings: BroadcastMutingSettings
 
@@ -78,12 +78,12 @@ class PlayerData constructor(val uuid: UUID) {
   var multipleidbreakflag = false
 
   //チェスト破壊トグル
-  var chestflag = false
+  var chestflag = true
 
   //PvPトグル
   var pvpflag = false
 
-  var nickName = PlayerNickName()
+  var nickName = PlayerNickName(PlayerNickName.Style.Level, 0, 0, 0)
 
   //region accessors and modifiers
 
@@ -144,35 +144,38 @@ class PlayerData constructor(val uuid: UUID) {
   // TODO many properties here might not be right to belong here
 
   //各統計値差分計算用配列
-  private val statisticsData: MutableList<Int>
+  private val statisticsData: MutableList<Int> = (MaterialSets.materials - exclude)
+      .map { player.getStatistic(Statistic.MINE_BLOCK, it) }
+      .toMutableList()
 
   @get:JvmName("canCreateRegion")
-  var canCreateRegion = false
-  var unitPerClick = 0
+  var canCreateRegion = true
+  var unitPerClick = 1
     private set
 
   //３０分間のデータを保存する．
-  val halfhourblock: MineBlock
+  val halfhourblock: MineBlock = MineBlock()
 
   //今回の採掘速度上昇レベルを格納
   var minespeedlv = 0
+
   //前回の採掘速度上昇レベルを格納
   var lastminespeedlv = 0
 
   //持ってるポーションエフェクト全てを格納する．
-  val effectdatalist: MutableList<FastDiggingEffect>
+  val effectdatalist: MutableList<FastDiggingEffect> = LinkedList()
 
   //プレイ時間差分計算用int
-  private var totalPlayTick = 0
+  private var totalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK)
 
   //投票受け取りボタン連打防止用
-  var votecooldownflag = false
+  var votecooldownflag = true
 
   //ガチャボタン連打防止用
-  var gachacooldownflag = false
+  var gachacooldownflag = true
 
   //インベントリ共有ボタン連打防止用
-  var shareinvcooldownflag = false
+  var shareinvcooldownflag = true
 
   var selectHomeNum = 0
   var setHomeNameNum = 0
@@ -181,23 +184,27 @@ class PlayerData constructor(val uuid: UUID) {
   var samepageflag = false//実績ショップ用
 
   //MineStackの履歴
-  var hisotryData: MineStackUsageHistory
+  var hisotryData: MineStackUsageHistory = MineStackUsageHistory()
 
   //経験値マネージャ
-  private val expmanager: IExperienceManager
+  private val expmanager: IExperienceManager = ExperienceManager(player)
 
-  var titlepage = 0 //実績メニュー用汎用ページ指定
+  var titlepage = 1 //実績メニュー用汎用ページ指定
+
+  //現在座標
+  var loc: Location? = null
+
   //endregion
 
   //ガチャの基準となるポイント
   var gachapoint = 0
 
   //現在のプレイヤーレベル
-  var level = 0
+  var level = 1
   //詫び券をあげる数
   var unclaimedApologyItems = 0
   //拡張インベントリ
-  var pocketInventory: Inventory
+  var pocketInventory: Inventory = createInventory(size = 1.rows(), title = "$DARK_PURPLE${BOLD}4次元ポケット")
     get() {
       // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
       if (field.size < pocketSize) {
@@ -218,14 +225,12 @@ class PlayerData constructor(val uuid: UUID) {
 
   //プレイ時間
   var playTick = 0
-  //現在座標
-  var loc: Location? = null
   //放置時間
   var idleMinute = 0
   //トータル破壊ブロック
   var totalbreaknum = 0.toLong()
   //整地量バー
-  val expbar: ExpBar
+  val expbar: ExpBar = ExpBar(this, player)
   //合計経験値
   var totalexp = 0
   //合計経験値統合済みフラグ
@@ -244,14 +249,14 @@ class PlayerData constructor(val uuid: UUID) {
   var ChainVote = 0
 
   //アクティブスキル関連データ
-  var activeskilldata: ActiveSkillData
+  var activeskilldata: ActiveSkillData = ActiveSkillData()
 
-  val mebius: MebiusTask
+  val mebius: MebiusTask = MebiusTask(this)
 
   private val subHomeMap = HashMap<Int, SubHome>()
 
   //二つ名解禁フラグ保存用
-  var TitleFlags: BitSet
+  var TitleFlags: BitSet = BitSet(10000).apply { set(1) }
   //二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
   var p_vote_forT = 0
   //二つ名配布予約NOの保存
@@ -265,7 +270,7 @@ class PlayerData constructor(val uuid: UUID) {
 
   //グリッド式保護関連
   private var claimUnit = ClaimUnit(0, 0, 0, 0)
-  var templateMap: MutableMap<Int, GridTemplate>? = null
+  var templateMap: MutableMap<Int, GridTemplate> = HashMap()
 
   //投票妖精関連
   var usingVotingFairy = false
@@ -276,10 +281,10 @@ class PlayerData constructor(val uuid: UUID) {
   })
   var hasVotingFairyMana = 0
   var VotingFairyRecoveryValue = 0
-  var toggleGiveApple = 0
-  var toggleVotingFairy = 0
+  var toggleGiveApple = 1
+  var toggleVotingFairy = 1
   var p_apple: Long = 0
-  var toggleVFSound = false
+  var toggleVFSound = true
 
   //貢献度pt
   var added_mana = 0
@@ -292,7 +297,7 @@ class PlayerData constructor(val uuid: UUID) {
   //バレンタインイベント用
   var hasChocoGave = false
 
-  var giganticBerserk = GiganticBerserk()
+  var giganticBerserk = GiganticBerserk(0, 0, 0, false, 0)
 
   //region calculated
   // TODO many properties here may be inlined and deleted
@@ -376,92 +381,6 @@ class PlayerData constructor(val uuid: UUID) {
     }
     get() = giganticBerserk.cd
   //endregion
-
-  init {
-    //初期値を設定
-    this.loaded = false
-    this.receiveFastDiggingEffectStats = false
-    this.halfhourblock = MineBlock()
-    this.gachapoint = 0
-    this.receiveGachaTicketEveryMinute = true
-    this.minespeedlv = 0
-    this.lastminespeedlv = 0
-    this.effectdatalist = LinkedList()
-    this.level = 1
-    this.mebius = MebiusTask(this)
-    this.unclaimedApologyItems = 0
-    this.pocketInventory = createInventory(size = 1.rows(), title = DARK_PURPLE.toString() + "" + BOLD + "4次元ポケット")
-    this.regionCount = 0
-    this.autoMineStack = true
-    this.totalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK)
-    this.playTick = 0
-    this.dispkilllogflag = false
-    this.dispworldguardlogflag = true
-    this.multipleidbreakflag = false
-    this.pvpflag = false
-    this.loc = null
-    this.idleMinute = 0
-    this.totalbreaknum = 0
-    //統計にないため一部ブロックを除外
-    statisticsData = (MaterialSets.materials - exclude)
-        .map { player.getStatistic(Statistic.MINE_BLOCK, it) }
-        .toMutableList()
-    this.activeskilldata = ActiveSkillData()
-    this.expbar = ExpBar(this, player)
-    this.expmanager = ExperienceManager(player)
-    this.p_givenvote = 0
-    this.votecooldownflag = true
-    this.gachacooldownflag = true
-    this.shareinvcooldownflag = true
-    this.chestflag = true
-
-    this.nickName = PlayerNickName(PlayerNickName.Style.Level, 0, 0, 0)
-    this.TitleFlags = BitSet(10000)
-    this.TitleFlags.set(1)
-    this.p_vote_forT = 0
-    this.giveachvNo = 0
-    this.titlepage = 1
-    this.LimitedLoginCount = 0
-
-    this.starLevels = StarLevel(0, 0, 0)
-
-    this.buildCount = BuildCount(1, BigDecimal.ZERO, 0)
-    this.anniversary = false
-
-    this.allowBreakingHalfBlocks = false
-
-    this.claimUnit = ClaimUnit(0, 0, 0, 0)
-    this.canCreateRegion = true
-    this.unitPerClick = 1
-    this.templateMap = HashMap()
-    this.usingVotingFairy = false
-    this.hasVotingFairyMana = 0
-    this.VotingFairyRecoveryValue = 0
-    this.toggleGiveApple = 1
-    this.votingFairyStartTime = dummyDate
-    this.votingFairyEndTime = dummyDate
-    this.toggleVotingFairy = 1
-    this.p_apple = 0
-    this.toggleVFSound = true
-
-    this.added_mana = 0
-    this.contribute_point = 0
-
-    this.hasNewYearSobaGive = false
-    this.newYearBagAmount = 0
-
-    this.hasChocoGave = false
-
-    this.hisotryData = MineStackUsageHistory()
-
-    this.ChainVote = 0
-
-    this.selectHomeNum = 0
-    this.setHomeNameNum = 0
-    this.isSubHomeNameChange = false
-
-    this.giganticBerserk = GiganticBerserk(0, 0, 0, false, 0)
-  }
 
   //join時とonenable時、プレイヤーデータを最新の状態に更新
   fun updateOnJoin() {
