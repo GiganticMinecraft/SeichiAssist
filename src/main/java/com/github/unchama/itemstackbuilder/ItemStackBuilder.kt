@@ -24,6 +24,15 @@ interface ItemStackBuilder {
   fun lore(lore: List<String>): ItemStackBuilder
 
   /**
+   * [ItemStack] のLoreを設定します.
+   *
+   * @param lore [ItemStack] のLoreとして設定する [String] の [List]
+   * [List] に `null` が含まれていた場合,その行は無視されます.
+   * @return このBuilder
+   */
+  fun lore(vararg lore: String): ItemStackBuilder = lore(lore.toList())
+
+  /**
    * [ItemStack] にエンチャントを付与します.
    *
    * @return このBuilder
