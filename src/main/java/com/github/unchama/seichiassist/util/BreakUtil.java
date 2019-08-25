@@ -43,7 +43,7 @@ public final class BreakUtil {
 
 		//壊されるブロックがワールドガード範囲だった場合処理を終了
 		if(!ExternalPlugins.getWorldGuard().canBuild(player, breakblock.getLocation())){
-			if(playerdata.getDispworldguardlogflag()){
+			if(playerdata.getShouldDisplayWorldGuardLogs()){
 				player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
 			}
 			return false;

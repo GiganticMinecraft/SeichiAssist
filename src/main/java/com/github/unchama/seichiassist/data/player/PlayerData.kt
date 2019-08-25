@@ -59,12 +59,10 @@ class PlayerData constructor(val uuid: UUID) {
   var receiveGachaTicketEveryMinute = true
 
   //キルログ表示トグル
-  @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayDeathMessages"))
-  var dispkilllogflag = false
+  var shouldDisplayDeathMessages = false
 
   //ワールドガード保護ログ表示トグル
-  @Deprecated(message = "", replaceWith = ReplaceWith("shouldDisplayWorldGuardLogs"))
-  var dispworldguardlogflag = true
+  var shouldDisplayWorldGuardLogs = true
 
   lateinit var broadcastMutingSettings: BroadcastMutingSettings
 
@@ -87,9 +85,6 @@ class PlayerData constructor(val uuid: UUID) {
 
   //region accessors and modifiers
 
-  @Suppress("RedundantSuspendModifier")
-  suspend fun shouldDisplayDeathMessages(): Boolean = this.dispkilllogflag
-
   val toggleExpBarVisibility: TargetedEffect<Player> =
       unfocusedEffect {
         this.expbar.isVisible = !this.expbar.isVisible
@@ -107,12 +102,12 @@ class PlayerData constructor(val uuid: UUID) {
 
   val toggleWorldGuardLogEffect: UnfocusedEffect =
       unfocusedEffect {
-        this.dispworldguardlogflag = !this.dispworldguardlogflag
+        this.shouldDisplayWorldGuardLogs = !this.shouldDisplayWorldGuardLogs
       }
 
   val toggleDeathMessageMutingSettings: UnfocusedEffect =
       unfocusedEffect {
-        this.dispkilllogflag = !this.dispkilllogflag
+        this.shouldDisplayDeathMessages = !this.shouldDisplayDeathMessages
       }
 
   @Suppress("RedundantSuspendModifier")
@@ -122,10 +117,6 @@ class PlayerData constructor(val uuid: UUID) {
     get() = unfocusedEffect {
       broadcastMutingSettings = getBroadcastMutingSettings().nextSettingsOption()
     }
-
-  @Suppress("RedundantSuspendModifier")
-  suspend fun shouldDisplayWorldGuardLogs(): Boolean = this.dispworldguardlogflag
-
 
   @Suppress("RedundantSuspendModifier")
   suspend fun toggleHalfBreakFlag(): TargetedEffect<Player> {

@@ -226,8 +226,8 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       playerdata.unclaimedApologyItems = rs.getInt("numofsorryforbug")
       playerdata.regionCount = rs.getInt("rgnum")
       playerdata.pocketInventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
-      playerdata.dispkilllogflag = rs.getBoolean("killlogflag")
-      playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag")
+      playerdata.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
+      playerdata.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
 
       playerdata.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
 

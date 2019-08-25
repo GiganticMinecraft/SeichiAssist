@@ -346,7 +346,7 @@ object SecondPage: Menu {
             IconItemStackBuilder(Material.FLINT_AND_STEEL)
                 .title("$YELLOW$UNDERLINE${BOLD}死亡メッセージ表示切替")
 
-        if (playerData.shouldDisplayDeathMessages()) {
+        if (playerData.shouldDisplayDeathMessages) {
           baseBuilder
               .enchanted()
               .lore(listOf(
@@ -369,7 +369,7 @@ object SecondPage: Menu {
                 playerData.toggleDeathMessageMutingSettings,
                 deferredEffect {
                   val (soundPitch, message) =
-                      if (playerData.shouldDisplayDeathMessages())
+                      if (playerData.shouldDisplayDeathMessages)
                         Pair(1.0f, "${GREEN}死亡メッセージ:表示")
                       else
                         Pair(0.5f, "${RED}死亡メッセージ:隠す")
@@ -393,7 +393,7 @@ object SecondPage: Menu {
 
         val loreHeading = "$RESET${GRAY}スキル使用時のワールドガード保護警告メッセージ"
 
-        if (playerData.shouldDisplayWorldGuardLogs()) {
+        if (playerData.shouldDisplayWorldGuardLogs) {
           baseBuilder
               .enchanted()
               .lore(listOf(
@@ -418,7 +418,7 @@ object SecondPage: Menu {
                 playerData.toggleWorldGuardLogEffect,
                 deferredEffect {
                   val (soundPitch, message) =
-                      if (playerData.shouldDisplayWorldGuardLogs())
+                      if (playerData.shouldDisplayWorldGuardLogs)
                         Pair(1.0f, "${ChatColor.GREEN}ワールドガード保護メッセージ:表示")
                       else
                         Pair(0.5f, "${ChatColor.RED}ワールドガード保護メッセージ:隠す")

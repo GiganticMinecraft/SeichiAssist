@@ -34,7 +34,7 @@ public class PlayerDeathEventListener implements Listener {
 				continue;
 			}
 			//キルログ表示フラグがONのプレイヤーにのみ死亡メッセージを送信
-			if(playerdata.getDispkilllogflag()){
+			if(playerdata.getShouldDisplayDeathMessages()){
 				p.sendMessage(msg);
 			}
 		}

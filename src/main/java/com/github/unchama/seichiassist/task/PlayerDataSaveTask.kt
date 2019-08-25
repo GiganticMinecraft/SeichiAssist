@@ -190,8 +190,8 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
           + ",inventory = '" + BukkitSerialization.toBase64(playerdata.pocketInventory) + "'"
           + ",playtick = " + playerdata.playTick
           + ",lastquit = cast( now() as datetime )"
-          + ",killlogflag = " + playerdata.dispkilllogflag
-          + ",worldguardlogflag = " + playerdata.dispworldguardlogflag
+          + ",killlogflag = " + playerdata.shouldDisplayDeathMessages
+          + ",worldguardlogflag = " + playerdata.shouldDisplayWorldGuardLogs
 
           + ",multipleidbreakflag = " + playerdata.multipleidbreakflag
 
