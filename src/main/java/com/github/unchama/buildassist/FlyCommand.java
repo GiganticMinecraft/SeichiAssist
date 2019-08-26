@@ -10,33 +10,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 
-public class flyCommand implements TabExecutor {
-    Plugin plugin;
-
-    public flyCommand(final Plugin _plugin) {
-        this.plugin = _plugin;
-    }
-
-    @Override
-    public List<String> onTabComplete(final CommandSender arg0, final Command arg1,
-                                      final String arg2, final String[] arg3) {
-        return null;
-    }
-
-
-    public boolean isInt(final String num) {
-        try {
-            Integer.parseInt(num);
-            return true;
-        } catch (final NumberFormatException e) {
-        }
-        return false;
-    }
-
-
+public final class FlyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label,
                              final String[] args) {
