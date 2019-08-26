@@ -1,13 +1,14 @@
 /*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package com.github.unchama.buildassist;
 
-import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.util.TypeConverter;
+import com.github.unchama.seichiassist.util.exp.IExperienceManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -51,11 +52,11 @@ public class flyCommand implements TabExecutor {
                     + "FLY機能を中断したい場合は、末尾に「finish」を記入してください。");
             return true;
         }
+
         if (args.length == 1) {
             //プレイヤーを取得
+            // safe cast
             final Player player = (Player) sender;
-            //プレイヤーネーム
-            final String name = Util.getName(player);
             //UUIDを取得
             final UUID uuid = player.getUniqueId();
             //playerdataを取得
@@ -65,29 +66,27 @@ public class flyCommand implements TabExecutor {
                 return false;
             }
 
-            final ExperienceManager expman = new ExperienceManager(player);
+            final IExperienceManager expman = new ExperienceManager(player);
 
-            final boolean flyflag;
             int flytime = playerdata.flytime;
-            boolean Endlessfly = playerdata.Endlessfly;
-
-            if (args[0].equalsIgnoreCase("finish")) {
-                flyflag = false;
-                playerdata.flyflag = flyflag;
+            final boolean endlessFly = playerdata.endlessfly;
+            final String query = args[0];
+            if (query.equalsIgnoreCase("finish")) {
+                playerdata.flyflag = false;
                 playerdata.flytime = 0;
-                playerdata.Endlessfly = false;
+                playerdata.endlessfly = false;
                 player.setAllowFlight(false);
                 player.setFlying(false);
                 sender.sendMessage(ChatColor.GREEN
                         + "fly効果を停止しました。");
-            } else if (args[0].equalsIgnoreCase("endless")) {
+            } else if (query.equalsIgnoreCase("endless")) {
 
                 if (!expman.hasExp(BuildAssist.config.getFlyExp())) {
                     sender.sendMessage(ChatColor.GREEN
                             + "所持している経験値が、必要経験値量(" + BuildAssist.config.getFlyExp() + ")に達していません。");
                 } else {
                     playerdata.flyflag = true;
-                    playerdata.Endlessfly = true;
+                    playerdata.endlessfly = true;
                     playerdata.flytime = 0;
                     player.setAllowFlight(true);
                     player.setFlying(true);
@@ -95,8 +94,9 @@ public class flyCommand implements TabExecutor {
                             + "無期限でFLY効果をONにしました。");
                 }
 
-            } else if (isInt(args[0])) {
-                if (Integer.parseInt(args[0]) <= 0) {
+            } else if (TypeConverter.isParsableToInteger(query)) {
+                final int minutes = Integer.parseInt(query);
+                if (minutes <= 0) {
                     sender.sendMessage(ChatColor.GREEN
                             + "時間指定の数値は「1」以上の整数で行ってください。");
                     return true;
@@ -104,16 +104,14 @@ public class flyCommand implements TabExecutor {
                     sender.sendMessage(ChatColor.GREEN
                             + "所持している経験値が、必要経験値量(" + BuildAssist.config.getFlyExp() + ")に達していません。");
                 } else {
-                    if (Endlessfly) {
+                    if (endlessFly) {
                         sender.sendMessage(ChatColor.GREEN
                                 + "無期限飛行モードは解除されました。");
                     }
-                    flytime += Integer.parseInt(args[0]);
-                    flyflag = true;
-                    Endlessfly = false;
-                    playerdata.flyflag = flyflag;
+                    flytime += minutes;
+                    playerdata.flyflag = true;
                     playerdata.flytime = flytime;
-                    playerdata.Endlessfly = Endlessfly;
+                    playerdata.endlessfly = false;
                     sender.sendMessage(ChatColor.YELLOW + "【FLYコマンド認証】効果の残り時間はあと"
                             + flytime + "分です。");
                     player.setAllowFlight(true);
