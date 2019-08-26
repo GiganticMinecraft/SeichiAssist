@@ -77,8 +77,8 @@ public enum ActiveSkill{
 	}
 	public int getRepeatTimes(int skilllevel){
 		int repeattimes = 1;
-		switch(this.toString()){
-		case "MULTI":
+		switch(this){
+		case MULTI:
 			switch(skilllevel){
 			case 4:
 				repeattimes = 3;
@@ -105,8 +105,8 @@ public enum ActiveSkill{
 	}
 	public Coordinate getBreakLength(int skilllevel){
 		Coordinate breaklength = new Coordinate(0,0,0);
-		switch(this.toString()){
-		case "ARROW":
+		switch(this){
+		case ARROW:
 			switch(skilllevel){
 			case 4:
 				breaklength.setXYZ(3, 3, 3);
@@ -128,7 +128,7 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "MULTI":
+		case MULTI:
 			switch(skilllevel){
 			case 4:
 				breaklength.setXYZ(3, 3, 3);
@@ -150,7 +150,7 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "BREAK":
+		case BREAK:
 			switch(skilllevel){
 			case 1:
 				breaklength.setXYZ(1, 2, 1);
@@ -181,7 +181,7 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "WATERCONDENSE":
+		case WATERCONDENSE:
 			switch(skilllevel){
 			case 7:
 				breaklength.setXYZ(7, 7, 7);
@@ -194,7 +194,7 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "LAVACONDENSE":
+		case LAVACONDENSE:
 			switch(skilllevel){
 			case 7:
 				breaklength.setXYZ(7, 7, 7);
@@ -207,10 +207,10 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "ARMOR":
+		case ARMOR:
 			breaklength.setXYZ(11, 11, 11);
 			break;
-		case "FLUIDCONDENSE":
+		case FLUIDCONDENSE:
 			breaklength.setXYZ(11, 11, 11);
 		}
 		return breaklength;
@@ -384,8 +384,8 @@ public enum ActiveSkill{
 
 	public long getCoolDown(int skillnum) {
 		double cooldowntime = 0;
-		switch(this.toString()){
-		case "ARROW":
+		switch(this){
+		case ARROW:
 			switch(skillnum){
 			case 4:
 				cooldowntime = 0.2;
@@ -407,7 +407,7 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "MULTI":
+		case MULTI:
 			switch(skillnum){
 			case 4:
 				cooldowntime = 0.6;
@@ -429,7 +429,7 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "BREAK":
+		case BREAK:
 			switch(skillnum){
 			case 1:
 				cooldowntime = 0;
@@ -466,11 +466,11 @@ public enum ActiveSkill{
 
 	public Material getMaterial(int skilllevel) {
 		Material material = Material.AIR;
-		switch(this.toString()){
-		case "ARROW":
+		switch(this){
+		case ARROW:
 			material = Material.TIPPED_ARROW;
 			break;
-		case "MULTI":
+		case MULTI:
 			switch(skilllevel){
 			case 4:
 				material = Material.SADDLE;
@@ -492,7 +492,7 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "BREAK":
+		case BREAK:
 			switch(skilllevel){
 			case 1:
 				material = Material.GRASS;
@@ -523,7 +523,7 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "WATERCONDENSE":
+		case WATERCONDENSE:
 			switch(skilllevel){
 			case 7:
 				material = Material.SNOW_BLOCK;
@@ -536,7 +536,7 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "LAVACONDENSE":
+		case LAVACONDENSE:
 			switch(skilllevel){
 			case 7:
 				material = Material.NETHERRACK;
@@ -549,10 +549,10 @@ public enum ActiveSkill{
 				break;
 			}
 			break;
-		case "ARMOR":
+		case ARMOR:
 			material = Material.DIAMOND_CHESTPLATE;
 			break;
-		case "FLUIDCONDENSE":
+		case FLUIDCONDENSE:
 			material = Material.NETHER_STAR;
 		}
 		return material;
@@ -609,8 +609,8 @@ public enum ActiveSkill{
 
 	public PotionType getPotionType(int skilllevel) {
 		PotionType potiontype = PotionType.WATER;
-		switch(this.toString()){
-		case "ARROW":
+		switch(this){
+		case ARROW:
 			switch(skilllevel){
 			case 4:
 				potiontype = PotionType.REGEN;
