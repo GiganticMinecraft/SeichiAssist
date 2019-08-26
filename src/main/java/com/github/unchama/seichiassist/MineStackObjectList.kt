@@ -511,12 +511,12 @@ object MineStackObjectList {
       MineStackRsObj("record_wait", "レコード", 1, Material.RECORD_12, 0)
   )
 
-  var minestacklist: MutableList<MineStackObj>? = null
-
   // ガチャ系アイテム
   // これは後に変更されるのでミュータブルでないといけない
   var minestacklistgacha: MutableList<MineStackObj> = mutableListOf(
       MineStackGachaObj("gachaimo", StaticGachaPrizeFactory.getGachaRingoName(), 1, Material.GOLDEN_APPLE, 0),
       MineStackGachaObj("exp_bottle", "エンチャントの瓶", 1, Material.EXP_BOTTLE, 0)
   )
+
+  val minestacklist: MutableList<MineStackObj> = ArrayList(initialCapacity = minestacklistbuild.size + minestacklistdrop.size + minestacklistfarm.size + minestacklistgacha.size + minestacklistmine.size + minestacklistrs.size)
 }
