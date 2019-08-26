@@ -31,7 +31,7 @@ public final class Util {
 
 	//ワールドガードAPIを返す
 	public static WorldGuardPlugin getWorldGuard() {
-		final Plugin plugin = BuildAssist.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+		final Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 
 		// WorldGuard may not be loaded
 		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
@@ -42,7 +42,7 @@ public final class Util {
 	}
 
 	/**
-	 * プレイヤーの要るワールドでスキルが発動できるか判定する
+	 * プレイヤーの居るワールドでスキルが発動できるか判定する
 	 * @param player 対象となるプレイヤー
 	 * @return 発動できる場合はtrue、できない場合はfalse
 	 */
