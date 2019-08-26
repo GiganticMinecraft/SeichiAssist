@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class PlayerData {
-	public String name;
-	public UUID uuid;
+public final class PlayerData {
+	public final String name;
+	public final UUID uuid;
 	public int level;
 	/**
 	 * トータル設置ブロック数
@@ -28,7 +28,7 @@ public class PlayerData {
 	int flytime;
 
 	@PackagePrivate
-	boolean Endlessfly;
+	boolean endlessfly;
 
 	@PackagePrivate
 	boolean ZoneSetSkillFlag;
@@ -71,7 +71,7 @@ public class PlayerData {
 		level = 1;
 		flyflag = false;
 		flytime = 0;
-		Endlessfly = false;
+		endlessfly = false;
 		ZoneSetSkillFlag = false;
 		zsSkillDirtFlag = true;
 		AREAint = 2;

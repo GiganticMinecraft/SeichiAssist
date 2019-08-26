@@ -48,7 +48,7 @@ public final class MenuInventoryData {
 			Flyallows = "OFF" ;
 		}
 		final String FlyTime ;
-		if(playerdata.Endlessfly){
+		if(playerdata.endlessfly){
 			FlyTime = "∞" ;
 		}else {
 			FlyTime = String.valueOf(playerdata.flytime);

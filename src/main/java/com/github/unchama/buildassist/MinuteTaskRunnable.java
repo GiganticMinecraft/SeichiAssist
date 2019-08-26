@@ -44,7 +44,7 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 				playerdata.updateLevel(player);
 				playerdata.buildsave(player);
 
-				if (playerdata.Endlessfly) {
+				if (playerdata.endlessfly) {
 					if (playerdata_s.getIdleMinute() >= 10) {
 						player.setAllowFlight(true);
 						player.sendMessage(ChatColor.GRAY + "放置時間中のFLYは無期限で継続中です(経験値は消費しません)");
@@ -54,7 +54,7 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 						player.sendMessage(ChatColor.RED + "Fly効果を終了しました");
 						playerdata.flytime = 0;
 						playerdata.flyflag = false;
-						playerdata.Endlessfly = false;
+						playerdata.endlessfly = false;
 						player.setAllowFlight(false);
 						player.setFlying(false);
 					} else {
