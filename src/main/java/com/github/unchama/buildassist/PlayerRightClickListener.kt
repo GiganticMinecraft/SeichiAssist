@@ -1,27 +1,24 @@
 package com.github.unchama.buildassist
 
-import java.math.BigDecimal
-import java.util.HashMap
-import java.util.UUID
-
+import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.seichiassist.MineStackObjectList
+import com.github.unchama.seichiassist.Schedulers
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.sequentialEffect
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
-import org.bukkit.World
-import org.bukkit.block.BlockState
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.PlayerInventory
-
-import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.minestack.MineStackObj
+import java.math.BigDecimal
 
 class PlayerRightClickListener : Listener {
   internal var playermap = BuildAssist.playermap
@@ -56,9 +53,13 @@ class PlayerRightClickListener : Listener {
         if (equipmentslot == EquipmentSlot.OFF_HAND) {
           return
         }
-        //開く音を再生
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
 
+        GlobalScope.launch(Schedulers.async) {
+          sequentialEffect(
+              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              BuildMainMenu.open
+          ).runFor(player)
+        }
       } else if (player.isSneaking) {
 
         //プレイヤーインベントリを取得

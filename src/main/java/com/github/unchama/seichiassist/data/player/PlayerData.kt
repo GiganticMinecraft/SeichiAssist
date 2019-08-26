@@ -865,6 +865,7 @@ class PlayerData constructor(@Deprecated("PlayerDataはuuidに依存するべき
     //TODO:もちろんここにあるべきではない
     const val passiveSkillProbability = 10
 
-    val exclude = EnumSet.of(Material.GRASS_PATH, Material.SOIL, Material.MOB_SPAWNER)
+    val exclude = EnumSet.of(Material.GRASS_PATH, Material.SOIL, Material.MOB_SPAWNER,
+        Material.CAULDRON, Material.ENDER_CHEST)
   }
 }
