@@ -6,9 +6,8 @@ import com.github.unchama.seichiassist.MineStackObjectList
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
-import com.github.unchama.seichiassist.data.MineStack
-import com.github.unchama.seichiassist.data.PlayerData
-import com.github.unchama.seichiassist.data.playerdata.*
+import com.github.unchama.seichiassist.data.player.*
+import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.BukkitSerialization
@@ -201,10 +200,10 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       //各種数値
       playerdata.loaded = true
       runBlocking {
-        playerdata.fastDiggingEffectSuppressor.setStateFromSerializedValue(rs.getInt("effectflag"))
+        playerdata.settings.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag"))
       }
-      playerdata.minestackflag = rs.getBoolean("minestackflag")
-      playerdata.messageflag = rs.getBoolean("messageflag")
+      playerdata.settings.autoMineStack = rs.getBoolean("minestackflag")
+      playerdata.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
       playerdata.activeskilldata.apply {
         mineflagnum = rs.getInt("activemineflagnum")
         assaultflag = rs.getBoolean("assaultflag")
@@ -222,17 +221,17 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       }
 
       playerdata.gachapoint = rs.getInt("gachapoint")
-      playerdata.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
+      playerdata.settings.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
       playerdata.level = rs.getInt("level")
-      playerdata.wabiGacha = rs.getInt("numofsorryforbug")
+      playerdata.unclaimedApologyItems = rs.getInt("numofsorryforbug")
       playerdata.regionCount = rs.getInt("rgnum")
-      playerdata.inventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
-      playerdata.dispkilllogflag = rs.getBoolean("killlogflag")
-      playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag")
+      playerdata.pocketInventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
+      playerdata.settings.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
+      playerdata.settings.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
 
-      playerdata.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
+      playerdata.settings.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
 
-      playerdata.pvpflag = rs.getBoolean("pvpflag")
+      playerdata.settings.pvpflag = rs.getBoolean("pvpflag")
       playerdata.totalbreaknum = rs.getLong("totalbreaknum")
       playerdata.playTick = rs.getInt("playtick")
       playerdata.p_givenvote = rs.getInt("p_givenvote")
@@ -246,20 +245,19 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
 
       playerdata.expmarge = rs.getByte("expmarge")
       playerdata.contentsPresentInSharedInventory = !rs.getString("shareinv").isNullOrEmpty()
-      playerdata.everysoundflag = rs.getBoolean("everysound")
-      playerdata.everymessageflag = rs.getBoolean("everymessage")
+      playerdata.settings.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
 
       playerdata.selectHomeNum = 0
       playerdata.setHomeNameNum = 0
       playerdata.isSubHomeNameChange = false
 
       //実績、二つ名の情報
-      playerdata.nickName = PlayerNickName(
-          PlayerNickName.Style.marshal(rs.getBoolean("displayTypeLv")),
-          rs.getInt("displayTitle1No"),
-          rs.getInt("displayTitle2No"),
-          rs.getInt("displayTitle3No")
-      )
+      playerdata.settings.nickName = PlayerNickName(
+                PlayerNickName.Style.marshal(rs.getBoolean("displayTypeLv")),
+                rs.getInt("displayTitle1No"),
+                rs.getInt("displayTitle2No"),
+                rs.getInt("displayTitle3No")
+            )
       playerdata.p_vote_forT = rs.getInt("p_vote")
       playerdata.giveachvNo = rs.getInt("giveachvNo")
       playerdata.achievePoint = AchievementPoint(
@@ -288,7 +286,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         lastIn
       }
       val chain = rs.getInt("ChainJoin")
-      playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = if (chain == 0) {
+      playerdata.loginStatus = playerdata.loginStatus.copy(consecutiveLoginDays = if (chain == 0) {
   1
 } else {
   chain
@@ -312,9 +310,9 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
           LLE.getLastcheck(playerdata.lastcheckdate)
           playerdata.loginStatus = playerdata.loginStatus.copy(totalLoginDay = playerdata.loginStatus.totalLoginDay + 1)
           if (datediff == 1L) {
-            playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = playerdata.loginStatus.chainLoginDay + 1)
+            playerdata.loginStatus = playerdata.loginStatus.copy(consecutiveLoginDays = playerdata.loginStatus.consecutiveLoginDays + 1)
           } else {
-            playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = 1)
+            playerdata.loginStatus = playerdata.loginStatus.copy(consecutiveLoginDays = 1)
           }
         }
       } catch (e: ParseException) {

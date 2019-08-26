@@ -1,15 +1,14 @@
 package com.github.unchama.buildassist;
 
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.SeichiAssist;
+import java.util.HashMap;
+import java.util.UUID;
 
 
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
@@ -49,7 +48,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  			return;
  		}
  		//DBから読み込み終わるまで待つ
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 		if(playerdata_s == null){
  			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "の建築系データ取得待機…(" + (i+1) + "回目)");
  			i++;

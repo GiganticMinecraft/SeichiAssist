@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.achievement;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -240,7 +240,7 @@ public enum SeichiAchievement {
     }
 
     private static int getDaysChaining(Player player) {
-        return getPlayerData(player).getLoginStatus().getChainLoginDay();
+        return getPlayerData(player).getLoginStatus().getConsecutiveLoginDays();
     }
 
     private static int getTotalPlayedDays(Player player) {

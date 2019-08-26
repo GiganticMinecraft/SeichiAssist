@@ -2,9 +2,9 @@ package com.github.unchama.seichiassist.listener.new_year_event;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import de.tr7zw.itemnbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,11 +20,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 正月イベント・お年玉袋関連処理実装クラス。
@@ -50,7 +46,7 @@ public class NewYearBagListener implements Listener {
 		PlayerData playerData = playerMap.get(player.getUniqueId());
 
 		//整地ワールドのみドロップ許可
-		if (!Util.isSeichiWorld(player)) {
+		if (!Util.INSTANCE.isSeichiWorld(player)) {
 			return;
 		}
 
@@ -60,12 +56,12 @@ public class NewYearBagListener implements Listener {
 		}
 
 		if (isDrop()) {
-			if (Util.isPlayerInventoryFull(player)) {
-				Util.dropItem(player, getNewYearBag());
+			if (Util.INSTANCE.isPlayerInventoryFull(player)) {
+				Util.INSTANCE.dropItem(player, getNewYearBag());
 				player.sendMessage(ChatColor.RED + "インベントリがいっぱいのため「お年玉袋」がドロップしました");
 				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f);
 			} else {
-				Util.addItem(player, getNewYearBag());
+				Util.INSTANCE.addItem(player, getNewYearBag());
 				player.sendMessage(ChatColor.AQUA + "「お年玉袋」を見つけたよ！");
 				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f);
 			}

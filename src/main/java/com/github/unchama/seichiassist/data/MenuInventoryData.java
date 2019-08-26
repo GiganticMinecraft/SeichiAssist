@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.LevelThresholds;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
@@ -148,7 +149,7 @@ public class MenuInventoryData {
 	// 複数種類ブロック同時破壊トグルボタン(追加)
 	public static ItemMeta MultipleIDBlockBreakToggleMeta(PlayerData playerdata,ItemMeta itemmeta){
 		List<String> lore = new ArrayList<>();
-		if(playerdata.getMultipleidbreakflag()){
+		if(playerdata.getSettings().getMultipleidbreakflag()){
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 			lore.add(ChatColor.RESET + "" +  ChatColor.GREEN + "複数種類ブロック同時破壊");
 			lore.add(ChatColor.RESET + "" +  ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
@@ -570,7 +571,7 @@ public class MenuInventoryData {
 				skullmeta = ItemMetaFactory.SKULL.getValue();
 				itemstack.setDurability((short) 3);
 				skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.getName() + "のスキルエフェクトデータ");
+				skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.getLowercaseName() + "のスキルエフェクトデータ");
 				lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillEffect.Companion.getNamebyNum(playerdata.getActiveskilldata().effectnum)
 						, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるエフェクトポイント：" + playerdata.getActiveskilldata().effectpoint
 						, ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※投票すると獲得出来ます"
@@ -889,8 +890,8 @@ public class MenuInventoryData {
 		itemstack = new ItemStack(Material.BOOK,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認" );
-		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(playerdata.getNickName().getId1())
-				+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(playerdata.getNickName().getId2()) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(playerdata.getNickName().getId3()) + "」");
+		lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(playerdata.getSettings().getNickName().getId1())
+				+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(playerdata.getSettings().getNickName().getId2()) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(playerdata.getSettings().getNickName().getId3()) + "」");
 		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -5856,7 +5857,7 @@ public class MenuInventoryData {
 
 	private static boolean sendWarningToLogger(Player p, PlayerData playerdata) {
 		if(playerdata == null){
-			Util.sendPlayerDataNullMessage(p);
+			Util.INSTANCE.sendPlayerDataNullMessage(p);
 			Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
 			Bukkit.getLogger().warning("MenuInventoryData.getMenuData");
 			return true;
@@ -6132,7 +6133,7 @@ public class MenuInventoryData {
 							ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています",
 							ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更",
 							ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x+1) + "]",
-							ChatColor.RESET + "" + ChatColor.GRAY + "" + Util.getWorldName(l.getWorld().getName()) + " x:" + (int)l.getX() + " y:" + (int)l.getY() + " z:" + (int)l.getZ())
+							ChatColor.RESET + "" + ChatColor.GRAY + "" + Util.INSTANCE.getWorldName(l.getWorld().getName()) + " x:" + (int)l.getX() + " y:" + (int)l.getY() + " z:" + (int)l.getZ())
 					: Arrays.asList(ChatColor.GRAY + "サブホームポイント" + (x + 1), ChatColor.GRAY + "ポイント未設定");
 			itemmeta.setLore(subHomeLore);
 			itemstack.setItemMeta(itemmeta);

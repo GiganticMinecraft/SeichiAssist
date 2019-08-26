@@ -6,8 +6,8 @@ import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.data.MenuInventoryData
-import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
-import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
+import com.github.unchama.seichiassist.data.player.GiganticBerserk
+import com.github.unchama.seichiassist.data.player.PlayerNickName
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.menus.stickmenu.firstPage
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -176,8 +176,8 @@ class PlayerInventoryListener : Listener {
             // 複数破壊トグル
 
             if (playerdata.level >= SeichiAssist.seichiAssistConfig.multipleIDBlockBreaklevel) {
-              playerdata.multipleidbreakflag = !playerdata.multipleidbreakflag
-              if (playerdata.multipleidbreakflag) {
+              playerdata.settings.multipleidbreakflag = !playerdata.settings.multipleidbreakflag
+              if (playerdata.settings.multipleidbreakflag) {
                 player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                 player.sendMessage(ChatColor.GREEN.toString() + "複数種類同時破壊:ON")
               } else {
@@ -642,7 +642,7 @@ class PlayerInventoryListener : Listener {
             if (playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
               player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -743,7 +743,7 @@ class PlayerInventoryListener : Listener {
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
               player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -889,7 +889,7 @@ class PlayerInventoryListener : Listener {
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
               player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -942,7 +942,7 @@ class PlayerInventoryListener : Listener {
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
               player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -998,7 +998,7 @@ class PlayerInventoryListener : Listener {
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
               player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -1376,7 +1376,7 @@ class PlayerInventoryListener : Listener {
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid] ?: return
     //エラー分岐
-    val name = playerdata.name
+    val name = playerdata.lowercaseName
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
@@ -1837,11 +1837,11 @@ when (itemstackcurrent.type) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
           val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(Integer.parseInt(itemmeta.displayName))
-              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.nickName.id2)
-              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.nickName.id3))
+              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.settings.nickName.id2)
+              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.settings.nickName.id3))
           if (forcheck.length < 9) {
             playerdata.updateNickname(id1 = Integer.parseInt(itemmeta.displayName))
-            player.sendMessage("前パーツ「" + SeichiAssist.seichiAssistConfig.getTitle1(playerdata.nickName.id1) + "」をセットしました。")
+            player.sendMessage("前パーツ「" + SeichiAssist.seichiAssistConfig.getTitle1(playerdata.settings.nickName.id1) + "」をセットしました。")
           } else {
             player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
           }
@@ -1878,12 +1878,12 @@ when (itemstackcurrent.type) {
           val itemmeta = itemstackcurrent.itemMeta
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
-          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.nickName.id1)
+          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.settings.nickName.id1)
               + SeichiAssist.seichiAssistConfig.getTitle2(Integer.parseInt(itemmeta.displayName))
-              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.nickName.id3))
+              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.settings.nickName.id3))
           if (forcheck.length < 9) {
             playerdata.updateNickname(id2 = Integer.parseInt(itemmeta.displayName))
-            player.sendMessage("中パーツ「" + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.nickName.id2) + "」をセットしました。")
+            player.sendMessage("中パーツ「" + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.settings.nickName.id2) + "」をセットしました。")
           } else {
             player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
           }
@@ -1920,12 +1920,12 @@ when (itemstackcurrent.type) {
           val itemmeta = itemstackcurrent.itemMeta
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
-          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.nickName.id1)
-              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.nickName.id2)
+          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.settings.nickName.id1)
+              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.settings.nickName.id2)
               + SeichiAssist.seichiAssistConfig.getTitle3(Integer.parseInt(itemmeta.displayName)))
           if (forcheck.length < 9) {
             playerdata.updateNickname(id3 = Integer.parseInt(itemmeta.displayName))
-            player.sendMessage("後パーツ「" + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.nickName.id3) + "」をセットしました。")
+            player.sendMessage("後パーツ「" + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.settings.nickName.id3) + "」をセットしました。")
           } else {
             player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
           }
@@ -2874,7 +2874,7 @@ when (itemstackcurrent.type) {
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid] ?: return
     //エラー分岐
-    val name = playerdata.name
+    val name = playerdata.lowercaseName
     val inventory = event.inventory
 
     //インベントリサイズが4列でない時終了

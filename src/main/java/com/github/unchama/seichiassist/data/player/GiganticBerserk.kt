@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.data.playerdata
+package com.github.unchama.seichiassist.data.player
 
 data class GiganticBerserk(val level: Int = 0, val exp: Int = 0, val stage: Int = 0, val canEvolve: Boolean = false, val cd: Int = 0) {
   fun reachedLimit(): Boolean {

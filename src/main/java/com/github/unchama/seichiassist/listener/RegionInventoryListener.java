@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.listener;
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GridTemplate;
-import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.data.RegionMenuData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.Direction;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
@@ -327,7 +327,7 @@ public class RegionInventoryListener implements Listener {
 	private static void setWGSelection(Player player) {
 		PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 		Map<DirectionType, Integer> unitMap = playerData.getUnitMap();
-		Direction direction = Util.getPlayerDirection(player);
+		Direction direction = Util.INSTANCE.getPlayerDirection(player);
 		World world = player.getWorld();
 
 		int aheadUnitAmount = unitMap.get(DirectionType.AHEAD);

@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.listener
 import com.github.unchama.seichiassist.ActiveSkill
 import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.PlayerData
+import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.isSeichi
 import com.github.unchama.seichiassist.util.Util
 import net.coreprotect.model.Config
@@ -28,7 +28,7 @@ class PlayerJoinListener : Listener {
 
     // プレイヤーデータ作成
     // 新しく作成したPlayerDataを引数とする
-    databaseGateway.playerDataManipulator.loadPlayerData(PlayerData(player))
+    databaseGateway.playerDataManipulator.loadPlayerData(PlayerData(player.uniqueId))
 
     // 初見さんへの処理
 

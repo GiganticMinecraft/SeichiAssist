@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener;
 
 import com.github.unchama.seichiassist.MebiusTalk;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.github.unchama.util.collection.SetFactory;
@@ -36,13 +36,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class MebiusListener implements Listener {
 	// Instanceアクセス用
@@ -414,11 +408,11 @@ public class MebiusListener implements Listener {
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなただけのMEBIUSを育てましょう！");
 		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> getPlayerData(player).getMebius().speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！"), 10);
 		player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
-		if (!Util.isPlayerInventoryFull(player)) {
-			Util.addItem(player, mebius);
+		if (!Util.INSTANCE.isPlayerInventoryFull(player)) {
+			Util.INSTANCE.addItem(player, mebius);
 		} else {
 			player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "所持しきれないためMEBIUSをドロップしました。");
-			Util.dropItem(player, mebius);
+			Util.INSTANCE.dropItem(player, mebius);
 		}
 	}
 

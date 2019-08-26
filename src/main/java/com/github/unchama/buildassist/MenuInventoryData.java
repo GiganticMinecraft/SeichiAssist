@@ -1,11 +1,7 @@
 package com.github.unchama.buildassist;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
 import com.github.unchama.buildassist.util.AsyncInventorySetter;
+import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,7 +13,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.github.unchama.seichiassist.SeichiAssist;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 public class MenuInventoryData {
 
@@ -268,7 +267,7 @@ public class MenuInventoryData {
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
 //		PlayerData playerdata = BuildAssist.playermap.get(uuid);
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト1");
 		ItemStack itemstack;
@@ -455,7 +454,7 @@ public class MenuInventoryData {
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
 //		PlayerData playerdata = BuildAssist.playermap.get(uuid);
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト2");
 		ItemStack itemstack;
@@ -697,7 +696,7 @@ public class MenuInventoryData {
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
 //		PlayerData playerdata = BuildAssist.playermap.get(uuid);
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 		Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト3");
 		ItemStack itemstack;

@@ -32,7 +32,7 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 						playerdata.uuid);
 				//SeichiAssistのデータを取得
 				UUID uuid = player.getUniqueId();
-				com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+				com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 				//経験値変更用のクラスを設定
 				ExperienceManager expman = new ExperienceManager(player);
 

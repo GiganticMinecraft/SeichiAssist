@@ -1,10 +1,9 @@
 package com.github.unchama.buildassist;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.UUID;
-
+import com.github.unchama.buildassist.util.ExternalPlugins;
 import com.github.unchama.seichiassist.MineStackObjectList;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -19,9 +18,9 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.github.unchama.buildassist.util.ExternalPlugins;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.minestack.MineStackObj;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.UUID;
 //import org.bukkit.metadata.FixedMetadataValue;
 //import org.bukkit.plugin.java.JavaPlugin;
 //import com.github.unchama.seichiassist.util.Util;
@@ -49,7 +48,7 @@ public class BlockLineUp implements Listener{
 		//アクションを起こした手を取得
 		EquipmentSlot equipmentslot = e.getHand();
 		//プレイヤーデータ
-		com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 		PlayerData playerdata = BuildAssist.playermap.get(uuid);
 
 		//プレイヤーデータが無い場合は処理終了

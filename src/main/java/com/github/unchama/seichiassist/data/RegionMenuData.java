@@ -2,9 +2,10 @@ package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -55,7 +56,7 @@ public class RegionMenuData {
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック"
 				, ChatColor.RESET + "" +  ChatColor.GREEN + "④メニューの" + ChatColor.RESET + "" +  ChatColor.YELLOW + "金の斧" + ChatColor.RESET + "" +  ChatColor.GREEN + "をクリック"
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[//wand]");
-		ItemStack menuicon0 = Util.getMenuIcon(Material.WOOD_AXE, 1
+		ItemStack menuicon0 = Util.INSTANCE.getMenuIcon(Material.WOOD_AXE, 1
 				, ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護設定用の木の斧を召喚"
 				, lore0, true);
 		inventory.setItem(0, menuicon0);
@@ -121,7 +122,7 @@ public class RegionMenuData {
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "その他のコマンドはWikiを参照"
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/rg list]"
 		);
-		ItemStack menuicon2 = Util.getMenuIcon(Material.STONE_AXE, 1,
+		ItemStack menuicon2 = Util.INSTANCE.getMenuIcon(Material.STONE_AXE, 1,
 				ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "保護一覧を表示", lore2, true);
 		inventory.setItem(2, menuicon2);
 
@@ -132,7 +133,7 @@ public class RegionMenuData {
 				, ChatColor.RESET + "" + ChatColor.YELLOW + "保護の各種設定や削除が行えます"
 				, ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/land]"
 				);
-		ItemStack menuicon3 = Util.getMenuIcon(Material.DIAMOND_AXE, 1,
+		ItemStack menuicon3 = Util.INSTANCE.getMenuIcon(Material.DIAMOND_AXE, 1,
 				ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "RegionGUI機能", lore3, true);
 		inventory.setItem(3, menuicon3);
 
@@ -144,7 +145,7 @@ public class RegionMenuData {
 				, ChatColor.RESET + "" + ChatColor.AQUA + "15ブロック＝1ユニットとして"
 				, ChatColor.RESET + "" + ChatColor.AQUA + "保護が作成されます。"
 		);
-		ItemStack menuicon4 = Util.getMenuIcon(Material.IRON_AXE, 1,
+		ItemStack menuicon4 = Util.INSTANCE.getMenuIcon(Material.IRON_AXE, 1,
 				ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "グリッド式保護作成画面",
 				lore4, true);
 		inventory.setItem(4, menuicon4);
@@ -172,7 +173,7 @@ public class RegionMenuData {
 		lore0.add(ChatColor.AQUA + "" + playerData.getUnitPerClick() + ChatColor.GREEN + "ユニット(" +
 				ChatColor.AQUA + playerData.getUnitPerClick() * 15 + ChatColor.GREEN + "ブロック)/1クリック");
 		lore0.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "クリックで変更");
-		ItemStack menuicon0 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 0,
+		ItemStack menuicon0 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 0,
 				ChatColor.GREEN + "拡張単位の変更", lore0, true);
 		gridInv.setItem(0, menuicon0);
 
@@ -183,14 +184,14 @@ public class RegionMenuData {
 		} else if (!playerData.canGridReduce(DirectionType.AHEAD)) {
 			lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
 		}
-		ItemStack menuicon1 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 14,
+		ItemStack menuicon1 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 14,
 				ChatColor.DARK_GREEN + "前に" + playerData.getUnitPerClick() + "ユニット増やす/減らす", lore1, true);
 		gridInv.setItem(1, menuicon1);
 
 		//2マス目
 		List<String> lore2 = new ArrayList<>();
 		lore2.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "クリックで開く");
-		ItemStack menuicon2 = Util.getMenuIcon(Material.CHEST, 1, ChatColor.GREEN + "設定保存メニュー",
+		ItemStack menuicon2 = Util.INSTANCE.getMenuIcon(Material.CHEST, 1, ChatColor.GREEN + "設定保存メニュー",
 				lore2, true);
 		gridInv.setItem(2, menuicon2);
 
@@ -201,7 +202,7 @@ public class RegionMenuData {
 		} else if (!playerData.canGridReduce(DirectionType.LEFT)) {
 			lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
 		}
-		ItemStack menuicon3 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 10,
+		ItemStack menuicon3 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 10,
 				ChatColor.DARK_GREEN + "左に" + playerData.getUnitPerClick() + "ユニット増やす/減らす", lore3, true);
 		gridInv.setItem(3, menuicon3);
 
@@ -218,7 +219,7 @@ public class RegionMenuData {
 				+ "(" + ChatColor.AQUA + nfNum.format(unitMap.get(DirectionType.LEFT) * 15) + ChatColor.GRAY + "ブロック)");
 		lore4.add(ChatColor.GRAY + "保護ユニット数：" + ChatColor.AQUA + playerData.getGridChunkAmount());
 		lore4.add(ChatColor.GRAY + "保護ユニット上限値：" + ChatColor.RED + config.getGridLimitPerWorld(player.getWorld().getName()));
-		ItemStack menuicon4 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, ChatColor.DARK_GREEN + "設定",
+		ItemStack menuicon4 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, ChatColor.DARK_GREEN + "設定",
 				lore4, true);
 		gridInv.setItem(4, menuicon4);
 
@@ -229,14 +230,14 @@ public class RegionMenuData {
 		} else if (!playerData.canGridReduce(DirectionType.RIGHT)) {
 			lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
 		}
-		ItemStack menuicon5 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5,
+		ItemStack menuicon5 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5,
 				ChatColor.DARK_GREEN + "右に" + playerData.getUnitPerClick() + "ユニット増やす/減らす", lore5, true);
 		gridInv.setItem(5, menuicon5);
 
 		//6マス目
 		List<String> lore6 = new ArrayList<>();
 		lore6.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "取扱注意！！");
-		ItemStack menuicon6 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 4, ChatColor.RED + "全設定リセット",
+		ItemStack menuicon6 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 4, ChatColor.RED + "全設定リセット",
 				lore6, true);
 		gridInv.setItem(6, menuicon6);
 
@@ -247,7 +248,7 @@ public class RegionMenuData {
 		} else if (!playerData.canGridReduce(DirectionType.BEHIND)) {
 			lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
 		}
-		ItemStack menuicon7 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 13,
+		ItemStack menuicon7 = Util.INSTANCE.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 13,
 				ChatColor.DARK_GREEN + "後ろに" + playerData.getUnitPerClick() + "ユニット増やす/減らす", lore7, true);
 		gridInv.setItem(7, menuicon7);
 
@@ -255,7 +256,7 @@ public class RegionMenuData {
 		if (!config.isGridProtectEnable(player)) {
 			List<String> lore8 = new ArrayList<>();
 			lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "このワールドでは保護を作成できません");
-			ItemStack menuicon8 = Util.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",
+			ItemStack menuicon8 = Util.INSTANCE.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",
 					lore8, true);
 			gridInv.setItem(8, menuicon8);
 		} else if (!playerData.canCreateRegion()) {
@@ -263,14 +264,14 @@ public class RegionMenuData {
 			lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "以下の原因により保護を作成できません");
 			lore8.add(ChatColor.RED + "・保護の範囲が他の保護と重複している");
 			lore8.add(ChatColor.RED + "・保護の作成上限に達している");
-			ItemStack menuicon8 = Util.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",
+			ItemStack menuicon8 = Util.INSTANCE.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",
 					lore8, true);
 			gridInv.setItem(8, menuicon8);
 		} else {
 			List<String> lore8 = new ArrayList<>();
 			lore8.add(ChatColor.DARK_GREEN + "保護作成可能です");
 			lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "クリックで作成");
-			ItemStack menuicon8 = Util.getMenuIcon(Material.WOOL, 1, 11, ChatColor.GREEN + "保護作成",
+			ItemStack menuicon8 = Util.INSTANCE.getMenuIcon(Material.WOOL, 1, 11, ChatColor.GREEN + "保護作成",
 					lore8, true);
 			gridInv.setItem(8, menuicon8);
 		}
@@ -348,7 +349,7 @@ public class RegionMenuData {
 		//戻るボタン
 		List<String> lore = new ArrayList<>();
 		lore.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + "クリックで戻る");
-		ItemStack retIcon = Util.getMenuIcon(Material.BARRIER, 1, ChatColor.RED + "グリッド式保護メニューに戻る",
+		ItemStack retIcon = Util.INSTANCE.getMenuIcon(Material.BARRIER, 1, ChatColor.RED + "グリッド式保護メニューに戻る",
 				 lore, true);
 		inv.setItem(getAisleAmount() * 9, retIcon);
 
@@ -384,13 +385,13 @@ public class RegionMenuData {
 			lore.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + template.getLeftAmount() + ChatColor.GRAY + "ユニット");
 			lore.add(ChatColor.GREEN + "左クリックで設定を読み込み");
 			lore.add(ChatColor.RED + "右クリックで現在の設定で上書き");
-			return Util.getMenuIcon(Material.CHEST, 1,
+			return Util.INSTANCE.getMenuIcon(Material.CHEST, 1,
 					ChatColor.GREEN + "テンプレNo." + (i + 1) + "(設定済)", lore, true);
 		} else {
 			List<String> lore = new ArrayList<>();
 			lore.add(ChatColor.GREEN + "未設定");
 			lore.add(ChatColor.RED + "左クリックで現在の設定を保存");
-			return Util.getMenuIcon(Material.PAPER, 1,
+			return Util.INSTANCE.getMenuIcon(Material.PAPER, 1,
 					ChatColor.RED + "テンプレNo." + (i + 1) , lore, true);
 		}
 	}
