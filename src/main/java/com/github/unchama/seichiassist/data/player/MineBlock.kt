@@ -6,12 +6,6 @@ class MineBlock {
   var before: Long = 0
   var increase: Long = 0
 
-  init {
-    after = 0
-    before = 0
-    increase = 0
-  }
-
   fun setIncrease() {
     increase = after - before
   }

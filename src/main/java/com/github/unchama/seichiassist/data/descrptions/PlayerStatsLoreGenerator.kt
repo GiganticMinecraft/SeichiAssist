@@ -124,7 +124,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
   /**
    * 連続ログイン日数の説明文
    */
-  private fun totalChainLoginDaysDescription(): String = "${GRAY}連続ログイン日数：${playerData.loginStatus.chainLoginDay}日"
+  private fun totalChainLoginDaysDescription(): String = "${GRAY}連続ログイン日数：${playerData.loginStatus.consecutiveLoginDays}日"
 
   /**
    * 連続投票日数の説明文.

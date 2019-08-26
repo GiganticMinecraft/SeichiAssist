@@ -240,7 +240,7 @@ public enum SeichiAchievement {
     }
 
     private static int getDaysChaining(Player player) {
-        return getPlayerData(player).getLoginStatus().getChainLoginDay();
+        return getPlayerData(player).getLoginStatus().getConsecutiveLoginDays();
     }
 
     private static int getTotalPlayedDays(Player player) {

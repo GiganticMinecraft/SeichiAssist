@@ -218,7 +218,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
           + ",starlevel_Event = " + playerdata.starLevels.fromEventAchievement
 
           + ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
-          + ",ChainJoin = " + playerdata.loginStatus.chainLoginDay
+          + ",ChainJoin = " + playerdata.loginStatus.consecutiveLoginDays
           + ",TotalJoin = " + playerdata.loginStatus.totalLoginDay
           + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
 

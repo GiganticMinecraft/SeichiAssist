@@ -286,7 +286,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         lastIn
       }
       val chain = rs.getInt("ChainJoin")
-      playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = if (chain == 0) {
+      playerdata.loginStatus = playerdata.loginStatus.copy(consecutiveLoginDays = if (chain == 0) {
   1
 } else {
   chain
@@ -310,9 +310,9 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
           LLE.getLastcheck(playerdata.lastcheckdate)
           playerdata.loginStatus = playerdata.loginStatus.copy(totalLoginDay = playerdata.loginStatus.totalLoginDay + 1)
           if (datediff == 1L) {
-            playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = playerdata.loginStatus.chainLoginDay + 1)
+            playerdata.loginStatus = playerdata.loginStatus.copy(consecutiveLoginDays = playerdata.loginStatus.consecutiveLoginDays + 1)
           } else {
-            playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = 1)
+            playerdata.loginStatus = playerdata.loginStatus.copy(consecutiveLoginDays = 1)
           }
         }
       } catch (e: ParseException) {
