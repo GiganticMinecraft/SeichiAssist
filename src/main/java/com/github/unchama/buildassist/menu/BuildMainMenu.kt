@@ -13,6 +13,7 @@ import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.menuinventory.slot.button.recomputedButton
 import com.github.unchama.seichiassist.Schedulers
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.asCommandEffect
@@ -184,7 +185,7 @@ object BuildMainMenu : Menu {
 
     suspend fun Player.computeButtonToOpenRangedPlaceSkillMenu() = run {
       val openerData = BuildAssist.playermap[uniqueId]!!
-      val iconItemStack = SkullItemStackBuilder(UUID.fromString("d3c47f6fae3a45c1ad7ce2c762b03ae6"))
+      val iconItemStack = SkullItemStackBuilder(SkullOwners.MHF_Exclamation)
           .title("$YELLOW${EMPHASIZE}「範囲設置スキル」設定画面へ")
           .lore(
               "$RESET$DARK_RED${UNDERLINE}クリックで移動",
