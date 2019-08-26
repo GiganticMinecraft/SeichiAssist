@@ -4,8 +4,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
@@ -25,9 +25,6 @@ public class BuildAssist {
 
     //起動するタスクリスト
     private final List<BukkitTask> tasklist = new LinkedList<>();
-
-    //総建築量ランキング表示用データリスト
-    //public static final List<Integer> ranklist = new ArrayList<>();
 
     //Playerdataに依存するデータリスト
     public static final HashMap<UUID, PlayerData> playermap = new HashMap<>();
@@ -230,24 +227,6 @@ public class BuildAssist {
             , Material.NETHER_WART_BLOCK//ネザーウォートB
             , Material.CONCRETE//コンクリート
             , Material.CONCRETE_POWDER//コンクリートパウダー
-/*
-			,Material.WHITE_GLAZED_TERRACOTTA//彩釉テラコッタ	ブロックの向きがあるので除外
-			,Material.ORANGE_GLAZED_TERRACOTTA
-			,Material.MAGENTA_GLAZED_TERRACOTTA
-			,Material.LIGHT_BLUE_GLAZED_TERRACOTTA
-			,Material.YELLOW_GLAZED_TERRACOTTA
-			,Material.LIME_GLAZED_TERRACOTTA
-			,Material.PINK_GLAZED_TERRACOTTA
-			,Material.GRAY_GLAZED_TERRACOTTA
-			,Material.SILVER_GLAZED_TERRACOTTA
-			,Material.CYAN_GLAZED_TERRACOTTA
-			,Material.PURPLE_GLAZED_TERRACOTTA
-			,Material.BLUE_GLAZED_TERRACOTTA
-			,Material.BROWN_GLAZED_TERRACOTTA
-			,Material.GREEN_GLAZED_TERRACOTTA
-			,Material.RED_GLAZED_TERRACOTTA
-			,Material.BLACK_GLAZED_TERRACOTTA
-*/
     );
 
     static final Set<Material> material_slab2 = EnumSet.of(
@@ -288,7 +267,7 @@ public class BuildAssist {
 
         //コマンドの登録
         commandlist = new HashMap<>();
-        commandlist.put("fly", new flyCommand(plugin));
+        commandlist.put("fly", new FlyCommand());
 
         registerEvent(new PlayerJoinListener());
         registerEvent(new EntityListener());
