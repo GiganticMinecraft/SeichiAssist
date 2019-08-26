@@ -24,7 +24,8 @@ object MaterialSets {
       Material.BOOKSHELF, Material.IRON_FENCE, Material.ICE, Material.WOOL, Material.GOLD_BLOCK, Material.END_ROD,
       Material.PUMPKIN, Material.MELON_BLOCK, Material.STONE_SLAB2, Material.SPONGE, Material.SOIL, Material.GRASS_PATH,
       Material.MOB_SPAWNER, Material.WORKBENCH, Material.FURNACE, Material.QUARTZ_BLOCK, Material.CHEST,
-      Material.TRAPPED_CHEST
+      Material.TRAPPED_CHEST, Material.NETHER_FENCE, Material.NETHER_BRICK_STAIRS, Material.CAULDRON, Material.END_ROD,
+      Material.PURPUR_STAIRS, Material.END_BRICKS, Material.PURPUR_SLAB, Material.ENDER_CHEST
   )
 
   val luckMaterials: Set<Material> = EnumSet.of(
