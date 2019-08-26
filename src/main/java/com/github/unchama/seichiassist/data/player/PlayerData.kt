@@ -41,7 +41,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 
-class PlayerData constructor(val uuid: UUID) {
+class PlayerData constructor(@Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID) {
   //読み込み済みフラグ
   var loaded = false
 
@@ -230,6 +230,7 @@ class PlayerData constructor(val uuid: UUID) {
       voteFairyPeriod = ClosedRangeWithComparator(voteFairyPeriod.start, value, voteFairyPeriod.comparator)
     }
 
+  @Deprecated("PlayerDataはPlayerに依存するべきではない。")
   private val player: Player
     get() = Bukkit.getPlayer(uuid)
 
