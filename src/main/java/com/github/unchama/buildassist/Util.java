@@ -4,6 +4,7 @@ package com.github.unchama.buildassist;
 import java.math.BigDecimal;
 
 import com.github.unchama.seichiassist.MineStackObjectList;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -16,15 +17,15 @@ public final class Util {
 	private Util() {
 	}
 
-	public static int toInt(String s) {
+	public static int toInt(final String s) {
 		return Integer.parseInt(s);
 	}
 
-	public static String getName(Player p) {
+	public static String getName(final Player p) {
 		return p.getName().toLowerCase();
 	}
 
-	public static String getName(String name) {
+	public static String getName(final String name) {
 		return name.toLowerCase();
 	}
 
@@ -45,7 +46,7 @@ public final class Util {
 	 * @param player 対象となるプレイヤー
 	 * @return 発動できる場合はtrue、できない場合はfalse
 	 */
-	public static boolean isSkillEnable(Player player){
+	public static boolean isSkillEnable(final Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
 		String worldname = SeichiAssist.Companion.getSEICHIWORLDNAME();
 		if(SeichiAssist.Companion.getDEBUG()){
@@ -74,7 +75,7 @@ public final class Util {
 	 * @param player 対象のプレイヤー
 	 * @return いる場合はtrue、いない場合はfalse
 	 */
-	public static boolean inTrackedWorld(Player player){
+	public static boolean inTrackedWorld(final Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
 		if(SeichiAssist.Companion.getDEBUG()){
 			return true;
@@ -99,7 +100,7 @@ public final class Util {
 	 */
 	// TODO これはここにあるべきではない
 	@Deprecated public static @Nullable
-	MineStackObj findMineStackObjectByName(String name) {
+	MineStackObj findMineStackObjectByName(final String name) {
 		return MineStackObjectList.INSTANCE.getMinestacklist().stream()
 				.filter(obj -> name.equals(obj.getMineStackObjName()))
 				.findFirst().orElse(null);
@@ -112,9 +113,9 @@ public final class Util {
 	 * @param player 増加させるプレイヤー
 	 * @param amount 増加量
 	 */
-	public static void addBuild1MinAmount(Player player, BigDecimal amount) {
+	public static void addBuild1MinAmount(final Player player, final BigDecimal amount) {
 		//プレイヤーデータ取得
-		PlayerData playerData = BuildAssist.playermap.get(player.getUniqueId());
+		final PlayerData playerData = BuildAssist.playermap.get(player.getUniqueId());
 		//player.sendMessage("足す数:" + amount.doubleValue() + ",かけた後:" + amount.multiply(new BigDecimal("0.1")).doubleValue());
 		//ワールドによって倍率変化
 		if (player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.Companion.getSEICHIWORLDNAME())) {
