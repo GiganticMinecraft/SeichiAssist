@@ -8,6 +8,10 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
+/**
+ * @deprecated isVisibleはPlayerData.configurationで管理されるべきであり、ExpBarを中央管理して各PlayerDataと同期するようにするべき
+ */
+@Deprecated
 public class ExpBar {
 	private BossBar expbar;
 	private Player p;

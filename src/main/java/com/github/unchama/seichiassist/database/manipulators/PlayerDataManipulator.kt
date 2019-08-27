@@ -632,7 +632,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         val command = "insert into $db.$table (name,uuid,loginflag) values('$playerName','$stringUuid','1')"
         stmt!!.executeUpdate(command)
 
-        PlayerData(playerUUID)
+        PlayerData(playerUUID, playerName)
       }
       else -> {
         //uuidが存在するときの処理

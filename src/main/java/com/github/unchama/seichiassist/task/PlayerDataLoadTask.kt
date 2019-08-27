@@ -41,7 +41,7 @@ fun loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
   val db: String = SeichiAssist.seichiAssistConfig.db
   val timer: MillisecondTimer = MillisecondTimer.getInitializedTimerInstance()
 
-  val playerData = PlayerData(playerUUID)
+  val playerData = PlayerData(playerUUID, playerName)
 
   @Throws(SQLException::class)
   fun updateLoginInfo(stmt: Statement) {
