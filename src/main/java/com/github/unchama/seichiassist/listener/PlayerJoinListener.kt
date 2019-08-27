@@ -29,7 +29,16 @@ class PlayerJoinListener : Listener {
     val playerUuid = event.uniqueId
     val playerName = event.name
 
-    playerMap[playerUuid] = databaseGateway.playerDataManipulator.loadPlayerData(playerUuid, playerName)
+    try {
+      val playerData = databaseGateway.playerDataManipulator.loadPlayerData(playerUuid, playerName)
+      SeichiAssist.playermap[playerUuid] = playerData
+    } catch (e: Exception) {
+      println("Caught exception while loading PlayerData.")
+      e.printStackTrace()
+
+      event.kickMessage = "プレーヤーデータの読み込みに失敗しました。管理者に連絡してください。"
+      event.loginResult = AsyncPlayerPreLoginEvent.Result.KICK_OTHER
+    }
   }
 
   // プレイヤーがjoinした時に実行
