@@ -6,7 +6,6 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seichiassist.*
-import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.category
 import com.github.unchama.targetedeffect.TargetedEffect
@@ -51,7 +50,17 @@ object CategorizedMineStackMenu {
           }
       )
 
-      val stickMenuButtonSection = singleSlotLayout { (9 * 5) to CommonButtons.openStickMenu }
+      val mineStackMainMenuButtonSection = run {
+        val mineStackMainMenuButton = Button(
+            SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
+                .title("$YELLOW$UNDERLINE${BOLD}MineStackメインメニューへ")
+                .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
+                .build(),
+            FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE, MineStackMainMenu.open)
+        )
+
+        singleSlotLayout { (9 * 5) to mineStackMainMenuButton }
+      }
 
       val previousPageButtonSection = if (page > 0) {
         singleSlotLayout { 9 * 5 + 7 to buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp) }
@@ -62,7 +71,7 @@ object CategorizedMineStackMenu {
       } else emptyLayout
 
       combinedLayout(
-          stickMenuButtonSection,
+          mineStackMainMenuButtonSection,
           previousPageButtonSection,
           nextPageButtonSection
       )
