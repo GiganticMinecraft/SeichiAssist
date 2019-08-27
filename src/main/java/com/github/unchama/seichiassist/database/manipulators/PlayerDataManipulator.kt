@@ -9,9 +9,9 @@ import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.task.CheckAlreadyExistPlayerDataTask
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
+import com.github.unchama.seichiassist.task.loadExistingPlayerData
 import com.github.unchama.seichiassist.task.recordIteration
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.util.Util
@@ -600,10 +600,45 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             }
     }
 
-    fun loadPlayerData(playerdata: PlayerData) {
-        val player = Bukkit.getPlayer(playerdata.uuid)
-        player.sendMessage(ChatColor.YELLOW.toString() + "プレイヤーデータ取得中。完了まで動かずお待ち下さい…")
-        CheckAlreadyExistPlayerDataTask(playerdata).runTaskAsynchronously(plugin)
+    fun loadPlayerData(playerUUID: UUID, playerName: String): PlayerData {
+        val databaseGateway = SeichiAssist.databaseGateway
+        val table = DatabaseConstants.PLAYERDATA_TABLENAME
+        val db = SeichiAssist.seichiAssistConfig.db
+
+        //sqlコネクションチェック
+        databaseGateway.ensureConnection()
+
+        //同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
+        val stmt = databaseGateway.con.createStatement()
+
+        val stringUuid: String = playerUUID.toString().toLowerCase()
+
+        //uuidがsqlデータ内に存在するか検索
+        val count = run {
+            val command = ("select count(*) as count from $db.$table where uuid = '$stringUuid'")
+
+            stmt.executeQuery(command).use { resultSet ->
+                resultSet.next()
+                resultSet.getInt("count")
+            }
+        }
+
+        return when (count) {
+            0 -> {
+                //uuidが存在しない時の処理
+                SeichiAssist.instance.server.consoleSender.sendMessage("${ChatColor.YELLOW}${playerName}は完全初見です。プレイヤーデータを作成します")
+
+                //新しくuuidとnameを設定し行を作成
+                val command = "insert into $db.$table (name,uuid,loginflag) values('$playerName','$stringUuid','1')"
+                stmt!!.executeUpdate(command)
+
+                PlayerData(playerUUID)
+            }
+            else -> {
+                //uuidが存在するときの処理
+                loadExistingPlayerData(playerUUID, playerName)
+            }
+        }
     }
 
     //ondisable"以外"の時のプレイヤーデータセーブ処理(loginflag折りません)

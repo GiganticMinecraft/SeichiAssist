@@ -302,7 +302,6 @@ class PlayerData constructor(@Deprecated("PlayerDataはuuidに依存するべき
   //join時とonenable時、プレイヤーデータを最新の状態に更新
   fun updateOnJoin() {
     //破壊量データ(before)を設定
-    //minuteblock.before = totalbreaknum;
     halfhourblock.before = totalbreaknum
     updateLevel()
     notifySorryForBug()
