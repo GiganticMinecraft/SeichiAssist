@@ -228,15 +228,13 @@ object BuildMainMenu : Menu {
                 "${RED}建築LVが足りません".asMessageEffect()
               } else {
                 sequentialEffect(
+                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                     TargetedEffect {
-                      if (openerData.line_up_flg >= 2) {
-                        openerData.line_up_flg = 0
-                      } else {
-                        openerData.line_up_flg++
-                      }
+                      openerData.line_up_flg += 1
+                      openerData.line_up_flg %= 3
                     },
-                    "${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}".asMessageEffect(),
-                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f))
+                    deferredEffect { "${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}".asMessageEffect() }
+                )
               }
             }
           }
