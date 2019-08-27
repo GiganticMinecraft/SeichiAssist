@@ -79,7 +79,7 @@ class PlayerData constructor(@Deprecated("PlayerDataはuuidに依存するべき
   val effectdatalist: MutableList<FastDiggingEffect> = LinkedList()
 
   //プレイ時間差分計算用int
-  private var totalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK)
+  private var totalPlayTick: Int? = null
 
   //投票受け取りボタン連打防止用
   var votecooldownflag = true
@@ -321,7 +321,7 @@ class PlayerData constructor(@Deprecated("PlayerDataはuuidに依存するべき
     //総整地量を更新
     updateAndCalcMinedBlockAmount()
     //総プレイ時間更新
-    calcPlayTick()
+    updatePlayTick()
 
     activeskilldata.updateOnQuit()
     expbar.remove()
@@ -484,13 +484,13 @@ class PlayerData constructor(@Deprecated("PlayerDataはuuidに依存するべき
   }
 
   //総プレイ時間を更新する
-  fun calcPlayTick() {
-    val ticksInStatistic = player.getStatistic(Statistic.PLAY_ONE_TICK)
-    //前回との差分を算出
-    val pastTime = ticksInStatistic - totalPlayTick
-    totalPlayTick = ticksInStatistic
-    //総プレイ時間に追加
-    playTick += pastTime
+  fun updatePlayTick() {
+    // WARN: 1分毎にupdatePlayTickが呼び出されるというコンテクストに依存している.
+    val nowTotalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK)
+    val diff = nowTotalPlayTick - (totalPlayTick ?: nowTotalPlayTick)
+
+    totalPlayTick = nowTotalPlayTick
+    playTick += diff
   }
 
   //総破壊ブロック数を更新する

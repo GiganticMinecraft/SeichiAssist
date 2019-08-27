@@ -60,7 +60,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       //activeskillpointを設定
       playerData.activeskilldata.updateActiveSkillPoint(player, playerData.level)
       //総プレイ時間更新
-      playerData.calcPlayTick()
+      playerData.updatePlayTick()
 
       //スターレベル更新
       playerData.updateStarLevel()
