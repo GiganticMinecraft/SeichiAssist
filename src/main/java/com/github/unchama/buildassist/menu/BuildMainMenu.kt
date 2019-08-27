@@ -23,7 +23,6 @@ import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
-import java.util.*
 
 object BuildMainMenu : Menu {
 
@@ -202,7 +201,7 @@ object BuildMainMenu : Menu {
                   if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
                     "${RED}建築LVが足りません".asMessageEffect()
                   } else {
-                    TargetedEffect { openInventory(MenuInventoryData.getSetBlockSkillData(player)) }
+                    TargetedEffect<Player> { it.openInventory(MenuInventoryData.getSetBlockSkillData(it)) }
                   }
                 }
             )
@@ -261,7 +260,7 @@ object BuildMainMenu : Menu {
           FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
             sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                TargetedEffect { MenuInventoryData.getBlockLineUpData(this@run) }
+                TargetedEffect { it.openInventory(MenuInventoryData.getBlockLineUpData(it)) }
             )
           }
       )
@@ -276,7 +275,7 @@ object BuildMainMenu : Menu {
       Button(iconItemStackBuilder,
           FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
             sequentialEffect(FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                TargetedEffect { openInventory(MenuInventoryData.getBlockCraftData(this@run)) })
+                TargetedEffect { it.openInventory(MenuInventoryData.getBlockCraftData(it)) })
           })
     }
 
