@@ -14,7 +14,6 @@ import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.util.ActionStatus.Fail
 import com.github.unchama.util.row
@@ -165,7 +164,7 @@ class PlayerInventoryListener : Listener {
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
           ).runFor(player)
         }
@@ -408,7 +407,7 @@ class PlayerInventoryListener : Listener {
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
           ).runFor(player)
         }
@@ -1159,7 +1158,7 @@ class PlayerInventoryListener : Listener {
           "MHF_ArrowLeft" -> {
             GlobalScope.launch(Schedulers.async) {
               sequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                  CommonSoundEffects.menuTransitionFenceSound,
                   StickMenu.firstPage.open
               ).runFor(player)
             }
@@ -1236,7 +1235,7 @@ class PlayerInventoryListener : Listener {
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
           ).runFor(player)
         }
@@ -1306,7 +1305,7 @@ class PlayerInventoryListener : Listener {
           "MHF_ArrowLeft" -> {
             GlobalScope.launch(Schedulers.async) {
               sequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                  CommonSoundEffects.menuTransitionFenceSound,
                   StickMenu.firstPage.open
               ).runFor(player)
             }
@@ -1383,7 +1382,7 @@ class PlayerInventoryListener : Listener {
           "MHF_ArrowLeft" -> {
             GlobalScope.launch(Schedulers.async) {
               sequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                  CommonSoundEffects.menuTransitionFenceSound,
                   StickMenu.firstPage.open
               ).runFor(player)
             }
@@ -1681,7 +1680,7 @@ class PlayerInventoryListener : Listener {
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           GlobalScope.launch(Schedulers.async) {
             sequentialEffect(
-                FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                CommonSoundEffects.menuTransitionFenceSound,
                 StickMenu.firstPage.open
             ).runFor(player)
           }
@@ -3231,7 +3230,7 @@ when (itemstackcurrent.type) {
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
           ).runFor(player)
         }

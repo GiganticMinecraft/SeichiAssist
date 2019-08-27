@@ -12,6 +12,7 @@ import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.recomputedButton
 import com.github.unchama.seasonalevents.events.valentine.Valentine
+import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.SkullOwners
@@ -119,7 +120,7 @@ private object FirstPage: Menu {
       Button(
           iconItemStack,
           LeftClickButtonEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               // TODO メニューに置き換える
               TargetedEffect { it.openInventory(MenuInventoryData.getRankingList(0)) }
           )
@@ -136,7 +137,7 @@ private object FirstPage: Menu {
       Button(
           iconItemStack,
           LeftClickButtonEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               // TODO メニューに置き換える
               TargetedEffect { it.openInventory(MenuInventoryData.getRankingList_playtick(0)) }
           )
@@ -156,7 +157,7 @@ private object FirstPage: Menu {
       Button(
           iconItemStack,
           LeftClickButtonEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               // TODO メニューに置き換える
               TargetedEffect { it.openInventory(MenuInventoryData.getRankingList_p_vote(0)) }
           )
@@ -173,7 +174,7 @@ private object FirstPage: Menu {
       Button(
           iconItemStack,
           LeftClickButtonEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.secondPage.open
           )
       )
@@ -340,7 +341,7 @@ private object FirstPage: Menu {
       Button(
           iconItemStack,
           LeftClickButtonEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               // TODO メニューに置き換える
               TargetedEffect { it.openInventory(MenuInventoryData.getVotingMenuData(it)) }
           )

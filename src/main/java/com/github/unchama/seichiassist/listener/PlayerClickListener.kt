@@ -9,7 +9,6 @@ import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.ops.appendOwnerInformation
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.targetedeffect.unfocusedEffect
 import kotlinx.coroutines.GlobalScope
@@ -445,7 +444,7 @@ class PlayerClickListener : Listener {
 
     val effect = sequentialEffect(
         unfocusedEffect { event.isCancelled = true },
-        FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+        CommonSoundEffects.menuTransitionFenceSound,
         StickMenu.firstPage.open
     )
 

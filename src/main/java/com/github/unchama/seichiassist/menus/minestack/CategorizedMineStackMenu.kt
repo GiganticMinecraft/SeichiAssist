@@ -5,21 +5,16 @@ import com.github.unchama.menuinventory.*
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
-import com.github.unchama.seichiassist.MineStackObjectList
-import com.github.unchama.seichiassist.Schedulers
-import com.github.unchama.seichiassist.SkullOwnerReference
-import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.seichiassist.*
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.category
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.targetedeffect.unfocusedEffect
 import com.github.unchama.util.collection.mapValues
 import org.bukkit.ChatColor.*
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import kotlin.math.ceil
 
@@ -50,7 +45,7 @@ object CategorizedMineStackMenu {
               .build(),
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
-                FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                CommonSoundEffects.menuTransitionFenceSound,
                 forCategory(category, page).open
             )
           }

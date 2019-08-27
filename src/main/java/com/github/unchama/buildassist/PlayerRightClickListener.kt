@@ -1,17 +1,16 @@
 package com.github.unchama.buildassist
 
 import com.github.unchama.buildassist.menu.BuildMainMenu
+import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.seichiassist.MineStackObjectList
 import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -56,7 +55,7 @@ class PlayerRightClickListener : Listener {
 
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               BuildMainMenu.open
           ).runFor(player)
         }
