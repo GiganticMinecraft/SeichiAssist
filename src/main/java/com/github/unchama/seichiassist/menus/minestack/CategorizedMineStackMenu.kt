@@ -38,15 +38,15 @@ object CategorizedMineStackMenu {
 
     // ページ操作等のボタンを含むレイアウトセクション
     val uiOperationSection = run {
-      fun buttonToTransferTo(page: Int, skullOwnerReference: SkullOwnerReference) = Button(
+      fun buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference) = Button(
           SkullItemStackBuilder(skullOwnerReference)
-              .title("$YELLOW$UNDERLINE${BOLD}MineStack${page + 1}ページ目へ")
+              .title("$YELLOW$UNDERLINE${BOLD}MineStack${pageIndex + 1}ページ目へ")
               .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
               .build(),
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
-                forCategory(category, page).open
+                forCategory(category, pageIndex).open
             )
           }
       )
@@ -81,18 +81,18 @@ object CategorizedMineStackMenu {
   }
 
   /**
-   * カテゴリ別マインスタックメニューで[page]ページ目の[Menu]
+   * カテゴリ別マインスタックメニューで [pageIndex] + 1 ページ目の[Menu]
    */
-  fun forCategory(category: MineStackObjectCategory, page: Int = 0): Menu = object: Menu {
+  fun forCategory(category: MineStackObjectCategory, pageIndex: Int = 0): Menu = object: Menu {
     override val open: TargetedEffect<Player> = computedEffect { player ->
       val session = MenuInventoryView(
           6.rows(),
-          "$DARK_BLUE${BOLD}MineStack - ${category.uiLabel} (${page}ページ目)"
+          "$DARK_BLUE${BOLD}MineStack(${category.uiLabel})"
       ).createNewSession()
 
       sequentialEffect(
           session.openEffectThrough(Schedulers.sync),
-          unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout(category, page)) }
+          unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout(category, pageIndex)) }
       )
     }
   }
