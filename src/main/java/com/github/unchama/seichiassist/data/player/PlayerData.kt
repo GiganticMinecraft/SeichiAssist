@@ -379,7 +379,7 @@ class PlayerData constructor(
     updatePlayerLevel()
     updateStarLevel()
     setDisplayName()
-    ExpBarSynchronization.synchronizeFor(player)
+    SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
     activeskilldata.mana.display(player, level)
   }
 
@@ -857,7 +857,7 @@ class PlayerData constructor(
           else -> "${RED}整地量バー非表示"
         }.asMessageEffect()
       } + unfocusedEffect {
-        ExpBarSynchronization.synchronizeFor(player)
+        SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
       }
 
   companion object {

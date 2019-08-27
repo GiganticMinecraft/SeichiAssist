@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.listener;
 
-import com.github.unchama.seichiassist.ExpBarSynchronization;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
@@ -27,7 +26,7 @@ public class PlayerQuitListener implements Listener {
 		//プレイヤーデータ取得
 		PlayerData playerdata = playermap.get(uuid);
 
-		ExpBarSynchronization.INSTANCE.desynchronizeFor(player);
+		SeichiAssist.instance.getExpBarSynchronization().desynchronizeFor(player);
 
 		//quit時とondisable時、プレイヤーデータを最新の状態に更新
 		playerdata.updateOnQuit();

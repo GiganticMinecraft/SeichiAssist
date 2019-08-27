@@ -7,7 +7,7 @@ import org.bukkit.boss.BarStyle
 import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 
-object ExpBarSynchronization {
+class ExpBarSynchronization {
   private data class ExpBarProperties(val title: String, val progress: Double)
 
   private val managedExpBars: MutableMap<Player, BossBar> = HashMap()

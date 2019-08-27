@@ -36,11 +36,11 @@ import java.util.*
 
 
 class SeichiAssist : JavaPlugin() {
-  init {
-    instance = this
-  }
+  init { instance = this }
 
   private var repeatedJobCoroutine: Job? = null
+
+  val expBarSynchronization = ExpBarSynchronization()
 
   override fun onEnable() {
 
