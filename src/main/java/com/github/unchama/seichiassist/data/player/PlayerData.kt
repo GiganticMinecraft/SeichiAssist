@@ -105,7 +105,7 @@ class PlayerData constructor(
   var hisotryData: MineStackUsageHistory = MineStackUsageHistory()
 
   //経験値マネージャ
-  private val expmanager: IExperienceManager = ExperienceManager(player)
+  private val expmanager: IExperienceManager by lazy { ExperienceManager(player) }
 
   var titlepage = 1 //実績メニュー用汎用ページ指定
 
@@ -154,7 +154,7 @@ class PlayerData constructor(
   //トータル破壊ブロック
   var totalbreaknum = 0.toLong()
   //整地量バー
-  val expbar: ExpBar = ExpBar(this, player)
+  val expbar: ExpBar by lazy { ExpBar(this, player) }
   //合計経験値
   var totalexp = 0
   //合計経験値統合済みフラグ
