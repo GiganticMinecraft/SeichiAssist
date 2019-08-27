@@ -139,7 +139,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * Expバーの説明文.
    */
   private fun expBarDescription(): List<String> {
-    return if (playerData.expbar.isVisible) {
+    return if (playerData.settings.isExpBarVisible) {
       listOf(
           "${GREEN}整地量バーを表示",
           "$DARK_RED${UNDERLINE}クリックで非表示"

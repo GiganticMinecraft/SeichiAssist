@@ -38,6 +38,8 @@ class PlayerSettings {
 
   var nickName = PlayerNickName(PlayerNickName.Style.Level, 0, 0, 0)
 
+  var isExpBarVisible = false
+
   //region accessors and modifiers
 
   val toggleAutoMineStack: UnfocusedEffect =

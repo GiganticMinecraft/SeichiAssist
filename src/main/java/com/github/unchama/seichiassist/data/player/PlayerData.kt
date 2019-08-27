@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.data.player
 import com.github.unchama.menuinventory.rows
 import com.github.unchama.seichiassist.*
 import com.github.unchama.seichiassist.data.ActiveSkillData
-import com.github.unchama.seichiassist.data.ExpBar
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.Mana
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
@@ -153,8 +152,6 @@ class PlayerData constructor(
   var playTick = 0
   //トータル破壊ブロック
   var totalbreaknum = 0.toLong()
-  //整地量バー
-  val expbar: ExpBar by lazy { ExpBar(this, player) }
   //合計経験値
   var totalexp = 0
   //合計経験値統合済みフラグ
@@ -333,7 +330,7 @@ class PlayerData constructor(
     updatePlayTick()
 
     activeskilldata.updateOnQuit()
-    expbar.remove()
+
     //クライアント経験値をサーバー保管
     saveTotalExp()
   }
@@ -382,7 +379,8 @@ class PlayerData constructor(
     updatePlayerLevel()
     updateStarLevel()
     setDisplayName()
-    expbar.calculate()
+    ExpBarSynchronization.synchronizeFor(player)
+    activeskilldata.mana.display(player, level)
   }
 
   //表示される名前に整地レベルor二つ名を追加
@@ -849,14 +847,17 @@ class PlayerData constructor(
         this.regionCount += 1
       }
 
+  @Deprecated("Should be moved to external scope")
   val toggleExpBarVisibility: TargetedEffect<Player> =
       unfocusedEffect {
-        this.expbar.isVisible = !this.expbar.isVisible
+        this.settings.isExpBarVisible = !this.settings.isExpBarVisible
       } + deferredEffect {
         when {
-          this.expbar.isVisible -> "${GREEN}整地量バー表示"
+          this.settings.isExpBarVisible -> "${GREEN}整地量バー表示"
           else -> "${RED}整地量バー非表示"
         }.asMessageEffect()
+      } + unfocusedEffect {
+        ExpBarSynchronization.synchronizeFor(player)
       }
 
   companion object {

@@ -198,7 +198,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.activeskilldata.effectpoint
           + ",mana = " + playerdata.activeskilldata.mana.mana
-          + ",expvisible = " + playerdata.expbar.isVisible
+          + ",expvisible = " + playerdata.settings.isExpBarVisible
           + ",totalexp = " + playerdata.totalexp
           + ",expmarge = " + playerdata.expmarge
           + ",everysound = " + playerdata.settings.getBroadcastMutingSettings().shouldMuteSounds()

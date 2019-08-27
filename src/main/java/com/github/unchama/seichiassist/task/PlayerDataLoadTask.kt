@@ -221,7 +221,7 @@ fun loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
       playerData.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint")
       //マナの情報
       playerData.activeskilldata.mana.mana = rs.getDouble("mana")
-      playerData.expbar.isVisible = rs.getBoolean("expvisible")
+      playerData.settings.isExpBarVisible = rs.getBoolean("expvisible")
 
       playerData.totalexp = rs.getInt("totalexp")
 

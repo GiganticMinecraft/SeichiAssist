@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.listener;
 
+import com.github.unchama.seichiassist.ExpBarSynchronization;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,12 +26,9 @@ public class PlayerQuitListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ取得
 		PlayerData playerdata = playermap.get(uuid);
-		//念のためエラー分岐
-		if(playerdata == null){
-			Bukkit.getLogger().warning(player.getName() + " -> PlayerData not found.");
-			Bukkit.getLogger().warning("PlayerQuitListener.onplayerQuitEvent");
-			return;
-		}
+
+		ExpBarSynchronization.INSTANCE.desynchronizeFor(player);
+
 		//quit時とondisable時、プレイヤーデータを最新の状態に更新
 		playerdata.updateOnQuit();
 		//タスクをすべて終了する
