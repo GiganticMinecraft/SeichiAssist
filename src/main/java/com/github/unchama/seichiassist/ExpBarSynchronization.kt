@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist
 
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
+import org.bukkit.ChatColor.BOLD
+import org.bukkit.ChatColor.GOLD
 import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
 import org.bukkit.boss.BossBar
@@ -14,21 +15,22 @@ class ExpBarSynchronization {
 
   private fun computePropertiesFor(player: Player): ExpBarProperties {
     val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    val playerLevel = playerData.level
 
-    return if (playerData.level >= LevelThresholds.levelExpThresholds.size) {
+    return if (playerLevel >= LevelThresholds.levelExpThresholds.size) {
       // BarをMAXにして総整地量を表示
-      val text = "${ChatColor.GOLD}${ChatColor.BOLD}Lv ${playerData.level}(総整地量: ${String.format("%,d", playerData.totalbreaknum)})"
+      val text = "$GOLD${BOLD}Lv $playerLevel(総整地量: ${String.format("%,d", playerData.totalbreaknum)})"
       val progress = 1.0
 
       ExpBarProperties(text, progress)
     } else {
       // 現在のLvにおける割合をBarに配置
-      val nextLevelThreshold = LevelThresholds.levelExpThresholds[playerData.level]
-      val previousLevelThreshold = LevelThresholds.levelExpThresholds[playerData.level - 1]
+      val nextLevelThreshold = LevelThresholds.levelExpThresholds[playerLevel]
+      val previousLevelThreshold = LevelThresholds.levelExpThresholds[playerLevel - 1]
       val currentExp = playerData.totalbreaknum
-      val text = "${ChatColor.GOLD}${ChatColor.BOLD}Lv ${playerData.level}(${String.format("%,d", currentExp)}/${String.format("%,d", nextLevelThreshold)})"
+      val text = "$GOLD${BOLD}Lv $playerLevel(${String.format("%,d", currentExp)}/${String.format("%,d", nextLevelThreshold)})"
 
-      val expAfterPreviousThreshold = playerData.totalbreaknum - previousLevelThreshold
+      val expAfterPreviousThreshold = currentExp - previousLevelThreshold
       val expBetweenLevels = nextLevelThreshold - previousLevelThreshold
       val progress = when {
         // レベルアップ前にログアウトした場合、次回ログイン時のレベルアップ処理までに100%を超えている場合がある
