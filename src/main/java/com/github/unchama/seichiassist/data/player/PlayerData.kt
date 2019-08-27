@@ -41,7 +41,10 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 
-class PlayerData constructor(@Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID) {
+class PlayerData constructor(
+    @Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID,
+    val name: String
+) {
   //読み込み済みフラグ
   var loaded = false
 
@@ -57,9 +60,11 @@ class PlayerData constructor(@Deprecated("PlayerDataはuuidに依存するべき
   var chestflag = true
 
   //各統計値差分計算用配列
-  private val statisticsData: MutableList<Int> = (MaterialSets.materials - exclude)
-      .map { player.getStatistic(Statistic.MINE_BLOCK, it) }
-      .toMutableList()
+  private val statisticsData: MutableList<Int> by lazy {
+    (MaterialSets.materials - exclude)
+        .map { player.getStatistic(Statistic.MINE_BLOCK, it) }
+        .toMutableList()
+  }
 
   @get:JvmName("canCreateRegion")
   var canCreateRegion = true
@@ -235,8 +240,7 @@ class PlayerData constructor(@Deprecated("PlayerDataはuuidに依存するべき
     get() = Bukkit.getPlayer(uuid)
 
   //プレイヤー名
-  val lowercaseName: String
-    get() = Util.getName(player)
+  val lowercaseName: String = name.toLowerCase()
 
   /**
    * スターレベルの合計を返すショートカットフィールド。
@@ -304,7 +308,12 @@ class PlayerData constructor(@Deprecated("PlayerDataはuuidに依存するべき
     //破壊量データ(before)を設定
     halfhourblock.before = totalbreaknum
     updateLevel()
-    notifySorryForBug()
+
+    if (unclaimedApologyItems > 0) {
+      player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
+      player.sendMessage("${GREEN}運営チームから${unclaimedApologyItems}枚の${GOLD}ガチャ券${WHITE}が届いています！\n木の棒メニューから受け取ってください")
+    }
+
     activeskilldata.updateOnJoin(player, level)
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
@@ -349,14 +358,6 @@ class PlayerData constructor(@Deprecated("PlayerDataはuuidに依存するべき
   fun convertEffectPointToAchievePoint() {
     achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
     activeskilldata.effectpoint -= 10
-  }
-
-  //詫びガチャの通知
-  private fun notifySorryForBug() {
-    if (unclaimedApologyItems > 0) {
-      player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      player.sendMessage(GREEN.toString() + "運営チームから" + unclaimedApologyItems + "枚の" + GOLD + "ガチャ券" + WHITE + "が届いています！\n木の棒メニューから受け取ってください")
-    }
   }
 
   //エフェクトデータのdurationを60秒引く
