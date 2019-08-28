@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.menuinventory.MenuHandler
+import com.github.unchama.minestack.MineStack
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands.*
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
@@ -41,6 +42,8 @@ class SeichiAssist : JavaPlugin() {
   private var repeatedJobCoroutine: Job? = null
 
   val expBarSynchronization = ExpBarSynchronization()
+
+  val mineStack = MineStack()
 
   override fun onEnable() {
 
