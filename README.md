@@ -3,9 +3,10 @@
 [![CircleCI](https://circleci.com/gh/GiganticMinecraft/SeichiAssist/tree/master.svg?style=svg)](https://circleci.com/gh/GiganticMinecraft/SeichiAssist/tree/master)
 
 ## 開発環境
-- [eclipse 4.4 luna](http://mergedoc.osdn.jp/)
+- [eclipse 4.4 luna](http://mergedoc.osdn.jp/) や [Intellij IDEA 2019.2](https://www.jetbrains.com/idea/) などの統合開発環境
 - [JDK 1.8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 - [mysql-connecter-java-5.1.35](https://downloads.mysql.com/archives/c-j/)
+- [Kotlin 1.3](https://plugins.jetbrains.com/plugin/6954-kotlin)
 
 ## 前提プラグイン
 - [CoreProtect-2.14.4](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)
@@ -22,13 +23,14 @@
 - SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) | [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
 
 ## ビルド
-//TODO maven -> gradle へ移行済みの為、書き変えが必要。
+// TODO maven -> gradle へ移行済みの為、書き換えが必要。
 
 前提プラグインのjarを`${プロジェクトディレクトリ}/localDependencies`にコピーしてください。
 
 Gradleがコマンドラインで使える状態で`gradle build`を実行すると、`target`フォルダにjarが出力されます。
 
 // TODO Eclipse
+
 Eclipseを開発に使用している場合、プロジェクトをgradleプロジェクトとして読み込み、
 実行(R) -> 実行(S) -> Maven Clean を実行
 そのあと、実行(R) -> 実行(S) -> Maven Install を実行
@@ -58,6 +60,6 @@ masterブランチは本番環境に反映されます。
 本番環境を更新するタイミングでdevelopブランチをmasterブランチにマージします。
 
 ## 利用条件
-- GPLv3ライセンスでの公開です。ソースコードの使用規約等はGPLv3ライセンスに従います。
+- [GPLv3ライセンス](https://github.com/GiganticMinecraft/SeichiAssist/blob/develop/LICENSE)での公開です。ソースコードの使用規約等はGPLv3ライセンスに従います。
 - 当リポジトリのコードの著作権はunchamaが所有しています。
-- 独自機能の追加やバグの修正等、当サーバーの発展への寄与を目的としたコードの修正・改変を歓迎しています。その場合、ギガンティック☆整地鯖(以下、当サーバー)のDiscordコミュニティに参加して、当コードに関する詳細なサポートを受けることが出来ます。
+- 独自機能の追加やバグの修正等、ギガンティック☆整地鯖(以下、当サーバー)の発展への寄与を目的としたコードの修正・改変を歓迎しています。その場合、当サーバーのDiscordコミュニティに参加して、当コードに関する詳細なサポートを受けることが出来ます。
