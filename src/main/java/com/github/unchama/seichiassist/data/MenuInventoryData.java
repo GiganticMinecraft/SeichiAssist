@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
+import com.github.unchama.itemstackbuilder.IconItemStackBuilder;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.LevelThresholds;
@@ -5843,6 +5844,14 @@ public class MenuInventoryData {
 		itemstack.setItemMeta(itemmeta);
 
 		inventory.setItem(2,itemstack);
+
+		inventory.setItem(
+		        7,
+                new IconItemStackBuilder(Material.BRICK, 0)
+                        .title(ChatColor.BOLD + ChatColor.GREEN.toString() + "建築サーバー")
+                        .enchanted()
+                        .build()
+        );
 
 		itemstack = new ItemStack(Material.DIAMOND);
 		itemmeta = itemstack.getItemMeta();

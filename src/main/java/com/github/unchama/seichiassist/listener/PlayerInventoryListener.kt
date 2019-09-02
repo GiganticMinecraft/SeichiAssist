@@ -103,6 +103,12 @@ class PlayerInventoryListener : Listener {
           player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
               byteArrayDataOutput.toByteArray())
         }
+        "建築サーバー" in displayName -> {
+          byteArrayDataOutput.writeUTF("Connect")
+          byteArrayDataOutput.writeUTF("s8")
+          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
+              byteArrayDataOutput.toByteArray())
+        }
         "公共施設サーバー" in displayName -> {
           byteArrayDataOutput.writeUTF("Connect")
           byteArrayDataOutput.writeUTF("s7")
