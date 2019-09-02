@@ -5846,7 +5846,7 @@ public class MenuInventoryData {
 
         inventory.setItem(
                 7,
-                new IconItemStackBuilder(Material.BRICK, 0)
+                new IconItemStackBuilder(Material.BRICK, (short) 0)
                         .title(ChatColor.BOLD + ChatColor.GREEN.toString() + "建築サーバー")
                         .enchanted()
                         .build()
