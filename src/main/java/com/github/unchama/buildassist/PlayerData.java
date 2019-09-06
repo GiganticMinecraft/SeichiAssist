@@ -31,12 +31,15 @@ public final class PlayerData {
 	boolean endlessfly;
 
 	@PackagePrivate
+	public
 	boolean ZoneSetSkillFlag;
 
 	@PackagePrivate
+	public
 	boolean zsSkillDirtFlag;
 
 	@PackagePrivate
+	public
 	int AREAint;
 
 	/**
@@ -49,18 +52,23 @@ public final class PlayerData {
 	 * ブロックを並べるスキル設定フラグ
 	 */
 	@PackagePrivate
-	int line_up_flg;
+    public
+    int line_up_flg;
 	@PackagePrivate
+	public
 	int line_up_step_flg;
 	@PackagePrivate
+	public
 	int line_up_des_flg;
 	@PackagePrivate
+	public
 	int line_up_minestack_flg;
 	/**
 	 * ブロック範囲設置スキル設定フラグ
 	 */
 	@PackagePrivate
-	boolean zs_minestack_flag;
+    public
+    boolean zs_minestack_flag;
 
 	//プレイヤーデータクラスのコンストラクタ
 	public PlayerData(final Player player){

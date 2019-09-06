@@ -1,8 +1,4 @@
-/*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
-package com.github.unchama.buildassist;
-
-import java.util.HashMap;
-import java.util.UUID;
+package com.github.unchama.buildassist.listener;
 
 import org.bukkit.entity.LargeFireball;
 import org.bukkit.entity.Player;
@@ -12,7 +8,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class EntityListener implements Listener {
-	HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
 
 	@EventHandler
 	public void onEntityExplodeEvent(final EntityExplodeEvent event) {

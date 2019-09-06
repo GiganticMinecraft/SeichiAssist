@@ -1,5 +1,6 @@
 package com.github.unchama.buildassist;
 
+import com.github.unchama.buildassist.listener.*;
 import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -29,7 +30,7 @@ public class BuildAssist {
     //Playerdataに依存するデータリスト
     public static final HashMap<UUID, PlayerData> playermap = new HashMap<>();
     private HashMap<String, CommandExecutor> commandlist;
-    static BuildAssistConfig config;
+    public static BuildAssistConfig config;
 
     //lvの閾値
     static final List<Integer> levellist = Arrays.asList(
@@ -57,7 +58,7 @@ public class BuildAssist {
     );
 
     //範囲設置ブロックの対象リスト
-    static final Set<Material> materiallist = EnumSet.of(
+    public static final Set<Material> materiallist = EnumSet.of(
             Material.STONE//石
             , Material.GRASS//草
             , Material.DIRT//土
@@ -250,9 +251,9 @@ public class BuildAssist {
             , Material.STATIONARY_WATER    //水
     );
 
-    static final String[] line_up_str = {"OFF", "上側", "下側"};
-    static final String[] line_up_step_str = {"上側", "下側", "両方"};
-    static final String[] line_up_off_on_str = {"OFF", "ON"};
+    public static final String[] line_up_str = {"OFF", "上側", "下側"};
+    public static final String[] line_up_step_str = {"上側", "下側", "両方"};
+    public static final String[] line_up_off_on_str = {"OFF", "ON"};
 
     public BuildAssist(final SeichiAssist plugin) {
         BuildAssist.plugin = plugin;

@@ -1,8 +1,13 @@
-package com.github.unchama.buildassist;
+package com.github.unchama.buildassist.listener;
 
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.github.unchama.buildassist.BuildAssist;
+import com.github.unchama.buildassist.ExperienceManager;
+import com.github.unchama.buildassist.MenuInventoryData;
+import com.github.unchama.buildassist.PlayerData;
+import com.github.unchama.buildassist.Util;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Material;
@@ -23,7 +28,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 
 public class PlayerInventoryListener implements Listener {
-	HashMap<UUID,PlayerData> playermap = BuildAssist.playermap;
+	HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
 
 	/*
 	//プレイヤーが4次元ポケットを閉じた時に実行
