@@ -82,7 +82,7 @@ object MineStackMainMenu: Menu {
 
   override val open: TargetedEffect<Player> = computedEffect { player ->
     val session = MenuInventoryView(
-        4.rows(),
+        6.rows(),
         "$DARK_PURPLE${BOLD}MineStackメインメニュー"
     ).createNewSession()
 

@@ -18,7 +18,7 @@ enum class ManagedWorld(
   companion object {
     val seichiWorlds = values().filter { it.isSeichi }
 
-    fun fromName(worldName: String): ManagedWorld? = values().find { it.name == worldName }
+    fun fromName(worldName: String): ManagedWorld? = values().find { it.alphabetName == worldName }
 
     fun fromBukkitWorld(world: World): ManagedWorld? = fromName(world.name)
   }

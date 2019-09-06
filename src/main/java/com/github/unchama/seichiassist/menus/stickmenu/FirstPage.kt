@@ -638,13 +638,13 @@ private object FirstPage: Menu {
         val lore =
             if (Util.isSkillEnable(this))
               listOf(
-                  "$RESET${RED}このワールドでは",
-                  "$RESET${RED}整地スキルを使えません"
+                  "$RESET${GRAY}整地に便利なスキルを使用できるゾ",
+                  "$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く"
               )
             else
               listOf(
-                  "$RESET${GRAY}整地に便利なスキルを使用できるゾ",
-                  "$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く"
+                  "$RESET${RED}このワールドでは",
+                  "$RESET${RED}整地スキルを使えません"
               )
 
         IconItemStackBuilder(Material.ENCHANTED_BOOK)
