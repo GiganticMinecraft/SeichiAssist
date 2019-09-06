@@ -139,7 +139,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata.ZoneSetSkillFlag = true ;
 						player.sendMessage(ChatColor.RED + "範囲設置スキルON" ) ;
 						player.openInventory(MenuInventoryData.getMenuData(player));
-					}else if (playerdata.ZoneSetSkillFlag){
+					}else {
 						playerdata.ZoneSetSkillFlag = false ;
 						player.sendMessage(ChatColor.RED + "範囲設置スキルOFF" ) ;
 						player.openInventory(MenuInventoryData.getMenuData(player));
@@ -204,7 +204,7 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 
-			}else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)){
+			}else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)) {
 				if(itemstackcurrent.getAmount() == 11){
 					//範囲MAX
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
