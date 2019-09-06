@@ -5,7 +5,7 @@ import org.bukkit.Material
 import java.util.EnumSet
 
 object MaterialSets {
-  // TODO これは何のMaterial??
+  // このMaterialは整地スキルに対応するブロック群を示しています。
   val materials: Set<Material> = EnumSet.of(
       Material.STONE, Material.NETHERRACK, Material.NETHER_BRICK, Material.DIRT, Material.GRAVEL, Material.LOG,
       Material.LOG_2, Material.GRASS, Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.DIAMOND_ORE,
@@ -25,7 +25,7 @@ object MaterialSets {
       Material.PUMPKIN, Material.MELON_BLOCK, Material.STONE_SLAB2, Material.SPONGE, Material.SOIL, Material.GRASS_PATH,
       Material.MOB_SPAWNER, Material.WORKBENCH, Material.FURNACE, Material.QUARTZ_BLOCK, Material.CHEST,
       Material.TRAPPED_CHEST, Material.NETHER_FENCE, Material.NETHER_BRICK_STAIRS, Material.CAULDRON, Material.END_ROD,
-      Material.PURPUR_STAIRS, Material.END_BRICKS, Material.PURPUR_SLAB, Material.ENDER_CHEST
+      Material.PURPUR_STAIRS, Material.END_BRICKS, Material.PURPUR_SLAB, Material.ENDER_CHEST, Material.PURPUR_SLAB, Material.STEP
   )
 
   val luckMaterials: Set<Material> = EnumSet.of(
