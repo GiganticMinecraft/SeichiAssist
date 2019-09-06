@@ -1,15 +1,13 @@
 package com.github.unchama.seichiassist.listener
 
-import com.github.unchama.seichiassist.Config
+import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.RegionMenuData
-import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.menus.RegionMenu
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.util.Util.Direction
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
-import com.google.common.util.concurrent.ListenableFuture
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldedit.bukkit.selections.Selection
 import com.sk89q.worldguard.bukkit.WorldConfiguration
@@ -21,24 +19,19 @@ import com.sk89q.worldguard.protection.managers.RegionManager
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import com.sk89q.worldguard.protection.util.DomainInputResolver
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
-import org.bukkit.World
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryView
-import org.bukkit.inventory.ItemStack
-
-import java.util.HashMap
-import java.util.UUID
+import java.util.*
 
 /**
  * 保護関連メニューのListenerクラス
@@ -88,7 +81,7 @@ class RegionInventoryListener : Listener {
 
       //土地保護メニュー
       if (itemstackcurrent.type == Material.DIAMOND_AXE && itemstackcurrent.itemMeta.displayName.contains("土地保護メニュー")) {
-        player.openInventory(RegionMenuData.getRegionMenuData(player))
+        GlobalScope.launch(Schedulers.async) { RegionMenu.open.runFor(player) }
         player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.5f)
       }
     }
