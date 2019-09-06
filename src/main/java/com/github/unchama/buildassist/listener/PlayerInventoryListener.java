@@ -5,6 +5,7 @@ import com.github.unchama.buildassist.MenuInventoryData;
 import com.github.unchama.buildassist.PlayerData;
 import com.github.unchama.buildassist.Util;
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.MineStack;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
@@ -464,15 +465,19 @@ public class PlayerInventoryListener implements Listener {
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("stone");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("step0");
+
+					final MineStackObj inStack = Util.findMineStackObjectByName("stone");
+					final int inAmount = getPower10().get(x);
+
+					final MineStackObj outStack = Util.findMineStackObjectByName("step0");
+					final int outAmount = getPower10().get(x) * 2;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < getPower10().get(x)){
+					if ( playerdata_s.getMinestack().getStackedAmountOf(inStack) < inAmount){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, (int)getPower10().get(x) * 2 );
-						player.sendMessage(ChatColor.GREEN + "石"+ (int)getPower10().get(x) +"個→石ハーフブロック"+ ((int)getPower10().get(x)*2) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack, inAmount);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount );
+						player.sendMessage(ChatColor.GREEN + "石"+ inAmount +"個→石ハーフブロック"+ outAmount +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData(player));
 				}
@@ -485,15 +490,18 @@ public class PlayerInventoryListener implements Listener {
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("stone");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("smooth_brick0");
+
+					final MineStackObj inStack = Util.findMineStackObjectByName("stone");
+					final MineStackObj outStack = Util.findMineStackObjectByName("smooth_brick0");
+					final int amount = getPower10().get(x);
+
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < (int)getPower10().get(x)){
-						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
-					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "石"+ (int)getPower10().get(x) +"個→石レンガ"+ ((int)getPower10().get(x)) +"個変換" );
+					if ( playerdata_s.getMinestack().getStackedAmountOf(inStack) < amount) {
+						player.sendMessage(ChatColor.RED + "アイテムが足りません");
+					} else {
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack, amount);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack, amount);
+						player.sendMessage(ChatColor.GREEN + "石"+ amount +"個→石レンガ"+ amount +"個変換");
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData(player));
 				}
@@ -508,15 +516,18 @@ public class PlayerInventoryListener implements Listener {
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("granite");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("polished_granite");
+
+					final MineStackObj inStack = Util.findMineStackObjectByName("granite");
+					final MineStackObj outStack = Util.findMineStackObjectByName("polished_granite");
+					final int amount = getPower10().get(x);
+
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < (int)getPower10().get(x)){
+					if (playerdata_s.getMinestack().getStackedAmountOf(inStack) < amount) {
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
-					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "花崗岩"+ (int)getPower10().get(x) +"個→磨かれた花崗岩"+ ((int)getPower10().get(x)) +"個変換" );
+					} else {
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack, amount);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack, amount);
+						player.sendMessage(ChatColor.GREEN + "花崗岩"+ amount +"個→磨かれた花崗岩"+ amount +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData(player));
 				}
@@ -529,15 +540,18 @@ public class PlayerInventoryListener implements Listener {
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("diorite");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("polished_diorite");
+
+					final MineStackObj inStack = Util.findMineStackObjectByName("diorite");
+					final MineStackObj outStack = Util.findMineStackObjectByName("polished_diorite");
+					final int amount = getPower10().get(x);
+
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < (int)getPower10().get(x)){
+					if ( playerdata_s.getMinestack().getStackedAmountOf(inStack) < amount){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "閃緑岩"+ (int)getPower10().get(x) +"個→磨かれた閃緑岩"+ ((int)getPower10().get(x)) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack, amount);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack, amount);
+						player.sendMessage(ChatColor.GREEN + "閃緑岩"+ amount +"個→磨かれた閃緑岩"+ amount +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData(player));
 				}
@@ -549,16 +563,19 @@ public class PlayerInventoryListener implements Listener {
 				}else{
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("andesite");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("polished_andesite");
+					final MineStackObj inStack = Util.findMineStackObjectByName("andesite");
+					final MineStackObj outStack = Util.findMineStackObjectByName("polished_andesite");
+					final int amount = getPower10().get(x);
+
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < (int)getPower10().get(x)){
+					if ( playerdata_s.getMinestack().getStackedAmountOf(inStack) < amount){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "安山岩"+ (int)getPower10().get(x) +"個→磨かれた安山岩"+ ((int)getPower10().get(x)) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack, amount);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack, amount);
+						player.sendMessage(ChatColor.GREEN + "安山岩"+ amount +"個→磨かれた安山岩"+ amount +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData(player));
 				}
@@ -570,16 +587,21 @@ public class PlayerInventoryListener implements Listener {
 				}else{
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("quartz");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("quartz_block");
+					final MineStackObj inStack = Util.findMineStackObjectByName("quartz");
+					final int inAmount = getPower10().get(x) * 4;
+
+					final MineStackObj outStack = Util.findMineStackObjectByName("quartz_block");
+					final int outAmount = getPower10().get(x);
+
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*4) ){
+					if ( playerdata_s.getMinestack().getStackedAmountOf(inStack) < inAmount){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*4) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "ネザー水晶"+ ((int)getPower10().get(x)*4) +"個→ネザー水晶ブロック"+ ((int)getPower10().get(x)) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack, inAmount);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount);
+						player.sendMessage(ChatColor.GREEN + "ネザー水晶"+ inAmount +"個→ネザー水晶ブロック"+ outAmount +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData(player));
 				}
@@ -591,16 +613,21 @@ public class PlayerInventoryListener implements Listener {
 				}else{
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("brick_item");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("brick");
+					final MineStackObj inStack = Util.findMineStackObjectByName("brick_item");
+					final int inAmount = getPower10().get(x) * 4;
+
+					final MineStackObj outStack = Util.findMineStackObjectByName("brick");
+					final int outAmount = getPower10().get(x);
+
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*4) ){
+					if (playerdata_s.getMinestack().getStackedAmountOf(inStack) < inAmount){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*4) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "レンガ"+ ((int)getPower10().get(x)*4) +"個→レンガブロック"+ ((int)getPower10().get(x)) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack, inAmount);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount);
+						player.sendMessage(ChatColor.GREEN + "レンガ"+ inAmount +"個→レンガブロック"+ outAmount +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData(player));
 				}
@@ -612,15 +639,18 @@ public class PlayerInventoryListener implements Listener {
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("nether_brick_item");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("nether_brick");
+					final MineStackObj inStack = Util.findMineStackObjectByName("nether_brick_item");
+					final int inAmount = getPower10().get(x) * 4;
+
+					final MineStackObj outStack = Util.findMineStackObjectByName("nether_brick");
+					final int outAmount = getPower10().get(x);
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*4) ){
+					if ( playerdata_s.getMinestack().getStackedAmountOf(inStack) < inAmount){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*4) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "ネザーレンガ"+ ((int)getPower10().get(x)*4) +"個→ネザーレンガブロック"+ ((int)getPower10().get(x)) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack, inAmount);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount);
+						player.sendMessage(ChatColor.GREEN + "ネザーレンガ"+ inAmount +"個→ネザーレンガブロック"+ outAmount +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData(player));
 				}
@@ -677,251 +707,295 @@ public class PlayerInventoryListener implements Listener {
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-			if(itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp") ){
+			final Material type = itemstackcurrent.getType();
+			if(type == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp") ){
 				//1ページ目へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getBlockCraftData(player));
 
-			} else if (itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown") ){
+			} else if (type == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown") ){
 				//3ページ目へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getBlockCraftData3(player));
 
 				//雪玉を雪（ブロック）に変換10～1万
-			} else if (itemstackcurrent.getType() == Material.SNOW_BLOCK){
+			} else if (type == Material.SNOW_BLOCK){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("snow_ball");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("snow_block");
+					final MineStackObj inStack = Util.findMineStackObjectByName("snow_ball");
+					final int inAmount = getPower10().get(x) * 4;
+
+					final MineStackObj outStack = Util.findMineStackObjectByName("snow_block");
+					final int outAmount = getPower10().get(x);
+
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*4) ){
+					if ( playerdata_s.getMinestack().getStackedAmountOf(inStack) < inAmount){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*4) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "雪玉"+ ((int)getPower10().get(x)*4) +"個→雪（ブロック）"+ ((int)getPower10().get(x)) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack, inAmount);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount);
+						player.sendMessage(ChatColor.GREEN + "雪玉"+ inAmount +"個→雪（ブロック）"+ outAmount +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 				}
 
 				//ネザーウォートとネザーレンガを赤いネザーレンガに変換10～10万
-			} else if (itemstackcurrent.getType() == Material.RED_NETHER_BRICK){
+			} else if (type == Material.RED_NETHER_BRICK){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("nether_stalk");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("red_nether_brick");
-					final MineStackObj id_3 = Util.findMineStackObjectByName("nether_brick_item");
+
+					final MineStackObj inStack1 = Util.findMineStackObjectByName("nether_stalk");
+					final int inAmount1 = getPower10().get(x) * 2;
+
+					final MineStackObj inStack2 = Util.findMineStackObjectByName("nether_brick_item");
+					final int inAmount2 = getPower10().get(x) * 2;
+
+					final MineStackObj outStack = Util.findMineStackObjectByName("red_nether_brick");
+					final int outAmount = getPower10().get(x);
+
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*2) ) || ( playerdata_s.getMinestack().getStackedAmountOf(id_3) < ((int)getPower10().get(x)*2) )){
+					if ( ( playerdata_s.getMinestack().getStackedAmountOf(inStack1) < inAmount1) || ( playerdata_s.getMinestack().getStackedAmountOf(inStack2) < inAmount2)){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*2) );
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_3, ((int)getPower10().get(x)*2) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "ネザーウォート"+ ((int)getPower10().get(x)*2) +"個+ネザーレンガ"+ ((int)getPower10().get(x)*2) +"個→赤いネザーレンガ"+ ((int)getPower10().get(x)) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack1, inAmount1);
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack2, inAmount2);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount);
+						player.sendMessage(ChatColor.GREEN + "ネザーウォート"+ inAmount1 +"個+ネザーレンガ"+ inAmount2 +"個→赤いネザーレンガ"+ outAmount +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 				}
 
 				//石炭を消費して鉄鉱石を鉄インゴットに変換4～4000
-			} else if (itemstackcurrent.getType() == Material.IRON_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
+			} else if (type == Material.IRON_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
-
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("iron_ore");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("iron_ingot");
-					final MineStackObj id_3 = Util.findMineStackObjectByName("coal");
+					final MineStackObj inStack1 = Util.findMineStackObjectByName("iron_ore");
+					final MineStackObj outStack = Util.findMineStackObjectByName("iron_ingot");
+					final int amount1 = getPower10().get(x) * 4;
+
+					final MineStackObj inStack2 = Util.findMineStackObjectByName("coal");
+					final int inAmount2 = getPower10().get(x);
+
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*4) ) || ( playerdata_s.getMinestack().getStackedAmountOf(id_3) < (int)getPower10().get(x) )){
+					if ( ( playerdata_s.getMinestack().getStackedAmountOf(inStack1) < amount1) || ( playerdata_s.getMinestack().getStackedAmountOf(inStack2) < inAmount2)){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*4) );
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_3, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, ((int)getPower10().get(x)*4) );
-						player.sendMessage(ChatColor.GREEN + "鉄鉱石"+ ((int)getPower10().get(x)*4) +"個+石炭"+ (int)getPower10().get(x) +"個→鉄インゴット"+ ((int)getPower10().get(x)*4) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack1, amount1);
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack2, inAmount2);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack, amount1);
+						player.sendMessage(ChatColor.GREEN + "鉄鉱石"+ amount1 +"個+石炭"+ inAmount2 +"個→鉄インゴット"+ amount1 +"個変換");
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 				}
 
 				//溶岩バケツを消費して鉄鉱石を鉄インゴットに変換50～5万
-			} else if (itemstackcurrent.getType() == Material.IRON_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
+			} else if (type == Material.IRON_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
-
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("iron_ore");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("iron_ingot");
-					final MineStackObj id_3 = Util.findMineStackObjectByName("lava_bucket");
-					final MineStackObj id_4 = Util.findMineStackObjectByName("bucket");
+					final MineStackObj inStack1 = Util.findMineStackObjectByName("iron_ore");
+					final MineStackObj outStack1 = Util.findMineStackObjectByName("iron_ingot");
+					final int amount1 = getPower10().get(x) * 50;
+
+					final MineStackObj inStack2 = Util.findMineStackObjectByName("lava_bucket");
+					final MineStackObj outStack2 = Util.findMineStackObjectByName("bucket");
+					final int amount2 = getPower10().get(x);
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*50) ) || ( playerdata_s.getMinestack().getStackedAmountOf(id_3) < (int)getPower10().get(x) )){
+					if ( ( playerdata_s.getMinestack().getStackedAmountOf(inStack1) < amount1) || ( playerdata_s.getMinestack().getStackedAmountOf(inStack2) < getPower10().get(x))){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*50) );
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_3, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, ((int)getPower10().get(x)*50) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_4, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "鉄鉱石"+ ((int)getPower10().get(x)*50) +"個+溶岩バケツ"+ (int)getPower10().get(x) +"個→鉄インゴット"+ ((int)getPower10().get(x)*50) +"個+バケツ"+ (int)getPower10().get(x) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack1, amount1);
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack2, amount2);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack1, amount1);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack2, amount2);
+						player.sendMessage(ChatColor.GREEN + "鉄鉱石"+ amount1 +"個+溶岩バケツ"+ amount2 +"個→鉄インゴット"+ amount1 +"個+バケツ"+ amount2 +"個変換");
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 				}
 
 
 				//石炭を消費して金鉱石を金インゴットに変換4～4000
-			} else if (itemstackcurrent.getType() == Material.GOLD_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
+			} else if (type == Material.GOLD_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("gold_ore");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("gold_ingot");
-					final MineStackObj id_3 = Util.findMineStackObjectByName("coal");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*4) ) || ( playerdata_s.getMinestack().getStackedAmountOf(id_3) < (int)getPower10().get(x) )){
+					final MineStackObj inStack2 = Util.findMineStackObjectByName("coal");
+					final int amount2 = getPower10().get(x);
+
+					final MineStackObj inStack1 = Util.findMineStackObjectByName("gold_ore");
+					final MineStackObj outStack1 = Util.findMineStackObjectByName("gold_ingot");
+					final int amount1 = amount2 * 4;
+					if ( playerdata_s.getMinestack().getStackedAmountOf(inStack1) < amount1 || playerdata_s.getMinestack().getStackedAmountOf(inStack2) < amount2){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*4) );
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_3, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, ((int)getPower10().get(x)*4) );
-						player.sendMessage(ChatColor.GREEN + "金鉱石"+ ((int)getPower10().get(x)*4) +"個+石炭"+ (int)getPower10().get(x) +"個→金インゴット"+ ((int)getPower10().get(x)*4) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack1, amount1);
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack2, amount2);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack1, amount1);
+						player.sendMessage(ChatColor.GREEN + "金鉱石"+ amount1 +"個+石炭"+ amount2 +"個→金インゴット"+ amount1 +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 				}
 
 				//溶岩バケツを消費して金鉱石を金インゴットに変換50～5万
-			} else if (itemstackcurrent.getType() == Material.GOLD_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
+			} else if (type == Material.GOLD_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("gold_ore");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("gold_ingot");
-					final MineStackObj id_3 = Util.findMineStackObjectByName("lava_bucket");
-					final MineStackObj id_4 = Util.findMineStackObjectByName("bucket");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*50) ) || ( playerdata_s.getMinestack().getStackedAmountOf(id_3) < (int)getPower10().get(x) )){
+					final MineStackObj inStack2 = Util.findMineStackObjectByName("lava_bucket");
+					final MineStackObj outStack2 = Util.findMineStackObjectByName("bucket");
+					final int amount2 = getPower10().get(x);
+
+					final MineStackObj inStack1 = Util.findMineStackObjectByName("gold_ore");
+					final MineStackObj outStack1 = Util.findMineStackObjectByName("gold_ingot");
+					final int amount1 = amount2 * 50;
+					if ( playerdata_s.getMinestack().getStackedAmountOf(inStack1) < amount1 || playerdata_s.getMinestack().getStackedAmountOf(inStack2) < amount2){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*50) );
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_3, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, ((int)getPower10().get(x)*50) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_4, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "金鉱石"+ ((int)getPower10().get(x)*50) +"個+溶岩バケツ"+ (int)getPower10().get(x) +"個→金インゴット"+ ((int)getPower10().get(x)*50) +"個+バケツ"+ (int)getPower10().get(x) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack1, amount1);
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack2, amount2);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack1, amount1);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack2, amount2);
+						player.sendMessage(ChatColor.GREEN + "金鉱石"+ amount1 +"個+溶岩バケツ"+ amount2 +"個→金インゴット"+ amount1 +"個+バケツ"+ amount2 +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 				}
 
 
 				//石炭を消費して砂をガラスに変換4～4000
-			} else if (itemstackcurrent.getType() == Material.GLASS && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
+			} else if (type == Material.GLASS && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("sand");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("glass");
-					final MineStackObj id_3 = Util.findMineStackObjectByName("coal");
+					final MineStackObj inStack1 = Util.findMineStackObjectByName("sand");
+					final MineStackObj outStack1 = Util.findMineStackObjectByName("glass");
+					final MineStackObj inStack2 = Util.findMineStackObjectByName("coal");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*4) ) || ( playerdata_s.getMinestack().getStackedAmountOf(id_3) < (int)getPower10().get(x) )){
+					final MineStack m = playerdata_s.getMinestack();
+					final int amount2 = getPower10().get(x);
+					final int amount1 = amount2 * 4;
+					if (m.getStackedAmountOf(inStack1) < amount1 || m.getStackedAmountOf(inStack2) < amount2){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*4) );
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_3, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, ((int)getPower10().get(x)*4) );
-						player.sendMessage(ChatColor.GREEN + "砂"+ ((int)getPower10().get(x)*4) +"個+石炭"+ (int)getPower10().get(x) +"個→ガラス"+ ((int)getPower10().get(x)*4) +"個変換" );
+						m.subtractStackedAmountOf(inStack1, amount1);
+						m.subtractStackedAmountOf(inStack2, amount2);
+						m.addStackedAmountOf(outStack1, amount1);
+						player.sendMessage(ChatColor.GREEN + "砂"+ amount1 +"個+石炭"+ amount2 +"個→ガラス"+ amount1 +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 				}
 
-				//溶岩バケツを消費して砂をガラスに変換50～5万
-			} else if (itemstackcurrent.getType() == Material.GLASS && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
+				/*
+				 * 溶岩バケツ: 1 + ネザーラック: 50
+				 * ---> 空バケツ: 1 + ネザーレンガ: 50
+				 * 50から10倍で5万まで
+				 */
+			} else if (type == Material.GLASS && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("sand");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("glass");
-					final MineStackObj id_3 = Util.findMineStackObjectByName("lava_bucket");
-					final MineStackObj id_4 = Util.findMineStackObjectByName("bucket");
+					final MineStackObj inStack1 = Util.findMineStackObjectByName("sand");
+					final MineStackObj outStack1 = Util.findMineStackObjectByName("glass");
+					final MineStackObj inStack2 = Util.findMineStackObjectByName("lava_bucket");
+					final MineStackObj outStack2 = Util.findMineStackObjectByName("bucket");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*50) ) || ( playerdata_s.getMinestack().getStackedAmountOf(id_3) < (int)getPower10().get(x) )){
+					final int amount2 = getPower10().get(x);
+					final int amount1 = amount2 * 50;
+					if ( ( playerdata_s.getMinestack().getStackedAmountOf(inStack1) < amount1) || ( playerdata_s.getMinestack().getStackedAmountOf(inStack2) < amount2)){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*50) );
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_3, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, ((int)getPower10().get(x)*50) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_4, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "砂"+ ((int)getPower10().get(x)*50) +"個+溶岩バケツ"+ (int)getPower10().get(x) +"個→ガラス"+ ((int)getPower10().get(x)*50) +"個+バケツ"+ (int)getPower10().get(x) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack1, amount1);
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack2, amount2);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack1, amount1);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack2, amount2);
+						player.sendMessage(ChatColor.GREEN + "砂"+ amount1 +"個+溶岩バケツ"+ amount2 +"個→ガラス"+ amount1 +"個+バケツ"+ amount2 +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 				}
 
-
-				//石炭を消費してネザーラックをネザーレンガに変換4～4000
-			} else if (itemstackcurrent.getType() == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
+				/*
+				 * 溶岩バケツ: 1 + ネザーラック: 4
+				 * ---> 空バケツ: 1 + ネザーレンガ: 4
+				 * 4から10倍で4000まで
+				 */
+			} else if (type == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("netherrack");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("nether_brick_item");
-					final MineStackObj id_3 = Util.findMineStackObjectByName("coal");
+					final MineStackObj inStack1 = Util.findMineStackObjectByName("netherrack");
+					final MineStackObj outStack1 = Util.findMineStackObjectByName("nether_brick_item");
+					final MineStackObj inStack2 = Util.findMineStackObjectByName("coal");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*4) ) || ( playerdata_s.getMinestack().getStackedAmountOf(id_3) < (int)getPower10().get(x) )){
+					final int amount2 = getPower10().get(x);
+					final int amount1 = amount2 * 4;
+					if ( ( playerdata_s.getMinestack().getStackedAmountOf(inStack1) < amount1) || ( playerdata_s.getMinestack().getStackedAmountOf(inStack2) < amount2)){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*4) );
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_3, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, ((int)getPower10().get(x)*4) );
-						player.sendMessage(ChatColor.GREEN + "ネザーラック"+ ((int)getPower10().get(x)*4) +"個+石炭"+ (int)getPower10().get(x) +"個→ネザーレンガ"+ ((int)getPower10().get(x)*4) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack1, amount1);
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack2, amount2);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack1, amount1);
+						player.sendMessage(ChatColor.GREEN + "ネザーラック"+ amount1 +"個+石炭"+ amount2 +"個→ネザーレンガ"+ amount1 +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 				}
 
-				//溶岩バケツを消費してネザーラックをネザーレンガに変換50～5万
-			} else if (itemstackcurrent.getType() == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
+				/*
+				 * 溶岩バケツ: 1 + ネザーラック: 50
+				 * ---> 空バケツ: 1 + ネザーレンガ: 50
+				 * 50から10倍で5万まで
+				 */
+			} else if (type == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("netherrack");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("nether_brick_item");
-					final MineStackObj id_3 = Util.findMineStackObjectByName("lava_bucket");
-					final MineStackObj id_4 = Util.findMineStackObjectByName("bucket");
+					final MineStackObj inStack1 = Util.findMineStackObjectByName("netherrack");
+					final MineStackObj outStack1 = Util.findMineStackObjectByName("nether_brick_item");
+					final MineStackObj inStack2 = Util.findMineStackObjectByName("lava_bucket");
+					final MineStackObj outStack2 = Util.findMineStackObjectByName("bucket");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*50) ) || ( playerdata_s.getMinestack().getStackedAmountOf(id_3) < (int)getPower10().get(x) )){
+					final int amount2 = getPower10().get(x);
+					final int amount1 = amount2 * 50;
+					if ( ( playerdata_s.getMinestack().getStackedAmountOf(inStack1) < amount1) || ( playerdata_s.getMinestack().getStackedAmountOf(inStack2) < amount2)){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*50) );
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_3, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, ((int)getPower10().get(x)*50) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_4, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "ネザーラック"+ ((int)getPower10().get(x)*50) +"個+溶岩バケツ"+ (int)getPower10().get(x) +"個→ネザーレンガ"+ ((int)getPower10().get(x)*50) +"個+バケツ"+ (int)getPower10().get(x) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack1, amount1);
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack2, amount2);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack1, amount1);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack2, amount2);
+						player.sendMessage(ChatColor.GREEN + "ネザーラック"+ amount1 +"個+溶岩バケツ"+ amount2 +"個→ネザーレンガ"+ amount1 +"個+バケツ"+ amount2 +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 				}
@@ -993,17 +1067,20 @@ public class PlayerInventoryListener implements Listener {
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("clay_ball");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("brick_item");
-					final MineStackObj id_3 = Util.findMineStackObjectByName("coal");
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*4) ) || ( playerdata_s.getMinestack().getStackedAmountOf(id_3) < (int)getPower10().get(x) )){
+					final MineStackObj inStack2 = Util.findMineStackObjectByName("coal");
+					final int amount2 = getPower10().get(x);
+
+					final MineStackObj inStack1 = Util.findMineStackObjectByName("clay_ball");
+					final MineStackObj outStack1 = Util.findMineStackObjectByName("brick_item");
+					final int amount1 = amount2 * 4;
+					if (playerdata_s.getMinestack().getStackedAmountOf(inStack1) < amount1 || playerdata_s.getMinestack().getStackedAmountOf(inStack2) < amount2){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*4) );
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_3, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, ((int)getPower10().get(x)*4) );
-						player.sendMessage(ChatColor.GREEN + "粘土"+ ((int)getPower10().get(x)*4) +"個+石炭"+ (int)getPower10().get(x) +"個→レンガ"+ ((int)getPower10().get(x)*4) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack1, amount1);
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack2, amount2);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack1, amount1);
+						player.sendMessage(ChatColor.GREEN + "粘土"+ amount1 +"個+石炭"+ amount2 +"個→レンガ"+ amount1 +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData3(player));
 				}
@@ -1016,19 +1093,24 @@ public class PlayerInventoryListener implements Listener {
 
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					int x = itemstackcurrent.getAmount();
-					final MineStackObj id_1 = Util.findMineStackObjectByName("clay_ball");
-					final MineStackObj id_2 = Util.findMineStackObjectByName("brick_item");
-					final MineStackObj id_3 = Util.findMineStackObjectByName("lava_bucket");
-					final MineStackObj id_4 = Util.findMineStackObjectByName("bucket");
+
+					final MineStackObj inStack2 = Util.findMineStackObjectByName("lava_bucket");
+					final MineStackObj outStack2 = Util.findMineStackObjectByName("bucket");
+					final int amount2 = getPower10().get(x);
+
+					final MineStackObj inStack1 = Util.findMineStackObjectByName("clay_ball");
+					final MineStackObj outStack1 = Util.findMineStackObjectByName("brick_item");
+					final int amount1 = amount2 * 50;
+
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					if ( ( playerdata_s.getMinestack().getStackedAmountOf(id_1) < ((int)getPower10().get(x)*50) ) || ( playerdata_s.getMinestack().getStackedAmountOf(id_3) < (int)getPower10().get(x) )){
+					if ( ( playerdata_s.getMinestack().getStackedAmountOf(inStack1) < amount1) || ( playerdata_s.getMinestack().getStackedAmountOf(inStack2) < amount2)){
 						player.sendMessage(ChatColor.RED + "アイテムが足りません" );
 					}else{
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_1, ((int)getPower10().get(x)*50) );
-						playerdata_s.getMinestack().subtractStackedAmountOf(id_3, (int)getPower10().get(x) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_2, ((int)getPower10().get(x)*50) );
-						playerdata_s.getMinestack().addStackedAmountOf(id_4, (int)getPower10().get(x) );
-						player.sendMessage(ChatColor.GREEN + "粘土"+ ((int)getPower10().get(x)*50) +"個+溶岩バケツ"+ (int)getPower10().get(x) +"個→レンガ"+ ((int)getPower10().get(x)*50) +"個+バケツ"+ (int)getPower10().get(x) +"個変換" );
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack1, amount1);
+						playerdata_s.getMinestack().subtractStackedAmountOf(inStack2, amount2);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack1, amount1);
+						playerdata_s.getMinestack().addStackedAmountOf(outStack2, amount2);
+						player.sendMessage(ChatColor.GREEN + "粘土"+ amount1 +"個+溶岩バケツ"+ amount2 +"個→レンガ"+ amount1 +"個+バケツ"+ amount2 +"個変換" );
 					}
 					player.openInventory(MenuInventoryData.getBlockCraftData3(player));
 				}
