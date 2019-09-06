@@ -99,9 +99,6 @@ public class PlayerInventoryListener implements Listener {
 				return;
 			}
 
-			//経験値変更用のクラスを設定
-			ExperienceManager expman = new ExperienceManager(player);
-
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
@@ -262,7 +259,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata.ZoneSetSkillFlag = true ;
 						player.sendMessage(ChatColor.RED + "範囲設置スキルON" ) ;
 						player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
-					}else if (playerdata.ZoneSetSkillFlag){
+					}else {
 						playerdata.ZoneSetSkillFlag = false ;
 						player.sendMessage(ChatColor.RED + "範囲設置スキルOFF" ) ;
 						player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
@@ -277,7 +274,7 @@ public class PlayerInventoryListener implements Listener {
 					playerdata.zsSkillDirtFlag = true ;
 					player.sendMessage(ChatColor.RED + "土設置機能ON" ) ;
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
-				}else if (playerdata.zsSkillDirtFlag){
+				}else {
 					playerdata.zsSkillDirtFlag = false ;
 					player.sendMessage(ChatColor.RED + "土設置機能OFF" ) ;
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
