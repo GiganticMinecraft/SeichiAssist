@@ -205,14 +205,15 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getMenuData(player));
 
 			}else if(itemstackcurrent.getType() == Material.SKULL_ITEM) {
-				if(itemstackcurrent.getAmount() == 11){
+				final int amount = itemstackcurrent.getAmount();
+				if(amount == 11){
 					//範囲MAX
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					playerdata.AREAint = 5;
 					player.sendMessage(ChatColor.RED + "現在の範囲設定は"+(playerdata.AREAint *2 +1)+"×"+ (playerdata.AREAint *2 +1)+"です");
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
 
-				}else if(itemstackcurrent.getAmount() == 7){
+				}else if(amount == 7){
 					//範囲++
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					if(playerdata.AREAint == 5){
@@ -223,14 +224,14 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "現在の範囲設定は"+(playerdata.AREAint *2 +1)+"×"+ (playerdata.AREAint *2 +1)+"です");
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
 
-				}else if(itemstackcurrent.getAmount() == 5){
+				}else if(amount == 5){
 					//範囲初期化
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					playerdata.AREAint = 2;
 					player.sendMessage(ChatColor.RED + "現在の範囲設定は"+(playerdata.AREAint *2 +1)+"×"+ (playerdata.AREAint *2 +1)+"です");
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
 
-				}else if(itemstackcurrent.getAmount() == 3){
+				}else if(amount == 3){
 					//範囲--
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					if(playerdata.AREAint == 1){
@@ -241,7 +242,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "現在の範囲設定は"+(playerdata.AREAint *2 +1)+"×"+ (playerdata.AREAint *2 +1)+"です");
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
 
-				}else if(itemstackcurrent.getAmount() == 1){
+				}else if(amount == 1){
 					//範囲MIN
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					playerdata.AREAint = 1;
@@ -255,7 +256,7 @@ public class PlayerInventoryListener implements Listener {
 				if(playerdata.level < BuildAssist.config.getZoneSetSkillLevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
-					if(!playerdata.ZoneSetSkillFlag){
+					if(!playerdata.ZoneSetSkillFlag) {
 						playerdata.ZoneSetSkillFlag = true ;
 						player.sendMessage(ChatColor.RED + "範囲設置スキルON" ) ;
 						player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
@@ -296,7 +297,6 @@ public class PlayerInventoryListener implements Listener {
 					}
 				}
 			}
-
 		}
 
 	}
@@ -344,15 +344,15 @@ public class PlayerInventoryListener implements Listener {
 			if(event.getClickedInventory().getType() == InventoryType.PLAYER){
 				return;
 			}
+			final Material type = itemstackcurrent.getType();
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-			if(itemstackcurrent.getType() == Material.SKULL_ITEM){
+			if(type == Material.SKULL_ITEM){
 				//ホームメニューへ帰還
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
-
-			} else if (itemstackcurrent.getType() == Material.WOOD){
+			} else if (type == Material.WOOD){
 				//ブロックを並べるスキル設定
 				if(playerdata.level < BuildAssist.config.getblocklineuplevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
@@ -368,7 +368,7 @@ public class PlayerInventoryListener implements Listener {
 					player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 				}
 
-			} else if (itemstackcurrent.getType() == Material.STEP){
+			} else if (type == Material.STEP){
 				//ブロックを並べるスキルハーフブロック設定
 				if ( playerdata.line_up_step_flg >= 2 ){
 					playerdata.line_up_step_flg = 0;
@@ -379,14 +379,14 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 
-			} else if (itemstackcurrent.getType() == Material.TNT){
+			} else if (type == Material.TNT){
 				//ブロックを並べるスキル一部ブロックを破壊して並べる設定
 				playerdata.line_up_des_flg ^= 1;
 				player.sendMessage(ChatColor.GREEN + "破壊設定 ：" + BuildAssist.line_up_off_on_str[playerdata.line_up_des_flg] ) ;
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 
-			} else if (itemstackcurrent.getType() == Material.CHEST){
+			} else if (type == Material.CHEST){
 				//マインスタックの方を優先して消費する設定
 				if(playerdata.level < BuildAssist.config.getblocklineupMinestacklevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
