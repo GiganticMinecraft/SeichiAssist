@@ -11,7 +11,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class BlockPlaceEventListener implements Listener {
+
+public class BlockPlaceEventListener implements TypedEventListener<BlockPlaceEvent> {
     private final HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
 
     @Override
