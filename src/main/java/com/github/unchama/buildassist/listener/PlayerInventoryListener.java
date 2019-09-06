@@ -51,7 +51,7 @@ public class PlayerInventoryListener implements Listener {
 			ItemStack itemstack = pinventory.getItemInMainHand();
 			if(itemstack.getType().equals(Material.ENDER_PORTAL_FRAME)){
 				//閉まる音を再生
-				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_CLOSE, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_ENDERCHEST_CLOSE, 1, 0.1f);
 			}
 		}
 	}
@@ -149,7 +149,7 @@ public class PlayerInventoryListener implements Listener {
 
 			} else if (itemstackcurrent.getType() == Material.SKULL_ITEM && itemstackcurrent.getItemMeta().getDisplayName().contains("「範囲設置スキル」設定画面へ")){
 				//範囲設置スキル設定画面を開く
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				if(playerdata.level < BuildAssist.config.getblocklineuplevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -173,12 +173,12 @@ public class PlayerInventoryListener implements Listener {
 
 			} else if (itemstackcurrent.getType() == Material.PAPER){
 				//ブロックを並べる設定メニューを開く
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 
 			} else if (itemstackcurrent.getType() == Material.WORKBENCH){
 				//MineStackブロック一括クラフトメニュー画面へ
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getBlockCraftData(player));
 
 			}
@@ -201,7 +201,7 @@ public class PlayerInventoryListener implements Listener {
 
 			if(itemstackcurrent.getType() == Material.BARRIER){
 				//ホームメニューへ帰還
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 
 			}else if(itemstackcurrent.getType() == Material.SKULL_ITEM) {
@@ -350,7 +350,7 @@ public class PlayerInventoryListener implements Listener {
 			 */
 			if(type == Material.SKULL_ITEM){
 				//ホームメニューへ帰還
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 			} else if (type == Material.WOOD){
 				//ブロックを並べるスキル設定
@@ -449,12 +449,12 @@ public class PlayerInventoryListener implements Listener {
 			 */
 			if(itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft") ){
 				//ホームメニューへ帰還
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 
 			} else if (itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown") ){
 				//2ページ目へ
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 
 				//石を石ハーフブロックに変換10～10万
@@ -680,12 +680,12 @@ public class PlayerInventoryListener implements Listener {
 			 */
 			if(itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp") ){
 				//1ページ目へ
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getBlockCraftData(player));
 
 			} else if (itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown") ){
 				//3ページ目へ
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getBlockCraftData3(player));
 
 				//雪玉を雪（ブロック）に変換10～1万
@@ -977,12 +977,12 @@ public class PlayerInventoryListener implements Listener {
 			 */
 			if(itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp") ){
 				//2ページ目へ
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 
 /*			} else if (itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown") ){
 				//4ページ目へ
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
+				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
 				player.openInventory(MenuInventoryData.getBlockCraftData4(player));
 */
 
