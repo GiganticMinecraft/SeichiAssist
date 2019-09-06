@@ -56,7 +56,11 @@ object CategorizedMineStackMenu {
                 .title("$YELLOW$UNDERLINE${BOLD}MineStackメインメニューへ")
                 .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
                 .build(),
-            FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE, MineStackMainMenu.open)
+            FilteredButtonEffect(
+                ClickEventFilter.ALWAYS_INVOKE,
+                CommonSoundEffects.menuTransitionFenceSound,
+                MineStackMainMenu.open
+            )
         )
 
         singleSlotLayout { (9 * 5) to mineStackMainMenuButton }
