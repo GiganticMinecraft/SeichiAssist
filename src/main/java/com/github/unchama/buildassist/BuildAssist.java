@@ -21,7 +21,7 @@ import java.util.UUID;
 
 
 public class BuildAssist {
-    private static SeichiAssist plugin;
+    public static SeichiAssist plugin;
     static Boolean DEBUG = false;
 
     //起動するタスクリスト

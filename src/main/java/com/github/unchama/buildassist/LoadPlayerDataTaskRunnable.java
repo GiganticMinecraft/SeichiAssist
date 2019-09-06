@@ -18,7 +18,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 	private final UUID uuid;
 	private int retryCount;
 
-	LoadPlayerDataTaskRunnable(final Player p) {
+	public LoadPlayerDataTaskRunnable(final Player p) {
 		this.p = p;
 		uuid = this.p.getUniqueId();
 		retryCount = 0;

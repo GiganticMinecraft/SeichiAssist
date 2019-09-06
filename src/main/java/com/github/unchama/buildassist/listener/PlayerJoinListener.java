@@ -17,10 +17,10 @@ public class PlayerJoinListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onplayerJoinEvent(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
+    public void onplayerJoinEvent(final PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
         //DBからデータを読み込むのを待ってから初期化
-        new LoadPlayerDataTaskRunnable(player).runTaskTimerAsynchronously(plugin, 0, 20);
+        new LoadPlayerDataTaskRunnable(player).runTaskTimerAsynchronously(BuildAssist.plugin, 0, 20);
 
     }
 }
