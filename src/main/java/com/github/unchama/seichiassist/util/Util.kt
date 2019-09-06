@@ -31,16 +31,12 @@ object Util {
 
   //スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
   fun isSkillEnable(player: Player): Boolean {
-    //デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
-    var worldname = SeichiAssist.SEICHIWORLDNAME
-    if (SeichiAssist.DEBUG) {
-      worldname = SeichiAssist.DEBUGWORLDNAME
-    }
+    val seichiWorldPrefix = if (SeichiAssist.DEBUG) SeichiAssist.DEBUGWORLDNAME else SeichiAssist.SEICHIWORLDNAME
 
-    //整地ワールドzeroではスキル発動不可
+    // 整地ワールドzeroではスキル発動不可
     return if (player.world.name.equals("world_sw_zero", ignoreCase = true)) {
       false
-    } else player.world.name.toLowerCase().startsWith(worldname)
+    } else player.world.name.toLowerCase().startsWith(seichiWorldPrefix)
         || player.world.name.equals("world", ignoreCase = true)
         || player.world.name.equals("world_2", ignoreCase = true)
         || player.world.name.equals("world_nether", ignoreCase = true)
@@ -48,9 +44,6 @@ object Util {
         || player.world.name.equals("world_TT", ignoreCase = true)
         || player.world.name.equals("world_nether_TT", ignoreCase = true)
         || player.world.name.equals("world_the_end_TT", ignoreCase = true)
-
-    //プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)にいる場合
-    //それ以外のワールドの場合
   }
 
   /**
