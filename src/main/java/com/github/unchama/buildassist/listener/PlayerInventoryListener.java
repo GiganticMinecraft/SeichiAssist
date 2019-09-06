@@ -68,7 +68,7 @@ public class PlayerInventoryListener implements Listener {
 		InventoryView view = event.getView();
 		HumanEntity he = view.getPlayer();
 		//インベントリを開けたのがプレイヤーではない時終了
-		if(!he.getType().equals(EntityType.PLAYER)){
+		if(he.getType() != EntityType.PLAYER){
 			return;
 		}
 
@@ -95,7 +95,7 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
-			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+			if(event.getClickedInventory().getType() == InventoryType.PLAYER){
 				return;
 			}
 
@@ -104,7 +104,7 @@ public class PlayerInventoryListener implements Listener {
 			 */
 
 
-			if(itemstackcurrent.getType().equals(Material.FEATHER)){
+			if(itemstackcurrent.getType() == Material.FEATHER){
 				if(itemstackcurrent.getAmount() == 1){
 					//fly 1分予約追加
 					player.closeInventory();
@@ -117,19 +117,19 @@ public class PlayerInventoryListener implements Listener {
 					player.chat("/fly 5");
 				}
 
-			} else if (itemstackcurrent.getType().equals(Material.ELYTRA)){
+			} else if (itemstackcurrent.getType() == Material.ELYTRA){
 				//fly ENDLESSモード
 				player.closeInventory();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.chat("/fly endless");
 
-			} else if (itemstackcurrent.getType().equals(Material.CHAINMAIL_BOOTS)){
+			} else if (itemstackcurrent.getType() == Material.CHAINMAIL_BOOTS){
 				//fly OFF
 				player.closeInventory();
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.chat("/fly finish");
 
-			} else if (itemstackcurrent.getType().equals(Material.STONE)){
+			} else if (itemstackcurrent.getType() == Material.STONE){
 				//範囲設置スキル ON/OFF
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(playerdata.level < BuildAssist.config.getZoneSetSkillLevel() ){
@@ -147,7 +147,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 
-			} else if (itemstackcurrent.getType().equals(Material.SKULL_ITEM) && itemstackcurrent.getItemMeta().getDisplayName().contains("「範囲設置スキル」設定画面へ")){
+			} else if (itemstackcurrent.getType() == Material.SKULL_ITEM && itemstackcurrent.getItemMeta().getDisplayName().contains("「範囲設置スキル」設定画面へ")){
 				//範囲設置スキル設定画面を開く
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				if(playerdata.level < BuildAssist.config.getblocklineuplevel() ){
@@ -155,7 +155,7 @@ public class PlayerInventoryListener implements Listener {
 				}else{
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
 				}
-			} else if (itemstackcurrent.getType().equals(Material.WOOD)){
+			} else if (itemstackcurrent.getType() == Material.WOOD){
 				//ブロックを並べるスキル設定
 				if(playerdata.level < BuildAssist.config.getblocklineuplevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
@@ -171,12 +171,12 @@ public class PlayerInventoryListener implements Listener {
 					player.openInventory(MenuInventoryData.getMenuData(player));
 				}
 
-			} else if (itemstackcurrent.getType().equals(Material.PAPER)){
+			} else if (itemstackcurrent.getType() == Material.PAPER){
 				//ブロックを並べる設定メニューを開く
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 
-			} else if (itemstackcurrent.getType().equals(Material.WORKBENCH)){
+			} else if (itemstackcurrent.getType() == Material.WORKBENCH){
 				//MineStackブロック一括クラフトメニュー画面へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getBlockCraftData(player));
@@ -192,19 +192,19 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
-			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+			if(event.getClickedInventory().getType() == InventoryType.PLAYER){
 				return;
 			}
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 
-			if(itemstackcurrent.getType().equals(Material.BARRIER)){
+			if(itemstackcurrent.getType() == Material.BARRIER){
 				//ホームメニューへ帰還
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 
-			}else if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)) {
+			}else if(itemstackcurrent.getType() == Material.SKULL_ITEM) {
 				if(itemstackcurrent.getAmount() == 11){
 					//範囲MAX
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
@@ -248,7 +248,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "現在の範囲設定は"+(playerdata.AREAint *2 +1)+"×"+ (playerdata.AREAint *2 +1)+"です");
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
 				}
-			} else if (itemstackcurrent.getType().equals(Material.STONE)){
+			} else if (itemstackcurrent.getType() == Material.STONE){
 				//範囲設置スキル ON/OFF
 				//範囲設置スキル ON/OFF
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
@@ -267,7 +267,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 
-			} else if (itemstackcurrent.getType().equals(Material.DIRT)){
+			} else if (itemstackcurrent.getType() == Material.DIRT){
 				//範囲設置スキル、土設置 ON/OFF
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(!playerdata.zsSkillDirtFlag){
@@ -279,7 +279,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "土設置機能OFF" ) ;
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
 				}
-			}else if(itemstackcurrent.getType().equals(Material.CHEST)){
+			}else if(itemstackcurrent.getType() == Material.CHEST){
 				//MineStack優先設定
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				if(playerdata.level < BuildAssist.config.getZoneskillMinestacklevel()){
@@ -314,7 +314,7 @@ public class PlayerInventoryListener implements Listener {
 		InventoryView view = event.getView();
 		HumanEntity he = view.getPlayer();
 		//インベントリを開けたのがプレイヤーではない時終了
-		if(!he.getType().equals(EntityType.PLAYER)){
+		if(he.getType() != EntityType.PLAYER){
 			return;
 		}
 
@@ -341,18 +341,18 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
-			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+			if(event.getClickedInventory().getType() == InventoryType.PLAYER){
 				return;
 			}
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM)){
+			if(itemstackcurrent.getType() == Material.SKULL_ITEM){
 				//ホームメニューへ帰還
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 
-			} else if (itemstackcurrent.getType().equals(Material.WOOD)){
+			} else if (itemstackcurrent.getType() == Material.WOOD){
 				//ブロックを並べるスキル設定
 				if(playerdata.level < BuildAssist.config.getblocklineuplevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
@@ -368,7 +368,7 @@ public class PlayerInventoryListener implements Listener {
 					player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 				}
 
-			} else if (itemstackcurrent.getType().equals(Material.STEP)){
+			} else if (itemstackcurrent.getType() == Material.STEP){
 				//ブロックを並べるスキルハーフブロック設定
 				if ( playerdata.line_up_step_flg >= 2 ){
 					playerdata.line_up_step_flg = 0;
@@ -379,14 +379,14 @@ public class PlayerInventoryListener implements Listener {
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 
-			} else if (itemstackcurrent.getType().equals(Material.TNT)){
+			} else if (itemstackcurrent.getType() == Material.TNT){
 				//ブロックを並べるスキル一部ブロックを破壊して並べる設定
 				playerdata.line_up_des_flg ^= 1;
 				player.sendMessage(ChatColor.GREEN + "破壊設定 ：" + BuildAssist.line_up_off_on_str[playerdata.line_up_des_flg] ) ;
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 
-			} else if (itemstackcurrent.getType().equals(Material.CHEST)){
+			} else if (itemstackcurrent.getType() == Material.CHEST){
 				//マインスタックの方を優先して消費する設定
 				if(playerdata.level < BuildAssist.config.getblocklineupMinestacklevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
@@ -414,7 +414,7 @@ public class PlayerInventoryListener implements Listener {
 		InventoryView view = event.getView();
 		HumanEntity he = view.getPlayer();
 		//インベントリを開けたのがプレイヤーではない時終了
-		if(!he.getType().equals(EntityType.PLAYER)){
+		if(he.getType() != EntityType.PLAYER){
 			return;
 		}
 
@@ -441,24 +441,24 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
-			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+			if(event.getClickedInventory().getType() == InventoryType.PLAYER){
 				return;
 			}
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft") ){
+			if(itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowLeft") ){
 				//ホームメニューへ帰還
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getMenuData(player));
 
-			} else if (itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown") ){
+			} else if (itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown") ){
 				//2ページ目へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getBlockCraftData2(player));
 
 				//石を石ハーフブロックに変換10～10万
-			} else if (itemstackcurrent.getType().equals(Material.STEP)){
+			} else if (itemstackcurrent.getType() == Material.STEP){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(1) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -479,7 +479,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//石を石レンガに変換10～10万
-			} else if (itemstackcurrent.getType().equals(Material.SMOOTH_BRICK)){
+			} else if (itemstackcurrent.getType() == Material.SMOOTH_BRICK){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(1) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -500,7 +500,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//花崗岩を磨かれた花崗岩に変換10～1万
-			} else if (itemstackcurrent.getType().equals(Material.STONE) && (itemstackcurrent.getDurability() == 2 ) ){
+			} else if (itemstackcurrent.getType() == Material.STONE && (itemstackcurrent.getDurability() == 2 ) ){
 //				player.sendMessage(ChatColor.RED + "data:"+itemstackcurrent.getDurability() );
 
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
@@ -523,7 +523,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//閃緑岩を磨かれた閃緑岩に変換10～1万
-			} else if (itemstackcurrent.getType().equals(Material.STONE) && (itemstackcurrent.getDurability() == 4 ) ){
+			} else if (itemstackcurrent.getType() == Material.STONE && (itemstackcurrent.getDurability() == 4 ) ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -544,7 +544,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//安山岩を磨かれた安山岩に変換10～1万
-			} else if (itemstackcurrent.getType().equals(Material.STONE) && (itemstackcurrent.getDurability() == 6 ) ){
+			} else if (itemstackcurrent.getType() == Material.STONE && (itemstackcurrent.getDurability() == 6 ) ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -565,7 +565,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//ネザー水晶をネザー水晶ブロックに変換10～1万
-			} else if (itemstackcurrent.getType().equals(Material.QUARTZ_BLOCK) ){
+			} else if (itemstackcurrent.getType() == Material.QUARTZ_BLOCK){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -586,7 +586,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//レンガをレンガブロックに変換10～1万
-			} else if (itemstackcurrent.getType().equals(Material.BRICK) ){
+			} else if (itemstackcurrent.getType() == Material.BRICK){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -606,7 +606,7 @@ public class PlayerInventoryListener implements Listener {
 					player.openInventory(MenuInventoryData.getBlockCraftData(player));
 				}
 				//ネザーレンガをネザーレンガブロックに変換10～1万
-			} else if (itemstackcurrent.getType().equals(Material.NETHER_BRICK) ){
+			} else if (itemstackcurrent.getType() == Material.NETHER_BRICK){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -645,7 +645,7 @@ public class PlayerInventoryListener implements Listener {
 		InventoryView view = event.getView();
 		HumanEntity he = view.getPlayer();
 		//インベントリを開けたのがプレイヤーではない時終了
-		if(!he.getType().equals(EntityType.PLAYER)){
+		if(he.getType() != EntityType.PLAYER){
 			return;
 		}
 
@@ -672,24 +672,24 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
-			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+			if(event.getClickedInventory().getType() == InventoryType.PLAYER){
 				return;
 			}
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp") ){
+			if(itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp") ){
 				//1ページ目へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getBlockCraftData(player));
 
-			} else if (itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown") ){
+			} else if (itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown") ){
 				//3ページ目へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getBlockCraftData3(player));
 
 				//雪玉を雪（ブロック）に変換10～1万
-			} else if (itemstackcurrent.getType().equals(Material.SNOW_BLOCK) ){
+			} else if (itemstackcurrent.getType() == Material.SNOW_BLOCK){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -710,7 +710,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//ネザーウォートとネザーレンガを赤いネザーレンガに変換10～10万
-			} else if (itemstackcurrent.getType().equals(Material.RED_NETHER_BRICK) ){
+			} else if (itemstackcurrent.getType() == Material.RED_NETHER_BRICK){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -733,7 +733,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//石炭を消費して鉄鉱石を鉄インゴットに変換4～4000
-			} else if (itemstackcurrent.getType().equals(Material.IRON_INGOT) && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
+			} else if (itemstackcurrent.getType() == Material.IRON_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -756,7 +756,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//溶岩バケツを消費して鉄鉱石を鉄インゴットに変換50～5万
-			} else if (itemstackcurrent.getType().equals(Material.IRON_INGOT) && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
+			} else if (itemstackcurrent.getType() == Material.IRON_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -782,7 +782,7 @@ public class PlayerInventoryListener implements Listener {
 
 
 				//石炭を消費して金鉱石を金インゴットに変換4～4000
-			} else if (itemstackcurrent.getType().equals(Material.GOLD_INGOT) && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
+			} else if (itemstackcurrent.getType() == Material.GOLD_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -805,7 +805,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//溶岩バケツを消費して金鉱石を金インゴットに変換50～5万
-			} else if (itemstackcurrent.getType().equals(Material.GOLD_INGOT) && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
+			} else if (itemstackcurrent.getType() == Material.GOLD_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -831,7 +831,7 @@ public class PlayerInventoryListener implements Listener {
 
 
 				//石炭を消費して砂をガラスに変換4～4000
-			} else if (itemstackcurrent.getType().equals(Material.GLASS) && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
+			} else if (itemstackcurrent.getType() == Material.GLASS && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -854,7 +854,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//溶岩バケツを消費して砂をガラスに変換50～5万
-			} else if (itemstackcurrent.getType().equals(Material.GLASS) && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
+			} else if (itemstackcurrent.getType() == Material.GLASS && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -880,7 +880,7 @@ public class PlayerInventoryListener implements Listener {
 
 
 				//石炭を消費してネザーラックをネザーレンガに変換4～4000
-			} else if (itemstackcurrent.getType().equals(Material.NETHER_BRICK_ITEM) && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
+			} else if (itemstackcurrent.getType() == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -903,7 +903,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//溶岩バケツを消費してネザーラックをネザーレンガに変換50～5万
-			} else if (itemstackcurrent.getType().equals(Material.NETHER_BRICK_ITEM) && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
+			} else if (itemstackcurrent.getType() == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -942,7 +942,7 @@ public class PlayerInventoryListener implements Listener {
 		InventoryView view = event.getView();
 		HumanEntity he = view.getPlayer();
 		//インベントリを開けたのがプレイヤーではない時終了
-		if(!he.getType().equals(EntityType.PLAYER)){
+		if(he.getType() != EntityType.PLAYER){
 			return;
 		}
 
@@ -969,13 +969,13 @@ public class PlayerInventoryListener implements Listener {
 			event.setCancelled(true);
 
 			//プレイヤーインベントリのクリックの場合終了
-			if(event.getClickedInventory().getType().equals(InventoryType.PLAYER)){
+			if(event.getClickedInventory().getType() == InventoryType.PLAYER){
 				return;
 			}
 			/*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-			if(itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp") ){
+			if(itemstackcurrent.getType() == Material.SKULL_ITEM && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowUp") ){
 				//2ページ目へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
 				player.openInventory(MenuInventoryData.getBlockCraftData2(player));
@@ -987,7 +987,7 @@ public class PlayerInventoryListener implements Listener {
 */
 
 				//石炭を消費して粘土をレンガに変換4～4000
-			} else if (itemstackcurrent.getType().equals(Material.CLAY_BRICK) && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
+			} else if (itemstackcurrent.getType() == Material.CLAY_BRICK && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
@@ -1010,7 +1010,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 
 				//溶岩バケツを消費して粘土をレンガに変換50～5万
-			} else if ( itemstackcurrent.getType().equals(Material.CLAY_BRICK) && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
+			} else if (itemstackcurrent.getType() == Material.CLAY_BRICK && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
 				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
