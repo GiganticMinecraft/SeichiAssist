@@ -30,9 +30,8 @@ import org.bukkit.inventory.PlayerInventory;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 
-public class PlayerRightClickListener implements Listener  {
-	HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
-
+public class PlayerRightClickListener implements TypedEventListener<PlayerInteractEvent>  {
+	@Override
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onEvent(final PlayerInteractEvent event) {
