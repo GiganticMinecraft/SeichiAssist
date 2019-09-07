@@ -59,7 +59,7 @@ public class BlockFill implements TypedEventListener<PlayerInteractEvent> {
 		//プレイヤーが起こしたアクションを取得
 		final Action action = e.getAction();
 		//左クリックの処理
-		if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
+		if(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK){
 			//プレイヤーインベントリを取得
 			final PlayerInventory inventory = player.getInventory();
 			//メインハンドとオフハンドを取得
