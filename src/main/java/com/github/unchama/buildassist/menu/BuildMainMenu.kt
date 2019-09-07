@@ -108,7 +108,7 @@ object BuildMainMenu : Menu {
           .lore(
               "$RESET${YELLOW}クリックすると以降OFFにするまで",
               "$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
-              "$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分 ${BuildAssist.config.flyExp}"
+              "$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.flyExp}"
           )
           .build()
 
