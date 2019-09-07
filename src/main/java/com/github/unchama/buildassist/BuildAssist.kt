@@ -103,7 +103,7 @@ class BuildAssist(plugin: Plugin) {
     )
 
     //範囲設置ブロックの対象リスト
-    internal val materiallist = Arrays.asList(
+    internal val materiallist = EnumSet.of(
 
 
         Material.STONE//石
@@ -192,13 +192,13 @@ class BuildAssist(plugin: Plugin) {
     )
 
     //ハーフブロックまとめ
-    val material_slab = Arrays.asList(
+    val material_slab = EnumSet.of(
         Material.STONE_SLAB2, Material.PURPUR_SLAB, Material.WOOD_STEP, Material.STEP
     )
 
 
     //直列設置ブロックの対象リスト
-    internal val materiallist2 = Arrays.asList(
+    internal val materiallist2 = EnumSet.of(
         Material.STONE//石
         , Material.GRASS//草
         , Material.DIRT//土
@@ -290,14 +290,14 @@ class BuildAssist(plugin: Plugin) {
     //			,Material.CARPET//カーペット
     //			,Material.RAILS//レール
 
-    internal val material_slab2 = Arrays.asList(
+    internal val material_slab2 = EnumSet.of(
         Material.STONE_SLAB2    //赤砂岩
         , Material.PURPUR_SLAB    //プルパー
         , Material.WOOD_STEP        //木
         , Material.STEP            //石
     )
 
-    internal val material_destruction = Arrays.asList(
+    internal val material_destruction = EnumSet.of(
         Material.LONG_GRASS            //草
         , Material.DEAD_BUSH            //枯れ木
         , Material.YELLOW_FLOWER        //タンポポ
