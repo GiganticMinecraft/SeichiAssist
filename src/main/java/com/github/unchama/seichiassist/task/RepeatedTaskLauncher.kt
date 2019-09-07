@@ -6,6 +6,7 @@ abstract class RepeatedTaskLauncher {
   suspend fun launch(): Nothing {
     while (true) {
       delay(getRepeatIntervalTicks() * 50)
+      runRoutine()
     }
   }
 
