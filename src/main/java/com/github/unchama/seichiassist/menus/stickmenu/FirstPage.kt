@@ -657,6 +657,7 @@ private object FirstPage: Menu {
       return Button(
           iconItemStack,
           LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
               // TODO メニューに置き換える
               TargetedEffect { it.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(it)) }
           )
