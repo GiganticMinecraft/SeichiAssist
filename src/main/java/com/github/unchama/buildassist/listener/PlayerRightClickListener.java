@@ -39,20 +39,21 @@ public class PlayerRightClickListener implements TypedEventListener<PlayerIntera
 		final Player player = event.getPlayer();
 		//UUID取得
 		final UUID uuid = player.getUniqueId();
-		//ワールドデータを取得
-		final World playerworld = player.getWorld();
-		//プレイヤーが起こしたアクションを取得
-		final Action action = event.getAction();
-		//アクションを起こした手を取得
-		final EquipmentSlot equipmentslot = event.getHand();
 		//プレイヤーデータ
 		final PlayerData playerdata = BuildAssist.Companion.getPlayermap().get(uuid);
 		//プレイヤーデータが無い場合は処理終了
 		if(playerdata == null) {
 			return;
 		}
-		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
+		//ワールドデータを取得
+		final World playerworld = player.getWorld();
+		//プレイヤーが起こしたアクションを取得
+		final Action action = event.getAction();
+		//アクションを起こした手を取得
+		final EquipmentSlot equipmentslot = event.getHand();
+
+		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 		if(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK){
 			//左クリックの処理
 			if(player.getInventory().getItemInMainHand().getType() == Material.STICK){
@@ -158,8 +159,6 @@ public class PlayerRightClickListener implements TypedEventListener<PlayerIntera
 						int setblockX = playerlocx - AREAint ;
 						final int setblockY = Y1 ;
 						int setblockZ = playerlocz - AREAint ;
-						int setunder;
-
 						int searchedInv = 9 ;
 
 						ItemStack ItemInInv;
@@ -168,7 +167,7 @@ public class PlayerRightClickListener implements TypedEventListener<PlayerIntera
 						final Location WGloc = new Location(playerworld,0,0,0)  ;
 
 
-						for(;setblockZ < playerlocz + SEARCHint ;){
+						while (setblockZ < playerlocz + SEARCHint) {
 							//ブロック設置座標のブロック判別
 							final Material m1 = player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).getType();
 							final Set<Material> s1 = EnumSet.of(
@@ -176,26 +175,24 @@ public class PlayerRightClickListener implements TypedEventListener<PlayerIntera
 									Material.RED_ROSE, Material.RED_MUSHROOM, Material.BROWN_MUSHROOM
 									);
 							if(s1.contains(m1)) {
-								setunder = 1;
 								if(playerdata.zsSkillDirtFlag){
-                                    for(;setunder < 5;){
-                                        //設置対象の[setunder]分の下のブロックが空気かどうか
-                                        final Material m2 = player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).getType();
-                                        final Set<Material> s2 = EnumSet.of(Material.AIR, Material.LAVA, Material.STATIONARY_LAVA, Material.WATER, Material.STATIONARY_WATER);
-                                        if(s2.contains(m2)){
-                                            WGloc.setX(setblockX);
-                                            WGloc.setY(setblockY - setunder);
-                                            WGloc.setZ(setblockZ);
-                                            //他人の保護がかかっている場合は処理を終了
-                                            if(!Util.getWorldGuard().canBuild(player, WGloc)){
-                                                player.sendMessage(ChatColor.RED + "付近に誰かの保護がかかっているようです" ) ;
-                                            }else {
-                                                //保護のない場合、土を設置する処理
-                                                player.getWorld().getBlockAt(setblockX,(setblockY - setunder),setblockZ).setType(Material.DIRT);
-                                            }
-                                        }
-                                        setunder ++;
-                                    }
+									for (int innerSetUnder = 1; innerSetUnder <= 4; innerSetUnder++) {
+										//設置対象の[setunder]分の下のブロックが空気かどうか
+										final Material m2 = player.getWorld().getBlockAt(setblockX,(setblockY - innerSetUnder),setblockZ).getType();
+										final Set<Material> s2 = EnumSet.of(Material.AIR, Material.LAVA, Material.STATIONARY_LAVA, Material.WATER, Material.STATIONARY_WATER);
+										if(s2.contains(m2)){
+											WGloc.setX(setblockX);
+											WGloc.setY(setblockY - innerSetUnder);
+											WGloc.setZ(setblockZ);
+											//他人の保護がかかっている場合は処理を終了
+											if(!Util.getWorldGuard().canBuild(player, WGloc)){
+												player.sendMessage(ChatColor.RED + "付近に誰かの保護がかかっているようです" ) ;
+											}else {
+												//保護のない場合、土を設置する処理
+												player.getWorld().getBlockAt(setblockX,(setblockY - innerSetUnder),setblockZ).setType(Material.DIRT);
+											}
+										}
+									}
 								}
 
 								//他人の保護がかかっている場合は処理を終了
@@ -269,12 +266,10 @@ public class PlayerRightClickListener implements TypedEventListener<PlayerIntera
 											//スロットアイテムがオフハンドと一致した場合
 										}else if(ItemInInv.getType() == offhanditem.getType() ){
 											//数量以外のデータ(各種メタ)が一致するかどうか検知(仮)
-											final ItemStack ItemInInvCheck = ItemInInv ;
-											final ItemStack offhandCheck = offhanditem ;
-											ItemInInvCheck.setAmount(1);
-											offhandCheck.setAmount(1);
+											ItemInInv.setAmount(1);
+											offhanditem.setAmount(1);
 
-											if(!(ItemInInvCheck.equals(offhandCheck))){
+											if(!(ItemInInv.equals(offhanditem))){
 												if(searchedInv == 35){
 													searchedInv = 0 ;
 												}else if(searchedInv == 8 ){
