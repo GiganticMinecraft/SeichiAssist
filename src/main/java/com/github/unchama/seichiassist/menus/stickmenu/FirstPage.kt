@@ -699,14 +699,16 @@ private object FirstPage: Menu {
 
               val itemStackToGive = Util.getskull(this@computeGachaTicketButton.name)
 
-              sequentialEffect(
-                  unfocusedEffect {
-                    playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
-                    repeat(gachaTicketsToGive) { Util.addItemToPlayerSafely(this@computeGachaTicketButton, itemStackToGive) }
-                  },
-                  "${ChatColor.GOLD}ガチャ券${gachaTicketsToGive}枚${ChatColor.WHITE}プレゼントフォーユー".asMessageEffect(),
-                  FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
-              )
+              if (gachaTicketsToGive > 0) {
+                sequentialEffect(
+                    unfocusedEffect {
+                      playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
+                      repeat(gachaTicketsToGive) { Util.addItemToPlayerSafely(this@computeGachaTicketButton, itemStackToGive) }
+                    },
+                    "${ChatColor.GOLD}ガチャ券${gachaTicketsToGive}枚${ChatColor.WHITE}プレゼントフォーユー".asMessageEffect(),
+                    FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+                )
+              } else EmptyEffect
             } else EmptyEffect
           }
       )
