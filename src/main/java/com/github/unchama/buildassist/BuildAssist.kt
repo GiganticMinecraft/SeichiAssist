@@ -146,13 +146,15 @@ class BuildAssist(plugin: SeichiAssist) {
 
   companion object {
     lateinit var plugin: SeichiAssist
-    internal var DEBUG: Boolean? = false
+    @get:JvmName("getDEBUG")
+    internal var DEBUG = false
 
     //Playerdataに依存するデータリスト
     val playermap = HashMap<UUID, PlayerData>()
     lateinit var config: BuildAssistConfig
 
     //lvの閾値
+    @get:JvmName("getLevellist")
     internal val levellist = listOf(
         0, 50, 100, 200, 300,
         450, 600, 900, 1200, 1600, //10

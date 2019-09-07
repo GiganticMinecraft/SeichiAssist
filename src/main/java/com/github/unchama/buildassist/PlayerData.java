@@ -87,13 +87,13 @@ public final class PlayerData {
 		//現在のランクの次を取得
 		int i = level;
 		//ランクが上がらなくなるまで処理
-		while(BuildAssist.levellist.get(i) <= totalbuildnum.doubleValue() && (i+2) <= BuildAssist.levellist.size()){
-			if(!BuildAssist.DEBUG){
+		while(BuildAssist.Companion.getLevellist().get(i) <= totalbuildnum.doubleValue() && (i+2) <= BuildAssist.Companion.getLevellist().size()){
+			if(!BuildAssist.Companion.getDEBUG()){
 				//レベルアップ時のメッセージ
 				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(" + i +")→建築Lv(" + (i+1) + ")】");
 			}
 			i++;
-			if( (i+1) == BuildAssist.levellist.size()){
+			if( (i+1) == BuildAssist.Companion.getLevellist().size()){
 				player.sendMessage(ChatColor.GOLD+"最大Lvに到達したよ(`･ω･´)");
 			}
 		}
@@ -157,10 +157,10 @@ public final class PlayerData {
 
 		//1分制限の判断
 		final BigDecimal newBuildCount;
-		if (build_num_1min.doubleValue() <= BuildAssist.config.getBuildNum1minLimit()) {
+		if (build_num_1min.doubleValue() <= BuildAssist.Companion.getConfig().getBuildNum1minLimit()) {
 			newBuildCount = totalbuildnum.add(build_num_1min);
 		} else {
-			newBuildCount = totalbuildnum.add(new BigDecimal(BuildAssist.config.getBuildNum1minLimit()));
+			newBuildCount = totalbuildnum.add(new BigDecimal(BuildAssist.Companion.getConfig().getBuildNum1minLimit()));
 		}
 
 		playerData.setBuildCount(new BuildCount(level, newBuildCount, oldBuildCount.getMigrationFlag()));
