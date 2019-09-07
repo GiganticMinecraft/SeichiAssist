@@ -3,33 +3,24 @@ package com.github.unchama.buildassist
 import com.github.unchama.buildassist.listener.BlockFill
 import com.github.unchama.buildassist.listener.BlockPlaceEventListener
 import com.github.unchama.buildassist.listener.EntityListener
-import com.github.unchama.buildassist.listener.PlayerInventoryListener
 import com.github.unchama.buildassist.listener.PlayerJoinListener
 import com.github.unchama.buildassist.listener.PlayerQuitListener
-import com.github.unchama.buildassist.listener.PlayerRightClickListener
-import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
-import org.bukkit.event.Event
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
-import org.bukkit.event.Listener
+import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
-import java.util.EnumSet
-import java.util.HashMap
-import java.util.LinkedList
-import java.util.UUID
-
-
-class BuildAssist(plugin: SeichiAssist) {
+class BuildAssist(plugin: Plugin) {
 
   //起動するタスクリスト
-  private val tasklist = LinkedList<BukkitTask>()
-  private var commandlist = HashMap<String, CommandExecutor>(15)
+  private val tasklist = ArrayList<BukkitTask>()
+  private var commandlist: HashMap<String, CommandExecutor>? = null
 
   init {
     BuildAssist.plugin = plugin
@@ -42,17 +33,19 @@ class BuildAssist(plugin: SeichiAssist) {
 
 
     //コマンドの登録
-    commandlist["fly"] = FlyCommand()
+    commandlist = HashMap()
+    commandlist!!["fly"] = FlyCommand()
 
-    registerEvent(PlayerJoinListener())
-    registerEvent(EntityListener())
-    registerEvent(PlayerRightClickListener())
-    registerEvent(PlayerInventoryListener())
-    registerEvent(BlockFill())        //クリックイベント登録
-    registerEvent(PlayerQuitListener())    //退出時
-    registerEvent(BlockPlaceEventListener())    //ブロックを置いた時
+    Bukkit.getServer().pluginManager.registerEvents(PlayerJoinListener(), plugin)
+    Bukkit.getServer().pluginManager.registerEvents(EntityListener(), plugin)
+    Bukkit.getServer().pluginManager.registerEvents(PlayerRightClickListener(), plugin)
+    Bukkit.getServer().pluginManager.registerEvents(PlayerInventoryListener(), plugin)
+    Bukkit.getServer().pluginManager.registerEvents(BlockFill(), plugin)        //クリックイベント登録
+    Bukkit.getServer().pluginManager.registerEvents(PlayerQuitListener(), plugin)    //退出時
+    Bukkit.getServer().pluginManager.registerEvents(BlockPlaceEventListener(), plugin)    //ブロックを置いた時
 
-    for (p in Bukkit.getServer().onlinePlayers) {
+
+    for (p in plugin.server.onlinePlayers) {
       val uuid = p.uniqueId
 
       val playerdata = PlayerData(p)
@@ -61,99 +54,30 @@ class BuildAssist(plugin: SeichiAssist) {
 
       playermap[uuid] = playerdata
     }
-
     plugin.logger.info("BuildAssist is Enabled!")
 
     tasklist.add(MinuteTaskRunnable().runTaskTimer(plugin, 0, 1200))
   }
 
-  fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
-    return commandlist[cmd.name]?.onCommand(sender, cmd, label, args) ?: false
+  fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
+    return commandlist!![cmd.name]?.onCommand(sender, cmd, label, args) ?: false
   }
 
   fun onDisable() {
-    for (task in tasklist) {
+    for (task in this.tasklist) {
       task.cancel()
     }
   }
 
-  private fun registerEvent(listener: Listener) {
-    Bukkit.getServer().pluginManager.registerEvents(listener, SeichiAssist.instance)
-  }
-
-  private inline fun <E : Event> registerEvent(priority: EventPriority, crossinline func: (E) -> Unit) {
-    // ※ アノテーションはパラメータとして与えられた値を受け付けないため迂回する
-    val listener = when (priority) {
-      EventPriority.LOWEST -> {
-        object : Listener {
-          @EventHandler(priority = EventPriority.LOWEST)
-          fun onEvent(event: E) {
-            func(event)
-          }
-        }
-      }
-
-      EventPriority.LOW -> {
-        object : Listener {
-          @EventHandler(priority = EventPriority.LOW)
-          fun onEvent(event: E) {
-            func(event)
-          }
-        }
-      }
-
-      EventPriority.NORMAL -> {
-        object : Listener {
-          @EventHandler(priority = EventPriority.NORMAL)
-          fun onEvent(event: E) {
-            func(event)
-          }
-        }
-      }
-
-      EventPriority.HIGH -> {
-        object : Listener {
-          @EventHandler(priority = EventPriority.HIGH)
-          fun onEvent(event: E) {
-            func(event)
-          }
-        }
-      }
-
-      EventPriority.HIGHEST -> {
-        object : Listener {
-          @EventHandler(priority = EventPriority.HIGHEST)
-          fun onEvent(event: E) {
-            func(event)
-          }
-        }
-      }
-
-      EventPriority.MONITOR -> {
-        object : Listener {
-          @EventHandler(priority = EventPriority.MONITOR)
-          fun onEvent(event: E) {
-            func(event)
-          }
-        }
-      }
-    }
-
-    registerEvent(listener)
-
-  }
-
   companion object {
-    lateinit var plugin: SeichiAssist
-    @get:JvmName("getDEBUG")
-    internal var DEBUG = false
+    lateinit var plugin: Plugin
+    var DEBUG: Boolean? = false
 
     //Playerdataに依存するデータリスト
     val playermap = HashMap<UUID, PlayerData>()
     lateinit var config: BuildAssistConfig
 
     //lvの閾値
-    @get:JvmName("getLevellist")
     internal val levellist = listOf(
         0, 50, 100, 200, 300,
         450, 600, 900, 1200, 1600, //10
@@ -178,11 +102,10 @@ class BuildAssist(plugin: SeichiAssist) {
         5000000
     )
 
-    /**
-     * 範囲設置ブロックの対象リスト
-     **/
-    @JvmStatic
-    val materiallist: Set<Material> = EnumSet.of(
+    //範囲設置ブロックの対象リスト
+    internal val materiallist = Arrays.asList(
+
+
         Material.STONE//石
         , Material.GRASS//草
         , Material.DIRT//土
@@ -269,16 +192,13 @@ class BuildAssist(plugin: SeichiAssist) {
     )
 
     //ハーフブロックまとめ
-    @JvmStatic
-    val material_slab: Set<Material> = EnumSet.of(
+    val material_slab = Arrays.asList(
         Material.STONE_SLAB2, Material.PURPUR_SLAB, Material.WOOD_STEP, Material.STEP
     )
 
 
     //直列設置ブロックの対象リスト
-    @JvmStatic
-    @get:JvmName("getMateriallist2")
-    internal val materiallist2: Set<Material> = EnumSet.of(
+    internal val materiallist2 = Arrays.asList(
         Material.STONE//石
         , Material.GRASS//草
         , Material.DIRT//土
@@ -347,23 +267,37 @@ class BuildAssist(plugin: SeichiAssist) {
         , Material.NETHER_WART_BLOCK//ネザーウォートB
         , Material.CONCRETE//コンクリート
         , Material.CONCRETE_POWDER//コンクリートパウダー
+        /*
+			,Material.WHITE_GLAZED_TERRACOTTA//彩釉テラコッタ	ブロックの向きがあるので除外
+			,Material.ORANGE_GLAZED_TERRACOTTA
+			,Material.MAGENTA_GLAZED_TERRACOTTA
+			,Material.LIGHT_BLUE_GLAZED_TERRACOTTA
+			,Material.YELLOW_GLAZED_TERRACOTTA
+			,Material.LIME_GLAZED_TERRACOTTA
+			,Material.PINK_GLAZED_TERRACOTTA
+			,Material.GRAY_GLAZED_TERRACOTTA
+			,Material.SILVER_GLAZED_TERRACOTTA
+			,Material.CYAN_GLAZED_TERRACOTTA
+			,Material.PURPLE_GLAZED_TERRACOTTA
+			,Material.BLUE_GLAZED_TERRACOTTA
+			,Material.BROWN_GLAZED_TERRACOTTA
+			,Material.GREEN_GLAZED_TERRACOTTA
+			,Material.RED_GLAZED_TERRACOTTA
+			,Material.BLACK_GLAZED_TERRACOTTA
+*/
     )//			,Material.LEAVES//葉		設置した葉が時間経過で消えるので除外
     //			,Material.LEAVES_2//葉2		設置した葉が時間経過で消えるので除外
     //			,Material.CARPET//カーペット
     //			,Material.RAILS//レール
 
-    @JvmStatic
-    @get:JvmName("getMaterial_slab2")
-    internal val material_slab2: Set<Material> = EnumSet.of(
+    internal val material_slab2 = Arrays.asList(
         Material.STONE_SLAB2    //赤砂岩
         , Material.PURPUR_SLAB    //プルパー
         , Material.WOOD_STEP        //木
         , Material.STEP            //石
     )
 
-    @JvmStatic
-    @get:JvmName("getMaterial_destruction")
-    internal val material_destruction: Set<Material> = EnumSet.of(
+    internal val material_destruction = Arrays.asList(
         Material.LONG_GRASS            //草
         , Material.DEAD_BUSH            //枯れ木
         , Material.YELLOW_FLOWER        //タンポポ
@@ -377,13 +311,9 @@ class BuildAssist(plugin: SeichiAssist) {
         , Material.STATIONARY_WATER    //水
     )
 
-    @JvmStatic
-    val line_up_str = arrayOf("OFF", "上側", "下側")
-
-    @JvmStatic
-    val line_up_step_str = arrayOf("上側", "下側", "両方")
-
-    @JvmStatic
-    val line_up_off_on_str = arrayOf("OFF", "ON")
+    var line_up_str = arrayOf("OFF", "上側", "下側")
+    var line_up_step_str = arrayOf("上側", "下側", "両方")
+    var line_up_off_on_str = arrayOf("OFF", "ON")
   }
+
 }
