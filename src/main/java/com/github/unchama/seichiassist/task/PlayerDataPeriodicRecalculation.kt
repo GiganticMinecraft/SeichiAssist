@@ -103,11 +103,6 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
 
         //effect追加の処理
         //実際のeffect値が0より小さいときはeffectを適用しない
-
-        //プレイヤーデータを更新
-
-        //effect追加の処理
-        //実際のeffect値が0より小さいときはeffectを適用しない
         if (minespeedlv < 0 || maxSpeed == 0) {
           player.addPotionEffect(PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true)
         } else {
@@ -140,24 +135,20 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       /*
 			 * ガチャ券付与の処理
 			 */
-
-      //ガチャポイントに合算
-      playerData.gachapoint = playerData.gachapoint + increase
-
       if (playerData.gachapoint >= config.gachaPresentInterval && playerData.settings.receiveGachaTicketEveryMinute) {
         val skull = Util.getskull(name)
         playerData.gachapoint = playerData.gachapoint - config.gachaPresentInterval
         if (player.inventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
           Util.addItem(player, skull)
-          player.sendMessage(GOLD.toString() + "ガチャ券" + WHITE + "プレゼントフォーユー。右クリックで使えるゾ")
+          player.sendMessage("${GOLD}ガチャ券${WHITE}プレゼントフォーユー。右クリックで使えるゾ")
         } else {
           Util.dropItem(player, skull)
           player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-          player.sendMessage(GOLD.toString() + "ガチャ券" + WHITE + "がドロップしました。右クリックで使えるゾ")
+          player.sendMessage("${GOLD}ガチャ券${WHITE}がドロップしました。右クリックで使えるゾ")
         }
       } else {
         if (increase != 0 && playerData.settings.receiveGachaTicketEveryMinute) {
-          player.sendMessage("あと" + AQUA + (config.gachaPresentInterval - playerData.gachapoint % config.gachaPresentInterval) + WHITE + "ブロック整地すると" + GOLD + "ガチャ券" + WHITE + "獲得ダヨ")
+          player.sendMessage("あと$AQUA${config.gachaPresentInterval - playerData.gachapoint % config.gachaPresentInterval}${WHITE}ブロック整地すると${GOLD}ガチャ券${WHITE}獲得ダヨ")
         }
       }
 

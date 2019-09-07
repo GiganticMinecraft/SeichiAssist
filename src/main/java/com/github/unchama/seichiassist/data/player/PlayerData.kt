@@ -511,12 +511,14 @@ class PlayerData constructor(
       }
       statisticsData[i] = materialStatistics
     }
-    //double値を四捨五入し、整地量に追加する整数xを出す
-    val x = sum.roundToInt()
 
-    //xを整地量に追加
-    totalbreaknum += x
-    return x
+    return sum.roundToInt().also {
+      //整地量に追加
+      totalbreaknum += it
+
+      //ガチャポイントに合算
+      gachapoint += it
+    }
   }
 
   //ブロック別整地数反映量の調節
