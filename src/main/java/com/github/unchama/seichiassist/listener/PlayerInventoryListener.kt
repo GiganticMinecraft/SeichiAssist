@@ -1623,11 +1623,12 @@ class PlayerInventoryListener : Listener {
     val player = he as Player
     val playerdata = playermap[player.uniqueId]!!
 
-    fun setTitle(first: Int = 0, second: Int = 0, third: Int = 0, message: String = """二つ名$first「
+    fun setTitle(first: Int = 0, second: Int = 0, third: Int = 0, message: String =
+        """二つ名$first「
           |${getTitle(1, first)}
           |${if (second != 0) getTitle(2, second) else ""}
           |${if (third != 0) getTitle(3, third) else ""}
-          |」が設定されました。""".trimMargin()) {
+          |」が設定されました。""".trimMargin().filter { it != '\n' }) {
       playerdata.updateNickname(first, second, third)
       player.sendMessage(message)
     }
