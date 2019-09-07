@@ -1,6 +1,6 @@
 package com.github.unchama.buildassist
 
-import com.github.unchama.buildassist.listener.BlockLineUp
+import com.github.unchama.buildassist.listener.BlockFill
 import com.github.unchama.buildassist.listener.BlockPlaceEventListener
 import com.github.unchama.buildassist.listener.EntityListener
 import com.github.unchama.buildassist.listener.PlayerInventoryListener
@@ -19,7 +19,6 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.scheduler.BukkitTask
 
-import java.util.Arrays
 import java.util.EnumSet
 import java.util.HashMap
 import java.util.LinkedList
@@ -49,7 +48,7 @@ class BuildAssist(plugin: SeichiAssist) {
     registerEvent(EntityListener())
     registerEvent(PlayerRightClickListener())
     registerEvent(PlayerInventoryListener())
-    registerEvent(BlockLineUp())        //クリックイベント登録
+    registerEvent(BlockFill())        //クリックイベント登録
     registerEvent(PlayerQuitListener())    //退出時
     registerEvent(BlockPlaceEventListener())    //ブロックを置いた時
 

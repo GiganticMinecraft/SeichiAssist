@@ -25,7 +25,7 @@ public class LimitedLoginEvent {
 
 //	private JavaPlugin instance;
 
-//	public void BlockLineUp(JavaPlugin instance) {
+//	public void BlockFill(JavaPlugin instance) {
 //		this.instance = instance;
 //		instance.getServer().getPluginManager().registerEvents(this, instance);
 //	}
