@@ -306,6 +306,10 @@ class PlayerData constructor(
     halfhourblock.before = totalbreaknum
     updateLevel()
 
+    // TODO statisticsDataは別の箇所に持たれるべき
+    // statisticsDataを初期化する
+    run { statisticsData }
+
     if (unclaimedApologyItems > 0) {
       player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
       player.sendMessage("${GREEN}運営チームから${unclaimedApologyItems}枚の${GOLD}ガチャ券${WHITE}が届いています！\n木の棒メニューから受け取ってください")
