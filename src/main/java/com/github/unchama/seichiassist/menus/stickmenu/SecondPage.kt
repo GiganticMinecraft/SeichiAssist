@@ -304,7 +304,7 @@ object SecondPage: Menu {
             }
 
         val messageConfigurationState =
-            if (currentSettings.shouldMuteSounds()) {
+            if (currentSettings.shouldMuteMessages()) {
               "$RESET${GREEN}全体メッセージ:表示する"
             } else {
               "$RESET${RED}全体メッセージ:表示しない"
