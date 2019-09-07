@@ -167,8 +167,8 @@ public class BlockFill implements TypedEventListener<PlayerInteractEvent> {
 				if( max > 64 ){
 					max = 64;
 				}
-				int v;
-				for(v = 0 ; v < max ; v++) {//設置ループ
+				int decreaseFromStack;
+				for(decreaseFromStack = 0 ; decreaseFromStack < max ; decreaseFromStack++) {//設置ループ
 					px += step_x;
 					py += step_y;
 					pz += step_z;
@@ -197,10 +197,10 @@ public class BlockFill implements TypedEventListener<PlayerInteractEvent> {
 					pl.getWorld().getBlockAt(px , py , pz ).setData(d);		//ブロックのデータを設定
 
 				}
-				v *= double_mag;	//ハーフ2段重ねの場合は2倍
+				decreaseFromStack *= double_mag;	//ハーフ2段重ねの場合は2倍
 				//カウント対象ワールドの場合カウント値を足す
 				if(Util.inTrackedWorld(player)){	//対象ワールドかチェック
-					Util.addBuild1MinAmount(player, new BigDecimal(v * BuildAssist.Companion.getConfig().getBlockCountMag()));	//設置した数を足す
+					Util.addBuild1MinAmount(player, new BigDecimal(decreaseFromStack * BuildAssist.Companion.getConfig().getBlockCountMag()));	//設置した数を足す
 				}
 
 				//マインスタック優先の場合マインスタックの数を減らす
@@ -213,29 +213,29 @@ public class BlockFill implements TypedEventListener<PlayerInteractEvent> {
 					 * TODO 変数vの意味が以下の様に変わっているので可読性が宜しくない
 					 * (設置した数 -> 設置した数のうち、MineStack上で足りなかったブロック数)
 					 */
-					final long num = playerdata_s.getMinestack().getStackedAmountOf(mineStackObj) - v;
+					final long num = playerdata_s.getMinestack().getStackedAmountOf(mineStackObj) - decreaseFromStack;
 					if( num < 0 ){ // minestack上の残数では足りない場合
 						//minestackは0にする
 						playerdata_s.getMinestack().subtractStackedAmountOf
 							(mineStackObj , playerdata_s.getMinestack().getStackedAmountOf(mineStackObj));
 
 						//minestack不足分をvへ代入
-						v = (int)num * (-1);
+						decreaseFromStack = (int) -num;
 
 					}else{ // minestack上の残数で足りる場合
 						//minestack上から設置した数分引く
-						playerdata_s.getMinestack().subtractStackedAmountOf(mineStackObj , v);
+						playerdata_s.getMinestack().subtractStackedAmountOf(mineStackObj , decreaseFromStack);
 
 						//足りなかったブロックは0なのでvには0を代入
-						v = 0;
+						decreaseFromStack = 0;
 					}
 				}
 
 				//アイテム数が0ならメインハンドのアイテムをクリア
-				if (mainhanditem.getAmount() - v <= 0 ){
+				if (mainhanditem.getAmount() - decreaseFromStack <= 0 ){
 					inventory.setItemInMainHand(new ItemStack(Material.AIR,-1));//アイテム数が0になっても消えないので自前で消す
 				}else{	//0じゃないなら設置した分を引く
-					mainhanditem.setAmount(mainhanditem.getAmount() - v );
+					mainhanditem.setAmount(mainhanditem.getAmount() - decreaseFromStack );
 
 				}
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_PLACE, 1, 1);
