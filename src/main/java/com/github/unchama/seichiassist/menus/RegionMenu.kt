@@ -176,20 +176,17 @@ object RegionMenu : Menu {
       Button(
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK,
-              if (!playerHasPermission) {
-                "${RED}このワールドでは保護を申請できません".asMessageEffect()
-              } else if (isSelectionNull) {
-                sequentialEffect(
+              when {
+                !playerHasPermission -> "${RED}このワールドでは保護を申請できません".asMessageEffect()
+                isSelectionNull -> sequentialEffect(
                     "${RED}先に木の斧で範囲を指定してからこのボタンを押してください".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
                 )
-              } else if (!selectionHasEnoughSpace) {
-                sequentialEffect(
+                !selectionHasEnoughSpace -> sequentialEffect(
                     "${RED}指定された範囲が狭すぎます。1辺当たり最低10ブロック以上にしてください".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
                 )
-              } else {
-                sequentialEffect(
+                else -> sequentialEffect(
                     "/expand vert".asCommandEffect(),
                     "rg claim ${player.name}_${openerData.regionCount}".asCommandEffect(),
                     deferredEffect { openerData.incrementRegionNumber },
