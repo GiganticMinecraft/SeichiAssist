@@ -2906,16 +2906,16 @@ when (itemstackcurrent.type) {
 
     //プレイヤー通知
     if (giveticket == 0) {
-      player.sendMessage(YELLOW.toString() + "鉱石を認識しなかったか数が不足しています。全てのアイテムを返却します")
+      player.sendMessage("${YELLOW}鉱石を認識しなかったか数が不足しています。全てのアイテムを返却します")
     } else {
-      player.sendMessage(DARK_RED.toString() + "交換券" + RESET + "" + GREEN + "を" + giveticket + "枚付与しました")
+      player.sendMessage("${DARK_RED}交換券$RESET${GREEN}を${giveticket}枚付与しました")
     }
     /*
      * step2 交換券をインベントリへ
      */
     val exchangeticket = ItemStack(Material.PAPER)
     val itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER)
-    itemmeta.displayName = DARK_RED.toString() + "" + BOLD + "交換券"
+    itemmeta.displayName = "$DARK_RED${BOLD}交換券"
     itemmeta.addEnchant(Enchantment.PROTECTION_FIRE, 1, false)
     itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
     exchangeticket.itemMeta = itemmeta
@@ -2932,7 +2932,7 @@ when (itemstackcurrent.type) {
     }
     if (count > 0) {
       player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      player.sendMessage(GREEN.toString() + "交換券の付与が終わりました")
+      player.sendMessage("${GREEN}交換券の付与が終わりました")
     }
 
     /*
