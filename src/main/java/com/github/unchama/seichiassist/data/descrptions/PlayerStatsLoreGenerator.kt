@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.data.descrptions
 import com.github.unchama.seichiassist.LevelThresholds
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.text.Templates
 import com.github.unchama.seichiassist.text.WarningsGenerator
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
@@ -38,7 +37,12 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
               totalChainLoginDaysDescription()
           ),
           totalChainVoteDaysDescription(),
-          Templates.playerInfoDescrpition,
+          listOf(
+              "$DARK_GRAY※1分毎に更新",
+              "${GREEN}統計データは",
+              "${GREEN}各サバイバルサーバー間で",
+              "${GREEN}共有されます"
+          ),
           expBarDescription()
       ).flatten()
     }
@@ -131,7 +135,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    */
   private fun totalChainVoteDaysDescription(): List<String> =
       if (playerData.ChainVote > 0)
-        listOf("連続投票日数：${playerData.ChainVote}日")
+        listOf("$RESET${GRAY}連続投票日数：${playerData.ChainVote}日")
       else
         emptyList()
 
