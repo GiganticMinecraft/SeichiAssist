@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class MinuteTaskRunnable extends BukkitRunnable {
-	private final HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
+	private final HashMap<UUID, PlayerData> playermap = BuildAssist.Companion.getPlayermap();
 
 	@Override
 	public void run() {
@@ -30,12 +30,12 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 				//経験値変更用のクラスを設定
 				final IExperienceManager expman = new ExperienceManager(player);
 
-				final int minus = -BuildAssist.config.getFlyExp();
+				final int minus = -BuildAssist.Companion.getConfig().getFlyExp();
 
 				//1分間の建築量を加算する
 
-				if(playerdata.build_num_1min.doubleValue() > BuildAssist.config.getBuildNum1minLimit()){
-					playerdata.totalbuildnum = playerdata.totalbuildnum.add(new BigDecimal(BuildAssist.config.getBuildNum1minLimit()));
+				if(playerdata.build_num_1min.doubleValue() > BuildAssist.Companion.getConfig().getBuildNum1minLimit()){
+					playerdata.totalbuildnum = playerdata.totalbuildnum.add(new BigDecimal(BuildAssist.Companion.getConfig().getBuildNum1minLimit()));
 				}else{
 					playerdata.totalbuildnum = playerdata.totalbuildnum.add(playerdata.build_num_1min);
 				}
@@ -47,7 +47,7 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 					if (playerdata_s.getIdleMinute() >= 10) {
 						player.setAllowFlight(true);
 						player.sendMessage(ChatColor.GRAY + "放置時間中のFLYは無期限で継続中です(経験値は消費しません)");
-					} else if (!expman.hasExp(BuildAssist.config.getFlyExp())) {
+					} else if (!expman.hasExp(BuildAssist.Companion.getConfig().getFlyExp())) {
 						player.sendMessage(ChatColor.RED
 								+ "Fly効果の発動に必要な経験値が不足しているため、");
 						player.sendMessage(ChatColor.RED + "Fly効果を終了しました");
@@ -71,7 +71,7 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 						playerdata.flyflag = false;
 						player.setAllowFlight(false);
 						player.setFlying(false);
-					} else if (!expman.hasExp(BuildAssist.config.getFlyExp())) {
+					} else if (!expman.hasExp(BuildAssist.Companion.getConfig().getFlyExp())) {
 						player.sendMessage(ChatColor.RED
 								+ "Fly効果の発動に必要な経験値が不足しているため、");
 						player.sendMessage(ChatColor.RED + "Fly効果を終了しました");

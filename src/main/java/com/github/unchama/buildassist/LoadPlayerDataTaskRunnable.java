@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 
 
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
-	private final HashMap<UUID,PlayerData> playermap = BuildAssist.playermap;
+	private final HashMap<UUID,PlayerData> playermap = BuildAssist.Companion.getPlayermap();
 	private final Player p;
 	private final UUID uuid;
 	private int retryCount;

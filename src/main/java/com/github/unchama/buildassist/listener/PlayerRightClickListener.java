@@ -35,7 +35,7 @@ public class PlayerRightClickListener implements Listener  {
 
 	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void onPlayerMenuUIEvent(final PlayerInteractEvent event){
+	public void onEvent(final PlayerInteractEvent event) {
 		//プレイヤーを取得
 		final Player player = event.getPlayer();
 		//UUID取得
@@ -47,13 +47,12 @@ public class PlayerRightClickListener implements Listener  {
 		//アクションを起こした手を取得
 		final EquipmentSlot equipmentslot = event.getHand();
 		//プレイヤーデータ
-		final PlayerData playerdata = BuildAssist.playermap.get(uuid);
-		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
-
+		final PlayerData playerdata = BuildAssist.Companion.getPlayermap().get(uuid);
 		//プレイヤーデータが無い場合は処理終了
-		if(playerdata == null){
+		if(playerdata == null) {
 			return;
 		}
+		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 		if(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK){
 			//左クリックの処理
@@ -74,7 +73,7 @@ public class PlayerRightClickListener implements Listener  {
 				final ItemStack offhanditem = inventory.getItemInOffHand();
 
 				//オフハンドにブロックがあるか
-				final boolean offhandtoolflag = BuildAssist.materiallist.contains(offhanditem.getType());
+				final boolean offhandtoolflag = BuildAssist.Companion.getMateriallist().contains(offhanditem.getType());
 
 
 				//場合分け
@@ -83,32 +82,11 @@ public class PlayerRightClickListener implements Listener  {
 					if(!playerdata.ZoneSetSkillFlag){
 						return;
 					}
-					//オフハンドの時
-
-					//Location playerloc = player.getLocation();
-					//Block block = player.getWorld().getBlockAt(playerloc.getBlockX(), playerloc.getBlockY() -1 , playerloc.getBlockZ());
 
 					//プレイヤーの足の座標を取得
 					final int playerlocx = player.getLocation().getBlockX();
 					final int playerlocy = player.getLocation().getBlockY();
 					final int playerlocz = player.getLocation().getBlockZ();
-
-					/*Coordinate start,end;
-					Block placelocblock;
-
-					start = new Coordinate(-3,-4,-3);
-					end = new Coordinate(3,4,3);
-
-
-					for(int x = start.x ; x < end.x ; x++){
-						for(int z = start.z ; z < end.z ; z++){
-							for(int y = start.y ; y < end.y; y++){
-								placelocblock = block.getRelative(x, y, z);
-
-							}
-						}
-					}
-					*/
 
 					//スキルの範囲設定用
 					final int AREAint = playerdata.AREAint ;
@@ -128,7 +106,7 @@ public class PlayerRightClickListener implements Listener  {
 					int Y2 = 256 ;
 
 					//スキル発動条件を満たすか
-					boolean SetReady = false ;
+					boolean skillInvokable = false ;
 
 					//
 					int block_cnt = 0;
@@ -137,18 +115,18 @@ public class PlayerRightClickListener implements Listener  {
 					int no = -1;
 
 					//オフハンドアイテムと、範囲内のブロックに一致する物があるかどうか判別
-					//同じ物がない場合・同じ物が3か所以上のY軸で存在する場合→SetReady = false
-					for(;searchY < playerlocy + 2 ;){
+					//同じ物がない場合・同じ物が3か所以上のY軸で存在する場合→skillInvokable = false
+					while (searchY < playerlocy + 2) {
 						if(offhanditem.getType() == player.getWorld().getBlockAt(searchX,searchY,searchZ).getType()&&
 							offhanditem.getData().getData() == player.getWorld().getBlockAt(searchX,searchY,searchZ).getData()){
 
 							if(Y1 == searchY || Y1 == 256){
 								Y1 = searchY ;
-								SetReady = true ;
+								skillInvokable = true ;
 							}else if(Y2 == searchY || Y2 == 256){
 								Y2 = searchY ;
 							}else {
-								SetReady = false ;
+								skillInvokable = false ;
 								player.sendMessage(ChatColor.RED + "範囲内に「オフハンドと同じブロック」が多すぎます。(Y軸2つ分以内にして下さい)");
 								break;
 							}
@@ -162,21 +140,20 @@ public class PlayerRightClickListener implements Listener  {
 								searchZ = searchZ - SEARCHintB ;
 								searchY ++ ;
 							}
-
 						}
 					}
 
 					if(Y1 == 256){
 						player.sendMessage(ChatColor.RED + "範囲内に「オフハンドと同じブロック」を設置してください。(基準になります)");
-						SetReady = false ;
+						skillInvokable = false;
 					}
 
 					//上の処理で「スキル条件を満たしていない」と判断された場合、処理終了
-					if(!SetReady){
+					if(!skillInvokable) {
 						player.sendMessage(ChatColor.RED + "発動条件が満たされませんでした。");
 					}
 
-					if(SetReady){
+					if(skillInvokable){
 				        //実際に範囲内にブロックを設置する処理
 						//設置範囲の基準となる座標
 						int setblockX = playerlocx - AREAint ;
@@ -231,44 +208,41 @@ public class PlayerRightClickListener implements Listener  {
 									break;
 								}else {
 									//ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
-									if(playerdata.zs_minestack_flag)minestack:{//label指定は基本的に禁じ手だが、今回は後付けなので使わせてもらう。(解読性向上のため、1箇所のみの利用)
+									if(playerdata.zs_minestack_flag) {
 										//no:設置するブロック・max:設置できる最大量
 										final List<MineStackObj> i1 = MineStackObjectList.INSTANCE.getMinestacklist();
 										no = IntStream.range(0, MineStackObjectList.INSTANCE.getMinestacklist().size())
 												.filter(cnt ->
 														offhanditem.getType() == i1.get(cnt).getMaterial() &&
-														offhanditem.getData().getData() == i1.get(cnt).getDurability()
+																offhanditem.getData().getData() == i1.get(cnt).getDurability()
 												)
 												.findFirst()
 												.orElse(no);
-										if(no > 0){
+										if (no > 0) {
 											//設置するブロックがMineStackに登録済み
 											//1引く
 											final MineStackObj mineStackObj = MineStackObjectList.INSTANCE.getMinestacklist().get(no);
-											if(playerdata_s.getMinestack().getStackedAmountOf(mineStackObj) > 0){
+											if (playerdata_s.getMinestack().getStackedAmountOf(mineStackObj) > 0) {
 												//player.sendMessage("MineStackよりブロック消費");
 												//player.sendMessage("MineStackブロック残量(前):" + playerdata_s.getMinestack().getNum(no));
 												playerdata_s.getMinestack().subtractStackedAmountOf(mineStackObj, 1);
 												//player.sendMessage("MineStackブロック残量(後):" + playerdata_s.getMinestack().getNum(no));
 
 												//設置処理
-												player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).setType(offhanditem.getType());
-												player.getWorld().getBlockAt(setblockX,setblockY,setblockZ).setData(offhanditem.getData().getData());
+												player.getWorld().getBlockAt(setblockX, setblockY, setblockZ).setType(offhanditem.getType());
+												player.getWorld().getBlockAt(setblockX, setblockY, setblockZ).setData(offhanditem.getData().getData());
 
 												//ブロックカウント
 												block_cnt++;
 
 												//あとの設定
-												setblockX ++ ;
+												setblockX++;
 
-												if(setblockX > playerlocx + AREAint){
-													setblockX = setblockX - AREAintB ;
-													setblockZ ++ ;
+												if (setblockX > playerlocx + AREAint) {
+													setblockX = setblockX - AREAintB;
+													setblockZ++;
 												}
 												continue;
-											}else{
-												//player.sendMessage("MineStackのブロックがありません。インベントリより消費します。");
-												break minestack;//minestack処理はなかったことにして次のfor分に飛ぶ。(label:minestackだけから抜ける)
 											}
 										}
 									}
@@ -276,7 +250,7 @@ public class PlayerRightClickListener implements Listener  {
 
 								//インベントリの左上から一つずつ確認する。
 								//※一度「該当アイテムなし」と判断したスロットは次回以降スキップする様に組んであるゾ
-									for(; searchedInv < 36 ;){
+									while (searchedInv < 36) {
 										//該当スロットのアイテムデータ取得
 										ItemInInv = player.getInventory().getItem(searchedInv) ;
                                         if (ItemInInv != null) {
@@ -357,7 +331,7 @@ public class PlayerRightClickListener implements Listener  {
 					//player.sendMessage(ChatColor.RED + "敷き詰めスキル：処理終了" ) ;
 
 					if(Util.inTrackedWorld(player)){
-						Util.addBuild1MinAmount(player, new BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag()));	//設置した数を足す
+						Util.addBuild1MinAmount(player, new BigDecimal(block_cnt * BuildAssist.Companion.getConfig().getBlockCountMag()));	//設置した数を足す
 					}
                 }
             }

@@ -1,4 +1,4 @@
-package com.github.unchama.buildassist;
+package com.github.unchama.buildassist.listener;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.github.unchama.buildassist.BuildAssist;
+import com.github.unchama.buildassist.PlayerData;
+import com.github.unchama.buildassist.Util;
 import com.github.unchama.seichiassist.MineStackObjectList;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,20 +27,8 @@ import com.github.unchama.buildassist.util.ExternalPlugins;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import org.jetbrains.annotations.Nullable;
-//import org.bukkit.metadata.FixedMetadataValue;
-//import org.bukkit.plugin.java.JavaPlugin;
-//import com.github.unchama.seichiassist.util.Util;
 
 public class BlockLineUp implements Listener{
-
-//    private JavaPlugin plugin;
-
-//	public void BlockLineUp(JavaPlugin plugin) {
-//		this.plugin = plugin;
-//		plugin.getServer().getPluginManager().registerEvents(this, plugin);
-//	}
-
-
 	@EventHandler
 	public void onPlayerClick(final PlayerInteractEvent e){
 		//プレイヤーを取得
@@ -48,7 +39,7 @@ public class BlockLineUp implements Listener{
 		final Action action = e.getAction();
 		//プレイヤーデータ
 		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
-		final PlayerData playerdata = BuildAssist.playermap.get(uuid);
+		final PlayerData playerdata = BuildAssist.Companion.getPlayermap().get(uuid);
 
 		//プレイヤーデータが無い場合は処理終了
 		if(playerdata == null){
@@ -77,7 +68,7 @@ public class BlockLineUp implements Listener{
 //			player.sendMessage(""+mainhanditem.getAmount());	//持ってる数
 
 			//メインハンドにブロックがあるとき
-			if(BuildAssist.materiallist2.contains(mainhanditem.getType()) || BuildAssist.material_slab2.contains(mainhanditem.getType())) {
+			if(BuildAssist.Companion.getMateriallist2().contains(mainhanditem.getType()) || BuildAssist.Companion.getMaterial_slab2().contains(mainhanditem.getType())) {
 				if(offhanditem.getType() != Material.STICK){//オフハンドに木の棒を持ってるときのみ発動する
 					return;
 				}
@@ -123,7 +114,7 @@ public class BlockLineUp implements Listener{
 						step_x = 1;
 					}
 				}
-				final double mana_mag = BuildAssist.config.getblocklineupmana_mag();
+				final double mana_mag = BuildAssist.Companion.getConfig().getblocklineupmana_mag();
 
 				int max = mainhanditem.getAmount();//メインハンドのアイテム数を最大値に
 				//マインスタック優先の場合最大値をマインスタックの数を足す
@@ -153,7 +144,7 @@ public class BlockLineUp implements Listener{
 
 				//手に持ってるのがハーフブロックの場合
 				Material m2 = null;
-				if(BuildAssist.material_slab2.contains(m)){
+				if(BuildAssist.Companion.getMaterial_slab2().contains(m)){
 					if(playerdata.line_up_step_flg == 0) {
 						d += 8;	//上設置設定の場合は上側のデータに書き換え
 					} else if(playerdata.line_up_step_flg == 2) {
@@ -182,7 +173,7 @@ public class BlockLineUp implements Listener{
 
 					//空気以外にぶつかったら設置終わり
 					if (b.getType() != Material.AIR){
-						if(!BuildAssist.material_destruction.contains(b.getType()) || playerdata.line_up_des_flg == 0){
+						if(!BuildAssist.Companion.getMaterial_destruction().contains(b.getType()) || playerdata.line_up_des_flg == 0){
 							break;
 						}
 						final Collection<ItemStack> i = b.getDrops();
@@ -206,7 +197,7 @@ public class BlockLineUp implements Listener{
 				v *= double_mag;	//ハーフ2段重ねの場合は2倍
 				//カウント対象ワールドの場合カウント値を足す
 				if(Util.inTrackedWorld(player)){	//対象ワールドかチェック
-					Util.addBuild1MinAmount(player, new BigDecimal(v * BuildAssist.config.getBlockCountMag()));	//設置した数を足す
+					Util.addBuild1MinAmount(player, new BigDecimal(v * BuildAssist.Companion.getConfig().getBlockCountMag()));	//設置した数を足す
 				}
 
 				//マインスタック優先の場合マインスタックの数を減らす

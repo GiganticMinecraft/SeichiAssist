@@ -28,7 +28,7 @@ import java.util.UUID;
 import static com.github.unchama.buildassist.PowerOf10.getPower10;
 
 public class PlayerInventoryListener implements Listener {
-	HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
+	HashMap<UUID, PlayerData> playermap = BuildAssist.Companion.getPlayermap();
 
 	/*
 	//プレイヤーが4次元ポケットを閉じた時に実行
@@ -132,7 +132,7 @@ public class PlayerInventoryListener implements Listener {
 			} else if (itemstackcurrent.getType() == Material.STONE){
 				//範囲設置スキル ON/OFF
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				if(playerdata.level < BuildAssist.config.getZoneSetSkillLevel() ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getZoneSetSkillLevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 					if(!playerdata.ZoneSetSkillFlag){
@@ -150,14 +150,14 @@ public class PlayerInventoryListener implements Listener {
 			} else if (itemstackcurrent.getType() == Material.SKULL_ITEM && itemstackcurrent.getItemMeta().getDisplayName().contains("「範囲設置スキル」設定画面へ")){
 				//範囲設置スキル設定画面を開く
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
-				if(playerdata.level < BuildAssist.config.getblocklineuplevel() ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getblocklineuplevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
 				}
 			} else if (itemstackcurrent.getType() == Material.WOOD){
 				//ブロックを並べるスキル設定
-				if(playerdata.level < BuildAssist.config.getblocklineuplevel() ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getblocklineuplevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -166,7 +166,7 @@ public class PlayerInventoryListener implements Listener {
 					}else{
 						playerdata.line_up_flg++;
 					}
-					player.sendMessage(ChatColor.GREEN + "ブロックを並べるスキル（仮） ：" + BuildAssist.line_up_str[playerdata.line_up_flg] ) ;
+					player.sendMessage(ChatColor.GREEN + "ブロックを並べるスキル（仮） ：" + BuildAssist.Companion.getLine_up_str()[playerdata.line_up_flg] ) ;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					player.openInventory(MenuInventoryData.getMenuData(player));
 				}
@@ -253,7 +253,7 @@ public class PlayerInventoryListener implements Listener {
 				//範囲設置スキル ON/OFF
 				//範囲設置スキル ON/OFF
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				if(playerdata.level < BuildAssist.config.getZoneSetSkillLevel() ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getZoneSetSkillLevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 					if(!playerdata.ZoneSetSkillFlag) {
@@ -283,7 +283,7 @@ public class PlayerInventoryListener implements Listener {
 			}else if(itemstackcurrent.getType() == Material.CHEST){
 				//MineStack優先設定
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				if(playerdata.level < BuildAssist.config.getZoneskillMinestacklevel()){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getZoneskillMinestacklevel()){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 					if(playerdata.zs_minestack_flag){
@@ -354,7 +354,7 @@ public class PlayerInventoryListener implements Listener {
 				player.openInventory(MenuInventoryData.getMenuData(player));
 			} else if (type == Material.WOOD){
 				//ブロックを並べるスキル設定
-				if(playerdata.level < BuildAssist.config.getblocklineuplevel() ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getblocklineuplevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -363,7 +363,7 @@ public class PlayerInventoryListener implements Listener {
 					}else{
 						playerdata.line_up_flg++;
 					}
-					player.sendMessage(ChatColor.GREEN + "ブロックを並べるスキル（仮） ：" + BuildAssist.line_up_str[playerdata.line_up_flg] ) ;
+					player.sendMessage(ChatColor.GREEN + "ブロックを並べるスキル（仮） ：" + BuildAssist.Companion.getLine_up_str()[playerdata.line_up_flg] ) ;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 				}
@@ -375,24 +375,24 @@ public class PlayerInventoryListener implements Listener {
 				}else{
 					playerdata.line_up_step_flg++;
 				}
-				player.sendMessage(ChatColor.GREEN + "ハーフブロック設定 ：" + BuildAssist.line_up_step_str[playerdata.line_up_step_flg] ) ;
+				player.sendMessage(ChatColor.GREEN + "ハーフブロック設定 ：" + BuildAssist.Companion.getLine_up_step_str()[playerdata.line_up_step_flg] ) ;
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 
 			} else if (type == Material.TNT){
 				//ブロックを並べるスキル一部ブロックを破壊して並べる設定
 				playerdata.line_up_des_flg ^= 1;
-				player.sendMessage(ChatColor.GREEN + "破壊設定 ：" + BuildAssist.line_up_off_on_str[playerdata.line_up_des_flg] ) ;
+				player.sendMessage(ChatColor.GREEN + "破壊設定 ：" + BuildAssist.Companion.getLine_up_off_on_str()[playerdata.line_up_des_flg] ) ;
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 				player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 
 			} else if (type == Material.CHEST){
 				//マインスタックの方を優先して消費する設定
-				if(playerdata.level < BuildAssist.config.getblocklineupMinestacklevel() ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getblocklineupMinestacklevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 					playerdata.line_up_minestack_flg ^= 1;
-					player.sendMessage(ChatColor.GREEN + "マインスタック優先設定 ：" + BuildAssist.line_up_off_on_str[playerdata.line_up_minestack_flg] ) ;
+					player.sendMessage(ChatColor.GREEN + "マインスタック優先設定 ：" + BuildAssist.Companion.getLine_up_off_on_str()[playerdata.line_up_minestack_flg] ) ;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					player.openInventory(MenuInventoryData.getBlockLineUpData(player));
 				}
@@ -459,7 +459,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//石を石ハーフブロックに変換10～10万
 			} else if (itemstackcurrent.getType() == Material.STEP){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(1) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(1) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -484,7 +484,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//石を石レンガに変換10～10万
 			} else if (itemstackcurrent.getType() == Material.SMOOTH_BRICK){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(1) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(1) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -510,7 +510,7 @@ public class PlayerInventoryListener implements Listener {
 			} else if (itemstackcurrent.getType() == Material.STONE && (itemstackcurrent.getDurability() == 2 ) ){
 //				player.sendMessage(ChatColor.RED + "data:"+itemstackcurrent.getDurability() );
 
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -534,7 +534,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//閃緑岩を磨かれた閃緑岩に変換10～1万
 			} else if (itemstackcurrent.getType() == Material.STONE && (itemstackcurrent.getDurability() == 4 ) ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -558,7 +558,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//安山岩を磨かれた安山岩に変換10～1万
 			} else if (itemstackcurrent.getType() == Material.STONE && (itemstackcurrent.getDurability() == 6 ) ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -582,7 +582,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//ネザー水晶をネザー水晶ブロックに変換10～1万
 			} else if (itemstackcurrent.getType() == Material.QUARTZ_BLOCK){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -608,7 +608,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//レンガをレンガブロックに変換10～1万
 			} else if (itemstackcurrent.getType() == Material.BRICK){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -633,7 +633,7 @@ public class PlayerInventoryListener implements Listener {
 				}
 				//ネザーレンガをネザーレンガブロックに変換10～1万
 			} else if (itemstackcurrent.getType() == Material.NETHER_BRICK){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -720,7 +720,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//雪玉を雪（ブロック）に変換10～1万
 			} else if (type == Material.SNOW_BLOCK){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -746,7 +746,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//ネザーウォートとネザーレンガを赤いネザーレンガに変換10～10万
 			} else if (type == Material.RED_NETHER_BRICK){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -776,7 +776,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//石炭を消費して鉄鉱石を鉄インゴットに変換4～4000
 			} else if (type == Material.IRON_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
@@ -802,7 +802,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//溶岩バケツを消費して鉄鉱石を鉄インゴットに変換50～5万
 			} else if (type == Material.IRON_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 					com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
@@ -830,7 +830,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//石炭を消費して金鉱石を金インゴットに変換4～4000
 			} else if (type == Material.GOLD_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -856,7 +856,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//溶岩バケツを消費して金鉱石を金インゴットに変換50～5万
 			} else if (type == Material.GOLD_INGOT && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -885,7 +885,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//石炭を消費して砂をガラスに変換4～4000
 			} else if (type == Material.GLASS && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -915,7 +915,7 @@ public class PlayerInventoryListener implements Listener {
 				 * 50から10倍で5万まで
 				 */
 			} else if (type == Material.GLASS && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -946,7 +946,7 @@ public class PlayerInventoryListener implements Listener {
 				 * 4から10倍で4000まで
 				 */
 			} else if (type == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -975,7 +975,7 @@ public class PlayerInventoryListener implements Listener {
 				 * 50から10倍で5万まで
 				 */
 			} else if (type == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -1061,7 +1061,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//石炭を消費して粘土をレンガに変換4～4000
 			} else if (itemstackcurrent.getType() == Material.CLAY_BRICK && itemstackcurrent.getItemMeta().getDisplayName().contains("石炭") ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
@@ -1087,7 +1087,7 @@ public class PlayerInventoryListener implements Listener {
 
 				//溶岩バケツを消費して粘土をレンガに変換50～5万
 			} else if (itemstackcurrent.getType() == Material.CLAY_BRICK && itemstackcurrent.getItemMeta().getDisplayName().contains("溶岩") ){
-				if(playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3) ){
+				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 

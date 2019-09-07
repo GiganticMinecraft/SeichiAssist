@@ -13,7 +13,7 @@ public class PlayerJoinListener implements Listener {
     public void onplayerJoinEvent(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         //DBからデータを読み込むのを待ってから初期化
-        new LoadPlayerDataTaskRunnable(player).runTaskTimerAsynchronously(BuildAssist.plugin, 0, 20);
+        new LoadPlayerDataTaskRunnable(player).runTaskTimerAsynchronously(BuildAssist.Companion.getPlugin(), 0, 20);
 
     }
 }

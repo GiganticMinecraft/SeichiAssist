@@ -36,7 +36,7 @@ public final class FlyCommand implements CommandExecutor {
             //UUIDを取得
             final UUID uuid = player.getUniqueId();
             //playerdataを取得
-            final PlayerData playerdata = BuildAssist.playermap.get(uuid);
+            final PlayerData playerdata = BuildAssist.Companion.getPlayermap().get(uuid);
             //プレイヤーデータが無い場合は処理終了
             if (playerdata == null) {
                 return false;
@@ -57,9 +57,9 @@ public final class FlyCommand implements CommandExecutor {
                         + "fly効果を停止しました。");
             } else if (query.equalsIgnoreCase("endless")) {
 
-                if (!expman.hasExp(BuildAssist.config.getFlyExp())) {
+                if (!expman.hasExp(BuildAssist.Companion.getConfig().getFlyExp())) {
                     sender.sendMessage(ChatColor.GREEN
-                            + "所持している経験値が、必要経験値量(" + BuildAssist.config.getFlyExp() + ")に達していません。");
+                            + "所持している経験値が、必要経験値量(" + BuildAssist.Companion.getConfig().getFlyExp() + ")に達していません。");
                 } else {
                     playerdata.flyflag = true;
                     playerdata.endlessfly = true;
@@ -76,9 +76,9 @@ public final class FlyCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.GREEN
                             + "時間指定の数値は「1」以上の整数で行ってください。");
                     return true;
-                } else if (!expman.hasExp(BuildAssist.config.getFlyExp())) {
+                } else if (!expman.hasExp(BuildAssist.Companion.getConfig().getFlyExp())) {
                     sender.sendMessage(ChatColor.GREEN
-                            + "所持している経験値が、必要経験値量(" + BuildAssist.config.getFlyExp() + ")に達していません。");
+                            + "所持している経験値が、必要経験値量(" + BuildAssist.Companion.getConfig().getFlyExp() + ")に達していません。");
                 } else {
                     if (endlessFly) {
                         sender.sendMessage(ChatColor.GREEN

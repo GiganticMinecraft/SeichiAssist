@@ -28,7 +28,7 @@ public final class MenuInventoryData {
 		//UUID取得
 		final UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
-		final PlayerData playerdata = BuildAssist.playermap.get(uuid);
+		final PlayerData playerdata = BuildAssist.Companion.getPlayermap().get(uuid);
 		//プレイヤーデータが無い場合は処理終了
 		if(playerdata == null){
 			return null;
@@ -112,7 +112,7 @@ public final class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "FLY機能、ON" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "(1分)");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.YELLOW + "クリックすると以降1分間に渡り"
 				, ChatColor.RESET + "" + ChatColor.YELLOW + "経験値を消費しつつFLYが可能になります。"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "必要経験値量：毎分 "+BuildAssist.config.getFlyExp());
+				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "必要経験値量：毎分 "+ BuildAssist.Companion.getConfig().getFlyExp());
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(3,itemstack);
@@ -123,7 +123,7 @@ public final class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "FLY機能、ON" + ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "(5分)");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.YELLOW + "クリックすると以降5分間に渡り"
 				, ChatColor.RESET + "" + ChatColor.YELLOW + "経験値を消費しつつFLYが可能になります。"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "必要経験値量：毎分 "+BuildAssist.config.getFlyExp());
+				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "必要経験値量：毎分 "+ BuildAssist.Companion.getConfig().getFlyExp());
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(4,itemstack);
@@ -134,7 +134,7 @@ public final class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "FLY機能、ON" + ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "(無制限)");
 		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.YELLOW + "クリックすると以降OFFにするまで"
 				, ChatColor.RESET + "" + ChatColor.YELLOW + "経験値を消費しつつFLYが可能になります。"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "必要経験値量：毎分 "+BuildAssist.config.getFlyExp());
+				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "必要経験値量：毎分 "+ BuildAssist.Companion.getConfig().getFlyExp());
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(5,itemstack);
@@ -158,7 +158,7 @@ public final class MenuInventoryData {
 				, ChatColor.RESET + "" + ChatColor.YELLOW + "オフハンドに持っているブロックと同じ物を"
 				, ChatColor.RESET + "" + ChatColor.YELLOW  + "インベントリ内から消費し設置します。"
 				, ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "＜クリックでON/OFF切り替え＞"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getZoneSetSkillLevel() + "以上で利用可能");
+				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getZoneSetSkillLevel() + "以上で利用可能");
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(18,itemstack);
@@ -181,10 +181,10 @@ public final class MenuInventoryData {
 		//ブロックを並べるスキル設定
 		itemstack = new ItemStack(Material.WOOD,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブロックを並べるスキル（仮） ：" + BuildAssist.line_up_str[playerdata.line_up_flg]);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブロックを並べるスキル（仮） ：" + BuildAssist.Companion.getLine_up_str()[playerdata.line_up_flg]);
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "オフハンドに木の棒、メインハンドに設置したいブロックを持って"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "左クリックすると向いてる方向に並べて設置します。"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getblocklineuplevel() + "以上で利用可能"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getblocklineuplevel() + "以上で利用可能"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "クリックで切り替え"
 //				, ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "※スキル発動時にマナを消費します。 最大消費マナ："+(BuildAssist.config.getblocklineupmana_mag()*64)
 
@@ -199,10 +199,10 @@ public final class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「ブロックを並べるスキル（仮） 」設定画面へ");
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "現在の設定"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "スキル設定 ：" + BuildAssist.line_up_str[playerdata.line_up_flg]
-				, ChatColor.RESET + "" + ChatColor.GRAY + "ハーフブロック設定 ：" + BuildAssist.line_up_step_str[playerdata.line_up_step_flg]
-				, ChatColor.RESET + "" + ChatColor.GRAY + "破壊設定 ：" + BuildAssist.line_up_off_on_str[playerdata.line_up_des_flg]
-				, ChatColor.RESET + "" + ChatColor.GRAY + "MineStack優先設定 ：" + BuildAssist.line_up_off_on_str[playerdata.line_up_minestack_flg]
+				, ChatColor.RESET + "" + ChatColor.GRAY + "スキル設定 ：" + BuildAssist.Companion.getLine_up_str()[playerdata.line_up_flg]
+				, ChatColor.RESET + "" + ChatColor.GRAY + "ハーフブロック設定 ：" + BuildAssist.Companion.getLine_up_step_str()[playerdata.line_up_step_flg]
+				, ChatColor.RESET + "" + ChatColor.GRAY + "破壊設定 ：" + BuildAssist.Companion.getLine_up_off_on_str()[playerdata.line_up_des_flg]
+				, ChatColor.RESET + "" + ChatColor.GRAY + "MineStack優先設定 ：" + BuildAssist.Companion.getLine_up_off_on_str()[playerdata.line_up_minestack_flg]
 				);
 		itemmeta.setLore(lore);
 		itemstack.setItemMeta(itemmeta);
@@ -229,7 +229,7 @@ public final class MenuInventoryData {
 		//UUID取得
 		final UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
-		final PlayerData playerdata = BuildAssist.playermap.get(uuid);
+		final PlayerData playerdata = BuildAssist.Companion.getPlayermap().get(uuid);
 
 		final Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "「範囲設置スキル」設定画面");
 		ItemStack itemstack;
@@ -370,7 +370,7 @@ public final class MenuInventoryData {
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack優先設定：" + ZSSkill_Minestack);
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "スキルでブロックを並べるとき"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "MineStackの在庫を優先して消費します。"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getZoneskillMinestacklevel() + "以上で利用可能"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getZoneskillMinestacklevel() + "以上で利用可能"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "クリックで切り替え"
 				);
 		itemmeta.setLore(lore);
@@ -387,7 +387,7 @@ public final class MenuInventoryData {
 		//UUID取得
 		final UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
-		final PlayerData playerdata = BuildAssist.playermap.get(uuid);
+		final PlayerData playerdata = BuildAssist.Companion.getPlayermap().get(uuid);
 
 		final Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "「ブロックを並べるスキル（仮）」設定");
 		ItemStack itemstack;
@@ -410,10 +410,10 @@ public final class MenuInventoryData {
 		//ブロックを並べるスキル設定
 		itemstack = new ItemStack(Material.WOOD,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブロックを並べるスキル（仮） ：" + BuildAssist.line_up_str[playerdata.line_up_flg]);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブロックを並べるスキル（仮） ：" + BuildAssist.Companion.getLine_up_str()[playerdata.line_up_flg]);
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "オフハンドに木の棒、メインハンドに設置したいブロックを持って"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "左クリックすると向いてる方向に並べて設置します。"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getblocklineuplevel() + "以上で利用可能"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getblocklineuplevel() + "以上で利用可能"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "クリックで切り替え"
 //				, ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "※スキル発動時にマナを消費します。 最大消費マナ："+(BuildAssist.config.getblocklineupmana_mag()*64)
 
@@ -425,7 +425,7 @@ public final class MenuInventoryData {
 		//ブロックを並べるスキルハーフブロック設定
 		itemstack = new ItemStack(Material.STEP,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STEP);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ハーフブロック設定 ：" + BuildAssist.line_up_step_str[playerdata.line_up_step_flg]);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ハーフブロック設定 ：" + BuildAssist.Companion.getLine_up_step_str()[playerdata.line_up_step_flg]);
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "ハーフブロックを並べる時の位置を決めます。"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "クリックで切り替え"
 				);
@@ -436,7 +436,7 @@ public final class MenuInventoryData {
 		//ブロックを並べるスキル一部ブロックを破壊して並べる設定
 		itemstack = new ItemStack(Material.TNT,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.TNT);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "破壊設定 ：" + BuildAssist.line_up_off_on_str[playerdata.line_up_des_flg]);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "破壊設定 ：" + BuildAssist.Companion.getLine_up_off_on_str()[playerdata.line_up_des_flg]);
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "ブロックを並べるとき特定のブロックを破壊して並べます。"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "破壊対象ブロック：草,花,水,雪,松明,きのこ"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "クリックで切り替え"
@@ -448,10 +448,10 @@ public final class MenuInventoryData {
 		//MineStackの方を優先して消費する設定
 		itemstack = new ItemStack(Material.CHEST,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHEST);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack優先設定 ：" + BuildAssist.line_up_off_on_str[playerdata.line_up_minestack_flg]);
+		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack優先設定 ：" + BuildAssist.Companion.getLine_up_off_on_str()[playerdata.line_up_minestack_flg]);
 		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "スキルでブロックを並べるとき"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "MineStackの在庫を優先して消費します。"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getblocklineupMinestacklevel() + "以上で利用可能"
+				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getblocklineupMinestacklevel() + "以上で利用可能"
 				, ChatColor.RESET + "" + ChatColor.GRAY + "クリックで切り替え"
 				);
 		itemmeta.setLore(lore);
@@ -508,7 +508,7 @@ public final class MenuInventoryData {
 			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "石"+ p10 +"個→石ハーフブロック"+ (p10 * 2) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石ハーフブロックの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(1) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(1) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -528,7 +528,7 @@ public final class MenuInventoryData {
 			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "石"+ p10 +"個→石レンガ"+ (p10) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石レンガの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(1) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(1) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -547,7 +547,7 @@ public final class MenuInventoryData {
 			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "花崗岩"+ p10 +"個→磨かれた花崗岩"+ (p10) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "花崗岩の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "磨かれた花崗岩の数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -566,7 +566,7 @@ public final class MenuInventoryData {
 			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "閃緑岩"+ p10 +"個→磨かれた閃緑岩"+ (p10) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "閃緑岩の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "磨かれた閃緑岩の数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -585,7 +585,7 @@ public final class MenuInventoryData {
 			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "安山岩"+ p10 +"個→磨かれた安山岩"+ (p10) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "安山岩の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "磨かれた安山岩の数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -604,7 +604,7 @@ public final class MenuInventoryData {
 			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "ネザー水晶"+ (p10 * 4) +"個→ネザー水晶ブロック"+ (p10) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザー水晶の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザー水晶ブロックの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -623,7 +623,7 @@ public final class MenuInventoryData {
 			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "レンガ"+ (p10 * 4) +"個→レンガブロック"+ (p10) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "レンガの数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "レンガブロックの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -642,7 +642,7 @@ public final class MenuInventoryData {
 			lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "ネザーレンガ"+ (p10 * 4) +"個→ネザーレンガブロック"+ (p10) +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーレンガの数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーレンガブロックの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -699,7 +699,7 @@ public final class MenuInventoryData {
 			lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.GRAY + "雪玉"+ (p10 * 4) +"個→雪（ブロック）"+ p10 +"個"
 					, ChatColor.RESET + "" + ChatColor.GRAY + "雪玉の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "雪（ブロック）の数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -721,7 +721,7 @@ public final class MenuInventoryData {
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーウォートの数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーレンガの数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "赤いネザーレンガの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(2) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -742,7 +742,7 @@ public final class MenuInventoryData {
 					, ChatColor.RESET + "" + ChatColor.GRAY + "鉄鉱石の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石炭の数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "鉄インゴットの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -763,7 +763,7 @@ public final class MenuInventoryData {
 					, ChatColor.RESET + "" + ChatColor.GRAY + "鉄鉱石の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "溶岩バケツの数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "鉄インゴットの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -784,7 +784,7 @@ public final class MenuInventoryData {
 					, ChatColor.RESET + "" + ChatColor.GRAY + "金鉱石の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石炭の数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "金インゴットの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -805,7 +805,7 @@ public final class MenuInventoryData {
 					, ChatColor.RESET + "" + ChatColor.GRAY + "金鉱石の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "溶岩バケツの数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "金インゴットの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -826,7 +826,7 @@ public final class MenuInventoryData {
 					, ChatColor.RESET + "" + ChatColor.GRAY + "砂の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石炭の数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ガラスの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -847,7 +847,7 @@ public final class MenuInventoryData {
 					, ChatColor.RESET + "" + ChatColor.GRAY + "砂の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "溶岩バケツの数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ガラスの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -868,7 +868,7 @@ public final class MenuInventoryData {
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーラックの数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石炭の数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーレンガの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -889,7 +889,7 @@ public final class MenuInventoryData {
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーラックの数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "溶岩バケツの数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "ネザーレンガの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -936,7 +936,7 @@ public final class MenuInventoryData {
 					, ChatColor.RESET + "" + ChatColor.GRAY + "粘土の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "石炭の数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "レンガの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);
@@ -957,7 +957,7 @@ public final class MenuInventoryData {
 					, ChatColor.RESET + "" + ChatColor.GRAY + "粘土の数:" + String.format("%,d",num_1)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "溶岩バケツの数:" + String.format("%,d",num_3)
 					, ChatColor.RESET + "" + ChatColor.GRAY + "レンガの数:" + String.format("%,d",num_2)
-					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能"
+					, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) + "以上で利用可能"
 					, ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
 					);
 			itemmeta.setLore(lore);

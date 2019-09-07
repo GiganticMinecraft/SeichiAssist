@@ -15,7 +15,7 @@ import java.util.UUID;
 
 
 public class PlayerQuitListener implements TypedEventListener<PlayerQuitEvent> {
-    private final HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
+    private final HashMap<UUID, PlayerData> playermap = BuildAssist.Companion.getPlayermap();
 
     //プレイヤーがquitした時に実行
     //SeichiAssistより先に実行させるために優先付け
