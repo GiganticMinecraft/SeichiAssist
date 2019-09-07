@@ -1,4 +1,3 @@
-/*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package com.github.unchama.buildassist;
 
 import java.math.BigDecimal;
@@ -98,7 +97,7 @@ public final class Util {
 	/**
 	 * 指定した名前のマインスタックオブジェクトを返す
 	 */
-	// TODO これはここにあるべきではない
+	// FIXME: これはここにあるべきではない
 	@Deprecated public static @Nullable
 	MineStackObj findMineStackObjectByName(final String name) {
 		return MineStackObjectList.INSTANCE.getMinestacklist().stream()
