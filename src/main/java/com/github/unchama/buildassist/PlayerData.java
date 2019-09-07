@@ -163,7 +163,7 @@ public final class PlayerData {
 	}
 
 	/** 建築系データを保存 */
-	void buildsave(final Player player){
+    public void buildsave(final Player player){
 		final com.github.unchama.seichiassist.data.PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(uuid);
 		if (playerData == null){
 			player.sendMessage(ChatColor.RED+"建築系データ保存失敗しました");

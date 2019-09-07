@@ -14,13 +14,14 @@ import java.util.HashMap;
 import java.util.UUID;
 
 
-public class PlayerQuitListener implements Listener {
+public class PlayerQuitListener implements TypedEventListener<PlayerQuitEvent> {
     private final HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
 
     //プレイヤーがquitした時に実行
     //SeichiAssistより先に実行させるために優先付け
+    @Override
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onplayerQuitEvent(final PlayerQuitEvent event) {
+    public void onEvent(final PlayerQuitEvent event) {
         //退出したplayerを取得
         final Player player = event.getPlayer();
         //プレイヤーのuuidを取得
