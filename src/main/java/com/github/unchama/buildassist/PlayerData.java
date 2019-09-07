@@ -1,4 +1,3 @@
-/*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package com.github.unchama.buildassist;
 
 import com.github.unchama.seichiassist.PackagePrivate;
@@ -30,17 +29,11 @@ public final class PlayerData {
 	@PackagePrivate
 	boolean endlessfly;
 
-	@PackagePrivate
-	public
-	boolean ZoneSetSkillFlag;
+	public boolean ZoneSetSkillFlag;
 
-	@PackagePrivate
-	public
-	boolean zsSkillDirtFlag;
+	public boolean zsSkillDirtFlag;
 
-	@PackagePrivate
-	public
-	int AREAint;
+	public int AREAint;
 
 	/**
 	 * 1分のブロック設置数
@@ -51,24 +44,14 @@ public final class PlayerData {
 	/**
 	 * ブロックを並べるスキル設定フラグ
 	 */
-	@PackagePrivate
-    public
-    int line_up_flg;
-	@PackagePrivate
-	public
-	int line_up_step_flg;
-	@PackagePrivate
-	public
-	int line_up_des_flg;
-	@PackagePrivate
-	public
-	int line_up_minestack_flg;
+    public int line_up_flg;
+	public int line_up_step_flg;
+	public int line_up_des_flg;
+	public int line_up_minestack_flg;
 	/**
 	 * ブロック範囲設置スキル設定フラグ
 	 */
-	@PackagePrivate
-    public
-    boolean zs_minestack_flag;
+    public boolean zs_minestack_flag;
 
 	//プレイヤーデータクラスのコンストラクタ
 	public PlayerData(final Player player){
