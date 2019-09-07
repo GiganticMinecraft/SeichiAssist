@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist
 
-import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands.*

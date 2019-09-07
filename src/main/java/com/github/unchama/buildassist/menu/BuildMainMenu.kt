@@ -1,6 +1,5 @@
 package com.github.unchama.buildassist.menu
 
-import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.buildassist.MenuInventoryData
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
