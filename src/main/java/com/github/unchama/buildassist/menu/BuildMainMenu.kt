@@ -149,7 +149,7 @@ object BuildMainMenu : Menu {
     suspend fun Player.computeButtonToToggleRangedPlaceSkill() = recomputedButton {
       val openerData = BuildAssist.playermap[uniqueId]!!
       val iconItemStack = IconItemStackBuilder(Material.STONE)
-          .title("$GREEN${EMPHASIZE}「範囲設置スキル」現在：${if (openerData.zs_minestack_flag) "ON" else "OFF"}")
+          .title("$GREEN${EMPHASIZE}「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
           .lore(
               "$RESET${YELLOW}「スニーク+左クリック」をすると、",
               "$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
