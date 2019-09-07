@@ -17,7 +17,6 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -28,17 +27,17 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockLineUp implements Listener{
+public class BlockFill implements TypedEventListener<PlayerInteractEvent> {
 	@EventHandler
-	public void onPlayerClick(final PlayerInteractEvent e){
+	@Override
+	public void onEvent(final PlayerInteractEvent e){
 		//プレイヤーを取得
 		final Player player = e.getPlayer();
+
 		//UUID取得
 		final UUID uuid = player.getUniqueId();
-		//プレイヤーが起こしたアクションを取得
-		final Action action = e.getAction();
+
 		//プレイヤーデータ
-		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 		final PlayerData playerdata = BuildAssist.Companion.getPlayermap().get(uuid);
 
 		//プレイヤーデータが無い場合は処理終了
@@ -55,6 +54,10 @@ public class BlockLineUp implements Listener{
 		if(!Util.isSkillEnable(player)){
 			return;
 		}
+
+		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		//プレイヤーが起こしたアクションを取得
+		final Action action = e.getAction();
 		//左クリックの処理
 		if(action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)){
 			//プレイヤーインベントリを取得
