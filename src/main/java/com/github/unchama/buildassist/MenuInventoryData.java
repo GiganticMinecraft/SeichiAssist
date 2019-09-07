@@ -19,211 +19,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
-public final class MenuInventoryData {
-	public static Inventory getMenuData(final Player p) {
-		//プレイヤーを取得
-		final Player player = p.getPlayer();
-		//UUID取得
-		final UUID uuid = player.getUniqueId();
-		//プレイヤーデータ
-		final PlayerData playerdata = BuildAssist.Companion.getPlayermap().get(uuid);
-		//プレイヤーデータが無い場合は処理終了
-		if(playerdata == null){
-			return null;
-		}
+public class MenuInventoryData {
 
-		final Inventory inventory = Bukkit.getServer().createInventory(null,4*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "木の棒メニューB");
-		ItemStack itemstack;
-		ItemMeta itemmeta;
-		SkullMeta skullmeta;
-		List<String> lore = new ArrayList<>();
-
-		//flyflag/flytimeのメニュー表示用変換
-		final String Flyallows ;
-		if(playerdata.flyflag){
-			Flyallows = "ON" ;
-		}else{
-			Flyallows = "OFF" ;
-		}
-		final String FlyTime ;
-		if(playerdata.endlessfly){
-			FlyTime = "∞" ;
-		}else {
-			FlyTime = String.valueOf(playerdata.flytime);
-		}
-
-		final String ZSSkill ;
-		if(playerdata.ZoneSetSkillFlag){
-			ZSSkill = "ON" ;
-		}else {
-			ZSSkill = "OFF" ;
-		}
-
-		final String ZSSkill_Minestack;
-		if(playerdata.zs_minestack_flag){
-			ZSSkill_Minestack = "ON";
-		}else{
-			ZSSkill_Minestack = "OFF";
-		}
-
-
-
-//		int prank = Util.calcPlayerRank(player);
-		itemstack = new ItemStack(Material.SKULL_ITEM,1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-		itemstack.setDurability((short) 3);
-		skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.name + "の統計データ");
-		lore.clear();
-		lore.addAll(Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "建築レベル:" + playerdata.level
-//				, ChatColor.RESET + "" +  ChatColor.AQUA + "次のレベルまで:" + (BuildAssist.levellist.get(playerdata.level + 1).intValue() - playerdata.totalbuildnum)
-				, ChatColor.RESET + "" +  ChatColor.AQUA + "総建築量:" + playerdata.totalbuildnum.doubleValue()
-//				, ChatColor.RESET + "" +  ChatColor.GOLD + "ランキング：" + prank + "位" + ChatColor.RESET + "" +  ChatColor.GRAY + "(" + BuildAssist.ranklist.size() +"人中)"
-
-				));
-		/*
-		if(prank > 1){
-			lore.add(ChatColor.RESET + "" +  ChatColor.AQUA + (prank-1) + "位との差：" + (BuildAssist.ranklist.get(prank-2).intValue() - playerdata.totalbuildnum));
-		}
-		*/
-		lore.add(ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "※1分毎に更新");
-
-		skullmeta.setLore(lore);
-		skullmeta.setOwner(playerdata.name);
-		itemstack.setItemMeta(skullmeta);
-		AsyncInventorySetter.setItemAsync(inventory,0,itemstack);
-
-
-		//FLY 状況表示
-		itemstack = new ItemStack(Material.COOKED_CHICKEN,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COOKED_CHICKEN);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "FLY機能 情報表示");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.AQUA + "" + "FLY 効果："+ Flyallows
-				, ChatColor.RESET + "" + ChatColor.AQUA + "FLY 残り時間："+ FlyTime );
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(2,itemstack);
-
-		//1分限定、FLY ON
-		itemstack = new ItemStack(Material.FEATHER,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.FEATHER);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "FLY機能、ON" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "(1分)");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.YELLOW + "クリックすると以降1分間に渡り"
-				, ChatColor.RESET + "" + ChatColor.YELLOW + "経験値を消費しつつFLYが可能になります。"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "必要経験値量：毎分 "+ BuildAssist.Companion.getConfig().getFlyExp());
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(3,itemstack);
-
-		//5分限定、FLY ON
-		itemstack = new ItemStack(Material.FEATHER,5);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.FEATHER);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "FLY機能、ON" + ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "(5分)");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.YELLOW + "クリックすると以降5分間に渡り"
-				, ChatColor.RESET + "" + ChatColor.YELLOW + "経験値を消費しつつFLYが可能になります。"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "必要経験値量：毎分 "+ BuildAssist.Companion.getConfig().getFlyExp());
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(4,itemstack);
-
-		//エンドレス、FLY ON
-		itemstack = new ItemStack(Material.ELYTRA,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ELYTRA);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "FLY機能、ON" + ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "(無制限)");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.YELLOW + "クリックすると以降OFFにするまで"
-				, ChatColor.RESET + "" + ChatColor.YELLOW + "経験値を消費しつつFLYが可能になります。"
-				, ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "必要経験値量：毎分 "+ BuildAssist.Companion.getConfig().getFlyExp());
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(5,itemstack);
-
-		//FLY 効果 OFF
-		itemstack = new ItemStack(Material.CHAINMAIL_BOOTS,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHAINMAIL_BOOTS);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "FLY機能、OFF");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "クリックすると、残り時間に関わらず"
-				, ChatColor.RESET + "" + ChatColor.RED + "FLYを終了します。") ;
-		itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(6,itemstack);
-
-		//範囲設置スキル ON/OFFボタン
-		itemstack = new ItemStack(Material.STONE,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE);
-		itemmeta.setDisplayName(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「範囲設置スキル」現在：" + ZSSkill );
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.YELLOW + "「スニーク+左クリック」をすると、"
-				, ChatColor.RESET + "" + ChatColor.YELLOW + "オフハンドに持っているブロックと同じ物を"
-				, ChatColor.RESET + "" + ChatColor.YELLOW  + "インベントリ内から消費し設置します。"
-				, ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "＜クリックでON/OFF切り替え＞"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getZoneSetSkillLevel() + "以上で利用可能");
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(18,itemstack);
-
-
-		//範囲設置スキル 設定画面移動
-		itemstack = new ItemStack(Material.SKULL_ITEM,1);
-		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-		itemstack.setDurability((short) 3);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「範囲設置スキル」設定画面へ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-							,ChatColor.RESET + "" + ChatColor.GRAY + "現在の設定"
-							,ChatColor.RESET + "" + ChatColor.GRAY + "MineStack優先設定:" + ZSSkill_Minestack);
-		skullmeta.setLore(lore);
-		skullmeta.setOwner("MHF_Exclamation");
-		itemstack.setItemMeta(skullmeta);
-		AsyncInventorySetter.setItemAsync(inventory,19,itemstack);
-
-
-		//ブロックを並べるスキル設定
-		itemstack = new ItemStack(Material.WOOD,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ブロックを並べるスキル（仮） ：" + BuildAssist.Companion.getLine_up_str()[playerdata.line_up_flg]);
-		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "オフハンドに木の棒、メインハンドに設置したいブロックを持って"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "左クリックすると向いてる方向に並べて設置します。"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "建築LV" + BuildAssist.Companion.getConfig().getblocklineuplevel() + "以上で利用可能"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "クリックで切り替え"
-//				, ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "※スキル発動時にマナを消費します。 最大消費マナ："+(BuildAssist.config.getblocklineupmana_mag()*64)
-
-				);
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(27,itemstack);
-
-		//ブロックを並べる設定メニューへ
-		itemstack = new ItemStack(Material.PAPER,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「ブロックを並べるスキル（仮） 」設定画面へ");
-		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "現在の設定"
-				, ChatColor.RESET + "" + ChatColor.GRAY + "スキル設定 ：" + BuildAssist.Companion.getLine_up_str()[playerdata.line_up_flg]
-				, ChatColor.RESET + "" + ChatColor.GRAY + "ハーフブロック設定 ：" + BuildAssist.Companion.getLine_up_step_str()[playerdata.line_up_step_flg]
-				, ChatColor.RESET + "" + ChatColor.GRAY + "破壊設定 ：" + BuildAssist.Companion.getLine_up_off_on_str()[playerdata.line_up_des_flg]
-				, ChatColor.RESET + "" + ChatColor.GRAY + "MineStack優先設定 ：" + BuildAssist.Companion.getLine_up_off_on_str()[playerdata.line_up_minestack_flg]
-				);
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(28,itemstack);
-
-		//MineStackブロック一括クラフトメニュー画面へ
-		itemstack = new ItemStack(Material.WORKBENCH,1);
-		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WORKBENCH);
-		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト画面へ");
-		lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-				);
-		itemmeta.setLore(lore);
-		itemstack.setItemMeta(itemmeta);
-		inventory.setItem(35,itemstack);
-
-		return inventory;
-
-	}
-
-
-	public static Inventory getSetBlockSkillData(final Player p) {
+	public static Inventory getSetBlockSkillData(Player p){
 		//プレイヤーを取得
 		final Player player = p.getPlayer();
 		//UUID取得
@@ -468,7 +267,7 @@ public final class MenuInventoryData {
 		final Player player = p.getPlayer();
 		//UUID取得
 		final UUID uuid = player.getUniqueId();
-		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 		final Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト1");
 		ItemStack itemstack;
@@ -659,7 +458,7 @@ public final class MenuInventoryData {
 		//UUID取得
 		final UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
-		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 		final Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト2");
 		ItemStack itemstack;
@@ -905,7 +704,7 @@ public final class MenuInventoryData {
 		final Player player = p.getPlayer();
 		//UUID取得
 		final UUID uuid = player.getUniqueId();
-		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 		final Inventory inventory = Bukkit.getServer().createInventory(null,6*9,ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "MineStackブロック一括クラフト3");
 		ItemStack itemstack;

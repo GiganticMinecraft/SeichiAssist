@@ -2,7 +2,7 @@ package com.github.unchama.buildassist;
 
 import com.github.unchama.seichiassist.PackagePrivate;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.playerdata.BuildCount;
+import com.github.unchama.seichiassist.data.player.BuildCount;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -111,7 +111,7 @@ public final class PlayerData {
 	 * @return ture:読み込み成功　false:読み込み失敗
 	 */
 	boolean buildload(final Player player){
-		final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 		if(playerdata_s == null){
 			return false;
 		}
@@ -147,7 +147,7 @@ public final class PlayerData {
 
 	/** 建築系データを保存 */
     public void buildsave(final Player player){
-		final com.github.unchama.seichiassist.data.PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final com.github.unchama.seichiassist.data.player.PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(uuid);
 		if (playerData == null){
 			player.sendMessage(ChatColor.RED+"建築系データ保存失敗しました");
 			return;

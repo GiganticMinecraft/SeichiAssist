@@ -1,8 +1,7 @@
-package com.github.unchama.seichiassist.data
+package com.github.unchama.seichiassist.data.player
 
 import com.github.unchama.seichiassist.minestack.MineStackObj
-
-import java.util.HashMap
+import java.util.*
 
 class MineStack(objectCountMap: Map<MineStackObj, Long>) {
 

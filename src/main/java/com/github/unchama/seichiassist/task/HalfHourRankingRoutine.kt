@@ -61,7 +61,7 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
           .take(3) // 1から3位まで
           .zip(rankingPositionColor)
           .forEachIndexed { index, (playerData, positionColor) ->
-            val playerNameText = "$positionColor[ Lv${playerData.level} ]${playerData.name}${ChatColor.WHITE}"
+            val playerNameText = "$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}${ChatColor.WHITE}"
             val increaseAmountText = "${ChatColor.AQUA}${playerData.halfhourblock.increase}${ChatColor.WHITE}"
 
             Util.sendEveryMessage("整地量第${index + 1}位は${playerNameText}で${increaseAmountText}でした")

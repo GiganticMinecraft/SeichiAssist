@@ -18,6 +18,8 @@ object SkullOwners {
   val MHF_ArrowLeft = "MHF_ArrowLeft".asSkullOwnerReference()
   val MHF_ArrowRight = "MHF_ArrowRight".asSkullOwnerReference()
 
+  val MHF_Exclamation = "MHF_Exclamation".asSkullOwnerReference()
+
   val MHF_Villager = "MHF_Villager".asSkullOwnerReference()
 }
 

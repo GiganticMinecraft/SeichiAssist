@@ -5,21 +5,16 @@ import com.github.unchama.seichiassist.ActiveSkillPremiumEffect
 import com.github.unchama.seichiassist.MineStackObjectList
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.GridTemplate
-import com.github.unchama.seichiassist.data.LimitedLoginEvent
-import com.github.unchama.seichiassist.data.MineStack
-import com.github.unchama.seichiassist.data.PlayerData
-import com.github.unchama.seichiassist.data.playerdata.*
+import com.github.unchama.seichiassist.data.player.*
+import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.util.MillisecondTimer
 import kotlinx.coroutines.runBlocking
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
+import org.bukkit.ChatColor.GREEN
 import org.bukkit.Location
-import org.bukkit.Sound
-import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
 import org.jetbrains.annotations.NotNull
 import java.io.IOException
 import java.math.BigDecimal
@@ -36,34 +31,20 @@ import kotlin.collections.HashMap
  * DBから読み込みたい値が増えた/減った場合は更新すること
  * @author unchama
  */
-class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable() {
+@Deprecated("Should be inlined.")
+fun loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
+  val config = SeichiAssist.seichiAssistConfig
+  val databaseGateway = SeichiAssist.databaseGateway
 
-  private val plugin = SeichiAssist.instance
-  private val playermap = SeichiAssist.playermap
-  private val databaseGateway = SeichiAssist.databaseGateway
+  val uuid: UUID = playerUUID
+  val stringUuid: String = uuid.toString().toLowerCase()
+  val db: String = SeichiAssist.seichiAssistConfig.db
+  val timer: MillisecondTimer = MillisecondTimer.getInitializedTimerInstance()
 
-  private val LLE = LimitedLoginEvent()
-
-  private val p: Player
-  internal val uuid: UUID
-  private val stringUuid: String
-  private var flag: Boolean = false
-  private var i: Int = 0
-  private val db: String
-  private val timer: MillisecondTimer
-
-  init {
-    timer = MillisecondTimer.getInitializedTimerInstance()
-    db = SeichiAssist.seichiAssistConfig.db
-    p = Bukkit.getPlayer(playerdata.uuid)
-    uuid = playerdata.uuid
-    stringUuid = uuid.toString().toLowerCase()
-    flag = true
-    i = 0
-  }
+  val playerData = PlayerData(playerUUID, playerName)
 
   @Throws(SQLException::class)
-  private fun updateLoginInfo(stmt: Statement) {
+  fun updateLoginInfo(stmt: Statement) {
     val loginInfoUpdateCommand = ("update "
         + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME + " "
         + "set loginflag = true, "
@@ -74,7 +55,7 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
   }
 
   @Throws(SQLException::class)
-  private fun loadSubHomeData(stmt: Statement) {
+  fun loadSubHomeData(stmt: Statement) {
     val subHomeDataQuery = ("select * from "
         + db + "." + DatabaseConstants.SUB_HOME_TABLENAME + " where "
         + "player_uuid like '" + stringUuid + "' and "
@@ -91,13 +72,13 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       val world = Bukkit.getWorld(worldName)
       val location = Location(world, locationX.toDouble(), locationY.toDouble(), locationZ.toDouble())
 
-      playerdata.setSubHomeLocation(location, subHomeId)
-      playerdata.setSubHomeName(subHomeName, subHomeId)
+      playerData.setSubHomeLocation(location, subHomeId)
+      playerData.setSubHomeName(subHomeName, subHomeId)
     }
   }
 
   @Throws(SQLException::class)
-  private fun loadMineStack(stmt: Statement) {
+  fun loadMineStack(stmt: Statement) {
     val mineStackDataQuery = ("select * from "
         + db + "." + DatabaseConstants.MINESTACK_TABLENAME + " where "
         + "player_uuid like '" + stringUuid + "'")
@@ -125,15 +106,15 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
       } else {
         Bukkit
             .getLogger()
-            .warning("プレーヤー ${p.name} のMineStackオブジェクト $objectName は収納可能リストに見つかりませんでした。")
+            .warning("プレーヤー $playerName のMineStackオブジェクト $objectName は収納可能リストに見つかりませんでした。")
       }
     }
 
-    playerdata.minestack = MineStack(objectAmounts)
+    playerData.minestack = MineStack(objectAmounts)
   }
 
   @Throws(SQLException::class)
-  private fun loadGridTemplate(stmt: Statement) {
+  fun loadGridTemplate(stmt: Statement) {
     val gridTemplateDataQuery = ("select * from "
         + db + "." + DatabaseConstants.GRID_TEMPLATE_TABLENAME + " where "
         + "designer_uuid like '" + stringUuid + "'")
@@ -154,12 +135,12 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         templateMap[templateId] = template
       }
 
-      playerdata.templateMap = templateMap
+      playerData.templateMap = templateMap
     }
   }
 
   @Throws(SQLException::class)
-  private fun loadSkillEffectUnlockState(stmt: Statement) {
+  fun loadSkillEffectUnlockState(stmt: Statement) {
     val unlockedSkillEffectQuery = ("select * from "
         + db + "." + DatabaseConstants.SKILL_EFFECT_TABLENAME + " where "
         + "player_uuid like '" + stringUuid + "'")
@@ -169,13 +150,13 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         val effectName = resultSet.getString("effect_name")
 
         val effect = ActiveSkillEffect.fromSqlName(effectName)
-        playerdata.activeskilldata.obtainedSkillEffects.add(effect)
+        playerData.activeskilldata.obtainedSkillEffects.add(effect)
       }
     }
   }
 
   @Throws(SQLException::class)
-  private fun loadSkillPremiumEffectUnlockState(stmt: Statement) {
+  fun loadSkillPremiumEffectUnlockState(stmt: Statement) {
     val unlockedSkillEffectQuery = ("select * from "
         + db + "." + DatabaseConstants.SKILL_PREMIUM_EFFECT_TABLENAME + " where "
         + "player_uuid like '" + stringUuid + "'")
@@ -185,13 +166,13 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         val effectName = resultSet.getString("effect_name")
 
         val effect = ActiveSkillPremiumEffect.fromSqlName(effectName)
-        playerdata.activeskilldata.obtainedSkillPremiumEffects.add(effect)
+        playerData.activeskilldata.obtainedSkillPremiumEffects.add(effect)
       }
     }
   }
 
   @Throws(SQLException::class, IOException::class)
-  private fun loadPlayerData(stmt: Statement) {
+  fun loadPlayerData(stmt: Statement) {
     //playerdataをsqlデータから得られた値で更新
     val command = ("select * from " + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME
         + " where uuid like '" + stringUuid + "'")
@@ -199,13 +180,13 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
     stmt.executeQuery(command).recordIteration {
       val rs = this
       //各種数値
-      playerdata.loaded = true
+      playerData.loaded = true
       runBlocking {
-        playerdata.fastDiggingEffectSuppressor.setStateFromSerializedValue(rs.getInt("effectflag"))
+        playerData.settings.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag"))
       }
-      playerdata.minestackflag = rs.getBoolean("minestackflag")
-      playerdata.messageflag = rs.getBoolean("messageflag")
-      playerdata.activeskilldata.apply {
+      playerData.settings.autoMineStack = rs.getBoolean("minestackflag")
+      playerData.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
+      playerData.activeskilldata.apply {
         mineflagnum = rs.getInt("activemineflagnum")
         assaultflag = rs.getBoolean("assaultflag")
         skilltype = rs.getInt("activeskilltype")
@@ -221,112 +202,110 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         effectnum = rs.getInt("effectnum")
       }
 
-      playerdata.gachapoint = rs.getInt("gachapoint")
-      playerdata.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
-      playerdata.level = rs.getInt("level")
-      playerdata.wabiGacha = rs.getInt("numofsorryforbug")
-      playerdata.regionCount = rs.getInt("rgnum")
-      playerdata.inventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
-      playerdata.dispkilllogflag = rs.getBoolean("killlogflag")
-      playerdata.dispworldguardlogflag = rs.getBoolean("worldguardlogflag")
+      playerData.gachapoint = rs.getInt("gachapoint")
+      playerData.settings.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
+      playerData.level = rs.getInt("level")
+      playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
+      playerData.regionCount = rs.getInt("rgnum")
+      playerData.pocketInventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
+      playerData.settings.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
+      playerData.settings.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
 
-      playerdata.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
+      playerData.settings.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
 
-      playerdata.pvpflag = rs.getBoolean("pvpflag")
-      playerdata.totalbreaknum = rs.getLong("totalbreaknum")
-      playerdata.playTick = rs.getInt("playtick")
-      playerdata.p_givenvote = rs.getInt("p_givenvote")
-      playerdata.activeskilldata.effectpoint = rs.getInt("effectpoint")
-      playerdata.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint")
+      playerData.settings.pvpflag = rs.getBoolean("pvpflag")
+      playerData.totalbreaknum = rs.getLong("totalbreaknum")
+      playerData.playTick = rs.getInt("playtick")
+      playerData.p_givenvote = rs.getInt("p_givenvote")
+      playerData.activeskilldata.effectpoint = rs.getInt("effectpoint")
+      playerData.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint")
       //マナの情報
-      playerdata.activeskilldata.mana.mana = rs.getDouble("mana")
-      playerdata.expbar.isVisible = rs.getBoolean("expvisible")
+      playerData.activeskilldata.mana.mana = rs.getDouble("mana")
+      playerData.settings.isExpBarVisible = rs.getBoolean("expvisible")
 
-      playerdata.totalexp = rs.getInt("totalexp")
+      playerData.totalexp = rs.getInt("totalexp")
 
-      playerdata.expmarge = rs.getByte("expmarge")
-      playerdata.contentsPresentInSharedInventory = !rs.getString("shareinv").isNullOrEmpty()
-      playerdata.everysoundflag = rs.getBoolean("everysound")
-      playerdata.everymessageflag = rs.getBoolean("everymessage")
+      playerData.expmarge = rs.getByte("expmarge")
+      playerData.contentsPresentInSharedInventory = !rs.getString("shareinv").isNullOrEmpty()
+      playerData.settings.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
 
-      playerdata.selectHomeNum = 0
-      playerdata.setHomeNameNum = 0
-      playerdata.isSubHomeNameChange = false
+      playerData.selectHomeNum = 0
+      playerData.setHomeNameNum = 0
+      playerData.isSubHomeNameChange = false
 
       //実績、二つ名の情報
-      playerdata.nickName = PlayerNickName(
+      playerData.settings.nickName = PlayerNickName(
           PlayerNickName.Style.marshal(rs.getBoolean("displayTypeLv")),
           rs.getInt("displayTitle1No"),
           rs.getInt("displayTitle2No"),
           rs.getInt("displayTitle3No")
       )
-      playerdata.p_vote_forT = rs.getInt("p_vote")
-      playerdata.giveachvNo = rs.getInt("giveachvNo")
-      playerdata.achievePoint = AchievementPoint(
+      playerData.p_vote_forT = rs.getInt("p_vote")
+      playerData.giveachvNo = rs.getInt("giveachvNo")
+      playerData.achievePoint = AchievementPoint(
           rs.getInt("achvPointMAX"),
           rs.getInt("achvPointUSE"),
           rs.getInt("achvChangenum")
       )
 
       //スターレベルの情報
-      playerdata.starLevels = StarLevel(
+      playerData.starLevels = StarLevel(
           rs.getInt("starlevel_Break"),
           rs.getInt("starlevel_Time"),
           rs.getInt("starlevel_Event")
       )
 
       //期間限定ログインイベント専用の累計ログイン日数
-      playerdata.LimitedLoginCount = rs.getInt("LimitedLoginCount")
+      playerData.LimitedLoginCount = rs.getInt("LimitedLoginCount")
 
       //連続・通算ログインの情報、およびその更新
       val cal = Calendar.getInstance()
       val sdf = SimpleDateFormat("yyyy/MM/dd")
       val lastIn = rs.getString("lastcheckdate")
-      playerdata.lastcheckdate = if (lastIn.isNullOrEmpty()) {
+      playerData.lastcheckdate = if (lastIn.isNullOrEmpty()) {
         sdf.format(cal.time)
       } else {
         lastIn
       }
       val chain = rs.getInt("ChainJoin")
-      playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = if (chain == 0) {
-  1
-} else {
-  chain
-})
+      playerData.loginStatus = playerData.loginStatus.copy(consecutiveLoginDays = if (chain == 0) {
+        1
+      } else {
+        chain
+      })
       val total = rs.getInt("TotalJoin")
 
-      playerdata.loginStatus = playerdata.loginStatus.copy(totalLoginDay = if (total == 0) {
-  1
-} else {
-  total
-})
+      playerData.loginStatus = playerData.loginStatus.copy(totalLoginDay = if (total == 0) {
+        1
+      } else {
+        total
+      })
 
       try {
         val TodayDate = sdf.parse(sdf.format(cal.time))
-        val LastDate = sdf.parse(playerdata.lastcheckdate)
+        val LastDate = sdf.parse(playerData.lastcheckdate)
         val TodayLong = TodayDate.time
         val LastLong = LastDate.time
 
         val datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
         if (datediff > 0) {
-          LLE.getLastcheck(playerdata.lastcheckdate)
-          playerdata.loginStatus = playerdata.loginStatus.copy(totalLoginDay = playerdata.loginStatus.totalLoginDay + 1)
+          playerData.loginStatus = playerData.loginStatus.copy(totalLoginDay = playerData.loginStatus.totalLoginDay + 1)
           if (datediff == 1L) {
-            playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = playerdata.loginStatus.chainLoginDay + 1)
+            playerData.loginStatus = playerData.loginStatus.copy(consecutiveLoginDays = playerData.loginStatus.consecutiveLoginDays + 1)
           } else {
-            playerdata.loginStatus = playerdata.loginStatus.copy(chainLoginDay = 1)
+            playerData.loginStatus = playerData.loginStatus.copy(consecutiveLoginDays = 1)
           }
         }
       } catch (e: ParseException) {
         e.printStackTrace()
       }
 
-      playerdata.lastcheckdate = sdf.format(cal.time)
+      playerData.lastcheckdate = sdf.format(cal.time)
 
       //連続投票の更新
       val lastvote = rs.getString("lastvote")
       if (lastvote.isNullOrEmpty()) {
-        playerdata.ChainVote = 0
+        playerData.ChainVote = 0
       } else {
         try {
           val TodayDate = sdf.parse(sdf.format(cal.time))
@@ -335,10 +314,10 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
           val LastLong = LastDate.time
 
           val datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-          playerdata.ChainVote =if (datediff <= 1 || datediff >= 0) {
-             rs.getInt("chainvote")
+          playerData.ChainVote = if (datediff <= 1 || datediff >= 0) {
+            rs.getInt("chainvote")
           } else {
-             0
+            0
           }
         } catch (e: ParseException) {
           e.printStackTrace()
@@ -353,158 +332,79 @@ class PlayerDataLoadTask(internal var playerdata: PlayerData) : BukkitRunnable()
         val Titlearray = Arrays.stream(Titlenums).mapToLong { x: String -> java.lang.Long.parseUnsignedLong(x, 16) }.toArray()
         @NotNull
         val TitleFlags = BitSet.valueOf(Titlearray)
-        playerdata.TitleFlags = TitleFlags
+        playerData.TitleFlags = TitleFlags
       } catch (e: NullPointerException) {
-        playerdata.TitleFlags = BitSet(10000)
-        playerdata.TitleFlags.set(1)
+        playerData.TitleFlags = BitSet(10000)
+        playerData.TitleFlags.set(1)
       }
 
       //建築
-      playerdata.buildCount = BuildCount(
+      playerData.buildCount = BuildCount(
           rs.getInt("build_lv"),
           BigDecimal(rs.getString("build_count")),
           rs.getByte("build_count_flg")
       )
 
       //マナ妖精
-      playerdata.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
-      playerdata.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
-      playerdata.hasVotingFairyMana = rs.getInt("hasVotingFairyMana")
-      playerdata.toggleGiveApple = rs.getInt("toggleGiveApple")
-      playerdata.toggleVotingFairy = rs.getInt("toggleVotingFairy")
-      playerdata.setVotingFairyTime(rs.getString("newVotingFairyTime"))
-      playerdata.p_apple = rs.getLong("p_apple")
+      playerData.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
+      playerData.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
+      playerData.hasVotingFairyMana = rs.getInt("hasVotingFairyMana")
+      playerData.toggleGiveApple = rs.getInt("toggleGiveApple")
+      playerData.toggleVotingFairy = rs.getInt("toggleVotingFairy")
+      playerData.setVotingFairyTime(rs.getString("newVotingFairyTime"))
+      playerData.p_apple = rs.getLong("p_apple")
 
 
-      playerdata.contribute_point = rs.getInt("contribute_point")
-      playerdata.added_mana = rs.getInt("added_mana")
+      playerData.contribute_point = rs.getInt("contribute_point")
+      playerData.added_mana = rs.getInt("added_mana")
 
-      playerdata.giganticBerserk = GiganticBerserk(
+      playerData.giganticBerserk = GiganticBerserk(
           rs.getInt("GBlevel"),
           rs.getInt("GBexp"),
           rs.getInt("GBstage"),
           rs.getBoolean("isGBStageUp")
       )
-      playerdata.anniversary = rs.getBoolean("anniversary")
-
-      // 1周年記念
-      if (playerdata.anniversary) {
-        p.sendMessage("整地サーバー1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。http://seichi.click/wiki/anniversary")
-        p.playSound(p.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      }
+      playerData.anniversary = rs.getBoolean("anniversary")
 
       //正月イベント用
-      playerdata.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive")
-      playerdata.newYearBagAmount = rs.getInt("newYearBagAmount")
+      playerData.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive")
+      playerData.newYearBagAmount = rs.getInt("newYearBagAmount")
 
       //バレンタインイベント用
-      playerdata.hasChocoGave = rs.getBoolean("hasChocoGave")
+      playerData.hasChocoGave = rs.getBoolean("hasChocoGave")
     }
   }
 
-  override fun run() {
-    //対象プレイヤーがオフラインなら処理終了
-    if (SeichiAssist.instance.server.getPlayer(uuid) == null) {
-      plugin.server.consoleSender.sendMessage(ChatColor.RED.toString() + p.name + "はオフラインの為取得処理を中断")
-      cancel()
-      return
-    }
-    //sqlコネクションチェック
-    databaseGateway.ensureConnection()
+  //sqlコネクションチェック
+  databaseGateway.ensureConnection()
 
-    val stmt: Statement
-    //同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
-    try {
-      stmt = databaseGateway.con.createStatement()
-    } catch (e1: SQLException) {
-      e1.printStackTrace()
-      cancel()
-      return
-    }
+  //同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
+  val stmt: Statement = databaseGateway.con.createStatement()
 
-    //ログインフラグの確認を行う
-    val table = DatabaseConstants.PLAYERDATA_TABLENAME
-    val loginFlagSelectionQuery = "select loginflag from " +
-        db + "." + table + " " +
-        "where uuid = '" + stringUuid + "'"
-    try {
-      stmt.executeQuery(loginFlagSelectionQuery).use { rs ->
-        while (rs.next()) {
-          flag = rs.getBoolean("loginflag")
-        }
-      }
-    } catch (e: SQLException) {
-      println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-      e.printStackTrace()
-      cancel()
-      return
-    }
+  loadPlayerData(stmt)
+  updateLoginInfo(stmt)
+  loadGridTemplate(stmt)
+  loadMineStack(stmt)
+  loadSkillEffectUnlockState(stmt)
+  loadSkillPremiumEffectUnlockState(stmt)
+  loadSubHomeData(stmt)
 
-    if (i >= 4 && flag) {
-      //強制取得実行
-      plugin.server.consoleSender.sendMessage(ChatColor.RED.toString() + p.name + "のplayerdata強制取得実行")
-      cancel()
-    } else if (!flag) {
-      //flagが折れてたので普通に取得実行
-      cancel()
-    } else {
-      //再試行
-      plugin.server.consoleSender.sendMessage(ChatColor.YELLOW.toString() + p.name + "のloginflag=false待機…(" + (i + 1) + "回目)")
-      i++
-      return
-    }
-
-    try {
-      loadPlayerData(stmt)
-      updateLoginInfo(stmt)
-      loadGridTemplate(stmt)
-      loadMineStack(stmt)
-      loadSkillEffectUnlockState(stmt)
-      loadSkillPremiumEffectUnlockState(stmt)
-      loadSubHomeData(stmt)
-    } catch (e: SQLException) {
-      println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-      e.printStackTrace()
-
-      //コネクション復活後にnewインスタンスのデータで上書きされるのを防止する為削除しておく
-      playermap.remove(uuid)
-
-      return
-    } catch (e: IOException) {
-      println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-      e.printStackTrace()
-      playermap.remove(uuid)
-      return
-    }
-
-    //念のためstatement閉じておく
-    try {
-      stmt.close()
-    } catch (e: SQLException) {
-      e.printStackTrace()
-    }
-
-    if (SeichiAssist.DEBUG) {
-      p.sendMessage("sqlデータで更新しました")
-    }
-    //更新したplayerdataをplayermapに追加
-    playermap[uuid] = playerdata
-
-    //期間限定ログインイベント判別処理
-    LLE.TryGetItem(p)
-
-    //貢献度pt増加によるマナ増加があるかどうか
-    if (playerdata.added_mana < playerdata.contribute_point) {
-      val addMana: Int
-      addMana = playerdata.contribute_point - playerdata.added_mana
-      playerdata.setContributionPoint(addMana)
-    }
-    timer.sendLapTimeMessage(ChatColor.GREEN.toString() + p.name + "のプレイヤーデータ読込完了")
+  //念のためstatement閉じておく
+  try {
+    stmt.close()
+  } catch (e: SQLException) {
+    e.printStackTrace()
   }
 
-  companion object {
-    private val config = SeichiAssist.seichiAssistConfig
+  //貢献度pt増加によるマナ増加があるかどうか
+  if (playerData.added_mana < playerData.contribute_point) {
+    val addMana: Int = playerData.contribute_point - playerData.added_mana
+    playerData.setContributionPoint(addMana)
   }
+
+  timer.sendLapTimeMessage("$GREEN${playerName}のプレイヤーデータ読込完了")
+
+  return playerData
 }
 
 inline fun ResultSet.recordIteration(operation: ResultSet.() -> Unit) {

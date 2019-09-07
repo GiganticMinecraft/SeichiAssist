@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.util;
 import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.util.external.CoreProtectWrapper;
 import com.github.unchama.seichiassist.util.external.ExternalPlugins;
@@ -43,7 +43,7 @@ public final class BreakUtil {
 
 		//壊されるブロックがワールドガード範囲だった場合処理を終了
 		if(!ExternalPlugins.getWorldGuard().canBuild(player, breakblock.getLocation())){
-			if(playerdata.getDispworldguardlogflag()){
+			if(playerdata.getSettings().getShouldDisplayWorldGuardLogs()){
 				player.sendMessage(ChatColor.RED + "ワールドガードで保護されています。");
 			}
 			return false;
@@ -67,7 +67,7 @@ public final class BreakUtil {
 			if(!playerdata.getChestflag()){
 				player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は無効化されています");
 				return false;
-			}else if(!Util.isSeichiWorld(player)){
+			}else if(!Util.INSTANCE.isSeichiWorld(player)){
 				player.sendMessage(ChatColor.RED + "スキルでのチェスト破壊は整地ワールドでのみ有効です");
 				return false;
 			}
@@ -156,7 +156,7 @@ public final class BreakUtil {
 			return false;
 		}
 		//minestackflagがfalseの時は処理を終了
-		if(!playerdata.getMinestackflag()){
+		if(!playerdata.getSettings().getAutoMineStack()){
 			return false;
 		}
 
@@ -207,9 +207,9 @@ public final class BreakUtil {
 					} else {
 						//ガチャ品
 						MineStackGachaData g = SeichiAssist.Companion.getMsgachadatalist().get(mineStackObj.getGachaType());
-						String name = playerdata.getName(); //プレイヤーのネームを見る
+						String name = playerdata.getLowercaseName(); //プレイヤーのネームを見る
 						if(g.getProbability() <0.1){ //カタログギフト券を除く(名前があるアイテム)
-							if(!Util.ItemStackContainsOwnerName(itemstack, name)){
+							if(!Util.INSTANCE.ItemStackContainsOwnerName(itemstack, name)){
 								//所有者の名前が無ければreturn
 								return false;
 							}
@@ -495,7 +495,7 @@ public final class BreakUtil {
 
 		// 1. 重力値を適用すべきか判定
 		// 整地ワールド判定
-		if (!Util.isSeichiWorld(player)) {
+		if (!Util.INSTANCE.isSeichiWorld(player)) {
 			return 0;
 		}
 

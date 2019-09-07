@@ -6,22 +6,21 @@ import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.data.MenuInventoryData
-import com.github.unchama.seichiassist.data.playerdata.GiganticBerserk
-import com.github.unchama.seichiassist.data.playerdata.PlayerNickName
+import com.github.unchama.seichiassist.data.player.GiganticBerserk
+import com.github.unchama.seichiassist.data.player.PlayerNickName
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.menus.stickmenu.firstPage
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.util.ActionStatus.Fail
 import com.github.unchama.util.row
 import com.google.common.io.ByteStreams
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.md_5.bungee.api.ChatColor
+import net.md_5.bungee.api.ChatColor.*
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -69,7 +68,7 @@ class PlayerInventoryListener : Listener {
     val player = he as Player
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_RED.toString() + "" + ChatColor.BOLD + "サーバーを選択してください") {
+    if (topinventory.title == DARK_RED.toString() + "" + BOLD + "サーバーを選択してください") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
@@ -101,6 +100,12 @@ class PlayerInventoryListener : Listener {
         "ヴァルハラサーバー" in displayName -> {
           byteArrayDataOutput.writeUTF("Connect")
           byteArrayDataOutput.writeUTF("s3")
+          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
+              byteArrayDataOutput.toByteArray())
+        }
+        "建築サーバー" in displayName -> {
+          byteArrayDataOutput.writeUTF("Connect")
+          byteArrayDataOutput.writeUTF("s8")
           player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
               byteArrayDataOutput.toByteArray())
         }
@@ -146,7 +151,7 @@ class PlayerInventoryListener : Listener {
 
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地スキル切り替え") {
+    if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキル切り替え") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
@@ -165,7 +170,7 @@ class PlayerInventoryListener : Listener {
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
           ).runFor(player)
         }
@@ -176,13 +181,13 @@ class PlayerInventoryListener : Listener {
             // 複数破壊トグル
 
             if (playerdata.level >= SeichiAssist.seichiAssistConfig.multipleIDBlockBreaklevel) {
-              playerdata.multipleidbreakflag = !playerdata.multipleidbreakflag
-              if (playerdata.multipleidbreakflag) {
+              playerdata.settings.multipleidbreakflag = !playerdata.settings.multipleidbreakflag
+              if (playerdata.settings.multipleidbreakflag) {
                 player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-                player.sendMessage(ChatColor.GREEN.toString() + "複数種類同時破壊:ON")
+                player.sendMessage(GREEN.toString() + "複数種類同時破壊:ON")
               } else {
                 player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
-                player.sendMessage(ChatColor.RED.toString() + "複数種類同時破壊:OFF")
+                player.sendMessage(RED.toString() + "複数種類同時破壊:OFF")
               }
               val itemmeta = itemstackcurrent.itemMeta
               itemstackcurrent.itemMeta = MenuInventoryData.MultipleIDBlockBreakToggleMeta(playerdata, itemmeta)
@@ -194,20 +199,20 @@ class PlayerInventoryListener : Listener {
 
           Material.DIAMOND_AXE -> {
             playerdata.chestflag = false
-            player.sendMessage(ChatColor.GREEN.toString() + "スキルでのチェスト破壊を無効化しました。")
+            player.sendMessage(GREEN.toString() + "スキルでのチェスト破壊を無効化しました。")
             player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
             player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player))
           }
 
           Material.CHEST -> {
             playerdata.chestflag = true
-            player.sendMessage(ChatColor.RED.toString() + "スキルでのチェスト破壊を有効化しました。")
+            player.sendMessage(RED.toString() + "スキルでのチェスト破壊を有効化しました。")
             player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player))
           }
 
           Material.STICK -> {
-            player.sendMessage(ChatColor.WHITE.toString() + "パッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk" + ChatColor.WHITE + "はレベル10以上から使用可能です")
+            player.sendMessage(WHITE.toString() + "パッシブスキル:" + YELLOW + "" + UNDERLINE + "" + BOLD + "Gigantic" + RED + UNDERLINE + "" + BOLD + "Berserk" + WHITE + "はレベル10以上から使用可能です")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           }
 
@@ -216,7 +221,7 @@ class PlayerInventoryListener : Listener {
               player.openInventory(MenuInventoryData.getGiganticBerserkEvolutionMenu(player))
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat())
             } else {
-              player.sendMessage(ChatColor.RED.toString() + "進化条件を満たしていません")
+              player.sendMessage(RED.toString() + "進化条件を満たしていません")
             }
           }
 
@@ -260,7 +265,7 @@ class PlayerInventoryListener : Listener {
 
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地スキル選択") {
+    if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキル選択") {
       val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
 
       event.isCancelled = true
@@ -270,65 +275,156 @@ class PlayerInventoryListener : Listener {
         return
       }
 
-      /*
-			 * クリックしたボタンに応じた各処理内容の記述ここから
-			 */
-      var type = ActiveSkill.ARROW.gettypenum()
-      var name: String
-      val current = itemstackcurrent.type
-
-      /**
-       * 選択されたときの発動コマンド
-       */
-      fun onSelect(e: ActiveSkill, initializeLevel: Int = 4) {
-        var someIndex = initializeLevel
-        while (someIndex <= 10) {
-          val name1 = e.getName(someIndex)
-          if (current == e.getMaterial(someIndex)) {
+      //ARROWSKILL
+      ActiveSkill.ARROW.gettypenum().let { type ->
+        (4..9).forEach { skilllevel ->
+          val name = ActiveSkill.ARROW.getName(skilllevel)
+          if (itemstackcurrent.type == ActiveSkill.ARROW.getMaterial(skilllevel)) {
             val potionmeta = itemstackcurrent.itemMeta as PotionMeta
-            if (potionmeta.basePotionData.type === e.getPotionType(someIndex)) {
-              if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == someIndex) {
+            if (potionmeta.basePotionData.type == ActiveSkill.ARROW.getPotionType(skilllevel)) {
+              if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
                 player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-                player.sendMessage(ChatColor.YELLOW.toString() + "選択を解除しました")
+                player.sendMessage("${YELLOW}選択を解除しました")
                 playerdata.activeskilldata.skilltype = 0
                 playerdata.activeskilldata.skillnum = 0
-                break
               } else {
-                playerdata.activeskilldata.updateSkill(player, type, someIndex, 1)
-                player.sendMessage(ChatColor.GREEN.toString() + "アクティブスキル:" + name1 + "  が選択されました")
+                playerdata.activeskilldata.updateSkill(player, type, skilllevel, 1)
+                player.sendMessage("${GREEN}アクティブスキル:$name  が選択されました")
                 player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
-                break
               }
             }
           }
-          someIndex++
         }
       }
-      onSelect(ActiveSkill.ARROW)
-      onSelect(ActiveSkill.MULTI)
-      onSelect(ActiveSkill.BREAK, 1)
-      onSelect(ActiveSkill.WATERCONDENSE, 7)
-      onSelect(ActiveSkill.LAVACONDENSE, 7)
-      onSelect(ActiveSkill.FLUIDCONDENSE, 10)
-      onSelect(ActiveSkill.ARMOR, 10)
+
+      //MULTISKILL
+      ActiveSkill.MULTI.gettypenum().let { type ->
+        (4..9).forEach { skilllevel ->
+          val name = ActiveSkill.MULTI.getName(skilllevel)
+          if (itemstackcurrent.type == ActiveSkill.MULTI.getMaterial(skilllevel)) {
+            if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
+              player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
+              player.sendMessage("${YELLOW}選択を解除しました")
+              playerdata.activeskilldata.skilltype = 0
+              playerdata.activeskilldata.skillnum = 0
+            } else {
+              playerdata.activeskilldata.updateSkill(player, type, skilllevel, 1)
+              player.sendMessage("${GREEN}アクティブスキル:$name  が選択されました")
+              player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
+            }
+          }
+        }
+      }
+
+      //BREAKSKILL
+      ActiveSkill.BREAK.gettypenum().let { type ->
+        (1..9).forEach { skilllevel ->
+          val name = ActiveSkill.BREAK.getName(skilllevel)
+          if (itemstackcurrent.type == ActiveSkill.BREAK.getMaterial(skilllevel)) {
+            if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
+              player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
+              player.sendMessage("${YELLOW}選択を解除しました")
+              playerdata.activeskilldata.skilltype = 0
+              playerdata.activeskilldata.skillnum = 0
+            } else {
+              playerdata.activeskilldata.updateSkill(player, type, skilllevel, 1)
+              player.sendMessage("${GREEN}アクティブスキル:$name  が選択されました")
+              player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
+            }
+          }
+        }
+      }
+
+      //CONDENSKILL
+      //WATER
+      ActiveSkill.WATERCONDENSE.gettypenum().let { type ->
+        (7..9).forEach { skilllevel ->
+          val name = ActiveSkill.WATERCONDENSE.getName(skilllevel)
+          if (itemstackcurrent.type == ActiveSkill.WATERCONDENSE.getMaterial(skilllevel)) {
+            if (playerdata.activeskilldata.assaulttype == type && playerdata.activeskilldata.assaultnum == skilllevel) {
+              player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
+              player.sendMessage("${YELLOW}選択を解除しました")
+              playerdata.activeskilldata.assaulttype = 0
+              playerdata.activeskilldata.assaultnum = 0
+            } else {
+              playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
+              player.sendMessage("${DARK_GREEN}アサルトスキル:$name  が選択されました")
+              player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
+            }
+          }
+        }
+      }
+
+      //LAVA
+      ActiveSkill.LAVACONDENSE.gettypenum().let { type ->
+        (7..9).forEach { skilllevel ->
+          val name = ActiveSkill.LAVACONDENSE.getName(skilllevel)
+          if (itemstackcurrent.type == ActiveSkill.LAVACONDENSE.getMaterial(skilllevel)) {
+            if (playerdata.activeskilldata.assaulttype == type && playerdata.activeskilldata.assaultnum == skilllevel) {
+              player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
+              player.sendMessage("${YELLOW}選択を解除しました")
+              playerdata.activeskilldata.assaulttype = 0
+              playerdata.activeskilldata.assaultnum = 0
+            } else {
+              playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
+              player.sendMessage("${DARK_GREEN}アサルトスキル:$name  が選択されました")
+              player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
+            }
+          }
+        }
+      }
+
+      ActiveSkill.FLUIDCONDENSE.gettypenum().let { type ->
+        (10).let { skilllevel ->
+          if (itemstackcurrent.type == ActiveSkill.FLUIDCONDENSE.getMaterial(skilllevel)) {
+            if (playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type) {
+              player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
+              player.sendMessage("${YELLOW}選択を解除しました")
+              playerdata.activeskilldata.assaulttype = 0
+              playerdata.activeskilldata.assaultnum = 0
+            } else {
+              playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
+              player.sendMessage("${DARK_GREEN}アサルトスキル:ヴェンダー・ブリザード が選択されました")
+              player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
+            }
+          }
+        }
+      }
+
+      //アサルトアーマー
+      ActiveSkill.ARMOR.gettypenum().let { type ->
+        (10).let { skilllevel ->
+          if (itemstackcurrent.type == ActiveSkill.ARMOR.getMaterial(skilllevel)) {
+            if (playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type) {
+              player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
+              player.sendMessage("${YELLOW}選択を解除しました")
+              playerdata.activeskilldata.assaulttype = 0
+              playerdata.activeskilldata.assaultnum = 0
+            } else {
+              playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
+              player.sendMessage("${DARK_GREEN}アサルトスキル:アサルト・アーマー が選択されました")
+              player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
+            }
+          }
+        }
+      }
 
       //ページ変更処理
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
           ).runFor(player)
         }
       } else {
-        val type = itemstackcurrent.type
-        when (type) {
+        when (itemstackcurrent.type) {
           Material.STONE_BUTTON -> {
             if (itemstackcurrent.itemMeta.displayName.contains("リセット")) {
               //経験値変更用のクラスを設定
               //経験値が足りなかったら処理を終了
               if (!expman.hasExp(10000)) {
-                player.sendMessage(ChatColor.RED.toString() + "必要な経験値が足りません")
+                player.sendMessage(RED.toString() + "必要な経験値が足りません")
                 player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
                 return
               }
@@ -342,7 +438,7 @@ class PlayerInventoryListener : Listener {
               //リセット音を流す
               player.playSound(player.location, Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1f, 0.1.toFloat())
               //メッセージを流す
-              player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "アクティブスキルポイントをリセットしました")
+              player.sendMessage(LIGHT_PURPLE.toString() + "アクティブスキルポイントをリセットしました")
               //メニューを開く
               player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
             }
@@ -352,7 +448,7 @@ class PlayerInventoryListener : Listener {
             if (playerdata.activeskilldata.skilltype == 0 && playerdata.activeskilldata.skillnum == 0
                 && playerdata.activeskilldata.assaulttype == 0 && playerdata.activeskilldata.assaultnum == 0) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-              player.sendMessage(ChatColor.YELLOW.toString() + "既に全ての選択は削除されています")
+              player.sendMessage(YELLOW.toString() + "既に全ての選択は削除されています")
             } else {
               playerdata.activeskilldata.clearSelection(player)
             }
@@ -394,7 +490,7 @@ class PlayerInventoryListener : Listener {
     val playerdata = playerMap[uuid]!!
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地スキルエフェクト選択") {
+    if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキルエフェクト選択") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
@@ -417,10 +513,10 @@ class PlayerInventoryListener : Listener {
       } else if (currentType === Material.GLASS) {
         if (playerdata.activeskilldata.effectnum == 0) {
           player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-          player.sendMessage(ChatColor.YELLOW.toString() + "既に選択されています")
+          player.sendMessage(YELLOW.toString() + "既に選択されています")
         } else {
           playerdata.activeskilldata.effectnum = 0
-          player.sendMessage(ChatColor.GREEN.toString() + "エフェクト:未設定  が選択されました")
+          player.sendMessage(GREEN.toString() + "エフェクト:未設定  が選択されました")
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
         }
         return
@@ -435,10 +531,10 @@ class PlayerInventoryListener : Listener {
           if (currentType === activeSkillEffect.material) {
             if (playerdata.activeskilldata.effectnum == activeSkillEffect.num) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-              player.sendMessage(ChatColor.YELLOW.toString() + "既に選択されています")
+              player.sendMessage(YELLOW.toString() + "既に選択されています")
             } else {
               playerdata.activeskilldata.effectnum = activeSkillEffect.num
-              player.sendMessage(ChatColor.GREEN.toString() + "エフェクト:" + activeSkillEffect.nameOnUI + ChatColor.RESET + "" + ChatColor.GREEN + " が選択されました")
+              player.sendMessage(GREEN.toString() + "エフェクト:" + activeSkillEffect.nameOnUI + RESET + "" + GREEN + " が選択されました")
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
             }
           }
@@ -448,10 +544,10 @@ class PlayerInventoryListener : Listener {
           if (currentType === activeSkillPremiumEffect.material) {
             if (playerdata.activeskilldata.effectnum == activeSkillPremiumEffect.num) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-              player.sendMessage(ChatColor.YELLOW.toString() + "既に選択されています")
+              player.sendMessage(YELLOW.toString() + "既に選択されています")
             } else {
               playerdata.activeskilldata.effectnum = activeSkillPremiumEffect.num + 100
-              player.sendMessage(ChatColor.GREEN.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト:" + activeSkillPremiumEffect.desc + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + " が選択されました")
+              player.sendMessage(GREEN.toString() + "" + BOLD + "プレミアムエフェクト:" + activeSkillPremiumEffect.desc + RESET + "" + GREEN + "" + BOLD + " が選択されました")
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
             }
           }
@@ -466,11 +562,11 @@ class PlayerInventoryListener : Listener {
         for (activeSkillEffect in skilleffect) {
           if (activeSkillEffect.nameOnUI in itemmeta.displayName) {
             if (playerdata.activeskilldata.effectpoint < activeSkillEffect.usePoint) {
-              player.sendMessage(ChatColor.DARK_RED.toString() + "エフェクトポイントが足りません")
+              player.sendMessage(DARK_RED.toString() + "エフェクトポイントが足りません")
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.5.toFloat())
             } else {
               playerdata.activeskilldata.obtainedSkillEffects.add(activeSkillEffect)
-              player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "エフェクト：" + activeSkillEffect.nameOnUI + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました")
+              player.sendMessage(LIGHT_PURPLE.toString() + "エフェクト：" + activeSkillEffect.nameOnUI + RESET + "" + LIGHT_PURPLE + "" + BOLD + "" + " を解除しました")
               player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
               playerdata.activeskilldata.effectpoint -= activeSkillEffect.usePoint
               player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player))
@@ -486,11 +582,11 @@ class PlayerInventoryListener : Listener {
         for (activeSkillPremiumEffect in premiumeffect) {
           if (activeSkillPremiumEffect.desc in itemmeta.displayName) {
             if (playerdata.activeskilldata.premiumeffectpoint < activeSkillPremiumEffect.usePoint) {
-              player.sendMessage(ChatColor.DARK_RED.toString() + "プレミアムエフェクトポイントが足りません")
+              player.sendMessage(DARK_RED.toString() + "プレミアムエフェクトポイントが足りません")
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.5f)
             } else {
               playerdata.activeskilldata.obtainedSkillPremiumEffects.add(activeSkillPremiumEffect)
-              player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.desc + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "" + " を解除しました")
+              player.sendMessage(LIGHT_PURPLE.toString() + "" + BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.desc + RESET + "" + LIGHT_PURPLE + "" + BOLD + "" + " を解除しました")
               if (databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) === Fail) {
                 player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。")
               }
@@ -531,7 +627,7 @@ class PlayerInventoryListener : Listener {
     val playerdata = playerMap[uuid]!!
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地スキル選択") {
+    if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキル選択") {
       event.isCancelled = true
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.type === InventoryType.PLAYER) {
@@ -549,14 +645,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 4
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.5.toFloat())
           } else if (playerdata.activeskilldata.breakskill < 3) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(3, 3) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(3, 3) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.5.toFloat())
           } else {
             playerdata.activeskilldata.arrowskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -565,14 +661,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 5
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.arrowskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.arrowskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -581,14 +677,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 6
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.arrowskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.arrowskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -597,14 +693,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 7
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.arrowskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.arrowskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -613,14 +709,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 8
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.arrowskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.arrowskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -629,20 +725,20 @@ class PlayerInventoryListener : Listener {
           skilllevel = 9
           skilltype = 1
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.arrowskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.arrowskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             if (playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
-              player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
+              player.sendMessage(YELLOW.toString() + "" + BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(GOLD.toString() + "" + BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -650,14 +746,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 4
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.breakskill < 3) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(3, 3) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(3, 3) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.multiskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -666,14 +762,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 5
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.multiskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.multiskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -682,14 +778,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 6
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.multiskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.multiskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -698,14 +794,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 7
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.multiskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.multiskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -714,14 +810,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 8
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.multiskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.multiskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -730,20 +826,20 @@ class PlayerInventoryListener : Listener {
           skilllevel = 9
           skilltype = 2
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.multiskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.multiskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.breakskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
-              player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
+              player.sendMessage(YELLOW.toString() + "" + BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(GOLD.toString() + "" + BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -751,11 +847,11 @@ class PlayerInventoryListener : Listener {
           skilllevel = 1
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.breakskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -764,14 +860,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 2
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.breakskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.breakskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -780,14 +876,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 3
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.breakskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.breakskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -796,14 +892,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 4
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.breakskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.breakskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -812,14 +908,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 5
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.breakskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.breakskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -828,14 +924,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 6
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.breakskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.breakskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -844,14 +940,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 7
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.breakskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.breakskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -860,14 +956,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 8
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.breakskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.breakskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -876,20 +972,20 @@ class PlayerInventoryListener : Listener {
           skilllevel = 9
           skilltype = 3
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.breakskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.breakskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
-              player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
+              player.sendMessage(YELLOW.toString() + "" + BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(GOLD.toString() + "" + BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -897,14 +993,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 7
           skilltype = 4
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.breakskill < 3) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(3, 3) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(3, 3) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.watercondenskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -913,14 +1009,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 8
           skilltype = 4
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.watercondenskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.watercondenskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -929,20 +1025,20 @@ class PlayerInventoryListener : Listener {
           skilllevel = 9
           skilltype = 4
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.watercondenskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.watercondenskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
-              player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
+              player.sendMessage(YELLOW.toString() + "" + BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(GOLD.toString() + "" + BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -950,14 +1046,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 7
           skilltype = 5
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.breakskill < 3) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(3, 3) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(3, 3) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.lavacondenskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -969,14 +1065,14 @@ class PlayerInventoryListener : Listener {
           skilllevel = 8
           skilltype = 5
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.lavacondenskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.lavacondenskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -985,20 +1081,20 @@ class PlayerInventoryListener : Listener {
           skilllevel = 9
           skilltype = 5
           if (playerdata.activeskilldata.skillpoint < skilllevel * 10) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else if (playerdata.activeskilldata.lavacondenskill < skilllevel - 1) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
+            player.sendMessage(DARK_RED.toString() + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype, skilllevel - 1) + "]を習得する必要があります")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.lavacondenskill = skilllevel
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + ActiveSkill.getActiveSkillName(skilltype, skilllevel) + "を解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             if (playerdata.activeskilldata.arrowskill == 9 && playerdata.activeskilldata.multiskill == 9 && playerdata.activeskilldata.watercondenskill == 9 && playerdata.activeskilldata.lavacondenskill == 9) {
-              player.sendMessage(ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
+              player.sendMessage(YELLOW.toString() + "" + BOLD + "全てのスキルを習得し、アサルト・アーマーを解除しました")
               Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 1.2.toFloat())
-              Util.sendEveryMessage(ChatColor.GOLD.toString() + "" + ChatColor.BOLD + playerdata.name + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
+              Util.sendEveryMessage(GOLD.toString() + "" + BOLD + playerdata.lowercaseName + "が全てのスキルを習得し、アサルトアーマーを解除しました！")
             }
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
           }
@@ -1006,11 +1102,11 @@ class PlayerInventoryListener : Listener {
 
         } else if (name.contains("ヴェンダー・ブリザード")) {
           if (playerdata.activeskilldata.skillpoint < 110) {
-            player.sendMessage(ChatColor.DARK_RED.toString() + "アクティブスキルポイントが足りません")
+            player.sendMessage(DARK_RED.toString() + "アクティブスキルポイントが足りません")
             player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           } else {
             playerdata.activeskilldata.fluidcondenskill = 10
-            player.sendMessage(ChatColor.AQUA.toString() + "" + ChatColor.BOLD + "" + "ヴェンダー・ブリザードを解除しました")
+            player.sendMessage(AQUA.toString() + "" + BOLD + "" + "ヴェンダー・ブリザードを解除しました")
             player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat())
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -1048,7 +1144,7 @@ class PlayerInventoryListener : Listener {
 
     val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地神ランキング") {
+    if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地神ランキング") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
@@ -1068,7 +1164,7 @@ class PlayerInventoryListener : Listener {
           "MHF_ArrowLeft" -> {
             GlobalScope.launch(Schedulers.async) {
               sequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                  CommonSoundEffects.menuTransitionFenceSound,
                   StickMenu.firstPage.open
               ).runFor(player)
             }
@@ -1130,7 +1226,7 @@ class PlayerInventoryListener : Listener {
 
     val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "ログイン神ランキング") {
+    if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "ログイン神ランキング") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
@@ -1145,7 +1241,7 @@ class PlayerInventoryListener : Listener {
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
           ).runFor(player)
         }
@@ -1197,7 +1293,7 @@ class PlayerInventoryListener : Listener {
 
     val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "投票神ランキング") {
+    if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "投票神ランキング") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
@@ -1215,7 +1311,7 @@ class PlayerInventoryListener : Listener {
           "MHF_ArrowLeft" -> {
             GlobalScope.launch(Schedulers.async) {
               sequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                  CommonSoundEffects.menuTransitionFenceSound,
                   StickMenu.firstPage.open
               ).runFor(player)
             }
@@ -1272,7 +1368,7 @@ class PlayerInventoryListener : Listener {
     val player = he as Player
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "寄付神ランキング") {
+    if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "寄付神ランキング") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
@@ -1292,7 +1388,7 @@ class PlayerInventoryListener : Listener {
           "MHF_ArrowLeft" -> {
             GlobalScope.launch(Schedulers.async) {
               sequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                  CommonSoundEffects.menuTransitionFenceSound,
                   StickMenu.firstPage.open
               ).runFor(player)
             }
@@ -1347,7 +1443,7 @@ class PlayerInventoryListener : Listener {
     val player = he as Player
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.BLUE.toString() + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴") {
+    if (topinventory.title == BLUE.toString() + "" + BOLD + "プレミアムエフェクト購入履歴") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
@@ -1376,14 +1472,14 @@ class PlayerInventoryListener : Listener {
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid] ?: return
     //エラー分岐
-    val name = playerdata.name
+    val name = playerdata.lowercaseName
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
     if (inventory.row != 4) {
       return
     }
-    if (inventory.title == ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "交換したい景品を入れてください") {
+    if (inventory.title == LIGHT_PURPLE.toString() + "" + BOLD + "交換したい景品を入れてください") {
       var givegacha = 0
       /*
 			 * step1 for文でinventory内に対象商品がないか検索
@@ -1462,11 +1558,11 @@ class PlayerInventoryListener : Listener {
       }
       //ガチャシステムメンテナンス中は全て返却する
       if (SeichiAssist.gachamente) {
-        player.sendMessage(ChatColor.RED.toString() + "ガチャシステムメンテナンス中の為全てのアイテムを返却します")
+        player.sendMessage(RED.toString() + "ガチャシステムメンテナンス中の為全てのアイテムを返却します")
       } else if (big <= 0 && reg <= 0) {
-        player.sendMessage(ChatColor.YELLOW.toString() + "景品を認識しませんでした。全てのアイテムを返却します")
+        player.sendMessage(YELLOW.toString() + "景品を認識しませんでした。全てのアイテムを返却します")
       } else {
-        player.sendMessage(ChatColor.GREEN.toString() + "大当たり景品を" + big + "個、当たり景品を" + reg + "個認識しました")
+        player.sendMessage(GREEN.toString() + "大当たり景品を" + big + "個、当たり景品を" + reg + "個認識しました")
       }
       /*
 			 * step2 非対象商品をインベントリに戻す
@@ -1494,7 +1590,7 @@ class PlayerInventoryListener : Listener {
       }
       if (count > 0) {
         player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-        player.sendMessage(ChatColor.GREEN.toString() + "" + count + "枚の" + ChatColor.GOLD + "ガチャ券" + ChatColor.WHITE + "を受け取りました")
+        player.sendMessage(GREEN.toString() + "" + count + "枚の" + GOLD + "ガチャ券" + WHITE + "を受け取りました")
       }
     }
 
@@ -1527,11 +1623,12 @@ class PlayerInventoryListener : Listener {
     val player = he as Player
     val playerdata = playermap[player.uniqueId]!!
 
-    fun setTitle(first: Int = 0, second: Int = 0, third: Int = 0, message: String = """二つ名$first「
+    fun setTitle(first: Int = 0, second: Int = 0, third: Int = 0, message: String =
+        """二つ名$first「
           |${getTitle(1, first)}
           |${if (second != 0) getTitle(2, second) else ""}
           |${if (third != 0) getTitle(3, third) else ""}
-          |」が設定されました。""".trimMargin()) {
+          |」が設定されました。""".trimMargin().filter { it != '\n' }) {
       playerdata.updateNickname(first, second, third)
       player.sendMessage(message)
     }
@@ -1542,7 +1639,7 @@ class PlayerInventoryListener : Listener {
     val title = topinventory.title
     //インベントリ名が以下の時処理
     val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
-    val prefix = "${ChatColor.DARK_PURPLE}${ChatColor.BOLD}"
+    val prefix = "$DARK_PURPLE$BOLD"
     when (title) {
       "${prefix}実績・二つ名システム" -> {
         event.isCancelled = true
@@ -1590,7 +1687,7 @@ class PlayerInventoryListener : Listener {
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           GlobalScope.launch(Schedulers.async) {
             sequentialEffect(
-                FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+                CommonSoundEffects.menuTransitionFenceSound,
                 StickMenu.firstPage.open
             ).runFor(player)
           }
@@ -1837,11 +1934,11 @@ when (itemstackcurrent.type) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
           val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(Integer.parseInt(itemmeta.displayName))
-              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.nickName.id2)
-              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.nickName.id3))
+              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.settings.nickName.id2)
+              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.settings.nickName.id3))
           if (forcheck.length < 9) {
             playerdata.updateNickname(id1 = Integer.parseInt(itemmeta.displayName))
-            player.sendMessage("前パーツ「" + SeichiAssist.seichiAssistConfig.getTitle1(playerdata.nickName.id1) + "」をセットしました。")
+            player.sendMessage("前パーツ「" + SeichiAssist.seichiAssistConfig.getTitle1(playerdata.settings.nickName.id1) + "」をセットしました。")
           } else {
             player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
           }
@@ -1878,12 +1975,12 @@ when (itemstackcurrent.type) {
           val itemmeta = itemstackcurrent.itemMeta
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
-          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.nickName.id1)
+          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.settings.nickName.id1)
               + SeichiAssist.seichiAssistConfig.getTitle2(Integer.parseInt(itemmeta.displayName))
-              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.nickName.id3))
+              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.settings.nickName.id3))
           if (forcheck.length < 9) {
             playerdata.updateNickname(id2 = Integer.parseInt(itemmeta.displayName))
-            player.sendMessage("中パーツ「" + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.nickName.id2) + "」をセットしました。")
+            player.sendMessage("中パーツ「" + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.settings.nickName.id2) + "」をセットしました。")
           } else {
             player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
           }
@@ -1920,12 +2017,12 @@ when (itemstackcurrent.type) {
           val itemmeta = itemstackcurrent.itemMeta
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
-          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.nickName.id1)
-              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.nickName.id2)
+          val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.settings.nickName.id1)
+              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.settings.nickName.id2)
               + SeichiAssist.seichiAssistConfig.getTitle3(Integer.parseInt(itemmeta.displayName)))
           if (forcheck.length < 9) {
             playerdata.updateNickname(id3 = Integer.parseInt(itemmeta.displayName))
-            player.sendMessage("後パーツ「" + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.nickName.id3) + "」をセットしました。")
+            player.sendMessage("後パーツ「" + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.settings.nickName.id3) + "」をセットしました。")
           } else {
             player.sendMessage("全パーツ合計で8文字以内になるよう設定してください。")
           }
@@ -2757,113 +2854,103 @@ when (itemstackcurrent.type) {
   @EventHandler
   fun onOreTradeEvent(event: InventoryCloseEvent) {
     val player = event.player as Player
-    val uuid = player.uniqueId
+
     //エラー分岐
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
-    if (inventory.row != 4) {
-      return
+    if (inventory.row != 4) return
+
+    if (inventory.title != "$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください") return
+
+    var giveticket = 0
+    /*
+     * step1 for文でinventory内の対象商品の個数を計算
+     * 非対象商品は返却boxへ
+     */
+    //ドロップ用アイテムリスト(返却box)作成
+    val drop = ArrayList<ItemStack>()
+
+    //余剰鉱石返却用アイテムリスト
+    val amount = EnumMap<Material, Int>(Material::class.java)
+
+    val seek = EnumMap<Material, Int>(Material::class.java)
+    seek[Material.COAL_ORE] = 128
+    seek[Material.IRON_ORE] = 64
+    seek[Material.GOLD_ORE] = 8
+    seek[Material.LAPIS_ORE] = 8
+    seek[Material.DIAMOND_ORE] = 4
+    seek[Material.REDSTONE_ORE] = 32
+    seek[Material.EMERALD_ORE] = 4
+    seek[Material.QUARTZ_ORE] = 16
+
+    for (content in inventory.contents) {
+      //ないなら次へ
+      if (content == null) continue
+
+      when (val type = content.type) {
+        in seek.keys -> {
+          amount[type] = (amount[type] ?: 0) + content.amount
+        }
+
+        else -> {
+          drop += content
+        }
+      }
     }
-    if (inventory.title == ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "交換したい鉱石を入れてください") {
-      var giveticket = 0
-      /*
-			 * step1 for文でinventory内の対象商品の個数を計算
-			 * 非対象商品は返却boxへ
-			 */
-      //ガチャ景品交換インベントリの中身を取得
-      val item = inventory.contents
-      //ドロップ用アイテムリスト(返却box)作成
-      val drop = ArrayList<ItemStack>()
-      //余剰鉱石返却用アイテムリスト
-      val retore = ArrayList<ItemStack>()
-      val amount = EnumMap<Material, Int>(Material::class.java)
-      val seek = EnumMap<Material, Int>(Material::class.java)
-      seek[Material.COAL_ORE] = 128
-      seek[Material.IRON_ORE] = 64
-      seek[Material.GOLD_ORE] = 8
-      seek[Material.LAPIS_ORE] = 8
-      seek[Material.DIAMOND_ORE] = 4
-      seek[Material.REDSTONE_ORE] = 32
-      seek[Material.EMERALD_ORE] = 4
-      seek[Material.QUARTZ_ORE] = 16
-      //for文でインベントリ内のアイテムを1つずつ見る
-      //鉱石・交換券変換インベントリスロットを1つずつ見る
-      for (m in item) {
-        //ないなら次へ
-        val type = m.type
-        if (m == null) {
-          continue
-        } else {
-          when (type) {
-            in seek.keys -> {
-              amount.putIfAbsent(type, 0)
-              amount[type] = amount[type]?.plus(m.amount)
-            }
 
-            else -> {
-              drop += m
-            }
-          }
-        }
-      }
+    //チケット計算
+    for (k in amount.keys) {
+      giveticket += (amount[k] ?: 0) / seek[k]!!
+    }
 
-      //チケット計算
-      for (k in amount.keys) {
-        giveticket += (amount[k] ?: 0) / seek[k]!!
-      }
+    //プレイヤー通知
+    if (giveticket == 0) {
+      player.sendMessage("${YELLOW}鉱石を認識しなかったか数が不足しています。全てのアイテムを返却します")
+    } else {
+      player.sendMessage("${DARK_RED}交換券$RESET${GREEN}を${giveticket}枚付与しました")
+    }
+    /*
+     * step2 交換券をインベントリへ
+     */
+    val exchangeticket = ItemStack(Material.PAPER)
+    val itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER)
+    itemmeta.displayName = "$DARK_RED${BOLD}交換券"
+    itemmeta.addEnchant(Enchantment.PROTECTION_FIRE, 1, false)
+    itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+    exchangeticket.itemMeta = itemmeta
 
-      //プレイヤー通知
-      if (giveticket == 0) {
-        player.sendMessage(ChatColor.YELLOW.toString() + "鉱石を認識しなかったか数が不足しています。全てのアイテムを返却します")
+    var count = 0
+    while (giveticket > 0) {
+      if (exchangeticket in player.inventory || !Util.isPlayerInventoryFull(player)) {
+        Util.addItem(player, exchangeticket)
       } else {
-        player.sendMessage(ChatColor.DARK_RED.toString() + "交換券" + ChatColor.RESET + "" + ChatColor.GREEN + "を" + giveticket + "枚付与しました")
+        Util.dropItem(player, exchangeticket)
       }
-      /*
-			 * step2 交換券をインベントリへ
-			 */
-      val exchangeticket = ItemStack(Material.PAPER)
-      val itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER)
-      itemmeta.displayName = ChatColor.DARK_RED.toString() + "" + ChatColor.BOLD + "交換券"
-      itemmeta.addEnchant(Enchantment.PROTECTION_FIRE, 1, false)
-      itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-      exchangeticket.itemMeta = itemmeta
+      giveticket--
+      count++
+    }
+    if (count > 0) {
+      player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
+      player.sendMessage("${GREEN}交換券の付与が終わりました")
+    }
 
-      var count = 0
-      while (giveticket > 0) {
-        if (exchangeticket in player.inventory || !Util.isPlayerInventoryFull(player)) {
-          Util.addItem(player, exchangeticket)
-        } else {
-          Util.dropItem(player, exchangeticket)
-        }
-        giveticket--
-        count++
+    /*
+     * step3 非対象商品・余剰鉱石の返却
+     */
+    for (k in amount.keys) {
+      val amount1 = (amount[k] ?: 0)
+      if (amount1 % seek[k]!! != 0) {
+        val f = ItemStack(k)
+        f.itemMeta = Bukkit.getItemFactory().getItemMeta(k)
+        f.amount = amount1
+        drop += f
       }
-      if (count > 0) {
-        player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-        player.sendMessage(ChatColor.GREEN.toString() + "交換券の付与が終わりました")
-      }
-      /*
-			 * step3 非対象商品・余剰鉱石の返却
-			 */
-      for (k in amount.keys) {
-        val amount1 = (amount[k] ?: 0)
-        if (amount1 % seek[k]!! != 0) {
-          val f = ItemStack(k)
-          f.itemMeta = Bukkit.getItemFactory().getItemMeta(k)
-          f.amount = amount1
-          drop += f
-        }
-      }
+    }
 
-      //返却処理
-      for (m in drop) {
-        if (!Util.isPlayerInventoryFull(player)) {
-          Util.addItem(player, m)
-        } else {
-          Util.dropItem(player, m)
-        }
-      }
+    //返却処理
+    for (itemStack in drop) {
+      Util.addItemToPlayerSafely(player, itemStack)
     }
   }
 
@@ -2874,14 +2961,14 @@ when (itemstackcurrent.type) {
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid] ?: return
     //エラー分岐
-    val name = playerdata.name
+    val name = playerdata.lowercaseName
     val inventory = event.inventory
 
     //インベントリサイズが4列でない時終了
     if (inventory.row != 4) {
       return
     }
-    if (inventory.title == ChatColor.GOLD.toString() + "" + ChatColor.BOLD + "椎名林檎と交換したい景品を入れてネ") {
+    if (inventory.title == GOLD.toString() + "" + BOLD + "椎名林檎と交換したい景品を入れてネ") {
       var giveringo = 0
       /*
 			 * step1 for文でinventory内に対象商品がないか検索
@@ -2952,11 +3039,11 @@ when (itemstackcurrent.type) {
       }
       //ガチャシステムメンテナンス中は全て返却する
       if (SeichiAssist.gachamente) {
-        player.sendMessage(ChatColor.RED.toString() + "ガチャシステムメンテナンス中の為全てのアイテムを返却します")
+        player.sendMessage(RED.toString() + "ガチャシステムメンテナンス中の為全てのアイテムを返却します")
       } else if (giga <= 0) {
-        player.sendMessage(ChatColor.YELLOW.toString() + "ギガンティック大当り景品を認識しませんでした。全てのアイテムを返却します")
+        player.sendMessage(YELLOW.toString() + "ギガンティック大当り景品を認識しませんでした。全てのアイテムを返却します")
       } else {
-        player.sendMessage(ChatColor.GREEN.toString() + "ギガンティック大当り景品を" + giga + "個認識しました")
+        player.sendMessage(GREEN.toString() + "ギガンティック大当り景品を" + giga + "個認識しました")
       }
       /*
 			 * step2 非対象商品をインベントリに戻す
@@ -2984,7 +3071,7 @@ when (itemstackcurrent.type) {
       }
       if (count > 0) {
         player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-        player.sendMessage(ChatColor.GREEN.toString() + "" + count + "個の" + ChatColor.GOLD + "椎名林檎" + ChatColor.WHITE + "を受け取りました")
+        player.sendMessage(GREEN.toString() + "" + count + "個の" + GOLD + "椎名林檎" + WHITE + "を受け取りました")
       }
     }
 
@@ -3002,7 +3089,7 @@ when (itemstackcurrent.type) {
     if (inventory.row != 4) {
       return
     }
-    if (inventory.title == ChatColor.GOLD.toString() + "" + ChatColor.BOLD + "修繕したい限定タイタンを入れてネ") {
+    if (inventory.title == GOLD.toString() + "" + BOLD + "修繕したい限定タイタンを入れてネ") {
       //インベントリの中身を取得
       val item = inventory.contents
 
@@ -3028,9 +3115,9 @@ when (itemstackcurrent.type) {
         }
       }
       if (count < 1) {
-        player.sendMessage(ChatColor.GREEN.toString() + "限定タイタンを認識しませんでした。すべてのアイテムを返却します")
+        player.sendMessage(GREEN.toString() + "限定タイタンを認識しませんでした。すべてのアイテムを返却します")
       } else {
-        player.sendMessage(ChatColor.GREEN.toString() + "限定タイタンを" + count + "個認識し、修繕しました。")
+        player.sendMessage(GREEN.toString() + "限定タイタンを" + count + "個認識し、修繕しました。")
       }
     }
   }
@@ -3062,7 +3149,7 @@ when (itemstackcurrent.type) {
     val playerdata = playerMap[uuid]!!
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "投票ptメニュー") {
+    if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "投票ptメニュー") {
       event.isCancelled = true
 
       if (event.clickedInventory.type === InventoryType.PLAYER) {
@@ -3126,7 +3213,7 @@ when (itemstackcurrent.type) {
           count++
         }
 
-        player.sendMessage(ChatColor.GOLD.toString() + "投票特典" + ChatColor.WHITE + "(" + count + "票分)を受け取りました")
+        player.sendMessage(GOLD.toString() + "投票特典" + WHITE + "(" + count + "票分)を受け取りました")
         player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
 
         val itemmeta = itemstackcurrent.itemMeta
@@ -3134,13 +3221,13 @@ when (itemstackcurrent.type) {
         player.openInventory(MenuInventoryData.getVotingMenuData(player))
       } else if (itemstackcurrent.type === Material.BOOK_AND_QUILL) {
         // 投票リンク表示
-        player.sendMessage(ChatColor.RED.toString() + "" + ChatColor.UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote")
+        player.sendMessage(RED.toString() + "" + UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote")
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.closeInventory()
       } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
+              CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
           ).runFor(player)
         }
@@ -3162,21 +3249,21 @@ when (itemstackcurrent.type) {
 
         //プレイヤーレベルが10に達していないとき
         if (playerdata.level < 10) {
-          player.sendMessage(ChatColor.GOLD.toString() + "プレイヤーレベルが足りません")
+          player.sendMessage(GOLD.toString() + "プレイヤーレベルが足りません")
           player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           return
         }
 
         //既に妖精召喚している場合終了
         if (playerdata.usingVotingFairy) {
-          player.sendMessage(ChatColor.GOLD.toString() + "既に妖精を召喚しています")
+          player.sendMessage(GOLD.toString() + "既に妖精を召喚しています")
           player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           return
         }
 
         //投票ptが足りない場合終了
         if (playerdata.activeskilldata.effectpoint < playerdata.toggleVotingFairy * 2) {
-          player.sendMessage(ChatColor.GOLD.toString() + "投票ptが足りません")
+          player.sendMessage(GOLD.toString() + "投票ptが足りません")
           player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
           return
         }
@@ -3221,7 +3308,7 @@ when (itemstackcurrent.type) {
     val playerdata = playerMap[uuid]!!
     val itemmeta = itemstackcurrent.itemMeta
 
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "ホームメニュー") {
+    if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "ホームメニュー") {
       event.isCancelled = true
 
       if (event.clickedInventory.type === InventoryType.PLAYER) {
@@ -3302,7 +3389,7 @@ when (itemstackcurrent.type) {
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid]!!
 
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "スキルを進化させますか?") {
+    if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "スキルを進化させますか?") {
       event.isCancelled = true
       if (itemstackcurrent.type === Material.NETHER_STAR) {
         playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1, false)
@@ -3310,7 +3397,7 @@ when (itemstackcurrent.type) {
         player.playSound(player.location, Sound.ENTITY_ENDERDRAGON_AMBIENT, 1f, 0.8.toFloat())
         player.openInventory(MenuInventoryData.getGiganticBerserkEvolution2Menu(player))
       }
-    } else if (topinventory.title == ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + "スキルを進化させました") {
+    } else if (topinventory.title == LIGHT_PURPLE.toString() + "" + BOLD + "スキルを進化させました") {
       event.isCancelled = true
     }
   }

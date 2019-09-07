@@ -1,8 +1,5 @@
 package com.github.unchama.seichiassist.data.player.settings
 
-import com.github.unchama.seichiassist.data.PlayerData
-import com.github.unchama.targetedeffect.unfocusedEffect
-
 /**
  * 全体メッセージとそれに伴う効果音の抑制をするためのプレーヤー向け設定項目の状態を表すEnum.
  */
@@ -34,15 +31,3 @@ enum class BroadcastMutingSettings {
         }
   }
 }
-
-// TODO PlayerDataにはこれらが入るべき
-suspend fun PlayerData.getBroadcastMutingSettings(): BroadcastMutingSettings =
-    BroadcastMutingSettings.fromBooleanSettings(everymessageflag, everysoundflag)
-
-val PlayerData.toggleBroadcastMutingSettings
-  get() = unfocusedEffect {
-    val newSettings = getBroadcastMutingSettings().nextSettingsOption()
-
-    everymessageflag = !newSettings.shouldMuteSounds()
-    everysoundflag = !newSettings.shouldMuteMessages()
-  }

@@ -22,6 +22,8 @@ class IconComponent constructor(val material: Material, private val durability: 
   var isEnchanted: Boolean = false
   var amount = 1
 
+  var itemFlagSet: Set<ItemFlag> = emptySet()
+
   val itemStack: ItemStack
     get() = ItemStack(material, amount, durability)
 
@@ -36,9 +38,11 @@ class IconComponent constructor(val material: Material, private val durability: 
       meta.isUnbreakable = isUnbreakable
 
       if (isEnchanted) {
-        meta.addEnchant(Enchantment.DIG_SPEED, 100, false)
+        meta.addEnchant(Enchantment.DIG_SPEED, 1, false)
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
       }
+
+      meta.addItemFlags(*itemFlagSet.toTypedArray())
 
       return meta
     }

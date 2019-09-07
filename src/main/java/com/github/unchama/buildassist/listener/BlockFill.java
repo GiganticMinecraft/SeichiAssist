@@ -1,5 +1,6 @@
 package com.github.unchama.buildassist.listener;
 
+import com.github.unchama.buildassist.util.ExternalPlugins;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -11,6 +12,8 @@ import com.github.unchama.buildassist.BuildAssist;
 import com.github.unchama.buildassist.PlayerData;
 import com.github.unchama.buildassist.Util;
 import com.github.unchama.seichiassist.MineStackObjectList;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.minestack.MineStackObj;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -22,9 +25,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.github.unchama.buildassist.util.ExternalPlugins;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.minestack.MineStackObj;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockFill implements TypedEventListener<PlayerInteractEvent> {
@@ -38,6 +41,7 @@ public class BlockFill implements TypedEventListener<PlayerInteractEvent> {
 		final UUID uuid = player.getUniqueId();
 
 		//プレイヤーデータ
+		com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 		final PlayerData playerdata = BuildAssist.Companion.getPlayermap().get(uuid);
 
 		//プレイヤーデータが無い場合は処理終了

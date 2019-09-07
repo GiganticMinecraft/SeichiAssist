@@ -5,21 +5,15 @@ import com.github.unchama.menuinventory.*
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
-import com.github.unchama.seichiassist.MineStackObjectList
-import com.github.unchama.seichiassist.Schedulers
-import com.github.unchama.seichiassist.SkullOwnerReference
-import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.*
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.category
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.computedEffect
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import com.github.unchama.targetedeffect.unfocusedEffect
 import com.github.unchama.util.collection.mapValues
 import org.bukkit.ChatColor.*
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import kotlin.math.ceil
 
@@ -43,20 +37,35 @@ object CategorizedMineStackMenu {
 
     // ページ操作等のボタンを含むレイアウトセクション
     val uiOperationSection = run {
-      fun buttonToTransferTo(page: Int, skullOwnerReference: SkullOwnerReference) = Button(
+      fun buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference) = Button(
           SkullItemStackBuilder(skullOwnerReference)
-              .title("$YELLOW$UNDERLINE${BOLD}MineStack${page + 1}ページ目へ")
+              .title("$YELLOW$UNDERLINE${BOLD}MineStack${pageIndex + 1}ページ目へ")
               .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
               .build(),
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
-                FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.1f),
-                forCategory(category, page).open
+                CommonSoundEffects.menuTransitionFenceSound,
+                forCategory(category, pageIndex).open
             )
           }
       )
 
-      val stickMenuButtonSection = singleSlotLayout { (9 * 5) to CommonButtons.openStickMenu }
+      val mineStackMainMenuButtonSection = run {
+        val mineStackMainMenuButton = Button(
+            SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
+                .title("$YELLOW$UNDERLINE${BOLD}MineStackメインメニューへ")
+                .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
+                .build(),
+            FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
+              sequentialEffect(
+                  CommonSoundEffects.menuTransitionFenceSound,
+                  MineStackMainMenu.open
+              )
+            }
+        )
+
+        singleSlotLayout { (9 * 5) to mineStackMainMenuButton }
+      }
 
       val previousPageButtonSection = if (page > 0) {
         singleSlotLayout { 9 * 5 + 7 to buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp) }
@@ -67,7 +76,7 @@ object CategorizedMineStackMenu {
       } else emptyLayout
 
       combinedLayout(
-          stickMenuButtonSection,
+          mineStackMainMenuButtonSection,
           previousPageButtonSection,
           nextPageButtonSection
       )
@@ -86,18 +95,18 @@ object CategorizedMineStackMenu {
   }
 
   /**
-   * カテゴリ別マインスタックメニューで[page]ページ目の[Menu]
+   * カテゴリ別マインスタックメニューで [pageIndex] + 1 ページ目の[Menu]
    */
-  fun forCategory(category: MineStackObjectCategory, page: Int = 0): Menu = object: Menu {
+  fun forCategory(category: MineStackObjectCategory, pageIndex: Int = 0): Menu = object: Menu {
     override val open: TargetedEffect<Player> = computedEffect { player ->
       val session = MenuInventoryView(
           6.rows(),
-          "$DARK_BLUE${BOLD}MineStack - ${category.uiLabel} (${page}ページ目)"
+          "$DARK_BLUE${BOLD}MineStack(${category.uiLabel})"
       ).createNewSession()
 
       sequentialEffect(
           session.openEffectThrough(Schedulers.sync),
-          unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout(category, page)) }
+          unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout(category, pageIndex)) }
       )
     }
   }

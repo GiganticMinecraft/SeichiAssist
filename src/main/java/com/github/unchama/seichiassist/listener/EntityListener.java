@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.task.GiganticBerserkTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
@@ -84,7 +84,7 @@ public class EntityListener implements Listener {
 		PlayerData playerdata = SeichiAssist.Companion.getPlayermap().get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
-			Util.sendPlayerDataNullMessage(player);
+			Util.INSTANCE.sendPlayerDataNullMessage(player);
 			Bukkit.getLogger().warning(player.getName() + " -> PlayerData not found.");
 			Bukkit.getLogger().warning("EntityListener.onPlayerActiveSkillEvent");
 			return;
@@ -96,7 +96,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 		//スキル発動条件がそろってなければ終了
-		if(!Util.isSkillEnable(player)){
+		if(!Util.INSTANCE.isSkillEnable(player)){
 			return;
 		}
 
@@ -192,7 +192,7 @@ public class EntityListener implements Listener {
 				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
 
-					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
+					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getSettings().getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
 						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
 							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
 								if(BreakUtil.canBreak(player, breakblock)){
@@ -359,7 +359,7 @@ public class EntityListener implements Listener {
 		/*GiganticBerserk用*/
 
 		//死んだMOBがGiganticBerserkの対象MOBでなければ終了
-		if(!Util.isEnemy(event.getEntity().getType())){
+		if(!Util.INSTANCE.isEnemy(event.getEntity().getType())){
 			return;
 		}
 
@@ -369,7 +369,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 		//プレイヤーが整地ワールドに居ない場合終了
-		if (!Util.isSeichiWorld(player)){
+		if (!Util.INSTANCE.isSeichiWorld(player)){
 			return;
 		}
 

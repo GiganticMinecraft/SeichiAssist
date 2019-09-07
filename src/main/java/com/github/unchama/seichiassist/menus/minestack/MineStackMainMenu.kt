@@ -7,6 +7,7 @@ import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.rows
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
+import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.menus.CommonButtons
@@ -40,7 +41,10 @@ object MineStackMainMenu: Menu {
 
         val button = Button(
             iconItemStack,
-            LeftClickButtonEffect(CategorizedMineStackMenu.forCategory(category).open)
+            LeftClickButtonEffect(
+                CommonSoundEffects.menuTransitionFenceSound,
+                CategorizedMineStackMenu.forCategory(category).open
+            )
         )
         slotIndex to button
       }.toMap()
@@ -78,7 +82,7 @@ object MineStackMainMenu: Menu {
 
   override val open: TargetedEffect<Player> = computedEffect { player ->
     val session = MenuInventoryView(
-        4.rows(),
+        6.rows(),
         "$DARK_PURPLE${BOLD}MineStackメインメニュー"
     ).createNewSession()
 

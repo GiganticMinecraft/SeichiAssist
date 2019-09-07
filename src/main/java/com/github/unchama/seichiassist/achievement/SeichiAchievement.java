@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.achievement;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,8 +22,8 @@ import java.util.function.Predicate;
 public enum SeichiAchievement {
 
     // 整地ランキング
-    NO_1001(1001, player -> getPlayerData(player).calcPlayerRank() == 1),
-    NO_1002(1002, player -> getRank(player) < 6), // maybe wrong, not `<` but `>`
+    NO_1001(1001, player -> getRank(player) == 1),
+    NO_1002(1002, player -> getRank(player) < 6),
     NO_1003(1003, player -> getRank(player) < 28),
     NO_1004(1004, player -> getRank(player) < 51),
     NO_1005(1005, player -> getRank(player) < 751),
@@ -240,7 +240,7 @@ public enum SeichiAchievement {
     }
 
     private static int getDaysChaining(Player player) {
-        return getPlayerData(player).getLoginStatus().getChainLoginDay();
+        return getPlayerData(player).getLoginStatus().getConsecutiveLoginDays();
     }
 
     private static int getTotalPlayedDays(Player player) {

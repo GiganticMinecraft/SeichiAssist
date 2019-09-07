@@ -1,18 +1,16 @@
 package com.github.unchama.seichiassist.data;
 
 
-
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.SeichiAssist;
+import java.util.UUID;
 
 
 public class Mana {

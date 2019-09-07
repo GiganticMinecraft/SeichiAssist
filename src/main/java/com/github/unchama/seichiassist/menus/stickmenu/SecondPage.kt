@@ -16,8 +16,6 @@ import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.*
-import com.github.unchama.seichiassist.data.player.settings.getBroadcastMutingSettings
-import com.github.unchama.seichiassist.data.player.settings.toggleBroadcastMutingSettings
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
@@ -296,7 +294,7 @@ object SecondPage: Menu {
     suspend fun Player.computeBroadcastMessageToggleButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]!!
       val iconItemStack = run {
-        val currentSettings = playerData.getBroadcastMutingSettings()
+        val currentSettings = playerData.settings.getBroadcastMutingSettings()
 
         val soundConfigurationState =
             if (currentSettings.shouldMuteSounds()) {
@@ -306,7 +304,7 @@ object SecondPage: Menu {
             }
 
         val messageConfigurationState =
-            if (currentSettings.shouldMuteSounds()) {
+            if (currentSettings.shouldMuteMessages()) {
               "$RESET${GREEN}全体メッセージ:表示する"
             } else {
               "$RESET${RED}全体メッセージ:表示しない"
@@ -326,10 +324,10 @@ object SecondPage: Menu {
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
-                playerData.toggleBroadcastMutingSettings,
+                playerData.settings.toggleBroadcastMutingSettings,
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
                 deferredEffect {
-                  when (playerData.getBroadcastMutingSettings()) {
+                  when (playerData.settings.getBroadcastMutingSettings()) {
                     RECEIVE_MESSAGE_AND_SOUND -> "${GREEN}非表示/消音設定を解除しました"
                     RECEIVE_MESSAGE_ONLY -> "${RED}消音可能な全体通知音を消音します"
                     MUTE_MESSAGE_AND_SOUND -> "${RED}非表示可能な全体メッセージを非表示にします"
@@ -348,7 +346,7 @@ object SecondPage: Menu {
             IconItemStackBuilder(Material.FLINT_AND_STEEL)
                 .title("$YELLOW$UNDERLINE${BOLD}死亡メッセージ表示切替")
 
-        if (playerData.shouldDisplayDeathMessages()) {
+        if (playerData.settings.shouldDisplayDeathMessages) {
           baseBuilder
               .enchanted()
               .lore(listOf(
@@ -368,10 +366,10 @@ object SecondPage: Menu {
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
-                playerData.toggleDeathMessageMutingSettings,
+                playerData.settings.toggleDeathMessageMutingSettings,
                 deferredEffect {
                   val (soundPitch, message) =
-                      if (playerData.shouldDisplayDeathMessages())
+                      if (playerData.settings.shouldDisplayDeathMessages)
                         Pair(1.0f, "${GREEN}死亡メッセージ:表示")
                       else
                         Pair(0.5f, "${RED}死亡メッセージ:隠す")
@@ -395,7 +393,7 @@ object SecondPage: Menu {
 
         val loreHeading = "$RESET${GRAY}スキル使用時のワールドガード保護警告メッセージ"
 
-        if (playerData.shouldDisplayWorldGuardLogs()) {
+        if (playerData.settings.shouldDisplayWorldGuardLogs) {
           baseBuilder
               .enchanted()
               .lore(listOf(
@@ -417,10 +415,10 @@ object SecondPage: Menu {
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
-                playerData.toggleWorldGuardLogEffect,
+                playerData.settings.toggleWorldGuardLogEffect,
                 deferredEffect {
                   val (soundPitch, message) =
-                      if (playerData.shouldDisplayWorldGuardLogs())
+                      if (playerData.settings.shouldDisplayWorldGuardLogs)
                         Pair(1.0f, "${ChatColor.GREEN}ワールドガード保護メッセージ:表示")
                       else
                         Pair(0.5f, "${ChatColor.RED}ワールドガード保護メッセージ:隠す")

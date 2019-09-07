@@ -25,7 +25,7 @@ class PlayerPickupItemListener : Listener {
 
     if (playerData.level < config.getMineStacklevel(1)) return
 
-    if (!playerData.minestackflag) return
+    if (!playerData.settings.autoMineStack) return
 
     val item = event.item
     val itemstack = item.itemStack
@@ -67,7 +67,7 @@ class PlayerPickupItemListener : Listener {
           } else {
             //ガチャ品
             val g = SeichiAssist.msgachadatalist[mineStackObj.gachaType]
-            val name = playerData.name //プレイヤーのネームを見る
+            val name = playerData.lowercaseName //プレイヤーのネームを見る
             if (g.probability < 0.1) { //カタログギフト券を除く(名前があるアイテム)
               if (!Util.ItemStackContainsOwnerName(itemstack, name)) {
                 //所有者の名前が無ければreturn
