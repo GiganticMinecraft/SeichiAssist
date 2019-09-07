@@ -518,5 +518,5 @@ object MineStackObjectList {
       MineStackGachaObj("exp_bottle", "エンチャントの瓶", 1, Material.EXP_BOTTLE, 0)
   )
 
-  val minestacklist: MutableList<MineStackObj> = ArrayList(initialCapacity = minestacklistbuild.size + minestacklistdrop.size + minestacklistfarm.size + minestacklistgacha.size + minestacklistmine.size + minestacklistrs.size)
+  val minestacklist: MutableList<MineStackObj> = ArrayList(minestacklistbuild.size + minestacklistdrop.size + minestacklistfarm.size + minestacklistgacha.size + minestacklistmine.size + minestacklistrs.size)
 }

@@ -67,7 +67,7 @@ class BuildAssist(plugin: SeichiAssist) {
     tasklist.add(MinuteTaskRunnable().runTaskTimer(plugin, 0, 1200))
   }
 
-  fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
+  fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
     return commandlist[cmd.name]?.onCommand(sender, cmd, label, args) ?: false
   }
 
@@ -81,7 +81,7 @@ class BuildAssist(plugin: SeichiAssist) {
     Bukkit.getServer().pluginManager.registerEvents(listener, SeichiAssist.instance)
   }
 
-  private inline fun <E : Event> registerEvent(priority: EventPriority, ignoreCancelled: Boolean = false, crossinline func: (E) -> Unit) {
+  private inline fun <E : Event> registerEvent(priority: EventPriority, crossinline func: (E) -> Unit) {
     // ※ アノテーションはパラメータとして与えられた値を受け付けないため迂回する
     val listener = when (priority) {
       EventPriority.LOWEST -> {

@@ -87,13 +87,12 @@ class SeichiAssist : JavaPlugin() {
 
     MineStackObjectList.minestacklistgacha.addAll(creategachaminestacklist())
 
-    MineStackObjectList.minestacklist = ArrayList()
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistmine)
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistdrop)
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistfarm)
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistbuild)
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistrs)
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistgacha)
+    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistmine)
+    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistdrop)
+    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistfarm)
+    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistbuild)
+    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistrs)
+    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistgacha)
 
     // コマンドの登録
     mapOf(
@@ -198,7 +197,7 @@ class SeichiAssist : JavaPlugin() {
   }
 
   override fun onCommand(sender: CommandSender?, command: Command?, label: String?, args: Array<out String>?)
-      = buildAssist.onCommand(sender, command, label, args)
+      = buildAssist.onCommand(sender!!, command!!, label!!, args!!)
 
   private fun startRepeatedJobs() {
     repeatedJobCoroutine = CoroutineScope(Schedulers.sync).launch {
