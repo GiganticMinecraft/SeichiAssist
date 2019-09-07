@@ -20,7 +20,7 @@ class BuildAssist(plugin: Plugin) {
 
   //起動するタスクリスト
   private val tasklist = ArrayList<BukkitTask>()
-  private var commandlist: HashMap<String, CommandExecutor>? = null
+  private var commandlist = HashMap<String, CommandExecutor>(5)
 
   init {
     BuildAssist.plugin = plugin
@@ -34,7 +34,7 @@ class BuildAssist(plugin: Plugin) {
 
     //コマンドの登録
     commandlist = HashMap()
-    commandlist!!["fly"] = FlyCommand()
+    commandlist["fly"] = FlyCommand()
 
     Bukkit.getServer().pluginManager.registerEvents(PlayerJoinListener(), plugin)
     Bukkit.getServer().pluginManager.registerEvents(EntityListener(), plugin)
@@ -60,7 +60,7 @@ class BuildAssist(plugin: Plugin) {
   }
 
   fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<String>): Boolean {
-    return commandlist!![cmd.name]?.onCommand(sender, cmd, label, args) ?: false
+    return commandlist[cmd.name]?.onCommand(sender, cmd, label, args) ?: false
   }
 
   fun onDisable() {
