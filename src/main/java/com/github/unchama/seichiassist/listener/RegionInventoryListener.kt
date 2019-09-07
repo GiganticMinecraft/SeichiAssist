@@ -1,26 +1,15 @@
 package com.github.unchama.seichiassist.listener
 
-import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.RegionMenuData
-import com.github.unchama.seichiassist.menus.RegionMenu
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
-import com.sk89q.worldedit.bukkit.WorldEditPlugin
-import com.sk89q.worldedit.bukkit.selections.Selection
-import com.sk89q.worldguard.bukkit.WorldConfiguration
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper
 import com.sk89q.worldguard.bukkit.commands.task.RegionAdder
-import com.sk89q.worldguard.protection.ApplicableRegionSet
-import com.sk89q.worldguard.protection.managers.RegionManager
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion
-import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import com.sk89q.worldguard.protection.util.DomainInputResolver
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Location
 import org.bukkit.Material
@@ -40,149 +29,6 @@ import java.util.*
  */
 class RegionInventoryListener : Listener {
   internal var playermap = SeichiAssist.playermap
-
-  /**
-   * 木の棒メニューの保護ボタンのみのListener
-   * @param event InventoryClickListener
-   */
-  @EventHandler
-  fun onPlayerClickStickMenu(event: InventoryClickEvent) {
-    //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
-      return
-    }
-
-    val itemstackcurrent = event.currentItem
-    val view = event.view
-    val he = view.player
-    //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
-      return
-    }
-    val topinventory = view.topInventory ?: return
-    //インベントリが存在しない時終了
-    //インベントリサイズが36でない時終了
-    if (topinventory.size != 4 * 9) {
-      return
-    }
-    val player = he as Player
-
-    //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "木の棒メニュー") {
-      event.isCancelled = true
-
-      //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
-        return
-      }
-      /*
-			 * クリックしたボタンに応じた各処理内容の記述ここから
-			 */
-
-      //土地保護メニュー
-      if (itemstackcurrent.type == Material.DIAMOND_AXE && itemstackcurrent.itemMeta.displayName.contains("土地保護メニュー")) {
-        GlobalScope.launch(Schedulers.async) { RegionMenu.open.runFor(player) }
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1.0f, 0.5f)
-      }
-    }
-  }
-
-  /**
-   * 保護メニューのInventoryClickListener
-   * @param event InventoryClickListener
-   */
-  @EventHandler
-  fun onPlayerRegionMenu(event: InventoryClickEvent) {
-    //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
-      return
-    }
-
-    val itemstackcurrent = event.currentItem
-    val view = event.view
-    val he = view.player
-    //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
-      return
-    }
-    val topinventory = view.topInventory ?: return
-    //インベントリが存在しない時終了
-    //インベントリタイプがホッパーでない時終了
-    if (topinventory.type != InventoryType.HOPPER) {
-      return
-    }
-    val player = he as Player
-
-    //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.BLACK.toString() + "保護メニュー") {
-      event.isCancelled = true
-
-      //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
-        return
-      }
-      /*
-			 * クリックしたボタンに応じた各処理内容の記述ここから
-			 */
-
-      val uuid = player.uniqueId
-      val playerdata = playermap[uuid]!!
-
-      if (itemstackcurrent.type == Material.WOOD_AXE) {
-        // wand召喚
-        player.closeInventory()
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        player.chat("//wand")
-        player.sendMessage(ChatColor.RESET.toString() + "" + ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "保護のかけ方\n"
-            + ChatColor.RESET + "" + ChatColor.GREEN + "①召喚された斧を手に持ちます\n"
-            + ChatColor.RESET + "" + ChatColor.GREEN + "②保護したい領域の一方の角を" + ChatColor.YELLOW + "左" + ChatColor.GREEN + "クリック\n"
-            + ChatColor.RESET + "" + ChatColor.GREEN + "③もう一方の対角線上の角を" + ChatColor.RED + "右" + ChatColor.GREEN + "クリック\n"
-            + ChatColor.RESET + "" + ChatColor.GREEN + "④メニューの" + ChatColor.RESET + "" + ChatColor.YELLOW + "金の斧" + ChatColor.RESET + "" + ChatColor.GREEN + "をクリック\n"
-        )
-      } else if (itemstackcurrent.type == Material.GOLD_AXE) {
-        // 保護の設定
-        player.closeInventory()
-        val selection = ExternalPlugins.getWorldEdit()!!.getSelection(player)
-        if (!player.hasPermission("worldguard.region.claim")) {
-          player.sendMessage(ChatColor.RED.toString() + "このワールドでは保護を申請できません")
-          return
-        } else if (selection == null) {
-          player.sendMessage(ChatColor.RED.toString() + "先に木の斧で範囲を指定してからこのボタンを押してください")
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.5f)
-          return
-        } else if (selection!!.getLength() < 10 || selection!!.getWidth() < 10) {
-          player.sendMessage(ChatColor.RED.toString() + "指定された範囲が狭すぎます。1辺当たり最低10ブロック以上にしてください")
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.5f)
-          return
-        }
-
-        player.chat("//expand vert")
-        player.chat("/rg claim " + player.name + "_" + playerdata.regionCount)
-        playerdata.regionCount = playerdata.regionCount + 1
-        player.chat("//sel")
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-      } else if (itemstackcurrent.type == Material.STONE_AXE) {
-        // 保護リストの表示
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-        player.closeInventory()
-        player.sendMessage(ChatColor.GRAY.toString() + "--------------------\n"
-            + ChatColor.GRAY + "複数ページの場合… " + ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "/rg list -p " + player.name + " ページNo\n"
-            + ChatColor.RESET + "" + ChatColor.GRAY + "先頭に[+]のついた保護はOwner権限\n[-]のついた保護はMember権限を保有しています\n"
-            + ChatColor.DARK_GREEN + "解説ページ→" + ChatColor.UNDERLINE + "https://seichi.click/wiki/WorldGuard")
-        player.chat("/rg list -p " + player.name)
-      } else if (itemstackcurrent.type == Material.DIAMOND_AXE) {
-        // ReguionGUI表示
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        player.closeInventory()
-        player.chat("/land")
-      } else if (itemstackcurrent.type == Material.IRON_AXE) {
-        gridResetFunction(player)
-        //グリッド式保護設定画面表示
-        player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-        player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
-      }
-    }
-  }
 
   /**
    * グリッド式保護メニューInventoryClickListener

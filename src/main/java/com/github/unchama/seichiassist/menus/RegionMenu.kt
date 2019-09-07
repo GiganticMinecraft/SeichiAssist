@@ -135,7 +135,10 @@ object RegionMenu : Menu {
 
       val playerHasPermission = player.hasPermission("worldguard.region.claim")
       val isSelectionNull = selection == null
-      val selectionHasEnoughSpace = selection.length >= 10 && selection.width >= 10
+      val selectionHasEnoughSpace =
+          if (!isSelectionNull)
+            selection.length >= 10 && selection.width >= 10
+          else false
 
       val canMakeRegion = playerHasPermission && !isSelectionNull && selectionHasEnoughSpace
 
@@ -150,7 +153,7 @@ object RegionMenu : Menu {
                 isSelectionNull -> arrayOf(
                     "${RED}範囲指定されていません",
                     "${RED}先に木の斧で2か所クリックしてネ")
-                selectionHasEnoughSpace -> arrayOf(
+                !selectionHasEnoughSpace -> arrayOf(
                     "${RED}選択された範囲が狭すぎます",
                     "${RED}一辺当たり最低10ブロック以上にしてネ")
                 else -> arrayOf(
@@ -173,7 +176,19 @@ object RegionMenu : Menu {
       Button(
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK,
-              if (canMakeRegion) {
+              if (!playerHasPermission) {
+                "${RED}このワールドでは保護を申請できません".asMessageEffect()
+              } else if (isSelectionNull) {
+                sequentialEffect(
+                    "${RED}先に木の斧で範囲を指定してからこのボタンを押してください".asMessageEffect(),
+                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
+                )
+              } else if (!selectionHasEnoughSpace) {
+                sequentialEffect(
+                    "${RED}指定された範囲が狭すぎます。1辺当たり最低10ブロック以上にしてください".asMessageEffect(),
+                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
+                )
+              } else {
                 sequentialEffect(
                     "/expand vert".asCommandEffect(),
                     "rg claim ${player.name}_${openerData.regionCount}".asCommandEffect(),
@@ -181,7 +196,7 @@ object RegionMenu : Menu {
                     "/sel".asCommandEffect(),
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                 )
-              } else EmptyEffect
+              }
           )
       )
     }
@@ -189,8 +204,8 @@ object RegionMenu : Menu {
   }
 
   private suspend fun Player.computeMenuLayout(): IndexedSlotLayout =
-      with(RegionMenu.ConstantButtons) {
-        with(RegionMenu.ButtonComputations) {
+      with(ConstantButtons) {
+        with(ButtonComputations) {
           IndexedSlotLayout(
               0 to summonWandButton,
               1 to computeButtonToClaimRegion(),
