@@ -2854,113 +2854,103 @@ when (itemstackcurrent.type) {
   @EventHandler
   fun onOreTradeEvent(event: InventoryCloseEvent) {
     val player = event.player as Player
-    val uuid = player.uniqueId
+
     //エラー分岐
     val inventory = event.inventory
 
     //インベントリサイズが36でない時終了
-    if (inventory.row != 4) {
-      return
+    if (inventory.row != 4) return
+
+    if (inventory.title != "$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください") return
+
+    var giveticket = 0
+    /*
+     * step1 for文でinventory内の対象商品の個数を計算
+     * 非対象商品は返却boxへ
+     */
+    //ドロップ用アイテムリスト(返却box)作成
+    val drop = ArrayList<ItemStack>()
+
+    //余剰鉱石返却用アイテムリスト
+    val amount = EnumMap<Material, Int>(Material::class.java)
+
+    val seek = EnumMap<Material, Int>(Material::class.java)
+    seek[Material.COAL_ORE] = 128
+    seek[Material.IRON_ORE] = 64
+    seek[Material.GOLD_ORE] = 8
+    seek[Material.LAPIS_ORE] = 8
+    seek[Material.DIAMOND_ORE] = 4
+    seek[Material.REDSTONE_ORE] = 32
+    seek[Material.EMERALD_ORE] = 4
+    seek[Material.QUARTZ_ORE] = 16
+
+    for (content in inventory.contents) {
+      //ないなら次へ
+      if (content == null) continue
+
+      when (val type = content.type) {
+        in seek.keys -> {
+          amount[type] = (amount[type] ?: 0) + content.amount
+        }
+
+        else -> {
+          drop += content
+        }
+      }
     }
-    if (inventory.title == LIGHT_PURPLE.toString() + "" + BOLD + "交換したい鉱石を入れてください") {
-      var giveticket = 0
-      /*
-			 * step1 for文でinventory内の対象商品の個数を計算
-			 * 非対象商品は返却boxへ
-			 */
-      //ガチャ景品交換インベントリの中身を取得
-      val item = inventory.contents
-      //ドロップ用アイテムリスト(返却box)作成
-      val drop = ArrayList<ItemStack>()
-      //余剰鉱石返却用アイテムリスト
-      val retore = ArrayList<ItemStack>()
-      val amount = EnumMap<Material, Int>(Material::class.java)
-      val seek = EnumMap<Material, Int>(Material::class.java)
-      seek[Material.COAL_ORE] = 128
-      seek[Material.IRON_ORE] = 64
-      seek[Material.GOLD_ORE] = 8
-      seek[Material.LAPIS_ORE] = 8
-      seek[Material.DIAMOND_ORE] = 4
-      seek[Material.REDSTONE_ORE] = 32
-      seek[Material.EMERALD_ORE] = 4
-      seek[Material.QUARTZ_ORE] = 16
-      //for文でインベントリ内のアイテムを1つずつ見る
-      //鉱石・交換券変換インベントリスロットを1つずつ見る
-      for (m in item) {
-        //ないなら次へ
-        val type = m.type
-        if (m == null) {
-          continue
-        } else {
-          when (type) {
-            in seek.keys -> {
-              amount.putIfAbsent(type, 0)
-              amount[type] = amount[type]?.plus(m.amount)
-            }
 
-            else -> {
-              drop += m
-            }
-          }
-        }
-      }
+    //チケット計算
+    for (k in amount.keys) {
+      giveticket += (amount[k] ?: 0) / seek[k]!!
+    }
 
-      //チケット計算
-      for (k in amount.keys) {
-        giveticket += (amount[k] ?: 0) / seek[k]!!
-      }
+    //プレイヤー通知
+    if (giveticket == 0) {
+      player.sendMessage(YELLOW.toString() + "鉱石を認識しなかったか数が不足しています。全てのアイテムを返却します")
+    } else {
+      player.sendMessage(DARK_RED.toString() + "交換券" + RESET + "" + GREEN + "を" + giveticket + "枚付与しました")
+    }
+    /*
+     * step2 交換券をインベントリへ
+     */
+    val exchangeticket = ItemStack(Material.PAPER)
+    val itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER)
+    itemmeta.displayName = DARK_RED.toString() + "" + BOLD + "交換券"
+    itemmeta.addEnchant(Enchantment.PROTECTION_FIRE, 1, false)
+    itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+    exchangeticket.itemMeta = itemmeta
 
-      //プレイヤー通知
-      if (giveticket == 0) {
-        player.sendMessage(YELLOW.toString() + "鉱石を認識しなかったか数が不足しています。全てのアイテムを返却します")
+    var count = 0
+    while (giveticket > 0) {
+      if (exchangeticket in player.inventory || !Util.isPlayerInventoryFull(player)) {
+        Util.addItem(player, exchangeticket)
       } else {
-        player.sendMessage(DARK_RED.toString() + "交換券" + RESET + "" + GREEN + "を" + giveticket + "枚付与しました")
+        Util.dropItem(player, exchangeticket)
       }
-      /*
-			 * step2 交換券をインベントリへ
-			 */
-      val exchangeticket = ItemStack(Material.PAPER)
-      val itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER)
-      itemmeta.displayName = DARK_RED.toString() + "" + BOLD + "交換券"
-      itemmeta.addEnchant(Enchantment.PROTECTION_FIRE, 1, false)
-      itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-      exchangeticket.itemMeta = itemmeta
+      giveticket--
+      count++
+    }
+    if (count > 0) {
+      player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
+      player.sendMessage(GREEN.toString() + "交換券の付与が終わりました")
+    }
 
-      var count = 0
-      while (giveticket > 0) {
-        if (exchangeticket in player.inventory || !Util.isPlayerInventoryFull(player)) {
-          Util.addItem(player, exchangeticket)
-        } else {
-          Util.dropItem(player, exchangeticket)
-        }
-        giveticket--
-        count++
+    /*
+     * step3 非対象商品・余剰鉱石の返却
+     */
+    for (k in amount.keys) {
+      val amount1 = (amount[k] ?: 0)
+      if (amount1 % seek[k]!! != 0) {
+        val f = ItemStack(k)
+        f.itemMeta = Bukkit.getItemFactory().getItemMeta(k)
+        f.amount = amount1
+        drop += f
       }
-      if (count > 0) {
-        player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-        player.sendMessage(GREEN.toString() + "交換券の付与が終わりました")
-      }
-      /*
-			 * step3 非対象商品・余剰鉱石の返却
-			 */
-      for (k in amount.keys) {
-        val amount1 = (amount[k] ?: 0)
-        if (amount1 % seek[k]!! != 0) {
-          val f = ItemStack(k)
-          f.itemMeta = Bukkit.getItemFactory().getItemMeta(k)
-          f.amount = amount1
-          drop += f
-        }
-      }
+    }
 
-      //返却処理
-      for (m in drop) {
-        if (!Util.isPlayerInventoryFull(player)) {
-          Util.addItem(player, m)
-        } else {
-          Util.dropItem(player, m)
-        }
-      }
+    //返却処理
+    for (itemStack in drop) {
+      Util.addItemToPlayerSafely(player, itemStack)
     }
   }
 
