@@ -35,7 +35,10 @@ class IconComponent constructor(val material: Material, private val durability: 
       }
       meta.lore = lore
 
-      meta.isUnbreakable = isUnbreakable
+      if (isUnbreakable) {
+        meta.isUnbreakable = true
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE)
+      }
 
       if (isEnchanted) {
         meta.addEnchant(Enchantment.DIG_SPEED, 1, false)
