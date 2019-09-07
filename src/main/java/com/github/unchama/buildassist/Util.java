@@ -33,7 +33,7 @@ public final class Util {
 		final Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 
 		// WorldGuard may not be loaded
-		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+		if (!(plugin instanceof WorldGuardPlugin)) {
 			return null; // Maybe you want throw an exception instead
 		}
 
@@ -120,7 +120,7 @@ public final class Util {
 		if (player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.Companion.getSEICHIWORLDNAME())) {
 			playerData.build_num_1min = playerData.build_num_1min.add(amount.multiply(new BigDecimal("0.1")));
 		} else {
-			playerData.build_num_1min= playerData.build_num_1min.add(amount);
+			playerData.build_num_1min = playerData.build_num_1min.add(amount);
 		}
 	}
 }
