@@ -47,7 +47,7 @@ internal object MineStackButtons {
     val itemStack = mineStackObj.itemStack.clone().apply {
       itemMeta = itemMeta.apply {
         displayName = run {
-          val name = if (hasDisplayName()) displayName else type.toString()
+          val name = mineStackObj.uiName ?: (if (hasDisplayName()) displayName else type.toString())
 
           "$YELLOW$UNDERLINE$BOLD$name"
         }
