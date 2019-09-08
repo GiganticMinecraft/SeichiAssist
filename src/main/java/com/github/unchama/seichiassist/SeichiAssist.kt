@@ -69,19 +69,25 @@ class SeichiAssist : JavaPlugin() {
       logger.info("${GREEN}config.ymlの設定値を書き換えて再起動してください")
     }
 
-    databaseGateway = DatabaseGateway.createInitializedInstance(
-        seichiAssistConfig.url, seichiAssistConfig.db, seichiAssistConfig.id, seichiAssistConfig.pw
-    )
+    try {
+      databaseGateway = DatabaseGateway.createInitializedInstance(
+          seichiAssistConfig.url, seichiAssistConfig.db, seichiAssistConfig.id, seichiAssistConfig.pw
+      )
+    } catch (e: Exception) {
+      e.printStackTrace()
+      logger.severe("データベース初期化に失敗しました。サーバーを停止します…")
+      Bukkit.shutdown()
+    }
 
     //mysqlからガチャデータ読み込み
     if (!databaseGateway.gachaDataManipulator.loadGachaData()) {
-      logger.info("ガチャデータのロードに失敗しました")
+      logger.severe("ガチャデータのロードに失敗しました")
       Bukkit.shutdown()
     }
 
     //mysqlからMineStack用ガチャデータ読み込み
     if (!databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
-      logger.info("MineStack用ガチャデータのロードに失敗しました")
+      logger.severe("MineStack用ガチャデータのロードに失敗しました")
       Bukkit.shutdown()
     }
 
