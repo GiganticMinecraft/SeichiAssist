@@ -2,6 +2,8 @@ name: @name@
 main: com.github.unchama.seichiassist.SeichiAssist
 version: @version@
 
+load: STARTUP
+
 commands:
   gacha:
     permission: multiseichiplugin.seichi
