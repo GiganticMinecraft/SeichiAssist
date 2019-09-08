@@ -609,36 +609,41 @@ object MenuInventoryData {
     AsyncInventorySetter.setItemAsync(inventory, 45, itemstack)
 
     //石炭を消費して粘土をレンガに変換4～4000
-    var num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("clay_ball")!!)
-    var num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick_item")!!)
-    var num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal")!!)
-    for (x in 0..3) {
-      val p10 = power10[x]
-      itemstack = ItemStack(Material.CLAY_BRICK, x)
-      itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CLAY_BRICK)
-      itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "石炭を消費して粘土をレンガに変換します"
-      lore = listOf("${ChatColor.RESET}${ChatColor.GRAY}粘土${p10 * 4}個+石炭${p10}個→レンガ${p10 * 4}個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "粘土の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "石炭の数:" + comma(num_3), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
-      )
-      itemmeta.lore = lore
-      itemstack.itemMeta = itemmeta
-      inventory.setItem(x, itemstack)
+    run {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("clay_ball")!!)
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick_item")!!)
+      val num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal")!!)
+      for (x in 0..3) {
+        val p10 = power10[x]
+        itemstack = ItemStack(Material.CLAY_BRICK, x)
+        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CLAY_BRICK)
+        itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "石炭を消費して粘土をレンガに変換します"
+        lore = listOf("${ChatColor.RESET}${ChatColor.GRAY}粘土${p10 * 4}個+石炭${p10}個→レンガ${p10 * 4}個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "粘土の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "石炭の数:" + comma(num_3), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
+        )
+        itemmeta.lore = lore
+        itemstack.itemMeta = itemmeta
+        inventory.setItem(x, itemstack)
+      }
     }
 
     //溶岩バケツを消費して粘土をレンガに変換50～5万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("clay_ball")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick_item")!!)
-    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket")!!)
-    for (x in 0..3) {
-      val p10 = power10[x]
-      itemstack = ItemStack(Material.CLAY_BRICK, x)
-      itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CLAY_BRICK)
-      itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "溶岩バケツを消費して粘土をレンガに変換します"
-      lore = ImmutableListFactory.of(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "粘土" + p10 * 50 + "個+溶岩バケツ" + p10 + "個→レンガ" + p10 * 50 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "粘土の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "溶岩バケツの数:" + comma(num_3), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
-      )
-      itemmeta.lore = lore
-      itemstack.itemMeta = itemmeta
-      inventory.setItem(x + 5, itemstack)
+    run {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("clay_ball")!!)
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick_item")!!)
+      val num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket")!!)
+      for (x in 0..3) {
+        val p10 = power10[x]
+        itemstack = ItemStack(Material.CLAY_BRICK, x)
+        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CLAY_BRICK)
+        itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "溶岩バケツを消費して粘土をレンガに変換します"
+        lore = ImmutableListFactory.of(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "粘土" + p10 * 50 + "個+溶岩バケツ" + p10 + "個→レンガ" + p10 * 50 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "粘土の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "溶岩バケツの数:" + comma(num_3), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
+        )
+        itemmeta.lore = lore
+        itemstack.itemMeta = itemmeta
+        inventory.setItem(x + 5, itemstack)
+      }
     }
+
     return inventory
   }
 
