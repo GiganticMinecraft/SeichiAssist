@@ -2863,93 +2863,81 @@ when (itemstackcurrent.type) {
 
     if (inventory.title != "$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください") return
 
-    var giveticket = 0
     /*
      * step1 for文でinventory内の対象商品の個数を計算
      * 非対象商品は返却boxへ
      */
-    //ドロップ用アイテムリスト(返却box)作成
-    val drop = ArrayList<ItemStack>()
 
-    //余剰鉱石返却用アイテムリスト
-    val amount = EnumMap<Material, Int>(Material::class.java)
+    val requiredAmountPerTicket = mapOf(
+        Material.COAL_ORE to 128,
+        Material.IRON_ORE to 64,
+        Material.GOLD_ORE to 8,
+        Material.LAPIS_ORE to 8,
+        Material.DIAMOND_ORE to 4,
+        Material.REDSTONE_ORE to 32,
+        Material.EMERALD_ORE to 4,         
+        Material.QUARTZ_ORE to 16
+    )
 
-    val seek = EnumMap<Material, Int>(Material::class.java)
-    seek[Material.COAL_ORE] = 128
-    seek[Material.IRON_ORE] = 64
-    seek[Material.GOLD_ORE] = 8
-    seek[Material.LAPIS_ORE] = 8
-    seek[Material.DIAMOND_ORE] = 4
-    seek[Material.REDSTONE_ORE] = 32
-    seek[Material.EMERALD_ORE] = 4
-    seek[Material.QUARTZ_ORE] = 16
+    val inventoryContents = inventory.contents.filterNotNull()
 
-    for (content in inventory.contents) {
-      //ないなら次へ
-      if (content == null) continue
+    val (itemsToExchange, rejectedItems) =
+        inventoryContents
+            .partition { it.type in requiredAmountPerTicket }
 
-      when (val type = content.type) {
-        in seek.keys -> {
-          amount[type] = (amount[type] ?: 0) + content.amount
-        }
+    val exchangingAmount = itemsToExchange
+        .groupBy { it.type }
+        .mapValues { (_, stacks) -> stacks.map { it.amount }.sum() }
 
-        else -> {
-          drop += content
-        }
-      }
-    }
-
-    //チケット計算
-    for (k in amount.keys) {
-      giveticket += (amount[k] ?: 0) / seek[k]!!
-    }
+    val ticketAmount = exchangingAmount
+        .map { (material, amount) -> amount / requiredAmountPerTicket[material]!! }
+        .sum()
 
     //プレイヤー通知
-    if (giveticket == 0) {
+    if (ticketAmount == 0) {
       player.sendMessage("${YELLOW}鉱石を認識しなかったか数が不足しています。全てのアイテムを返却します")
     } else {
-      player.sendMessage("${DARK_RED}交換券$RESET${GREEN}を${giveticket}枚付与しました")
+      player.sendMessage("${DARK_RED}交換券$RESET${GREEN}を${ticketAmount}枚付与しました")
     }
+
     /*
      * step2 交換券をインベントリへ
      */
-    val exchangeticket = ItemStack(Material.PAPER)
-    val itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER)
-    itemmeta.displayName = "$DARK_RED${BOLD}交換券"
-    itemmeta.addEnchant(Enchantment.PROTECTION_FIRE, 1, false)
-    itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-    exchangeticket.itemMeta = itemmeta
-
-    var count = 0
-    while (giveticket > 0) {
-      if (exchangeticket in player.inventory || !Util.isPlayerInventoryFull(player)) {
-        Util.addItem(player, exchangeticket)
-      } else {
-        Util.dropItem(player, exchangeticket)
+    val exchangeTicket = run {
+      ItemStack(Material.PAPER).apply {
+        itemMeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER).apply {
+          displayName = "$DARK_RED${BOLD}交換券"
+          addEnchant(Enchantment.PROTECTION_FIRE, 1, false)
+          addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        }
       }
-      giveticket--
-      count++
     }
-    if (count > 0) {
+
+    repeat(ticketAmount) {
+      Util.addItemToPlayerSafely(player, exchangeTicket)
+    }
+
+    if (ticketAmount > 0) {
       player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
       player.sendMessage("${GREEN}交換券の付与が終わりました")
     }
 
     /*
-     * step3 非対象商品・余剰鉱石の返却
+     * step3 非対象・余剰鉱石の返却
      */
-    for (k in amount.keys) {
-      val amount1 = (amount[k] ?: 0)
-      if (amount1 % seek[k]!! != 0) {
-        val f = ItemStack(k)
-        f.itemMeta = Bukkit.getItemFactory().getItemMeta(k)
-        f.amount = amount1
-        drop += f
-      }
-    }
+    val itemStacksToReturn =
+        exchangingAmount
+            .mapNotNull { (exchangedMaterial, exchangedAmount) ->
+              val returningAmount = exchangedAmount % requiredAmountPerTicket[exchangedMaterial]!!
+
+              if (returningAmount != 0)
+                ItemStack(exchangedMaterial).apply { amount = returningAmount }
+              else
+                null
+            } + rejectedItems
 
     //返却処理
-    for (itemStack in drop) {
+    itemStacksToReturn.forEach { itemStack ->
       Util.addItemToPlayerSafely(player, itemStack)
     }
   }
