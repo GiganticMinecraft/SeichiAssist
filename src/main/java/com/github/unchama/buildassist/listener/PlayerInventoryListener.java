@@ -5,7 +5,7 @@ import com.github.unchama.buildassist.MenuInventoryData;
 import com.github.unchama.buildassist.PlayerData;
 import com.github.unchama.buildassist.Util;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.MineStack;
+import com.github.unchama.seichiassist.data.player.MineStack;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
@@ -128,7 +128,7 @@ public class PlayerInventoryListener implements Listener {
 				if(playerdata.level < BuildAssist.Companion.getConfig().getblocklineuplevel() ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
-					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 				}
 			} else if (type == Material.WOOD){
 				//ブロックを並べるスキル設定
@@ -149,12 +149,12 @@ public class PlayerInventoryListener implements Listener {
 			} else if (type == Material.PAPER){
 				//ブロックを並べる設定メニューを開く
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
-				player.openInventory(MenuInventoryData.getBlockLineUpData(player));
+				player.openInventory(MenuInventoryData.INSTANCE.getBlockLineUpData(player));
 
 			} else if (type == Material.WORKBENCH){
 				//MineStackブロック一括クラフトメニュー画面へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
-				player.openInventory(MenuInventoryData.getBlockCraftData(player));
+				player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData(player));
 
 			}
 
@@ -186,7 +186,7 @@ public class PlayerInventoryListener implements Listener {
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					playerdata.AREAint = 5;
 					player.sendMessage(ChatColor.RED + "現在の範囲設定は"+(playerdata.AREAint *2 +1)+"×"+ (playerdata.AREAint *2 +1)+"です");
-					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 
 				}else if(amount == 7){
 					//範囲++
@@ -197,14 +197,14 @@ public class PlayerInventoryListener implements Listener {
 						playerdata.AREAint ++ ;
 					}
 					player.sendMessage(ChatColor.RED + "現在の範囲設定は"+(playerdata.AREAint *2 +1)+"×"+ (playerdata.AREAint *2 +1)+"です");
-					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 
 				}else if(amount == 5){
 					//範囲初期化
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					playerdata.AREAint = 2;
 					player.sendMessage(ChatColor.RED + "現在の範囲設定は"+(playerdata.AREAint *2 +1)+"×"+ (playerdata.AREAint *2 +1)+"です");
-					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 
 				}else if(amount == 3){
 					//範囲--
@@ -215,14 +215,14 @@ public class PlayerInventoryListener implements Listener {
 						playerdata.AREAint -- ;
 					}
 					player.sendMessage(ChatColor.RED + "現在の範囲設定は"+(playerdata.AREAint *2 +1)+"×"+ (playerdata.AREAint *2 +1)+"です");
-					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 
 				}else if(amount == 1){
 					//範囲MIN
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					playerdata.AREAint = 1;
 					player.sendMessage(ChatColor.RED + "現在の範囲設定は"+(playerdata.AREAint *2 +1)+"×"+ (playerdata.AREAint *2 +1)+"です");
-					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 				}
 			} else if (type == Material.STONE){
 				//範囲設置スキル ON/OFF
@@ -234,11 +234,11 @@ public class PlayerInventoryListener implements Listener {
 					if(!playerdata.ZoneSetSkillFlag) {
 						playerdata.ZoneSetSkillFlag = true ;
 						player.sendMessage(ChatColor.RED + "範囲設置スキルON" ) ;
-						player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+						player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 					}else {
 						playerdata.ZoneSetSkillFlag = false ;
 						player.sendMessage(ChatColor.RED + "範囲設置スキルOFF" ) ;
-						player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+						player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 					}
 				}
 
@@ -249,11 +249,11 @@ public class PlayerInventoryListener implements Listener {
 				if(!playerdata.zsSkillDirtFlag){
 					playerdata.zsSkillDirtFlag = true ;
 					player.sendMessage(ChatColor.RED + "土設置機能ON" ) ;
-					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 				}else {
 					playerdata.zsSkillDirtFlag = false ;
 					player.sendMessage(ChatColor.RED + "土設置機能OFF" ) ;
-					player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 				}
 			}else if(type == Material.CHEST){
 				//MineStack優先設定
@@ -264,11 +264,11 @@ public class PlayerInventoryListener implements Listener {
 					if(playerdata.zs_minestack_flag){
 						playerdata.zs_minestack_flag = false;
 						player.sendMessage(ChatColor.RED + "MineStack優先設定OFF");
-						player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+						player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 					}else{
 						playerdata.zs_minestack_flag = true;
 						player.sendMessage(ChatColor.RED + "MineStack優先設定ON");
-						player.openInventory(MenuInventoryData.getSetBlockSkillData(player));
+						player.openInventory(MenuInventoryData.INSTANCE.getSetBlockSkillData(player));
 					}
 				}
 			}
@@ -340,7 +340,7 @@ public class PlayerInventoryListener implements Listener {
 					}
 					player.sendMessage(ChatColor.GREEN + "ブロックを並べるスキル（仮） ：" + BuildAssist.Companion.getLine_up_str()[playerdata.line_up_flg] ) ;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					player.openInventory(MenuInventoryData.getBlockLineUpData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockLineUpData(player));
 				}
 
 			} else if (type == Material.STEP){
@@ -352,14 +352,14 @@ public class PlayerInventoryListener implements Listener {
 				}
 				player.sendMessage(ChatColor.GREEN + "ハーフブロック設定 ：" + BuildAssist.Companion.getLine_up_step_str()[playerdata.line_up_step_flg] ) ;
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.openInventory(MenuInventoryData.getBlockLineUpData(player));
+				player.openInventory(MenuInventoryData.INSTANCE.getBlockLineUpData(player));
 
 			} else if (type == Material.TNT){
 				//ブロックを並べるスキル一部ブロックを破壊して並べる設定
 				playerdata.line_up_des_flg ^= 1;
 				player.sendMessage(ChatColor.GREEN + "破壊設定 ：" + BuildAssist.Companion.getLine_up_off_on_str()[playerdata.line_up_des_flg] ) ;
 				player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-				player.openInventory(MenuInventoryData.getBlockLineUpData(player));
+				player.openInventory(MenuInventoryData.INSTANCE.getBlockLineUpData(player));
 
 			} else if (type == Material.CHEST){
 				//マインスタックの方を優先して消費する設定
@@ -369,7 +369,7 @@ public class PlayerInventoryListener implements Listener {
 					playerdata.line_up_minestack_flg ^= 1;
 					player.sendMessage(ChatColor.GREEN + "マインスタック優先設定 ：" + BuildAssist.Companion.getLine_up_off_on_str()[playerdata.line_up_minestack_flg] ) ;
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
-					player.openInventory(MenuInventoryData.getBlockLineUpData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockLineUpData(player));
 				}
 			}
 		}
@@ -431,7 +431,7 @@ public class PlayerInventoryListener implements Listener {
 			} else if (type == Material.SKULL_ITEM && "MHF_ArrowDown".equals(((SkullMeta)itemstackcurrent.getItemMeta()).getOwner()) ){
 				//2ページ目へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
-				player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+				player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 
 				//石を石ハーフブロックに変換10～10万
 			} else if (type == Material.STEP){
@@ -439,7 +439,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 
 					final MineStackObj inStack = Util.findMineStackObjectByName("stone");
@@ -455,7 +455,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount );
 						player.sendMessage(ChatColor.GREEN + "石"+ inAmount +"個→石ハーフブロック"+ outAmount +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData(player));
 				}
 
 				//石を石レンガに変換10～10万
@@ -464,7 +464,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 
 					final MineStackObj inStack = Util.findMineStackObjectByName("stone");
@@ -479,7 +479,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack, amount);
 						player.sendMessage(ChatColor.GREEN + "石"+ amount +"個→石レンガ"+ amount +"個変換");
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData(player));
 				}
 
 				//花崗岩を磨かれた花崗岩に変換10～1万
@@ -490,7 +490,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 
 					final MineStackObj inStack = Util.findMineStackObjectByName("granite");
@@ -505,7 +505,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack, amount);
 						player.sendMessage(ChatColor.GREEN + "花崗岩"+ amount +"個→磨かれた花崗岩"+ amount +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData(player));
 				}
 
 				//閃緑岩を磨かれた閃緑岩に変換10～1万
@@ -514,7 +514,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 
 					final MineStackObj inStack = Util.findMineStackObjectByName("diorite");
@@ -529,7 +529,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack, amount);
 						player.sendMessage(ChatColor.GREEN + "閃緑岩"+ amount +"個→磨かれた閃緑岩"+ amount +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData(player));
 				}
 
 				//安山岩を磨かれた安山岩に変換10～1万
@@ -538,7 +538,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 					final int x = itemstackcurrent.getAmount();
 					final MineStackObj inStack = Util.findMineStackObjectByName("andesite");
@@ -553,7 +553,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack, amount);
 						player.sendMessage(ChatColor.GREEN + "安山岩"+ amount +"個→磨かれた安山岩"+ amount +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData(player));
 				}
 
 				//ネザー水晶をネザー水晶ブロックに変換10～1万
@@ -562,7 +562,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 					final int x = itemstackcurrent.getAmount();
 					final MineStackObj inStack = Util.findMineStackObjectByName("quartz");
@@ -579,7 +579,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount);
 						player.sendMessage(ChatColor.GREEN + "ネザー水晶"+ inAmount +"個→ネザー水晶ブロック"+ outAmount +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData(player));
 				}
 
 				//レンガをレンガブロックに変換10～1万
@@ -588,7 +588,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 					final int x = itemstackcurrent.getAmount();
 					final MineStackObj inStack = Util.findMineStackObjectByName("brick_item");
@@ -605,7 +605,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount);
 						player.sendMessage(ChatColor.GREEN + "レンガ"+ inAmount +"個→レンガブロック"+ outAmount +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData(player));
 				}
 				//ネザーレンガをネザーレンガブロックに変換10～1万
 			} else if (type == Material.NETHER_BRICK){
@@ -613,7 +613,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 					final MineStackObj inStack = Util.findMineStackObjectByName("nether_brick_item");
 					final int inAmount = getPower10().get(x) * 4;
@@ -628,7 +628,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount);
 						player.sendMessage(ChatColor.GREEN + "ネザーレンガ"+ inAmount +"個→ネザーレンガブロック"+ outAmount +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData(player));
 				}
 
 			}
@@ -687,12 +687,12 @@ public class PlayerInventoryListener implements Listener {
 			if(type == Material.SKULL_ITEM && "MHF_ArrowUp".equals(((SkullMeta)itemstackcurrent.getItemMeta()).getOwner()) ){
 				//1ページ目へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
-				player.openInventory(MenuInventoryData.getBlockCraftData(player));
+				player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData(player));
 
 			} else if (type == Material.SKULL_ITEM && "MHF_ArrowDown".equals(((SkullMeta)itemstackcurrent.getItemMeta()).getOwner()) ){
 				//3ページ目へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
-				player.openInventory(MenuInventoryData.getBlockCraftData3(player));
+				player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData3(player));
 
 				//雪玉を雪（ブロック）に変換10～1万
 			} else if (type == Material.SNOW_BLOCK){
@@ -700,7 +700,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 
 					final int x = itemstackcurrent.getAmount();
 					final MineStackObj inStack = Util.findMineStackObjectByName("snow_ball");
@@ -717,7 +717,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount);
 						player.sendMessage(ChatColor.GREEN + "雪玉"+ inAmount +"個→雪（ブロック）"+ outAmount +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 				}
 
 				//ネザーウォートとネザーレンガを赤いネザーレンガに変換10～10万
@@ -726,7 +726,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 
 					final MineStackObj inStack1 = Util.findMineStackObjectByName("nether_stalk");
@@ -747,7 +747,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack, outAmount);
 						player.sendMessage(ChatColor.GREEN + "ネザーウォート"+ inAmount1 +"個+ネザーレンガ"+ inAmount2 +"個→赤いネザーレンガ"+ outAmount +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 				}
 
 				//石炭を消費して鉄鉱石を鉄インゴットに変換4～4000
@@ -755,7 +755,7 @@ public class PlayerInventoryListener implements Listener {
 				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 					final MineStackObj inStack1 = Util.findMineStackObjectByName("iron_ore");
 					final MineStackObj outStack = Util.findMineStackObjectByName("iron_ingot");
@@ -773,7 +773,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack, amount1);
 						player.sendMessage(ChatColor.GREEN + "鉄鉱石"+ amount1 +"個+石炭"+ inAmount2 +"個→鉄インゴット"+ amount1 +"個変換");
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 				}
 
 				//溶岩バケツを消費して鉄鉱石を鉄インゴットに変換50～5万
@@ -781,7 +781,7 @@ public class PlayerInventoryListener implements Listener {
 				if(playerdata.level < BuildAssist.Companion.getConfig().getMinestackBlockCraftlevel(3) ){
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 					final MineStackObj inStack1 = Util.findMineStackObjectByName("iron_ore");
 					final MineStackObj outStack1 = Util.findMineStackObjectByName("iron_ingot");
@@ -800,7 +800,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack2, amount2);
 						player.sendMessage(ChatColor.GREEN + "鉄鉱石"+ amount1 +"個+溶岩バケツ"+ amount2 +"個→鉄インゴット"+ amount1 +"個+バケツ"+ amount2 +"個変換");
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 				}
 
 
@@ -810,7 +810,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					final MineStackObj inStack2 = Util.findMineStackObjectByName("coal");
@@ -827,7 +827,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack1, amount1);
 						player.sendMessage(ChatColor.GREEN + "金鉱石"+ amount1 +"個+石炭"+ amount2 +"個→金インゴット"+ amount1 +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 				}
 
 				//溶岩バケツを消費して金鉱石を金インゴットに変換50～5万
@@ -836,7 +836,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					final MineStackObj inStack2 = Util.findMineStackObjectByName("lava_bucket");
@@ -855,7 +855,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack2, amount2);
 						player.sendMessage(ChatColor.GREEN + "金鉱石"+ amount1 +"個+溶岩バケツ"+ amount2 +"個→金インゴット"+ amount1 +"個+バケツ"+ amount2 +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 				}
 
 
@@ -865,7 +865,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 					final MineStackObj inStack1 = Util.findMineStackObjectByName("sand");
 					final MineStackObj outStack1 = Util.findMineStackObjectByName("glass");
@@ -882,7 +882,7 @@ public class PlayerInventoryListener implements Listener {
 						m.addStackedAmountOf(outStack1, amount1);
 						player.sendMessage(ChatColor.GREEN + "砂"+ amount1 +"個+石炭"+ amount2 +"個→ガラス"+ amount1 +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 				}
 
 				/*
@@ -895,7 +895,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 					final MineStackObj inStack1 = Util.findMineStackObjectByName("sand");
 					final MineStackObj outStack1 = Util.findMineStackObjectByName("glass");
@@ -913,7 +913,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack2, amount2);
 						player.sendMessage(ChatColor.GREEN + "砂"+ amount1 +"個+溶岩バケツ"+ amount2 +"個→ガラス"+ amount1 +"個+バケツ"+ amount2 +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 				}
 
 				/*
@@ -926,7 +926,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 					final MineStackObj inStack1 = Util.findMineStackObjectByName("netherrack");
 					final MineStackObj outStack1 = Util.findMineStackObjectByName("nether_brick_item");
@@ -942,7 +942,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack1, amount1);
 						player.sendMessage(ChatColor.GREEN + "ネザーラック"+ amount1 +"個+石炭"+ amount2 +"個→ネザーレンガ"+ amount1 +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 				}
 
 				/*
@@ -955,7 +955,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 					final MineStackObj inStack1 = Util.findMineStackObjectByName("netherrack");
 					final MineStackObj outStack1 = Util.findMineStackObjectByName("nether_brick_item");
@@ -973,7 +973,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack2, amount2);
 						player.sendMessage(ChatColor.GREEN + "ネザーラック"+ amount1 +"個+溶岩バケツ"+ amount2 +"個→ネザーレンガ"+ amount1 +"個+バケツ"+ amount2 +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 				}
 			}
 		}
@@ -1027,7 +1027,7 @@ public class PlayerInventoryListener implements Listener {
 			if(itemstackcurrent.getType() == Material.SKULL_ITEM && "MHF_ArrowUp".equals(((SkullMeta)itemstackcurrent.getItemMeta()).getOwner()) ){
 				//2ページ目へ
 				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, 0.1f);
-				player.openInventory(MenuInventoryData.getBlockCraftData2(player));
+				player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData2(player));
 
 /*			} else if (itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.getItemMeta()).getOwner().equals("MHF_ArrowDown") ){
 				//4ページ目へ
@@ -1041,7 +1041,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 					player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 1);
 					final MineStackObj inStack2 = Util.findMineStackObjectByName("coal");
@@ -1058,7 +1058,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack1, amount1);
 						player.sendMessage(ChatColor.GREEN + "粘土"+ amount1 +"個+石炭"+ amount2 +"個→レンガ"+ amount1 +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData3(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData3(player));
 				}
 
 				//溶岩バケツを消費して粘土をレンガに変換50～5万
@@ -1067,7 +1067,7 @@ public class PlayerInventoryListener implements Listener {
 					player.sendMessage(ChatColor.RED + "建築LVが足りません") ;
 				}else{
 
-					final com.github.unchama.seichiassist.data.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+					final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 					final int x = itemstackcurrent.getAmount();
 
 					final MineStackObj inStack2 = Util.findMineStackObjectByName("lava_bucket");
@@ -1088,7 +1088,7 @@ public class PlayerInventoryListener implements Listener {
 						playerdata_s.getMinestack().addStackedAmountOf(outStack2, amount2);
 						player.sendMessage(ChatColor.GREEN + "粘土"+ amount1 +"個+溶岩バケツ"+ amount2 +"個→レンガ"+ amount1 +"個+バケツ"+ amount2 +"個変換" );
 					}
-					player.openInventory(MenuInventoryData.getBlockCraftData3(player));
+					player.openInventory(MenuInventoryData.INSTANCE.getBlockCraftData3(player));
 				}
 			}
 		}
