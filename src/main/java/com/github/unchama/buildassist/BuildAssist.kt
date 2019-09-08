@@ -45,7 +45,7 @@ class BuildAssist(plugin: Plugin) {
     Bukkit.getServer().pluginManager.registerEvents(BlockPlaceEventListener(), plugin)    //ブロックを置いた時
 
 
-    for (p in plugin.server.onlinePlayers) {
+    for (p in Bukkit.getServer().onlinePlayers) {
       val uuid = p.uniqueId
 
       val playerdata = PlayerData(p)
