@@ -158,6 +158,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
 			 */
       listOf(
           1001 until 1013,
+          2001 until 2011,
           3001 until 3019,
           4001 until 4023,
           5001 until 5008,
