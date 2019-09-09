@@ -164,28 +164,19 @@ object BreakUtil {
         if (!mineStackObj.hasNameLore && !itemstack.itemMeta.hasLore() && !itemstack.itemMeta.hasDisplayName()) {
           return addToMineStackAfterLevelCheck()
         } else if (mineStackObj.hasNameLore && itemstack.itemMeta.hasDisplayName() && itemstack.itemMeta.hasLore()) {
-          //名前と説明文が付いているアイテム
-          val meta = itemstack.itemMeta
-
           //ガチャ以外のアイテム(がちゃりんご)
           if (mineStackObj.gachaType == -1) {
-            if (meta.displayName != StaticGachaPrizeFactory.getGachaRingoName() || meta.lore != StaticGachaPrizeFactory.getGachaRingoLore()) {
-              return false
-            }
+            if (!itemstack.isSimilar(StaticGachaPrizeFactory.getGachaRingo())) return false
 
             return addToMineStackAfterLevelCheck()
           } else {
             //ガチャ品
             val g = SeichiAssist.msgachadatalist[mineStackObj.gachaType]
-            val name = playerData.lowercaseName //プレイヤーのネームを見る
-            if (g.probability < 0.1) { //カタログギフト券を除く(名前があるアイテム)
-              if (!Util.itemStackContainsOwnerName(itemstack, name)) {
-                //所有者の名前が無ければreturn
-                return false
-              }
-            }
 
-            if (g.itemStackEquals(itemstack)) { //中身が同じ場合のみここに入る
+            //名前が記入されているはずのアイテムで名前がなければ
+            if (g.probability < 0.1 && !Util.itemStackContainsOwnerName(itemstack, player.name)) return false
+
+            if (g.itemStackEquals(itemstack)) {
               return addToMineStackAfterLevelCheck()
             }
           }
