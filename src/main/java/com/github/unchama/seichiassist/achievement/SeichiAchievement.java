@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.achievement;
 
 import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.buildassist.*;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
@@ -34,6 +34,18 @@ public enum SeichiAchievement {
     NO_1010(1010, player -> getRank(player) < 101),
     NO_1011(1011, player -> getRank(player) < 251),
     NO_1012(1012, player -> getRank(player) < 501),
+
+    //建築量
+    NO_2001(2001, player -> getPlacedBlockAmount(player) > 1000000),
+    NO_2002(2002, player -> getPlacedBlockAmount(player) > 800000),
+    NO_2003(2003, player -> getPlacedBlockAmount(player) > 650000),
+    NO_2004(2004, player -> getPlacedBlockAmount(player) > 500000),
+    NO_2005(2005, player -> getPlacedBlockAmount(player) > 400000),
+    NO_2006(2006, player -> getPlacedBlockAmount(player) > 300000),
+    NO_2007(2007, player -> getPlacedBlockAmount(player) > 200000),
+    NO_2008(2008, player -> getPlacedBlockAmount(player) > 100000),
+    NO_2009(2009, player -> getPlacedBlockAmount(player) > 50000),
+    NO_2010(2010, player -> getPlacedBlockAmount(player) > 10000),
 
     // 整地量
     NO_3001(3001, player -> getBrokenBlockAmount(player) > 2147483646L),
@@ -233,6 +245,11 @@ public enum SeichiAchievement {
 
     private static long getBrokenBlockAmount(Player player) {
         return getPlayerData(player).getTotalbreaknum();
+    }
+
+    private static int getPlacedBlockAmount(Player player) {
+        final com.github.unchama.buildassist.PlayerData playerdata = BuildAssist.playermap.get(player.getUniqueId());
+        return playerdata.totalbuildnum.intValue();
     }
 
     private static long getSpentTicks(Player player) {
