@@ -85,31 +85,50 @@ object OnClickTitleMenu : Listener {
           playerdata.updateNickname(style = PlayerNickName.Style.Level)
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_Present2") {
+        }
+        //予約付与システム受け取り処理
+        else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_Present2") {
           SeichiAchievement.tryAchieve(player, playerdata.giveachvNo)
           playerdata.giveachvNo = 0
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
-        } else if (itemstackcurrent.type == Material.ANVIL) {
+        }
+        //「二つ名組合せシステム」を開く
+        else if (itemstackcurrent.type == Material.ANVIL) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-        } else if (itemstackcurrent.type == Material.GOLD_PICKAXE) {
+        }
+        //カテゴリ「整地」を開く
+        else if (itemstackcurrent.type == Material.GOLD_PICKAXE) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleSeichi(player))
-        } else if (itemstackcurrent.type == Material.COMPASS) {
+        }
+        //カテゴリ「建築」を開く
+        else if(itemstackcurrent.getType().equals(Material.GLASS)){
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          playerdata.titlepage = 1 ;
+          player.openInventory(MenuInventoryData.getTitleBuild(player));
+        }
+        //カテゴリ「ログイン」を開く
+        else if (itemstackcurrent.type == Material.COMPASS) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleLogin(player))
-        } else if (itemstackcurrent.type == Material.BLAZE_POWDER) {
+        }
+        //カテゴリ「やりこみ」を開く
+        else if (itemstackcurrent.type == Material.BLAZE_POWDER) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleSuperTry(player))
-        } else if (itemstackcurrent.type == Material.EYE_OF_ENDER) {
+        } //カテゴリ「特殊」を開く
+        else if (itemstackcurrent.type == Material.EYE_OF_ENDER) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        }
+        //ホームメニューに戻る
+        else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           GlobalScope.launch(Schedulers.async) {
             sequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
@@ -117,20 +136,7 @@ object OnClickTitleMenu : Listener {
             ).runFor(player)
           }
           return
-        }//ホームメニューに戻る
-        //カテゴリ「特殊」を開く
-        //カテゴリ「やりこみ」を開く
-        /*
-        //カテゴリ「建築」を開く ※未実装
-        else if(itemstackcurrent.getType().equals(Material.WOODEN_DOOR)){
-          player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-          playerdata.titlepage = 1 ;
-          player.openInventory(MenuInventoryData.getTitleBuild(player));
         }
-        *///カテゴリ「ログイン」を開く
-        //カテゴリ「整地」を開く
-        //「二つ名組合せシステム」を開く
-        //予約付与システム受け取り処理
       }
 
       "${prefix}カテゴリ「整地」" -> {
@@ -172,14 +178,20 @@ object OnClickTitleMenu : Listener {
         //プレイヤーインベントリのクリックの場合終了
         if (event.clickedInventory.type == InventoryType.PLAYER) {
           return
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        }
+        //クリックしたボタンに応じた各処理内容の記述ここから
+        //実績「建築量」
+        if (itemstackcurrent.type === Material.BIRCH_WOOD_STAIRS) {
+          //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.openInventory(MenuInventoryData.getTitleBuildData(player))
+        }
+        //実績メニューに戻る
+        else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
-        }//クリックしたボタンに応じた各処理内容の記述ここから
-        //実績未実装のカテゴリです。
-        //実績メニューに戻る
-
+        }
       }
 
       "${prefix}カテゴリ「ログイン」" -> {
@@ -596,6 +608,80 @@ object OnClickTitleMenu : Listener {
           player.openInventory(MenuInventoryData.getTitleSeichi(player))
           return
         }//実績メニューに戻る
+      }
+      "${prefix}実績「建築量」" -> {
+        event.isCancelled = true
+
+        //実績解除処理部分の読みこみ
+        //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
+        //プレイヤーインベントリのクリックの場合終了
+        if (event.clickedInventory.type === InventoryType.PLAYER) {
+          return
+        }
+
+        /*
+         * クリックしたボタンに応じた各処理内容の記述ここから
+         */
+
+        if (itemstackcurrent.type === Material.BEDROCK) {
+          //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
+          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+          player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
+          player.openInventory(MenuInventoryData.getTitleBuildData(player))
+        } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
+          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+          val name = itemstackcurrent.itemMeta.displayName
+          when {
+            ("No2001「" + SeichiAssist.seichiAssistConfig.getTitle1(2001)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(2001) + "」" ) in name -> {
+              setTitle(2001,9905,2001)
+            }
+            ("No2002「" + SeichiAssist.seichiAssistConfig.getTitle1(2002)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(2002) + "」" ) in name -> {
+              setTitle(2002, 9905, 2002)
+            }
+            ("No2003「" + SeichiAssist.seichiAssistConfig.getTitle1(2003)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9909) + SeichiAssist.seichiAssistConfig.getTitle3(2003) + "」" ) in name -> {
+              setTitle(2003, 9909, 2003)
+            }
+            ("No2004「" + SeichiAssist.seichiAssistConfig.getTitle1(2004)
+                + SeichiAssist.seichiAssistConfig.getTitle3(2004)+ "」" ) in name ->{
+              setTitle(first = 2004, third = 2004)
+            }
+            ("No2005「" + SeichiAssist.seichiAssistConfig.getTitle1(2005)
+                + SeichiAssist.seichiAssistConfig.getTitle3(2005)+ "」" ) in name ->{
+              setTitle(first = 2005, third = 2005)
+            }
+            ("No2006「" + SeichiAssist.seichiAssistConfig.getTitle1(2006)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9909) + SeichiAssist.seichiAssistConfig.getTitle3(2006) + "」" ) in name -> {
+              setTitle(2006, 9909, 2006)
+            }
+            ("No2007「" + SeichiAssist.seichiAssistConfig.getTitle1(2007)
+                + SeichiAssist.seichiAssistConfig.getTitle3(2007)+ "」" ) in name -> {
+              setTitle(first = 2007, third = 2007)
+            }
+            ("No2008「" + SeichiAssist.seichiAssistConfig.getTitle1(2008)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(2008) + "」" ) in name -> {
+              setTitle(2008, 9901, 2008)
+            }
+            ("No2009「" + SeichiAssist.seichiAssistConfig.getTitle1(2009)
+                + SeichiAssist.seichiAssistConfig.getTitle3(2009)+ "」" ) in name -> {
+              setTitle(first = 2009, third = 2009)
+            }
+            ("No2010「" + SeichiAssist.seichiAssistConfig.getTitle1(2010)
+                + SeichiAssist.seichiAssistConfig.getTitle3(2010)+ "」" ) in name -> {
+              setTitle(first = 2010, third = 2010)
+            }
+          }
+          player.openInventory(MenuInventoryData.getTitleBuildData(player))
+
+        }
+        //実績メニューに戻る
+        else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.openInventory(MenuInventoryData.getTitleBuild(player))
+          return
+        }
       }
       "${prefix}実績「整地量」" -> {
         event.isCancelled = true
