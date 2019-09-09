@@ -17,147 +17,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.meta.SkullMeta
 
 class PlayerInventoryListener : Listener {
-  internal var playermap = BuildAssist.playermap
-
-  @EventHandler
-  fun onPlayerClickActiveSkillSellectEvent(event: InventoryClickEvent) {
-    //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
-      return
-    }
-
-    val itemstackcurrent = event.currentItem
-    val view = event.view
-    val he = view.player
-    //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
-      return
-    }
-
-    val topinventory = view.topInventory ?: return
-    //インベントリが存在しない時終了
-    //インベントリサイズが36でない時終了
-    if (topinventory.size != 36) {
-      return
-    }
-    val player = he as Player
-    val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
-
-    //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "「範囲設置スキル」設定画面") {
-      event.isCancelled = true
-
-      //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
-        return
-      }
-      /*
-			 * クリックしたボタンに応じた各処理内容の記述ここから
-			 */
-      
-      if (itemstackcurrent.type == Material.BARRIER) {
-        //ホームメニューへ帰還
-        player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-        GlobalScope.launch(Schedulers.async) { BuildMainMenu.open.runFor(player) }
-
-      } else if (itemstackcurrent.type == Material.SKULL_ITEM) {
-        if (itemstackcurrent.amount == 11) {
-          //範囲MAX
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          playerdata.AREAint = 5
-          player.sendMessage(ChatColor.RED.toString() + "現在の範囲設定は" + (playerdata.AREAint * 2 + 1) + "×" + (playerdata.AREAint * 2 + 1) + "です")
-          player.openInventory(MenuInventoryData.getSetBlockSkillData(player))
-
-        } else if (itemstackcurrent.amount == 7) {
-          //範囲++
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          if (playerdata.AREAint == 5) {
-            player.sendMessage(ChatColor.RED.toString() + "[範囲スキル設定]これ以上範囲を広くできません！")
-          } else {
-            playerdata.AREAint++
-          }
-          player.sendMessage(ChatColor.RED.toString() + "現在の範囲設定は" + (playerdata.AREAint * 2 + 1) + "×" + (playerdata.AREAint * 2 + 1) + "です")
-          player.openInventory(MenuInventoryData.getSetBlockSkillData(player))
-
-        } else if (itemstackcurrent.amount == 5) {
-          //範囲初期化
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          playerdata.AREAint = 2
-          player.sendMessage(ChatColor.RED.toString() + "現在の範囲設定は" + (playerdata.AREAint * 2 + 1) + "×" + (playerdata.AREAint * 2 + 1) + "です")
-          player.openInventory(MenuInventoryData.getSetBlockSkillData(player))
-
-        } else if (itemstackcurrent.amount == 3) {
-          //範囲--
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          if (playerdata.AREAint == 1) {
-            player.sendMessage(ChatColor.RED.toString() + "[範囲スキル設定]これ以上範囲を狭くできません！")
-          } else {
-            playerdata.AREAint--
-          }
-          player.sendMessage(ChatColor.RED.toString() + "現在の範囲設定は" + (playerdata.AREAint * 2 + 1) + "×" + (playerdata.AREAint * 2 + 1) + "です")
-          player.openInventory(MenuInventoryData.getSetBlockSkillData(player))
-
-        } else if (itemstackcurrent.amount == 1) {
-          //範囲MIN
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          playerdata.AREAint = 1
-          player.sendMessage(ChatColor.RED.toString() + "現在の範囲設定は" + (playerdata.AREAint * 2 + 1) + "×" + (playerdata.AREAint * 2 + 1) + "です")
-          player.openInventory(MenuInventoryData.getSetBlockSkillData(player))
-        }
-      } else if (itemstackcurrent.type == Material.STONE) {
-        //範囲設置スキル ON/OFF
-        //範囲設置スキル ON/OFF
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        if (playerdata.level < BuildAssist.config.zoneSetSkillLevel) {
-          player.sendMessage(ChatColor.RED.toString() + "建築LVが足りません")
-        } else {
-          if (playerdata.ZoneSetSkillFlag == false) {
-            playerdata.ZoneSetSkillFlag = true
-            player.sendMessage(ChatColor.RED.toString() + "範囲設置スキルON")
-            player.openInventory(MenuInventoryData.getSetBlockSkillData(player))
-          } else if (playerdata.ZoneSetSkillFlag == true) {
-            playerdata.ZoneSetSkillFlag = false
-            player.sendMessage(ChatColor.RED.toString() + "範囲設置スキルOFF")
-            player.openInventory(MenuInventoryData.getSetBlockSkillData(player))
-          }
-        }
-
-
-      } else if (itemstackcurrent.type == Material.DIRT) {
-        //範囲設置スキル、土設置 ON/OFF
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        if (playerdata.zsSkillDirtFlag == false) {
-          playerdata.zsSkillDirtFlag = true
-          player.sendMessage(ChatColor.RED.toString() + "土設置機能ON")
-          player.openInventory(MenuInventoryData.getSetBlockSkillData(player))
-        } else if (playerdata.zsSkillDirtFlag == true) {
-          playerdata.zsSkillDirtFlag = false
-          player.sendMessage(ChatColor.RED.toString() + "土設置機能OFF")
-          player.openInventory(MenuInventoryData.getSetBlockSkillData(player))
-        }
-      } else if (itemstackcurrent.type == Material.CHEST) {
-        //MineStack優先設定
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        if (playerdata.level < BuildAssist.config.zoneskillMinestacklevel) {
-          player.sendMessage(ChatColor.RED.toString() + "建築LVが足りません")
-        } else {
-          if (playerdata.zs_minestack_flag == true) {
-            playerdata.zs_minestack_flag = false
-            player.sendMessage(ChatColor.RED.toString() + "MineStack優先設定OFF")
-            player.openInventory(MenuInventoryData.getSetBlockSkillData(player))
-          } else {
-            playerdata.zs_minestack_flag = true
-            player.sendMessage(ChatColor.RED.toString() + "MineStack優先設定ON")
-            player.openInventory(MenuInventoryData.getSetBlockSkillData(player))
-          }
-        }
-      }
-
-    }
-
-  }
-
+  internal var playerMap = BuildAssist.playermap
 
   //ブロックを並べるスキル（仮）設定画面
   @EventHandler
@@ -183,7 +43,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
 
     //プレイヤーデータが無い場合は処理終了
 
@@ -276,7 +136,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
 
     //プレイヤーデータが無い場合は処理終了
 
@@ -501,7 +361,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
 
     //プレイヤーデータが無い場合は処理終了
 
@@ -792,7 +652,7 @@ class PlayerInventoryListener : Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid] ?: return
+    val playerdata = playerMap[uuid] ?: return
 
     //プレイヤーデータが無い場合は処理終了
 
