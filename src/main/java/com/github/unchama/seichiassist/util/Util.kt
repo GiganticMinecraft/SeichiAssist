@@ -414,14 +414,13 @@ object Util {
     return skull
   }
 
-  fun ItemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean {
-
+  fun itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean {
     val meta = itemstack.itemMeta
-    val lore: List<String>
-    if (meta.hasLore()) {
-      lore = meta.lore
+
+    val lore: List<String> = if (meta.hasLore()) {
+      meta.lore
     } else {
-      lore = ArrayList()
+      ArrayList()
     }
 
     for (s in lore) {
@@ -429,38 +428,12 @@ object Util {
         var idx = s.lastIndexOf("所有者：")
         idx += 4 //「所有者：」の右端(名前の左端)までidxを移動
         val temp = s.substring(idx)
-        if (temp == name) {
+        if (temp.equals(name, ignoreCase = true)) {
           return true
         }
       }
     }
     return false
-  }
-
-  fun ItemStackResetName(itemstack: ItemStack): ItemStack {
-
-    val itemstack_temp = ItemStack(itemstack)
-    val meta = itemstack_temp.itemMeta
-    val lore: MutableList<String>
-    if (meta != null) {
-      if (meta.hasLore()) {
-        lore = meta.lore
-
-        var i: Int
-        i = 0
-        while (i < lore.size) {
-          if (lore[i].contains("所有者：")) { //"所有者:がある"
-            break
-          }
-          i++
-        }
-        if (i != lore.size) { //所有者表記が無かった場合を除く
-          lore.removeAt(i)
-          meta.lore = lore
-        }
-      }
-    }
-    return itemstack_temp
   }
 
   /**

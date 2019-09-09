@@ -219,7 +219,7 @@ public class AssaultTask extends BukkitRunnable{
 		Block breakblock;
 		//壊されるエリアの設定
 		//現在のプレイヤーの向いている方向
-		String dir = BreakUtil.getCardinalDirection(player);
+		String dir = BreakUtil.INSTANCE.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(assaultarea.getDir())){
 			assaultarea.setDir(dir);
@@ -240,7 +240,7 @@ public class AssaultTask extends BukkitRunnable{
 							|| lava_materialflag || water_materialflag
 							){
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block) || !breakflag){
-							if(BreakUtil.canBreak(player, breakblock)){
+							if(BreakUtil.INSTANCE.canBreak(player, breakblock)){
 								if(lava_materialflag){
 									lavas.add(breakblock);
 								}else if(water_materialflag){
@@ -256,7 +256,7 @@ public class AssaultTask extends BukkitRunnable{
 			}
 		}
 		//重力値計算
-		int gravity = BreakUtil.getGravity(player,block,true);
+		int gravity = BreakUtil.INSTANCE.getGravity(player,block,true);
 
 		// 実際に破壊するブロック数の計算分岐
 		int breaksum = 0;
@@ -280,7 +280,7 @@ public class AssaultTask extends BukkitRunnable{
 
 
 		//減る耐久値の計算
-		short durability = (short) (tool.getDurability() + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaksum));
+		short durability = (short) (tool.getDurability() + BreakUtil.INSTANCE.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaksum));
 
 
 		//重力値の判定
@@ -329,21 +329,21 @@ public class AssaultTask extends BukkitRunnable{
 		if(waterflag){
 			for (Block value : waters) {
 				value.setType(Material.PACKED_ICE);
-				BreakUtil.logRemove(player, value);
+				BreakUtil.INSTANCE.logRemove(player, value);
 			}
 		}else if(lavaflag){
 			for (Block value : lavas) {
 				value.setType(Material.MAGMA);
-				BreakUtil.logRemove(player, value);
+				BreakUtil.INSTANCE.logRemove(player, value);
 			}
 		}else if(fluidflag) {
 			for (Block item : waters) {
 				item.setType(Material.PACKED_ICE);
-				BreakUtil.logRemove(player, item);
+				BreakUtil.INSTANCE.logRemove(player, item);
 			}
 			for (Block value : lavas) {
 				value.setType(Material.MAGMA);
-				BreakUtil.logRemove(player, value);
+				BreakUtil.INSTANCE.logRemove(player, value);
 			}
 		}else if(breakflag){
 			for (Block item : waters) {
@@ -353,7 +353,7 @@ public class AssaultTask extends BukkitRunnable{
 				value.setType(Material.AIR);
 			}
 			for(Block b:blocks){
-				BreakUtil.breakBlock(player, b, player.getLocation(), tool,false);
+				BreakUtil.INSTANCE.breakBlock(player, b, player.getLocation(), tool,false);
 				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}

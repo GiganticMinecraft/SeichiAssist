@@ -91,7 +91,7 @@ public class EntityListener implements Listener {
 		}
 
 		//整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
-		if(BreakUtil.getGravity(player, block, false) > 3){
+		if(BreakUtil.INSTANCE.getGravity(player, block, false) > 3){
 			player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 			return;
 		}
@@ -169,7 +169,7 @@ public class EntityListener implements Listener {
 		Block breakblock;
 		BreakArea area = playerdata.getActiveskilldata().area;
 		//現在のプレイヤーの向いている方向
-		String dir = BreakUtil.getCardinalDirection(player);
+		String dir = BreakUtil.INSTANCE.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(area.getDir())){
 			area.setDir(dir);
@@ -194,8 +194,8 @@ public class EntityListener implements Listener {
 
 					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getSettings().getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
 						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
-							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
-								if(BreakUtil.canBreak(player, breakblock)){
+							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.INSTANCE.BlockEqualsMaterialList(breakblock)){
+								if(BreakUtil.INSTANCE.canBreak(player, breakblock)){
 									if(breakblock.getType() == Material.STATIONARY_LAVA){
 										lavas.add(breakblock);
 									}else{
@@ -215,7 +215,7 @@ public class EntityListener implements Listener {
 								|| (block.getType() == Material.REDSTONE_ORE && breakblock.getType() == Material.GLOWING_REDSTONE_ORE)
 								|| breakblock.getType() == Material.STATIONARY_LAVA
 								){
-							if(BreakUtil.canBreak(player, breakblock)){
+							if(BreakUtil.INSTANCE.canBreak(player, breakblock)){
 								if(breakblock.getType() == Material.STATIONARY_LAVA){
 									lavas.add(breakblock);
 								}else{
@@ -231,7 +231,7 @@ public class EntityListener implements Listener {
 
 
 		//重力値計算
-		int gravity = BreakUtil.getGravity(player,block,false);
+		int gravity = BreakUtil.INSTANCE.getGravity(player,block,false);
 
 
 		//減る経験値計算
@@ -247,9 +247,9 @@ public class EntityListener implements Listener {
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナ：" + useMana);
 		}
 		//減る耐久値の計算
-		short durability = (short) (tool.getDurability() + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breakBlock.size()));
+		short durability = (short) (tool.getDurability() + BreakUtil.INSTANCE.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breakBlock.size()));
 		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-		durability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavas.size());
+		durability += BreakUtil.INSTANCE.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavas.size());
 
 
 		//重力値の判定
@@ -303,7 +303,7 @@ public class EntityListener implements Listener {
 		//エフェクトが指定されていないときの処理
 		if(playerdata.getActiveskilldata().effectnum == 0){
 			for(final Block b : breakBlock){
-				BreakUtil.breakBlock(player, b, player.getLocation(), tool,false);
+				BreakUtil.INSTANCE.breakBlock(player, b, player.getLocation(), tool,false);
 				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}
