@@ -95,35 +95,35 @@ object OnClickTitleMenu : Listener {
         }
         //「二つ名組合せシステム」を開く
         else if (itemstackcurrent.type == Material.ANVIL) {
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         }
         //カテゴリ「整地」を開く
         else if (itemstackcurrent.type == Material.GOLD_PICKAXE) {
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleSeichi(player))
         }
         //カテゴリ「建築」を開く
         else if(itemstackcurrent.getType().equals(Material.GLASS)){
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           playerdata.titlepage = 1 ;
           player.openInventory(MenuInventoryData.getTitleBuild(player));
         }
         //カテゴリ「ログイン」を開く
         else if (itemstackcurrent.type == Material.COMPASS) {
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleLogin(player))
         }
         //カテゴリ「やりこみ」を開く
         else if (itemstackcurrent.type == Material.BLAZE_POWDER) {
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleSuperTry(player))
         } //カテゴリ「特殊」を開く
         else if (itemstackcurrent.type == Material.EYE_OF_ENDER) {
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
         }
@@ -183,12 +183,12 @@ object OnClickTitleMenu : Listener {
         //実績「建築量」
         if (itemstackcurrent.type === Material.BIRCH_WOOD_STAIRS) {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.getTitleBuildData(player))
         }
         //実績メニューに戻る
         else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
         }
@@ -678,7 +678,7 @@ object OnClickTitleMenu : Listener {
         }
         //実績メニューに戻る
         else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
-          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
+          player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.getTitleBuild(player))
           return
         }
