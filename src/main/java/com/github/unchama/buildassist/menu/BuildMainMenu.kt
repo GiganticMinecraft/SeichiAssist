@@ -201,7 +201,7 @@ object BuildMainMenu : Menu {
                   if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
                     "${RED}建築LVが足りません".asMessageEffect()
                   } else {
-                    TargetedEffect<Player> { it.openInventory(MenuInventoryData.getSetBlockSkillData(it)) }
+                    BlockPlacementSkillMenu.open
                   }
                 }
             )

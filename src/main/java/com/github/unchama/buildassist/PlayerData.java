@@ -21,6 +21,7 @@ public class PlayerData {
 	public boolean Endlessfly ;
 	public boolean ZoneSetSkillFlag ;
 	public boolean zsSkillDirtFlag;
+	// TODO: こいつは殺す
 	public int AREAint ;
 
 	public BigDecimal build_num_1min;			//1分のブロック設置数
