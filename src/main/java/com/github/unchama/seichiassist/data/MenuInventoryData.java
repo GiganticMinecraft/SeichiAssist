@@ -761,7 +761,8 @@ public class MenuInventoryData {
         itemstack = new ItemStack(Material.GLASS, 1);
         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
         itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「建築」");
-        lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.YELLOW + "今後実装予定のカテゴリです。");
+        lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "以下の実績が含まれます。"
+                ,ChatColor.RESET + "" +  ChatColor.AQUA + "「建築量」");
         itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         itemmeta.setLore(lore);
         itemstack.setItemMeta(itemmeta);
@@ -1453,7 +1454,14 @@ public class MenuInventoryData {
 
 
         //ボタン情報
-        // [ここにカテゴリを設定]
+        itemstack = new ItemStack(Material.BIRCH_WOOD_STAIRS,1);
+        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BIRCH_WOOD_STAIRS);
+        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績「建築量」" );
+        lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "獲得状況を表示します。");
+        itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        itemmeta.setLore(lore);
+        itemstack.setItemMeta(itemmeta);
+        inventory.setItem(13,itemstack);
 
         // 1ページ目を開く
         itemstack = new ItemStack(Material.SKULL_ITEM, 1);
@@ -2480,6 +2488,270 @@ public class MenuInventoryData {
         return inventory;
     }
 
+    //実績「建築量」
+    public static Inventory getTitleBuildData(Player p) {
+        //プレイヤーを取得
+        Player player = p.getPlayer();
+        //UUID取得
+        UUID uuid = player.getUniqueId();
+        //プレイヤーデータ
+        PlayerData playerdata = SeichiAssist.Companion.getPlayermap().get(uuid);
+        //念のためエラー分岐
+        if (playerdata == null) {
+            player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
+            Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
+            return null;
+        }
+        Inventory inventory = Bukkit.getServer().createInventory(null, 4 * 9, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績「建築量」");
+        ItemStack itemstack;
+        ItemMeta itemmeta;
+        SkullMeta skullmeta;
+        List<String> lore;
+        //実績設定・解禁ボタン
+        //建築量100万突破
+        if(playerdata.getTitleFlags().get(2001)){
+            itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+            itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2001「"+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(2001)
+                    + SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(9905) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(2001) +"」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 100万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(0,itemstack);
+        }else{
+            itemstack = new ItemStack(Material.BEDROCK,1);
+            itemmeta = ItemMetaFactory.BEDROCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2001「???」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 100万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(0,itemstack);
+        }
+        //80万突破
+        if(playerdata.getTitleFlags().get(2002)){
+            itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+            itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2002「"+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(2002)
+                    + SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(9905) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(2002) +"」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 80万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(1,itemstack);
+        }else{
+            itemstack = new ItemStack(Material.BEDROCK,1);
+            itemmeta = ItemMetaFactory.BEDROCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2002「???」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 80万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(1,itemstack);
+        }
+        //65万突破
+        if(playerdata.getTitleFlags().get(2003)){
+            itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+            itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2003「"+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(2003)
+                    + SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(9909) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(2003) +"」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 65万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(2,itemstack);
+        }else{
+            itemstack = new ItemStack(Material.BEDROCK,1);
+            itemmeta = ItemMetaFactory.BEDROCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2003「???」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 65万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(2,itemstack);
+        }
+        //50万突破
+        if(playerdata.getTitleFlags().get(2004)){
+            itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+            itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2004「"+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(2004)
+                    + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(2004) +"」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 50万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(3,itemstack);
+        }else{
+            itemstack = new ItemStack(Material.BEDROCK,1);
+            itemmeta = ItemMetaFactory.BEDROCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2004「???」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 50万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(3,itemstack);
+        }
+        //40万突破
+        if(playerdata.getTitleFlags().get(2005)){
+            itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+            itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2005「"+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(2005)
+                    + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(2005) +"」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 40万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(4,itemstack);
+        }else{
+            itemstack = new ItemStack(Material.BEDROCK,1);
+            itemmeta = ItemMetaFactory.BEDROCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2005「???」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 40万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(4,itemstack);
+        }
+        //30万突破
+        if(playerdata.getTitleFlags().get(2006)){
+            itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+            itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2006「"+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(2006)
+                    + SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(9909) + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(2006) +"」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 30万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(5,itemstack);
+        }else{
+            itemstack = new ItemStack(Material.BEDROCK,1);
+            itemmeta = ItemMetaFactory.BEDROCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2006「???」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 30万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(5,itemstack);
+        }
+        //20万突破
+        if(playerdata.getTitleFlags().get(2007)){
+            itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+            itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2007「"+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(2007)
+                    + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(2007) +"」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 20万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(6,itemstack);
+        }else{
+            itemstack = new ItemStack(Material.BEDROCK,1);
+            itemmeta = ItemMetaFactory.BEDROCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2007「???」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 20万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(6,itemstack);
+        }
+        //10万突破
+        if(playerdata.getTitleFlags().get(2008)){
+            itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+            itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2008「"+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(2008)
+                    + SeichiAssist.Companion.getSeichiAssistConfig().getTitle2(9901) +SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(2008) +"」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 10万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(7,itemstack);
+        }else{
+            itemstack = new ItemStack(Material.BEDROCK,1);
+            itemmeta = ItemMetaFactory.BEDROCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2008「???」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 10万 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(7,itemstack);
+        }
+        //5万突破
+        if(playerdata.getTitleFlags().get(2009)){
+            itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+            itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2009「"+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(2009)
+                    + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(2009) +"」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 50000 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(8,itemstack);
+        }else{
+            itemstack = new ItemStack(Material.BEDROCK,1);
+            itemmeta = ItemMetaFactory.BEDROCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2009「???」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 50000 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(8,itemstack);
+        }
+        //1万突破
+        if(playerdata.getTitleFlags().get(2010)){
+            itemstack = new ItemStack(Material.DIAMOND_BLOCK,1);
+            itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2010「"+ SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(2010)
+                    + SeichiAssist.Companion.getSeichiAssistConfig().getTitle3(2010) +"」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 10000 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(17,itemstack);
+        }else{
+            itemstack = new ItemStack(Material.BEDROCK,1);
+            itemmeta = ItemMetaFactory.BEDROCK.getValue();
+            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No2010「???」" );
+            lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.RED + "条件：建築量が 10000 を超える"
+                    ,ChatColor.RESET + "" +  ChatColor.RED + "※この実績は自動解禁式です。");
+            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            itemmeta.setLore(lore);
+            itemstack.setItemMeta(itemmeta);
+            inventory.setItem(17,itemstack);
+        }
+        // 1ページ目を開く
+        itemstack = new ItemStack(Material.SKULL_ITEM, 1);
+        skullmeta = ItemMetaFactory.SKULL.getValue();
+        itemstack.setDurability((short) 3);
+        skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「建築」カテゴリメニューへ");
+        lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
+        skullmeta.setLore(lore);
+        skullmeta.setOwner("MHF_ArrowLeft");
+        itemstack.setItemMeta(skullmeta);
+        AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
+
+        return inventory;
+    }
 
     //実績「参加時間」
     public static Inventory getTitleTimeData(Player p) {

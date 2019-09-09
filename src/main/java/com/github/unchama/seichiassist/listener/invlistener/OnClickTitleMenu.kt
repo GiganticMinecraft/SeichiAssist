@@ -597,7 +597,6 @@ object OnClickTitleMenu : Listener {
           return
         }//実績メニューに戻る
       }
-
       "${prefix}実績「整地量」" -> {
         event.isCancelled = true
 
