@@ -111,7 +111,7 @@ class PlayerData constructor(
   //現在座標
   var loc: Location? = null
 
-  val mebius: MebiusTask = MebiusTask(this)
+  val mebius: MebiusTask by lazy { MebiusTask(uuid) }
 
   //放置時間
   var idleMinute = 0
