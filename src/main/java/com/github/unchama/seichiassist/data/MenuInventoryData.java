@@ -2447,7 +2447,7 @@ public class MenuInventoryData {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3011「" + SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(3011) + "」");
-            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "条件：整地量が 10000 を超える"
+            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "条件：整地量が 1万 を超える"
                     , ChatColor.RESET + "" + ChatColor.RED + "※この実績は自動解禁式です。");
             itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             itemmeta.setLore(lore);
@@ -2457,7 +2457,7 @@ public class MenuInventoryData {
             itemstack = new ItemStack(Material.BEDROCK, 1);
             itemmeta = ItemMetaFactory.BEDROCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3011「???」");
-            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "条件：整地量が 10000 を超える"
+            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "条件：整地量が 1万 を超える"
                     , ChatColor.RESET + "" + ChatColor.RED + "※この実績は自動解禁式です。");
             itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             itemmeta.setLore(lore);
