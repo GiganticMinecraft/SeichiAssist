@@ -10,6 +10,7 @@ import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.category
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.ops.lore
 import com.github.unchama.targetedeffect.*
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor.*
@@ -22,6 +23,20 @@ import kotlin.math.min
 internal object MineStackButtons {
   private fun withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect<Player> {
     fun ItemStack.withAmount(amount: Int): ItemStack = clone().apply { this.amount = amount }
+    fun MineStackObj.generateParameterizedStack(player: Player): ItemStack {
+      // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
+      if (this.stackType == MineStackObjectCategory.GACHA_PRIZES && this.gachaType >= 0) {
+        val gachaData = SeichiAssist.msgachadatalist[this.gachaType]
+        if (gachaData.probability < 0.1) {
+          return this.itemStack.clone().apply {
+            val itemLore = if (itemMeta.hasLore()) itemMeta.lore else listOf()
+            lore = itemLore + "$RESET${DARK_GREEN}所有者：${player.name}"
+          }
+        }
+      }
+
+      return mineStackObj.itemStack.clone()
+    }
 
     return computedEffect { player ->
       val playerData = SeichiAssist.playermap[player.uniqueId]!!
@@ -29,10 +44,11 @@ internal object MineStackButtons {
       val grantAmount = min(mineStackObj.itemStack.maxStackSize.toLong(), currentAmount).toInt()
 
       val soundEffectPitch = if (currentAmount >= grantAmount) 1.0f else 0.5f
+      val grantItemStack = mineStackObj.generateParameterizedStack(player).withAmount(grantAmount)
 
       sequentialEffect(
           unfocusedEffect {
-            Util.addItemToPlayerSafely(player, mineStackObj.itemStack.withAmount(grantAmount))
+            Util.addItemToPlayerSafely(player, grantItemStack)
             playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong())
           },
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch)
