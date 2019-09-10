@@ -68,7 +68,7 @@ object BlockPlacementSkillMenu : Menu {
         .title("$YELLOW$UNDERLINE${BOLD}現在の設定は以下の通りです")
         .lore(
             "$RESET$AQUA${UNDERLINE}スキルの使用設定: ${if(isSkillEnabled) "ON" else "OFF"}",
-            "$RESET$AQUA${UNDERLINE}スキルの範囲設定: $skillRange*$skillRange",
+            "$RESET$AQUA${UNDERLINE}スキルの範囲設定: $skillRange×$skillRange",
             "$RESET$AQUA${UNDERLINE}MineStack優先設定: ${if(isConsumingMineStack) "ON" else "OFF"}"
         )
         .build()
@@ -83,7 +83,7 @@ object BlockPlacementSkillMenu : Menu {
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowUp")
         .title("$RED$UNDERLINE${BOLD}範囲設定を最大値に変更")
         .lore(
-            "$RESET${AQUA}現在の範囲設定： $currentRange*$currentRange",
+            "$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
             "$RESET$AQUA${UNDERLINE}変更後の範囲設定： 11×11"
         )
         .amount(11)
@@ -94,7 +94,7 @@ object BlockPlacementSkillMenu : Menu {
         LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             unfocusedEffect { playerData.AREAint = 5 },
-            "${RED}現在の範囲設定は 11*11 です".asMessageEffect(),
+            "${RED}現在の範囲設定は 11×11 です".asMessageEffect(),
             open
         )
     )
@@ -108,8 +108,19 @@ object BlockPlacementSkillMenu : Menu {
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowUp")
         .title("$YELLOW$UNDERLINE${BOLD}範囲設定を一段階大きくする")
         .lore(
-            "$RESET${AQUA}現在の範囲設定： $currentRange*$currentRange",
-            "$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange"
+            listOf(
+                "$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange"
+            ) +
+                if (playerData.AREAint == 5) {
+                  listOf(
+                      "$RESET${RED}これ以上範囲設定を大きくできません。"
+                  )
+                } else {
+                  listOf(
+                      "$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
+                      "$RESET${RED}※範囲設定の最大値は11×11※"
+                  )
+                }
         )
         .amount(7)
         .build()
@@ -117,16 +128,16 @@ object BlockPlacementSkillMenu : Menu {
     Button(
         iconItemStack,
         LeftClickButtonEffect(
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             deferredEffect {
-              if (playerData.AREAint == 5) {
-                "$RED[範囲スキル設定]これ以上範囲を広くできません！".asMessageEffect()
-              } else {
-                unfocusedEffect { playerData.AREAint++ }
-              }
-            },
-            "${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
-            open
+              if (playerData.AREAint < 5)
+                sequentialEffect(
+                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+                    unfocusedEffect { playerData.AREAint++ },
+                    "${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
+                    open
+                )
+              else EmptyEffect
+            }
         )
     )
   }
@@ -138,9 +149,8 @@ object BlockPlacementSkillMenu : Menu {
     val iconItemStack = SkullItemStackBuilder("MHF_TNT")
         .title("$RED$UNDERLINE${BOLD}範囲設定を初期値に変更")
         .lore(
-            "$RESET${AQUA}現在の範囲設定： $currentRange*$currentRange",
-            "$RESET$AQUA${UNDERLINE}変更後の範囲設定： 5×5",
-            "$RESET${RED}※範囲設定の最大値は11×11※"
+            "$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
+            "$RESET$AQUA${UNDERLINE}変更後の範囲設定： 5×5"
         )
         .amount(5)
         .build()
@@ -164,9 +174,19 @@ object BlockPlacementSkillMenu : Menu {
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowDown")
         .title("$YELLOW$UNDERLINE${BOLD}範囲設定を一段階小さくする")
         .lore(
-            "$RESET${AQUA}現在の範囲設定： $currentRange*$currentRange",
-            "$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
-            "$RESET${RED}※範囲設定の最小値は3×3※"
+            listOf(
+                "$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange"
+            ) +
+                if (playerData.AREAint == 1) {
+                  listOf(
+                      "${RED}これ以上範囲設定を小さくできません。"
+                  )
+                } else {
+                  listOf(
+                      "$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
+                      "$RESET${RED}※範囲設定の最大値は3×3※"
+                  )
+                }
         )
         .amount(3)
         .build()
@@ -174,16 +194,16 @@ object BlockPlacementSkillMenu : Menu {
     Button(
         iconItemStack,
         LeftClickButtonEffect(
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             deferredEffect {
-              if (playerData.AREAint == 1) {
-                "${RED}[範囲スキル設定]これ以上範囲を狭くできません！".asMessageEffect()
-              } else {
-                unfocusedEffect { playerData.AREAint-- }
-              }
-            },
-            "${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
-            open
+              if (playerData.AREAint > 1)
+                sequentialEffect(
+                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+                    unfocusedEffect { playerData.AREAint-- },
+                    "${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
+                    open
+                )
+              else EmptyEffect
+            }
         )
     )
   }
@@ -195,7 +215,7 @@ object BlockPlacementSkillMenu : Menu {
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowDown")
         .title("$RED$UNDERLINE${BOLD}範囲設定を最小値に変更")
         .lore(
-            "$RESET${AQUA}現在の範囲設定： $currentRange*$currentRange",
+            "$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
             "$RESET$AQUA${UNDERLINE}変更後の範囲設定： 3×3"
         )
         .amount(1)
@@ -206,7 +226,7 @@ object BlockPlacementSkillMenu : Menu {
         LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             unfocusedEffect { playerData.AREAint = 1 },
-            "${RED}現在の範囲設定は 3*3 です".asMessageEffect(),
+            "${RED}現在の範囲設定は 3×3 です".asMessageEffect(),
             open
         )
     )
