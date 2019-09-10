@@ -10,6 +10,7 @@ import com.github.unchama.menuinventory.MenuInventoryView
 import com.github.unchama.menuinventory.rows
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
+import com.github.unchama.menuinventory.slot.button.recomputedButton
 import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.targetedeffect.*
@@ -36,7 +37,7 @@ object BlockPlacementSkillMenu : Menu {
     )
   }
 
-  private fun Player.computeButtonToToggleDirtPlacement() = run {
+  private suspend fun Player.computeButtonToToggleDirtPlacement() = recomputedButton {
     val playerData = BuildAssist.playermap[uniqueId]!!
     val currentStatus = playerData.zsSkillDirtFlag
 
@@ -58,7 +59,7 @@ object BlockPlacementSkillMenu : Menu {
     )
   }
 
-  private fun Player.computeButtonToShowCurrentStatus() = run {
+  private suspend fun Player.computeButtonToShowCurrentStatus() = recomputedButton {
     val playerData = BuildAssist.playermap[uniqueId]!!
     val isSkillEnabled = playerData.ZoneSetSkillFlag
     val skillRange = playerData.computeCurrentSkillRange()
