@@ -10,7 +10,6 @@ import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.ops.appendOwnerInformation
 import com.github.unchama.targetedeffect.sequentialEffect
-import com.github.unchama.targetedeffect.unfocusedEffect
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -443,10 +442,11 @@ class PlayerClickListener : Listener {
     if (event.hand === EquipmentSlot.OFF_HAND) return
 
     val effect = sequentialEffect(
-        unfocusedEffect { event.isCancelled = true },
         CommonSoundEffects.menuTransitionFenceSound,
         StickMenu.firstPage.open
     )
+
+    event.isCancelled = true
 
     GlobalScope.launch(Schedulers.async) {
       effect.runFor(player)

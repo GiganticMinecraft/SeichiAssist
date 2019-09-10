@@ -53,6 +53,8 @@ class PlayerRightClickListener : Listener {
           return
         }
 
+        event.isCancelled = true
+
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               CommonSoundEffects.menuTransitionFenceSound,
