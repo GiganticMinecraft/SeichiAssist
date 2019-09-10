@@ -41,7 +41,7 @@ public class LimitedLoginEvent {
 		player = p;
 		UUID uuid = p.getUniqueId();
 		playerdata = playermap.get(uuid);
-		ItemStack skull = Util.INSTANCE.getskull(Util.INSTANCE.getName(player));
+		ItemStack skull = Util.INSTANCE.getskull(player.getName());
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 

@@ -1,13 +1,10 @@
 package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.*
-import com.github.unchama.seichiassist.SeichiAssist.Companion.playermap
-import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.data.ItemData
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
-import com.github.unchama.seichiassist.data.player.PlayerNickName
 import com.github.unchama.seichiassist.listener.invlistener.OnActiveSkillUnselect
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
@@ -1067,7 +1064,7 @@ class PlayerInventoryListener : Listener {
       /*
 			 * step3 ガチャ券をインベントリへ
 			 */
-      val skull = Util.getExchangeskull(Util.getName(player))
+      val skull = Util.getExchangeskull(player.name)
       var count = 0
       while (givegacha > 0) {
         if (player.inventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
@@ -1288,7 +1285,7 @@ class PlayerInventoryListener : Listener {
       /*
 			 * step3 椎名林檎をインベントリへ
 			 */
-      val ringo = StaticGachaPrizeFactory.getMaxRingo(Util.getName(player))
+      val ringo = StaticGachaPrizeFactory.getMaxRingo(player.name)
       var count = 0
       while (giveringo > 0) {
         if (player.inventory.contains(ringo) || !Util.isPlayerInventoryFull(player)) {
@@ -1408,7 +1405,7 @@ class PlayerInventoryListener : Listener {
           //ここに投票1回につきプレゼントする特典の処理を書く
 
           //ガチャ券プレゼント処理
-          val skull = Util.getVoteskull(Util.getName(player))
+          val skull = Util.getVoteskull(player.name)
           for (i in 0..9) {
             if (player.inventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
               Util.addItem(player, skull)

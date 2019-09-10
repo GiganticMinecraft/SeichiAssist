@@ -389,7 +389,7 @@ class PlayerData constructor(
 
   //表示される名前に整地レベルor二つ名を追加
   fun setDisplayName() {
-    var displayname = Util.getName(player)
+    var displayname = player.name
     //放置時に色を変える
     val idleColor = when {
       idleMinute >= 10 -> DARK_GRAY

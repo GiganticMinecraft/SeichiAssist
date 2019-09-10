@@ -258,11 +258,6 @@ object Util {
     }
   }
 
-  //プレイヤーネームを格納（toLowerCaseで全て小文字にする。)
-  fun getName(p: Player): String {
-    return p.name.toLowerCase()
-  }
-
   fun getName(name: String): String {
     //小文字にしてるだけだよ
     return name.toLowerCase()

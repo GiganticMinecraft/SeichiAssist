@@ -369,7 +369,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         return lrs.getString("shareinv").right()
       }
     } catch (e: SQLException) {
-      Bukkit.getLogger().warning(Util.getName(player) + " sql failed. -> loadShareInv")
+      Bukkit.getLogger().warning(player.name + " sql failed. -> loadShareInv")
       e.printStackTrace()
 
       return "${ChatColor.RED}共有インベントリにアクセスできません".asMessageEffect().left()

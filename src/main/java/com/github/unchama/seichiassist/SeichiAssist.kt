@@ -18,7 +18,6 @@ import com.github.unchama.seichiassist.task.HalfHourRankingRoutine
 import com.github.unchama.seichiassist.task.PlayerDataBackupTask
 import com.github.unchama.seichiassist.task.PlayerDataPeriodicRecalculation
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
-import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.ActionStatus.Fail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -185,7 +184,7 @@ class SeichiAssist : JavaPlugin() {
       if (playerdata == null) {
         p.sendMessage(RED.toString() + "playerdataの保存に失敗しました。管理者に報告してください")
         server.consoleSender.sendMessage(RED.toString() + "SeichiAssist[Ondisable処理]でエラー発生")
-        logger.warning(Util.getName(p) + "のplayerdataの保存失敗。開発者に報告してください")
+        logger.warning(p.name + "のplayerdataの保存失敗。開発者に報告してください")
         continue
       }
       //quit時とondisable時、プレイヤーデータを最新の状態に更新
