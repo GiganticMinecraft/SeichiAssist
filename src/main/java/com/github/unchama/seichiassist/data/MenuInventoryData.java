@@ -1270,7 +1270,7 @@ public class MenuInventoryData {
         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
         itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報");
         lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "クリックで情報を最新化"
-                , ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + (playerdata.getAchievePoint().getCumulativeTotal())
+                , ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + playerdata.getAchievePoint().getCumulativeTotal()
                 , ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + playerdata.getAchievePoint().getUsed()
                 , ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + playerdata.getAchievePoint().getLeft());
         itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

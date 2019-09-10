@@ -180,7 +180,7 @@ class PlayerData constructor(
   //二つ名配布予約NOの保存
   var giveachvNo = 0
   //実績ポイント用
-  var achievePoint = AchievementPoint(cumulativeTotal = 0, used = 0, conversionCount = 0)
+  var achievePoint = AchievementPoint(fromUnlockedAchievements = 0, used = 0, conversionCount = 0)
 
   var buildCount = BuildCount(1, BigDecimal.ZERO, 0)
   // 1周年記念
@@ -349,7 +349,7 @@ class PlayerData constructor(
         .stream() // index
         .filter { it in 1000..9799 }
         .count().toInt() /* Safe Conversation: BitSet indexes -> Int */ * 10
-    achievePoint = achievePoint.copy(cumulativeTotal = max)
+    achievePoint = achievePoint.copy(fromUnlockedAchievements = max)
   }
 
   fun consumeAchievePoint(amount: Int) {
