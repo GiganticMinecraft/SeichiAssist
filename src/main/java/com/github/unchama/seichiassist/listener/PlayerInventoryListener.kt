@@ -1556,7 +1556,7 @@ class PlayerInventoryListener : Listener {
       }
       for (x in 1..SeichiAssist.seichiAssistConfig.subHomeMax) {
         if (itemmeta.displayName.contains("サブホームポイント" + x + "にワープ")) {
-          player.chat("/subhome $x")
+          player.chat("/subhome warp $x")
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         } else if (itemmeta.displayName.contains("サブホームポイント" + x + "の情報")) {
           player.chat("/subhome name $x")
