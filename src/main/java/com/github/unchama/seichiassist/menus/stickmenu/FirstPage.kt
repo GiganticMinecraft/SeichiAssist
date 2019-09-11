@@ -47,6 +47,7 @@ private object FirstPage: Menu {
     val teleportServerButton = run {
       val buttonLore = listOf(
           "${GRAY}・各サバイバルサーバー",
+          "${GRAY}・建築サーバー",
           "${GRAY}・公共施設サーバー",
           "${GRAY}間を移動する時に使います",
           "$DARK_RED${UNDERLINE}クリックして開く"
