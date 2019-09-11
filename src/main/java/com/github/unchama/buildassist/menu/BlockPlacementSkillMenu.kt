@@ -20,14 +20,14 @@ import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
-object BlockPlacementSkillMenu : Menu { 
-  
+object BlockPlacementSkillMenu : Menu {
+
   private val buttonToOpenPreviousPage = run {
     val iconItemStack = IconItemStackBuilder(Material.BARRIER)
         .title("$YELLOW$UNDERLINE${BOLD}元のページへ")
         .lore("$RESET$DARK_RED${UNDERLINE}クリックで移動")
         .build()
-  
+
     Button(
         iconItemStack,
         LeftClickButtonEffect(
@@ -44,7 +44,7 @@ object BlockPlacementSkillMenu : Menu {
     val iconItemStack = IconItemStackBuilder(Material.DIRT)
         .title("$YELLOW$UNDERLINE${BOLD}設置時に下の空洞を埋める機能")
         .lore(
-            "$RESET$AQUA${UNDERLINE}機能の使用設定： ${if(currentStatus) "ON" else "OFF"}",
+            "$RESET$AQUA${UNDERLINE}機能の使用設定： ${if (currentStatus) "ON" else "OFF"}",
             "$RESET$AQUA${UNDERLINE}機能の範囲： 地下5マスまで"
         )
         .build()
@@ -54,7 +54,7 @@ object BlockPlacementSkillMenu : Menu {
         LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             unfocusedEffect { playerData.zsSkillDirtFlag = !currentStatus },
-            "${RED}土設置機能${if(currentStatus) "OFF" else "ON"}".asMessageEffect()
+            "${RED}土設置機能${if (currentStatus) "OFF" else "ON"}".asMessageEffect()
         )
     )
   }
@@ -68,19 +68,19 @@ object BlockPlacementSkillMenu : Menu {
     val iconItemStack = IconItemStackBuilder(Material.STONE)
         .title("$YELLOW$UNDERLINE${BOLD}現在の設定は以下の通りです")
         .lore(
-            "$RESET$AQUA${UNDERLINE}スキルの使用設定: ${if(isSkillEnabled) "ON" else "OFF"}",
+            "$RESET$AQUA${UNDERLINE}スキルの使用設定: ${if (isSkillEnabled) "ON" else "OFF"}",
             "$RESET$AQUA${UNDERLINE}スキルの範囲設定: $skillRange×$skillRange",
-            "$RESET$AQUA${UNDERLINE}MineStack優先設定: ${if(isConsumingMineStack) "ON" else "OFF"}"
+            "$RESET$AQUA${UNDERLINE}MineStack優先設定: ${if (isConsumingMineStack) "ON" else "OFF"}"
         )
         .build()
 
     Button(iconItemStack)
   }
-  
+
   private fun Player.computeButtonToMaximizeRange() = run {
     val playerData = BuildAssist.playermap[uniqueId]!!
     val currentRange = playerData.computeCurrentSkillRange()
-    
+
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowUp")
         .title("$RED$UNDERLINE${BOLD}範囲設定を最大値に変更")
         .lore(
@@ -89,7 +89,7 @@ object BlockPlacementSkillMenu : Menu {
         )
         .amount(11)
         .build()
-    
+
     Button(
         iconItemStack,
         LeftClickButtonEffect(
@@ -232,11 +232,11 @@ object BlockPlacementSkillMenu : Menu {
         )
     )
   }
-  
-  private fun Player.computeButtonToToggleConsumingMineStack() = run {
+
+  private suspend fun Player.computeButtonToToggleConsumingMineStack() = recomputedButton {
     val playerData = BuildAssist.playermap[uniqueId]!!
     val currentStatus = playerData.zs_minestack_flag
-    
+
     val iconItemStackBuilder = IconItemStackBuilder(Material.CHEST)
         .title("$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}")
         .lore(
@@ -246,7 +246,7 @@ object BlockPlacementSkillMenu : Menu {
             "$RESET${GRAY}クリックで切り替え"
         )
         .build()
-    
+
     Button(
         iconItemStackBuilder,
         LeftClickButtonEffect(
@@ -265,9 +265,9 @@ object BlockPlacementSkillMenu : Menu {
         )
     )
   }
-  
+
   private fun PlayerData.computeCurrentSkillRange() = AREAint * 2 + 1
-  
+
   private suspend fun Player.computeMenuLayout() = IndexedSlotLayout(
       0 to buttonToOpenPreviousPage,
       4 to computeButtonToToggleDirtPlacement(),
@@ -279,7 +279,7 @@ object BlockPlacementSkillMenu : Menu {
       25 to computeButtonToMinimizeRange(),
       35 to computeButtonToToggleConsumingMineStack()
   )
-  
+
   override val open: TargetedEffect<Player> = computedEffect { player ->
     val session = MenuInventoryView(4.rows(), "$DARK_PURPLE${BOLD}「範囲設置スキル」設定画面").createNewSession()
 
