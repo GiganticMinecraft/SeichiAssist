@@ -154,8 +154,7 @@ object BuildMainMenu : Menu {
               "$RESET${YELLOW}「スニーク+左クリック」をすると、",
               "$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
               "$RESET${YELLOW}インベントリ内から消費し設置します。",
-              "$RESET${LIGHT_PURPLE}＜クリックでON/OFF切り替え＞",
-              "$RESET${GRAY}建築LV${BuildAssist.config.zoneSetSkillLevel}以上で利用可能"
+              "$RESET${LIGHT_PURPLE}＜クリックでON/OFF切り替え＞"
           )
           .build()
 
@@ -216,7 +215,6 @@ object BuildMainMenu : Menu {
           .lore(
               "$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
               "$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
-              "$RESET${GRAY}建築LV${BuildAssist.config.getblocklineuplevel()}以上で利用可能",
               "$RESET${GRAY}クリックで切り替え"
           )
           .build()
