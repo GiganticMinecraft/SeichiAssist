@@ -112,7 +112,7 @@ private object FirstPage: Menu {
           IconItemStackBuilder(Material.COOKIE)
               .title("$YELLOW$UNDERLINE${BOLD}整地神ランキングを見る")
               .lore(listOf(
-                  "$RESET$RED(整地レベル100以上のプレイヤーのみ表記されます)",
+                  "$RESET$RED(整地ランキング150位以内のプレイヤーのみ表記されます)",
                   "$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
@@ -149,7 +149,7 @@ private object FirstPage: Menu {
           IconItemStackBuilder(Material.COOKIE)
               .title("$YELLOW$UNDERLINE${BOLD}投票神ランキングを見る")
               .lore(listOf(
-                  "$RESET$RED(投票しているプレイヤーのみ表記されます)",
+                  "$RESET$RED(投票ランキング150位以内のプレイヤーのみ表記されます)",
                   "$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
