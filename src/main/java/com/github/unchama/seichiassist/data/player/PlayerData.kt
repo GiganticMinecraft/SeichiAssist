@@ -621,7 +621,7 @@ class PlayerData constructor(
   fun getSubHomeName(subHomeIndex: Int): String {
     val subHome = this.subHomeMap[subHomeIndex]
     val subHomeName = subHome?.name
-    return subHomeName ?: "サブホームポイント$subHomeIndex"
+    return subHomeName ?: "サブホームポイント${subHomeIndex + 1}"
   }
 
   private fun saveTotalExp() {
