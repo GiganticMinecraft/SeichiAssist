@@ -131,7 +131,9 @@ private object FirstPage: Menu {
       val iconItemStack =
           IconItemStackBuilder(Material.COOKIE)
               .title("$YELLOW$UNDERLINE${BOLD}ログイン神ランキングを見る")
-              .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで開く"))
+              .lore(listOf(
+                  "$RESET$RED(ログインランキング150位以内のプレイヤーのみ表記されます)",
+                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"))
               .build()
 
       Button(
