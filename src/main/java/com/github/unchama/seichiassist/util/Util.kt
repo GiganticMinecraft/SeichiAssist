@@ -567,21 +567,6 @@ object Util {
     return cur.after(start) && cur.before(end)
   }
 
-  fun getWorldName(s: String): String {
-    val worldname: String
-    when (s) {
-      "world_spawn" -> worldname = "スポーンワールド"
-      "world" -> worldname = "メインワールド"
-      "world_SW" -> worldname = "第一整地ワールド"
-      "world_SW_2" -> worldname = "第二整地ワールド"
-      "world_SW_3" -> worldname = "第三整地ワールド"
-      "world_SW_nether" -> worldname = "整地ネザー"
-      "world_SW_the_end" -> worldname = "整地エンド"
-      else -> worldname = s
-    }
-    return worldname
-  }
-
   fun setDifficulty(worldNameList: List<String>, difficulty: Difficulty) {
     for (name in worldNameList) {
       val world = Bukkit.getWorld(name)

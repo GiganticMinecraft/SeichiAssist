@@ -1,10 +1,7 @@
 package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.LevelThresholds;
-import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
@@ -6143,7 +6140,7 @@ public class MenuInventoryData {
                             ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています",
                             ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更",
                             ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x + 1) + "]",
-                            ChatColor.RESET + "" + ChatColor.GRAY + "" + Util.INSTANCE.getWorldName(l.getWorld().getName()) + " x:" + (int) l.getX() + " y:" + (int) l.getY() + " z:" + (int) l.getZ())
+                            ChatColor.RESET + "" + ChatColor.GRAY + "" + ManagedWorldKt.asManagedWorld(l.getWorld()).getJapaneseName() + " x:" + (int) l.getX() + " y:" + (int) l.getY() + " z:" + (int) l.getZ())
                     : Arrays.asList(ChatColor.GRAY + "サブホームポイント" + (x + 1), ChatColor.GRAY + "ポイント未設定");
             itemmeta.setLore(subHomeLore);
             itemstack.setItemMeta(itemmeta);
