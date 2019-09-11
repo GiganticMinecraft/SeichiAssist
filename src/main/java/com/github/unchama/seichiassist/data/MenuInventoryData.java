@@ -156,40 +156,21 @@ public class MenuInventoryData {
             lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
             lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "破壊可能な全種類のブロックを同時に破壊します");
             lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "整地ワールドではON/OFFに関わらず同時破壊されます");
-            //ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
-            if (playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel()) {
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel());
-                //	ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：***"
-                //	ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
-                lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "ON");
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
-            } else {
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "必要整地レベル：" + SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel());
-                lore.add(ChatColor.RESET + "" + ChatColor.RED + "整地レベルが足りません");
-                if (SeichiAssist.Companion.getDEBUG()) {
-                    lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "ON");
-                }
+            lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "ON");
+            lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
+            if (SeichiAssist.Companion.getDEBUG()) {
+                lore.add(ChatColor.RESET + "" + ChatColor.RED + "ON");
             }
-
         } else {
             itemmeta.removeEnchant(Enchantment.DIG_SPEED);
             lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "複数種類ブロック同時破壊");
             lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
             lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "破壊可能な全種類のブロックを同時に破壊します");
             lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "整地ワールドではON/OFFに関わらず同時破壊されます");
-            //ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
-            if (playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel()) {
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel());
-                //	ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：***"
-                //	ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
+            lore.add(ChatColor.RESET + "" + ChatColor.RED + "OFF");
+            lore.add(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
+            if (SeichiAssist.Companion.getDEBUG()) {
                 lore.add(ChatColor.RESET + "" + ChatColor.RED + "OFF");
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
-            } else {
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "必要整地レベル：" + SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel());
-                lore.add(ChatColor.RESET + "" + ChatColor.RED + "整地レベルが足りません");
-                if (SeichiAssist.Companion.getDEBUG()) {
-                    lore.add(ChatColor.RESET + "" + ChatColor.RED + "OFF");
-                }
             }
         }
         itemmeta.setLore(lore);
