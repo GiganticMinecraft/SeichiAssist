@@ -391,7 +391,7 @@ private object FirstPage: Menu {
 
         val effectStats =
             listOf("$RESET$YELLOW${UNDERLINE}上昇量の内訳") +
-                openerData.effectdatalist.map { it.effectDescription }
+                openerData.effectdatalist.map { "$RESET$RED${it.effectDescription}" }
 
         toggleNavigation + explanation + effectStats
       }
