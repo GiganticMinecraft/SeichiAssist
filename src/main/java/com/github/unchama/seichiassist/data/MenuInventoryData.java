@@ -6103,7 +6103,7 @@ public class MenuInventoryData {
                     , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "うまく機能しない時は"
                     , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "再接続してみてください"
                     , ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでワープ"
-                    , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome warp" + (x + 1) + "]"
+                    , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome warp " + (x + 1) + "]"
             );
             itemmeta.setLore(lore);
             itemstack.setItemMeta(itemmeta);
