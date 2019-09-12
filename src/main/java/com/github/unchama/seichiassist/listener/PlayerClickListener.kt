@@ -437,6 +437,8 @@ class PlayerClickListener : Listener {
 
     if (player.inventory.itemInMainHand.type !== Material.STICK) return
 
+    event.isCancelled = true
+
     // 右クリックの処理ではない
     if (!(action === Action.RIGHT_CLICK_AIR || action === Action.RIGHT_CLICK_BLOCK)) return
     if (event.hand === EquipmentSlot.OFF_HAND) return
@@ -445,8 +447,6 @@ class PlayerClickListener : Listener {
         CommonSoundEffects.menuTransitionFenceSound,
         StickMenu.firstPage.open
     )
-
-    event.isCancelled = true
 
     GlobalScope.launch(Schedulers.async) {
       effect.runFor(player)
