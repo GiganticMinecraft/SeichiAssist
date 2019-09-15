@@ -202,7 +202,7 @@ class SeichiAssist : JavaPlugin() {
     buildAssist.onDisable()
   }
 
-  override fun onCommand(sender: CommandSender?, command: Command?, label: String?, args: Array<out String>?)
+  override fun onCommand(sender: CommandSender?, command: Command?, label: String?, args: Array<String>?)
       = buildAssist.onCommand(sender!!, command!!, label!!, args!!)
 
   private fun startRepeatedJobs() {
@@ -265,9 +265,9 @@ class SeichiAssist : JavaPlugin() {
     val ranklist_premiumeffectpoint: MutableList<RankData> = ArrayList()
 
     //総採掘量表示用
-    var allplayerbreakblockint: Long = 0
+    var allplayerbreakblockint = 0L
 
-    var allplayergiveapplelong: Long = 0
+    var allplayergiveapplelong = 0L
 
     //プラグインで出すエンティティの保存
     val entitylist: MutableList<Entity> = ArrayList()
