@@ -10,7 +10,6 @@ import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.ops.appendOwnerInformation
 import com.github.unchama.targetedeffect.sequentialEffect
-import com.github.unchama.targetedeffect.unfocusedEffect
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -438,12 +437,13 @@ class PlayerClickListener : Listener {
 
     if (player.inventory.itemInMainHand.type !== Material.STICK) return
 
+    event.isCancelled = true
+
     // 右クリックの処理ではない
     if (!(action === Action.RIGHT_CLICK_AIR || action === Action.RIGHT_CLICK_BLOCK)) return
     if (event.hand === EquipmentSlot.OFF_HAND) return
 
     val effect = sequentialEffect(
-        unfocusedEffect { event.isCancelled = true },
         CommonSoundEffects.menuTransitionFenceSound,
         StickMenu.firstPage.open
     )

@@ -17,7 +17,6 @@ import com.github.unchama.seichiassist.task.HalfHourRankingRoutine
 import com.github.unchama.seichiassist.task.PlayerDataBackupTask
 import com.github.unchama.seichiassist.task.PlayerDataPeriodicRecalculation
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
-import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.ActionStatus.Fail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -68,19 +67,25 @@ class SeichiAssist : JavaPlugin() {
       logger.info("${GREEN}config.ymlの設定値を書き換えて再起動してください")
     }
 
-    databaseGateway = DatabaseGateway.createInitializedInstance(
-        seichiAssistConfig.url, seichiAssistConfig.db, seichiAssistConfig.id, seichiAssistConfig.pw
-    )
+    try {
+      databaseGateway = DatabaseGateway.createInitializedInstance(
+          seichiAssistConfig.url, seichiAssistConfig.db, seichiAssistConfig.id, seichiAssistConfig.pw
+      )
+    } catch (e: Exception) {
+      e.printStackTrace()
+      logger.severe("データベース初期化に失敗しました。サーバーを停止します…")
+      Bukkit.shutdown()
+    }
 
     //mysqlからガチャデータ読み込み
     if (!databaseGateway.gachaDataManipulator.loadGachaData()) {
-      logger.info("ガチャデータのロードに失敗しました")
+      logger.severe("ガチャデータのロードに失敗しました")
       Bukkit.shutdown()
     }
 
     //mysqlからMineStack用ガチャデータ読み込み
     if (!databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
-      logger.info("MineStack用ガチャデータのロードに失敗しました")
+      logger.severe("MineStack用ガチャデータのロードに失敗しました")
       Bukkit.shutdown()
     }
 
@@ -177,7 +182,7 @@ class SeichiAssist : JavaPlugin() {
       if (playerdata == null) {
         p.sendMessage(RED.toString() + "playerdataの保存に失敗しました。管理者に報告してください")
         server.consoleSender.sendMessage(RED.toString() + "SeichiAssist[Ondisable処理]でエラー発生")
-        logger.warning(Util.getName(p) + "のplayerdataの保存失敗。開発者に報告してください")
+        logger.warning(p.name + "のplayerdataの保存失敗。開発者に報告してください")
         continue
       }
       //quit時とondisable時、プレイヤーデータを最新の状態に更新
@@ -273,7 +278,7 @@ class SeichiAssist : JavaPlugin() {
       for (i in msgachadatalist.indices) {
         val g = msgachadatalist[i]
         if (g.itemStack.type !== Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外
-          minestacklist.add(MineStackObj(g.objName, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES))
+          minestacklist.add(MineStackObj(g.objName, null, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES))
         }
       }
       return minestacklist

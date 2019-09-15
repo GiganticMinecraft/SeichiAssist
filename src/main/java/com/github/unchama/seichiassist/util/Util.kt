@@ -258,11 +258,6 @@ object Util {
     }
   }
 
-  //プレイヤーネームを格納（toLowerCaseで全て小文字にする。)
-  fun getName(p: Player): String {
-    return p.name.toLowerCase()
-  }
-
   fun getName(name: String): String {
     //小文字にしてるだけだよ
     return name.toLowerCase()
@@ -414,14 +409,13 @@ object Util {
     return skull
   }
 
-  fun ItemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean {
-
+  fun itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean {
     val meta = itemstack.itemMeta
-    val lore: List<String>
-    if (meta.hasLore()) {
-      lore = meta.lore
+
+    val lore: List<String> = if (meta.hasLore()) {
+      meta.lore
     } else {
-      lore = ArrayList()
+      ArrayList()
     }
 
     for (s in lore) {
@@ -429,38 +423,12 @@ object Util {
         var idx = s.lastIndexOf("所有者：")
         idx += 4 //「所有者：」の右端(名前の左端)までidxを移動
         val temp = s.substring(idx)
-        if (temp == name) {
+        if (temp.equals(name, ignoreCase = true)) {
           return true
         }
       }
     }
     return false
-  }
-
-  fun ItemStackResetName(itemstack: ItemStack): ItemStack {
-
-    val itemstack_temp = ItemStack(itemstack)
-    val meta = itemstack_temp.itemMeta
-    val lore: MutableList<String>
-    if (meta != null) {
-      if (meta.hasLore()) {
-        lore = meta.lore
-
-        var i: Int
-        i = 0
-        while (i < lore.size) {
-          if (lore[i].contains("所有者：")) { //"所有者:がある"
-            break
-          }
-          i++
-        }
-        if (i != lore.size) { //所有者表記が無かった場合を除く
-          lore.removeAt(i)
-          meta.lore = lore
-        }
-      }
-    }
-    return itemstack_temp
   }
 
   /**
@@ -597,21 +565,6 @@ object Util {
   fun isVotingFairyPeriod(start: Calendar, end: Calendar): Boolean {
     val cur = Calendar.getInstance()
     return cur.after(start) && cur.before(end)
-  }
-
-  fun getWorldName(s: String): String {
-    val worldname: String
-    when (s) {
-      "world_spawn" -> worldname = "スポーンワールド"
-      "world" -> worldname = "メインワールド"
-      "world_SW" -> worldname = "第一整地ワールド"
-      "world_SW_2" -> worldname = "第二整地ワールド"
-      "world_SW_3" -> worldname = "第三整地ワールド"
-      "world_SW_nether" -> worldname = "整地ネザー"
-      "world_SW_the_end" -> worldname = "整地エンド"
-      else -> worldname = s
-    }
-    return worldname
   }
 
   fun setDifficulty(worldNameList: List<String>, difficulty: Difficulty) {

@@ -46,7 +46,7 @@ public enum SeichiAchievement {
     NO_3008(3008, player -> getBrokenBlockAmount(player) > 1000000L),
     NO_3009(3009, player -> getBrokenBlockAmount(player) > 500000L),
     NO_3010(3010, player -> getBrokenBlockAmount(player) > 100000L),
-    NO_3011(3011, player -> getBrokenBlockAmount(player) > 2000000000L),
+    NO_3011(3011, player -> getBrokenBlockAmount(player) > 10000L),
     NO_3012(3012, player -> getBrokenBlockAmount(player) > 3000000000L),
     NO_3013(3013, player -> getBrokenBlockAmount(player) > 4000000000L),
     NO_3014(3014, player -> getBrokenBlockAmount(player) > 5000000000L),

@@ -33,7 +33,8 @@ public final class PlayerData {
 
 	public boolean zsSkillDirtFlag;
 
-	public int AREAint;
+    // TODO: こいつは殺す
+    public int AREAint;
 
 	/**
 	 * 1分のブロック設置数

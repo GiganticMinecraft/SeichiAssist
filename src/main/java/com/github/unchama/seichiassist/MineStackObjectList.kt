@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.objects.*
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import org.bukkit.Material
@@ -514,7 +515,7 @@ object MineStackObjectList {
   // ガチャ系アイテム
   // これは後に変更されるのでミュータブルでないといけない
   var minestacklistgacha: MutableList<MineStackObj> = mutableListOf(
-      MineStackGachaObj("gachaimo", StaticGachaPrizeFactory.getGachaRingoName(), 1, Material.GOLDEN_APPLE, 0),
+      MineStackObj("gachaimo", null, 1, StaticGachaPrizeFactory.getGachaRingo(), true, -1, MineStackObjectCategory.GACHA_PRIZES),
       MineStackGachaObj("exp_bottle", "エンチャントの瓶", 1, Material.EXP_BOTTLE, 0)
   )
 

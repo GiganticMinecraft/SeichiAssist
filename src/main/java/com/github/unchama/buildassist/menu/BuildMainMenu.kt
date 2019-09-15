@@ -107,7 +107,7 @@ object BuildMainMenu : Menu {
           .lore(
               "$RESET${YELLOW}クリックすると以降OFFにするまで",
               "$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
-              "$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分 ${BuildAssist.config.flyExp}"
+              "$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.flyExp}"
           )
           .build()
 
@@ -148,13 +148,12 @@ object BuildMainMenu : Menu {
     suspend fun Player.computeButtonToToggleRangedPlaceSkill() = recomputedButton {
       val openerData = BuildAssist.playermap[uniqueId]!!
       val iconItemStack = IconItemStackBuilder(Material.STONE)
-          .title("$GREEN${EMPHASIZE}「範囲設置スキル」現在：${if (openerData.zs_minestack_flag) "ON" else "OFF"}")
+          .title("$GREEN${EMPHASIZE}「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
           .lore(
               "$RESET${YELLOW}「スニーク+左クリック」をすると、",
               "$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
               "$RESET${YELLOW}インベントリ内から消費し設置します。",
-              "$RESET${LIGHT_PURPLE}＜クリックでON/OFF切り替え＞",
-              "$RESET${GRAY}建築LV${BuildAssist.config.zoneSetSkillLevel}以上で利用可能"
+              "$RESET${LIGHT_PURPLE}＜クリックでON/OFF切り替え＞"
           )
           .build()
 
@@ -200,7 +199,7 @@ object BuildMainMenu : Menu {
                   if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
                     "${RED}建築LVが足りません".asMessageEffect()
                   } else {
-                    TargetedEffect<Player> { it.openInventory(MenuInventoryData.getSetBlockSkillData(it)) }
+                    BlockPlacementSkillMenu.open
                   }
                 }
             )
@@ -215,7 +214,6 @@ object BuildMainMenu : Menu {
           .lore(
               "$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
               "$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
-              "$RESET${GRAY}建築LV${BuildAssist.config.getblocklineuplevel()}以上で利用可能",
               "$RESET${GRAY}クリックで切り替え"
           )
           .build()

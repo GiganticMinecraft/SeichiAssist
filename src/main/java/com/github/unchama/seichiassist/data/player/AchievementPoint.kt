@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.data.player
 
-data class AchievementPoint(val cumulativeTotal: Int = 0, val used: Int = 0, val conversionCount: Int = 0) {
-  // いちいち変更するのは冗長
-  val left = cumulativeTotal + conversionCount * 3 - used
+data class AchievementPoint(val fromUnlockedAchievements: Int = 0, val used: Int = 0, val conversionCount: Int = 0) {
+  val cumulativeTotal = fromUnlockedAchievements + conversionCount * 3
+
+  val left = cumulativeTotal - used
 }

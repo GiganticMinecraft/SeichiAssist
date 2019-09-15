@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.effect.breaking.ExplosionTask
 import com.github.unchama.seichiassist.effect.breaking.MeteoTask
 import com.github.unchama.seichiassist.effect.toXYZTuple
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.bukkit.ChatColor
 import org.bukkit.Location
@@ -68,12 +67,7 @@ enum class ActiveSkillEffect constructor(
       METEO -> ArrowEffects.singleArrowMeteoEffect
     }
 
-    GlobalScope.launch(Schedulers.async) {
-      repeat (100) {
-        effect.runFor(player)
-        delay(50)
-      }
-    }
+    GlobalScope.launch(Schedulers.async) { effect.runFor(player) }
   }
 
   companion object {

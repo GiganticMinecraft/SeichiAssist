@@ -1,10 +1,7 @@
 package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.LevelThresholds;
-import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
@@ -156,40 +153,21 @@ public class MenuInventoryData {
             lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
             lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "破壊可能な全種類のブロックを同時に破壊します");
             lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "整地ワールドではON/OFFに関わらず同時破壊されます");
-            //ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
-            if (playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel()) {
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel());
-                //	ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：***"
-                //	ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
-                lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "ON");
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
-            } else {
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "必要整地レベル：" + SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel());
-                lore.add(ChatColor.RESET + "" + ChatColor.RED + "整地レベルが足りません");
-                if (SeichiAssist.Companion.getDEBUG()) {
-                    lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "ON");
-                }
+            lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "ON");
+            lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
+            if (SeichiAssist.Companion.getDEBUG()) {
+                lore.add(ChatColor.RESET + "" + ChatColor.RED + "ON");
             }
-
         } else {
             itemmeta.removeEnchant(Enchantment.DIG_SPEED);
             lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "複数種類ブロック同時破壊");
             lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
             lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "破壊可能な全種類のブロックを同時に破壊します");
             lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "整地ワールドではON/OFFに関わらず同時破壊されます");
-            //ChatColor.RESET + "" +  ChatColor.DARK_GRAY + "クールダウン：0秒"
-            if (playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel()) {
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "必要整地レベル：" + SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel());
-                //	ChatColor.RESET + "" +  ChatColor.BLUE + "消費マナ：***"
-                //	ChatColor.RESET + "" +  ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
+            lore.add(ChatColor.RESET + "" + ChatColor.RED + "OFF");
+            lore.add(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
+            if (SeichiAssist.Companion.getDEBUG()) {
                 lore.add(ChatColor.RESET + "" + ChatColor.RED + "OFF");
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
-            } else {
-                lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "必要整地レベル：" + SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel());
-                lore.add(ChatColor.RESET + "" + ChatColor.RED + "整地レベルが足りません");
-                if (SeichiAssist.Companion.getDEBUG()) {
-                    lore.add(ChatColor.RESET + "" + ChatColor.RED + "OFF");
-                }
             }
         }
         itemmeta.setLore(lore);
@@ -1270,7 +1248,7 @@ public class MenuInventoryData {
         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
         itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報");
         lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "クリックで情報を最新化"
-                , ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + (playerdata.getAchievePoint().getCumulativeTotal())
+                , ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + playerdata.getAchievePoint().getCumulativeTotal()
                 , ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + playerdata.getAchievePoint().getUsed()
                 , ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + playerdata.getAchievePoint().getLeft());
         itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -2447,7 +2425,7 @@ public class MenuInventoryData {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3011「" + SeichiAssist.Companion.getSeichiAssistConfig().getTitle1(3011) + "」");
-            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "条件：整地量が 10000 を超える"
+            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "条件：整地量が 1万 を超える"
                     , ChatColor.RESET + "" + ChatColor.RED + "※この実績は自動解禁式です。");
             itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             itemmeta.setLore(lore);
@@ -2457,7 +2435,7 @@ public class MenuInventoryData {
             itemstack = new ItemStack(Material.BEDROCK, 1);
             itemmeta = ItemMetaFactory.BEDROCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3011「???」");
-            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "条件：整地量が 10000 を超える"
+            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "条件：整地量が 1万 を超える"
                     , ChatColor.RESET + "" + ChatColor.RED + "※この実績は自動解禁式です。");
             itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             itemmeta.setLore(lore);
@@ -6125,7 +6103,7 @@ public class MenuInventoryData {
                     , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "うまく機能しない時は"
                     , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "再接続してみてください"
                     , ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでワープ"
-                    , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome " + (x + 1) + "]"
+                    , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome warp " + (x + 1) + "]"
             );
             itemmeta.setLore(lore);
             itemstack.setItemMeta(itemmeta);
@@ -6143,7 +6121,7 @@ public class MenuInventoryData {
                             ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています",
                             ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更",
                             ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x + 1) + "]",
-                            ChatColor.RESET + "" + ChatColor.GRAY + "" + Util.INSTANCE.getWorldName(l.getWorld().getName()) + " x:" + (int) l.getX() + " y:" + (int) l.getY() + " z:" + (int) l.getZ())
+                            ChatColor.RESET + "" + ChatColor.GRAY + "" + ManagedWorldKt.asManagedWorld(l.getWorld()).getJapaneseName() + " x:" + (int) l.getX() + " y:" + (int) l.getY() + " z:" + (int) l.getZ())
                     : Arrays.asList(ChatColor.GRAY + "サブホームポイント" + (x + 1), ChatColor.GRAY + "ポイント未設定");
             itemmeta.setLore(subHomeLore);
             itemstack.setItemMeta(itemmeta);

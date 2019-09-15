@@ -21,14 +21,17 @@ import com.github.unchama.seichiassist.util.TypeConverter
 class FastDiggingEffect(var duration: Int, var amplifier: Double, private val id: Int) {
   val effectDescription: String
     get() {
+      val effectStrength = String.format("%.2f", amplifier)
+      val formattedDuration = TypeConverter.toTimeString(duration / 20)
+
       return when (id) {
-        0 -> "+$amplifier 不明な上昇値_${TypeConverter.toTimeString(duration / 20)}"
-        1 -> "+$amplifier 接続人数から"
-        2 -> "+$amplifier 整地量から"
-        3 -> "+$amplifier ﾄﾞﾗｹﾞﾅｲﾀｲﾑから_${TypeConverter.toTimeString(duration / 20)}"
-        4 -> "+$amplifier 投票ボーナスから_${TypeConverter.toTimeString(duration / 20)}"
-        5 -> "+$amplifier コマンド入力から_${TypeConverter.toTimeString(duration / 20)}"
-        else -> "+$amplifier 不明な上昇値_${TypeConverter.toTimeString(duration / 20)}"
+        0 -> "+$effectStrength 不明な上昇値_${formattedDuration}"
+        1 -> "+$effectStrength 接続人数から"
+        2 -> "+$effectStrength 整地量から"
+        3 -> "+$effectStrength ﾄﾞﾗｹﾞﾅｲﾀｲﾑから_${formattedDuration}"
+        4 -> "+$effectStrength 投票ボーナスから_${formattedDuration}"
+        5 -> "+$effectStrength コマンド入力から_${formattedDuration}"
+        else -> "+$effectStrength 不明な上昇値_${formattedDuration}"
       }
     }
 

@@ -53,6 +53,8 @@ class PlayerRightClickListener : Listener {
           return
         }
 
+        event.isCancelled = true
+
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               CommonSoundEffects.menuTransitionFenceSound,
@@ -88,23 +90,6 @@ class PlayerRightClickListener : Listener {
           val playerlocx = player.location.blockX
           val playerlocy = player.location.blockY
           val playerlocz = player.location.blockZ
-
-          /*Coordinate start,end;
-					Block placelocblock;
-
-					start = new Coordinate(-3,-4,-3);
-					end = new Coordinate(3,4,3);
-
-
-					for(int x = start.x ; x < end.x ; x++){
-						for(int z = start.z ; z < end.z ; z++){
-							for(int y = start.y ; y < end.y; y++){
-								placelocblock = block.getRelative(x, y, z);
-
-							}
-						}
-					}
-					*/
 
           //スキルの範囲設定用
           val AREAint = playerdata.AREAint

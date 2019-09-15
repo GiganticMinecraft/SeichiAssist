@@ -58,7 +58,7 @@ public class AreaControlTask extends BukkitRunnable{
 		playerlocy = player.getLocation().getBlockY() - 1 ;
 
 		//もし前回とプレイヤーの向いている方向が違ったらBreakAreaを取り直す
-		dir = BreakUtil.getCardinalDirection(player);
+		dir = BreakUtil.INSTANCE.getCardinalDirection(player);
 		if(!area.getDir().equals(dir)){
 			area.setDir(dir);
 			area.makeArea();
