@@ -52,6 +52,7 @@ public final class Util {
 			worldname = SeichiAssist.Companion.getDEBUGWORLDNAME();
 		}
 		//プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)または各種TTワールドにいる場合
+        // TODO: ManagedWorldへ移行
 		final String name = player.getWorld().getName();
 		if(name.toLowerCase().startsWith(worldname)
 				|| name.equalsIgnoreCase("world")
