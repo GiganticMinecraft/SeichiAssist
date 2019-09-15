@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist
 
+import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands.*
@@ -89,14 +90,15 @@ class SeichiAssist : JavaPlugin() {
       Bukkit.shutdown()
     }
 
-    MineStackObjectList.minestacklistgacha.addAll(creategachaminestacklist())
+    MineStackObjectList.minestackGachaPrizes.addAll(generateGachaPrizes())
 
-    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistmine)
-    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistdrop)
-    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistfarm)
-    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistbuild)
-    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistrs)
-    MineStackObjectList.minestacklist.addAll(MineStackObjectList.minestacklistgacha)
+    MineStackObjectList.minestacklist.clear()
+    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistmine
+    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistdrop
+    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistfarm
+    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistbuild
+    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistrs
+    MineStackObjectList.minestacklist += MineStackObjectList.minestackGachaPrizes
 
     // コマンドの登録
     mapOf(
@@ -273,12 +275,12 @@ class SeichiAssist : JavaPlugin() {
     //プレイヤーがスキルで破壊するブロックリスト
     val allblocklist: MutableList<Block> = LinkedList()
 
-    private fun creategachaminestacklist(): List<MineStackObj> {
+    private fun generateGachaPrizes(): List<MineStackObj> {
       val minestacklist = ArrayList<MineStackObj>()
       for (i in msgachadatalist.indices) {
         val g = msgachadatalist[i]
         if (g.itemStack.type !== Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外
-          minestacklist.add(MineStackObj(g.objName, null, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES))
+          minestacklist += MineStackObj(g.objName, null, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES)
         }
       }
       return minestacklist
