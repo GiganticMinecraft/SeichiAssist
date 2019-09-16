@@ -62,6 +62,12 @@ object BreakUtil {
       }
     }
 
+    if (breakblock.world.asManagedWorld()?.isSeichi == true) {
+      val isBlockY5Step = material == Material.STEP && breakblock.y == 5 && breakblock.data == 0.toByte()
+
+      if (isBlockY5Step && !playerdata.canBreakHalfBlock()) return false
+    }
+
     return true
   }
 
@@ -410,6 +416,7 @@ object BreakUtil {
   }
 
   fun BlockEqualsMaterialList(block: Block): Boolean {
+    println(block.type.name)
     return MaterialSets.materials.contains(block.type)
   }
 

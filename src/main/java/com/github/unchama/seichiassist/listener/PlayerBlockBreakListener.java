@@ -26,8 +26,9 @@ import java.util.*;
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	private SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+
 	//アクティブスキルの実行
-	@EventHandler
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void onPlayerActiveSkillEvent(BlockBreakEvent event){
 		//実行したプレイヤーを取得
 		Player player = event.getPlayer();
@@ -160,6 +161,8 @@ public class PlayerBlockBreakListener implements Listener {
 	//複数範囲破壊
 	private void runMultiSkill(Player player, Block block,
 			ItemStack tool) {
+
+
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
@@ -550,7 +553,7 @@ public class PlayerBlockBreakListener implements Listener {
 	 *
 	 * @param event BlockBreakEvent
 	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	@SuppressWarnings("deprecation")
 	public void onPlayerBlockHalf(BlockBreakEvent event) {
 		Player p = event.getPlayer();
