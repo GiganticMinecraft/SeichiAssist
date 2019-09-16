@@ -6,8 +6,6 @@ import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.data.GachaData;
-
 public class Config{
 	private static FileConfiguration config;
 	private SeichiAssist plugin;
@@ -43,22 +41,6 @@ public class Config{
 	public FileConfiguration getConfig(){
 		return plugin.getConfig();
 	}
-
-	//config.ymlファイルからガチャデータの読み込み
-	public void loadGachaData(){
-		int num = config.getInt("gachanum");
-		int i;
-		for (i=1; i <= num; i++ ) {
-			GachaData gachadata = new GachaData();
-			gachadata.itemstack = config.getItemStack("item" + i);
-			gachadata.amount = config.getInt("amount" + i);
-			gachadata.probability = config.getDouble("probability" + i);
-			SeichiAssist.gachadatalist.add(gachadata);
-			//instance.getLogger().info(i + "番目のガチャデータロード完了");
-		}
-		plugin.getLogger().info("合計" + (i-1) + "個のガチャデータのLoadを完了しました");
-	}
-
 
 	public double getMinuteMineSpeed(){
 		return TypeConverter.toDouble(config.getString("minutespeedamount"));
@@ -178,12 +160,8 @@ public class Config{
 	public boolean isGridProtectEnable(Player player) {
 		List<String> worldlist = config.getStringList("GridProtectEnableWorld");
 
-		for (String name : worldlist) {
-			if (player.getWorld().getName().equalsIgnoreCase(name)) {
-				return true;
-			}
-		}
-		return false;
+        return worldlist.stream()
+                .anyMatch(name -> player.getWorld().getName().equalsIgnoreCase(name));
 	}
 
 	/**

@@ -4,8 +4,8 @@ package com.github.unchama.seichiassist.event;
  * Created by karayuu on 2018/04/18
  */
 
-import com.github.unchama.seichiassist.data.*;
-import org.bukkit.entity.*;
+import com.github.unchama.seichiassist.data.player.PlayerData;
+import org.bukkit.entity.Player;
 
 /**
  * 整地レベルが上がった際に呼び出されるEventです。

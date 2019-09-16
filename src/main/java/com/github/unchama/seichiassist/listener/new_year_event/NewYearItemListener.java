@@ -1,29 +1,35 @@
 package com.github.unchama.seichiassist.listener.new_year_event;
 
-import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.data.*;
-import org.bukkit.*;
-import org.bukkit.enchantments.*;
-import org.bukkit.entity.*;
-import org.bukkit.event.*;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.*;
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.Mana;
+import com.github.unchama.seichiassist.data.player.PlayerData;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
-
-/**
- * Created by karayuu on 2017/12/10
- * Developer of Gigantic☆Seichi Server
- * Support at dev-basic or dev-extreme channel of Discord
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * 正月イベント・リンゴのListener
+ * @author karayuu
+ * @since 2017/12/10
  */
 public class NewYearItemListener implements Listener {
-	private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap;
-	private static Config config = SeichiAssist.config;
+	private static Map<UUID, PlayerData> playerMap = SeichiAssist.Companion.getPlayermap();
+	private static Config config = SeichiAssist.Companion.getSeichiAssistConfig();
 
 	@EventHandler
 	public void onPlayerNewYearItemConsumeEvent(PlayerItemConsumeEvent event) {
@@ -69,10 +75,10 @@ public class NewYearItemListener implements Listener {
 	private void useApple(Player player) {
 		UUID uuid = player.getUniqueId();
 		PlayerData playerData = playerMap.get(uuid);
-		Mana mana = playerData.activeskilldata.mana;
+		Mana mana = playerData.getActiveskilldata().mana;
 
-		double max = mana.calcMaxManaOnly(player, playerData.level);
-		mana.increaseMana(max * 0.1, player, playerData.level);
+		double max = mana.calcMaxManaOnly(player, playerData.getLevel());
+		mana.increase(max * 0.1, player, playerData.getLevel());
 		player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f);
 	}
 }

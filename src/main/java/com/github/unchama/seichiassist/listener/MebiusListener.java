@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener;
 
 import com.github.unchama.seichiassist.MebiusTalk;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.ImmutableListFactory;
 import com.github.unchama.util.collection.SetFactory;
@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -35,13 +36,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class MebiusListener implements Listener {
 	// Instanceアクセス用
@@ -57,7 +52,7 @@ public class MebiusListener implements Listener {
 	// 起動時
 	public MebiusListener() {
 		me = this;
-		if (SeichiAssist.config.getMebiusDebug() == 1) {
+		if (SeichiAssist.Companion.getSeichiAssistConfig().getMebiusDebug() == 1) {
 			// mebiusdebug=1の時はコマンドでトグル可能
 			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "メビウス帽子のdebugモードトグル機能：有効");
 			DEBUGENABLE = true;
@@ -70,12 +65,14 @@ public class MebiusListener implements Listener {
 	}
 
 	// リロード
+	// TODO ここはListenerクラスですよ
 	public static void reload() {
 		tips.clear();
 		loadTips();
 	}
 
 	// デバッグ
+	// TODO ここはListenerクラスですよ
 	public static void debug(Player player) {
 		if (DEBUGENABLE) {
 			if (debugFlg) {
@@ -88,6 +85,7 @@ public class MebiusListener implements Listener {
 	}
 
 	// デバッグgive
+	// TODO ここはListenerクラスですよ
 	public static void debugGive(Player player) {
 		if (debugFlg) {
 			give(player);
@@ -98,46 +96,8 @@ public class MebiusListener implements Listener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
-		getPlayerData(player).mebius.cancel();
+		getPlayerData(player).getMebius().cancel();
 	}
-
-	// 経験値瓶を投げた時
-	// @EventHandler(priority = EventPriority.LOW) //
-	// onPlayerRightClickExpBottleEventより先に呼び出す
-	// public void onExpBottle(PlayerInteractEvent event) {
-	// // PlayerのLvがEXPBONUS以上なら抜ける
-	// if (getPlayerData(event.getPlayer()).level >= EXPBONUS) {
-	// return;
-	// }
-	// // PlayerがMebiusを装備してなければ抜ける
-	// if (!isEquip(event.getPlayer())) {
-	// return;
-	// }
-	// // メインハンドにアイテムを持っていなければ抜ける
-	// if (event.getPlayer().getInventory() == null ||
-	// event.getPlayer().getInventory().getItemInMainHand() == null) {
-	// return;
-	// }
-	// try {
-	// // 経験値瓶を投げる時
-	// if
-	// (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.EXP_BOTTLE)
-	// && (event.getAction().equals(Action.RIGHT_CLICK_AIR) ||
-	// event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
-	// int amount = 1;
-	// // スニーク状態
-	// if (event.getPlayer().isSneaking()) {
-	// amount = event.getItem().getAmount();
-	// }
-	// // 投げる個数分追加で投げる
-	// for (int cnt = 0; cnt < amount; cnt++) {
-	// event.getPlayer().launchProjectile(ThrownExpBottle.class);
-	// }
-	// }
-	// } catch (NullPointerException e) {
-	// // 万が一NullPointerExceptionが発生した場合、処理無しでOK
-	// }
-	// }
 
 	// Tipsを呼び出されたとき
 	public static void callTips(Player player) {
@@ -145,10 +105,10 @@ public class MebiusListener implements Listener {
 			int no = new Random().nextInt(tips.size() + 1);
 			if (no == tips.size()) {
 				// Talkを喋る
-				getPlayerData(player).mebius.speak(getTalk(getIl(player.getInventory().getHelmet())));
+				getPlayerData(player).getMebius().speak(getTalk(getIl(player.getInventory().getHelmet())));
 			} else {
 				// tipsの中身を設定
-				getPlayerData(player).mebius.speak(tips.get(no));
+				getPlayerData(player).getMebius().speak(tips.get(no));
 			}
 		}
 	}
@@ -172,8 +132,9 @@ public class MebiusListener implements Listener {
 				"いてっ！やめろよー！僕を怒らせたら怖いぞー！");
 
 		// プレイヤーがダメージを受けた場合
-		if (event.getEntity() instanceof Player) {
-			Player player = (Player) event.getEntity();
+		final Entity entity = event.getEntity();
+		if (entity instanceof Player) {
+			Player player = (Player) entity;
 			// プレイヤーがMebiusを装備していない場合は除外
 			if (!isEquip(player)) {
 				return;
@@ -186,7 +147,7 @@ public class MebiusListener implements Listener {
 				short max = mebius.getType().getMaxDurability();
 				short dur = mebius.getDurability();
 				if (dur >= max - 10) {
-					getPlayerData((Player) event.getEntity()).mebius.speak(getMessage(breakmsgs, Objects.requireNonNull(getNickname(player)), ""));
+					getPlayerData(player).getMebius().speak(getMessage(breakmsgs, Objects.requireNonNull(getNickname(player)), ""));
 				}
 			}
 
@@ -194,7 +155,7 @@ public class MebiusListener implements Listener {
 			if (event.getDamager() instanceof Monster) {
 				Monster monster = (Monster) event.getDamager();
 				// 対モンスターメッセージ
-				getPlayerData((Player) event.getEntity()).mebius.speak(getMessage(warnmsgs, Objects.requireNonNull(getNickname(player)), monster.getName()));
+				getPlayerData(player).getMebius().speak(getMessage(warnmsgs, Objects.requireNonNull(getNickname(player)), monster.getName()));
 			}
 		}
 	}
@@ -213,42 +174,48 @@ public class MebiusListener implements Listener {
 		// 壊れたアイテムがMEBIUSなら
 		if (isMebius(item)) {
 			Player player = event.getPlayer();
-			getPlayerData(event.getPlayer()).mebius.speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
+			getPlayerData(event.getPlayer()).getMebius().speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
 			player.sendMessage(getName(item) + ChatColor.RESET + "が旅立ちました。");
 			// エンドラが叫ぶ
-			player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 1f, 0.1f);
+			player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f);
 		}
 	}
 
 	// モンスターを倒した時
 	@EventHandler
 	public void onKill(EntityDeathEvent event) {
-		try {
-			final Set<String> msgs = SetFactory.of(
-					"さすが[str1]！[str2]なんて敵じゃないね！", "僕にかかれば[str2]なんてこんなもんだよー！",
-					"モンスターってなんで人間を襲うんだろう…？", "ねえ[str1]、今の僕のおかげだよね！ね？",
-					"たまにはやられてみたいもんだねー、ふふん！", "[str2]なんて僕の力を出すまでもなかったね！");
-			// プレイヤーがモンスターを倒した場合以外は除外
-			if (!(event.getEntity() instanceof Monster || event.getEntity() instanceof LivingEntity)
-					|| !(event.getEntity().getKiller() instanceof Player)) {
-				return;
-			}
-			Player player = event.getEntity().getKiller();
-			String monsterName = event.getEntity().getName();
-
-			// プレイヤーがMebiusを装備していない場合は除外
-			if (!isEquip(player)) {
-				return;
-			}
-
-			//もしモンスター名が取れなければ除外
-			if(monsterName.equals("")){
-				return;
-			}
-			getPlayerData(player).mebius.speak(getMessage(msgs,
-					Objects.requireNonNull(getNickname(player)), monsterName));
-		} catch (NullPointerException e) {
+		final Set<String> msgs = SetFactory.of(
+				"さすが[str1]！[str2]なんて敵じゃないね！", "僕にかかれば[str2]なんてこんなもんだよー！",
+				"モンスターってなんで人間を襲うんだろう…？", "ねえ[str1]、今の僕のおかげだよね！ね？",
+				"たまにはやられてみたいもんだねー、ふふん！", "[str2]なんて僕の力を出すまでもなかったね！");
+		final LivingEntity lived = event.getEntity();
+		// プレイヤーがモンスターを倒した場合以外は除外
+		if (lived == null) {
+			return;
 		}
+
+		final Player player = lived.getKiller();
+		if (player == null) {
+			return;
+		}
+
+		final String monsterName = lived.getName();
+
+		// プレイヤーがMebiusを装備していない場合は除外
+		if (!isEquip(player)) {
+			return;
+		}
+
+		//もしモンスター名が取れなければ除外
+		if(monsterName.equals("")){
+			return;
+		}
+
+		String playerNick = getNickname(player);
+		Objects.requireNonNull(playerNick);
+		getPlayerData(player).getMebius().speak(
+				getMessage(msgs, playerNick, monsterName)
+		);
 	}
 
 	// ブロックを破壊した時
@@ -263,7 +230,7 @@ public class MebiusListener implements Listener {
 		Player player = event.getPlayer();
 		if (isEquip(player)) {
 			PlayerData pd = getPlayerData(player);
-			pd.mebius.speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
+			pd.getMebius().speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
 			// Lvup
 			if (isLevelUp(player)) {
 				levelUp(player);
@@ -346,7 +313,7 @@ public class MebiusListener implements Listener {
 			player.sendMessage(getName(mebius) + ChatColor.RESET + "に命名しました。");
 			mebius.setItemMeta(meta);
 			player.getInventory().setHelmet(mebius);
-			getPlayerData(player).mebius.speakForce("わーい、ありがとう！今日から僕は" + NAMEHEAD + name + ChatColor.RESET + "だ！");
+			getPlayerData(player).getMebius().speakForce("わーい、ありがとう！今日から僕は" + NAMEHEAD + name + ChatColor.RESET + "だ！");
 			return true;
 		}
 		return false;
@@ -371,11 +338,12 @@ public class MebiusListener implements Listener {
 			NBTItem nbtItem = new NBTItem(mebius);
 			nbtItem.setString("nickname", name);
 			player.getInventory().setHelmet(nbtItem.getItem());
-			getPlayerData(player).mebius.speakForce("わーい、ありがとう！今日から君のこと" + ChatColor.GREEN + name + ChatColor.RESET + "って呼ぶね！");
+			getPlayerData(player).getMebius().speakForce("わーい、ありがとう！今日から君のこと" + ChatColor.GREEN + name + ChatColor.RESET + "って呼ぶね！");
 			return true;
 		}
 	}
 
+	// TODO あの！ここはListenerクラスですよ！！
 	public static String getNickname(Player player) {
 		if (!isEquip(player)) {
 			return null;
@@ -411,7 +379,7 @@ public class MebiusListener implements Listener {
 
 	// PlayerData取得
 	private static PlayerData getPlayerData(Player player) {
-		return SeichiAssist.playermap.get(player.getUniqueId());
+		return SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
 	}
 
 	// ItemStackがMebiusか
@@ -438,13 +406,13 @@ public class MebiusListener implements Listener {
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "おめでとうございます。採掘中にMEBIUSを発見しました。");
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "MEBIUSはプレイヤーと共に成長するヘルメットです。");
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなただけのMEBIUSを育てましょう！");
-		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.instance, () -> getPlayerData(player).mebius.speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！"), 10);
+		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> getPlayerData(player).getMebius().speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！"), 10);
 		player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
-		if (!Util.isPlayerInventoryFull(player)) {
-			Util.addItem(player, mebius);
+		if (!Util.INSTANCE.isPlayerInventoryFull(player)) {
+			Util.INSTANCE.addItem(player, mebius);
 		} else {
 			player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "所持しきれないためMEBIUSをドロップしました。");
-			Util.dropItem(player, mebius);
+			Util.INSTANCE.dropItem(player, mebius);
 		}
 	}
 
@@ -522,7 +490,7 @@ public class MebiusListener implements Listener {
 		mebius.setDurability((short) 0);
 		player.getInventory().setHelmet(mebius);
 		// Talkを喋る
-		getPlayerData(player).mebius.speakForce(getTalk(level));
+		getPlayerData(player).getMebius().speakForce(getTalk(level));
 	}
 
 	// 見た目更新Lv

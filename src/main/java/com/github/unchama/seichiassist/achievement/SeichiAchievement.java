@@ -1,13 +1,16 @@
 package com.github.unchama.seichiassist.achievement;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -19,8 +22,8 @@ import java.util.function.Predicate;
 public enum SeichiAchievement {
 
     // 整地ランキング
-    NO_1001(1001, player -> getPlayerData(player).calcPlayerRank(player) == 1),
-    NO_1002(1002, player -> getRank(player) < 6), // maybe wrong, not `<` but `>`
+    NO_1001(1001, player -> getRank(player) == 1),
+    NO_1002(1002, player -> getRank(player) < 6),
     NO_1003(1003, player -> getRank(player) < 28),
     NO_1004(1004, player -> getRank(player) < 51),
     NO_1005(1005, player -> getRank(player) < 751),
@@ -43,7 +46,7 @@ public enum SeichiAchievement {
     NO_3008(3008, player -> getBrokenBlockAmount(player) > 1000000L),
     NO_3009(3009, player -> getBrokenBlockAmount(player) > 500000L),
     NO_3010(3010, player -> getBrokenBlockAmount(player) > 100000L),
-    NO_3011(3011, player -> getBrokenBlockAmount(player) > 2000000000L),
+    NO_3011(3011, player -> getBrokenBlockAmount(player) > 10000L),
     NO_3012(3012, player -> getBrokenBlockAmount(player) > 3000000000L),
     NO_3013(3013, player -> getBrokenBlockAmount(player) > 4000000000L),
     NO_3014(3014, player -> getBrokenBlockAmount(player) > 5000000000L),
@@ -157,7 +160,7 @@ public enum SeichiAchievement {
     NO_9017(9017, player -> Calendar.getInstance().get(Calendar.MONTH) + 1 == 5),
     NO_9018(9018, player -> inDayOf(5, 5)),
     NO_9019(9019, player -> inDayOf(5, 5)), // missing?
-    NO_9020(9020, player -> inDayOf(5, 14)),
+    NO_9020(9020, player -> todayIsAt(Month.MAY, 2, DayOfWeek.SUNDAY)),
     NO_9021(9021, player -> Calendar.getInstance().get(Calendar.MONTH) + 1 == 6),
     NO_9022(9022, player -> inDayOf(6, 12)),
     NO_9023(9023, player -> inDayOf(6, 17)),
@@ -186,13 +189,13 @@ public enum SeichiAchievement {
 
     public void achieve(Player player) {
         PlayerData playerData = getPlayerData(player);
-        if (playerData.TitleFlags.get(id)) return;
+        if (playerData.getTitleFlags().get(id)) return;
 
         if (!condition.test(player)) {
             // TODO: this shouldn't be here
             if (9000 < id && id < 10000) player.sendMessage("実績No" + id + "は条件を満たしていません。");
         } else {
-            playerData.TitleFlags.set(id);
+            playerData.getTitleFlags().set(id);
             player.sendMessage("実績No" + id + "解除！おめでとうございます！");
         }
     }
@@ -205,7 +208,7 @@ public enum SeichiAchievement {
 
         // 予約配布システム
         if (7000 < id && id < 8000) {
-            playerData.TitleFlags.set(id);
+            playerData.getTitleFlags().set(id);
             player.sendMessage("【実績システム】運営チームよりNo" + id + "の二つ名がプレゼントされました。");
         } else {
             optionalAchievement.ifPresent(seichiAchievement -> seichiAchievement.achieve(player));
@@ -225,31 +228,59 @@ public enum SeichiAchievement {
     }
 
     private static int getRank(Player player) {
-        return getPlayerData(player).calcPlayerRank(player);
+        return getPlayerData(player).calcPlayerRank();
     }
 
     private static long getBrokenBlockAmount(Player player) {
-        return getPlayerData(player).totalbreaknum;
+        return getPlayerData(player).getTotalbreaknum();
     }
 
     private static long getSpentTicks(Player player) {
-        return getPlayerData(player).playtick;
+        return getPlayerData(player).getPlayTick();
     }
 
     private static int getDaysChaining(Player player) {
-        return getPlayerData(player).ChainJoin;
+        return getPlayerData(player).getLoginStatus().getConsecutiveLoginDays();
     }
 
     private static int getTotalPlayedDays(Player player) {
-        return getPlayerData(player).TotalJoin;
+        return getPlayerData(player).getLoginStatus().getTotalLoginDay();
     }
 
     private static int getVotingCounts(Player player) {
-        return getPlayerData(player).p_vote_forT;
+        return getPlayerData(player).getP_vote_forT();
     }
 
     private static PlayerData getPlayerData(Player player) {
-        return SeichiAssist.playermap.get(player.getUniqueId());
+        return SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
+    }
+
+    /**
+     今日が{@code month}月の{@code weeks}週の{@code weekday}曜日かを判定する。
+     @param month 月
+     @param weeks 月の中で第何週目か。1-5までが受け付けられる
+     @param weekday 何曜日か。
+     @return 今日が{@code month}月の{@code weeks}週の{@code weekday}曜日かを判定するならtrue、そうでないならfalse
+     */
+    private static boolean todayIsAt(final Month month, final int weeks, final DayOfWeek weekday) {
+        if (weeks < 1 || weeks > 5) {
+            throw new IllegalArgumentException("weeks requires in 1..5");
+        }
+        final LocalDate now = LocalDate.now();
+        // そもそも月が違うならfalse
+        if (now.getMonth() != month) return false;
+        // 今日と指定されている曜日が違うならfalse
+        if (now.getDayOfWeek() != weekday) return false;
+        // 第一週目ならずらさなくていい
+        if (weeks == 1) {
+            return true;
+        }
+        // 月は同じ、曜日も一緒、第一週目ではない
+        // ここで今月の第n週目のm曜日を求めて現在と同一性を比較する、それでおしまい。
+        return now.equals(
+                now.with(TemporalAdjusters.firstDayOfMonth())
+                        .with(TemporalAdjusters.dayOfWeekInMonth(weeks, weekday))
+        );
     }
 
 }

@@ -19,7 +19,7 @@ public class MillisecondTimer {
 
 	public void sendLapTimeMessage(String message) {
 		final long recordedNanoSecondDuration = System.nanoTime() - startTime;
-		SeichiAssist.instance.getServer().getConsoleSender()
+		SeichiAssist.Companion.getInstance().getServer().getConsoleSender()
 				.sendMessage(message + "(time: "+ recordedNanoSecondDuration / 1000 +" ms)");
 
 		startTime = System.nanoTime();

@@ -4,16 +4,17 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.task.AssaultTaskRunnable;
+import com.github.unchama.seichiassist.task.AssaultTask;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashSet;
+import java.util.stream.IntStream;
 
 public class ActiveSkillData {
-	SeichiAssist plugin = SeichiAssist.instance;
+	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
 	//アクティブスキルポイント
 	public int skillpoint;
 	//アクティブスキルエフェクトポイント
@@ -90,42 +91,45 @@ public class ActiveSkillData {
 
 		mana = new Mana();
 	}
+
+	private static int decreasePoint(int level) {
+		return level * 10;
+	}
+
 	//activeskillpointをレベルに従って更新
 	public void updateActiveSkillPoint(Player player,int level) {
-		int point = 0;
+		int point = IntStream.rangeClosed(1, level).map(i -> i / 10 + 1).sum();
 		//レベルに応じたスキルポイント量を取得
-		for(int i = 1;i <= level;i++){
-			point += i / 10 + 1;
-		}
-		if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getDEBUG()){
 			player.sendMessage("あなたのレベルでの獲得アクティブスキルポイント：" + point);
 		}
 		//取得しているスキルを確認してその分のスキルポイントを引く
 		//遠距離スキル
-		for(int i = arrowskill; i >= 4 ; i--){
-			point -= i * 10;
-		}
+		// arrowskill -> 4は(arrowskill-4).repeatと同じ
+		point -= IntStream.rangeClosed(4, arrowskill)
+				.map(ActiveSkillData::decreasePoint)
+				.sum();
 		//マルチ破壊スキル
-		for(int i = multiskill; i >= 4 ; i--){
-			point -= i * 10;
-		}
+		point -= IntStream.rangeClosed(4, multiskill)
+				.map(ActiveSkillData::decreasePoint)
+				.sum();
 		//破壊スキル
-		for(int i = breakskill; i >= 1 ; i--){
-			point -= i * 10;
-		}
+		point -= IntStream.rangeClosed(1, breakskill)
+				.map(ActiveSkillData::decreasePoint)
+				.sum();
 		//水凝固スキル
-		for(int i = watercondenskill; i >= 7 ; i--){
-			point -= i * 10;
-		}
+		point -= IntStream.rangeClosed(7, watercondenskill)
+				.map(ActiveSkillData::decreasePoint)
+				.sum();
 		//熔岩凝固スキル
-		for(int i = lavacondenskill; i >= 7 ; i--){
-			point -= i * 10;
-		}
+		point -= IntStream.rangeClosed(7, watercondenskill)
+				.map(ActiveSkillData::decreasePoint)
+				.sum();
 		if (fluidcondenskill == 10){
 			point -= 110;
 		}
 
-		if(SeichiAssist.DEBUG){
+		if(SeichiAssist.Companion.getDEBUG()){
 			player.sendMessage("獲得済みスキルを考慮したアクティブスキルポイント：" + point);
 			point += 10000;
 		}
@@ -188,7 +192,7 @@ public class ActiveSkillData {
 		if(mineflagnum != 0){
 			this.assaultarea = new BreakArea(player,type,skilllevel,mineflagnum,true);
 			this.assaultflag = true;
-			this.assaulttask = new AssaultTaskRunnable(player).runTaskTimer(plugin,10,10);
+			this.assaulttask = new AssaultTask(player).runTaskTimer(plugin,10,10);
 		}//オフの時の処理
 		else{
 			this.assaultflag = false;
@@ -202,7 +206,7 @@ public class ActiveSkillData {
 			this.updateAssaultSkill(player,this.assaulttype,this.assaultnum,this.mineflagnum);
 			String name = ActiveSkill.getActiveSkillName(this.assaulttype, this.assaultnum);
 			player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル:" + name + "  を選択しています。");
-			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
 		}
 
 		//通常スキルの実行
@@ -210,12 +214,12 @@ public class ActiveSkillData {
 			this.updateSkill(player, this.skilltype, this.skillnum,this.mineflagnum);
 			String name = ActiveSkill.getActiveSkillName(this.skilltype, this.skillnum);
 			player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  を選択しています。");
-			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
 		}
 
 
 	}
-	public void clearSellect(Player player) {
+	public void clearSelection(Player player) {
 		this.skilltype = 0;
 		this.skillnum = 0;
 		this.mineflagnum = 0;
@@ -224,15 +228,15 @@ public class ActiveSkillData {
 		this.assaultflag = false;
 		try{this.assaulttask.cancel();}catch(NullPointerException e){}
 		player.sendMessage(ChatColor.GREEN + "全ての選択を削除しました。");
-		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, (float) 0.1);
+		player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
 
 	}
-	public void updateonJoin(Player player, int level) {
+	public void updateOnJoin(Player player, int level) {
 		updateActiveSkillPoint(player, level);
 		runTask(player);
-		mana.update(player,level);
+		mana.initialize(player,level);
 	}
-	public void updateonQuit(Player player) {
-		mana.removeBar();
+	public void updateOnQuit() {
+		mana.hide();
 	}
 }

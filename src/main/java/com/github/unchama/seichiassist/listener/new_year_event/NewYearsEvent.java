@@ -1,28 +1,33 @@
 package com.github.unchama.seichiassist.listener.new_year_event;
 
-import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.data.*;
-import com.github.unchama.seichiassist.util.*;
-import org.bukkit.*;
-import org.bukkit.entity.*;
-import org.bukkit.event.*;
-import org.bukkit.event.player.*;
-import org.bukkit.scheduler.*;
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.player.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitScheduler;
 
-import java.text.*;
-import java.util.*;
-/**
- * Created by karayuu on 2017/11/28
- * Developer of Gigantic☆Seichi Server
- * Support at dev-basic or dev-extreme channel of Discord
- */
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
 /**
  * 正月イベント関連クラス
+ * @author karayuu
+ * @since 2017/11/28
  */
 public class NewYearsEvent implements Listener {
-	private static SeichiAssist plugin = SeichiAssist.instance;
-	private static Config config = SeichiAssist.config;
-	private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap;
+	private static SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	private static Config config = SeichiAssist.Companion.getSeichiAssistConfig();
+	private static Map<UUID, PlayerData> playerMap = SeichiAssist.Companion.getPlayermap();
 
 	/**
 	 * 正月イベント準備メソッド(コンストラクタ)
@@ -74,20 +79,20 @@ public class NewYearsEvent implements Listener {
 
 	private void giveNewYearSobaToPlayer(Player player, String year) {
 		PlayerData playerData = playerMap.get(player.getUniqueId());
-		if (playerData.hasNewYearSobaGive) {
+		if (playerData.getHasNewYearSobaGive()) {
 			return;
 		}
 
-		if (Util.isPlayerInventoryFull(player)) {
+		if (Util.INSTANCE.isPlayerInventoryFull(player)) {
 			player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリが一杯のため,アイテムが入手できませんでした。");
 			player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリに空きを作ってから再度サーバーに参加してください。");
-			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
+			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f);
 		} else {
 			String command = "give " + player.getName() + " skull 1 3 {display:{Name:\"年越し蕎麦(" + year + "年)\",Lore:[\"\", \"" + ChatColor.YELLOW + "大晦日記念アイテムだよ！\"]},SkullOwner:{Id:\"f15ab073-412e-4fe2-8668-1be12066e2ac\"," +
 					"Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY4MzRiNWIyNTQyNmRlNjM1MzhlYzgyY2E4ZmJlY2ZjYmIzZTY4MmQ4MDYzNjQzZDJlNjdhNzYyMWJkIn19fQ==\"}]}}}";
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
-			playerData.hasNewYearSobaGive = true;
+			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f);
+			playerData.setHasNewYearSobaGive(true);
 		}
 	}
 

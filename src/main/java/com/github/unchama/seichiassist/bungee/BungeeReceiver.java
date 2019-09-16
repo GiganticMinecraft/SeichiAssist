@@ -1,17 +1,13 @@
 package com.github.unchama.seichiassist.bungee;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.player.PlayerData;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.io.*;
+import java.util.UUID;
 
 public class BungeeReceiver implements PluginMessageListener {
 	private SeichiAssist plugin;
@@ -39,9 +35,9 @@ public class BungeeReceiver implements PluginMessageListener {
 
 	private void getLocation(String servername, String uuid, String wanter) {
 		// 受信UUIDからプレイヤーを特定
-		Player p = plugin.getServer().getPlayer(UUID.fromString(uuid));
+		Player p = Bukkit.getServer().getPlayer(UUID.fromString(uuid));
 		// プレイヤーデータを取得
-		PlayerData pd = SeichiAssist.playermap.get(UUID.fromString(uuid));
+		PlayerData pd = SeichiAssist.Companion.getPlayermap().get(UUID.fromString(uuid));
 
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
@@ -50,7 +46,7 @@ public class BungeeReceiver implements PluginMessageListener {
 			out.writeUTF("GetLocation");
 			out.writeUTF(wanter);
 			// プレイヤーの座標を返却
-			out.writeUTF(p.getName() + ": 整地Lv" + pd.level + " (総整地量: " + String.format("%,d", pd.totalbreaknum) + ")");
+			out.writeUTF(p.getName() + ": 整地Lv" + pd.getLevel() + " (総整地量: " + String.format("%,d", pd.getTotalbreaknum()) + ")");
 			out.writeUTF("Server: " + servername + ", " + "World: " + p.getWorld().getName() + " (" + p.getLocation().getBlockX() + ", " + p.getLocation().getBlockY() + ", " + p.getLocation().getBlockZ() + ")");
 		} catch (IOException e) {
 			e.printStackTrace();
