@@ -43,6 +43,7 @@ class PlayerJoinListener : Listener {
 
         try {
           loadPlayerData(event.uniqueId, event.name, isLastTry)
+          println("Loaded PlayerData of ${event.name} on $tryCount'th try")
           return@runBlocking
         } catch (e: Exception) {
           if (isLastTry) {
