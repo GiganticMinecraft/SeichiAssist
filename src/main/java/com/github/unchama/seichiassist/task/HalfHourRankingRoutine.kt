@@ -19,7 +19,7 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
       val halfHourBlock = playerData.halfhourblock
 
       //プレイヤーがオンラインの時の処理
-      if (player != null && playerData.loaded) {
+      if (player != null) {
         val totalBreakNum = playerData.totalbreaknum
 
         halfHourBlock.after = totalBreakNum
@@ -30,10 +30,6 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
         if (halfHourBlock.increase > 0) {
           player.sendMessage("あなたの整地量は ${ChatColor.AQUA}${halfHourBlock.increase}${ChatColor.WHITE} でした")
         }
-      } else if (!playerData.loaded) {
-        //debug用…このメッセージ視認後に大量集計されないかを確認する
-        Bukkit.getLogger().info("Apple Pen !")
-        halfHourBlock.increase = 0
       } else {
         //ﾌﾟﾚｲﾔｰがオフラインの時の処理
         //前回との差を０に設定

@@ -44,8 +44,6 @@ class PlayerData constructor(
     @Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID,
     val name: String
 ) {
-  //読み込み済みフラグ
-  var loaded = false
 
   val settings = PlayerSettings()
 

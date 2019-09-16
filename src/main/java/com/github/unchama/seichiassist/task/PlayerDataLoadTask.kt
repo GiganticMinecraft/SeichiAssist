@@ -180,7 +180,6 @@ fun loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
     stmt.executeQuery(command).recordIteration {
       val rs = this
       //各種数値
-      playerData.loaded = true
       runBlocking {
         playerData.settings.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag"))
       }
