@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Mana;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.Util;
@@ -11,12 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class VotingFairyListener implements Listener {
 
@@ -85,9 +80,9 @@ public class VotingFairyListener implements Listener {
 				,"こんな時間に呼ぶなんて…りんごははずんでもらうよ？"
 				);
 
-		if (Util.getTimeZone(playerdata.getVotingFairyStartTime()).equals("morning"))
+		if (Util.INSTANCE.getTimeZone(playerdata.getVotingFairyStartTime()).equals("morning"))
 			VotingFairyTask.speak(p, getMessage(morning, p.getName()), playerdata.getToggleVFSound());
-		else if (Util.getTimeZone(playerdata.getVotingFairyStartTime()).equals("day"))
+		else if (Util.INSTANCE.getTimeZone(playerdata.getVotingFairyStartTime()).equals("day"))
 			VotingFairyTask.speak(p, getMessage(day, p.getName()), playerdata.getToggleVFSound());
 		else
 			VotingFairyTask.speak(p, getMessage(night, p.getName()), playerdata.getToggleVFSound());
@@ -141,7 +136,7 @@ public class VotingFairyListener implements Listener {
 			}
 
 			//りんご所持数で値変更
-			final MineStackObj gachaimoObject = Util.findMineStackObjectByName("gachaimo");
+			final MineStackObj gachaimoObject = Util.INSTANCE.findMineStackObjectByName("gachaimo");
 			long l = playerdata.getMinestack().getStackedAmountOf(gachaimoObject);
 
 			if(m > l) {
@@ -164,7 +159,7 @@ public class VotingFairyListener implements Listener {
 			//マナ回復
 			mana.increase(n, p, playerdata.getLevel());
 			//りんごを減らす
-			playerdata.getMinestack().subtractStackedAmountOf(Util.findMineStackObjectByName("gachaimo"), m);
+			playerdata.getMinestack().subtractStackedAmountOf(Util.INSTANCE.findMineStackObjectByName("gachaimo"), m);
 			//減ったりんごの数をplayerdataに加算
 			playerdata.setP_apple(playerdata.getP_apple() + m);
 

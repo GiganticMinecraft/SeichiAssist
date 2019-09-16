@@ -4,11 +4,11 @@ import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.task.GiganticBerserkTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -18,19 +18,17 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class EntityListener implements Listener {
-	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 
 	@EventHandler
@@ -86,19 +84,19 @@ public class EntityListener implements Listener {
 		PlayerData playerdata = SeichiAssist.Companion.getPlayermap().get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
-			Util.sendPlayerDataNullMessage(player);
+			Util.INSTANCE.sendPlayerDataNullMessage(player);
 			Bukkit.getLogger().warning(player.getName() + " -> PlayerData not found.");
 			Bukkit.getLogger().warning("EntityListener.onPlayerActiveSkillEvent");
 			return;
 		}
 
 		//整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
-		if(BreakUtil.getGravity(player, block, false) > 3){
+		if(BreakUtil.INSTANCE.getGravity(player, block, false) > 3){
 			player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 			return;
 		}
 		//スキル発動条件がそろってなければ終了
-		if(!Util.isSkillEnable(player)){
+		if(!Util.INSTANCE.isSkillEnable(player)){
 			return;
 		}
 
@@ -171,7 +169,7 @@ public class EntityListener implements Listener {
 		Block breakblock;
 		BreakArea area = playerdata.getActiveskilldata().area;
 		//現在のプレイヤーの向いている方向
-		String dir = BreakUtil.getCardinalDirection(player);
+		String dir = BreakUtil.INSTANCE.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(area.getDir())){
 			area.setDir(dir);
@@ -194,10 +192,10 @@ public class EntityListener implements Listener {
 				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
 
-					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
+					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getSettings().getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
 						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
-							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
-								if(BreakUtil.canBreak(player, breakblock)){
+							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.INSTANCE.BlockEqualsMaterialList(breakblock)){
+								if(BreakUtil.INSTANCE.canBreak(player, breakblock)){
 									if(breakblock.getType() == Material.STATIONARY_LAVA){
 										lavas.add(breakblock);
 									}else{
@@ -217,7 +215,7 @@ public class EntityListener implements Listener {
 								|| (block.getType() == Material.REDSTONE_ORE && breakblock.getType() == Material.GLOWING_REDSTONE_ORE)
 								|| breakblock.getType() == Material.STATIONARY_LAVA
 								){
-							if(BreakUtil.canBreak(player, breakblock)){
+							if(BreakUtil.INSTANCE.canBreak(player, breakblock)){
 								if(breakblock.getType() == Material.STATIONARY_LAVA){
 									lavas.add(breakblock);
 								}else{
@@ -233,7 +231,7 @@ public class EntityListener implements Listener {
 
 
 		//重力値計算
-		int gravity = BreakUtil.getGravity(player,block,false);
+		int gravity = BreakUtil.INSTANCE.getGravity(player,block,false);
 
 
 		//減る経験値計算
@@ -249,9 +247,9 @@ public class EntityListener implements Listener {
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナ：" + useMana);
 		}
 		//減る耐久値の計算
-		short durability = (short) (tool.getDurability() + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breakBlock.size()));
+		short durability = (short) (tool.getDurability() + BreakUtil.INSTANCE.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breakBlock.size()));
 		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-		durability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavas.size());
+		durability += BreakUtil.INSTANCE.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavas.size());
 
 
 		//重力値の判定
@@ -305,7 +303,7 @@ public class EntityListener implements Listener {
 		//エフェクトが指定されていないときの処理
 		if(playerdata.getActiveskilldata().effectnum == 0){
 			for(final Block b : breakBlock){
-				BreakUtil.breakBlock(player, b, player.getLocation(), tool,false);
+				BreakUtil.INSTANCE.breakBlock(player, b, player.getLocation(), tool,false);
 				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}
@@ -356,49 +354,12 @@ public class EntityListener implements Listener {
 		}
 	}
 
-	/*
-	@EventHandler
-	public void PvPToggleEvent(EntityDamageByEntityEvent event){
-		Entity damager = event.getDamager();
-		Entity entity = event.getEntity();
-		if(damager instanceof Player && entity instanceof Player){
-			UUID uuid_damager = damager.getUniqueId();
-			PlayerData playerdata_damager = playermap.get(uuid_damager);
-			//念のためエラー分岐
-			if(playerdata_damager == null){
-				damager.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-				instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[PvP処理]でエラー発生");
-				instance.getLogger().warning(damager.getName()+ "のplayerdataがありません。開発者に報告してください");
-				return;
-			}
-			if(!playerdata_damager.pvpflag){
-				event.setCancelled(true);
-				return;
-			}
-
-			UUID uuid_entity = entity.getUniqueId();
-			PlayerData playerdata_entity = playermap.get(uuid_entity);
-			//念のためエラー分岐
-			if(playerdata_entity == null){
-				entity.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-				instance.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[PvP処理]でエラー発生");
-				instance.getLogger().warning(entity.getName()+ "のplayerdataがありません。開発者に報告してください");
-				return;
-			}
-			if(!playerdata_entity.pvpflag){
-				event.setCancelled(true);
-				return;
-			}
-		}
-	}
-	*/
-
 	@EventHandler
 	public void onDeath(EntityDeathEvent event) {
 		/*GiganticBerserk用*/
 
 		//死んだMOBがGiganticBerserkの対象MOBでなければ終了
-		if(!Util.isEnemy(event.getEntity().getType())){
+		if(!Util.INSTANCE.isEnemy(event.getEntity().getType())){
 			return;
 		}
 
@@ -408,7 +369,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 		//プレイヤーが整地ワールドに居ない場合終了
-		if (!Util.isSeichiWorld(player)){
+		if (!Util.INSTANCE.isSeichiWorld(player)){
 			return;
 		}
 

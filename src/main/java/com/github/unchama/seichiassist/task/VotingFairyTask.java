@@ -1,18 +1,16 @@
 package com.github.unchama.seichiassist.task;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.player.PlayerData;
+import com.github.unchama.seichiassist.listener.VotingFairyListener;
+import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.listener.VotingFairyListener;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.HashMap;
+import java.util.UUID;
 
 
 public class VotingFairyTask {
@@ -27,7 +25,7 @@ public class VotingFairyTask {
 		VotingFairyListener.regeneMana(p);
 
 		//効果時間中か
-		if(!Util.isVotingFairyPeriod(playerdata.getVotingFairyStartTime(), playerdata.getVotingFairyEndTime())) {
+		if(!Util.INSTANCE.isVotingFairyPeriod(playerdata.getVotingFairyStartTime(), playerdata.getVotingFairyEndTime())) {
 			speak(p, ("あっ、もうこんな時間だ！"), false);
 			speak(p, ("じゃーねー！" + p.getName()), true);
 			p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "妖精はどこかへ行ってしまった");

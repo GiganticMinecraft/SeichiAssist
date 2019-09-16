@@ -1,12 +1,11 @@
 package com.github.unchama.seichiassist.database.manipulators
 
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect
-import com.github.unchama.seichiassist.data.PlayerData
+import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.task.recordIteration
 import com.github.unchama.util.ActionStatus
-import com.github.unchama.util.collection.ImmutableListFactory
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -26,7 +25,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
     val command = ("insert into " + tableReference
         + " (playername,playeruuid,effectnum,effectname,usepoint,date) "
         + "value("
-        + "'" + playerdata.name + "',"
+        + "'" + playerdata.lowercaseName + "',"
         + "'" + playerdata.uuid.toString() + "',"
         + effect.num + ","
         + "'" + effect.getsqlName() + "',"
@@ -56,7 +55,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
     var count = 0
     val effect = ActiveSkillPremiumEffect.values()
 
-    val command = "select * from " + tableReference + " where playername = '" + playerdata.name + "'"
+    val command = "select * from " + tableReference + " where playername = '" + playerdata.lowercaseName + "'"
     try {
       gateway.executeQuery(command).recordIteration {
         val lrs = this
@@ -65,7 +64,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
         val usePoint = lrs.getInt("usepoint")
         if (getPoint > 0) {
           itemstack = ItemStack(Material.DIAMOND)
-          lore2 = ImmutableListFactory.of(ChatColor.RESET.toString() + "" + ChatColor.GREEN + "" + "金額：" + getPoint * 100,
+          lore2 = listOf(ChatColor.RESET.toString() + "" + ChatColor.GREEN + "" + "金額：" + getPoint * 100,
               "" + ChatColor.RESET + ChatColor.GREEN + "プレミアムエフェクトポイント：+" + getPoint,
               "" + ChatColor.RESET + ChatColor.GREEN + "日時：" + lrs.getString("date")
           )
@@ -79,7 +78,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
           material = effect[num].material
           itemstack = ItemStack(material)
 
-          lore2 = ImmutableListFactory.of("" + ChatColor.RESET + ChatColor.GOLD + "プレミアムエフェクトポイント： -" + usePoint,
+          lore2 = listOf("" + ChatColor.RESET + ChatColor.GOLD + "プレミアムエフェクトポイント： -" + usePoint,
               "" + ChatColor.RESET + ChatColor.GOLD + "日時：" + lrs.getString("date")
           )
           itemstack.itemMeta = Bukkit.getItemFactory().getItemMeta(material).apply {

@@ -4,12 +4,12 @@ import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
-import com.github.unchama.seichiassist.data.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.task.CoolDownTask;
 import com.github.unchama.seichiassist.task.MultiBreakTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.external.ExternalPlugins;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -21,18 +21,14 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerBlockBreakListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	private SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+
 	//アクティブスキルの実行
-	@EventHandler
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void onPlayerActiveSkillEvent(BlockBreakEvent event){
 		//実行したプレイヤーを取得
 		Player player = event.getPlayer();
@@ -61,7 +57,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//重力値によるキャンセル判定(スキル判定より先に判定させること)
 		if(!MaterialSets.INSTANCE.getGravityMaterials().contains(block.getType()) &&
 		!MaterialSets.INSTANCE.getCancelledMaterials().contains(block.getType())){
-			if(BreakUtil.getGravity(player, block, false) > 15){
+			if(BreakUtil.INSTANCE.getGravity(player, block, false) > 15){
 				player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。");
 				event.setCancelled(true);
 				return;
@@ -74,7 +70,7 @@ public class PlayerBlockBreakListener implements Listener {
 		}
 
 		//スキル発動条件がそろってなければ終了
-		if(!Util.isSkillEnable(player)){
+		if(!Util.INSTANCE.isSkillEnable(player)){
 			return;
 		}
 
@@ -92,7 +88,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//スキル発動条件がそろってなければ終了
-		if(!Util.isSkillEnable(player)){
+		if(!Util.INSTANCE.isSkillEnable(player)){
 			return;
 		}
 
@@ -146,7 +142,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//これ以前の終了処理はマナは回復しません
 		//追加マナ獲得
-		playerdata.getActiveskilldata().mana.increase(BreakUtil.calcManaDrop(playerdata),player, playerdata.getLevel());
+		playerdata.getActiveskilldata().mana.increase(BreakUtil.INSTANCE.calcManaDrop(playerdata),player, playerdata.getLevel());
 		//これ以降の終了処理はマナが回復します
 
 		//アクティブスキルフラグがオフの時処理を終了
@@ -165,6 +161,8 @@ public class PlayerBlockBreakListener implements Listener {
 	//複数範囲破壊
 	private void runMultiSkill(Player player, Block block,
 			ItemStack tool) {
+
+
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
@@ -188,7 +186,7 @@ public class PlayerBlockBreakListener implements Listener {
 		long breakblocknum = 0;
 		final BreakArea area = playerdata.getActiveskilldata().area;
 		//現在のプレイヤーの向いている方向
-		String dir = BreakUtil.getCardinalDirection(player);
+		String dir = BreakUtil.INSTANCE.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(area.getDir())){
 			area.setDir(dir);
@@ -234,11 +232,11 @@ public class PlayerBlockBreakListener implements Listener {
 						breakblock = block.getRelative(x, y, z);
 						if(x == 0 && y == 0 && z == 0)continue;
 
-						if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
+						if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getSettings().getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
 							if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
-								if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
+								if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.INSTANCE.BlockEqualsMaterialList(breakblock)){
 									if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
-										if(BreakUtil.canBreak(player, breakblock)){
+										if(BreakUtil.INSTANCE.canBreak(player, breakblock)){
 											if(breakblock.getType() == Material.STATIONARY_LAVA){
 												lavalist.add(breakblock);
 											}else{
@@ -259,7 +257,7 @@ public class PlayerBlockBreakListener implements Listener {
 									|| breakblock.getType() == Material.STATIONARY_LAVA
 									){
 								if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
-									if(BreakUtil.canBreak(player, breakblock)){
+									if(BreakUtil.INSTANCE.canBreak(player, breakblock)){
 										if(breakblock.getType() == Material.STATIONARY_LAVA){
 											lavalist.add(breakblock);
 										}else{
@@ -276,7 +274,7 @@ public class PlayerBlockBreakListener implements Listener {
 			}
 
 			//重力値計算
-			int gravity = BreakUtil.getGravity(player,block,false);
+			int gravity = BreakUtil.INSTANCE.getGravity(player,block,false);
 
 
 			//減る経験値計算
@@ -288,9 +286,9 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 			//減る耐久値の計算
-			alldurability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size());
+			alldurability += BreakUtil.INSTANCE.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size());
 			//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-			alldurability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
+			alldurability += BreakUtil.INSTANCE.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10*lavalist.size());
 
 			//重力値の判定
 			if(gravity > 15){
@@ -331,7 +329,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breakblocknum==0){
-			BreakUtil.breakBlock(player, block, centerofblock, tool,true);
+			BreakUtil.INSTANCE.breakBlock(player, block, centerofblock, tool,true);
 			return;
 		}//スキルの処理
 		else{
@@ -378,7 +376,7 @@ public class PlayerBlockBreakListener implements Listener {
 		//壊される範囲を設定
 		BreakArea area = playerdata.getActiveskilldata().area;
 		//現在のプレイヤーの向いている方向
-		String dir = BreakUtil.getCardinalDirection(player);
+		String dir = BreakUtil.INSTANCE.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(area.getDir())){
 			area.setDir(dir);
@@ -400,11 +398,11 @@ public class PlayerBlockBreakListener implements Listener {
 					breakblock = block.getRelative(x, y, z);
 					if(x == 0 && y == 0 && z == 0)continue;
 
-					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && (Util.isSeichiWorld(player) || playerdata.getMultipleidbreakflag())) { //追加テスト(複数種類一括破壊スキル)
+					if(playerdata.getLevel() >= SeichiAssist.Companion.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && (Util.INSTANCE.isSeichiWorld(player) || playerdata.getSettings().getMultipleidbreakflag())) { //追加テスト(複数種類一括破壊スキル)
 						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
-							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.BlockEqualsMaterialList(breakblock)){
+							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.INSTANCE.BlockEqualsMaterialList(breakblock)){
 								if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
-									if(BreakUtil.canBreak(player, breakblock)){
+									if(BreakUtil.INSTANCE.canBreak(player, breakblock)){
 										if(breakblock.getType() == Material.STATIONARY_LAVA){
 											lavalist.add(breakblock);
 										}else{
@@ -425,7 +423,7 @@ public class PlayerBlockBreakListener implements Listener {
 								|| breakblock.getType() == Material.STATIONARY_LAVA
 								){
 							if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block)){
-								if(BreakUtil.canBreak(player, breakblock)){
+								if(BreakUtil.INSTANCE.canBreak(player, breakblock)){
 									if(breakblock.getType() == Material.STATIONARY_LAVA){
 										lavalist.add(breakblock);
 									}else{
@@ -444,7 +442,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
 		//重力値計算
-		int gravity = BreakUtil.getGravity(player,block,false);
+		int gravity = BreakUtil.INSTANCE.getGravity(player,block,false);
 
 
 		//減るマナ計算
@@ -461,9 +459,9 @@ public class PlayerBlockBreakListener implements Listener {
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナ：" + useMana);
 		}
 		//減る耐久値の計算
-		short durability = (short) (tool.getDurability() + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
+		short durability = (short) (tool.getDurability() + BreakUtil.INSTANCE.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaklist.size()));
 		//１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-		durability += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavalist.size());
+		durability += BreakUtil.INSTANCE.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),10 * lavalist.size());
 
 
 		//重力値の判定
@@ -508,14 +506,14 @@ public class PlayerBlockBreakListener implements Listener {
 
 		//自身のみしか壊さない時自然に処理する
 		if(breaklist.isEmpty()){
-			BreakUtil.breakBlock(player, block, centerofblock, tool,true);
+			BreakUtil.INSTANCE.breakBlock(player, block, centerofblock, tool,true);
 			return;
 		}//エフェクトが指定されていないときの処理
 		else if(playerdata.getActiveskilldata().effectnum == 0){
 			breaklist.add(block);
 			SeichiAssist.Companion.getAllblocklist().add(block);
 			for(Block b:breaklist){
-				BreakUtil.breakBlock(player, b, centerofblock, tool,false);
+				BreakUtil.INSTANCE.breakBlock(player, b, centerofblock, tool,false);
 				SeichiAssist.Companion.getAllblocklist().remove(b);
 			}
 		}
@@ -555,7 +553,7 @@ public class PlayerBlockBreakListener implements Listener {
 	 *
 	 * @param event BlockBreakEvent
 	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	@SuppressWarnings("deprecation")
 	public void onPlayerBlockHalf(BlockBreakEvent event) {
 		Player p = event.getPlayer();

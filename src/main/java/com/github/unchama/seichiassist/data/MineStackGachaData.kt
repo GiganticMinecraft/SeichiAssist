@@ -19,18 +19,21 @@ class MineStackGachaData(val objName: String,
 
   @Deprecated("ここをなんのデータクラスだと思っているんだ")
   fun itemStackEquals(another: ItemStack): Boolean {
-    val lore = this.itemStack.itemMeta.lore
-    val anotherLore = another.itemMeta.lore
+    val crt = itemStack.itemMeta
+    val ant = another.itemMeta
+    val lore = crt.lore
+    val anotherLore = ant.lore
 
-    if (anotherLore.containsAll(lore) && (this.itemStack.itemMeta.displayName.contains(another.itemMeta.displayName) || another.itemMeta.displayName.contains(this.itemStack.itemMeta.displayName))) {
+    if (anotherLore.containsAll(lore) && (crt.displayName.contains(another.itemMeta.displayName) || ant.displayName.contains(this.itemStack.itemMeta.displayName))) {
       //この時点で名前と内容が一致
       //盾、バナー用の模様判定
-      if ((another.type == Material.SHIELD || another.type == Material.BANNER) && this.itemStack.type == another.type) {
-        val bs0 = another.itemMeta as BlockStateMeta
+      val otherType = another.type
+      if ((otherType === Material.SHIELD || otherType === Material.BANNER) && this.itemStack.type === otherType) {
+        val bs0 = ant as BlockStateMeta
         val b0 = bs0.blockState as Banner
         val p0 = b0.patterns
 
-        val bs1 = this.itemStack.itemMeta as BlockStateMeta
+        val bs1 = crt as BlockStateMeta
         val b1 = bs1.blockState as Banner
         val p1 = b1.patterns
 

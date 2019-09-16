@@ -11,6 +11,30 @@ import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.asMessageEffect
 import org.bukkit.command.CommandSender
 
+/*
+ Kotlinコンパイラのバグによりクラスの外に持ってきているが、
+ 本来ContextualExecutorBuilder.argumentParsers.combinedParse内にあって良い
+ */
+private tailrec suspend fun <CS : CommandSender>
+    parse(parsers: List<(String) -> ResponseEffectOrResult<CS, Any>>,
+          args: List<String>,
+          onMissingArguments: ContextualExecutor,
+          context: RawCommandContext,
+          refinedSender: CS,
+          reverseAccumulator: List<Any> = listOf()): Option<Pair<List<Any>, List<String>>> {
+  val firstParser = parsers.firstOrNull() ?: return Some(reverseAccumulator.reversed() to args)
+  val firstArg = args.firstOrNull()
+      ?: return None.also { onMissingArguments.executeWith(context) }
+
+  return when (val transformed = firstParser(firstArg)) {
+    is Either.Left -> None.also { transformed.a.runFor(refinedSender) }
+    is Either.Right -> {
+      val parsedArg = transformed.b
+      parse(parsers.drop(1), args.drop(1), onMissingArguments, context, refinedSender, reverseAccumulator.plus(parsedArg))
+    }
+  }
+}
+
 /**
  * [ContextualExecutor]を作成するためのビルダークラス.
  *
@@ -36,26 +60,9 @@ data class ContextualExecutorBuilder<CS : CommandSender>(
   fun argumentsParsers(parsers: List<SingleArgumentParser>,
                        onMissingArguments: ContextualExecutor = PrintUsageExecutor): ContextualExecutorBuilder<CS> {
     val combinedParser: CommandArgumentsParser<CS> = { refinedSender, context: RawCommandContext ->
-      tailrec suspend fun parse(parsers: List<(String) -> ResponseEffectOrResult<CS, Any>>,
-                                onMissingArguments: ContextualExecutor,
-                                args: List<String>,
-                                reverseAccumulator: List<Any> = listOf()): Option<Pair<List<Any>, List<String>>> {
-        val firstParser = parsers.firstOrNull() ?: return Some(reverseAccumulator.reversed() to args)
-        val firstArg = args.firstOrNull()
-            ?: return None.also { onMissingArguments.executeWith(context) }
 
-        return when (val transformed = firstParser(firstArg)) {
-          is Either.Left -> None.also { transformed.a.runFor(refinedSender) }
-          is Either.Right -> {
-            val parsedArg = transformed.b
-            parse(parsers.drop(1), onMissingArguments, args.drop(1), reverseAccumulator.plus(parsedArg))
-          }
-        }
-      }
-
-      parse(parsers, onMissingArguments, context.args).map { parseResult ->
-        PartiallyParsedArgs(parseResult.first, parseResult.second)
-      }
+      parse(parsers, context.args, onMissingArguments, context, refinedSender)
+          .map { (parsed, nonParsed) -> PartiallyParsedArgs(parsed, nonParsed) }
     }
 
     return this.copy(argumentsParser = combinedParser)

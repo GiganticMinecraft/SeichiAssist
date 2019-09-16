@@ -1,5 +1,12 @@
 package com.github.unchama.seichiassist.data;
 
+import com.github.unchama.seichiassist.Config;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.player.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -7,18 +14,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import com.github.unchama.seichiassist.Config;
-import com.github.unchama.seichiassist.SeichiAssist;
 //import org.bukkit.metadata.FixedMetadataValue;
 //import org.bukkit.instance.java.JavaPlugin;
-import com.github.unchama.seichiassist.util.Util;
 
 public class LimitedLoginEvent {
 	private static Config config = SeichiAssist.Companion.getSeichiAssistConfig();
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	HashMap<UUID, PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
 	Player player;
 	PlayerData playerdata;
 	String lastcheckdate ;
@@ -40,7 +41,7 @@ public class LimitedLoginEvent {
 		player = p;
 		UUID uuid = p.getUniqueId();
 		playerdata = playermap.get(uuid);
-		ItemStack skull = Util.getskull(Util.getName(player));
+		ItemStack skull = Util.INSTANCE.getskull(player.getName());
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -89,10 +90,10 @@ public class LimitedLoginEvent {
 								}
 								p.sendMessage("【"+ message +"】"+ amount +"個のガチャ券をプレゼント！");
 								for (int i = 1; i <= amount; i++) {
-									if(player.getInventory().contains(skull) || !Util.isPlayerInventoryFull(player)){
-										Util.addItem(player,skull);
+									if(player.getInventory().contains(skull) || !Util.INSTANCE.isPlayerInventoryFull(player)){
+										Util.INSTANCE.addItem(player,skull);
 									}else{
-										Util.dropItem(player,skull);
+										Util.INSTANCE.dropItem(player,skull);
 									}
 								}
 								break;

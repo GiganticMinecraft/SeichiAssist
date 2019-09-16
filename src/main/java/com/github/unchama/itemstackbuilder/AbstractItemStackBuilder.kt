@@ -2,6 +2,7 @@ package com.github.unchama.itemstackbuilder
 
 import com.github.unchama.itemstackbuilder.component.IconComponent
 import org.bukkit.Material
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 
@@ -14,7 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta
  * @author karayuu
  */
 @Suppress("UNCHECKED_CAST")
-abstract class AbstractItemStackBuilder<T : AbstractItemStackBuilder<T, M>, M: ItemMeta>
+abstract class AbstractItemStackBuilder<T : AbstractItemStackBuilder<T, M>, M : ItemMeta>
 protected constructor(material: Material, durability: Short) : ItemStackBuilder {
 
   private val component: IconComponent = IconComponent(material, durability)
@@ -34,8 +35,18 @@ protected constructor(material: Material, durability: Short) : ItemStackBuilder 
     return this as T
   }
 
+  override fun unbreakable(): T {
+    this.component.isUnbreakable = true
+    return this as T
+  }
+
   override fun amount(amount: Int): T {
     this.component.amount = amount
+    return this as T
+  }
+
+  override fun flagged(flag: ItemFlag): T {
+    this.component.itemFlagSet = component.itemFlagSet.plus(flag)
     return this as T
   }
 

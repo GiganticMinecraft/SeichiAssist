@@ -1,5 +1,6 @@
 package com.github.unchama.contextualexecutor
 
+import arrow.core.Either
 import arrow.effects.extensions.io.fx.fx
 import arrow.effects.extensions.io.unsafeRun.runNonBlocking
 import arrow.unsafe
@@ -42,7 +43,7 @@ fun ContextualExecutor.asNonBlockingTabExecutor(): TabExecutor = object : TabExe
         fx {
           !effect { executeWith(context) }
         }
-      }) { }
+      }) { when (it) { is Either.Left -> it.a.printStackTrace() } }
     }
 
     // 非同期の操作を含むことを前提とするため, Bukkitへのコマンドの成否を必ず成功扱いにする

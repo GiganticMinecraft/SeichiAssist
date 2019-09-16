@@ -5,6 +5,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.*
 
 open class MineStackObj(val mineStackObjName: String,
+                        val uiName: String?,
                         val level: Int,
                         itemStack: ItemStack,
                         val hasNameLore: Boolean,
@@ -15,18 +16,10 @@ open class MineStackObj(val mineStackObjName: String,
     amount = 1
   }
 
-  constructor(objName: String, japaneseName: String?,
+  constructor(objName: String, uiName: String?,
               level: Int, material: Material, durability: Int,
               nameLoreFlag: Boolean, gachaType: Int, stackType: MineStackObjectCategory): this(
-      objName, level,
-      ItemStack(material, 1, durability.toShort()).apply {
-        if (japaneseName != null) {
-          itemMeta = itemMeta.apply {
-            displayName = japaneseName
-          }
-        }
-      },
-      nameLoreFlag, gachaType, stackType
+      objName, uiName, level, ItemStack(material, 1, durability.toShort()), nameLoreFlag, gachaType, stackType
   )
 
   val material: Material

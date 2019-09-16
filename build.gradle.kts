@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "click.seichi"
-version = "1.1.1"
+version = "1.1.2"
 description = """ギガンティック☆整地鯖の独自要素を司るプラグイン"""
 
 project.sourceSets {
@@ -115,14 +115,21 @@ tasks.jar {
     from(embedConfiguration.map { if (it.isDirectory) it else zipTree(it) })
 }
 
+val compilerArgument = listOf("-Xlint:unchecked", "-Xlint:deprecation")
+val kotlinCompilerArgument = listOf("-Xjsr305=strict")
+
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
     jvmTarget = "1.8"
-    freeCompilerArgs = listOf("-Xjsr305=strict")
+    freeCompilerArgs = compilerArgument + kotlinCompilerArgument
 }
 
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
-    freeCompilerArgs = listOf("-Xjsr305=strict")
+    freeCompilerArgs = compilerArgument + kotlinCompilerArgument
 }
+
+val compileJava: JavaCompile by tasks
+compileJava.options.compilerArgs.addAll(compilerArgument)
+

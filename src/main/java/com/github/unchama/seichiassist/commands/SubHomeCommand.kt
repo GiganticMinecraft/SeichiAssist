@@ -16,9 +16,9 @@ object SubHomeCommand {
           "${ChatColor.GREEN}移動する場合",
           "${ChatColor.GREEN}/subhome warp [移動したいサブホームの番号]",
           "${ChatColor.GREEN}セットする場合",
-          "${ChatColor.GREEN}/subHome set [セットしたいサブホームの番号]",
+          "${ChatColor.GREEN}/subhome set [セットしたいサブホームの番号]",
           "${ChatColor.GREEN}名前変更する場合",
-          "${ChatColor.GREEN}/subHome name [名前変更したいサブホームの番号]"
+          "${ChatColor.GREEN}/subhome name [名前変更したいサブホームの番号]"
       ).asMessageEffect()
   )
 

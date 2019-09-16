@@ -1,18 +1,16 @@
 package com.github.unchama.seichiassist.listener;
 
-import java.util.HashMap;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.player.PlayerData;
+import com.github.unchama.seichiassist.database.DatabaseGateway;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class PlayerQuitListener implements Listener {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
@@ -27,14 +25,11 @@ public class PlayerQuitListener implements Listener {
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ取得
 		PlayerData playerdata = playermap.get(uuid);
-		//念のためエラー分岐
-		if(playerdata == null){
-			Bukkit.getLogger().warning(player.getName() + " -> PlayerData not found.");
-			Bukkit.getLogger().warning("PlayerQuitListener.onplayerQuitEvent");
-			return;
-		}
+
+		SeichiAssist.instance.getExpBarSynchronization().desynchronizeFor(player);
+
 		//quit時とondisable時、プレイヤーデータを最新の状態に更新
-		playerdata.updateonQuit(player);
+		playerdata.updateOnQuit();
 		//タスクをすべて終了する
 		playerdata.getActiveskilldata().RemoveAllTask();
 		//saveplayerdata

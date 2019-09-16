@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.task;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
 import com.github.unchama.seichiassist.listener.MebiusListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * 2分に1回呼び出される
@@ -24,8 +24,8 @@ public class MebiusTask extends BukkitRunnable {
 	private boolean silence = false;
 
 	// プレイヤー接続時に呼び出される
-	public MebiusTask(PlayerData parent) {
-		p = Bukkit.getPlayer(parent.getUuid());
+	public MebiusTask(UUID uuid) {
+		p = Bukkit.getPlayer(uuid);
 		if (MebiusListener.isEquip(p)) {
 			speak("おかえり" +Objects.requireNonNull(MebiusListener.getNickname(p))  + "！待ってたよ！");
 		}

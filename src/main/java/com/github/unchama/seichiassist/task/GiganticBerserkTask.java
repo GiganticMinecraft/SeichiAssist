@@ -1,19 +1,17 @@
 package com.github.unchama.seichiassist.task;
 
-import java.util.HashMap;
-import java.util.Random;
-import java.util.UUID;
-
 import com.github.unchama.seichiassist.LevelThresholds;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.Mana;
+import com.github.unchama.seichiassist.data.player.PlayerData;
+import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.ChatColor;
-
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.Mana;
-import com.github.unchama.seichiassist.data.PlayerData;
-import com.github.unchama.seichiassist.util.Util;
+import java.util.HashMap;
+import java.util.Random;
+import java.util.UUID;
 
 public class GiganticBerserkTask {
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
@@ -26,20 +24,20 @@ public class GiganticBerserkTask {
 		playerdata = playermap.get(uuid);
 		Mana mana = playerdata.getActiveskilldata().mana;
 
-		playerdata.setGBcd(playerdata.getGBcd() + 1);
-		if (playerdata.getGBcd() >= SeichiAssist.Companion.getSeichiAssistConfig().getGiganticBerserkLimit()){
+		playerdata.setGBcd(playerdata.getGiganticBerserk().getCd() + 1);
+		if (playerdata.getGiganticBerserk().getCd() >= SeichiAssist.Companion.getSeichiAssistConfig().getGiganticBerserkLimit()){
 			if(SeichiAssist.Companion.getDEBUG()){
 				player.sendMessage("上限到達");
 			}
 			return;
 		}
-		if(playerdata.getIdletime() >= 3){
+		if(playerdata.getIdleMinute() >= 3){
 			return;
 		}
 
 		//確率でマナを回復させる
 		double d = Math.random();
-		if(d < getProb(playerdata)){
+		if(d < playerdata.getGiganticBerserk().manaRegenerationProbability()){
 
 			double i = getRecoveryValue(playerdata);
 
@@ -49,35 +47,35 @@ public class GiganticBerserkTask {
 		}
 
 		//最大レベルの場合終了
-		if(playerdata.getGBstage() == 4 && playerdata.getGBlevel() == 9){
+		if(playerdata.getGiganticBerserk().reachedLimit()){
 			return;
 		}
 
 		//進化待機状態の場合終了
-		if(playerdata.isGBStageUp()){
+		if(playerdata.getGiganticBerserk().getCanEvolve()){
 			return;
 		}
 
+		// stage * level
+		int level = playerdata.getGiganticBerserk().getLevel();
+		int n = (playerdata.getGiganticBerserk().getStage() * 10) + level;
 
-		int n = (playerdata.getGBstage() * 10) + playerdata.getGBlevel();
-
-		playerdata.setGBexp(playerdata.getGBexp() + 1);
+		playerdata.setGBexp(playerdata.getGiganticBerserk().getExp() + 1);
 		//レベルアップするかどうか判定
-		if(LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n) <= playerdata.getGBexp()){
-			if(playerdata.getGBlevel() <= 8){
-				playerdata.setGBexp(0);
-				playerdata.setGBlevel(playerdata.getGBlevel() + 1);
+		if(LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n) <= playerdata.getGiganticBerserk().getExp()){
+			if(level <= 8){
+				playerdata.giganticBerserkLevelUp();
 				//プレイヤーにメッセージ
 				player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.WHITE + "のレベルがアップし、確率が上昇しました");
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f) ;
 				//最大レベルになった時の処理
-				if(playerdata.getGBstage() == 4 && playerdata.getGBlevel() == 9){
-					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f);
-					Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.getName() + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！");
+				if(playerdata.getGiganticBerserk().reachedLimit()){
+					Util.INSTANCE.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f);
+					Util.INSTANCE.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.getLowercaseName() + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！");
 				}
 			}
 			//レベルが10かつ段階がダイヤ未満の場合は進化待機状態へ
-			else if(playerdata.getGBstage() <= 3){
+			else if(playerdata.getGiganticBerserk().getStage() <= 3){
 				player.sendMessage(ChatColor.GREEN + "パッシブスキルメニューより" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GREEN + "スキルが進化可能です。");
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f) ;
 				playerdata.setGBStageUp(true);
@@ -86,27 +84,16 @@ public class GiganticBerserkTask {
 	}
 
 
-	/**
-	 * マナ回復確率を返す
-	 * @param playerdata
-	 */
-	public double getProb(PlayerData pd){
-		if (pd.getGBlevel() < 2) return 0.05;
-		else if (pd.getGBlevel() < 4) return 0.06;
-		else if (pd.getGBlevel() < 6) return 0.07;
-		else if (pd.getGBlevel() < 8) return 0.08;
-		else if (pd.getGBlevel() < 9) return 0.09;
-		else return 0.10;
-	}
-
 	public double getRecoveryValue(PlayerData playerdata){
-		double i,l;
+		double i;
+		final double l;
 		Random rnd = new Random();
 
-		switch (playerdata.getGBstage()){
+		final int level = playerdata.getGiganticBerserk().getLevel();
+		switch (playerdata.getGiganticBerserk().getStage()) {
 		case 0:
 			i = 300;
-			switch (playerdata.getGBlevel()){
+			switch (level) {
 			case 0:
 				l = 30;
 				break;
@@ -143,7 +130,7 @@ public class GiganticBerserkTask {
 			break;
 		case 1:
 			i = 2000;
-			switch (playerdata.getGBlevel()){
+			switch (level){
 			case 0:
 				l = 200;
 				break;
@@ -180,7 +167,7 @@ public class GiganticBerserkTask {
 			break;
 		case 2:
 			i = 15000;
-			switch (playerdata.getGBlevel()){
+			switch (level){
 			case 0:
 				l = 1500;
 				break;
@@ -217,7 +204,7 @@ public class GiganticBerserkTask {
 			break;
 		case 3:
 			i = 40000;
-			switch (playerdata.getGBlevel()){
+			switch (level){
 			case 0:
 				l = 4000;
 				break;
@@ -254,7 +241,7 @@ public class GiganticBerserkTask {
 			break;
 		case 4:
 			i = 100000;
-			switch (playerdata.getGBlevel()){
+			switch (level){
 			case 0:
 				l = 10000;
 				break;

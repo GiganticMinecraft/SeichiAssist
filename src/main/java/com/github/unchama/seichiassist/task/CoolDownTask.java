@@ -1,14 +1,13 @@
 package com.github.unchama.seichiassist.task;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.PlayerData;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class CoolDownTask extends BukkitRunnable{
 	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();

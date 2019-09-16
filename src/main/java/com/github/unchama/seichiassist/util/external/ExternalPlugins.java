@@ -42,7 +42,7 @@ public final class ExternalPlugins {
 	public static CoreProtectWrapper getCoreProtectWrapper() {
 		final CoreProtectAPI cp = getCoreProtect();
 
-		return cp == null ? null : new CoreProtectWrapper(getCoreProtect());
+		return cp == null ? null : new CoreProtectWrapper(cp);
 	}
 
 	//ワールドガードAPIを返す
