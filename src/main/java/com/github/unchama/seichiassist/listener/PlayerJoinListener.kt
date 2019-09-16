@@ -36,7 +36,7 @@ class PlayerJoinListener : Listener {
 
   @EventHandler
   fun onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent) {
-    val maxTryCount = 5
+    val maxTryCount = 10
     runBlocking {
       (1 until maxTryCount + 1).forEach { tryCount ->
         val isLastTry = tryCount == maxTryCount
@@ -55,7 +55,7 @@ class PlayerJoinListener : Listener {
           }
         }
 
-        delay(400)
+        delay(600)
       }
     }
   }
