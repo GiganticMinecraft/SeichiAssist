@@ -25,7 +25,7 @@ class PlayerSettings {
   //ワールドガード保護ログ表示トグル
   var shouldDisplayWorldGuardLogs = true
 
-  lateinit var broadcastMutingSettings: BroadcastMutingSettings
+  var broadcastMutingSettings: BroadcastMutingSettings = BroadcastMutingSettings.MUTE_MESSAGE_AND_SOUND
 
   //ハーフブロック破壊抑制用
   private var allowBreakingHalfBlocks = false
