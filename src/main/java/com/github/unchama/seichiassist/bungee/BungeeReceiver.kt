@@ -44,10 +44,11 @@ class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
     val player = Bukkit.getServer().getPlayer(playerName)
     val playerData = SeichiAssist.playermap[player.uniqueId]!!
 
+    playerData.updateOnQuit()
+    SeichiAssist.playermap.remove(player.uniqueId)
+
     GlobalScope.launch {
-      playerData.updateOnQuit()
       savePlayerData(playerData)
-      SeichiAssist.playermap.remove(player.uniqueId)
 
       val message = writtenMessage("PlayerDataSavedAndDiscarded", player.name)
       player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
