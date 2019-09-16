@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.bungee
 
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.task.savePlayerData
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.messaging.PluginMessageListener
@@ -17,30 +20,49 @@ class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
     try {
       when (`in`.readUTF()) {
         "GetLocation" -> getLocation(`in`.readUTF(), `in`.readUTF(), `in`.readUTF())
+        "SavePlayerData" -> savePlayerData(`in`.readUTF())
       }
     } catch (e: IOException) {
       e.printStackTrace()
     }
   }
 
-  private fun getLocation(servername: String, uuid: String, wanter: String) {
-    // 受信UUIDからプレイヤーを特定
-    val player = Bukkit.getServer().getPlayer(UUID.fromString(uuid))
-    // プレイヤーデータを取得
-    val playerData = SeichiAssist.playermap[UUID.fromString(uuid)]!!
-
+  private fun writtenMessage(vararg messages: String): ByteArray {
     val b = ByteArrayOutputStream()
     val out = DataOutputStream(b)
+
     try {
-      // 返却データの生成
-      out.writeUTF("GetLocation")
-      out.writeUTF(wanter)
-      out.writeUTF("${player.name}: 整地Lv${playerData.level} (総整地量: ${String.format("%,d", playerData.totalbreaknum)})")
-      out.writeUTF("Server: $servername, World: ${player.world.name} (${player.location.blockX}, ${player.location.blockY}, ${player.location.blockZ})")
+      messages.forEach { out.writeUTF(it) }
     } catch (e: IOException) {
       e.printStackTrace()
     }
 
-    player.sendPluginMessage(plugin, "SeichiAssistBungee", b.toByteArray())
+    return b.toByteArray()
+  }
+
+  private fun savePlayerData(playerName: String) {
+    val player = Bukkit.getServer().getPlayer(playerName)
+    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+
+    GlobalScope.launch {
+      savePlayerData(playerData)
+
+      val message = writtenMessage("PlayerDataSaved", player.name)
+      player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
+    }
+  }
+
+  private fun getLocation(servername: String, uuid: String, wanter: String) {
+    val player = Bukkit.getServer().getPlayer(UUID.fromString(uuid))
+    val playerData = SeichiAssist.playermap[UUID.fromString(uuid)]!!
+
+    val message = writtenMessage(
+        "GetLocation",
+        wanter,
+        "${player.name}: 整地Lv${playerData.level} (総整地量: ${String.format("%,d", playerData.totalbreaknum)})",
+        "Server: $servername, World: ${player.world.name} (${player.location.blockX}, ${player.location.blockY}, ${player.location.blockZ})"
+    )
+
+    player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
   }
 }

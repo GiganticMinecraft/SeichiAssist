@@ -1,43 +1,34 @@
-package com.github.unchama.seichiassist.listener;
+package com.github.unchama.seichiassist.listener
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.player.PlayerData;
-import com.github.unchama.seichiassist.database.DatabaseGateway;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.task.savePlayerData
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerQuitEvent
 
-import java.util.HashMap;
-import java.util.UUID;
+class PlayerQuitListener : Listener {
+  private val playerMap = SeichiAssist.playermap
 
-public class PlayerQuitListener implements Listener {
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
-	DatabaseGateway databaseGateway = SeichiAssist.Companion.getDatabaseGateway();
+  //プレイヤーがquitした時に実行
+  @EventHandler(priority = EventPriority.LOWEST)
+  fun onplayerQuitEvent(event: PlayerQuitEvent) {
+    val player = event.player
+    val uuid = player.uniqueId
+    val playerData = playerMap[uuid]!!
 
-	//プレイヤーがquitした時に実行
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onplayerQuitEvent(PlayerQuitEvent event){
-		//退出したplayerを取得
-		Player player = event.getPlayer();
-		//プレイヤーのuuidを取得
-		UUID uuid = player.getUniqueId();
-		//プレイヤーデータ取得
-		PlayerData playerdata = playermap.get(uuid);
+    SeichiAssist.instance.expBarSynchronization.desynchronizeFor(player)
 
-		SeichiAssist.instance.getExpBarSynchronization().desynchronizeFor(player);
+    playerData.updateOnQuit()
+    playerData.activeskilldata.RemoveAllTask()
 
-		//quit時とondisable時、プレイヤーデータを最新の状態に更新
-		playerdata.updateOnQuit();
-		//タスクをすべて終了する
-		playerdata.getActiveskilldata().RemoveAllTask();
-		//saveplayerdata
-		databaseGateway.playerDataManipulator.saveQuitPlayerData(playerdata);
+    GlobalScope.launch {
+      savePlayerData(playerData)
+    }
 
-		//不要なplayerdataを削除
-		playermap.remove(uuid);
-
-	}
-
+    //不要なplayerdataを削除
+    playerMap.remove(uuid)
+  }
 }

@@ -10,7 +10,6 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.task.CoolDownTask
-import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.loadExistingPlayerData
 import com.github.unchama.seichiassist.task.recordIteration
 import com.github.unchama.seichiassist.util.BukkitSerialization
@@ -639,16 +638,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         loadExistingPlayerData(playerUUID, playerName, ignoreActiveState)
       }
     }
-  }
-
-  //ondisable"以外"の時のプレイヤーデータセーブ処理(loginflag折りません)
-  fun savePlayerData(playerdata: PlayerData) {
-    PlayerDataSaveTask(playerdata, false, false).runTaskAsynchronously(plugin)
-  }
-
-  //ondisable"以外"の時のプレイヤーデータセーブ処理(ログアウト時に使用、loginflag折ります)
-  fun saveQuitPlayerData(playerdata: PlayerData) {
-    PlayerDataSaveTask(playerdata, false, true).runTaskAsynchronously(plugin)
   }
 
   companion object {

@@ -17,11 +17,12 @@ import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.task.HalfHourRankingRoutine
 import com.github.unchama.seichiassist.task.PlayerDataBackupTask
 import com.github.unchama.seichiassist.task.PlayerDataPeriodicRecalculation
-import com.github.unchama.seichiassist.task.PlayerDataSaveTask
+import com.github.unchama.seichiassist.task.savePlayerData
 import com.github.unchama.util.ActionStatus.Fail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.RED
@@ -195,7 +196,9 @@ class SeichiAssist : JavaPlugin() {
       //quit時とondisable時、プレイヤーデータを最新の状態に更新
       playerdata.updateOnQuit()
 
-      PlayerDataSaveTask(playerdata, true, true).run()
+      runBlocking {
+        savePlayerData(playerdata)
+      }
     }
 
     if (databaseGateway.disconnect() === Fail) {
