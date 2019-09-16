@@ -48,7 +48,7 @@ object BuildMainMenu : Menu {
       val iconItemStack = IconItemStackBuilder(Material.COOKED_CHICKEN)
           .title("$YELLOW${EMPHASIZE}FLY機能 情報表示")
           .lore(
-              "$RESET${AQUA}FLY 効果: ${openerData.flyflag}",
+              "$RESET${AQUA}FLY 効果: ${if (openerData.flyflag) "ON" else "OFF"}",
               "$RESET${AQUA}FLY 残り時間: ${if (openerData.Endlessfly) "∞" else openerData.flytime}"
           )
           .build()
