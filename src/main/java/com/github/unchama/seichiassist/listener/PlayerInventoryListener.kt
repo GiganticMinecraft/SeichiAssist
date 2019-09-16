@@ -67,54 +67,33 @@ class PlayerInventoryListener : Listener {
     val player = he as Player
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == DARK_RED.toString() + "" + BOLD + "サーバーを選択してください") {
+    if (topinventory.title == "$DARK_RED${BOLD}サーバーを選択してください") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
-        return
-      }
+      if (event.clickedInventory.type === InventoryType.PLAYER) return
+
       val meta = itemstackcurrent.itemMeta
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      val byteArrayDataOutput = ByteStreams
-          .newDataOutput()
+      val byteArrayDataOutput = ByteStreams.newDataOutput()
+
       //ページ変更処理
       val displayName = meta.displayName
-      when {
-        "アルカディアサーバー" in displayName -> {
-          byteArrayDataOutput.writeUTF("Connect")
-          byteArrayDataOutput.writeUTF("s1")
-          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-              byteArrayDataOutput.toByteArray())
-        }
-        "エデンサーバー" in displayName -> {
-          byteArrayDataOutput.writeUTF("Connect")
-          byteArrayDataOutput.writeUTF("s2")
-          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-              byteArrayDataOutput.toByteArray())
-        }
-        "ヴァルハラサーバー" in displayName -> {
-          byteArrayDataOutput.writeUTF("Connect")
-          byteArrayDataOutput.writeUTF("s3")
-          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-              byteArrayDataOutput.toByteArray())
-        }
-        "建築サーバー" in displayName -> {
-          byteArrayDataOutput.writeUTF("Connect")
-          byteArrayDataOutput.writeUTF("s8")
-          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-              byteArrayDataOutput.toByteArray())
-        }
-        "公共施設サーバー" in displayName -> {
-          byteArrayDataOutput.writeUTF("Connect")
-          byteArrayDataOutput.writeUTF("s7")
-          player.sendPluginMessage(SeichiAssist.instance, "BungeeCord",
-              byteArrayDataOutput.toByteArray())
-        }
+      val targetServerName = when {
+        "アルカディアサーバー" in displayName -> "s1"
+        "エデンサーバー" in displayName -> "s2"
+        "ヴァルハラサーバー" in displayName -> "s3"
+        "建築サーバー" in displayName -> "s8"
+        "公共施設サーバー" in displayName -> "s7"
+        else -> throw IllegalStateException("Reached unreachable segment.")
       }
+
+      byteArrayDataOutput.writeUTF("Connect")
+      byteArrayDataOutput.writeUTF(targetServerName)
+      player.sendPluginMessage(SeichiAssist.instance, "BungeeCord", byteArrayDataOutput.toByteArray())
     }
   }
 
