@@ -11,7 +11,7 @@ import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.isRegionSeichi
+import com.github.unchama.seichiassist.isSeichiWorldWithWGRegions
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.targetedeffect.asMessageEffect
 import com.github.unchama.targetedeffect.ops.asSequentialEffect
@@ -65,7 +65,7 @@ object RmpCommand {
         val world = context.args.parsed[0] as World
         val days = context.args.parsed[1] as Int
 
-        if (ManagedWorld.fromBukkitWorld(world)?.isRegionSeichi == false) {
+        if (ManagedWorld.fromBukkitWorld(world)?.isSeichiWorldWithWGRegions == false) {
           return@execution "removeコマンドは保護をかけて整地する整地ワールドでのみ使用出来ます".asMessageEffect()
         }
 
