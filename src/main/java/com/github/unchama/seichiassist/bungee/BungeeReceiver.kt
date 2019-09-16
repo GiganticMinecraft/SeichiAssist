@@ -20,7 +20,7 @@ class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
     try {
       when (`in`.readUTF()) {
         "GetLocation" -> getLocation(`in`.readUTF(), `in`.readUTF(), `in`.readUTF())
-        "SavePlayerData" -> savePlayerData(`in`.readUTF())
+        "SaveAndDiscardPlayerData" -> savePlayerData(`in`.readUTF())
       }
     } catch (e: IOException) {
       e.printStackTrace()
@@ -45,9 +45,11 @@ class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
     val playerData = SeichiAssist.playermap[player.uniqueId]!!
 
     GlobalScope.launch {
+      playerData.updateOnQuit()
       savePlayerData(playerData)
+      SeichiAssist.playermap.remove(player.uniqueId)
 
-      val message = writtenMessage("PlayerDataSaved", player.name)
+      val message = writtenMessage("PlayerDataSavedAndDiscarded", player.name)
       player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
     }
   }

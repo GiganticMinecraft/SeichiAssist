@@ -337,6 +337,8 @@ class PlayerData constructor(
 
     //クライアント経験値をサーバー保管
     saveTotalExp()
+
+    activeskilldata.RemoveAllTask()
   }
 
   fun giganticBerserkLevelUp() {

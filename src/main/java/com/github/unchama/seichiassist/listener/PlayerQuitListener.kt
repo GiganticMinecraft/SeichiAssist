@@ -17,16 +17,13 @@ class PlayerQuitListener : Listener {
   fun onplayerQuitEvent(event: PlayerQuitEvent) {
     val player = event.player
     val uuid = player.uniqueId
-    val playerData = playerMap[uuid]!!
-
     SeichiAssist.instance.expBarSynchronization.desynchronizeFor(player)
 
-    playerData.updateOnQuit()
-    playerData.activeskilldata.RemoveAllTask()
+    val playerData = playerMap[uuid] ?: return
 
-    GlobalScope.launch {
-      savePlayerData(playerData)
-    }
+    playerData.updateOnQuit()
+
+    GlobalScope.launch { savePlayerData(playerData) }
 
     //不要なplayerdataを削除
     playerMap.remove(uuid)
