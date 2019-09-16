@@ -726,6 +726,7 @@ class PlayerData constructor(
 
   fun setVotingFairyTime(@AntiTypesafe str: String) {
     val s = str.split(",".toRegex()).toTypedArray()
+    if (s.size < 5) return
     if (s.slice(0..4).all(String::isNotEmpty)) {
       val year = s[0].toInt()
       val month = s[1].toInt() - 1
