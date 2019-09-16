@@ -333,6 +333,8 @@ class PlayerData constructor(
 
     activeskilldata.updateOnQuit()
 
+    mebius.cancel()
+
     //クライアント経験値をサーバー保管
     saveTotalExp()
   }

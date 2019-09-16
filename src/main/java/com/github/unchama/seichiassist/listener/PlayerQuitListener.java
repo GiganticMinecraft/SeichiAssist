@@ -17,7 +17,7 @@ public class PlayerQuitListener implements Listener {
 	DatabaseGateway databaseGateway = SeichiAssist.Companion.getDatabaseGateway();
 
 	//プレイヤーがquitした時に実行
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onplayerQuitEvent(PlayerQuitEvent event){
 		//退出したplayerを取得
 		Player player = event.getPlayer();
