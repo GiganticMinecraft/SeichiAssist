@@ -339,7 +339,7 @@ fun loadExistingPlayerData(playerUUID: UUID, playerName: String, ignoreActiveSta
         @NotNull
         val TitleFlags = BitSet.valueOf(Titlearray)
         playerData.TitleFlags = TitleFlags
-      } catch (e: NullPointerException) {
+      } catch (e: Exception) {
         playerData.TitleFlags = BitSet(10000)
         playerData.TitleFlags.set(1)
       }
