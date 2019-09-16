@@ -147,8 +147,13 @@ class SeichiAssist : JavaPlugin() {
 
     //オンラインの全てのプレイヤーを処理
     for (p in server.onlinePlayers) {
-      //プレイヤーデータを生成
-      playermap[p.uniqueId] = databaseGateway.playerDataManipulator.loadPlayerData(p.uniqueId, p.name)
+      try {
+        //プレイヤーデータを生成
+        playermap[p.uniqueId] = databaseGateway.playerDataManipulator.loadPlayerData(p.uniqueId, p.name, false)
+      } catch (e: Exception) {
+        e.printStackTrace()
+        p.kickPlayer("プレーヤーデータの読み込みに失敗しました。")
+      }
     }
 
     //ランキングリストを最新情報に更新する
