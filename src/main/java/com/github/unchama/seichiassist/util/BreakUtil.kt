@@ -416,7 +416,6 @@ object BreakUtil {
   }
 
   fun BlockEqualsMaterialList(block: Block): Boolean {
-    println(block.type.name)
     return MaterialSets.materials.contains(block.type)
   }
 
