@@ -42,6 +42,7 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
 
     // ここで、0 -> 第一位、 1 -> 第二位、・・・n -> 第(n+1)位にする (つまり降順)
     val sortedPlayerData = SeichiAssist.playermap.values.toList()
+        .filter { it.halfhourblock.increase != 0L }
         .sortedBy { it.halfhourblock.increase }
         .asReversed()
 
@@ -50,7 +51,7 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
     val topPlayerData = sortedPlayerData.firstOrNull()
 
     // 第一位の整地量が非ゼロならば
-    if (topPlayerData != null && topPlayerData.halfhourblock.increase != 0L) {
+    if (topPlayerData != null) {
       val rankingPositionColor = listOf(ChatColor.DARK_PURPLE, ChatColor.BLUE, ChatColor.DARK_AQUA)
 
       sortedPlayerData
