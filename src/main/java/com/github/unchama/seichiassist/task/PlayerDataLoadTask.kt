@@ -29,12 +29,10 @@ import kotlin.collections.HashMap
 /**
  * プレイヤーデータロードを実施する処理(非同期で実行すること)
  *
- * @param ignoreActiveState プレーヤーデータが他サーバーで読み込まれている(loginflag=true)場合でも取得を実行するかどうか
- *
  * @author unchama
  */
 @Deprecated("Should be inlined.")
-fun loadExistingPlayerData(playerUUID: UUID, playerName: String, ignoreActiveState: Boolean): PlayerData {
+fun loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
   val config = SeichiAssist.seichiAssistConfig
   val databaseGateway = SeichiAssist.databaseGateway
 
@@ -181,10 +179,6 @@ fun loadExistingPlayerData(playerUUID: UUID, playerName: String, ignoreActiveSta
 
     stmt.executeQuery(command).recordIteration {
       val rs = this
-
-      if (rs.getBoolean("loginflag") && !ignoreActiveState) {
-        throw IllegalStateException("PlayerData which is to be loaded is still active on other servers.")
-      }
 
       //各種数値
       runBlocking {

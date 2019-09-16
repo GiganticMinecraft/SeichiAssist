@@ -26,9 +26,9 @@ class PlayerJoinListener : Listener {
   private val playerMap: HashMap<UUID, PlayerData> = SeichiAssist.playermap
   private val databaseGateway = SeichiAssist.databaseGateway
 
-  private fun loadPlayerData(playerUuid: UUID, playerName: String, ignoreActiveState: Boolean) {
+  private fun loadPlayerData(playerUuid: UUID, playerName: String) {
     SeichiAssist.playermap[playerUuid] =
-        databaseGateway.playerDataManipulator.loadPlayerData(playerUuid, playerName, ignoreActiveState)
+        databaseGateway.playerDataManipulator.loadPlayerData(playerUuid, playerName)
   }
 
   private val failedToLoadDataError =
@@ -42,8 +42,7 @@ class PlayerJoinListener : Listener {
         val isLastTry = tryCount == maxTryCount
 
         try {
-          loadPlayerData(event.uniqueId, event.name, isLastTry)
-          println("Loaded PlayerData of ${event.name} on $tryCount'th try")
+          loadPlayerData(event.uniqueId, event.name)
           return@runBlocking
         } catch (e: Exception) {
           if (isLastTry) {
@@ -72,7 +71,7 @@ class PlayerJoinListener : Listener {
      */
     if (!playerMap.containsKey(player.uniqueId)) {
       try {
-        loadPlayerData(player.uniqueId, player.name, false)
+        loadPlayerData(player.uniqueId, player.name)
       } catch (e: Exception) {
         println("Caught exception while loading PlayerData.")
         e.printStackTrace()

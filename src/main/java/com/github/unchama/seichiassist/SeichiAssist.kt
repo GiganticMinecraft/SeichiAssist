@@ -150,7 +150,7 @@ class SeichiAssist : JavaPlugin() {
     for (p in server.onlinePlayers) {
       try {
         //プレイヤーデータを生成
-        playermap[p.uniqueId] = databaseGateway.playerDataManipulator.loadPlayerData(p.uniqueId, p.name, false)
+        playermap[p.uniqueId] = databaseGateway.playerDataManipulator.loadPlayerData(p.uniqueId, p.name)
       } catch (e: Exception) {
         e.printStackTrace()
         p.kickPlayer("プレーヤーデータの読み込みに失敗しました。")

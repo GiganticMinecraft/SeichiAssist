@@ -599,7 +599,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         }
   }
 
-  fun loadPlayerData(playerUUID: UUID, playerName: String, ignoreActiveState: Boolean): PlayerData {
+  fun loadPlayerData(playerUUID: UUID, playerName: String): PlayerData {
     val databaseGateway = SeichiAssist.databaseGateway
     val table = DatabaseConstants.PLAYERDATA_TABLENAME
     val db = SeichiAssist.seichiAssistConfig.db
@@ -635,7 +635,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       }
       else -> {
         //uuidが存在するときの処理
-        loadExistingPlayerData(playerUUID, playerName, ignoreActiveState)
+        loadExistingPlayerData(playerUUID, playerName)
       }
     }
   }
