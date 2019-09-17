@@ -174,80 +174,62 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   fun addChainVote(name: String): Boolean {
-    val cal = Calendar.getInstance()
-    val sdf = SimpleDateFormat("yyyy/MM/dd")
-    var lastvote: String? = null
-    var select = "SELECT lastvote FROM " + tableReference + " " +
-        "WHERE name LIKE '" + name + "'"
+    val calendar = Calendar.getInstance()
+    val dateFormat = SimpleDateFormat("yyyy/MM/dd")
+    val lastVote: String
+
     try {
-      gateway.executeQuery(select).use { lrs ->
+      val readLastVote = gateway.executeQuery("SELECT lastvote FROM $tableReference WHERE name LIKE '$name'").use { lrs ->
         // 初回のnextがnull→データが1件も無い場合
-        if (!lrs.next()) {
-          return false
-        }
+        if (!lrs.next()) return false
 
-        val lv = lrs.getString("lastvote")
-
-        lastvote = if (lv == null || lv == "") {
-          sdf.format(cal.time)
-        } else {
-          lv
-        }
+        lrs.getString("lastvote")
       }
 
-      val update = "UPDATE " + tableReference + " " +
-          " SET lastvote = '" + sdf.format(cal.time) + "'" +
-          " WHERE name LIKE '" + name + "'"
+      lastVote =
+          if (readLastVote == null || readLastVote == "")
+            dateFormat.format(calendar.time)
+          else
+            readLastVote
+
+      val update = "UPDATE $tableReference  SET lastvote = '${dateFormat.format(calendar.time)}' WHERE name LIKE '$name'"
 
       gateway.executeUpdate(update)
     } catch (e: SQLException) {
-      Bukkit.getLogger().warning(Util.getName(name) + " sql failed. -> lastvote")
+      Bukkit.getLogger().warning("${Util.getName(name)} sql failed. -> lastvote")
       e.printStackTrace()
       return false
     }
 
-    select = "SELECT chainvote FROM " + tableReference + " " +
-        "WHERE name LIKE '" + name + "'"
     try {
-      gateway.executeQuery(select).use { lrs ->
+      gateway.executeQuery("SELECT chainvote FROM $tableReference WHERE name LIKE '$name'").use { lrs ->
         // 初回のnextがnull→データが1件も無い場合
-        if (!lrs.next()) {
-          return false
-        }
-        var count = lrs.getInt("chainvote")
+        if (!lrs.next()) return false
+
         try {
-          val TodayDate = sdf.parse(sdf.format(cal.time))
-          val LastDate = sdf.parse(lastvote)
+          val TodayDate = dateFormat.parse(dateFormat.format(calendar.time))
+          val LastDate = dateFormat.parse(lastVote)
           val TodayLong = TodayDate.time
           val LastLong = LastDate.time
 
-          val datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-          if (datediff <= 1 || datediff >= 0) {
-            count++
-          } else {
-            count = 1
-          }
-          //プレイヤーがオンラインの時即時反映させる
-          val player = Bukkit.getServer().getPlayer(name)
-          if (player != null) {
-            //UUIDを取得
-            val givenuuid = player.uniqueId
-            //playerdataを取得
-            val playerdata = SeichiAssist.playermap[givenuuid]!!
+          val dateDiff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
+          val count =
+              if (dateDiff == 1L)
+                lrs.getInt("chainvote") + 1
+              else
+                1
 
-            playerdata.ChainVote++
+          //プレイヤーがオンラインの時即時反映させる
+          Bukkit.getServer().getPlayer(name)?.let { player ->
+            val playerData = SeichiAssist.playermap[player.uniqueId]!!
+
+            playerData.ChainVote = count
           }
+
+          gateway.executeUpdate("UPDATE $tableReference SET chainvote = $count WHERE name LIKE '$name'")
         } catch (e: ParseException) {
           e.printStackTrace()
         }
-
-        lrs.close()
-
-        val update = "UPDATE " + tableReference + " " +
-            " SET chainvote = " + count +
-            " WHERE name LIKE '" + name + "'"
-
-        gateway.executeUpdate(update)
       }
     } catch (e: SQLException) {
       Bukkit.getLogger().warning(Util.getName(name) + " sql failed. -> chainvote")
