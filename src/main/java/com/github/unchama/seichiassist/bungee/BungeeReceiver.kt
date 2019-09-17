@@ -20,7 +20,7 @@ class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
     try {
       when (`in`.readUTF()) {
         "GetLocation" -> getLocation(`in`.readUTF(), `in`.readUTF(), `in`.readUTF())
-        "SaveAndDiscardPlayerData" -> savePlayerData(`in`.readUTF())
+        "UnloadPlayerData" -> savePlayerDataOnUpstreamRequest(`in`.readUTF())
       }
     } catch (e: IOException) {
       e.printStackTrace()
@@ -40,17 +40,25 @@ class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
     return b.toByteArray()
   }
 
-  private fun savePlayerData(playerName: String) {
+  private fun savePlayerDataOnUpstreamRequest(playerName: String) {
     val player = Bukkit.getServer().getPlayer(playerName)
-    val playerData = SeichiAssist.playermap[player.uniqueId]!!
 
-    playerData.updateOnQuit()
-    SeichiAssist.playermap.remove(player.uniqueId)
+    try {
+      val playerData = SeichiAssist.playermap[player.uniqueId]!!
 
-    GlobalScope.launch {
-      savePlayerData(playerData)
+      playerData.updateOnQuit()
+      SeichiAssist.playermap.remove(player.uniqueId)
 
-      val message = writtenMessage("PlayerDataSavedAndDiscarded", player.name)
+      GlobalScope.launch {
+        savePlayerData(playerData)
+
+        val message = writtenMessage("PlayerDataUnloaded", player.name)
+        player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
+      }
+    } catch (e: Exception) {
+      e.printStackTrace()
+      player.kickPlayer("プレーヤーデータが正常にアンロードされませんでした。再接続した後サーバーを移動してください。")
+      val message = writtenMessage("FailedToUnloadPlayerData", player.name)
       player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
     }
   }
