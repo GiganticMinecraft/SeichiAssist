@@ -57,7 +57,7 @@ class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
       }
     } catch (e: Exception) {
       e.printStackTrace()
-      player.kickPlayer("プレーヤーデータが正常にアンロードされませんでした。再接続した後サーバーを移動してください。")
+      player.kickPlayer("${player.name}のプレーヤーデータが正常にアンロードされませんでした。再接続した後サーバーを移動してください。")
       val message = writtenMessage("FailedToUnloadPlayerData", player.name)
       player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
     }
