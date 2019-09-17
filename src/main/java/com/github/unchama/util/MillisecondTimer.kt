@@ -1,27 +1,21 @@
-package com.github.unchama.util;
+package com.github.unchama.util
 
-import com.github.unchama.seichiassist.SeichiAssist;
+class MillisecondTimer private constructor() {
+  private var startTime: Long = 0
 
-public class MillisecondTimer {
-	private long startTime;
+  fun resetTimer() {
+    startTime = System.nanoTime()
+  }
 
-	private MillisecondTimer() {}
+  fun sendLapTimeMessage(message: String) {
+    val recordedNanoSecondDuration = System.nanoTime() - startTime
 
-	public static MillisecondTimer getInitializedTimerInstance() {
-		MillisecondTimer timer = new MillisecondTimer();
-		timer.resetTimer();
-		return timer;
-	}
+    println("$message(time: ${recordedNanoSecondDuration / 1000L} ms)")
 
-	public void resetTimer() {
-		startTime = System.nanoTime();
-	}
+    startTime = System.nanoTime()
+  }
 
-	public void sendLapTimeMessage(String message) {
-		final long recordedNanoSecondDuration = System.nanoTime() - startTime;
-		SeichiAssist.Companion.getInstance().getServer().getConsoleSender()
-				.sendMessage(message + "(time: "+ recordedNanoSecondDuration / 1000 +" ms)");
-
-		startTime = System.nanoTime();
-	}
+  companion object {
+    fun getInitializedTimerInstance(): MillisecondTimer = MillisecondTimer().apply { resetTimer() }
+  }
 }
