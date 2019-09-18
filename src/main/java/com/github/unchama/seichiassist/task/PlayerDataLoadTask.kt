@@ -70,10 +70,15 @@ fun loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
       val worldName = getString("world_name")
 
       val world = Bukkit.getWorld(worldName)
-      val location = Location(world, locationX.toDouble(), locationY.toDouble(), locationZ.toDouble())
 
-      playerData.setSubHomeLocation(location, subHomeId)
-      playerData.setSubHomeName(subHomeName, subHomeId)
+      if (world != null) {
+        val location = Location(world, locationX.toDouble(), locationY.toDouble(), locationZ.toDouble())
+
+        playerData.setSubHomeLocation(location, subHomeId)
+        playerData.setSubHomeName(subHomeName, subHomeId)
+      } else {
+        println("Resetting ${playerName}'s subhome ${subHomeName}(${subHomeId}) in $worldName - world name not found.")
+      }
     }
   }
 
