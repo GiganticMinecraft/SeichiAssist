@@ -255,7 +255,7 @@ class SeichiAssist : JavaPlugin() {
     var msgachadatalist: MutableList<MineStackGachaData> = ArrayList()
 
     //Playerdataに依存するデータリスト
-    val playermap = HashMap<UUID, PlayerData>()
+    @JvmStatic val playermap = HashMap<UUID, PlayerData>()
 
     //総採掘量ランキング表示用データリスト
     val ranklist: MutableList<RankData> = ArrayList()
