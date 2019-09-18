@@ -484,7 +484,7 @@ class PlayerData constructor(
     val newStars: Int = starLevels.total()
     //合計値の確認
     if (oldStars < newStars) {
-      player.sendMessage("$GOLD★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆($oldStars)→☆($newStars)】")
+      player.sendMessage("$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv200(☆($oldStars))→Lv200(☆($newStars))】")
     }
   }
 
