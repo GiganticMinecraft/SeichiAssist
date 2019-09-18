@@ -17,17 +17,13 @@ public final class PlayerData {
 	/**
 	 * トータル設置ブロック数
 	 */
-	@PackagePrivate
-	BigDecimal totalbuildnum;
+	public BigDecimal totalbuildnum;
 
-	@PackagePrivate
-	boolean flyflag;
+	public boolean flyflag;
 
-	@PackagePrivate
-	int flytime;
+	public int flytime;
 
-	@PackagePrivate
-	boolean endlessfly;
+	public boolean endlessfly;
 
 	public boolean ZoneSetSkillFlag;
 

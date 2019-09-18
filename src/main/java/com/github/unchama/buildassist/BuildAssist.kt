@@ -1,6 +1,5 @@
 package com.github.unchama.buildassist
 
-import com.github.unchama.buildassist.listener.BlockFill
 import com.github.unchama.buildassist.listener.BlockPlaceEventListener
 import com.github.unchama.buildassist.listener.EntityListener
 import com.github.unchama.buildassist.listener.PlayerJoinListener
@@ -40,7 +39,6 @@ class BuildAssist(plugin: Plugin) {
     Bukkit.getServer().pluginManager.registerEvents(EntityListener(), plugin)
     Bukkit.getServer().pluginManager.registerEvents(PlayerRightClickListener(), plugin)
     Bukkit.getServer().pluginManager.registerEvents(PlayerInventoryListener(), plugin)
-    Bukkit.getServer().pluginManager.registerEvents(BlockFill(), plugin)        //クリックイベント登録
     Bukkit.getServer().pluginManager.registerEvents(PlayerQuitListener(), plugin)    //退出時
     Bukkit.getServer().pluginManager.registerEvents(BlockPlaceEventListener(), plugin)    //ブロックを置いた時
 
