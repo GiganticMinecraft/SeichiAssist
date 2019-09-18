@@ -23,7 +23,6 @@ import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
-import java.io.IOException
 import java.sql.SQLException
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -619,31 +618,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         //uuidが存在するときの処理
         loadExistingPlayerData(playerUUID, playerName)
       }
-    }
-  }
-
-  companion object {
-    //指定プレイヤーの四次元ポケットの中身取得
-    fun selectInventory(playerDataManipulator: PlayerDataManipulator, uuid: UUID): Inventory? {
-      val struuid = uuid.toString()
-      var inventory: Inventory? = null
-      val command = ("select inventory from " + playerDataManipulator.tableReference
-          + " where uuid like '" + struuid + "'")
-      try {
-        playerDataManipulator.gateway.executeQuery(command).recordIteration {
-          inventory = BukkitSerialization.fromBase64(getString("inventory"))
-        }
-      } catch (e: SQLException) {
-        println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-        e.printStackTrace()
-        return null
-      } catch (e: IOException) {
-        println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-        e.printStackTrace()
-        return null
-      }
-
-      return inventory
     }
   }
 
