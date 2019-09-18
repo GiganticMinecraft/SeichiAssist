@@ -5,6 +5,7 @@ import java.net.URI
 
 plugins {
     java
+    scala
     maven
     kotlin("jvm").version("1.3.40")
     id("nebula.dependency-lock").version("2.2.4")
@@ -72,6 +73,8 @@ dependencies {
     embed("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
 
     embed("com.okkero.skedule:skedule:1.2.6")
+
+    embed("org.scala-lang:scala-library:2.11.6")
 
     // arrow依存
     val arrowVersion = "0.9.0"
