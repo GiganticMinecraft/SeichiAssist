@@ -19,7 +19,7 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
       val halfHourBlock = playerData.halfhourblock
 
       //プレイヤーがオンラインの時の処理
-      if (player != null && playerData.loaded) {
+      if (player != null) {
         val totalBreakNum = playerData.totalbreaknum
 
         halfHourBlock.after = totalBreakNum
@@ -30,10 +30,6 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
         if (halfHourBlock.increase > 0) {
           player.sendMessage("あなたの整地量は ${ChatColor.AQUA}${halfHourBlock.increase}${ChatColor.WHITE} でした")
         }
-      } else if (!playerData.loaded) {
-        //debug用…このメッセージ視認後に大量集計されないかを確認する
-        Bukkit.getLogger().info("Apple Pen !")
-        halfHourBlock.increase = 0
       } else {
         //ﾌﾟﾚｲﾔｰがオフラインの時の処理
         //前回との差を０に設定
@@ -46,6 +42,7 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
 
     // ここで、0 -> 第一位、 1 -> 第二位、・・・n -> 第(n+1)位にする (つまり降順)
     val sortedPlayerData = SeichiAssist.playermap.values.toList()
+        .filter { it.halfhourblock.increase != 0L }
         .sortedBy { it.halfhourblock.increase }
         .asReversed()
 
@@ -54,7 +51,7 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
     val topPlayerData = sortedPlayerData.firstOrNull()
 
     // 第一位の整地量が非ゼロならば
-    if (topPlayerData != null && topPlayerData.halfhourblock.increase != 0L) {
+    if (topPlayerData != null) {
       val rankingPositionColor = listOf(ChatColor.DARK_PURPLE, ChatColor.BLUE, ChatColor.DARK_AQUA)
 
       sortedPlayerData

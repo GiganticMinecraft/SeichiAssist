@@ -7,6 +7,8 @@ import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.isSeichi
 import com.github.unchama.seichiassist.util.Util
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import net.coreprotect.model.Config
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
@@ -34,14 +36,27 @@ class PlayerJoinListener : Listener {
 
   @EventHandler
   fun onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent) {
-    try {
-      loadPlayerData(event.uniqueId, event.name)
-    } catch (e: Exception) {
-      println("Caught exception while loading PlayerData.")
-      e.printStackTrace()
+    val maxTryCount = 10
+    runBlocking {
+      (1 until maxTryCount + 1).forEach { tryCount ->
+        val isLastTry = tryCount == maxTryCount
 
-      event.kickMessage = failedToLoadDataError
-      event.loginResult = AsyncPlayerPreLoginEvent.Result.KICK_OTHER
+        try {
+          loadPlayerData(event.uniqueId, event.name)
+          return@runBlocking
+        } catch (e: Exception) {
+          if (isLastTry) {
+            println("Caught exception while loading PlayerData.")
+            e.printStackTrace()
+
+            event.kickMessage = failedToLoadDataError
+            event.loginResult = AsyncPlayerPreLoginEvent.Result.KICK_OTHER
+            return@runBlocking
+          }
+        }
+
+        delay(600)
+      }
     }
   }
 

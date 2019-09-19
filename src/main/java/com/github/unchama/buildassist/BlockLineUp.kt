@@ -169,14 +169,14 @@ class BlockLineUp : Listener {
       Util.addBuild1MinAmount(player, BigDecimal(placedBlockCount * BuildAssist.config.blockCountMag))  //設置した数を足す
     }
 
-    val consumptionFromMainHand = if (buildAssistData.line_up_minestack_flg == 1 && mineStackObjectToBeUsed != null) {
+    val consumptionFromMainHand = if (mineStackObjectToBeUsed != null) {
       val mineStackAmount = playerMineStack.getStackedAmountOf(mineStackObjectToBeUsed)
       val consumptionFromMineStack = min(placedBlockCount.toLong(), mineStackAmount)
 
       playerMineStack.subtractStackedAmountOf(mineStackObjectToBeUsed, consumptionFromMineStack)
 
       placedBlockCount - consumptionFromMineStack.toInt()
-    } else 0
+    } else placedBlockCount
 
     // メインハンドのアイテム数を調整する
     if (mainHandItem.amount - consumptionFromMainHand > 0) {

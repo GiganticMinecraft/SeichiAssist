@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist.task
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 
@@ -17,16 +19,11 @@ object PlayerDataBackupTask: RepeatedTaskLauncher() {
     Util.sendEveryMessage(ChatColor.AQUA.toString() + "プレイヤーデータセーブ中…")
     Bukkit.getLogger().info(ChatColor.AQUA.toString() + "プレイヤーデータセーブ中…")
 
-    //現在オンラインのプレイヤーのプレイヤーデータを永続化する
-    for (player in Bukkit.getOnlinePlayers()) {
-      val playerData = playerMap[player.uniqueId]
-
-      if (playerData !== null) {
-        databaseGateway.playerDataManipulator.savePlayerData(playerData)
-      } else {
-        Bukkit.getLogger().warning(player.name + " -> PlayerData not found.")
-        Bukkit.getLogger().warning("PlayerDataBackupTask")
-      }
+    GlobalScope.launch {
+      //現在オンラインのプレイヤーのプレイヤーデータを永続化する
+      Bukkit.getOnlinePlayers()
+          .map { playerMap[it.uniqueId]!! }
+          .forEach { savePlayerData(it) }
     }
 
     Util.sendEveryMessage(ChatColor.AQUA.toString() + "プレイヤーデータセーブ完了")

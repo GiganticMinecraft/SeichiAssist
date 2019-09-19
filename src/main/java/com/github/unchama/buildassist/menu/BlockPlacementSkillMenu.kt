@@ -256,7 +256,7 @@ object BlockPlacementSkillMenu : Menu {
                 "$RED\"建築LVが足りません\"".asMessageEffect()
               } else {
                 sequentialEffect(
-                    unfocusedEffect { playerData.zs_minestack_flag != currentStatus },
+                    unfocusedEffect { playerData.zs_minestack_flag = !currentStatus },
                     "MineStack優先設定${if (currentStatus) "OFF" else "ON"}".asMessageEffect(),
                     open
                 )

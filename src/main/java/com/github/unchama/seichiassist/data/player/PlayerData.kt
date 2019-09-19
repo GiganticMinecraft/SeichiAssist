@@ -44,8 +44,6 @@ class PlayerData constructor(
     @Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID,
     val name: String
 ) {
-  //読み込み済みフラグ
-  var loaded = false
 
   val settings = PlayerSettings()
 
@@ -335,8 +333,12 @@ class PlayerData constructor(
 
     activeskilldata.updateOnQuit()
 
+    mebius.cancel()
+
     //クライアント経験値をサーバー保管
     saveTotalExp()
+
+    activeskilldata.RemoveAllTask()
   }
 
   fun giganticBerserkLevelUp() {
@@ -482,7 +484,7 @@ class PlayerData constructor(
     val newStars: Int = starLevels.total()
     //合計値の確認
     if (oldStars < newStars) {
-      player.sendMessage("$GOLD★☆★ｽﾀｰﾚﾍﾞﾙUP!!!★☆★【☆($oldStars)→☆($newStars)】")
+      player.sendMessage("$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv200(☆($oldStars))→Lv200(☆($newStars))】")
     }
   }
 
@@ -724,6 +726,7 @@ class PlayerData constructor(
 
   fun setVotingFairyTime(@AntiTypesafe str: String) {
     val s = str.split(",".toRegex()).toTypedArray()
+    if (s.size < 5) return
     if (s.slice(0..4).all(String::isNotEmpty)) {
       val year = s[0].toInt()
       val month = s[1].toInt() - 1
