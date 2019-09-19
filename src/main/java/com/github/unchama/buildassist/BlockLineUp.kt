@@ -164,7 +164,7 @@ class BlockLineUp : Listener {
     }
 
     //カウント対象ワールドの場合カウント値を足す
-    if (Util.isBlockCount(player)) {
+    if (Util.inTrackedWorld(player)) {
       //対象ワールドかチェック
       Util.addBuild1MinAmount(player, BigDecimal(placedBlockCount * BuildAssist.config.blockCountMag))  //設置した数を足す
     }

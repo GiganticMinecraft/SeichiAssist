@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.objects.*
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import org.bukkit.Material
+import java.util.*
 
 object MineStackObjectList {
   // 採掘可能ブロック
@@ -512,12 +513,20 @@ object MineStackObjectList {
       MineStackRsObj("record_wait", "レコード", 1, Material.RECORD_12, 0)
   )
 
-  var minestacklist: MutableList<MineStackObj>? = null
-
-  // ガチャ系アイテム
-  // これは後に変更されるのでミュータブルでないといけない
-  var minestacklistgacha: MutableList<MineStackObj> = mutableListOf(
+  /**
+   * デフォルトでガチャの内容に含まれている景品。
+   */
+  val minestackBuiltinGachaPrizes = listOf(
       MineStackObj("gachaimo", null, 1, StaticGachaPrizeFactory.getGachaRingo(), true, -1, MineStackObjectCategory.GACHA_PRIZES),
       MineStackGachaObj("exp_bottle", "エンチャントの瓶", 1, Material.EXP_BOTTLE, 0)
   )
+
+  /**
+   * マインスタックに格納できるガチャ景品。
+   */
+  // これは後に変更されるのでミュータブルでないといけない
+  val minestackGachaPrizes = minestackBuiltinGachaPrizes.toMutableList()
+
+  // ランダムアクセスしないので
+  val minestacklist: MutableList<MineStackObj> = LinkedList()
 }
