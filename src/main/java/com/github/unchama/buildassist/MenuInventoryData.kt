@@ -26,7 +26,7 @@ object MenuInventoryData {
    */
   private val power10 = PowerOf10.power10
 
-  fun getSetBlockSkillData(p: Player): Inventory {
+  @JvmStatic fun getSetBlockSkillData(p: Player): Inventory {
     //プレイヤーを取得
     val player = p.player
     //UUID取得
@@ -159,7 +159,7 @@ object MenuInventoryData {
   }
 
   //ブロックを並べる設定メニュー
-  fun getBlockLineUpData(p: Player): Inventory {
+  @JvmStatic fun getBlockLineUpData(p: Player): Inventory {
     //プレイヤーを取得
     val player = p.player
     //UUID取得
@@ -238,7 +238,7 @@ object MenuInventoryData {
 
 
   //MineStackブロック一括クラフトメニュー
-  fun getBlockCraftData(p: Player): Inventory {
+  @JvmStatic fun getBlockCraftData(p: Player): Inventory {
     //プレイヤーを取得
     val player = p.player
     //UUID取得
@@ -402,7 +402,7 @@ object MenuInventoryData {
   }
 
   //MineStackブロック一括クラフトメニュー2
-  fun getBlockCraftData2(p: Player): Inventory {
+  @JvmStatic fun getBlockCraftData2(p: Player): Inventory {
     //プレイヤーを取得
     val player = p.player
     //UUID取得
@@ -599,7 +599,7 @@ object MenuInventoryData {
   }
 
   //MineStackブロック一括クラフトメニュー3
-  fun getBlockCraftData3(p: Player): Inventory {
+  @JvmStatic fun getBlockCraftData3(p: Player): Inventory {
     //プレイヤーを取得
     val player = p.player
     //UUID取得

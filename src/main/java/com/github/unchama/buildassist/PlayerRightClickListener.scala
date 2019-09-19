@@ -14,7 +14,7 @@ import org.bukkit.{ChatColor, Location, Material}
 import scala.util.control.Breaks
 
 class PlayerRightClickListener extends Listener {
-  private var playermap = BuildAssist.getPlayermap
+  private var playermap = BuildAssist.playermap
 
   import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
@@ -31,7 +31,7 @@ class PlayerRightClickListener extends Listener {
     //アクションを起こした手を取得
     val equipmentslot = event.getHand
     //プレイヤーデータ
-    val playerdata = BuildAssist.getPlayermap.get(uuid).ifNull { return }
+    val playerdata = BuildAssist.playermap.getOrElse(uuid, return)
     val playerdata_s = SeichiAssist.getPlayermap.get(uuid).ifNull { return }
 
     if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
@@ -61,15 +61,15 @@ class PlayerRightClickListener extends Listener {
         val offhanditem = inventory.getItemInOffHand
 
         //メインハンドにブロックがあるか
-        val mainhandtoolflag = BuildAssist.getMateriallist.contains(mainhanditem.getType)
+        val mainhandtoolflag = BuildAssist.materiallist.contains(mainhanditem.getType)
         //オフハンドにブロックがあるか
-        val offhandtoolflag = BuildAssist.getMateriallist.contains(offhanditem.getType)
+        val offhandtoolflag = BuildAssist.materiallist.contains(offhanditem.getType)
 
 
         //場合分け
         if (offhandtoolflag) {
           //スキルフラグON以外のときは終了
-          if (!playerdata.ZoneSetSkillFlag == true) {
+          if (!playerdata.ZoneSetSkillFlag) {
             return
           }
           //オフハンドの時
@@ -221,7 +221,7 @@ class PlayerRightClickListener extends Listener {
                       //ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
                       if (playerdata.zs_minestack_flag) {//label指定は基本的に禁じ手だが、今回は後付けなので使わせてもらう。(解読性向上のため、1箇所のみの利用)
                         for (cnt <- 0 until MineStackObjectList.getMinestacklist.size) {
-                          if (offhanditem.getType == MineStackObjectList.getMinestacklist.get(cnt).getMaterial && offhanditem.getData.getData.toInt == MineStackObjectList.INSTANCE.getMinestacklist.get(cnt).getDurability) {
+                          if (offhanditem.getType == MineStackObjectList.getMinestacklist.get(cnt).getMaterial && offhanditem.getData.getData.toInt == MineStackObjectList.getMinestacklist.get(cnt).getDurability) {
                             no = cnt
                             b1.break
                             //no:設置するブロック・max:設置できる最大量
