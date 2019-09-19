@@ -6,7 +6,7 @@ class FastDiggingEffectSuppression {
   private var internalValue = 0
 
   val suppressionDegreeToggleEffect: TargetedEffect<CommandSender> =
-      unfocusedEffect {
+      UnfocusedEffect {
         internalValue = (internalValue + 1) % 6
       } + deferredEffect {
         when (internalValue) {

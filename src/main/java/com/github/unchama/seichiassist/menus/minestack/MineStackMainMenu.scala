@@ -73,7 +73,7 @@ object MineStackMainMenu: Menu {
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
-        unfocusedEffect { session.overwriteViewWith(player.computeMineStackMainMenuLayout()) }
+        UnfocusedEffect { session.overwriteViewWith(player.computeMineStackMainMenuLayout()) }
     )
   }
 }

@@ -4,8 +4,8 @@ import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.seichiassist.{CommonSoundEffects, Schedulers}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
+import org.bukkit.{Material, Sound}
 
 object BlockPlacementSkillMenu extends Menu {
 
@@ -40,7 +40,7 @@ object BlockPlacementSkillMenu extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            unfocusedEffect { playerData.zsSkillDirtFlag = !currentStatus },
+            UnfocusedEffect { playerData.zsSkillDirtFlag = !currentStatus },
             "${RED}土設置機能${if (currentStatus) "OFF" else "ON"}".asMessageEffect()
         )
     )
@@ -81,7 +81,7 @@ object BlockPlacementSkillMenu extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            unfocusedEffect { playerData.AREAint = 5 },
+            UnfocusedEffect { playerData.AREAint = 5 },
             "${RED}現在の範囲設定は 11×11 です".asMessageEffect(),
             open
         )
@@ -120,7 +120,7 @@ object BlockPlacementSkillMenu extends Menu {
               if (playerData.AREAint < 5)
                 sequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                    unfocusedEffect { playerData.AREAint++ },
+                    UnfocusedEffect { playerData.AREAint++ },
                     "${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
                     open
                 )
@@ -147,7 +147,7 @@ object BlockPlacementSkillMenu extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            unfocusedEffect { playerData.AREAint = 2 },
+            UnfocusedEffect { playerData.AREAint = 2 },
             "${RED}現在の範囲設定は 5×5 です".asMessageEffect(),
             open
         )
@@ -186,7 +186,7 @@ object BlockPlacementSkillMenu extends Menu {
               if (playerData.AREAint > 1)
                 sequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                    unfocusedEffect { playerData.AREAint-- },
+                    UnfocusedEffect { playerData.AREAint-- },
                     "${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
                     open
                 )
@@ -213,7 +213,7 @@ object BlockPlacementSkillMenu extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            unfocusedEffect { playerData.AREAint = 1 },
+            UnfocusedEffect { playerData.AREAint = 1 },
             "${RED}現在の範囲設定は 3×3 です".asMessageEffect(),
             open
         )
@@ -243,7 +243,7 @@ object BlockPlacementSkillMenu extends Menu {
                 "$RED\"建築LVが足りません\"".asMessageEffect()
               } else {
                 sequentialEffect(
-                    unfocusedEffect { playerData.zs_minestack_flag = !currentStatus },
+                    UnfocusedEffect { playerData.zs_minestack_flag = !currentStatus },
                     "MineStack優先設定${if (currentStatus) "OFF" else "ON"}".asMessageEffect(),
                     open
                 )
@@ -272,7 +272,7 @@ object BlockPlacementSkillMenu extends Menu {
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
-        unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+        UnfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
     )
   }
 

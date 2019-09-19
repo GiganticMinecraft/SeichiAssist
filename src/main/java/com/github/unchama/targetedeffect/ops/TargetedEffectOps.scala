@@ -1,6 +1,16 @@
 package com.github.unchama.targetedeffect.ops
 
-operator def <T> TargetedEffect<T>.plus(anotherEffect: TargetedEffect<T>): TargetedEffect<T> =
-    with (TargetedEffect.monoid<T>()) { this@plus.combine(anotherEffect) }
+import com.github.unchama.targetedeffect.TargetedEffect
 
-def <T> List<TargetedEffect<T>>.asSequentialEffect(): TargetedEffect<T> = fold(TargetedEffect.monoid())
+import scala.collection.JavaConverters._
+
+object TargetedEffectOps {
+    implicit class TargetedEffectCombine[T](val effect: TargetedEffect[T]) {
+        def plus(anotherEffect: TargetedEffect[T]): TargetedEffect[T] =
+            TargetedEffect.monoid[T]().combine(effect, anotherEffect)
+    }
+
+    implicit class TargetedEffectFold[T](val effects: List[TargetedEffect[T]]) {
+        def asSequentialEffect(): TargetedEffect[T] = TargetedEffect.monoid[T]().combineAll(effects.asJava)
+    }
+}

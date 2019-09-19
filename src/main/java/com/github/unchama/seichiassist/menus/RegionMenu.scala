@@ -5,8 +5,8 @@ import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seichiassist.data.RegionMenuData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
+import org.bukkit.{Material, Sound}
 
 object RegionMenu : Menu {
 
@@ -205,7 +205,7 @@ object RegionMenu : Menu {
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
-        unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+        UnfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
     )
   }
 

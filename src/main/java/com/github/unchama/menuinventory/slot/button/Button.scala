@@ -21,7 +21,7 @@ case class Button(override val itemStack: ItemStack,
   constructor(itemStack: ItemStack, vararg effects: ButtonEffect): this(itemStack, effects.toList())
 
   override def effectOn(event: InventoryClickEvent): TargetedEffect<Player> =
-      unfocusedEffect { event.isCancelled = true } + this.effects.map { it.asyncEffectOn(event) }.asSequentialEffect()
+      UnfocusedEffect { event.isCancelled = true } + this.effects.map { it.asyncEffectOn(event) }.asSequentialEffect()
 
   def withAnotherEffect(effect: ButtonEffect): Button = this.copy(effects = effects + effect)
 

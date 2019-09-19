@@ -4,9 +4,9 @@ import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
+import org.bukkit.{Material, Sound}
 
 object BuildMainMenu : Menu {
 
@@ -152,10 +152,10 @@ object BuildMainMenu : Menu {
                     "${RED}建築LVが足りません".asMessageEffect()
                   } else {
                     if (openerData.ZoneSetSkillFlag) sequentialEffect(
-                        unfocusedEffect { openerData.ZoneSetSkillFlag = false },
+                        UnfocusedEffect { openerData.ZoneSetSkillFlag = false },
                         "${RED}範囲設置スキルOFF".asMessageEffect()
                     ) else sequentialEffect(
-                        unfocusedEffect { openerData.ZoneSetSkillFlag = true },
+                        UnfocusedEffect { openerData.ZoneSetSkillFlag = true },
                         "${RED}範囲設置スキルON".asMessageEffect()
                     )
                   }
@@ -283,7 +283,7 @@ object BuildMainMenu : Menu {
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
-        unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+        UnfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
     )
   }
 

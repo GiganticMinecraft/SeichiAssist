@@ -92,7 +92,7 @@ object CategorizedMineStackMenu {
 
       sequentialEffect(
           session.openEffectThrough(Schedulers.sync),
-          unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout(category, pageIndex)) }
+          UnfocusedEffect { session.overwriteViewWith(player.computeMenuLayout(category, pageIndex)) }
       )
     }
   }

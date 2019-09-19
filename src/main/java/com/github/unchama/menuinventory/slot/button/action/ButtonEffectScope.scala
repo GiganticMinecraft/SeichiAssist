@@ -8,11 +8,11 @@ import org.bukkit.event.inventory.InventoryClickEvent
  * [ButtonEffect]に渡すScoped Lambdaの中で実行可能であるべきメソッドを提供するスコープオブジェクトのクラス.
  */
 case class ButtonEffectScope(val event: InventoryClickEvent) {
-  def overwriteCurrentViewBy(newLayout: IndexedSlotLayout): UnfocusedEffect = unfocusedEffect {
+  def overwriteCurrentViewBy(newLayout: IndexedSlotLayout): UnfocusedEffect = UnfocusedEffect {
     (event.inventory.holder as MenuSession).overwriteViewWith(newLayout)
   }
 
-  def overwriteCurrentSlotBy(newSlot: Slot): UnfocusedEffect = unfocusedEffect {
+  def overwriteCurrentSlotBy(newSlot: Slot): UnfocusedEffect = UnfocusedEffect {
     val session = event.inventory.holder as MenuSession
     val newLayout = session.view.slotLayout.altered(event.slot to newSlot)
     session.overwriteViewWith(layout = newLayout)

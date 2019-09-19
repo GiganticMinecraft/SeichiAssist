@@ -1,11 +1,15 @@
 package com.github.unchama.targetedeffect
 
-def String.asMessageEffect() =
-    TargetedEffect { commandSender: CommandSender ->
-      commandSender.sendMessage(this@asMessageEffect)
-    }
+import org.bukkit.command.CommandSender
 
-def List<String>.asMessageEffect() =
-  TargetedEffect { commandSender: CommandSender ->
-    commandSender.sendMessage(this@asMessageEffect.toTypedArray())
+object MessageEffects {
+  implicit class StringMessageEffect(val string: String) {
+    def asMessageEffect() =
+      TargetedEffect { cont => commandSender: CommandSender => commandSender.sendMessage(string) }
   }
+
+  implicit class StringListMessageEffect(val stringList: List[String]) {
+    def asMessageEffect() =
+      TargetedEffect { cont => commandSender: CommandSender => commandSender.sendMessage(stringList.toArray) }
+  }
+}

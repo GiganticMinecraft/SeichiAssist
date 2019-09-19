@@ -53,10 +53,10 @@ object ContextualExecutor {
         return true
       }
 
-      override def onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array < out String >): List < String >? {
-        val context = RawCommandContext (sender, ExecutedCommand (command, alias), args.toList () )
+      override def onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array[String]): List[String] = {
+        val context = RawCommandContext (sender, ExecutedCommand (command, alias), args.toList)
 
-        return tabCandidatesFor (context)
+        tabCandidatesFor (context)
       }
     }
   }

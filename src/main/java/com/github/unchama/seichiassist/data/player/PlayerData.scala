@@ -813,20 +813,20 @@ class PlayerData constructor(
    * 保護申請の番号を更新させる[UnfocusedEffect]
    */
   val incrementRegionNumber: UnfocusedEffect =
-      unfocusedEffect {
+      UnfocusedEffect {
         this.regionCount += 1
       }
 
   @Deprecated("Should be moved to external scope")
   val toggleExpBarVisibility: TargetedEffect<Player> =
-      unfocusedEffect {
+      UnfocusedEffect {
         this.settings.isExpBarVisible = !this.settings.isExpBarVisible
       } + deferredEffect {
         when {
           this.settings.isExpBarVisible -> "${GREEN}整地量バー表示"
           else -> "${RED}整地量バー非表示"
         }.asMessageEffect()
-      } + unfocusedEffect {
+      } + UnfocusedEffect {
         SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
       }
 

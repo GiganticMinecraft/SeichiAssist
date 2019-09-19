@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.effect.arrow
 
-import org.bukkit.{Bukkit, Material, Sound}
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionType
+import org.bukkit.{Bukkit, Material, Sound}
 
 inline def <reified P: Projectile> arrowEffect(spawnConfiguration: ProjectileSpawnConfiguration,
                                                                  sound: Sound? = null,
@@ -12,7 +12,7 @@ inline def <reified P: Projectile> arrowEffect(spawnConfiguration: ProjectileSpa
         computedEffect { player ->
           val playerLocation = player.location.clone()
 
-          unfocusedEffect {
+          UnfocusedEffect {
             val spawnLocation = playerLocation.clone()
                 .add(playerLocation.direction)
                 .add(spawnConfiguration.offset)

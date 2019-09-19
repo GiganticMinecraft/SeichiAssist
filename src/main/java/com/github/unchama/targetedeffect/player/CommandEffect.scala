@@ -1,7 +1,10 @@
 package com.github.unchama.targetedeffect.player
 
-/**
- * Created by karayuu on 2019/06/23
- */
+import com.github.unchama.targetedeffect.TargetedEffect
+import org.bukkit.entity.Player
 
-def String.asCommandEffect() = TargetedEffect<Player> { it.performCommand(this) }
+object CommandEffect {
+  implicit class StringToCommandEffect(val string: String) {
+    def asCommandEffect(): TargetedEffect[Player] = TargetedEffect[Player] { _ => _.performCommand(string) }
+  }
+}

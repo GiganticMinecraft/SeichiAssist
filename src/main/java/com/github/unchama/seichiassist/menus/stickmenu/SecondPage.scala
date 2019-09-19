@@ -6,9 +6,9 @@ import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
+import org.bukkit.{Material, Sound}
 
 /**
  * 木の棒メニュー2ページ目
@@ -252,8 +252,8 @@ object SecondPage: Menu {
                 }
 
                 sequentialEffect(
-                    unfocusedEffect { expManager.changeExp(-10000) },
-                    unfocusedEffect { Util.dropItem(it, skullToGive) },
+                    UnfocusedEffect { expManager.changeExp(-10000) },
+                    UnfocusedEffect { Util.dropItem(it, skullToGive) },
                     "${ChatColor.GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
                 )
@@ -476,7 +476,7 @@ object SecondPage: Menu {
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
-        unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+        UnfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
     )
   }
 }

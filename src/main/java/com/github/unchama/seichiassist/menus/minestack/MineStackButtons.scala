@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.menus.minestack
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
+import org.bukkit.{Material, Sound}
 
 internal object MineStackButtons {
   private def withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect<Player> {
@@ -33,7 +33,7 @@ internal object MineStackButtons {
       val grantItemStack = mineStackObj.generateParameterizedStack(player).withAmount(grantAmount)
 
       sequentialEffect(
-          unfocusedEffect {
+          UnfocusedEffect {
             Util.addItemToPlayerSafely(player, grantItemStack)
             playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong())
           },
@@ -71,7 +71,7 @@ internal object MineStackButtons {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
           sequentialEffect(
               withDrawOneStackEffect(mineStackObj),
-              unfocusedEffect {
+              UnfocusedEffect {
                 if (mineStackObj.category() !== MineStackObjectCategory.GACHA_PRIZES) {
                   playerData.hisotryData.add(mineStackObj)
                 }

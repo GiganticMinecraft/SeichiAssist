@@ -39,17 +39,17 @@ class PlayerSettings {
   //region accessors and modifiers
 
   val toggleAutoMineStack: UnfocusedEffect =
-      unfocusedEffect {
+      UnfocusedEffect {
         this.autoMineStack = !this.autoMineStack
       }
 
   val toggleWorldGuardLogEffect: UnfocusedEffect =
-      unfocusedEffect {
+      UnfocusedEffect {
         this.shouldDisplayWorldGuardLogs = !this.shouldDisplayWorldGuardLogs
       }
 
   val toggleDeathMessageMutingSettings: UnfocusedEffect =
-      unfocusedEffect {
+      UnfocusedEffect {
         this.shouldDisplayDeathMessages = !this.shouldDisplayDeathMessages
       }
 
@@ -57,7 +57,7 @@ class PlayerSettings {
   suspend def getBroadcastMutingSettings(): BroadcastMutingSettings = broadcastMutingSettings
 
   val toggleBroadcastMutingSettings
-    get() = unfocusedEffect {
+    get() = UnfocusedEffect {
       broadcastMutingSettings = getBroadcastMutingSettings().nextSettingsOption()
     }
 

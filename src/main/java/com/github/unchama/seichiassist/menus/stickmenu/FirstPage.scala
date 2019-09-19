@@ -3,12 +3,12 @@ package com.github.unchama.seichiassist.menus.stickmenu
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.seasonalevents.events.valentine.Valentine
-import com.github.unchama.seichiassist.{CommonSoundEffects, SkullOwners}
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.{CommonSoundEffects, SkullOwners}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
+import org.bukkit.{Material, Sound}
 
 /**
  * 木の棒メニュー1ページ目
@@ -574,7 +574,7 @@ private object FirstPage: Menu {
                   val itemToGive = Util.getForBugskull(this.name)
 
                   sequentialEffect(
-                      unfocusedEffect {
+                      UnfocusedEffect {
                         repeat(numberOfItemsToGive) { Util.addItemToPlayerSafely(this, itemToGive) }
                         playerData.unclaimedApologyItems = 0
                       },
@@ -677,7 +677,7 @@ private object FirstPage: Menu {
 
               if (gachaTicketsToGive > 0) {
                 sequentialEffect(
-                    unfocusedEffect {
+                    UnfocusedEffect {
                       playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
                       repeat(gachaTicketsToGive) { Util.addItemToPlayerSafely(this@computeGachaTicketButton, itemStackToGive) }
                     },
@@ -715,7 +715,7 @@ private object FirstPage: Menu {
       Button(
           iconItemStack,
           LeftClickButtonEffect(
-              unfocusedEffect {
+              UnfocusedEffect {
                 playerData.settings.receiveGachaTicketEveryMinute = !playerData.settings.receiveGachaTicketEveryMinute
               },
               deferredEffect {
@@ -760,7 +760,7 @@ private object FirstPage: Menu {
                   if (Valentine.isInEvent) {
                     sequentialEffect(
                         FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 0.5f),
-                        unfocusedEffect {
+                        UnfocusedEffect {
                           Valentine.giveChoco(this)
                           playerData.hasChocoGave = true
                         },
@@ -817,7 +817,7 @@ private object FirstPage: Menu {
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
-        unfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+        UnfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
     )
   }
 }

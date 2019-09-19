@@ -1,3 +1,8 @@
 package com.github.unchama.targetedeffect.player
 
-val closeInventoryEffect = TargetedEffect<Player> { it.closeInventory() }
+import com.github.unchama.targetedeffect.TargetedEffect
+import org.bukkit.entity.Player
+
+object PlayerEffects {
+  val closeInventoryEffect = TargetedEffect[Player] { cont => _.closeInventory() }
+}
