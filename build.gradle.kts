@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "click.seichi"
-version = "1.1.3"
+version = "1.1.4"
 description = """ギガンティック☆整地鯖の独自要素を司るプラグイン"""
 
 project.sourceSets {

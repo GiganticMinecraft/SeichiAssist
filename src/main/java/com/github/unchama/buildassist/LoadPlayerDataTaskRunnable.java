@@ -1,32 +1,27 @@
 package com.github.unchama.buildassist;
 
 
-import com.github.unchama.seichiassist.SeichiAssist;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import com.github.unchama.seichiassist.SeichiAssist;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
+
 
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
+	private final HashMap<UUID,PlayerData> playermap = BuildAssist.Companion.getPlayermap();
+	private final Player p;
+	private final UUID uuid;
+	private int retryCount;
 
-	private Plugin plugin = BuildAssist.plugin;
-	private HashMap<UUID,PlayerData> playermap = BuildAssist.playermap;
-
-
-	String name;
-	Player p;
-	final UUID uuid;
-	int i;
-
-	public LoadPlayerDataTaskRunnable(Player _p) {
-		p = _p;
-		name = Util.getName(p);
-		uuid = p.getUniqueId();
-		i = 0;
+	public LoadPlayerDataTaskRunnable(final Player p) {
+		this.p = p;
+		uuid = this.p.getUniqueId();
+		retryCount = 0;
 	}
 
 	@Override
@@ -34,44 +29,39 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
 		// 接続時にスケジュールで実行する処理
 
 		//対象プレイヤーがオフラインなら処理終了
-		if(BuildAssist.plugin.getServer().getPlayer(uuid) == null){
+		if(Bukkit.getServer().getPlayer(uuid) == null){
 			cancel();
-			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "はオフラインの為取得処理を中断");
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "はオフラインの為取得処理を中断");
 			return;
 		}
 		//読み込み失敗が規定回数超えたら終わる
- 		if(i >= 7){
+ 		if(retryCount >= 7){
 			cancel();
- 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "の建築系データが読み込めませんでした");
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "の建築系データが読み込めませんでした");
  			p.sendMessage(ChatColor.RED + "建築系データが読み込めませんでした。再接続をお願いします。改善されない場合はお手数ですがお問い合わせください");
  			p.kickPlayer(ChatColor.RED + "建築系データが読み込めませんでした。再接続をお願いします。改善されない場合はお手数ですがお問い合わせください");
  			return;
  		}
  		//DBから読み込み終わるまで待つ
-		com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+		final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
 		if(playerdata_s == null){
- 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "の建築系データ取得待機…(" + (i+1) + "回目)");
- 			i++;
+			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "の建築系データ取得待機…(" + (retryCount +1) + "回目)");
+ 			retryCount++;
  			return;
 		}
 		cancel();
-		PlayerData playerdata = null;
+		final PlayerData playerdata;
 		if (!playermap.containsKey(uuid)) {
 			//リストにplayerdataが無い場合は新規作成
 			playerdata = new PlayerData(p);
 			//PlayerDataをリストに登録
 			playermap.put(uuid, playerdata);
-// 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "new");
 		} else {
 			//リストにある場合はそれを読み込む
-			playerdata = (PlayerData) playermap.get(uuid);
-// 			plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "読み込み");
+			playerdata = playermap.get(uuid);
 		}
 		//建築系データ読み込み
 		playerdata.buildload(p);
-
-		plugin.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "建築系データ読み込み完了");
-		return;
+		Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "建築系データ読み込み完了");
 	}
-
 }
