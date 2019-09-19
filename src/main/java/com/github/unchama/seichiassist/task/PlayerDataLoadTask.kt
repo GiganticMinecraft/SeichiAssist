@@ -29,12 +29,10 @@ import kotlin.collections.HashMap
 /**
  * プレイヤーデータロードを実施する処理(非同期で実行すること)
  *
- * @param ignoreActiveState プレーヤーデータが他サーバーで読み込まれている(loginflag=true)場合でも取得を実行するかどうか
- *
  * @author unchama
  */
 @Deprecated("Should be inlined.")
-fun loadExistingPlayerData(playerUUID: UUID, playerName: String, ignoreActiveState: Boolean): PlayerData {
+fun loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
   val config = SeichiAssist.seichiAssistConfig
   val databaseGateway = SeichiAssist.databaseGateway
 
@@ -72,10 +70,15 @@ fun loadExistingPlayerData(playerUUID: UUID, playerName: String, ignoreActiveSta
       val worldName = getString("world_name")
 
       val world = Bukkit.getWorld(worldName)
-      val location = Location(world, locationX.toDouble(), locationY.toDouble(), locationZ.toDouble())
 
-      playerData.setSubHomeLocation(location, subHomeId)
-      playerData.setSubHomeName(subHomeName, subHomeId)
+      if (world != null) {
+        val location = Location(world, locationX.toDouble(), locationY.toDouble(), locationZ.toDouble())
+
+        playerData.setSubHomeLocation(location, subHomeId)
+        playerData.setSubHomeName(subHomeName, subHomeId)
+      } else {
+        println("Resetting ${playerName}'s subhome ${subHomeName}(${subHomeId}) in $worldName - world name not found.")
+      }
     }
   }
 
@@ -181,10 +184,6 @@ fun loadExistingPlayerData(playerUUID: UUID, playerName: String, ignoreActiveSta
 
     stmt.executeQuery(command).recordIteration {
       val rs = this
-
-      if (rs.getBoolean("loginflag") && !ignoreActiveState) {
-        throw IllegalStateException("PlayerData which is to be loaded is still active on other servers.")
-      }
 
       //各種数値
       runBlocking {
@@ -293,14 +292,17 @@ fun loadExistingPlayerData(playerUUID: UUID, playerName: String, ignoreActiveSta
         val TodayLong = TodayDate.time
         val LastLong = LastDate.time
 
-        val datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-        if (datediff > 0) {
-          playerData.loginStatus = playerData.loginStatus.copy(totalLoginDay = playerData.loginStatus.totalLoginDay + 1)
-          if (datediff == 1L) {
-            playerData.loginStatus = playerData.loginStatus.copy(consecutiveLoginDays = playerData.loginStatus.consecutiveLoginDays + 1)
-          } else {
-            playerData.loginStatus = playerData.loginStatus.copy(consecutiveLoginDays = 1)
-          }
+        val dateDiff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
+        if (dateDiff >= 1L) {
+          val newTotalLoginDay = playerData.loginStatus.totalLoginDay + 1
+          val newConsecutiveLoginDays =
+              if (dateDiff <= 2L)
+                playerData.loginStatus.consecutiveLoginDays + 1
+              else
+                1
+
+          playerData.loginStatus =
+              playerData.loginStatus.copy(totalLoginDay = newTotalLoginDay, consecutiveLoginDays = newConsecutiveLoginDays)
         }
       } catch (e: ParseException) {
         e.printStackTrace()
@@ -308,28 +310,7 @@ fun loadExistingPlayerData(playerUUID: UUID, playerName: String, ignoreActiveSta
 
       playerData.lastcheckdate = sdf.format(cal.time)
 
-      //連続投票の更新
-      val lastvote = rs.getString("lastvote")
-      if (lastvote.isNullOrEmpty()) {
-        playerData.ChainVote = 0
-      } else {
-        try {
-          val TodayDate = sdf.parse(sdf.format(cal.time))
-          val LastDate = sdf.parse(lastvote)
-          val TodayLong = TodayDate.time
-          val LastLong = LastDate.time
-
-          val datediff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-          playerData.ChainVote = if (datediff <= 1 || datediff >= 0) {
-            rs.getInt("chainvote")
-          } else {
-            0
-          }
-        } catch (e: ParseException) {
-          e.printStackTrace()
-        }
-
-      }
+      playerData.ChainVote = rs.getInt("chainvote")
 
       //実績解除フラグのBitSet型への復元処理
       //初回nullエラー回避のための分岐
@@ -339,7 +320,7 @@ fun loadExistingPlayerData(playerUUID: UUID, playerName: String, ignoreActiveSta
         @NotNull
         val TitleFlags = BitSet.valueOf(Titlearray)
         playerData.TitleFlags = TitleFlags
-      } catch (e: NullPointerException) {
+      } catch (e: Exception) {
         playerData.TitleFlags = BitSet(10000)
         playerData.TitleFlags.set(1)
       }

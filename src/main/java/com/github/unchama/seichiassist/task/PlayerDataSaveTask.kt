@@ -11,29 +11,21 @@ import com.github.unchama.util.ActionStatus.Fail
 import com.github.unchama.util.ActionStatus.Ok
 import kotlinx.coroutines.runBlocking
 import org.bukkit.ChatColor
-import org.bukkit.scheduler.BukkitRunnable
 import java.sql.SQLException
 import java.sql.Statement
 
 /**
  * プレイヤーデータをDBに保存する処理(非同期で実行すること)
  * DBにセーブしたい値が増えた/減った場合は更新すること
-
- * @param _playerdata 保存するプレーヤーデータ
- * @param _isondisable ondisableからの呼び出し時のみtrueにしておくフラグ
- * @param _logoutflag loginflag折る時にtrueにしておくフラグ
-
+ * @param playerdata 保存するプレーヤーデータ
  * @author unchama
  */
-class PlayerDataSaveTask(internal val playerdata: PlayerData,
-                         private val isOnDisable: Boolean,
-                         private val logoutflag: Boolean) : BukkitRunnable() {
-  private val plugin = SeichiAssist.instance
-  private val databaseGateway = SeichiAssist.databaseGateway
-  private val serverId = SeichiAssist.seichiAssistConfig.serverNum
+suspend fun savePlayerData(playerdata: PlayerData) {
+  val databaseGateway = SeichiAssist.databaseGateway
+  val serverId = SeichiAssist.seichiAssistConfig.serverNum
 
   @Throws(SQLException::class)
-  private fun updatePlayerMineStack(stmt: Statement) {
+  fun updatePlayerMineStack(stmt: Statement) {
     val playerUuid = playerdata.uuid.toString()
     for (mineStackObj in MineStackObjectList.minestacklist!!) {
       val iThObjectName = mineStackObj.mineStackObjName
@@ -49,7 +41,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
   }
 
   @Throws(SQLException::class)
-  private fun updateSubHome() {
+  fun updateSubHome() {
     val playerUuid = playerdata.uuid.toString()
     for ((subHomeId, subHome) in playerdata.subHomeEntries) {
       val subHomeLocation = subHome.location
@@ -80,7 +72,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
   }
 
   @Throws(SQLException::class)
-  private fun updateGridTemplate(stmt: Statement) {
+  fun updateGridTemplate(stmt: Statement) {
     val playerUuid = playerdata.uuid.toString()
 
     // 既存データをすべてクリアする
@@ -102,7 +94,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
   }
 
   @Throws(SQLException::class)
-  private fun updateActiveSkillEffectUnlockState(stmt: Statement) {
+  fun updateActiveSkillEffectUnlockState(stmt: Statement) {
     val playerUuid = playerdata.uuid.toString()
     val activeSkillEffects = ActiveSkillEffect.values()
     val obtainedEffects = playerdata.activeskilldata.obtainedSkillEffects
@@ -127,7 +119,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
   }
 
   @Throws(SQLException::class)
-  private fun updateActiveSkillPremiumEffectUnlockState(stmt: Statement) {
+  fun updateActiveSkillPremiumEffectUnlockState(stmt: Statement) {
     val playerUuid = playerdata.uuid.toString()
     val activeSkillPremiumEffects = ActiveSkillPremiumEffect.values()
     val obtainedEffects = playerdata.activeskilldata.obtainedSkillPremiumEffects
@@ -153,7 +145,7 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
 
   @ExperimentalUnsignedTypes
   @Throws(SQLException::class)
-  private fun updatePlayerDataColumns(stmt: Statement) {
+  fun updatePlayerDataColumns(stmt: Statement) {
     val playerUuid = playerdata.uuid.toString()
 
     //実績のフラグ(BitSet)保存用変換処理
@@ -252,16 +244,13 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
           //バレンタインイベント
           + ",hasChocoGave = " + playerdata.hasChocoGave
 
-          //loginflagを折る
-          + ", loginflag = " + !logoutflag
-
           + " where uuid like '" + playerUuid + "'")
     }
 
     stmt.executeUpdate(command)
   }
 
-  private fun executeUpdate(): ActionStatus {
+  fun executeUpdate(): ActionStatus {
     try {
       //sqlコネクションチェック
       databaseGateway.ensureConnection()
@@ -283,12 +272,13 @@ class PlayerDataSaveTask(internal val playerdata: PlayerData,
 
   }
 
-  override fun run() {
-    val resultMessage = if (executeUpdate() === Ok)
-      ChatColor.GREEN.toString() + playerdata.lowercaseName + "のプレイヤーデータ保存完了"
-    else
-      ChatColor.RED.toString() + playerdata.lowercaseName + "のプレイヤーデータ保存失敗"
-    plugin.server.consoleSender.sendMessage(resultMessage)
-    if (!isOnDisable) cancel()
+  for (i in 0 until 3) {
+    val result = executeUpdate()
+    if (result == Ok) {
+      println("${ChatColor.GREEN}${playerdata.lowercaseName}のプレイヤーデータ保存完了")
+      return
+    }
   }
+
+  println("${ChatColor.RED}${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
 }

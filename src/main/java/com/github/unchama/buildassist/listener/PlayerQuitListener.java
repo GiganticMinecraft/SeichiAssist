@@ -1,5 +1,7 @@
-package com.github.unchama.buildassist;
+package com.github.unchama.buildassist.listener;
 
+import com.github.unchama.buildassist.BuildAssist;
+import com.github.unchama.buildassist.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,21 +14,20 @@ import java.util.HashMap;
 import java.util.UUID;
 
 
-public class PlayerQuitListener implements Listener {
-    Plugin plugin = BuildAssist.plugin;
-    HashMap<UUID, PlayerData> playermap = BuildAssist.playermap;
+public class PlayerQuitListener implements TypedEventListener<PlayerQuitEvent> {
+    private final HashMap<UUID, PlayerData> playermap = BuildAssist.Companion.getPlayermap();
 
     //プレイヤーがquitした時に実行
     //SeichiAssistより先に実行させるために優先付け
+    @Override
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onplayerQuitEvent(PlayerQuitEvent event) {
+    public void onEvent(final PlayerQuitEvent event) {
         //退出したplayerを取得
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         //プレイヤーのuuidを取得
-        UUID uuid = player.getUniqueId();
+        final UUID uuid = player.getUniqueId();
         //プレイヤーデータ取得
-        PlayerData playerdata = playermap.get(uuid);
-
+        final PlayerData playerdata = playermap.get(uuid);
 
         //念のためエラー分岐
         if (playerdata == null) {

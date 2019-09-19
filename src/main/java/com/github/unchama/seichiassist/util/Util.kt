@@ -251,7 +251,7 @@ object Util {
   fun sendEverySoundWithoutIgnore(kind: Sound, a: Float, b: Float) {
     runBlocking {
       for (player in Bukkit.getOnlinePlayers()) {
-        if (SeichiAssist.playermap[player.uniqueId]!!.settings.getBroadcastMutingSettings().shouldMuteMessages()) {
+        if (SeichiAssist.playermap[player.uniqueId]!!.settings.getBroadcastMutingSettings().shouldMuteSounds()) {
           player.playSound(player.location, kind, a, b)
         }
       }

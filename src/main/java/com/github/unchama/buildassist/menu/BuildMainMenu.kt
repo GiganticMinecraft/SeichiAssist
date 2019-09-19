@@ -49,7 +49,7 @@ object BuildMainMenu : Menu {
           .title("$YELLOW${EMPHASIZE}FLY機能 情報表示")
           .lore(
               "$RESET${AQUA}FLY 効果: ${if (openerData.flyflag) "ON" else "OFF"}",
-              "$RESET${AQUA}FLY 残り時間: ${if (openerData.Endlessfly) "∞" else openerData.flytime}"
+              "$RESET${AQUA}FLY 残り時間: ${openerData.flytime.toString().takeUnless { openerData.endlessfly } ?: "∞"}"
           )
           .build()
 

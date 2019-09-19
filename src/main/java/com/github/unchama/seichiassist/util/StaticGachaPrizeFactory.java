@@ -13,7 +13,6 @@ import java.util.List;
 
 public final class StaticGachaPrizeFactory {
     private static ItemStack gachaRingo;
-    private static ItemStack siinaRingo;
     private static ItemStack sickleOfDeathGod;
 
     /**
@@ -49,16 +48,16 @@ public final class StaticGachaPrizeFactory {
      * @return 椎名林檎を表すItemStackを返す。
      */
     public static @NotNull ItemStack getMaxRingo(String name) {
-        if (siinaRingo == null) {
-            ItemMeta meta;
-            siinaRingo = new ItemStack(Material.GOLDEN_APPLE, 1);
-            siinaRingo.setDurability((short) 1);
-            meta = ItemMetaFactory.GOLDEN_APPLE.getValue();
-            meta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.ITALIC + "椎名林檎");
-            List<String> lore = getMaxRingoLore(name);
-            meta.setLore(lore);
-            siinaRingo.setItemMeta(meta);
-        }
+        ItemStack siinaRingo = new ItemStack(Material.GOLDEN_APPLE, 1);
+        siinaRingo.setDurability((short) 1);
+
+        List<String> lore = getMaxRingoLore(name);
+
+        ItemMeta meta = ItemMetaFactory.GOLDEN_APPLE.getValue();
+        meta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.ITALIC + "椎名林檎");
+        meta.setLore(lore);
+        siinaRingo.setItemMeta(meta);
+
         return siinaRingo;
     }
 

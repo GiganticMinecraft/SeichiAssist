@@ -342,7 +342,7 @@ class PlayerRightClickListener : Listener {
           //終了ログがうるさいので無くす
           //player.sendMessage(ChatColor.RED + "敷き詰めスキル：処理終了" ) ;
 
-          if (Util.isBlockCount(player) == true) {
+          if (Util.inTrackedWorld(player)) {
             Util.addBuild1MinAmount(player, BigDecimal(block_cnt * BuildAssist.config.blockCountMag))  //設置した数を足す
           }
 

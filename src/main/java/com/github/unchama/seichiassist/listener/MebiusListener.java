@@ -24,7 +24,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -90,13 +89,6 @@ public class MebiusListener implements Listener {
 		if (debugFlg) {
 			give(player);
 		}
-	}
-
-	// プレイヤーログアウト時
-	@EventHandler
-	public void onQuit(PlayerQuitEvent event) {
-		Player player = event.getPlayer();
-		getPlayerData(player).getMebius().cancel();
 	}
 
 	// Tipsを呼び出されたとき

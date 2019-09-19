@@ -1,5 +1,6 @@
 package com.github.unchama.menuinventory
 
+import arrow.core.Either
 import arrow.effects.extensions.io.fx.fx
 import arrow.effects.extensions.io.unsafeRun.runNonBlocking
 import arrow.unsafe
@@ -41,7 +42,7 @@ object MenuHandler : Listener {
               effect.runFor(whoClicked)
             }
           }
-        }) {}
+        }) { if (it is Either.Left) it.a.printStackTrace() }
       }
     }
   }
