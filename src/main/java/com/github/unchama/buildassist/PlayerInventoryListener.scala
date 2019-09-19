@@ -6,14 +6,14 @@ import com.github.unchama.targetedeffect.TargetedEffectKt
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.kotlin2scala.Coroutines
 import net.md_5.bungee.api.ChatColor._
-import org.bukkit.{Material, Sound}
 import org.bukkit.entity.{EntityType, Player}
-import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
+import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.meta.SkullMeta
+import org.bukkit.{Material, Sound}
 
 class PlayerInventoryListener extends Listener {
-  var playerMap = BuildAssist.playermap
+  var playerMap = BuildAssist.getPlayermap
 
   import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
@@ -71,7 +71,7 @@ class PlayerInventoryListener extends Listener {
         } else {
           playerdata.line_up_flg = (playerdata.line_up_flg + 1) % 3
 
-          player.sendMessage(s"${GREEN.toString}ブロックを並べるスキル（仮） ：${BuildAssist.line_up_str(playerdata.line_up_flg)}")
+          player.sendMessage(s"${GREEN.toString}ブロックを並べるスキル（仮） ：${BuildAssist.getLine_up_str.apply(playerdata.line_up_flg)}")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }

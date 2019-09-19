@@ -61,9 +61,9 @@ class PlayerRightClickListener extends Listener {
         val offhanditem = inventory.getItemInOffHand
 
         //メインハンドにブロックがあるか
-        val mainhandtoolflag = BuildAssist.materiallist.contains(mainhanditem.getType)
+        val mainhandtoolflag = BuildAssist.getMateriallist.contains(mainhanditem.getType)
         //オフハンドにブロックがあるか
-        val offhandtoolflag = BuildAssist.materiallist.contains(offhanditem.getType)
+        val offhandtoolflag = BuildAssist.getMateriallist.contains(offhanditem.getType)
 
 
         //場合分け
@@ -220,8 +220,8 @@ class PlayerRightClickListener extends Listener {
                     } else {
                       //ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
                       if (playerdata.zs_minestack_flag) {//label指定は基本的に禁じ手だが、今回は後付けなので使わせてもらう。(解読性向上のため、1箇所のみの利用)
-                        for (cnt <- 0 until MineStackObjectList.INSTANCE.getMinestacklist.size) {
-                          if (offhanditem.getType == MineStackObjectList.INSTANCE.getMinestacklist.get(cnt).getMaterial && offhanditem.getData.getData.toInt == MineStackObjectList.INSTANCE.getMinestacklist.get(cnt).getDurability) {
+                        for (cnt <- 0 until MineStackObjectList.getMinestacklist.size) {
+                          if (offhanditem.getType == MineStackObjectList.getMinestacklist.get(cnt).getMaterial && offhanditem.getData.getData.toInt == MineStackObjectList.INSTANCE.getMinestacklist.get(cnt).getDurability) {
                             no = cnt
                             b1.break
                             //no:設置するブロック・max:設置できる最大量
@@ -230,7 +230,7 @@ class PlayerRightClickListener extends Listener {
                         if (no > 0) {
                           //設置するブロックがMineStackに登録済み
                           //1引く
-                          val mineStackObj = MineStackObjectList.INSTANCE.getMinestacklist.get(no)
+                          val mineStackObj = MineStackObjectList.getMinestacklist.get(no)
                           if (playerdata_s.getMinestack.getStackedAmountOf(mineStackObj) > 0) {
                             //player.sendMessage("MineStackよりブロック消費");
                             //player.sendMessage("MineStackブロック残量(前):" + playerdata_s.getMinestack().getNum(no));
@@ -342,7 +342,7 @@ class PlayerRightClickListener extends Listener {
           //終了ログがうるさいので無くす
           //player.sendMessage(ChatColor.RED + "敷き詰めスキル：処理終了" ) ;
 
-          if (Util.isBlockCount(player)) {
+          if (Util.inTrackedWorld(player)) {
             Util.addBuild1MinAmount(player, new java.math.BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag))  //設置した数を足す
           }
 
