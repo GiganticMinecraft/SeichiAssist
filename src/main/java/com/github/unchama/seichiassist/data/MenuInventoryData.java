@@ -6113,23 +6113,22 @@ public class MenuInventoryData {
             itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント" + (x + 1) + "の情報");
             Location l = playerdata.getSubHomeLocation(x);
-            final ManagedWorld world = ManagedWorldKt.asManagedWorld(l.getWorld());
-            final String worldName;
-            if (world != null) {
-                worldName = world.getJapaneseName();
+            final List<String> subHomeLore;
+            if (l != null) {
+                final ManagedWorld world = ManagedWorldKt.asManagedWorld(l.getWorld());
+                final String worldName = world != null ? world.getJapaneseName() : l.getWorld().getName();
+
+                subHomeLore = Arrays.asList(
+                        ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x + 1) + "は",
+                        ChatColor.RESET + "" + ChatColor.GRAY + playerdata.getSubHomeName(x),
+                        ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています",
+                        ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更",
+                        ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x + 1) + "]",
+                        ChatColor.RESET + "" + ChatColor.GRAY + "" + worldName + " x:" + (int) l.getX() + " y:" + (int) l.getY() + " z:" + (int) l.getZ()
+                );
             } else {
-                worldName = l.getWorld().getName();
+                subHomeLore = Arrays.asList(ChatColor.GRAY + "サブホームポイント" + (x + 1), ChatColor.GRAY + "ポイント未設定");
             }
-            final List<String> subHomeLore = !(l == null || l.getWorld() == null)
-                    ?
-                    Arrays.asList(
-                            ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x + 1) + "は",
-                            ChatColor.RESET + "" + ChatColor.GRAY + playerdata.getSubHomeName(x),
-                            ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています",
-                            ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更",
-                            ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x + 1) + "]",
-                            ChatColor.RESET + "" + ChatColor.GRAY + "" + worldName + " x:" + (int) l.getX() + " y:" + (int) l.getY() + " z:" + (int) l.getZ())
-                    : Arrays.asList(ChatColor.GRAY + "サブホームポイント" + (x + 1), ChatColor.GRAY + "ポイント未設定");
             itemmeta.setLore(subHomeLore);
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(11 + x, itemstack);
