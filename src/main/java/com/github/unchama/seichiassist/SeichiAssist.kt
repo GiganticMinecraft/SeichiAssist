@@ -91,15 +91,15 @@ class SeichiAssist : JavaPlugin() {
       Bukkit.shutdown()
     }
 
-    MineStackObjectList.minestacklistgacha.addAll(creategachaminestacklist())
+    MineStackObjectList.minestackGachaPrizes.addAll(generateGachaPrizes())
 
-    MineStackObjectList.minestacklist = ArrayList()
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistmine)
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistdrop)
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistfarm)
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistbuild)
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistrs)
-    MineStackObjectList.minestacklist!!.addAll(MineStackObjectList.minestacklistgacha)
+    MineStackObjectList.minestacklist.clear()
+    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistmine
+    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistdrop
+    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistfarm
+    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistbuild
+    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistrs
+    MineStackObjectList.minestacklist += MineStackObjectList.minestackGachaPrizes
 
     // コマンドの登録
     mapOf(
@@ -210,8 +210,8 @@ class SeichiAssist : JavaPlugin() {
     buildAssist.onDisable()
   }
 
-  override fun onCommand(sender: CommandSender?, command: Command?, label: String?, args: Array<out String>?)
-      = buildAssist.onCommand(sender, command, label, args)
+  override fun onCommand(sender: CommandSender?, command: Command?, label: String?, args: Array<String>?)
+      = buildAssist.onCommand(sender!!, command!!, label!!, args!!)
 
   private fun startRepeatedJobs() {
     repeatedJobCoroutine = CoroutineScope(Schedulers.sync).launch {
@@ -273,9 +273,9 @@ class SeichiAssist : JavaPlugin() {
     val ranklist_premiumeffectpoint: MutableList<RankData> = ArrayList()
 
     //総採掘量表示用
-    var allplayerbreakblockint: Long = 0
+    var allplayerbreakblockint = 0L
 
-    var allplayergiveapplelong: Long = 0
+    var allplayergiveapplelong = 0L
 
     //プラグインで出すエンティティの保存
     val entitylist: MutableList<Entity> = ArrayList()
@@ -283,12 +283,12 @@ class SeichiAssist : JavaPlugin() {
     //プレイヤーがスキルで破壊するブロックリスト
     val allblocklist: MutableList<Block> = LinkedList()
 
-    private fun creategachaminestacklist(): List<MineStackObj> {
+    private fun generateGachaPrizes(): List<MineStackObj> {
       val minestacklist = ArrayList<MineStackObj>()
       for (i in msgachadatalist.indices) {
         val g = msgachadatalist[i]
         if (g.itemStack.type !== Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外
-          minestacklist.add(MineStackObj(g.objName, null, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES))
+          minestacklist += MineStackObj(g.objName, null, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES)
         }
       }
       return minestacklist

@@ -13,6 +13,6 @@ import java.lang.annotation.Target;
  * などと書かれてきたコメントを置き換えるためのアノテーションです。
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
+@Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD})
 public @interface PackagePrivate {
 }
