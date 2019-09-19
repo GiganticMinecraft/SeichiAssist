@@ -1,6 +1,7 @@
 package com.github.unchama.contextualexecutor.executors
 
 import com.github.unchama.contextualexecutor.{ContextualExecutor, RawCommandContext}
+import kotlin.coroutines.Continuation
 
 /**
  * コマンドの枝分かれでのルーティングを静的に行うアクションを返す[ContextualExecutor]
@@ -11,25 +12,29 @@ case class BranchedExecutor(val branches: Map[String, ContextualExecutor],
 
   import com.github.unchama.util.syntax.Nullability._
 
-  override def executeWith(rawContext: RawCommandContext) {
-    val firstArg = rawContext.args.firstOrNull()
-      .ifNull { return whenArgInsufficient.ifNotNull(_.executeWith(rawContext)).ifNull(Unit) }
+  override def executeWith(rawContext: RawCommandContext, cont: Continuation[Unit]) {
+    val (argHead, argTail) = rawContext.args match {
+      case ::(head, tl) => (head, tl)
+      case Nil =>
+        whenArgInsufficient.ifNotNull(_.executeWith(rawContext, cont))
+        return
+    }
 
-    val branch = branches.getOrElse(firstArg, return whenBranchNotFound.ifNotNull(_.executeWith(rawContext)).ifNull(Unit))
+    val branch = branches.getOrElse(argHead, return whenBranchNotFound.ifNotNull(_.executeWith(rawContext, cont)))
 
-    val argShiftedContext = rawContext.copy(args = rawContext.args.drop(1))
+    val argShiftedContext = rawContext.copy(args = argTail)
 
-    branch.executeWith(argShiftedContext)
+    branch.executeWith(argShiftedContext, cont)
   }
 
   override def tabCandidatesFor(context: RawCommandContext): List[String] = {
     val args = context.args
 
-    if (args.size <= 1) return branches.keys.sorted()
+    if (args.size <= 1) return branches.keys.toArray.sorted.toList
 
-    val childExecutor = branches[args.first()] ?: whenBranchNotFound ?: return null
+    val childExecutor = branches.getOrElse(args.head, whenBranchNotFound.ifNull { return null })
 
-    return childExecutor.tabCandidatesFor(context.copy(args = args.drop(1)))
+    childExecutor.tabCandidatesFor(context.copy(args = args.drop(1)))
   }
 
 }

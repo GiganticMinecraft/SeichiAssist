@@ -6,7 +6,7 @@ import kotlinx.coroutines._
 object Coroutines {
   def launchInGlobalScope(context: CoroutineContext = EmptyCoroutineContext.INSTANCE,
                           start: CoroutineStart = CoroutineStart.DEFAULT,
-                          block: (CoroutineScope, Continuation[kotlin.Unit]) => Unit): Job = {
+                          block: (CoroutineScope, Continuation[Unit]) => Unit): Job = {
     BuildersKt.launch(
       GlobalScope.INSTANCE, context, start,
       new kotlin.jvm.functions.Function2[CoroutineScope, Continuation[kotlin.Unit], Unit] {

@@ -1,5 +1,7 @@
 package com.github.unchama.contextualexecutor
 
+import com.github.unchama.util.kotlin2scala.Coroutines
+import kotlin.coroutines.Continuation
 import org.bukkit.command.{Command, CommandSender, TabExecutor}
 
 /**
@@ -13,7 +15,7 @@ trait ContextualExecutor {
    * このメソッドは**サーバーメインスレッド上のコルーチンで実行する必要性はない**.
    * また, 実行時例外が発生することはない.
    */
-  def executeWith(rawContext: RawCommandContext)
+  def executeWith(rawContext: RawCommandContext, continuation: Continuation[Unit])
 
   /**
    * [context] に基づいてTab補完の候補をListで返却する.
@@ -32,31 +34,20 @@ object ContextualExecutor {
      */
     def asNonBlockingTabExecutor(): TabExecutor = new TabExecutor {
       override def onCommand(sender: CommandSender, command: Command, alias: String, args: Array[String]): Boolean = {
-        val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList())
+        val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList)
 
-        unsafe {
-          runNonBlocking({
-            fx {
-              !effect {
-                executeWith(context)
-              }
-            }
-          }) {
-            when(it) {
-              is Either
-              .Left -> it.a.printStackTrace()
-            }
-          }
-        }
+        Coroutines.launchInGlobalScope(block = { case (_, cont) =>
+          contextualExecutor.executeWith(context, cont)
+        })
 
         // 非同期の操作を含むことを前提とするため, Bukkitへのコマンドの成否を必ず成功扱いにする
-        return true
+        true
       }
 
       override def onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array[String]): List[String] = {
         val context = RawCommandContext (sender, ExecutedCommand (command, alias), args.toList)
 
-        tabCandidatesFor (context)
+        contextualExecutor.tabCandidatesFor(context)
       }
     }
   }
