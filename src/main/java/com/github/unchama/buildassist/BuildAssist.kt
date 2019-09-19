@@ -76,7 +76,7 @@ class BuildAssist(plugin: Plugin) {
     lateinit var config: BuildAssistConfig
 
     //lvの閾値
-    internal val levellist = listOf(
+    val levellist = listOf(
         0, 50, 100, 200, 300,
         450, 600, 900, 1200, 1600, //10
         2000, 2500, 3000, 3600, 4300,
@@ -101,7 +101,7 @@ class BuildAssist(plugin: Plugin) {
     )
 
     //範囲設置ブロックの対象リスト
-    internal val materiallist = EnumSet.of(
+    val materiallist = EnumSet.of(
 
 
         Material.STONE//石
