@@ -23,7 +23,7 @@ class BlockLineUp extends Listener {
     val playerWorld = player.getWorld
 
     val seichiAssistData = SeichiAssist.getPlayermap.get(player.getUniqueId).ifNull { return }
-    val buildAssistData = BuildAssist.getPlayermap.get(player.getUniqueId).ifNull { return }
+    val buildAssistData = BuildAssist.playermap.getOrElse(player.getUniqueId, return)
 
     val playerMineStack = seichiAssistData.getMinestack
 
@@ -43,7 +43,7 @@ class BlockLineUp extends Listener {
     val offhandItem = inventory.getItemInOffHand
 
     //メインハンドに設置対象ブロックがある場合
-    if (!(BuildAssist.getMateriallist2.contains(mainHandItem.getType) || BuildAssist.getMaterial_slab2.contains(mainHandItem.getType))) return
+    if (!(BuildAssist.materiallist2.contains(mainHandItem.getType) || BuildAssist.material_slab2.contains(mainHandItem.getType))) return
 
     //オフハンドに木の棒を持ってるときのみ発動させる
     if (offhandItem.getType != Material.STICK) return
@@ -121,7 +121,7 @@ class BlockLineUp extends Listener {
       case _ => mainHandItemType
     }
 
-    val playerHoldsSlabBlock = BuildAssist.getMaterial_slab2.contains(mainHandItemType)
+    val playerHoldsSlabBlock = BuildAssist.material_slab2.contains(mainHandItemType)
     val slabLineUpStepMode = buildAssistData.line_up_step_flg
     val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == 2
 
@@ -152,7 +152,7 @@ class BlockLineUp extends Listener {
 
         if (block.getType != Material.AIR) {
           //空気以外にぶつかり、ブロック破壊をしないならば終わる
-          if (!BuildAssist.getMaterial_destruction.contains(block.getType) || buildAssistData.line_up_des_flg == 0) {
+          if (!BuildAssist.material_destruction.contains(block.getType) || buildAssistData.line_up_des_flg == 0) {
             b.break
           }
 

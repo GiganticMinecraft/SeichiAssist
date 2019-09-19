@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}
 
 class PlayerInventoryListener extends Listener {
-  var playerMap = BuildAssist.getPlayermap
+  var playerMap = BuildAssist.playermap
 
   import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
@@ -39,7 +39,7 @@ class PlayerInventoryListener extends Listener {
 
     val player = he.asInstanceOf[Player]
     val uuid = player.getUniqueId
-    val playerdata = playerMap.get(uuid).ifNull { return }
+    val playerdata = playerMap.getOrElse(uuid, return)
 
     //プレイヤーデータが無い場合は処理終了
 
@@ -71,7 +71,7 @@ class PlayerInventoryListener extends Listener {
         } else {
           playerdata.line_up_flg = (playerdata.line_up_flg + 1) % 3
 
-          player.sendMessage(s"${GREEN.toString}ブロックを並べるスキル（仮） ：${BuildAssist.getLine_up_str.apply(playerdata.line_up_flg)}")
+          player.sendMessage(s"${GREEN.toString}ブロックを並べるスキル（仮） ：${BuildAssist.line_up_str.apply(playerdata.line_up_flg)}")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }
@@ -132,7 +132,7 @@ class PlayerInventoryListener extends Listener {
     }
     val player = he.asInstanceOf[Player]
     val uuid = player.getUniqueId
-    val playerdata = playerMap.get(uuid).ifNull { return }
+    val playerdata = playerMap.getOrElse(uuid, return)
 
     //プレイヤーデータが無い場合は処理終了
 
@@ -361,7 +361,7 @@ class PlayerInventoryListener extends Listener {
     }
     val player = he.asInstanceOf[Player]
     val uuid = player.getUniqueId
-    val playerdata = playerMap.get(uuid).ifNull { return }
+    val playerdata = playerMap.getOrElse(uuid, return)
 
     //プレイヤーデータが無い場合は処理終了
 
@@ -652,7 +652,7 @@ class PlayerInventoryListener extends Listener {
     }
     val player = he.asInstanceOf[Player]
     val uuid = player.getUniqueId
-    val playerdata = playerMap.get(uuid).ifNull { return }
+    val playerdata = playerMap.getOrElse(uuid, return)
 
     //プレイヤーデータが無い場合は処理終了
 
