@@ -69,14 +69,14 @@ class BuildAssist(plugin: Plugin) {
 
   companion object {
     lateinit var plugin: Plugin
-    var DEBUG: Boolean? = false
+    @JvmStatic var DEBUG: Boolean? = false
 
     //Playerdataに依存するデータリスト
-    val playermap = HashMap<UUID, PlayerData>()
+    @JvmStatic val playermap = HashMap<UUID, PlayerData>()
     lateinit var config: BuildAssistConfig
 
     //lvの閾値
-    val levellist = listOf(
+    @JvmStatic val levellist = listOf(
         0, 50, 100, 200, 300,
         450, 600, 900, 1200, 1600, //10
         2000, 2500, 3000, 3600, 4300,
@@ -101,7 +101,7 @@ class BuildAssist(plugin: Plugin) {
     )
 
     //範囲設置ブロックの対象リスト
-    val materiallist = EnumSet.of(
+    @JvmStatic val materiallist = EnumSet.of(
 
 
         Material.STONE//石
@@ -196,7 +196,7 @@ class BuildAssist(plugin: Plugin) {
 
 
     //直列設置ブロックの対象リスト
-    internal val materiallist2 = EnumSet.of(
+    @JvmStatic val materiallist2 = EnumSet.of(
         Material.STONE//石
         , Material.GRASS//草
         , Material.DIRT//土
@@ -288,14 +288,14 @@ class BuildAssist(plugin: Plugin) {
     //			,Material.CARPET//カーペット
     //			,Material.RAILS//レール
 
-    internal val material_slab2 = EnumSet.of(
+    @JvmStatic val material_slab2 = EnumSet.of(
         Material.STONE_SLAB2    //赤砂岩
         , Material.PURPUR_SLAB    //プルパー
         , Material.WOOD_STEP        //木
         , Material.STEP            //石
     )
 
-    internal val material_destruction = EnumSet.of(
+    @JvmStatic val material_destruction = EnumSet.of(
         Material.LONG_GRASS            //草
         , Material.DEAD_BUSH            //枯れ木
         , Material.YELLOW_FLOWER        //タンポポ

@@ -14,7 +14,7 @@ import org.bukkit.{ChatColor, Location, Material}
 import scala.util.control.Breaks
 
 class PlayerRightClickListener extends Listener {
-  private var playermap = BuildAssist.playermap
+  private var playermap = BuildAssist.getPlayermap
 
   import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
@@ -31,7 +31,7 @@ class PlayerRightClickListener extends Listener {
     //アクションを起こした手を取得
     val equipmentslot = event.getHand
     //プレイヤーデータ
-    val playerdata = BuildAssist.playermap.get(uuid).ifNull { return }
+    val playerdata = BuildAssist.getPlayermap.get(uuid).ifNull { return }
     val playerdata_s = SeichiAssist.getPlayermap.get(uuid).ifNull { return }
 
     if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
