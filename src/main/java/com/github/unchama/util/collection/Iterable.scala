@@ -1,5 +1,4 @@
 package com.github.unchama.util.collection
-
 object CollectionUtils {
     def Iterable[IndexedValue[T]].mapValues[T, R](f: (T) => R): List[IndexedValue[R]] =
     map { (index, value) => IndexedValue(index, f(value)) }

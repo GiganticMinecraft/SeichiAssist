@@ -1,9 +1,13 @@
 package com.github.unchama.seichiassist.util
 
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.{ActiveSkill, MaterialSets, SeichiAssist}
+import org.bukkit.ChatColor._
 import org.bukkit.block.Block
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Entity, Player}
 import org.bukkit.inventory.ItemStack
+import org.bukkit.{DyeColor, Material}
 
 
 object BreakUtil {
@@ -23,7 +27,7 @@ object BreakUtil {
     //壊されるブロックがワールドガード範囲だった場合処理を終了
     if (!ExternalPlugins.getWorldGuard().canBuild(player, breakblock.location)) {
       if (playerdata.settings.shouldDisplayWorldGuardLogs) {
-        player.sendMessage(ChatColor.RED.toString() + "ワールドガードで保護されています。")
+        player.sendMessage(RED.toString() + "ワールドガードで保護されています。")
       }
       return false
     }
@@ -36,7 +40,7 @@ object BreakUtil {
         val failure = !wrapper.queueBlockRemoval(player, breakblock)
         //もし失敗したらプレイヤーに報告し処理を終了
         if (failure) {
-          player.sendMessage(ChatColor.RED.toString() + "coreprotectに保存できませんでした。管理者に報告してください。")
+          player.sendMessage(RED.toString() + "coreprotectに保存できませんでした。管理者に報告してください。")
           return false
         }
       }
@@ -44,10 +48,10 @@ object BreakUtil {
 
     if (material == Material.CHEST || material == Material.TRAPPED_CHEST) {
       if (!playerdata.chestflag) {
-        player.sendMessage(ChatColor.RED.toString() + "スキルでのチェスト破壊は無効化されています")
+        player.sendMessage(RED.toString() + "スキルでのチェスト破壊は無効化されています")
         return false
       } else if (!Util.isSeichiWorld(player)) {
-        player.sendMessage(ChatColor.RED.toString() + "スキルでのチェスト破壊は整地ワールドでのみ有効です")
+        player.sendMessage(RED.toString() + "スキルでのチェスト破壊は整地ワールドでのみ有効です")
         return false
       }
     }
@@ -122,8 +126,8 @@ object BreakUtil {
     if (player.gameMode != GameMode.SURVIVAL) return false
 
     if (SeichiAssist.DEBUG) {
-      player.sendMessage(s"${ChatColor.RED}minestackAdd:$itemstack")
-      player.sendMessage(s"${ChatColor.RED}mineDurability:${itemstack.durability}")
+      player.sendMessage(s"${RED}minestackAdd:$itemstack")
+      player.sendMessage(s"${RED}mineDurability:${itemstack.durability}")
     }
 
     val config = SeichiAssist.seichiAssistConfig
@@ -527,7 +531,7 @@ object BreakUtil {
   def logRemove(player: Player, removedBlock: Block): Boolean = {
     val wrapper = ExternalPlugins.getCoreProtectWrapper()
     if (wrapper == null) {
-      player.sendMessage(ChatColor.RED.toString() + "error:coreprotectに保存できませんでした。管理者に報告してください。")
+      player.sendMessage(RED.toString() + "error:coreprotectに保存できませんでした。管理者に報告してください。")
       return false
     }
 
@@ -535,7 +539,7 @@ object BreakUtil {
 
     //もし失敗したらプレイヤーに報告し処理を終了
     if (failure) {
-      player.sendMessage(ChatColor.RED.toString() + "error:coreprotectに保存できませんでした。管理者に報告してください。")
+      player.sendMessage(RED.toString() + "error:coreprotectに保存できませんでした。管理者に報告してください。")
       return false
     }
     return true

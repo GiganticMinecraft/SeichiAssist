@@ -2,13 +2,16 @@ package com.github.unchama.seichiassist.database.manipulators
 
 import java.sql.SQLException
 
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
+import org.junit.internal.runners.statements.Fail
 
 class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   private val plugin = SeichiAssist.instance
@@ -21,7 +24,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
                                            supplier: () => Int): Int = {
     //連打による負荷防止の為クールダウン処理
     if (!playerdata.votecooldownflag) {
-      player.sendMessage(ChatColor.RED.toString() + "しばらく待ってからやり直してください")
+      player.sendMessage(RED.toString() + "しばらく待ってからやり直してください")
       return 0
     }
     CoolDownTask(player, true, false, false).runTaskLater(plugin, 1200)
@@ -46,7 +49,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       } catch (e: SQLException) {
         println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
         e.printStackTrace()
-        player.sendMessage(ChatColor.RED.toString() + "投票特典の受け取りに失敗しました")
+        player.sendMessage(RED.toString() + "投票特典の受け取りに失敗しました")
         return@ifCoolDownDoneThenGet 0
       }
 
@@ -56,13 +59,13 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             + " set p_givenvote = " + p_vote
             + " where uuid like '" + struuid + "'")
         if (gateway.executeUpdate(command) === Fail) {
-          player.sendMessage(ChatColor.RED.toString() + "投票特典の受け取りに失敗しました")
+          player.sendMessage(RED.toString() + "投票特典の受け取りに失敗しました")
           return@ifCoolDownDoneThenGet 0
         }
 
         return p_vote - p_givenvote
       }
-      player.sendMessage(ChatColor.YELLOW.toString() + "投票特典は全て受け取り済みのようです")
+      player.sendMessage(YELLOW.toString() + "投票特典は全て受け取り済みのようです")
       0
     }
   }
@@ -81,7 +84,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       } catch (e: SQLException) {
         println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
         e.printStackTrace()
-        player.sendMessage(ChatColor.RED.toString() + "ガチャ券の受け取りに失敗しました")
+        player.sendMessage(RED.toString() + "ガチャ券の受け取りに失敗しました")
         return@ifCoolDownDoneThenGet 0
       }
 
@@ -91,7 +94,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             + " set numofsorryforbug = numofsorryforbug - 576"
             + " where uuid like '" + struuid + "'")
         if (gateway.executeUpdate(command) === Fail) {
-          player.sendMessage(ChatColor.RED.toString() + "ガチャ券の受け取りに失敗しました")
+          player.sendMessage(RED.toString() + "ガチャ券の受け取りに失敗しました")
           return@ifCoolDownDoneThenGet 0
         }
 
@@ -102,14 +105,14 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             + " set numofsorryforbug = 0"
             + " where uuid like '" + struuid + "'")
         if (gateway.executeUpdate(command) === Fail) {
-          player.sendMessage(ChatColor.RED.toString() + "ガチャ券の受け取りに失敗しました")
+          player.sendMessage(RED.toString() + "ガチャ券の受け取りに失敗しました")
           return@ifCoolDownDoneThenGet 0
         }
 
         return@ifCoolDownDoneThenGet numofsorryforbug
       }
 
-      player.sendMessage(ChatColor.YELLOW.toString() + "ガチャ券は全て受け取り済みのようです")
+      player.sendMessage(YELLOW.toString() + "ガチャ券は全て受け取り済みのようです")
       0
     }
   }
@@ -225,7 +228,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       try {
         gateway.executeQuery(s"select * from $tableReference where name like $playerName").use { resultSet =>
           if (!resultSet.next()) {
-            s"${ChatColor.RED}$playerName はデータベースに登録されていません。".asMessageEffect().left()
+            s"${RED}$playerName はデータベースに登録されていません。".asMessageEffect().left()
           } else {
             Unit.right()
           }
@@ -234,7 +237,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         Bukkit.getLogger().warning(s"sql failed on checking data existence of $playerName")
         e.printStackTrace()
 
-        s"${ChatColor.RED}プレーヤーデータへのアクセスに失敗しました。".asMessageEffect().left()
+        s"${RED}プレーヤーデータへのアクセスに失敗しました。".asMessageEffect().left()
       }
 
   suspend def addContributionPoint(targetPlayerName: String, point: Int): ResponseEffectOrResult[CommandSender, Unit] {
@@ -244,7 +247,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
       return if (gateway.executeUpdate(updateCommand) === Fail) {
         Bukkit.getLogger().warning(s"sql failed on updating $targetPlayerName's contribute_point")
-        s"${ChatColor.RED}貢献度ptの変更に失敗しました。".asMessageEffect().left()
+      s"${RED}貢献度ptの変更に失敗しました。".asMessageEffect ().left ()
       } else {
         Unit.right()
       }
@@ -283,7 +286,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   suspend def saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): ResponseEffectOrResult[CommandSender, Unit] {
     //連打による負荷防止の為クールダウン処理
     if (!playerData.shareinvcooldownflag) {
-      return s"${ChatColor.RED}しばらく待ってからやり直してください".asMessageEffect().left()
+    return s"${RED}しばらく待ってからやり直してください".asMessageEffect ().left ()
     }
     CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
 
@@ -294,7 +297,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         lrs.next()
         val sharedInventorySerial = lrs.getString("shareinv")
         if (sharedInventorySerial != null && sharedInventorySerial != "") {
-          return s"${ChatColor.RED}既にアイテムが収納されています".asMessageEffect().left()
+    return s"${RED}既にアイテムが収納されています".asMessageEffect ().left ()
         }
       }
 
@@ -303,7 +306,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       if (gateway.executeUpdate(updateCommand) === Fail) {
         Bukkit.getLogger().warning(s"${player.name} sql failed. => saveSharedInventory(executeUpdate failed)")
 
-        return s"${ChatColor.RED}アイテムの収納に失敗しました".asMessageEffect().left()
+    return s"${RED}アイテムの収納に失敗しました".asMessageEffect ().left ()
       }
 
       return Unit.right()
@@ -311,7 +314,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       Bukkit.getLogger().warning(s"${player.name} sql failed. => clearShareInv(SQLException)")
       e.printStackTrace()
 
-      return s"${ChatColor.RED}共有インベントリにアクセスできません".asMessageEffect().left()
+    return s"${RED}共有インベントリにアクセスできません".asMessageEffect ().left ()
     }
   }
 
@@ -319,7 +322,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   suspend def loadShareInv(player: Player, playerData: PlayerData): ResponseEffectOrResult[CommandSender, String] {
     //連打による負荷防止の為クールダウン処理
     if (!playerData.shareinvcooldownflag) {
-      return s"${ChatColor.RED}しばらく待ってからやり直してください".asMessageEffect().left()
+    return s"${RED}しばらく待ってからやり直してください".asMessageEffect ().left ()
     }
     CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
 
@@ -333,7 +336,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       Bukkit.getLogger().warning(player.name + " sql failed. => loadShareInv")
       e.printStackTrace()
 
-      return s"${ChatColor.RED}共有インベントリにアクセスできません".asMessageEffect().left()
+    return s"${RED}共有インベントリにアクセスできません".asMessageEffect ().left ()
     }
   }
 
@@ -343,7 +346,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
     if (gateway.executeUpdate(command) === Fail) {
       Bukkit.getLogger().warning(s"${player.name} sql failed. => clearShareInv")
-      return s"${ChatColor.RED}アイテムのクリアに失敗しました".asMessageEffect().left()
+    return s"${RED}アイテムのクリアに失敗しました".asMessageEffect ().left ()
     }
 
     return Unit.right()
@@ -530,7 +533,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       e.printStackTrace()
     }
 
-    return s"${ChatColor.RED}データベースから四次元ポケットのインベントリを取得できませんでした。".asMessageEffect().left()
+    return s"${RED}データベースから四次元ポケットのインベントリを取得できませんでした。".asMessageEffect ().left ()
   }
 
   @Suppress("RedundantSuspendModifier")
@@ -552,9 +555,9 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         ?.let { s"${playerName}の最終ログアウト日時：$it".asMessageEffect() }
         ?: run {
           val messages = List(
-              s"${ChatColor.RED}最終ログアウト日時の照会に失敗しました。",
-              s"${ChatColor.RED}プレイヤー名やプレイヤー名が変更されていないか確認してください。",
-              s"${ChatColor.RED}プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります。"
+            s"${RED}最終ログアウト日時の照会に失敗しました。",
+            s"${RED}プレイヤー名やプレイヤー名が変更されていないか確認してください。",
+            s"${RED}プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります。"
           )
 
           messages.asMessageEffect()
@@ -587,7 +590,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     return when (count) {
       0 => {
         //uuidが存在しない時の処理
-        SeichiAssist.instance.server.consoleSender.sendMessage(s"${ChatColor.YELLOW}${playerName}は完全初見です。プレイヤーデータを作成します")
+        SeichiAssist.instance.server.consoleSender.sendMessage(s"${YELLOW}${playerName}は完全初見です。プレイヤーデータを作成します")
 
         //新しくuuidとnameを設定し行を作成
         val command = s"insert into $db.$table (name,uuid,loginflag) values('$playerName','$stringUuid','1')"

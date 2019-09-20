@@ -1,6 +1,14 @@
 package com.github.unchama.seichiassist.task
 
-import java.sql.SQLException
+import java.sql.{ResultSet, SQLException}
+import java.util
+import java.util.UUID
+
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.player.{AchievementPoint, PlayerNickName, StarLevel}
+import com.github.unchama.seichiassist.util.BukkitSerialization
+import kotlin.jvm.Throws
+import org.bukkit.ChatColor._
 
 object PlayerDataLoading {
   /**
@@ -293,7 +301,7 @@ object PlayerDataLoading {
     //初回nullエラー回避のための分岐
     try {
     val Titlenums = rs.getString("TitleFlags").split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-    val Titlearray = Arrays.stream(Titlenums).mapToLong { x: String => java.lang.Long.parseUnsignedLong(x, 16) }.toArray()
+      val Titlearray = util.Arrays.stream(Titlenums).mapToLong { x: String => java.lang.Long.parseUnsignedLong(x, 16) }.toArray()
     @NotNull
     val TitleFlags = BitSet.valueOf(Titlearray)
     playerData.TitleFlags = TitleFlags

@@ -1,10 +1,12 @@
 package com.github.unchama.seichiassist.effect.breaking
 
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.{ActiveSkillData, Coordinate}
-import org.bukkit.Location
+import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.{Location, Material}
 
 class BlizzardTask(private val player: Player, private val skillData: ActiveSkillData,
                    private val tool: ItemStack,

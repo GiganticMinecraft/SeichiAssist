@@ -1,9 +1,12 @@
 package com.github.unchama.buildassist.menu
 
 import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.menuinventory.Menu
+import com.github.unchama.menuinventory.slot.button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.seichiassist.{CommonSoundEffects, Schedulers}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
@@ -15,7 +18,7 @@ object BlockPlacementSkillMenu extends Menu {
         .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
         .build()
 
-    Button(
+    button.Button(
         iconItemStack,
         LeftClickButtonEffect(
             CommonSoundEffects.menuTransitionFenceSound,

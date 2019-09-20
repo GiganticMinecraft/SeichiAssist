@@ -1,5 +1,7 @@
 package com.github.unchama.menuinventory
 
+import com.github.unchama.menuinventory.InventoryRowSize.InventorySize
+import org.bukkit.inventory.{Inventory, InventoryHolder}
 /**
  * 入っているアイテムスタックをクリックすることで作用が引き起こされるような
  * インベントリのイミュータブルなビューを表すオブジェクトのクラス.
@@ -10,7 +12,7 @@ package com.github.unchama.menuinventory
  */
 case class MenuInventoryView(private val size: InventorySize,
                              private val title: String,
-                             internal val slotLayout: IndexedSlotLayout = IndexedSlotLayout()) {
+                             val slotLayout: IndexedSlotLayout = IndexedSlotLayout()) {
   internal def createConfiguredInventory(holder: InventoryHolder): Inventory = {
     return runBlocking {
       createInventory(holder, size, title).also {

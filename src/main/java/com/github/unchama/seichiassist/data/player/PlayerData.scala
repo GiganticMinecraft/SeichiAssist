@@ -1,6 +1,18 @@
 package com.github.unchama.seichiassist.data.player
 
+import java.util
+import java.util.UUID
 
+import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
+import com.github.unchama.seichiassist.task.MebiusTask
+import com.github.unchama.seichiassist.{ManagedWorld, MaterialSets, SeichiAssist}
+import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect}
+import org.bukkit.ChatColor._
+import org.bukkit.potion.PotionEffectType
+import org.bukkit.{Bukkit, Material}
+
+import scala.collection.mutable
 class PlayerData(
     @Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID,
     val name: String
@@ -18,7 +30,9 @@ class PlayerData(
   var chestflag = true
 
   //各統計値差分計算用配列
-  private val statisticsData: MutableList[Int] by lazy {
+  private val statisticsData: mutable.MutableList[Int] by
+  lazy
+  {
     (MaterialSets.materials - exclude)
         .map { player.getStatistic(Statistic.MINE_BLOCK, it) }
         .toMutableList()
@@ -209,7 +223,9 @@ class PlayerData(
 
   val unitMap: Map[DirectionType, Int]
     get() {
-      val unitMap = EnumMap[DirectionType, Int](DirectionType::class.java) //HashMap[DirectionType, Int]()
+      val unitMap = util.EnumMap[DirectionType, Int](DirectionType ::
+      class.java
+      ) //HashMap[DirectionType, Int]()
 
       unitMap[DirectionType.AHEAD] = this.claimUnit.ahead
       unitMap[DirectionType.BEHIND] = this.claimUnit.behind
@@ -327,7 +343,7 @@ class PlayerData(
   //エフェクトデータのdurationを60秒引く
   def calcEffectData() {
     //tmplistを作成
-    val tmplist = ArrayList[FastDiggingEffect]()
+    val tmplist = util.ArrayList[FastDiggingEffect]()
     //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
     for (ed in effectdatalist) {
       ed.duration -= 1200
@@ -813,20 +829,20 @@ class PlayerData(
    * 保護申請の番号を更新させる[UnfocusedEffect]
    */
   val incrementRegionNumber: UnfocusedEffect =
-      UnfocusedEffect {
+    targetedeffect.UnfocusedEffect {
         this.regionCount += 1
       }
 
   @Deprecated("Should be moved to external scope")
   val toggleExpBarVisibility: TargetedEffect[Player] =
-      UnfocusedEffect {
+    targetedeffect.UnfocusedEffect {
         this.settings.isExpBarVisible = !this.settings.isExpBarVisible
       } + deferredEffect {
         when {
           this.settings.isExpBarVisible => s"${GREEN}整地量バー表示"
           else => s"${RED}整地量バー非表示"
         }.asMessageEffect()
-      } + UnfocusedEffect {
+    } + targetedeffect.UnfocusedEffect {
         SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
       }
 }
@@ -837,6 +853,6 @@ object PlayerData {
   //TODO:もちろんここにあるべきではない
   val passiveSkillProbability = 10
 
-  val exclude = EnumSet.of(Material.GRASS_PATH, Material.SOIL, Material.MOB_SPAWNER,
+  val exclude = util.EnumSet.of(Material.GRASS_PATH, Material.SOIL, Material.MOB_SPAWNER,
     Material.CAULDRON, Material.ENDER_CHEST)
 }

@@ -1,11 +1,15 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
+import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
-import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}
@@ -29,7 +33,7 @@ object SecondPage extends Menu {
 
       Button(
           iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 closeInventoryEffect,
                 s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("official")}".asMessageEffect(),
@@ -161,7 +165,7 @@ object SecondPage extends Menu {
 
       Button(
           iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
                 TargetedEffect {
@@ -254,12 +258,12 @@ object SecondPage extends Menu {
                 sequentialEffect(
                     UnfocusedEffect { expManager.changeExp(-10000) },
                     UnfocusedEffect { Util.dropItem(it, skullToGive) },
-                    s"${ChatColor.GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
+                  s"${GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
                 )
               } else {
                 sequentialEffect(
-                    s"${ChatColor.RED}必要な経験値が足りません".asMessageEffect(),
+                  s"${RED}必要な経験値が足りません".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
                 )
               }
@@ -398,9 +402,9 @@ object SecondPage extends Menu {
                 deferredEffect {
                   val (soundPitch, message) =
                       if (playerData.settings.shouldDisplayWorldGuardLogs)
-                        Pair(1.0f, s"${ChatColor.GREEN}ワールドガード保護メッセージ:表示")
+                        Pair(1.0f, s"${GREEN}ワールドガード保護メッセージ:表示")
                       else
-                        Pair(0.5f, s"${ChatColor.RED}ワールドガード保護メッセージ:隠す")
+                        Pair(0.5f, s"${RED}ワールドガード保護メッセージ:隠す")
 
                   sequentialEffect(
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch),

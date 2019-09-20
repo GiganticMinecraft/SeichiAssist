@@ -1,5 +1,4 @@
 package com.github.unchama.seichiassist.task
-
 abstract class RepeatedTaskLauncher {
   suspend def launch(): Nothing = {
     while (true) {

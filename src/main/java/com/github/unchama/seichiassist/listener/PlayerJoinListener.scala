@@ -1,7 +1,16 @@
 package com.github.unchama.seichiassist.listener
 
+import java.util
+import java.util.UUID
+
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.player.PlayerData
+import org.bukkit.ChatColor._
+import org.bukkit.Sound
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.{EventHandler, Listener}
 class PlayerJoinListener  extends  Listener {
-  private val playerMap: HashMap[UUID, PlayerData] = SeichiAssist.playermap
+  private val playerMap: util.HashMap[UUID, PlayerData] = SeichiAssist.playermap
   private val databaseGateway = SeichiAssist.databaseGateway
 
   private def loadPlayerData(playerUuid: UUID, playerName: String) {
@@ -80,8 +89,8 @@ class PlayerJoinListener  extends  Listener {
     // 初見さんへの処理
     if (!player.hasPlayedBefore()) {
       //初見さんであることを全体告知
-      Util.sendEveryMessage(ChatColor.LIGHT_PURPLE.toString() + "" + ChatColor.BOLD + player.name + "さんはこのサーバーに初めてログインしました！")
-      Util.sendEveryMessage(ChatColor.WHITE.toString() + "webサイトはもう読みましたか？→" + ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "https://www.seichi.network/gigantic")
+      Util.sendEveryMessage(LIGHT_PURPLE.toString() + "" + BOLD + player.name + "さんはこのサーバーに初めてログインしました！")
+      Util.sendEveryMessage(WHITE.toString() + "webサイトはもう読みましたか？→" + YELLOW + "" + UNDERLINE + "https://www.seichi.network/gigantic")
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
       //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
       player.inventory.addItem(ItemStack(Material.STICK))
@@ -128,7 +137,7 @@ class PlayerJoinListener  extends  Listener {
         // アクティブスキルがONになっている
         if (pd.activeskilldata.mineflagnum != 0) {
           // メッセージを表示
-          p.sendMessage(ChatColor.GOLD.toString() + ActiveSkill.getActiveSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF")
+          p.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF")
           // 内部状態をアサルトOFFに変更
           pd.activeskilldata.updateAssaultSkill(p, pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum, 0)
           // トグル音を鳴らす

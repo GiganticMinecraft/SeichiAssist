@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.util.ops
 
+import org.bukkit.ChatColor._
 object ItemStackOps {
   /**
    * [ItemStack] の説明文を表すプロパティ.

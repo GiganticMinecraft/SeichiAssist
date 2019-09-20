@@ -1,5 +1,7 @@
 package com.github.unchama.menuinventory
 
+import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
+import org.bukkit.event.{EventHandler, Listener}
 /**
  * [MenuInventoryView] に由来するインベントリ上のクリックイベントをビューに定義されたアクションに流すようなリスナーオブジェクト.
  *

@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.effect.breaking
 
+import org.bukkit.scheduler.BukkitRunnable
 abstract class RoundedTask  extends  BukkitRunnable() {
   private var round = 0
 

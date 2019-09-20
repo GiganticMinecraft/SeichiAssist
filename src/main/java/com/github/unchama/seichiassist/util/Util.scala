@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.util
 
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import net.md_5.bungee.api.chat.BaseComponent
+import org.bukkit.ChatColor._
+import org.bukkit.FireworkEffect
 import org.bukkit.block.Block
 import org.bukkit.entity.{EntityType, Firework, Player}
 import org.bukkit.inventory.meta.SkullMeta
@@ -12,8 +15,8 @@ object Util {
   private val types = arrayOf(FireworkEffect.Type.BALL, FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST, FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR)
 
   def sendPlayerDataNullMessage(player: Player) {
-    player.sendMessage(ChatColor.RED.toString() + "初回ログイン時の読み込み中か、読み込みに失敗しています")
-    player.sendMessage(ChatColor.RED.toString() + "再接続しても改善されない場合はお問い合わせフォームからお知らせ下さい")
+    player.sendMessage(RED.toString() + "初回ログイン時の読み込み中か、読み込みに失敗しています")
+    player.sendMessage(RED.toString() + "再接続しても改善されない場合はお問い合わせフォームからお知らせ下さい")
   }
 
   //スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
@@ -57,8 +60,8 @@ object Util {
     skull = ItemStack(Material.SKULL_ITEM, 1)
     skullmeta = ItemMetaFactory.SKULL.value
     skull.durability = 3.toShort()
-    skullmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "ガチャ券"
-    val lore = ImmutableListFactory.of(ChatColor.RESET.toString() + "" + ChatColor.GREEN + "右クリックで使えます", ChatColor.RESET.toString() + "" + ChatColor.DARK_GREEN + "所有者:" + name)
+    skullmeta.displayName = YELLOW.toString() + "" + BOLD + "ガチャ券"
+    val lore = ImmutableListFactory.of(RESET.toString() + "" + GREEN + "右クリックで使えます", RESET.toString() + "" + DARK_GREEN + "所有者:" + name)
     skullmeta.lore = lore
     skullmeta.owner = "unchama"
     skull.itemMeta = skullmeta
@@ -360,8 +363,8 @@ object Util {
     skull = ItemStack(Material.SKULL_ITEM, 1)
     skullmeta = ItemMetaFactory.SKULL.value
     skull.durability = 3.toShort()
-    skullmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "ガチャ券"
-    val lore = ImmutableListFactory.of(ChatColor.RESET.toString() + "" + ChatColor.GREEN + "右クリックで使えます", ChatColor.RESET.toString() + "" + ChatColor.DARK_GREEN + "所有者：" + name, ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "運営から不具合のお詫びです")
+    skullmeta.displayName = YELLOW.toString() + "" + BOLD + "ガチャ券"
+    val lore = ImmutableListFactory.of(RESET.toString() + "" + GREEN + "右クリックで使えます", RESET.toString() + "" + DARK_GREEN + "所有者：" + name, RESET.toString() + "" + DARK_RED + "運営から不具合のお詫びです")
     skullmeta.lore = lore
     skullmeta.owner = "unchama"
     skull.itemMeta = skullmeta
@@ -374,8 +377,8 @@ object Util {
     skull = ItemStack(Material.SKULL_ITEM, 1)
     skullmeta = ItemMetaFactory.SKULL.value
     skull.durability = 3.toShort()
-    skullmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "ガチャ券"
-    val lore = ImmutableListFactory.of(ChatColor.RESET.toString() + "" + ChatColor.GREEN + "右クリックで使えます", ChatColor.RESET.toString() + "" + ChatColor.DARK_GREEN + "所有者：" + name, ChatColor.RESET.toString() + "" + ChatColor.LIGHT_PURPLE + "投票ありがとナス♡")
+    skullmeta.displayName = YELLOW.toString() + "" + BOLD + "ガチャ券"
+    val lore = ImmutableListFactory.of(RESET.toString() + "" + GREEN + "右クリックで使えます", RESET.toString() + "" + DARK_GREEN + "所有者：" + name, RESET.toString() + "" + LIGHT_PURPLE + "投票ありがとナス♡")
     skullmeta.lore = lore
     skullmeta.owner = "unchama"
     skull.itemMeta = skullmeta
@@ -388,8 +391,8 @@ object Util {
     skull = ItemStack(Material.SKULL_ITEM, 1)
     skullmeta = ItemMetaFactory.SKULL.value
     skull.durability = 3.toShort()
-    skullmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.BOLD + "ガチャ券"
-    val lore = ImmutableListFactory.of(ChatColor.RESET.toString() + "" + ChatColor.GREEN + "右クリックで使えます", ChatColor.RESET.toString() + "" + ChatColor.DARK_GREEN + "所有者：" + name, ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ガチャ景品と交換しました。")
+    skullmeta.displayName = YELLOW.toString() + "" + BOLD + "ガチャ券"
+    val lore = ImmutableListFactory.of(RESET.toString() + "" + GREEN + "右クリックで使えます", RESET.toString() + "" + DARK_GREEN + "所有者：" + name, RESET.toString() + "" + GRAY + "ガチャ景品と交換しました。")
     skullmeta.lore = lore
     skullmeta.owner = "unchama"
     skull.itemMeta = skullmeta

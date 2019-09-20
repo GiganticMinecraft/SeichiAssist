@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.data
 
+import org.bukkit.ChatColor._
+import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BlockStateMeta
 
 class MineStackGachaData(val objName: String,
                          itemStack: ItemStack,
@@ -43,7 +46,7 @@ class MineStackGachaData(val objName: String,
   def appendOwnerLore(name: String) {
     val meta = this.itemStack.itemMeta
     val lore = if (meta.hasLore()) meta.lore else ArrayList()
-    lore.add(s"${ChatColor.RESET}${ChatColor.DARK_GREEN}所有者：$name")
+    lore.add(s"${RESET}${DARK_GREEN}所有者：$name")
     this.itemStack.itemMeta.lore = lore
   }
 

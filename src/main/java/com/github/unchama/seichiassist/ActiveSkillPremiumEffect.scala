@@ -3,14 +3,16 @@ package com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.data.Coordinate
 import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
+import kotlin.DeprecationLevel
 import kotlinx.coroutines.GlobalScope
+import org.bukkit.ChatColor._
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.{ChatColor, Location, Material}
+import org.bukkit.{Location, Material}
 
 enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, val desc: String, val explain: String, val usePoint: Int, val material: Material) {
-  MAGIC(1, "ef_magic", ChatColor.RED.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マジック", "鶏が出る手品", 10, Material.RED_ROSE);
+  MAGIC(1, "ef_magic", RED.toString() + "" + UNDERLINE + "" + BOLD + "マジック", "鶏が出る手品", 10, Material.RED_ROSE);
 
   internal var plugin = SeichiAssist.instance
 

@@ -1,5 +1,8 @@
 package com.github.unchama.seichiassist.task
 
+import com.github.unchama.seichiassist.SeichiAssist
+import org.bukkit.Bukkit
+import org.bukkit.ChatColor._
 object PlayerDataPeriodicRecalculation extends RepeatedTaskLauncher() {
   override def getRepeatIntervalTicks(): Long = if (SeichiAssist.DEBUG) 20 * 10 else 20 * 60
 

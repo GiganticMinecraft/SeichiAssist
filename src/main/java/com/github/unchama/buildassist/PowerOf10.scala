@@ -1,5 +1,4 @@
 package com.github.unchama.buildassist
-
 object PowerOf10 {
   val power10 = Array(
       1, 10, 100, 1000, 10000, 100000,

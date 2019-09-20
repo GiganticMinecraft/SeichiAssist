@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.text
 
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 /**

@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.{Schedulers, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.kotlin2scala.Coroutines
 import net.md_5.bungee.api.ChatColor._
+import org.bukkit.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.event.{EventHandler, Listener}

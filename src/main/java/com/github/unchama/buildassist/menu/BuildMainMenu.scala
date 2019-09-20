@@ -4,6 +4,7 @@ import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.{Material, Sound}

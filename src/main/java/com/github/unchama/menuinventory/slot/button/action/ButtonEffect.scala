@@ -1,5 +1,9 @@
 package com.github.unchama.menuinventory.slot.button.action
 
+import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.TargetedEffect
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
 /**
  * メニューインベントリ上のボタンが[InventoryClickEvent]に対して発火すべき作用を計算するオブジェクトへのtrait.
  */
@@ -13,7 +17,11 @@ trait ButtonEffect {
 }
 
 object ButtonEffect {
-  def apply(effect: ButtonEffectScope.() => TargetedEffect[Player]): ButtonEffect = object : ButtonEffect {
+  def apply(effect: ButtonEffectScope.()
+
+  => targetedeffect.TargetedEffect[Player]
+  ): ButtonEffect =
+  object: ButtonEffect {
     override def asyncEffectOn(event: InventoryClickEvent): TargetedEffect[Player] = effect(ButtonEffectScope(event))
   }
 }

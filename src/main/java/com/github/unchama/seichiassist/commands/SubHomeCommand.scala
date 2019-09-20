@@ -2,18 +2,20 @@ package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import org.bukkit.ChatColor._
 
 object SubHomeCommand {
   private val printDescriptionExecutor = EchoExecutor(
       List(
-          s"${ChatColor.GREEN}/subhome コマンドの使い方",
-          s"${ChatColor.GREEN}移動する場合",
-          s"${ChatColor.GREEN}/subhome warp [移動したいサブホームの番号]",
-          s"${ChatColor.GREEN}セットする場合",
-          s"${ChatColor.GREEN}/subhome set [セットしたいサブホームの番号]",
-          s"${ChatColor.GREEN}名前変更する場合",
-          s"${ChatColor.GREEN}/subhome name [名前変更したいサブホームの番号]"
+        s"${GREEN}/subhome コマンドの使い方",
+        s"${GREEN}移動する場合",
+        s"${GREEN}/subhome warp [移動したいサブホームの番号]",
+        s"${GREEN}セットする場合",
+        s"${GREEN}/subhome set [セットしたいサブホームの番号]",
+        s"${GREEN}名前変更する場合",
+        s"${GREEN}/subhome name [名前変更したいサブホームの番号]"
       ).asMessageEffect()
   )
 
@@ -67,7 +69,7 @@ object SubHomeCommand {
 
         List(
             s"サブホームポイント${subHomeId}に設定する名前をチャットで入力してください",
-            s"${ChatColor.YELLOW}※入力されたチャット内容は他のプレイヤーには見えません"
+          s"${YELLOW}※入力されたチャット内容は他のプレイヤーには見えません"
         ).asMessageEffect()
       }
       .build()

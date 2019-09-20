@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist.menus
 
+import com.github.unchama.menuinventory.slot.button
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import org.bukkit.ChatColor._
 import org.bukkit.Sound
 
 /**
@@ -16,10 +18,10 @@ object CommonButtons {
         StickMenu.firstPage.open
     )
 
-    Button(
+    button.Button(
         SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
-            .title(s"${ChatColor.YELLOW}${ChatColor.UNDERLINE}${ChatColor.BOLD}ホームへ")
-            .lore(List(s"${ChatColor.RESET}${ChatColor.DARK_RED}${ChatColor.UNDERLINE}クリックで移動"))
+          .title(s"${YELLOW}${UNDERLINE}${BOLD}ホームへ")
+          .lore(List(s"${RESET}${DARK_RED}${UNDERLINE}クリックで移動"))
             .build(),
         FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE, buttonEffect)
     )

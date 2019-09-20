@@ -1,6 +1,12 @@
 package com.github.unchama.seichiassist.task
 
-import java.sql.SQLException
+import java.sql.{SQLException, Statement}
+
+import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import kotlin.ExperimentalUnsignedTypes
+import kotlin.jvm.Throws
+import org.bukkit.ChatColor._
 
 object PlayerDataSaving {
   /**
@@ -264,11 +270,11 @@ object PlayerDataSaving {
     for (i in 0 until 3) {
       val result = executeUpdate()
       if (result == Ok) {
-        println(s"${ChatColor.GREEN}${playerdata.lowercaseName}のプレイヤーデータ保存完了")
+        println(s"${GREEN}${playerdata.lowercaseName}のプレイヤーデータ保存完了")
         return
       }
     }
 
-    println(s"${ChatColor.RED}${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
+    println(s"${RED}${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
   }
 }

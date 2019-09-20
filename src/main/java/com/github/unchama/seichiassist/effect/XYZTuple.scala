@@ -1,5 +1,4 @@
 package com.github.unchama.seichiassist.effect
-
 case class XYZTuple(val x: Int, val y: Int, val z: Int)
 
 object XYZTuple {

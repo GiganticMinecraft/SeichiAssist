@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist
 
 import java.util.EnumSet
 
+import kotlin.jvm.JvmStatic
 import org.bukkit.Material
 
 object MaterialSets {

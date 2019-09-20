@@ -1,9 +1,12 @@
 package com.github.unchama.menuinventory
 
+import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.TargetedEffect
+import org.bukkit.inventory.InventoryHolder
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
  */
-class MenuSession private[menuinventory] (view: MenuInventoryView): InventoryHolder = {
+class MenuSession private[menuinventory](view: MenuInventoryView) extends InventoryHolder {
   private val sessionInventory = view.createConfiguredInventory(this)
 
   var view: MenuInventoryView = view
@@ -21,7 +24,7 @@ class MenuSession private[menuinventory] (view: MenuInventoryView): InventoryHol
    *
    * @param syncExecutionContext インベントリを開くコルーチンの実行コンテキスト
    */
-  def openEffectThrough(syncExecutionContext: CoroutineContext): TargetedEffect[Player] = TargetedEffect {
+  def openEffectThrough(syncExecutionContext: CoroutineContext): TargetedEffect[Player] = targetedeffect.TargetedEffect {
     withContext(syncExecutionContext) {
       it.openInventory(sessionInventory)
     }

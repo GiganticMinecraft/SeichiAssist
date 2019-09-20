@@ -1,13 +1,16 @@
 package com.github.unchama.seichiassist
 
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor._
 import org.bukkit.boss.{BarColor, BarStyle, BossBar}
 import org.bukkit.entity.Player
+
+import scala.collection.mutable
 
 class ExpBarSynchronization {
   private case class ExpBarProperties(val title: String, val progress: Double)
 
-  private val managedExpBars: MutableMap[Player, BossBar] = HashMap()
+  private val managedExpBars: MutableMap[Player, BossBar] = mutable.HashMap()
 
   private def computePropertiesFor(player: Player): ExpBarProperties = {
     val playerData = SeichiAssist.playermap[player.uniqueId]

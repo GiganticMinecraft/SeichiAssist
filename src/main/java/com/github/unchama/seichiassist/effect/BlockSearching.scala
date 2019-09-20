@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.effect
 
+import com.github.unchama.seichiassist.effect.XYZTuple.AxisAlignedCuboid
 object BlockSearching {
   /**
    * [location]を中心としたチェビシェフ距離が[distance]以下の領域に

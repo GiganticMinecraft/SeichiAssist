@@ -1,5 +1,4 @@
 package com.github.unchama.seichiassist
-
 object LevelThresholds {
   /**
    * lvの閾値.

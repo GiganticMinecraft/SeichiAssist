@@ -2,16 +2,18 @@ package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import org.bukkit.ChatColor._
 
 object EffectCommand {
   private val printUsageExecutor: ContextualExecutor = playerCommandBuilder
       .execution {
         List(
-            s"${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
-            s"${ChatColor.RED}/ef",
+          s"${YELLOW}${BOLD}[コマンドリファレンス]",
+          s"${RED}/ef",
             "採掘速度上昇効果の制限を変更することができます。",
-            s"${ChatColor.RED}/ef smart",
+          s"${RED}/ef smart",
             "採掘速度上昇効果の内訳を表示するかしないかを変更することができます。"
         ).asMessageEffect()
       }

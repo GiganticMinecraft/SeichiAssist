@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
+import com.github.unchama.seichiassist.SeichiAssist
 
 object LastQuitCommand {
   val executor = ContextualExecutorBuilder.beginConfiguration()

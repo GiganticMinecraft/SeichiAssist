@@ -1,11 +1,17 @@
 package com.github.unchama.seichiassist.menus
 
+import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
+import com.github.unchama.menuinventory.{IndexedSlotLayout, Menu, MenuInventoryView}
+import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.data.RegionMenuData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.{Material, Sound}
 
 object RegionMenu extends Menu {
@@ -190,7 +196,7 @@ object RegionMenu extends Menu {
   private suspend def Player.computeMenuLayout(): IndexedSlotLayout =
       with(ConstantButtons) {
         with(ButtonComputations) {
-          IndexedSlotLayout(
+      menuinventory.IndexedSlotLayout(
               0 to summonWandButton,
               1 to computeButtonToClaimRegion(),
               2 to displayOpenerRegionButton,

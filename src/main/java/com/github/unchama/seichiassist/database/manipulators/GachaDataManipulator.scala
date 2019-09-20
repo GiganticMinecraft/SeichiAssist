@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.database.manipulators
 
+import java.util
+
+import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
+import com.github.unchama.seichiassist.util.BukkitSerialization
 
 class GachaDataManipulator(private val gateway: DatabaseGateway) {
 
@@ -9,7 +13,7 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
 
   //ガチャデータロード
   def loadGachaData(): Boolean = {
-    val prizes = ArrayList[GachaPrize]()
+    val prizes = util.ArrayList[GachaPrize]()
 
     val command = s"select * from $tableReference"
     try {

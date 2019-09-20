@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.data.player.settings
 
 import com.github.unchama.seichiassist.data.player.PlayerNickName
 import com.github.unchama.targetedeffect.UnfocusedEffect
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 class PlayerSettings {
@@ -65,8 +66,8 @@ class PlayerSettings {
   suspend def toggleHalfBreakFlag(): TargetedEffect[Player] = {
     allowBreakingHalfBlocks = !allowBreakingHalfBlocks
 
-    val newStatus = if (allowBreakingHalfBlocks) s"${ChatColor.GREEN}破壊可能" else "${ChatColor.RED}破壊不可能"
-    val responseMessage = s"現在ハーフブロックは$newStatus${ChatColor.RESET}です."
+    val newStatus = if (allowBreakingHalfBlocks) s"${GREEN}破壊可能" else "${RED}破壊不可能"
+    val responseMessage = s"現在ハーフブロックは$newStatus${RESET}です."
 
     return responseMessage.asMessageEffect()
   }

@@ -1,39 +1,41 @@
 package com.github.unchama.seichiassist.commands
 
+import com.github.unchama.contextualexecutor.builder.TypeAliases.ResponseEffectOrResult
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
+import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, ConsoleCommandSender}
 import org.bukkit.{Bukkit, World}
 
 object RmpCommand {
   private val printDescriptionExecutor = EchoExecutor(
     List(
-        s"${ChatColor.RED}/rmp remove [world名] [日数]",
+      s"${RED}/rmp remove [world名] [日数]",
         "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
         "",
-        s"${ChatColor.RED}/rmp list [world名] [日数]",
+      s"${RED}/rmp list [world名] [日数]",
         "全Ownerが[日数]間ログインしていないRegionを表示します"
     ).asMessageEffect()
   )
 
   private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
-      .refineSenderWithError[ConsoleCommandSender](s"${ChatColor.GREEN}このコマンドはコンソールから実行してください")
+    .refineSenderWithError[ConsoleCommandSender](s"${GREEN}このコマンドはコンソールから実行してください")
       .argumentsParsers(List(
           parser {
             Bukkit.getWorld(it)
                 ?.let { world => succeedWith(world) }
                 ?: failWith(s"存在しないワールドです: $it")
           },
-          Parsers.nonNegativeInteger(s"${ChatColor.RED}[日数]には非負整数を入力してください".asMessageEffect())
+        Parsers.nonNegativeInteger(s"${RED}[日数]には非負整数を入力してください".asMessageEffect())
       ), onMissingArguments = printDescriptionExecutor)
 
   private suspend def getOldRegionsIn(world: World, daysThreshold: Int): ResponseEffectOrResult[CommandSender, List[ProtectedRegion]] {
     val databaseGateway = SeichiAssist.databaseGateway
 
     val leavers = databaseGateway.playerDataManipulator.selectLeaversUUIDs(daysThreshold)
-        ?: return s"${ChatColor.RED}データベースアクセスに失敗しました。".asMessageEffect().left()
+    ?: return s"${RED}データベースアクセスに失敗しました。".asMessageEffect ().left ()
 
     val regions = ExternalPlugins.getWorldGuard().regionContainer.get(world).regions.toMap()
     val oldRegions = regions.values.filter { region =>
@@ -61,10 +63,12 @@ object RmpCommand {
 
           // メッセージ生成
           if (removalTargets.isEmpty()) {
-            s"${ChatColor.GREEN}該当Regionは存在しません".asMessageEffect()
+            s"${GREEN}該当Regionは存在しません".asMessageEffect()
           } else {
             removalTargets
-                .map { s"${ChatColor.YELLOW}[rmp] Deleted Region => ${world.name}.${it.id}".asMessageEffect() }
+              .map {
+                s"${YELLOW}[rmp] Deleted Region => ${world.name}.${it.id}".asMessageEffect()
+              }
                 .asSequentialEffect()
           }
         }.merge()
@@ -78,10 +82,12 @@ object RmpCommand {
 
         getOldRegionsIn(world, days).map { removalTargets =>
           if (removalTargets.isEmpty()) {
-            s"${ChatColor.GREEN}該当Regionは存在しません".asMessageEffect()
+            s"${GREEN}該当Regionは存在しません".asMessageEffect()
           } else {
             removalTargets
-                .map { (s"${ChatColor.GREEN}[rmp] List Region => ${world.name}.${it.id}").asMessageEffect() }
+              .map {
+                (s"${GREEN}[rmp] List Region => ${world.name}.${it.id}").asMessageEffect()
+              }
                 .asSequentialEffect()
           }
         }.merge()

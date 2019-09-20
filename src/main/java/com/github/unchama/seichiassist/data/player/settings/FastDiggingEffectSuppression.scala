@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.data.player.settings
 
+import com.github.unchama.targetedeffect.TargetedEffect
+import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 
 class FastDiggingEffectSuppression {
@@ -10,24 +12,34 @@ class FastDiggingEffectSuppression {
         internalValue = (internalValue + 1) % 6
       } + deferredEffect {
         when (internalValue) {
-          0 => s"${ChatColor.GREEN}採掘速度上昇効果:ON(無制限)"
-          1 => s"${ChatColor.GREEN}採掘速度上昇効果:ON(127制限)"
-          2 => s"${ChatColor.GREEN}採掘速度上昇効果:ON(200制限)"
-          3 => s"${ChatColor.GREEN}採掘速度上昇効果:ON(400制限)"
-          4 => s"${ChatColor.GREEN}採掘速度上昇効果:ON(600制限)"
-          else => s"${ChatColor.RED}採掘速度上昇効果:OFF"
+          0
+          => s"${GREEN}採掘速度上昇効果:ON(無制限)"
+          1
+          => s"${GREEN}採掘速度上昇効果:ON(127制限)"
+          2
+          => s"${GREEN}採掘速度上昇効果:ON(200制限)"
+          3
+          => s"${GREEN}採掘速度上昇効果:ON(400制限)"
+          4
+          => s"${GREEN}採掘速度上昇効果:ON(600制限)"
+          else => s"${RED}採掘速度上昇効果:OFF"
         }.asMessageEffect()
       }
 
   @Suppress("RedundantSuspendModifier")
   suspend def currentStatus(): String = {
-    return s"${ChatColor.RESET}" + when (internalValue) {
-      0 => s"${ChatColor.GREEN}現在有効です(無制限)"
-      1 => s"${ChatColor.GREEN}現在有効です${ChatColor.YELLOW}(127制限)"
-      2 => s"${ChatColor.GREEN}現在有効です${ChatColor.YELLOW}(200制限)"
-      3 => s"${ChatColor.GREEN}現在有効です${ChatColor.YELLOW}(400制限)"
-      4 => s"${ChatColor.GREEN}現在有効です${ChatColor.YELLOW}(600制限)"
-      else => s"${ChatColor.RED}現在OFFです"
+    return s"${RESET}" + when(internalValue) {
+      0
+      => s"${GREEN}現在有効です(無制限)"
+      1
+      => s"${GREEN}現在有効です${YELLOW}(127制限)"
+      2
+      => s"${GREEN}現在有効です${YELLOW}(200制限)"
+      3
+      => s"${GREEN}現在有効です${YELLOW}(400制限)"
+      4
+      => s"${GREEN}現在有効です${YELLOW}(600制限)"
+      else => s"${RED}現在OFFです"
     }
   }
 

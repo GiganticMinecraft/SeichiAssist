@@ -1,5 +1,4 @@
 package com.github.unchama.seichiassist.data.player
-
 // FIXME semantics is not clear
 class MineBlock() {
   var after: Long = 0

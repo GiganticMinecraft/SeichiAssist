@@ -1,5 +1,8 @@
 package com.github.unchama.contextualexecutor.builder
 
+import com.github.unchama.contextualexecutor.builder.TypeAliases.ResponseEffectOrResult
+import com.github.unchama.targetedeffect.{EmptyEffect, TargetedEffect}
+import org.bukkit.command.CommandSender
 /**
  * [ContextualExecutorBuilder.argumentsParser]が要求する,
  * 引数文字列から[ResponseEffectOrResult[Any]]への関数の作成を行うためのスコープオブジェクト.

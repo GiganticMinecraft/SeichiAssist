@@ -1,6 +1,11 @@
 package com.github.unchama.seichiassist.menus.minestack
 
+import com.github.unchama.itemstackbuilder.SkullOwnerReference
+import com.github.unchama.menuinventory.IndexedSlotLayout
+import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.seichiassist.MineStackObjectList
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 object CategorizedMineStackMenu {

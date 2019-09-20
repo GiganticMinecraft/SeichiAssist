@@ -1,5 +1,10 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist.SeichiAssist
+import org.bukkit.ChatColor._
+import org.bukkit.Sound
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.{EventHandler, Listener}
 /**
  * 保護関連メニューのListenerクラス
  * @author karayuu
@@ -38,7 +43,7 @@ class RegionInventoryListener  extends  Listener {
     }
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.LIGHT_PURPLE.toString() + "グリッド式保護設定メニュー") {
+    if (topinventory.title == LIGHT_PURPLE.toString() + "グリッド式保護設定メニュー") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
@@ -122,7 +127,7 @@ class RegionInventoryListener  extends  Listener {
     //インベントリが存在しない時終了
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == ChatColor.LIGHT_PURPLE.toString() + "グリッド式保護・設定保存") {
+    if (topinventory.title == LIGHT_PURPLE.toString() + "グリッド式保護・設定保存") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
@@ -157,7 +162,7 @@ class RegionInventoryListener  extends  Listener {
         }
 
         if (event.isLeftClick) {
-          player.sendMessage(ChatColor.GREEN.toString() + "グリッド式保護設定データ読み込み完了")
+          player.sendMessage(GREEN.toString() + "グリッド式保護設定データ読み込み完了")
           player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
           playerData.setUnitAmount(DirectionType.AHEAD, template.aheadAmount)
           playerData.setUnitAmount(DirectionType.BEHIND, template.behindAmount)
@@ -302,7 +307,7 @@ object RegionInventoryListener {
     val playerData = SeichiAssist.playermap[player.uniqueId]
     val unitMap = playerData.unitMap
 
-    player.sendMessage(ChatColor.GREEN.toString() + "グリッド式保護の現在の設定を保存しました。")
+    player.sendMessage(GREEN.toString() + "グリッド式保護の現在の設定を保存しました。")
     player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f)
     val template = GridTemplate(unitMap[DirectionType.AHEAD], unitMap[DirectionType.BEHIND],
       unitMap[DirectionType.RIGHT], unitMap[DirectionType.LEFT])
@@ -314,7 +319,7 @@ object RegionInventoryListener {
    * @param player 該当プレイヤー
    * @return x,z座標のMap
    */
-  def getNearlyUnitStart(player: Player): Map[String, Double] {
+  def getNearlyUnitStart(player: Player): Map[String, Double] = {
     val result = HashMap[String, Double]()
 
     val player_x = player.location.blockX.toDouble()
@@ -339,7 +344,7 @@ object RegionInventoryListener {
    * @param player 該当プレイヤー
    * @return x,z座標のMap
    */
-  def getNearlyUnitEnd(player: Player): Map[String, Double] {
+  def getNearlyUnitEnd(player: Player): Map[String, Double] = {
     val startCoordinate = getNearlyUnitStart(player)
 
     val resultMap = HashMap[String, Double]()

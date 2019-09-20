@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.ActiveSkillPremiumEffect
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.util.ActionStatus
+import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.{Inventory, ItemStack}
@@ -57,12 +58,12 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
         val usePoint = lrs.getInt("usepoint")
         if (getPoint > 0) {
           itemstack = ItemStack(Material.DIAMOND)
-          lore2 = List(ChatColor.RESET.toString() + "" + ChatColor.GREEN + "" + "金額：" + getPoint * 100,
-              "" + ChatColor.RESET + ChatColor.GREEN + "プレミアムエフェクトポイント：+" + getPoint,
-              "" + ChatColor.RESET + ChatColor.GREEN + "日時：" + lrs.getString("date")
+          lore2 = List(RESET.toString() + "" + GREEN + "" + "金額：" + getPoint * 100,
+            "" + RESET + GREEN + "プレミアムエフェクトポイント：+" + getPoint,
+            "" + RESET + GREEN + "日時：" + lrs.getString("date")
           )
           itemstack.itemMeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND).apply {
-            displayName = "" + ChatColor.AQUA + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付"
+            displayName = "" + AQUA + UNDERLINE + "" + BOLD + "寄付"
             lore = lore2
           }
           inventory.setItem(count, itemstack)
@@ -71,11 +72,11 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
           material = effect[num].material
           itemstack = ItemStack(material)
 
-          lore2 = List("" + ChatColor.RESET + ChatColor.GOLD + "プレミアムエフェクトポイント： -" + usePoint,
-              "" + ChatColor.RESET + ChatColor.GOLD + "日時：" + lrs.getString("date")
+          lore2 = List("" + RESET + GOLD + "プレミアムエフェクトポイント： -" + usePoint,
+            "" + RESET + GOLD + "日時：" + lrs.getString("date")
           )
           itemstack.itemMeta = Bukkit.getItemFactory().getItemMeta(material).apply {
-            displayName = "" + ChatColor.RESET.toString() + ChatColor.YELLOW + "購入エフェクト：" + effect[num].desc
+            displayName = "" + RESET.toString() + YELLOW + "購入エフェクト：" + effect[num].desc
             lore = lore2
           }
           inventory.setItem(count, itemstack)

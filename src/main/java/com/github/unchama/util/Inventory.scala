@@ -1,5 +1,8 @@
 package com.github.unchama.util
 
+import com.github.unchama.menuinventory.InventoryRowSize.InventorySize
+import org.bukkit.Bukkit
+import org.bukkit.inventory.{Inventory, InventoryHolder}
 object InventoryUtil {
   /**
    * 主にチェスト用。

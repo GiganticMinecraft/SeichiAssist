@@ -1,5 +1,6 @@
 package com.github.unchama.menuinventory
 
+import org.bukkit.event.inventory.InventoryType
 /**
  * チェストインベントリの行数を表すcase class
  */

@@ -1,12 +1,16 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
+import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.{CommonSoundEffects, SkullOwners}
+import com.github.unchama.seichiassist.{CommonSoundEffects, Schedulers, SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.{EmptyEffect, TargetedEffect}
+import com.github.unchama.{menuinventory, targetedeffect}
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
@@ -76,7 +80,9 @@ private object FirstPage extends Menu {
           LeftClickButtonEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
               // TODO メニューに置き換える
-              TargetedEffect { it.openInventory(MenuInventoryData.getTitleMenuData(it)) }
+            targetedeffect.TargetedEffect {
+              it.openInventory(MenuInventoryData.getTitleMenuData(it))
+            }
           )
       )
     }
@@ -203,7 +209,9 @@ private object FirstPage extends Menu {
           iconItemStack,
           LeftClickButtonEffect(
               FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-              TargetedEffect { it.openInventory(MenuInventoryData.getHomeMenuData(it)) }
+            targetedeffect.TargetedEffect {
+              it.openInventory(MenuInventoryData.getHomeMenuData(it))
+            }
           )
       )
     }
@@ -294,7 +302,7 @@ private object FirstPage extends Menu {
           LeftClickButtonEffect(
               FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
               // TODO メニューに置き換える
-              TargetedEffect {
+            targetedeffect.TargetedEffect {
                 it.openInventory(
                     createInventory(
                         size = 4.rows(),
@@ -525,7 +533,9 @@ private object FirstPage extends Menu {
                 if (playerData.level >= minimumRequiredLevel) {
                   sequentialEffect(
                       FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f),
-                      TargetedEffect { it.openInventory(player.enderChest) }
+                    targetedeffect.TargetedEffect {
+                      it.openInventory(player.enderChest)
+                    }
                   )
                 } else {
                   FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
@@ -681,7 +691,7 @@ private object FirstPage extends Menu {
                       playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
                       repeat(gachaTicketsToGive) { Util.addItemToPlayerSafely(this@computeGachaTicketButton, itemStackToGive) }
                     },
-                    s"${ChatColor.GOLD}ガチャ券${gachaTicketsToGive}枚${ChatColor.WHITE}プレゼントフォーユー".asMessageEffect(),
+                  s"${GOLD}ガチャ券${gachaTicketsToGive}枚${WHITE}プレゼントフォーユー".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
                 )
               } else EmptyEffect
@@ -715,19 +725,19 @@ private object FirstPage extends Menu {
       Button(
           iconItemStack,
           LeftClickButtonEffect(
-              UnfocusedEffect {
+            targetedeffect.UnfocusedEffect {
                 playerData.settings.receiveGachaTicketEveryMinute = !playerData.settings.receiveGachaTicketEveryMinute
               },
               deferredEffect {
                 if (playerData.settings.receiveGachaTicketEveryMinute) {
                   sequentialEffect(
-                      s"${ChatColor.GREEN}毎分のガチャ券受け取り:ON".asMessageEffect(),
+                    s"${GREEN}毎分のガチャ券受け取り:ON".asMessageEffect(),
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
                   )
                 } else {
                   sequentialEffect(
-                      s"${ChatColor.RED}毎分のガチャ券受け取り:OFF".asMessageEffect(),
-                      s"${ChatColor.GREEN}ガチャ券受け取りボタンを押すともらえます".asMessageEffect(),
+                    s"${RED}毎分のガチャ券受け取り:OFF".asMessageEffect(),
+                    s"${GREEN}ガチャ券受け取りボタンを押すともらえます".asMessageEffect(),
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1.0f, 1.0f)
                   )
                 }
@@ -764,7 +774,7 @@ private object FirstPage extends Menu {
                           Valentine.giveChoco(this)
                           playerData.hasChocoGave = true
                         },
-                        s"${ChatColor.AQUA}チョコチップクッキーを付与しました。".asMessageEffect()
+                      s"${AQUA}チョコチップクッキーを付与しました。".asMessageEffect()
                     )
                   } else {
                     EmptyEffect
@@ -813,11 +823,13 @@ private object FirstPage extends Menu {
       }
 
   override val open: TargetedEffect[Player] = computedEffect { player =>
-    val session = MenuInventoryView(4.rows(), s"${LIGHT_PURPLE}木の棒メニュー").createNewSession()
+    val session = menuinventory.MenuInventoryView(4.rows(), s"${LIGHT_PURPLE}木の棒メニュー").createNewSession()
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
-        UnfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+      targetedeffect.UnfocusedEffect {
+        session.overwriteViewWith(player.computeMenuLayout())
+      }
     )
   }
 }

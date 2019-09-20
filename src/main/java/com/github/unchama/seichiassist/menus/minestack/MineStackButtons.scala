@@ -1,9 +1,14 @@
 package com.github.unchama.seichiassist.menus.minestack
 
-import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.menuinventory.slot.button.{Button, action}
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
+import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
 internal object MineStackButtons {
@@ -33,7 +38,7 @@ internal object MineStackButtons {
       val grantItemStack = mineStackObj.generateParameterizedStack(player).withAmount(grantAmount)
 
       sequentialEffect(
-          UnfocusedEffect {
+        targetedeffect.UnfocusedEffect {
             Util.addItemToPlayerSafely(player, grantItemStack)
             playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong())
           },
@@ -105,7 +110,7 @@ internal object MineStackButtons {
       }.build()
     }
 
-    val buttonEffect = FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
+    val buttonEffect = action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
       sequentialEffect(
           playerData.settings.toggleAutoMineStack,
           deferredEffect {

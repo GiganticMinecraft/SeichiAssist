@@ -1,5 +1,8 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist.SeichiAssist
+import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 class PlayerQuitListener  extends  Listener {
   private val playerMap = SeichiAssist.playermap
 

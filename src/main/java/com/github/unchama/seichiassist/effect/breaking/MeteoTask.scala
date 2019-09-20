@@ -1,10 +1,15 @@
 package com.github.unchama.seichiassist.effect.breaking
 
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.{ActiveSkillData, Coordinate}
-import org.bukkit.Location
+import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.effect.XYZTuple.AxisAlignedCuboid
+import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.{Effect, Location, Sound}
 
 class MeteoTask(
     private val player: Player,

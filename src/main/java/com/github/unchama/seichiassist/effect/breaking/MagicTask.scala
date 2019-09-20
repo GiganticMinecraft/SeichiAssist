@@ -1,9 +1,13 @@
 package com.github.unchama.seichiassist.effect.breaking
 
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.material.Wool
+import org.bukkit.{DyeColor, Location, Material}
 
 class MagicTask(// プレイヤー情報
     private val player: Player, // 使用するツール

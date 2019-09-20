@@ -2,17 +2,19 @@ package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
+import com.github.unchama.seichiassist.SeichiAssist
+import org.bukkit.ChatColor._
 import org.bukkit.command.ConsoleCommandSender
 
 object SeichiAssistCommand {
   private val descriptionExecutor = EchoExecutor(List(
-      s"${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
-      s"${ChatColor.RED}/seichiassist reload-config",
+    s"${YELLOW}${BOLD}[コマンドリファレンス]",
+    s"${RED}/seichiassist reload-config",
       "config.ymlの設定値を再読み込みします",
-      s"${ChatColor.RED}/seichiassist toggle-debug",
+    s"${RED}/seichiassist toggle-debug",
       "デバッグモードのON,OFFを切り替えます",
       "config.ymlのdebugmodeの値が1の場合のみ、コンソールから使用可能",
-      s"${ChatColor.RED}/seichiassist set-anniversary-flag",
+    s"${RED}/seichiassist set-anniversary-flag",
       "1周年記念フラグを立てる（コンソール限定コマンド）"
   ).asMessageEffect())
 
@@ -32,16 +34,16 @@ object SeichiAssistCommand {
           SeichiAssist.instance.restartRepeatedJobs()
 
           val resultMessage = if (SeichiAssist.DEBUG) {
-            s"${ChatColor.GREEN}デバッグモードを有効にしました"
+            s"${GREEN}デバッグモードを有効にしました"
           } else {
-            s"${ChatColor.GREEN}デバッグモードを無効にしました"
+            s"${GREEN}デバッグモードを無効にしました"
           }
 
           resultMessage.asMessageEffect()
         } else {
           List(
-            s"${ChatColor.RED}このコマンドは現在の設定では実行できません",
-            s"${ChatColor.RED}config.ymlのdebugmodeの値を1に書き換えて再起動またはreloadしてください"
+            s"${RED}このコマンドは現在の設定では実行できません",
+            s"${RED}config.ymlのdebugmodeの値を1に書き換えて再起動またはreloadしてください"
           ).asMessageEffect()
         }
       }

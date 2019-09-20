@@ -1,5 +1,9 @@
 package com.github.unchama.seichiassist.task
 
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.util.Util
+import org.bukkit.Bukkit
+import org.bukkit.ChatColor._
 object HalfHourRankingRoutine extends RepeatedTaskLauncher() {
   override def getRepeatIntervalTicks(): Long = if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 30
 
@@ -23,7 +27,7 @@ object HalfHourRankingRoutine extends RepeatedTaskLauncher() {
 
         //increaseが0超過の場合プレイヤー個人に個人整地量を通知
         if (halfHourBlock.increase > 0) {
-          player.sendMessage(s"あなたの整地量は ${ChatColor.AQUA}${halfHourBlock.increase}${ChatColor.WHITE} でした")
+          player.sendMessage(s"あなたの整地量は ${AQUA}${halfHourBlock.increase}${WHITE} でした")
         }
       } else {
         //ﾌﾟﾚｲﾔｰがオフラインの時の処理
@@ -41,20 +45,20 @@ object HalfHourRankingRoutine extends RepeatedTaskLauncher() {
         .sortedBy { it.halfhourblock.increase }
         .asReversed()
 
-    Util.sendEveryMessage("全体の整地量は " + ChatColor.AQUA + totalBreakCount + ChatColor.WHITE + " でした")
+    Util.sendEveryMessage("全体の整地量は " + AQUA + totalBreakCount + WHITE + " でした")
 
     val topPlayerData = sortedPlayerData.firstOrNull()
 
     // 第一位の整地量が非ゼロならば
     if (topPlayerData != null) {
-      val rankingPositionColor = List(ChatColor.DARK_PURPLE, ChatColor.BLUE, ChatColor.DARK_AQUA)
+      val rankingPositionColor = List(DARK_PURPLE, BLUE, DARK_AQUA)
 
       sortedPlayerData
           .take(3) // 1から3位まで
           .zip(rankingPositionColor)
           .forEachIndexed { index, (playerData, positionColor) =>
-            val playerNameText = s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}${ChatColor.WHITE}"
-            val increaseAmountText = s"${ChatColor.AQUA}${playerData.halfhourblock.increase}${ChatColor.WHITE}"
+            val playerNameText = s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}${WHITE}"
+            val increaseAmountText = s"${AQUA}${playerData.halfhourblock.increase}${WHITE}"
 
             Util.sendEveryMessage(s"整地量第${index + 1}位は${playerNameText}で${increaseAmountText}でした")
           }

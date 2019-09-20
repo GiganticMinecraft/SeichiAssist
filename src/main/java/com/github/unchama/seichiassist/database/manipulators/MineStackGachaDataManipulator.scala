@@ -1,6 +1,14 @@
 package com.github.unchama.seichiassist.database.manipulators
 
+import java.sql.SQLException
+import java.util
+
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
+import com.github.unchama.seichiassist.util.BukkitSerialization
+import org.bukkit.Bukkit
+import org.junit.internal.runners.statements.Fail
 
 class MineStackGachaDataManipulator(private val gateway: DatabaseGateway) {
 
@@ -9,7 +17,7 @@ class MineStackGachaDataManipulator(private val gateway: DatabaseGateway) {
 
   //MineStack用ガチャデータロード
   def loadMineStackGachaData(): Boolean = {
-    val gachadatalist = ArrayList[MineStackGachaData]()
+    val gachadatalist = util.ArrayList[MineStackGachaData]()
 
     val command = s"select * from $tableReference"
     try {

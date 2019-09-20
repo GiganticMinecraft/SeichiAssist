@@ -1,5 +1,14 @@
 package com.github.unchama.seichiassist.listener.invlistener
 
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.MenuInventoryData
+import com.github.unchama.seichiassist.data.player.PlayerNickName
+import org.bukkit.ChatColor._
+import org.bukkit.entity.{EntityType, Player}
+import org.bukkit.event.Listener
+import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
+import org.bukkit.inventory.meta.SkullMeta
+import org.bukkit.{Material, Sound}
 object OnClickTitleMenu extends Listener {
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
@@ -42,7 +51,7 @@ object OnClickTitleMenu extends Listener {
     val title = topinventory.title
     //インベントリ名が以下の時処理
     val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
-    val prefix = s"${ChatColor.DARK_PURPLE}${ChatColor.BOLD}"
+    val prefix = s"${DARK_PURPLE}${BOLD}"
     when (title) {
       s"${prefix}実績・二つ名システム" => {
         event.isCancelled = true

@@ -1,6 +1,7 @@
 package com.github.unchama.menuinventory.slot.button.action
 
 import com.github.unchama.menuinventory.IndexedSlotLayout
+import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.targetedeffect.UnfocusedEffect
 import org.bukkit.event.inventory.InventoryClickEvent
 

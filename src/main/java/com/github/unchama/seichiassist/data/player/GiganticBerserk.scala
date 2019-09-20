@@ -1,5 +1,4 @@
 package com.github.unchama.seichiassist.data.player
-
 case class GiganticBerserk(level: Int = 0, exp: Int = 0, stage: Int = 0, canEvolve: Boolean = false, cd: Int = 0) {
 
   def reachedLimit(): Boolean = stage == 4 && level == 9

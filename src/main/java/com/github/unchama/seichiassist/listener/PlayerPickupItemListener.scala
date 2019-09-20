@@ -1,5 +1,11 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.util.BreakUtil
+import org.bukkit.ChatColor._
+import org.bukkit.event.player.PlayerPickupItemEvent
+import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.{GameMode, Sound}
 class PlayerPickupItemListener  extends  Listener {
   private val playerMap = SeichiAssist.playermap
   private val config = SeichiAssist.seichiAssistConfig
@@ -20,8 +26,8 @@ class PlayerPickupItemListener  extends  Listener {
     val itemstack = item.itemStack
 
     if (SeichiAssist.DEBUG) {
-      player.sendMessage(ChatColor.RED.toString() + "pick:" + itemstack.toString())
-      player.sendMessage(ChatColor.RED.toString() + "pickDurability:" + itemstack.durability)
+      player.sendMessage(RED.toString() + "pick:" + itemstack.toString())
+      player.sendMessage(RED.toString() + "pickDurability:" + itemstack.durability)
     }
 
     if (BreakUtil.addItemToMineStack(player, itemstack)) {

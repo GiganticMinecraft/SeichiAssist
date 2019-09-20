@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.data.descrptions
 
 import com.github.unchama.seichiassist.data.player.PlayerData
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 /**

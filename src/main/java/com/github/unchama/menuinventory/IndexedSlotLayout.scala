@@ -1,5 +1,9 @@
 package com.github.unchama.menuinventory
 
+import com.github.unchama.menuinventory.slot.Slot
+import kotlin.collections.IndexedValue
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.Inventory
 /**
  * どのインデックスがどの[Slot]と関連付けられているかの情報を持つ[Map]のラッパークラス.
  */

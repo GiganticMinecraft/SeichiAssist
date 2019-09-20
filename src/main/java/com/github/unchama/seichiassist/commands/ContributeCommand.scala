@@ -4,6 +4,9 @@ import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.builder.Parsers.{identity, nonNegativeInteger}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.targetedeffect.TargetedEffect
+import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandExecutor, CommandSender}
 
 object ContributeCommand {
@@ -13,19 +16,19 @@ object ContributeCommand {
           .map {
             val operationResponse =
                 if (point >= 0) {
-                  s"${ChatColor.GREEN}${targetPlayerName}に貢献度ポイントを${point}追加しました"
+                  s"${GREEN}${targetPlayerName}に貢献度ポイントを${point}追加しました"
                 } else {
-                  s"${ChatColor.GREEN}${targetPlayerName}の貢献度ポイントを${point}減少させました"
+                  s"${GREEN}${targetPlayerName}の貢献度ポイントを${point}減少させました"
                 }
 
             operationResponse.asMessageEffect()
           }.merge()
 
   private val helpMessage: TargetedEffect[CommandSender] = List(
-      s"${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
-      s"${ChatColor.RED}/contribute add [プレイヤー名] [増加分ポイント]",
+    s"${YELLOW}${BOLD}[コマンドリファレンス]",
+    s"${RED}/contribute add [プレイヤー名] [増加分ポイント]",
       "指定されたプレイヤーの貢献度ptを指定分増加させます",
-      s"${ChatColor.RED}/contribute remove [プレイヤー名] [減少分ポイント]",
+    s"${RED}/contribute remove [プレイヤー名] [減少分ポイント]",
       "指定されたプレイヤーの貢献度ptを指定分減少させます(入力ミス回避用)"
   ).asMessageEffect()
 
@@ -36,7 +39,7 @@ object ContributeCommand {
   private val parserConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
       .argumentsParsers(List(
           identity,
-          nonNegativeInteger(s"${ChatColor.RED}増加分ポイントは0以上の整数を指定してください。".asMessageEffect())
+        nonNegativeInteger(s"${RED}増加分ポイントは0以上の整数を指定してください。".asMessageEffect())
       ), onMissingArguments = printHelpExecutor)
 
   private val addPointExecutor: ContextualExecutor = parserConfiguredBuilder

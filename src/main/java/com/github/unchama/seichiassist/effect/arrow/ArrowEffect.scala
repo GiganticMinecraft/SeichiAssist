@@ -1,5 +1,9 @@
 package com.github.unchama.seichiassist.effect.arrow
 
+import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.{EmptyEffect, TargetedEffect}
+import org.bukkit.entity.Projectile
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionType
 import org.bukkit.{Bukkit, Material, Sound}
@@ -8,7 +12,10 @@ object ArrowEffects {
   def arrowEffect[reified P <: Projectile](
     spawnConfiguration: ProjectileSpawnConfiguration,
     sound: Sound? = null,
-    projectileModifier: P => Unit = {}): TargetedEffect[Player] =
+  projectileModifier: P => Unit
+  =
+  {}
+  ): targetedeffect.TargetedEffect[Player] =
     sequentialEffect(
       if (sound != null) FocusedSoundEffect(sound, 1.0f, 1.3f) else EmptyEffect,
       computedEffect { player =>

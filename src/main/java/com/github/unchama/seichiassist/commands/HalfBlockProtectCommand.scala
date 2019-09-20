@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.commands
 
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 
 object HalfBlockProtectCommand {

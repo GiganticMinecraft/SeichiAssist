@@ -1,8 +1,12 @@
 package com.github.unchama.seichiassist.menus.minestack
 
-import com.github.unchama.menuinventory.IndexedSlotLayout
-import com.github.unchama.seichiassist.CommonSoundEffects
+import com.github.unchama.menuinventory.slot.button.action
+import com.github.unchama.menuinventory.{IndexedSlotLayout, Menu, MenuInventoryView}
+import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
+import com.github.unchama.seichiassist.{CommonSoundEffects, Schedulers}
+import com.github.unchama.targetedeffect.TargetedEffect
+import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
@@ -24,9 +28,9 @@ object MineStackMainMenu extends Menu {
             .title(s"$BLUE$UNDERLINE$BOLD${category.uiLabel}")
             .build()
 
-        val button = Button(
+        val button = button.Button(
             iconItemStack,
-            LeftClickButtonEffect(
+          action.LeftClickButtonEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
                 CategorizedMineStackMenu.forCategory(category).open
             )

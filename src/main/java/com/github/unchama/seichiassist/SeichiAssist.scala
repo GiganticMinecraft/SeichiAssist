@@ -1,6 +1,17 @@
 package com.github.unchama.seichiassist
 
+import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.menuinventory.MenuHandler
+import com.github.unchama.seichiassist.commands._
+import com.github.unchama.seichiassist.data.{GachaPrize, RankData}
+import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
+import kotlinx.coroutines.Job
+import org.bukkit.ChatColor._
+import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.{Bukkit, Material}
 
+import scala.collection.mutable
 class SeichiAssist  extends  JavaPlugin() {
   init { instance = this }
 
@@ -216,7 +227,7 @@ object SeichiAssist {
   lateinit var buildAssist: BuildAssist
 
   //Gachadataに依存するデータリスト
-  val gachadatalist: MutableList[GachaPrize] = ArrayList()
+  val gachadatalist: mutable.MutableList[GachaPrize] = ArrayList()
 
   //(minestackに格納する)Gachadataに依存するデータリスト
   var msgachadatalist: MutableList[MineStackGachaData] = ArrayList()
@@ -225,19 +236,19 @@ object SeichiAssist {
   val playermap = HashMap[UUID, PlayerData]()
 
   //総採掘量ランキング表示用データリスト
-  val ranklist: MutableList[RankData] = ArrayList()
+  val ranklist: mutable.MutableList[RankData] = ArrayList()
 
   //プレイ時間ランキング表示用データリスト
-  val ranklist_playtick: MutableList[RankData] = ArrayList()
+  val ranklist_playtick: mutable.MutableList[RankData] = ArrayList()
 
   //投票ポイント表示用データリスト
-  val ranklist_p_vote: MutableList[RankData] = ArrayList()
+  val ranklist_p_vote: mutable.MutableList[RankData] = ArrayList()
 
   //マナ妖精表示用のデータリスト
-  val ranklist_p_apple: MutableList[RankData] = ArrayList()
+  val ranklist_p_apple: mutable.MutableList[RankData] = ArrayList()
 
   //プレミアムエフェクトポイント表示用データリスト
-  val ranklist_premiumeffectpoint: MutableList[RankData] = ArrayList()
+  val ranklist_premiumeffectpoint: mutable.MutableList[RankData] = ArrayList()
 
   //総採掘量表示用
   var allplayerbreakblockint = 0L
@@ -245,13 +256,13 @@ object SeichiAssist {
   var allplayergiveapplelong = 0L
 
   //プラグインで出すエンティティの保存
-  val entitylist: MutableList[Entity] = ArrayList()
+  val entitylist: mutable.MutableList[Entity] = ArrayList()
 
   //プレイヤーがスキルで破壊するブロックリスト
-  val allblocklist: MutableList[Block] = LinkedList()
+  val allblocklist: MutableList[Block] = mutable.LinkedList()
 
   private def generateGachaPrizes(): List[MineStackObj] = {
-    val minestacklist = ArrayList[MineStackObj]()
+    val minestacklist = util.ArrayList[MineStackObj]()
     for (i in msgachadatalist.indices) {
     val g = msgachadatalist[i]
     if (g.itemStack.type !== Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外

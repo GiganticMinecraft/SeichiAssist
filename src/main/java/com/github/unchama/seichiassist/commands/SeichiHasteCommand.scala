@@ -1,8 +1,10 @@
 package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor._
 
 object SeichiHasteCommand {
   private enum class ScopeSpecification {
@@ -17,7 +19,7 @@ object SeichiHasteCommand {
   }
 
   private val descriptionPrintExecutor = EchoExecutor(List(
-      s"${ChatColor.RED}/seichihaste [説明文id] [効果の持続ティック数] [効果の強さ] [スコープ指定子]",
+    s"${RED}/seichihaste [説明文id] [効果の持続ティック数] [効果の強さ] [スコープ指定子]",
       "指定されたプレイヤーに採掘速度上昇効果を付与します。",
       "同じサーバーにログイン中であるプレーヤーにしか適用されません。",
       "",
@@ -66,14 +68,14 @@ object SeichiHasteCommand {
 
             playerData.effectdatalist.add(effectData)
 
-            s"${ChatColor.LIGHT_PURPLE}$playerName に上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
+            s"${LIGHT_PURPLE}$playerName に上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
           }
           ScopeSpecification.ALL => {
             SeichiAssist.playermap.values.forEach {
               it.effectdatalist.add(effectData)
             }
 
-            s"${ChatColor.LIGHT_PURPLE}すべてのプレーヤーに上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
+            s"${LIGHT_PURPLE}すべてのプレーヤーに上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
           }
         }
       }

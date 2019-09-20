@@ -1,5 +1,4 @@
 package com.github.unchama.menuinventory.slot.button.action
-
 /**
  * "フィルタ"付きの[ButtonEffect]
  *

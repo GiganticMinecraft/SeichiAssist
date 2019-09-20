@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.minestack
 
+import org.bukkit.ChatColor._
 /**
  * マインスタックに収納するアイテムのカテゴリを表すオブジェクトの列挙.
  *
