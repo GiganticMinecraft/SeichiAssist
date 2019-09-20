@@ -1,16 +1,15 @@
 package com.github.unchama.buildassist;
 
-import java.math.BigDecimal;
-
 import com.github.unchama.seichiassist.MineStackObjectList;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackObj;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
+
+import java.math.BigDecimal;
 
 public final class Util {
 	private Util() {

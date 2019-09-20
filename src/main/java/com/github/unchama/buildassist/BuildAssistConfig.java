@@ -1,8 +1,7 @@
 package com.github.unchama.buildassist;
 
-import org.bukkit.configuration.file.FileConfiguration;
-
 import com.github.unchama.buildassist.util.TypeConverter;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
 public class BuildAssistConfig {

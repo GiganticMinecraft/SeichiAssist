@@ -1,10 +1,9 @@
 package com.github.unchama.buildassist.util;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 public final class ExternalPlugins {
 	private ExternalPlugins() {

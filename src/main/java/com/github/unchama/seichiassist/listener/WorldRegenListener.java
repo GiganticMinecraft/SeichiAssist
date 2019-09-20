@@ -1,14 +1,5 @@
 package com.github.unchama.seichiassist.listener;
 
-import io.monchi.regenworld.RegenWorld;
-import io.monchi.regenworld.event.RegenWorldEvent;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-
 import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldedit.BlockVector;
@@ -25,6 +16,13 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.wimbli.WorldBorder.CoordXZ;
 import com.wimbli.WorldBorder.WorldBorder;
 import com.wimbli.WorldBorder.WorldFillTask;
+import io.monchi.regenworld.RegenWorld;
+import io.monchi.regenworld.event.RegenWorldEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 /**
  * @author Mon_chi

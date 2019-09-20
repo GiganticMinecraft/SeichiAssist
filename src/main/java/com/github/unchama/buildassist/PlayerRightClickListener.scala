@@ -2,7 +2,6 @@ package com.github.unchama.buildassist
 
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, Schedulers, SeichiAssist}
-import com.github.unchama.targetedeffect.TargetedEffectKt.sequentialEffect
 import com.github.unchama.util.kotlin2scala.Coroutines
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -15,8 +14,6 @@ import scala.util.control.Breaks
 
 class PlayerRightClickListener extends Listener {
   private var playermap = BuildAssist.playermap
-
-  import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
   @EventHandler
   def onPlayerMenuUIEvent(event: PlayerInteractEvent) {

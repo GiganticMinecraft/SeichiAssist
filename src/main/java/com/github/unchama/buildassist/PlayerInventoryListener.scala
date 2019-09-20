@@ -2,7 +2,6 @@ package com.github.unchama.buildassist
 
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.seichiassist.{Schedulers, SeichiAssist}
-import com.github.unchama.targetedeffect.TargetedEffectKt
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.kotlin2scala.Coroutines
 import net.md_5.bungee.api.ChatColor._

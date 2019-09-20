@@ -1,11 +1,10 @@
 package com.github.unchama.seichiassist.task;
 
+import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.Location;
 import org.bukkit.entity.Projectile;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-
-import com.github.unchama.seichiassist.SeichiAssist;
 
 public class ArrowControlTask extends BukkitRunnable{
 

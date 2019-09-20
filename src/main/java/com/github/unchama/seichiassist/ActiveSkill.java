@@ -1,9 +1,8 @@
 package com.github.unchama.seichiassist;
 
+import com.github.unchama.seichiassist.data.Coordinate;
 import org.bukkit.Material;
 import org.bukkit.potion.PotionType;
-
-import com.github.unchama.seichiassist.data.Coordinate;
 
 public enum ActiveSkill{
 	ARROW(1,"","","","エビフライ・ドライブ","ホーリー・ショット","ツァーリ・ボンバ","アーク・ブラスト","ファンタズム・レイ","スーパー・ノヴァ",""),

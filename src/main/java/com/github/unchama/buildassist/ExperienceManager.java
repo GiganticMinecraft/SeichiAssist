@@ -1,12 +1,12 @@
 package com.github.unchama.buildassist;
 
 
-import java.lang.ref.WeakReference;
-import java.util.Arrays;
-
 import com.github.unchama.seichiassist.util.exp.IExperienceManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
+
+import java.lang.ref.WeakReference;
+import java.util.Arrays;
 
 /**
  * @author desht
