@@ -36,5 +36,5 @@ class FastDiggingEffect(var duration: Int, var amplifier: Double, private val id
     }
 
   //６０秒固定採掘速度固定
-  constructor(amplifier: Double, id: Int) : this(1260, amplifier, id)
+  def this(amplifier: Double, id: Int) : this(1260, amplifier, id)
 }

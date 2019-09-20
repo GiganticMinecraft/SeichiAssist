@@ -1,9 +1,11 @@
 package com.github.unchama.itemstackbuilder
 
+import org.bukkit.inventory.{ItemFlag, ItemStack}
+
 /**
  * [ItemStack] をBuildするBuilderを表すインターフェース.
  */
-interface ItemStackBuilder {
+trait ItemStackBuilder {
   /**
    * [ItemStack] の表示名を設定します.
    *
@@ -19,16 +21,16 @@ interface ItemStackBuilder {
    * [List] に `null` が含まれていた場合,その行は無視されます.
    * @return このBuilder
    */
-  def lore(lore: List<String>): ItemStackBuilder
+  def lore(lore: List[String]): ItemStackBuilder
 
   /**
    * [ItemStack] のLoreを設定します.
    *
-   * @param lore [ItemStack] のLoreとして設定する [String] の [List]
+   * @param _lore [ItemStack] のLoreとして設定する [String] の [List]
    * [List] に `null` が含まれていた場合,その行は無視されます.
    * @return このBuilder
    */
-  def lore(vararg lore: String): ItemStackBuilder = lore(lore.toList())
+  def lore(_lore: String*): ItemStackBuilder = lore(_lore.toList)
 
   /**
    * [ItemStack] にエンチャントを付与します.
@@ -64,14 +66,14 @@ interface ItemStackBuilder {
    *
    * @return このBuilder
    */
-  def flagged(flagSet: Set<ItemFlag>): ItemStackBuilder = flagSet.fold(this) { acc, flag -> acc.flagged(flag) }
+  def flagged(flagSet: Set[ItemFlag]): ItemStackBuilder = flagSet.foldLeft(this) { case (acc, flag) => acc.flagged(flag) }
 
   /**
    * [ItemStack] に与えられた全ての [ItemFlag] を付与する.
    *
    * @return このBuilder
    */
-  def flagged(vararg flags: ItemFlag): ItemStackBuilder = flagged(flags.toSet())
+  def flagged(flags: ItemFlag*): ItemStackBuilder = flagged(flags.toSet)
 
   /**
    * Builderによって指定された各引数を用いて [ItemStack] を生成します

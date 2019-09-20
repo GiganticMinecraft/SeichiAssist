@@ -4,11 +4,11 @@ package com.github.unchama.menuinventory
  * どのインデックスがどの[Slot]と関連付けられているかの情報を持つ[Map]のラッパークラス.
  */
 case class IndexedSlotLayout(private val map: Map<Int, Slot>) {
-  constructor(): this(mapOf())
+  def this(): this(mapOf())
 
-  constructor(vararg mappings: Pair<Int, Slot>): this(mapOf(*mappings))
+  def this(vararg mappings: Pair<Int, Slot>): this(mapOf(*mappings))
 
-  constructor(mapping: Iterable<IndexedValue<Slot>>): this(mapping.toMap())
+  def this(mapping: Iterable<IndexedValue<Slot>>): this(mapping.toMap())
 
   /**
    * クリックされた枠に対応した[Slot]が[InventoryClickEvent]に基づいて引き起こす作用を計算する.

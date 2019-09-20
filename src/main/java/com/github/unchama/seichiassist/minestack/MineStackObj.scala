@@ -15,7 +15,7 @@ open class MineStackObj(val mineStackObjName: String,
     amount = 1
   }
 
-  constructor(objName: String, uiName: String?,
+  def this(objName: String, uiName: String?,
               level: Int, material: Material, durability: Int,
               nameLoreFlag: Boolean, gachaType: Int, stackType: MineStackObjectCategory): this(
       objName, uiName, level, ItemStack(material, 1, durability.toShort()), nameLoreFlag, gachaType, stackType

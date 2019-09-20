@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist
 
-enum class ActiveSkillEffect constructor(
+enum class ActiveSkillEffect (
     val num: Int,
     val nameOnDatabase: String,
     val nameOnUI: String,

@@ -1,51 +1,62 @@
 package com.github.unchama.itemstackbuilder
 
+import com.github.unchama.itemstackbuilder.component.IconComponent
+import org.bukkit.Material
+import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.inventory.{ItemFlag, ItemStack}
+
 /**
  * ItemStackBuilderのベースとなる抽象クラス.
  *
- * @param T 派生クラス自身の型
- * @param M 派生クラスが生成する[ItemStack]が持つべきであろう[ItemMeta]の型.
+ * @tparam M 派生クラスが生成する[ItemStack]が持つべきであろう[ItemMeta]の型.
  *
  * @author karayuu
  */
-@Suppress("UNCHECKED_CAST")
-abstract class AbstractItemStackBuilder<T : AbstractItemStackBuilder<T, M>, M : ItemMeta>
-protected constructor(material: Material, durability: Short) : ItemStackBuilder {
+abstract class AbstractItemStackBuilder[M <: ItemMeta] protected
+(material: Material, durability: Short) extends ItemStackBuilder {
 
-  private val component: IconComponent = IconComponent(material, durability)
+  private val component: IconComponent = new IconComponent(material, durability)
 
-  override def title(title: String): T {
+  override def title(title: String): this.type = {
     this.component.title = title
-    return this as T
+    this
   }
 
-  override def lore(lore: List<String>): T {
+  override def lore(lore: List[String]): this.type = {
     this.component.lore = lore
-    return this as T
+    this
   }
 
-  override def enchanted(): T {
+  override def enchanted(): this.type = {
     this.component.isEnchanted = true
-    return this as T
+    this
   }
 
-  override def unbreakable(): T {
+  override def unbreakable(): this.type = {
     this.component.isUnbreakable = true
-    return this as T
+    this
   }
 
-  override def amount(amount: Int): T {
+  override def amount(amount: Int): this.type = {
     this.component.amount = amount
-    return this as T
+    this
   }
 
-  override def flagged(flag: ItemFlag): T {
-    this.component.itemFlagSet = component.itemFlagSet.plus(flag)
-    return this as T
+  override def flagged(flag: ItemFlag): this.type = {
+    this.component.itemFlagSet = component.itemFlagSet + flag
+    this
   }
 
-  final override def build(): ItemStack = component.itemStack.apply {
-    itemMeta = (component.itemMeta as M).also { transformItemMetaOnBuild(it) }
+  final override def build(): ItemStack = {
+    val itemStack = component.itemStack()
+
+    itemStack.setItemMeta {
+      val meta = component.itemMeta().asInstanceOf[M]
+      transformItemMetaOnBuild(meta)
+      meta
+    }
+
+    itemStack
   }
 
   /**

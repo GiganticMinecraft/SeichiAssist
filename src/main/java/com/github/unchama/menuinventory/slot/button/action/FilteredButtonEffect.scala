@@ -14,7 +14,7 @@ case class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter,
   /**
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[FilteredButtonEffect]を構築する.
    */
-  constructor(clickEventFilter: ClickEventFilter, vararg effects: TargetedEffect<Player>): this(clickEventFilter, { sequentialEffect(*effects) })
+  def this(clickEventFilter: ClickEventFilter, vararg effects: TargetedEffect<Player>): this(clickEventFilter, { sequentialEffect(*effects) })
 
   /**
    * [event]に基づいた[effect]による作用を計算する.
@@ -38,5 +38,5 @@ case class LeftClickButtonEffect(private val effect: ButtonEffectScope.() -> Tar
   /**
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[LeftClickButtonEffect]を構築する.
    */
-  constructor(vararg effects: TargetedEffect<Player>): this({ sequentialEffect(*effects) })
+  def this(vararg effects: TargetedEffect<Player>): this({ sequentialEffect(*effects) })
 }

@@ -1,45 +1,51 @@
 package com.github.unchama.itemstackbuilder.component
 
+import com.github.unchama.util.syntax.Nullability._
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.inventory.{ItemFlag, ItemStack}
+import org.bukkit.{Bukkit, Material}
+
+import scala.collection.JavaConversions._
+
 /**
  * ビルダー内で保持されるアイテムスタックの情報をまとめて持つデータ型.
  * ミュータブルな設計になっている.
  *
  * Created by karayuu on 2019/04/09
  */
-class IconComponent constructor(val material: Material, private val durability: Short = 0.toShort()) {
-  var title: String? = Bukkit.getItemFactory().getItemMeta(material)?.displayName
-  var lore: List<String> = emptyList()
+class IconComponent(val material: Material, private val durability: Short = 0.toShort) {
+  var title: String = Bukkit.getItemFactory().getItemMeta(material).ifNotNull(_.getDisplayName)
+  var lore: List[String] = Nil
 
   var isUnbreakable: Boolean = false
 
   var isEnchanted: Boolean = false
   var amount = 1
 
-  var itemFlagSet: Set<ItemFlag> = emptySet()
+  var itemFlagSet: Set[ItemFlag] = Set()
 
-  val itemStack: ItemStack
-    get() = ItemStack(material, amount, durability)
+  def itemStack(): ItemStack = new ItemStack(material, amount, durability)
 
-  val itemMeta: ItemMeta
-    get() {
-      val meta = Bukkit.getItemFactory().getItemMeta(material)
-      title?.let {
-        meta.displayName = it
-      }
-      meta.lore = lore
+  def itemMeta(): ItemMeta = {
+    val meta = Bukkit.getItemFactory.getItemMeta(material)
 
-      if (isUnbreakable) {
-        meta.isUnbreakable = true
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE)
-      }
+    title.ifNotNull(meta.setDisplayName)
 
-      if (isEnchanted) {
-        meta.addEnchant(Enchantment.DIG_SPEED, 1, false)
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-      }
+    meta.setLore(lore)
 
-      meta.addItemFlags(*itemFlagSet.toTypedArray())
-
-      return meta
+    if (isUnbreakable) {
+      meta.setUnbreakable(true)
+      meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE)
     }
+
+    if (isEnchanted) {
+      meta.addEnchant(Enchantment.DIG_SPEED, 1, false)
+      meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+    }
+
+    meta.addItemFlags(itemFlagSet.toArray: _*)
+
+    meta
+  }
 }

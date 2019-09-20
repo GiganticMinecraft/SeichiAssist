@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data.player
 
 
-class PlayerData constructor(
+class PlayerData(
     @Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID,
     val name: String
 ) {

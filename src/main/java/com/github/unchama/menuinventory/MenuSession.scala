@@ -3,7 +3,7 @@ package com.github.unchama.menuinventory
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
  */
-class MenuSession internal constructor(view: MenuInventoryView): InventoryHolder {
+class MenuSession private[menuinventory] (view: MenuInventoryView): InventoryHolder {
   private val sessionInventory = view.createConfiguredInventory(this)
 
   var view: MenuInventoryView = view

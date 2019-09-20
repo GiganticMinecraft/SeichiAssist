@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist
 
-typealias SkullOwnerReference = Either<UUID, String>
-
 /**
  * プレーヤーヘッドにownerとして設定されるプレーヤー達に関する定数を保持するオブジェクト
  */
