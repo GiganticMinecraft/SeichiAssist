@@ -1,24 +1,19 @@
 package com.github.unchama.util.collection
 
+import scala.collection.JavaConversions._
 
 object ImmutableListFactory {
 
-  @JvmStatic
-  // Checked, no kotlin usage found
-  def <E> of(): List<E> {
-    return emptyList()
-  }
+  // Checked, no scala usage found
+  def of[E](): java.util.List[E] = Nil
 
-  // Checked, no kotlin usage found
-  @JvmStatic
-  def <E> of(o: E): List<E> {
-    return listOf(o)
-  }
+  // Checked, no scala usage found
+  def of[E](o: E): java.util.List[E] = List(o)
+
+  def of[E](o: Array[E]): java.util.List[E] = o.toList
 
   @SafeVarargs
-  @JvmStatic
-  // Checked, no kotlin usage found
-  def <E> of(vararg o: E): List<E> {
-    return listOf(*o)
-  }
+  // Checked, no scala usage found
+  def of[E](o: E*): java.util.List[E] = List(o: _*)
+
 }
