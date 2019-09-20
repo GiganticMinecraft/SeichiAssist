@@ -84,15 +84,15 @@ class SeichiAssist extends JavaPlugin() {
       Bukkit.shutdown()
     }
 
-    MineStackObjectList.minestackGachaPrizes += SeichiAssist.generateGachaPrizes()
+    MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
 
     MineStackObjectList.minestacklist.clear()
-    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistmine
-    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistdrop
-    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistfarm
-    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistbuild
-    MineStackObjectList.minestacklist += MineStackObjectList.minestacklistrs
-    MineStackObjectList.minestacklist += MineStackObjectList.minestackGachaPrizes
+    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistmine
+    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistdrop
+    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistfarm
+    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistbuild
+    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistrs
+    MineStackObjectList.minestacklist ++= MineStackObjectList.minestackGachaPrizes
 
     // コマンドの登録
     Map(
@@ -115,7 +115,7 @@ class SeichiAssist extends JavaPlugin() {
         "minehead" -> MineHeadCommand.executor,
         "x-transfer" -> RegionOwnerTransferCommand.executor
     ).foreach {
-      case (commandName, executor) => getCommand(commandName).executor = executor
+      case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }
 
     //リスナーの登録
@@ -165,7 +165,8 @@ class SeichiAssist extends JavaPlugin() {
 
     logger.info("SeichiAssist is Enabled!")
 
-    SeichiAssist.buildAssist = BuildAssist(this).apply { onEnable() }
+    SeichiAssist.buildAssist = new BuildAssist(this)
+    SeichiAssist.buildAssist.onEnable()
   }
 
   override def onDisable(): Unit = {
@@ -250,7 +251,7 @@ object SeichiAssist {
   var databaseGateway: DatabaseGateway
   var seichiAssistConfig: Config
 
-  val buildAssist: BuildAssist
+  var buildAssist: BuildAssist
 
   //Gachadataに依存するデータリスト
   val gachadatalist: mutable.MutableList[GachaPrize] = mutable.MutableList()
