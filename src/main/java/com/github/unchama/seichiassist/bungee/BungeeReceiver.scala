@@ -19,7 +19,7 @@ class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageLi
     }
   }
 
-  private def writtenMessage(vararg messages: String): ByteArray {
+  private def writtenMessage(vararg messages: String): ByteArray = {
     val b = ByteArrayOutputStream()
     val out = DataOutputStream(b)
 

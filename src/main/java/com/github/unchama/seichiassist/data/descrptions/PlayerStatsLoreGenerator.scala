@@ -14,7 +14,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * Player統計のLoreを返します.
    */
   @Suppress("RedundantSuspendModifier")
-  suspend def computeLore(): List[String] {
+  suspend def computeLore(): List[String] = {
     return with(WarningsGenerator(targetPlayer)) {
       List(
           List(seichiLevelDescription()),
@@ -47,7 +47,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * 木の棒メニュー等で用いられる整地レベルの説明文
    * スターレベルを保持していたら,スターレベルも同時に表示します.
    */
-  private def seichiLevelDescription(): String {
+  private def seichiLevelDescription(): String = {
     val starLevel = playerData.totalStarLevel
     val level = playerData.level
 
@@ -61,7 +61,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
   /**
    * 次のレベルまでの残り必要整地量の説明文
    */
-  private def levelProgressionDescription(): List[String] {
+  private def levelProgressionDescription(): List[String] = {
     return if (playerData.level < LevelThresholds.levelExpThresholds.size) {
       //TODO:この計算は,ここにあるべきではない.
       val expRequiredToLevelUp = LevelThresholds.levelExpThresholds[playerData.level] - playerData.totalbreaknum
@@ -75,7 +75,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
   /**
    * パッシブスキルの説明文
    */
-  private def passiveSkillDescription(): List[String] {
+  private def passiveSkillDescription(): List[String] = {
     return List(
         s"${DARK_GRAY}パッシブスキル効果：",
         s"${DARK_GRAY}1ブロック整地ごとに",
@@ -137,7 +137,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
   /**
    * Expバーの説明文.
    */
-  private def expBarDescription(): List[String] {
+  private def expBarDescription(): List[String] = {
     return if (playerData.settings.isExpBarVisible) {
       List(
           s"${GREEN}整地量バーを表示",

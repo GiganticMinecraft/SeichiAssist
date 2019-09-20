@@ -62,7 +62,7 @@ class PlayerSettings {
     }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def toggleHalfBreakFlag(): TargetedEffect[Player] {
+  suspend def toggleHalfBreakFlag(): TargetedEffect[Player] = {
     allowBreakingHalfBlocks = !allowBreakingHalfBlocks
 
     val newStatus = if (allowBreakingHalfBlocks) s"${ChatColor.GREEN}破壊可能" else "${ChatColor.RED}破壊不可能"

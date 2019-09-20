@@ -27,7 +27,7 @@ open class MineStackObj(val mineStackObjName: String,
   val durability: Int
     get() = itemStack.durability.toInt()
 
-  override def equals(other: Any?): Boolean {
+  override def equals(other: Any?): Boolean = {
     if (this === other) return true
     val that = other as MineStackObj?
     return mineStackObjName == that?.mineStackObjName

@@ -8,7 +8,7 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
     get() = gateway.databaseName + "." + DatabaseConstants.GACHADATA_TABLENAME
 
   //ガチャデータロード
-  def loadGachaData(): Boolean {
+  def loadGachaData(): Boolean = {
     val prizes = ArrayList[GachaPrize]()
 
     val command = s"select * from $tableReference"
@@ -41,7 +41,7 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   //ガチャデータセーブ
-  def saveGachaData(): Boolean {
+  def saveGachaData(): Boolean = {
 
     //まずmysqlのガチャテーブルを初期化(中身全削除)
     var command = s"truncate table $tableReference"

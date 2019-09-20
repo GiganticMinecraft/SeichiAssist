@@ -40,7 +40,7 @@ object MineStackMainMenu extends Menu {
     /**
      * メインメニュー内の「履歴」機能部分のレイアウトを計算する
      */
-    suspend def Player.computeHistoricalMineStackLayout(): IndexedSlotLayout {
+    suspend def Player.computeHistoricalMineStackLayout(): IndexedSlotLayout = {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
       val buttonMapping = playerData.hisotryData.usageHistory.mapIndexed { index, mineStackObject =>
@@ -54,7 +54,7 @@ object MineStackMainMenu extends Menu {
     }
   }
 
-  private suspend def Player.computeMineStackMainMenuLayout(): IndexedSlotLayout {
+  private suspend def Player.computeMineStackMainMenuLayout(): IndexedSlotLayout = {
     return with(ButtonComputations) {
       IndexedSlotLayout(
           0 to with (MineStackButtons) { computeAutoMineStackToggleButton() },

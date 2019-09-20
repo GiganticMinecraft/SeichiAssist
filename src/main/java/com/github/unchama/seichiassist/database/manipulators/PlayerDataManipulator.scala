@@ -18,7 +18,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   private inline def ifCoolDownDoneThenGet(player: Player,
                                            playerdata: PlayerData,
-                                           supplier: () => Int): Int {
+                                           supplier: () => Int): Int = {
     //連打による負荷防止の為クールダウン処理
     if (!playerdata.votecooldownflag) {
       player.sendMessage(ChatColor.RED.toString() + "しばらく待ってからやり直してください")
@@ -30,7 +30,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   //投票特典配布時の処理(p_givenvoteの値の更新もココ)
-  def compareVotePoint(player: Player, playerdata: PlayerData): Int {
+  def compareVotePoint(player: Player, playerdata: PlayerData): Int = {
     return ifCoolDownDoneThenGet(player, playerdata) {
       val struuid = playerdata.uuid.toString()
 
@@ -68,7 +68,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   //最新のnumofsorryforbug値を返してmysqlのnumofsorrybug値を初期化する処理
-  def givePlayerBug(player: Player, playerdata: PlayerData): Int {
+  def givePlayerBug(player: Player, playerdata: PlayerData): Int = {
     return ifCoolDownDoneThenGet(player, playerdata) {
       val struuid = playerdata.uuid.toString()
       var numofsorryforbug = 0
@@ -119,7 +119,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
    * @param playerName プレーヤー名
    * @return 処理の成否
    */
-  def incrementVotePoint(playerName: String): ActionStatus {
+  def incrementVotePoint(playerName: String): ActionStatus = {
     val command = ("update " + tableReference
         + " set p_vote = p_vote + 1" //1加算
 
@@ -134,7 +134,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
    * @param num 足す整数
    * @return 処理の成否
    */
-  def addPremiumEffectPoint(playerName: String, num: Int): ActionStatus {
+  def addPremiumEffectPoint(playerName: String, num: Int): ActionStatus = {
     val command = ("update " + tableReference
         + " set premiumeffectpoint = premiumeffectpoint + " + num //引数で来たポイント数分加算
 
@@ -145,7 +145,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
 
   //指定されたプレイヤーにガチャ券を送信する
-  def addPlayerBug(playerName: String, num: Int): ActionStatus {
+  def addPlayerBug(playerName: String, num: Int): ActionStatus = {
     val command = ("update " + tableReference
         + " set numofsorryforbug = numofsorryforbug + " + num
         + " where name like '" + playerName + "'")
@@ -153,7 +153,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     return gateway.executeUpdate(command)
   }
 
-  def addChainVote(name: String): Boolean {
+  def addChainVote(name: String): Boolean = {
     val calendar = Calendar.getInstance()
     val dateFormat = SimpleDateFormat("yyyy/MM/dd")
     val lastVote: String
@@ -266,7 +266,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   // anniversary変更
-  def setAnniversary(anniversary: Boolean, uuid: UUID?): Boolean {
+  def setAnniversary(anniversary: Boolean, uuid: UUID?): Boolean = {
     var command = s"UPDATE $tableReference SET anniversary = $anniversary"
     if (uuid != null) {
       command += s" WHERE uuid = '$uuid'"
@@ -350,7 +350,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def selectLeaversUUIDs(days: Int): List[UUID]? {
+  suspend def selectLeaversUUIDs(days: Int): List[UUID]? = {
     val command = s"select name, uuid from $tableReference " +
         s"where ((lastquit <= date_sub(curdate(), interval $days day)) " +
         "or (lastquit is null)) and (name != '') and (uuid != '')"
@@ -374,7 +374,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   //ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
-  private def successBlockRankingUpdate(): Boolean {
+  private def successBlockRankingUpdate(): Boolean = {
     val ranklist = ArrayList[RankData]()
     SeichiAssist.allplayerbreakblockint = 0
     val command = ("select name,level,totalbreaknum from " + tableReference
@@ -401,7 +401,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   //ランキング表示用にプレイ時間のカラムだけ全員分引っ張る
-  private def successPlayTickRankingUpdate(): Boolean {
+  private def successPlayTickRankingUpdate(): Boolean = {
     val ranklist = ArrayList[RankData]()
     val command = ("select name,playtick from " + tableReference
         + " order by playtick desc")
@@ -425,7 +425,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   //ランキング表示用に投票数のカラムだけ全員分引っ張る
-  private def successVoteRankingUpdate(): Boolean {
+  private def successVoteRankingUpdate(): Boolean = {
     val ranklist = ArrayList[RankData]()
     val command = ("select name,p_vote from " + tableReference
         + " order by p_vote desc")
@@ -449,7 +449,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   //ランキング表示用にプレミアムエフェクトポイントのカラムだけ全員分引っ張る
-  private def successPremiumEffectPointRanking(): Boolean {
+  private def successPremiumEffectPointRanking(): Boolean = {
     val ranklist = ArrayList[RankData]()
     val command = ("select name,premiumeffectpoint from " + tableReference
         + " order by premiumeffectpoint desc")
@@ -473,7 +473,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   //ランキング表示用に上げたりんご数のカラムだけ全員分引っ張る
-  private def successAppleNumberRankingUpdate(): Boolean {
+  private def successAppleNumberRankingUpdate(): Boolean = {
     val ranklist = ArrayList[RankData]()
     SeichiAssist.allplayergiveapplelong = 0
     val command = s"select name,p_apple from $tableReference order by p_apple desc"
@@ -502,7 +502,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
    * @return 成否…true: 成功、false: 失敗
    * TODO この処理はDB上と通信を行う為非同期にすべき
    */
-  def successRankingUpdate(): Boolean {
+  def successRankingUpdate(): Boolean = {
     if (!successBlockRankingUpdate()) return false
     if (!successPlayTickRankingUpdate()) return false
     if (!successVoteRankingUpdate()) return false
@@ -512,7 +512,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   //全員に詫びガチャの配布
-  def addAllPlayerBug(amount: Int): ActionStatus {
+  def addAllPlayerBug(amount: Int): ActionStatus = {
     val command = s"update $tableReference set numofsorryforbug = numofsorryforbug + $amount"
     return gateway.executeUpdate(command)
   }
@@ -534,8 +534,8 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def inquireLastQuitOf(playerName: String): TargetedEffect[CommandSender] {
-    suspend def fetchLastQuitData(): String? {
+  suspend def inquireLastQuitOf(playerName: String): TargetedEffect[CommandSender] = {
+    suspend def fetchLastQuitData(): String? = {
       val command = s"select lastquit from $tableReference where playerName = '$playerName'"
       try {
         gateway.executeQuery(command).use { lrs =>
@@ -561,7 +561,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         }
   }
 
-  def loadPlayerData(playerUUID: UUID, playerName: String): PlayerData {
+  def loadPlayerData(playerUUID: UUID, playerName: String): PlayerData = {
     val databaseGateway = SeichiAssist.databaseGateway
     val table = DatabaseConstants.PLAYERDATA_TABLENAME
     val db = SeichiAssist.seichiAssistConfig.db

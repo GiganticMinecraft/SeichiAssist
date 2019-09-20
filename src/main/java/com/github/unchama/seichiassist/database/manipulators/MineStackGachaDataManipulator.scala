@@ -8,7 +8,7 @@ class MineStackGachaDataManipulator(private val gateway: DatabaseGateway) {
     get() = gateway.databaseName + "." + DatabaseConstants.MINESTACK_GACHADATA_TABLENAME
 
   //MineStack用ガチャデータロード
-  def loadMineStackGachaData(): Boolean {
+  def loadMineStackGachaData(): Boolean = {
     val gachadatalist = ArrayList[MineStackGachaData]()
 
     val command = s"select * from $tableReference"
@@ -40,7 +40,7 @@ class MineStackGachaDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   //MineStack用ガチャデータセーブ
-  def saveMineStackGachaData(): Boolean {
+  def saveMineStackGachaData(): Boolean = {
 
 
     //まずmysqlのガチャテーブルを初期化(中身全削除)

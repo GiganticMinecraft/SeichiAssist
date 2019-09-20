@@ -17,7 +17,7 @@ object Util {
   }
 
   //スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
-  def isSkillEnable(player: Player): Boolean {
+  def isSkillEnable(player: Player): Boolean = {
     val seichiWorldPrefix = if (SeichiAssist.DEBUG) SeichiAssist.DEBUGWORLDNAME else SeichiAssist.SEICHIWORLDNAME
 
     // 整地ワールドzeroではスキル発動不可
@@ -38,7 +38,7 @@ object Util {
    *
    */
   @Deprecated("use ManagedWorld")
-  def isSeichiWorld(player: Player): Boolean {
+  def isSeichiWorld(player: Player): Boolean = {
     //デバッグモード時は全ワールドtrue(DEBUGWORLDNAME = worldの場合)
     var worldname = SeichiAssist.SEICHIWORLDNAME
     if (SeichiAssist.DEBUG) {
@@ -51,7 +51,7 @@ object Util {
   }
 
   //ガチャ券アイテムスタック型の取得
-  def getskull(name: String): ItemStack {
+  def getskull(name: String): ItemStack = {
     val skull: ItemStack
     val skullmeta: SkullMeta
     skull = ItemStack(Material.SKULL_ITEM, 1)
@@ -66,7 +66,7 @@ object Util {
   }
 
   //プレイヤーのインベントリがフルかどうか確認
-  def isPlayerInventoryFull(player: Player): Boolean {
+  def isPlayerInventoryFull(player: Player): Boolean = {
     return player.inventory.firstEmpty() == -1
   }
 
@@ -138,7 +138,7 @@ object Util {
     }
   }
 
-  def getEnchantName(vaname: String, enchlevel: Int): String {
+  def getEnchantName(vaname: String, enchlevel: Int): String = {
     when (vaname) {
       "PROTECTION_ENVIRONMENTAL" => return "ダメージ軽減" + " " + getEnchantLevelRome(enchlevel)
 
@@ -198,7 +198,7 @@ object Util {
     }
   }
 
-  private def getEnchantLevelRome(enchantlevel: Int): String {
+  private def getEnchantLevelRome(enchantlevel: Int): String = {
     when (enchantlevel) {
       1 => return "Ⅰ"
 
@@ -225,7 +225,7 @@ object Util {
 
   }
 
-  def getDescFormat(list: List[String]): String {
+  def getDescFormat(list: List[String]): String = {
     return " " + list.joinToString("\n") + "\n"
   }
 
@@ -245,7 +245,7 @@ object Util {
     }
   }
 
-  def getName(name: String): String {
+  def getName(name: String): String = {
     //小文字にしてるだけだよ
     return name.toLowerCase()
   }
@@ -285,7 +285,7 @@ object Util {
   }
 
   //カラーをランダムで決める
-  def getRandomColors(length: Int): Array[Color] {
+  def getRandomColors(length: Int): Array[Color] = {
     // 配列を作る
     val rand = Random()
     // 配列の要素を順に処理していく
@@ -296,7 +296,7 @@ object Util {
   }
 
   //ガチャアイテムを含んでいるか調べる
-  def containsGachaTicket(player: Player): Boolean {
+  def containsGachaTicket(player: Player): Boolean = {
     val inventory = player.inventory.storageContents
     var material: Material
     var skullmeta: SkullMeta
@@ -320,14 +320,14 @@ object Util {
    * @param find 探す文字列
    * @return 見つかった場合はその添字、見つからなかった場合は-1
    */
-  def loreIndexOf(lore: List[String], find: String): Int {
+  def loreIndexOf(lore: List[String], find: String): Int = {
     return IntStream.range(0, lore.size)
         .filter { i => lore[i].contains(find) }
         .findFirst()
         .orElse(-1)
   }
 
-  def isGachaTicket(itemstack: ItemStack): Boolean {
+  def isGachaTicket(itemstack: ItemStack): Boolean = {
     if (itemstack.type != Material.SKULL_ITEM) {
       return false
     }
@@ -341,7 +341,7 @@ object Util {
   }
 
   def removeItemfromPlayerInventory(inventory: PlayerInventory,
-                                    itemstack: ItemStack, count: Int): Boolean {
+                                    itemstack: ItemStack, count: Int): Boolean = {
     //持っているアイテムを減らす処理
     if (itemstack.amount == count) {
       // アイテムをcount個使うので、プレイヤーの手を素手にする
@@ -354,7 +354,7 @@ object Util {
     return true
   }
 
-  def getForBugskull(name: String): ItemStack {
+  def getForBugskull(name: String): ItemStack = {
     val skull: ItemStack
     val skullmeta: SkullMeta
     skull = ItemStack(Material.SKULL_ITEM, 1)
@@ -368,7 +368,7 @@ object Util {
     return skull
   }
 
-  def getVoteskull(name: String): ItemStack {
+  def getVoteskull(name: String): ItemStack = {
     val skull: ItemStack
     val skullmeta: SkullMeta
     skull = ItemStack(Material.SKULL_ITEM, 1)
@@ -382,7 +382,7 @@ object Util {
     return skull
   }
 
-  def getExchangeskull(name: String): ItemStack {
+  def getExchangeskull(name: String): ItemStack = {
     val skull: ItemStack
     val skullmeta: SkullMeta
     skull = ItemStack(Material.SKULL_ITEM, 1)
@@ -396,7 +396,7 @@ object Util {
     return skull
   }
 
-  def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean {
+  def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean = {
     val meta = itemstack.itemMeta
 
     val lore: List[String] = if (meta.hasLore()) {
@@ -431,7 +431,7 @@ object Util {
    * @return ItemStack型のメニューアイコン
    */
   def getMenuIcon(material: Material?, amount: Int,
-                  displayName: String?, lore: List[String]?, isHideFlags: Boolean): ItemStack {
+                  displayName: String?, lore: List[String]?, isHideFlags: Boolean): ItemStack = {
     if (material == null || displayName == null || lore == null) {
       throw IllegalArgumentException("Material,DisplayName,LoreにNullは指定できません。")
     }
@@ -461,7 +461,7 @@ object Util {
    * @return ItemStack型のメニューアイコン
    */
   def getMenuIcon(material: Material?, amount: Int, durabity: Int,
-                  displayName: String?, lore: List[String]?, isHideFlags: Boolean): ItemStack {
+                  displayName: String?, lore: List[String]?, isHideFlags: Boolean): ItemStack = {
     if (material == null || displayName == null || lore == null) {
       throw IllegalArgumentException("Material,DisplayName,LoreにNullは指定できません。")
     }
@@ -497,7 +497,7 @@ object Util {
     WEST
   }
 
-  def getPlayerDirection(player: Player): Direction? {
+  def getPlayerDirection(player: Player): Direction? = {
     var rotation = ((player.location.yaw + 180) % 360).toDouble()
 
     if (rotation < 0) {
@@ -525,19 +525,19 @@ object Util {
     return null
   }
 
-  def showTime(cal: Calendar): String {
+  def showTime(cal: Calendar): String = {
     val date = cal.time
     val format = SimpleDateFormat("yyyy/MM/dd HH:mm")
     return format.format(date)
   }
 
-  def showHour(cal: Calendar): String {
+  def showHour(cal: Calendar): String = {
     val date = cal.time
     val format = SimpleDateFormat("HH:mm")
     return format.format(date)
   }
 
-  def getTimeZone(cal: Calendar): String {
+  def getTimeZone(cal: Calendar): String = {
     val date = cal.time
     val format = SimpleDateFormat("HH")
     val n = TypeConverter.toInt(format.format(date))
@@ -549,7 +549,7 @@ object Util {
       "night"
   }
 
-  def isVotingFairyPeriod(start: Calendar, end: Calendar): Boolean {
+  def isVotingFairyPeriod(start: Calendar, end: Calendar): Boolean = {
     val cur = Calendar.getInstance()
     return cur.after(start) && cur.before(end)
   }
@@ -570,13 +570,13 @@ object Util {
    */
   // TODO これはここにあるべきではない
   @Deprecated("")
-  def findMineStackObjectByName(name: String): MineStackObj? {
+  def findMineStackObjectByName(name: String): MineStackObj? = {
     return MineStackObjectList.minestacklist!!.stream()
         .filter { obj => name == obj.mineStackObjName }
         .findFirst().orElse(null)
   }
 
-  def isEnemy(type: EntityType): Boolean {
+  def isEnemy(type: EntityType): Boolean = {
     when (type) {
       //通常世界MOB
       EntityType.CAVE_SPIDER => return true
@@ -602,11 +602,11 @@ object Util {
     }
   }
 
-  def isMineHeadItem(itemstack: ItemStack): Boolean {
+  def isMineHeadItem(itemstack: ItemStack): Boolean = {
     return itemstack.type == Material.CARROT_STICK && loreIndexOf(itemstack.itemMeta.lore, "頭を狩り取る形をしている...") >= 0
   }
 
-  def getSkullDataFromBlock(block: Block): ItemStack {
+  def getSkullDataFromBlock(block: Block): ItemStack = {
     //ブロックがskullじゃない場合石でも返しとく
     if (block.type != Material.SKULL) {
       return ItemStack(Material.STONE)
@@ -639,7 +639,7 @@ object Util {
     return itemStack
   }
 
-  def isLimitedTitanItem(itemstack: ItemStack): Boolean {
+  def isLimitedTitanItem(itemstack: ItemStack): Boolean = {
     return itemstack.type == Material.DIAMOND_AXE && loreIndexOf(itemstack.itemMeta.lore, "特別なタイタンをあなたに♡") >= 0
   }
 

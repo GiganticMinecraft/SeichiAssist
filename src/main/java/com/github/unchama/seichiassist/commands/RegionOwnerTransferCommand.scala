@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 
 object RegionOwnerTransferCommand {
   @Suppress("RedundantSuspendModifier")
-  private suspend def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): TargetedEffect[Player] {
+  private suspend def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): TargetedEffect[Player] = {
     val owners = region.owners
 
     if (!owners.contains(donner.uniqueId)) {

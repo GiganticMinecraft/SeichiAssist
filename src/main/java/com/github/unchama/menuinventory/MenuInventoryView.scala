@@ -11,7 +11,7 @@ package com.github.unchama.menuinventory
 case class MenuInventoryView(private val size: InventorySize,
                              private val title: String,
                              internal val slotLayout: IndexedSlotLayout = IndexedSlotLayout()) {
-  internal def createConfiguredInventory(holder: InventoryHolder): Inventory {
+  internal def createConfiguredInventory(holder: InventoryHolder): Inventory = {
     return runBlocking {
       createInventory(holder, size, title).also {
         slotLayout.asynchronouslySetItemsOn(it)

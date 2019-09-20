@@ -14,7 +14,7 @@ enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, 
 
   internal var plugin = SeichiAssist.instance
 
-  def getsqlName(): String {
+  def getsqlName(): String = {
     return this.sql_name
   }
 

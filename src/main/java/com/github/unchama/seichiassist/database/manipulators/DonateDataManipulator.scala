@@ -14,7 +14,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
     get() = gateway.databaseName + "." + DatabaseConstants.DONATEDATA_TABLENAME
 
   def addPremiumEffectBuy(playerdata: PlayerData,
-                          effect: ActiveSkillPremiumEffect): ActionStatus {
+                          effect: ActiveSkillPremiumEffect): ActionStatus = {
     val command = ("insert into " + tableReference
         + " (playername,playeruuid,effectnum,effectname,usepoint,date) "
         + "value("
@@ -29,7 +29,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
     return gateway.executeUpdate(command)
   }
 
-  def addDonate(name: String, point: Int): ActionStatus {
+  def addDonate(name: String, point: Int): ActionStatus = {
     val command = ("insert into " + tableReference
         + " (playername,getpoint,date) "
         + "value("
@@ -40,7 +40,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
     return gateway.executeUpdate(command)
   }
 
-  def loadDonateData(playerdata: PlayerData, inventory: Inventory): Boolean {
+  def loadDonateData(playerdata: PlayerData, inventory: Inventory): Boolean = {
     var itemstack: ItemStack
     var itemmeta: ItemMeta
     var material: Material

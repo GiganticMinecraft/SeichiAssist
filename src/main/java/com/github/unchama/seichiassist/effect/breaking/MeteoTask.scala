@@ -44,7 +44,7 @@ class MeteoTask(
     }
   }
 
-  private def relativeAverage(i1: Int, i2: Int): Double {
+  private def relativeAverage(i1: Int, i2: Int): Double = {
     return (i1 + (i2 - i1) / 2).toDouble()
   }
 }

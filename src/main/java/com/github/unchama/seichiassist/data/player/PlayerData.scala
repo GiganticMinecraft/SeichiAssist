@@ -460,7 +460,7 @@ class PlayerData(
   }
 
   //総破壊ブロック数を更新する
-  def updateAndCalcMinedBlockAmount(): Int {
+  def updateAndCalcMinedBlockAmount(): Int = {
     var sum = 0.0
     for ((i, m) in (MaterialSets.materials - exclude).withIndex()) {
       val materialStatistics = player.getStatistic(Statistic.MINE_BLOCK, m)
@@ -485,7 +485,7 @@ class PlayerData(
   }
 
   //ブロック別整地数反映量の調節
-  private def calcBlockExp(m: Material, i: Int): Double {
+  private def calcBlockExp(m: Material, i: Int): Double = {
     val amount = i.toDouble()
     //ブロック別重み分け
     val matMult = when (m) {
@@ -507,7 +507,7 @@ class PlayerData(
   }
 
   //現在の採掘量順位
-  def calcPlayerRank(): Int {
+  def calcPlayerRank(): Int = {
     //ランク用関数
     var i = 0
     val t = totalbreaknum
@@ -523,7 +523,7 @@ class PlayerData(
     return i + 1
   }
 
-  def calcPlayerApple(): Int {
+  def calcPlayerApple(): Int = {
     //ランク用関数
     var i = 0
     val t = p_apple
@@ -540,7 +540,7 @@ class PlayerData(
   }
 
   //パッシブスキルの獲得量表示
-  def getPassiveExp(): Double {
+  def getPassiveExp(): Double = {
     return when {
       level < 8 => 0.0
       level < 18 => SeichiAssist.seichiAssistConfig.getDropExplevel(1)
@@ -576,12 +576,12 @@ class PlayerData(
   }
 
   // サブホームの位置を読み込む
-  def getSubHomeLocation(subHomeIndex: Int): Location? {
+  def getSubHomeLocation(subHomeIndex: Int): Location? = {
     val subHome = this.subHomeMap[subHomeIndex]
     return subHome?.location
   }
 
-  def getSubHomeName(subHomeIndex: Int): String {
+  def getSubHomeName(subHomeIndex: Int): String = {
     val subHome = this.subHomeMap[subHomeIndex]
     val subHomeName = subHome?.name
     return subHomeName ?: s"サブホームポイント${subHomeIndex + 1}"
@@ -608,11 +608,11 @@ class PlayerData(
     expmanager.setExp(totalexp)
   }
 
-  def canBreakHalfBlock(): Boolean {
+  def canBreakHalfBlock(): Boolean = {
     return this.allowBreakingHalfBlocks
   }
 
-  def canGridExtend(directionType: DirectionType, world: String): Boolean {
+  def canGridExtend(directionType: DirectionType, world: String): Boolean = {
     val limit = config.getGridLimitPerWorld(world)
     val chunkMap = unitMap
 
@@ -637,7 +637,7 @@ class PlayerData(
 
   }
 
-  def canGridReduce(directionType: DirectionType): Boolean {
+  def canGridReduce(directionType: DirectionType): Boolean = {
     val chunkMap = unitMap
 
     //減らしたと仮定する
@@ -672,7 +672,7 @@ class PlayerData(
   }
 
   @AntiTypesafe
-  def getVotingFairyStartTimeAsString(): String {
+  def getVotingFairyStartTimeAsString(): String = {
     val cal = this.votingFairyStartTime
     return if (votingFairyStartTime == dummyDate) {
       //設定されてない場合
@@ -739,7 +739,7 @@ class PlayerData(
   }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def toggleMessageFlag(): TargetedEffect[Player] {
+  suspend def toggleMessageFlag(): TargetedEffect[Player] = {
     settings.receiveFastDiggingEffectStats = !settings.receiveFastDiggingEffectStats
 
     val responseMessage = if (settings.receiveFastDiggingEffectStats) {
@@ -789,7 +789,7 @@ class PlayerData(
   /**
    * プレーヤーに付与されるべき採掘速度上昇効果を適用する[TargetedEffect].
    */
-  suspend def computeFastDiggingEffect(): TargetedEffect[Player] {
+  suspend def computeFastDiggingEffect(): TargetedEffect[Player] = {
     val activeEffects = effectdatalist.toList()
 
     val amplifierSum = activeEffects.map { it.amplifier }.sum()

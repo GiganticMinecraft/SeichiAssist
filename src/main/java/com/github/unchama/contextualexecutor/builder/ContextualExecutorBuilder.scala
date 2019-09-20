@@ -59,7 +59,7 @@ case class ContextualExecutorBuilder[CS  <: CommandSender](
    * 失敗したら[errorMessageOnFail]が返るような[senderTypeValidation]が入った
    * 新しい[ContextualExecutorBuilder]
    */
-  inline def refineSender[reified CS1  <: CS](errorMessageOnFail: TargetedEffect[CS]): ContextualExecutorBuilder[CS1] {
+  inline def refineSender[reified CS1  <: CS](errorMessageOnFail: TargetedEffect[CS]): ContextualExecutorBuilder[CS1] = {
     val newSenderTypeValidation: SenderTypeValidation[CS1] = { sender =>
       senderTypeValidation(sender).flatMap { refined1 =>
         if (refined1 is CS1) {

@@ -7,9 +7,9 @@ import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
 internal object MineStackButtons {
-  private def withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect[Player] {
+  private def withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect[Player] = {
     def ItemStack.withAmount(amount: Int): ItemStack = clone().apply { this.amount = amount }
-    def MineStackObj.generateParameterizedStack(player: Player): ItemStack {
+    def MineStackObj.generateParameterizedStack(player: Player): ItemStack = {
       // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
       if (this.stackType == MineStackObjectCategory.GACHA_PRIZES && this.gachaType >= 0) {
         val gachaData = SeichiAssist.msgachadatalist[this.gachaType]

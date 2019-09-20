@@ -239,7 +239,7 @@ object PlayerDataSaving {
       stmt.executeUpdate(command)
     }
 
-    def executeUpdate(): ActionStatus {
+    def executeUpdate(): ActionStatus = {
       try {
       //sqlコネクションチェック
       databaseGateway.ensureConnection()

@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack
 object BreakUtil {
 
   //他のプラグインの影響があってもブロックを破壊できるのか
-  def canBreak(player: Player, breakblock: Block?): Boolean {
+  def canBreak(player: Player, breakblock: Block?): Boolean = {
     if (!player.isOnline || breakblock == null) {
       return false
     }
@@ -61,7 +61,7 @@ object BreakUtil {
     return true
   }
 
-  private def equalsIgnoreNameCaseWorld(name: String): Boolean {
+  private def equalsIgnoreNameCaseWorld(name: String): Boolean = {
     val world = ManagedWorld.fromName(name)
 
     return world != null && world.shouldMuteCoreProtect
@@ -117,7 +117,7 @@ object BreakUtil {
 
   }
 
-  def addItemToMineStack(player: Player, itemstack: ItemStack): Boolean {
+  def addItemToMineStack(player: Player, itemstack: ItemStack): Boolean = {
     //もしサバイバルでなければ処理を終了
     if (player.gameMode != GameMode.SURVIVAL) return false
 
@@ -183,7 +183,7 @@ object BreakUtil {
     return false
   }
 
-  def dropItemOnTool(breakblock: Block, tool: ItemStack): ItemStack? {
+  def dropItemOnTool(breakblock: Block, tool: ItemStack): ItemStack? = {
     var dropitem: ItemStack? = null
     val dropmaterial: Material
     val breakmaterial = breakblock.type
@@ -334,7 +334,7 @@ object BreakUtil {
     return dropitem
   }
 
-  def calcManaDrop(playerdata: PlayerData): Double {
+  def calcManaDrop(playerdata: PlayerData): Double = {
     //０～１のランダムな値を取得
     val rand = Math.random()
     //10%の確率で経験値付与
@@ -369,7 +369,7 @@ object BreakUtil {
   }
 
   //num回だけ耐久を減らす処理
-  def calcDurability(enchantmentLevel: Int, num: Int): Short {
+  def calcDurability(enchantmentLevel: Int, num: Int): Short = {
     val rand = Random()
     val probability = 1.0 / (enchantmentLevel + 1.0)
 
@@ -378,7 +378,7 @@ object BreakUtil {
         .count().toShort()
   }
 
-  def getCardinalDirection(entity: Entity): String? {
+  def getCardinalDirection(entity: Entity): String? = {
     var rotation = ((entity.location.yaw + 180) % 360).toDouble()
     val loc = entity.location
     val pitch = loc.pitch
@@ -405,7 +405,7 @@ object BreakUtil {
     }
   }
 
-  def BlockEqualsMaterialList(block: Block): Boolean {
+  def BlockEqualsMaterialList(block: Block): Boolean = {
     return MaterialSets.materials.contains(block.type)
   }
 
@@ -416,7 +416,7 @@ object BreakUtil {
    * false:	アクティブスキルまたは手動による破壊
    * @return 重力値（破壊範囲の上に積まれているブロック数）
    */
-  def getGravity(player: Player, block: Block, isAssault: Boolean): Int {
+  def getGravity(player: Player, block: Block, isAssault: Boolean): Int = {
     /** OPENHEIGHTマス以上のtransparentmateriallistブロックの連続により、地上判定とする。  */
     val OPENHEIGHT = 3
 
@@ -524,7 +524,7 @@ object BreakUtil {
     return gravity
   }
 
-  def logRemove(player: Player, removedBlock: Block): Boolean {
+  def logRemove(player: Player, removedBlock: Block): Boolean = {
     val wrapper = ExternalPlugins.getCoreProtectWrapper()
     if (wrapper == null) {
       player.sendMessage(ChatColor.RED.toString() + "error:coreprotectに保存できませんでした。管理者に報告してください。")

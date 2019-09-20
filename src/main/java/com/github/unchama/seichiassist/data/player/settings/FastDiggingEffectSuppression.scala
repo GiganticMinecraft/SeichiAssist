@@ -20,7 +20,7 @@ class FastDiggingEffectSuppression {
       }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def currentStatus(): String {
+  suspend def currentStatus(): String = {
     return s"${ChatColor.RESET}" + when (internalValue) {
       0 => s"${ChatColor.GREEN}現在有効です(無制限)"
       1 => s"${ChatColor.GREEN}現在有効です${ChatColor.YELLOW}(127制限)"
@@ -32,7 +32,7 @@ class FastDiggingEffectSuppression {
   }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def nextToggledStatus(): String {
+  suspend def nextToggledStatus(): String = {
     return when (internalValue) {
       0 => "127制限"
       1 => "200制限"

@@ -13,7 +13,7 @@ class MineStackGachaData(val objName: String,
   val itemStack: ItemStack = itemStack.clone()
 
   @Deprecated("ここをなんのデータクラスだと思っているんだ")
-  def itemStackEquals(another: ItemStack): Boolean {
+  def itemStackEquals(another: ItemStack): Boolean = {
     val crt = itemStack.itemMeta
     val ant = another.itemMeta
     val lore = crt.lore

@@ -250,7 +250,7 @@ object SeichiAssist {
   //プレイヤーがスキルで破壊するブロックリスト
   val allblocklist: MutableList[Block] = LinkedList()
 
-  private def generateGachaPrizes(): List[MineStackObj] {
+  private def generateGachaPrizes(): List[MineStackObj] = {
     val minestacklist = ArrayList[MineStackObj]()
     for (i in msgachadatalist.indices) {
     val g = msgachadatalist[i]

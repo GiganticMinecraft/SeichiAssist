@@ -151,7 +151,7 @@ object MenuInventoryData {
   }
 
   //ブロックを並べる設定メニュー
-  def getBlockLineUpData(p: Player): Inventory {
+  def getBlockLineUpData(p: Player): Inventory = {
     //プレイヤーを取得
     val player = p.player
     //UUID取得
@@ -230,7 +230,7 @@ object MenuInventoryData {
 
 
   //MineStackブロック一括クラフトメニュー
-  def getBlockCraftData(p: Player): Inventory {
+  def getBlockCraftData(p: Player): Inventory = {
     //プレイヤーを取得
     val player = p.player
     //UUID取得
@@ -394,7 +394,7 @@ object MenuInventoryData {
   }
 
   //MineStackブロック一括クラフトメニュー2
-  def getBlockCraftData2(p: Player): Inventory {
+  def getBlockCraftData2(p: Player): Inventory = {
     //プレイヤーを取得
     val player = p.player
     //UUID取得
@@ -591,7 +591,7 @@ object MenuInventoryData {
   }
 
   //MineStackブロック一括クラフトメニュー3
-  def getBlockCraftData3(p: Player): Inventory {
+  def getBlockCraftData3(p: Player): Inventory = {
     //プレイヤーを取得
     val player = p.player
     //UUID取得
@@ -652,7 +652,7 @@ object MenuInventoryData {
     return inventory
   }
 
-  private def comma(i: Long): String {
+  private def comma(i: Long): String = {
     return NumberFormat.getNumberInstance(Locale.US).format(i)
   }
 }

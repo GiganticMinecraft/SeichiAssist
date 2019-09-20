@@ -13,7 +13,7 @@ case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
   /**
    * クリックされた枠に対応した[Slot]が[InventoryClickEvent]に基づいて引き起こす作用を計算する.
    */
-  internal def computeAsyncEffectOn(event: InventoryClickEvent): TargetedEffect[Player] {
+  internal def computeAsyncEffectOn(event: InventoryClickEvent): TargetedEffect[Player] = {
     return map[event.slot]?.effectOn(event) ?: EmptyEffect
   }
 

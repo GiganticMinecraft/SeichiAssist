@@ -14,7 +14,7 @@ object ShareInvCommand {
     }
   }
 
-  private suspend def withdrawFromSharedInventory(player: Player): TargetedEffect[Player] {
+  private suspend def withdrawFromSharedInventory(player: Player): TargetedEffect[Player] = {
     val playerData = SeichiAssist.playermap[player.uniqueId]!!
     val databaseGateway = SeichiAssist.databaseGateway
 
@@ -42,7 +42,7 @@ object ShareInvCommand {
     return s"${ChatColor.GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。".asMessageEffect()
   }
 
-  private suspend def depositToSharedInventory(player: Player): TargetedEffect[Player] {
+  private suspend def depositToSharedInventory(player: Player): TargetedEffect[Player] = {
     val playerData = SeichiAssist.playermap[player.uniqueId]!!
     val databaseGateway = SeichiAssist.databaseGateway
 

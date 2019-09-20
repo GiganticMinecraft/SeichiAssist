@@ -9,7 +9,7 @@ class ExpBarSynchronization {
 
   private val managedExpBars: MutableMap[Player, BossBar] = HashMap()
 
-  private def computePropertiesFor(player: Player): ExpBarProperties {
+  private def computePropertiesFor(player: Player): ExpBarProperties = {
     val playerData = SeichiAssist.playermap[player.uniqueId]!!
     val playerLevel = playerData.level
 

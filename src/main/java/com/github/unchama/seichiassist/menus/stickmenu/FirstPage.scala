@@ -385,7 +385,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeRegionMenuButton(): Button {
+    suspend def Player.computeRegionMenuButton(): Button = {
       val buttonLore = run {
         val worldGuardPlugin = ExternalPlugins.getWorldGuard()
         val regionManager = worldGuardPlugin.getRegionManager(world)
@@ -414,7 +414,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeMineStackButton(): Button {
+    suspend def Player.computeMineStackButton(): Button = {
       val openerData = SeichiAssist.playermap[uniqueId]!!
 
       val minimumLevelRequired = SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
@@ -458,7 +458,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computePocketOpenButton(): Button {
+    suspend def Player.computePocketOpenButton(): Button = {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
       val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
@@ -499,7 +499,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeEnderChestButton(): Button {
+    suspend def Player.computeEnderChestButton(): Button = {
       val playerData = SeichiAssist.playermap[uniqueId]!!
       val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
 
@@ -587,7 +587,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeStarLevelStatsButton(): Button {
+    suspend def Player.computeStarLevelStatsButton(): Button = {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
       val iconItemStack = run {
@@ -609,7 +609,7 @@ private object FirstPage extends Menu {
       return Button(iconItemStack)
     }
 
-    suspend def Player.computeActiveSkillButton(): Button {
+    suspend def Player.computeActiveSkillButton(): Button = {
       val iconItemStack = run {
         val lore =
             if (Util.isSkillEnable(this))
