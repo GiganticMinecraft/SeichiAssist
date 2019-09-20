@@ -1,15 +1,15 @@
 package com.github.unchama.contextualexecutor.builder
 
 object TypeAliases {
-  typealias Result[Error, Success] = Either[Error, Success]
+  type Result[Error, Success] = Either[Error, Success]
 
-  typealias ResponseEffectOrResult[CS, T] = Result[TargetedEffect[CS], T]
+  type ResponseEffectOrResult[CS, T] = Result[TargetedEffect[CS], T]
 
-  typealias SingleArgumentParser = (String) => ResponseEffectOrResult[CommandSender, Any]
+  type SingleArgumentParser = (String) => ResponseEffectOrResult[CommandSender, Any]
 
-  typealias SenderTypeValidation[CS] = suspend (CommandSender) => Option[CS]
+  type SenderTypeValidation[CS] = suspend (CommandSender) => Option[CS]
 
-  typealias CommandArgumentsParser[CS] = suspend (CS, RawCommandContext) => Option[PartiallyParsedArgs]
+  type CommandArgumentsParser[CS] = suspend (CS, RawCommandContext) => Option[PartiallyParsedArgs]
 
-  typealias ScopedContextualExecution[CS] = suspend (ParsedArgCommandContext[CS]) => TargetedEffect[CS]
+  type ScopedContextualExecution[CS] = suspend (ParsedArgCommandContext[CS]) => TargetedEffect[CS]
 }
