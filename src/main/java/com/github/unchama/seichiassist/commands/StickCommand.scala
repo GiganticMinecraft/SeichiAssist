@@ -7,7 +7,7 @@ import org.bukkit.{Material, Sound}
 
 object StickCommand {
   val executor = playerCommandBuilder
-      .execution { context ->
+      .execution { context =>
         val sender = context.sender
         val stickItemStack = ItemStack(Material.STICK, 1)
 

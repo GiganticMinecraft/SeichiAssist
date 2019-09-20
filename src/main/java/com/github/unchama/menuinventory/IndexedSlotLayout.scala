@@ -3,17 +3,17 @@ package com.github.unchama.menuinventory
 /**
  * どのインデックスがどの[Slot]と関連付けられているかの情報を持つ[Map]のラッパークラス.
  */
-case class IndexedSlotLayout(private val map: Map<Int, Slot>) {
+case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
   def this(): this(mapOf())
 
-  def this(vararg mappings: Pair<Int, Slot>): this(mapOf(*mappings))
+  def this(vararg mappings: Pair[Int, Slot]): this(mapOf(*mappings))
 
-  def this(mapping: Iterable<IndexedValue<Slot>>): this(mapping.toMap())
+  def this(mapping: Iterable[IndexedValue[Slot]]): this(mapping.toMap())
 
   /**
    * クリックされた枠に対応した[Slot]が[InventoryClickEvent]に基づいて引き起こす作用を計算する.
    */
-  internal def computeAsyncEffectOn(event: InventoryClickEvent): TargetedEffect<Player> {
+  internal def computeAsyncEffectOn(event: InventoryClickEvent): TargetedEffect[Player] {
     return map[event.slot]?.effectOn(event) ?: EmptyEffect
   }
 
@@ -42,12 +42,12 @@ case class IndexedSlotLayout(private val map: Map<Int, Slot>) {
   /**
    * [slotReplacement]でレイアウトの一箇所を置き換えた新しいレイアウトを計算する.
    */
-  internal def altered(slotReplacement: Pair<Int, Slot>) = copy(map = map + slotReplacement)
+  internal def altered(slotReplacement: Pair[Int, Slot]) = copy(map = map + slotReplacement)
 }
 
 val emptyLayout = IndexedSlotLayout()
 
-inline def singleSlotLayout(indexedSlot: () -> Pair<Int, Slot>): IndexedSlotLayout = IndexedSlotLayout(indexedSlot())
+inline def singleSlotLayout(indexedSlot: () => Pair[Int, Slot]): IndexedSlotLayout = IndexedSlotLayout(indexedSlot())
 
 def combinedLayout(vararg layouts: IndexedSlotLayout): IndexedSlotLayout =
-    layouts.toList().fold(emptyLayout) { acc, layout -> acc.merge(layout) }
+    layouts.toList().fold(emptyLayout) { acc, layout => acc.merge(layout) }

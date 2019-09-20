@@ -3,10 +3,10 @@ package com.github.unchama.buildassist
 import java.util.{ArrayList, EnumSet, UUID}
 
 import com.github.unchama.buildassist.listener.{BlockPlaceEventListener, EntityListener, PlayerJoinListener, PlayerQuitListener}
-import org.bukkit.{Bukkit, Material}
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
+import org.bukkit.{Bukkit, Material}
 
 import scala.collection.mutable
 
@@ -30,7 +30,7 @@ class BuildAssist(plugin: Plugin) {
 
     //コマンドの登録
     commandlist = mutable.HashMap()
-    commandlist += "fly" -> new FlyCommand()
+    commandlist += "fly" => new FlyCommand()
 
     Bukkit.getServer().getPluginManager.registerEvents(new PlayerJoinListener(), plugin)
     Bukkit.getServer().getPluginManager.registerEvents(new EntityListener(), plugin)
@@ -47,7 +47,7 @@ class BuildAssist(plugin: Plugin) {
 
       playerdata.updateLevel(p)
 
-      BuildAssist.playermap += uuid -> playerdata
+      BuildAssist.playermap += uuid => playerdata
     }
     plugin.getLogger.info("BuildAssist is Enabled!")
 

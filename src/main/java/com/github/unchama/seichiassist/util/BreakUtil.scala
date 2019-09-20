@@ -145,7 +145,7 @@ object BreakUtil {
       itemstack.durability = 0.toShort()
     }
 
-    MineStackObjectList.minestacklist!!.forEach { mineStackObj ->
+    MineStackObjectList.minestacklist!!.forEach { mineStackObj =>
       def addToMineStackAfterLevelCheck(): Boolean =
           if (playerData.level < config.getMineStacklevel(mineStackObj.level)) {
             false
@@ -190,7 +190,7 @@ object BreakUtil {
     val fortunelevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
     val rand = Math.random()
     var bonus = (rand * (fortunelevel + 2) - 1).toInt()
-    if (bonus <= 1) {
+    if (bonus [= 1) {
       bonus = 1
     }
     var b = breakblock.data
@@ -199,93 +199,93 @@ object BreakUtil {
     b = b and 0x0F.toByte()
 
     val silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH)
-    if (silktouch > 0) {
+    if (silktouch ] 0) {
       //シルクタッチの処理
       when (breakmaterial) {
-        Material.GLOWING_REDSTONE_ORE -> {
+        Material.GLOWING_REDSTONE_ORE => {
           dropmaterial = Material.REDSTONE_ORE
           dropitem = ItemStack(dropmaterial)
         }
-        Material.LOG, Material.LOG_2, Material.LEAVES, Material.LEAVES_2 -> dropitem = ItemStack(breakmaterial, 1, b_tree.toShort())
-        Material.MONSTER_EGGS -> {
+        Material.LOG, Material.LOG_2, Material.LEAVES, Material.LEAVES_2 => dropitem = ItemStack(breakmaterial, 1, b_tree.toShort())
+        Material.MONSTER_EGGS => {
           dropmaterial = Material.STONE
           dropitem = ItemStack(dropmaterial)
         }
-        else -> dropitem = ItemStack(breakmaterial, 1, b.toShort())
+        else => dropitem = ItemStack(breakmaterial, 1, b.toShort())
       }
 
     } else if (fortunelevel > 0 && MaterialSets.luckMaterials.contains(breakmaterial)) {
       //幸運の処理
       when (breakmaterial) {
-        Material.COAL_ORE -> {
+        Material.COAL_ORE => {
           dropmaterial = Material.COAL
           dropitem = ItemStack(dropmaterial, bonus)
         }
-        Material.DIAMOND_ORE -> {
+        Material.DIAMOND_ORE => {
           dropmaterial = Material.DIAMOND
           dropitem = ItemStack(dropmaterial, bonus)
         }
-        Material.LAPIS_ORE -> {
+        Material.LAPIS_ORE => {
           val dye = Dye()
           dye.color = DyeColor.BLUE
 
           bonus *= (rand * 4 + 4).toInt()
           dropitem = dye.toItemStack(bonus)
         }
-        Material.EMERALD_ORE -> {
+        Material.EMERALD_ORE => {
           dropmaterial = Material.EMERALD
           dropitem = ItemStack(dropmaterial, bonus)
         }
-        Material.REDSTONE_ORE -> {
+        Material.REDSTONE_ORE => {
           dropmaterial = Material.REDSTONE
           bonus *= (rand + 4).toInt()
           dropitem = ItemStack(dropmaterial, bonus)
         }
-        Material.GLOWING_REDSTONE_ORE -> {
+        Material.GLOWING_REDSTONE_ORE => {
           dropmaterial = Material.REDSTONE
           bonus *= (rand + 4).toInt()
           dropitem = ItemStack(dropmaterial, bonus)
         }
-        Material.QUARTZ_ORE -> {
+        Material.QUARTZ_ORE => {
           dropmaterial = Material.QUARTZ
           dropitem = ItemStack(dropmaterial, bonus)
         }
-        else -> {
+        else => {
         }
       }
     } else {
       //シルク幸運なしの処理
       when (breakmaterial) {
-        Material.COAL_ORE -> {
+        Material.COAL_ORE => {
           dropmaterial = Material.COAL
           dropitem = ItemStack(dropmaterial)
         }
-        Material.DIAMOND_ORE -> {
+        Material.DIAMOND_ORE => {
           dropmaterial = Material.DIAMOND
           dropitem = ItemStack(dropmaterial)
         }
-        Material.LAPIS_ORE -> {
+        Material.LAPIS_ORE => {
           val dye = Dye()
           dye.color = DyeColor.BLUE
           dropitem = dye.toItemStack((rand * 4 + 4).toInt())
         }
-        Material.EMERALD_ORE -> {
+        Material.EMERALD_ORE => {
           dropmaterial = Material.EMERALD
           dropitem = ItemStack(dropmaterial)
         }
-        Material.REDSTONE_ORE -> {
+        Material.REDSTONE_ORE => {
           dropmaterial = Material.REDSTONE
           dropitem = ItemStack(dropmaterial, (rand + 4).toInt())
         }
-        Material.GLOWING_REDSTONE_ORE -> {
+        Material.GLOWING_REDSTONE_ORE => {
           dropmaterial = Material.REDSTONE
           dropitem = ItemStack(dropmaterial, (rand + 4).toInt())
         }
-        Material.QUARTZ_ORE -> {
+        Material.QUARTZ_ORE => {
           dropmaterial = Material.QUARTZ
           dropitem = ItemStack(dropmaterial)
         }
-        Material.STONE ->
+        Material.STONE =>
           //Material.STONEの処理
           if (breakblock.data.toInt() == 0x00) {
             //焼き石の処理
@@ -295,18 +295,18 @@ object BreakUtil {
             //他の石の処理
             dropitem = ItemStack(breakmaterial, 1, b.toShort())
           }
-        Material.GRASS -> {
+        Material.GRASS => {
           //芝生の処理
           dropmaterial = Material.DIRT
           dropitem = ItemStack(dropmaterial)
         }
-        Material.GRAVEL -> {
+        Material.GRAVEL => {
           val p: Double
           when (fortunelevel) {
-            1 -> p = 0.14
-            2 -> p = 0.25
-            3 -> p = 1.00
-            else -> p = 0.1
+            1 => p = 0.14
+            2 => p = 0.25
+            3 => p = 1.00
+            else => p = 0.1
           }
           if (p > rand) {
             dropmaterial = Material.FLINT
@@ -315,18 +315,18 @@ object BreakUtil {
           }
           dropitem = ItemStack(dropmaterial, bonus)
         }
-        Material.LEAVES, Material.LEAVES_2 -> dropitem = null
-        Material.CLAY -> {
+        Material.LEAVES, Material.LEAVES_2 => dropitem = null
+        Material.CLAY => {
           dropmaterial = Material.CLAY_BALL
           dropitem = ItemStack(dropmaterial, 4)
         }
-        Material.MONSTER_EGGS -> {
+        Material.MONSTER_EGGS => {
           val loc = breakblock.location
           breakblock.world.spawnEntity(loc, EntityType.SILVERFISH)
           dropitem = null
         }
-        Material.LOG, Material.LOG_2 -> dropitem = ItemStack(breakmaterial, 1, b_tree.toShort())
-        else ->
+        Material.LOG, Material.LOG_2 => dropitem = ItemStack(breakmaterial, 1, b_tree.toShort())
+        else =>
           //breakblcokのままのアイテムスタックを保存
           dropitem = ItemStack(breakmaterial, 1, b.toShort())
       }
@@ -374,7 +374,7 @@ object BreakUtil {
     val probability = 1.0 / (enchantmentLevel + 1.0)
 
     return IntStream.range(0, num)
-        .filter { i -> probability > rand.nextDouble() }
+        .filter { i => probability > rand.nextDouble() }
         .count().toShort()
   }
 
@@ -386,9 +386,9 @@ object BreakUtil {
       rotation += 360.0
     }
 
-    return if (pitch <= -30) {
+    return if (pitch [= -30) {
       "U"
-    } else if (pitch >= 25) {
+    } else if (pitch ]= 25) {
       "D"
     } else if (0 <= rotation && rotation < 45.0) {
       "N"

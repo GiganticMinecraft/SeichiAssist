@@ -8,6 +8,6 @@ trait Menu {
   /**
    * オブジェクトが表すメニューを[Player]に開かせる[TargetedEffect].
    */
-  val open: TargetedEffect<Player>
+  val open: TargetedEffect[Player]
 
 }

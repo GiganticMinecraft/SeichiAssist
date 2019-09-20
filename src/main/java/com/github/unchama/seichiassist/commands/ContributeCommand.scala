@@ -7,7 +7,7 @@ import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import org.bukkit.command.{CommandExecutor, CommandSender}
 
 object ContributeCommand {
-  private suspend def addContributionPoint(targetPlayerName: String, point: Int): TargetedEffect<CommandSender> =
+  private suspend def addContributionPoint(targetPlayerName: String, point: Int): TargetedEffect[CommandSender] =
       SeichiAssist.databaseGateway.playerDataManipulator
           .addContributionPoint(targetPlayerName, point)
           .map {
@@ -21,11 +21,11 @@ object ContributeCommand {
             operationResponse.asMessageEffect()
           }.merge()
 
-  private val helpMessage: TargetedEffect<CommandSender> = listOf(
+  private val helpMessage: TargetedEffect[CommandSender] = listOf(
       "${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
-      "${ChatColor.RED}/contribute add <プレイヤー名> <増加分ポイント>",
+      "${ChatColor.RED}/contribute add [プレイヤー名] [増加分ポイント]",
       "指定されたプレイヤーの貢献度ptを指定分増加させます",
-      "${ChatColor.RED}/contribute remove <プレイヤー名> <減少分ポイント>",
+      "${ChatColor.RED}/contribute remove [プレイヤー名] [減少分ポイント]",
       "指定されたプレイヤーの貢献度ptを指定分減少させます(入力ミス回避用)"
   ).asMessageEffect()
 
@@ -40,7 +40,7 @@ object ContributeCommand {
       ), onMissingArguments = printHelpExecutor)
 
   private val addPointExecutor: ContextualExecutor = parserConfiguredBuilder
-      .execution { context ->
+      .execution { context =>
         val targetPlayerName = context.args.parsed[0] as String
         val point = context.args.parsed[1] as Int
 
@@ -49,7 +49,7 @@ object ContributeCommand {
       .build()
 
   private val removePointExecutor: ContextualExecutor = parserConfiguredBuilder
-      .execution { context ->
+      .execution { context =>
         val targetPlayerName = context.args.parsed[0] as String
         val point = context.args.parsed[1] as Int
 

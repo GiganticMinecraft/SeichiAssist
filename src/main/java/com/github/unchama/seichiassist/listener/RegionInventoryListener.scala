@@ -241,22 +241,22 @@ object RegionInventoryListener {
     var end_loc: Location? = null
 
     when (direction) {
-      Util.Direction.NORTH -> {
+      Util.Direction.NORTH => {
         start_loc = Location(world, start_x - 15 * leftsideUnitAmount, 0.0, start_z - 15 * aheadUnitAmount)
         end_loc = Location(world, end_x + 15 * rightsideUnitAmount, 256.0, end_z + 15 * behindUnitAmount)
       }
 
-      Util.Direction.EAST -> {
+      Util.Direction.EAST => {
         start_loc = Location(world, start_x - 15 * behindUnitAmount, 0.0, start_z + 15 * leftsideUnitAmount)
         end_loc = Location(world, end_x + 15 * aheadUnitAmount, 256.0, end_z + 15 * rightsideUnitAmount)
       }
 
-      Util.Direction.SOUTH -> {
+      Util.Direction.SOUTH => {
         start_loc = Location(world, start_x - 15 * rightsideUnitAmount, 0.0, start_z - 15 * behindUnitAmount)
         end_loc = Location(world, end_x + 15 * leftsideUnitAmount, 256.0, end_z + 15 * aheadUnitAmount)
       }
 
-      Util.Direction.WEST -> {
+      Util.Direction.WEST => {
         start_loc = Location(world, start_x - 15 * aheadUnitAmount, 0.0, start_z - 15 * rightsideUnitAmount)
         end_loc = Location(world, end_x + 15 * behindUnitAmount, 256.0, end_z + 15 * leftsideUnitAmount)
       }
@@ -314,8 +314,8 @@ object RegionInventoryListener {
    * @param player 該当プレイヤー
    * @return x,z座標のMap
    */
-  def getNearlyUnitStart(player: Player): Map<String, Double> {
-    val result = HashMap<String, Double>()
+  def getNearlyUnitStart(player: Player): Map[String, Double] {
+    val result = HashMap[String, Double]()
 
     val player_x = player.location.blockX.toDouble()
     val player_z = player.location.blockZ.toDouble()
@@ -339,10 +339,10 @@ object RegionInventoryListener {
    * @param player 該当プレイヤー
    * @return x,z座標のMap
    */
-  def getNearlyUnitEnd(player: Player): Map<String, Double> {
+  def getNearlyUnitEnd(player: Player): Map[String, Double] {
     val startCoordinate = getNearlyUnitStart(player)
 
-    val resultMap = HashMap<String, Double>()
+    val resultMap = HashMap[String, Double]()
 
     resultMap["x"] = startCoordinate["x"]!! + 14.0
     resultMap["z"] = startCoordinate["z"]!! + 14.0

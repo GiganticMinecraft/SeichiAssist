@@ -84,7 +84,7 @@ object CategorizedMineStackMenu {
    * カテゴリ別マインスタックメニューで [pageIndex] + 1 ページ目の[Menu]
    */
   def forCategory(category: MineStackObjectCategory, pageIndex: Int = 0): Menu = object: Menu {
-    override val open: TargetedEffect<Player> = computedEffect { player ->
+    override val open: TargetedEffect[Player] = computedEffect { player =>
       val session = MenuInventoryView(
           6.rows(),
           "$DARK_BLUE${BOLD}MineStack(${category.uiLabel})"

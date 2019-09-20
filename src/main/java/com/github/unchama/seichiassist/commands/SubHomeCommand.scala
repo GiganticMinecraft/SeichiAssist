@@ -20,7 +20,7 @@ object SubHomeCommand {
   private val argsAndSenderConfiguredBuilder = playerCommandBuilder
       .argumentsParsers(
           listOf(
-              SeichiAssist.seichiAssistConfig.subHomeMax.let { subHomeMax ->
+              SeichiAssist.seichiAssistConfig.subHomeMax.let { subHomeMax =>
                 Parsers.closedRangeInt(
                     0, subHomeMax,
                     failureMessage = "サブホームの番号を1～${subHomeMax}の間で入力してください".asMessageEffect())
@@ -30,7 +30,7 @@ object SubHomeCommand {
       )
 
   private val warpExecutor = argsAndSenderConfiguredBuilder
-      .execution { context ->
+      .execution { context =>
         val subHomeId = context.args.parsed[0] as Int
         val player = context.sender
         val subHomeLocation = SeichiAssist.playermap[player.uniqueId]?.getSubHomeLocation(subHomeId - 1)
@@ -45,7 +45,7 @@ object SubHomeCommand {
       .build()
 
   private val setExecutor = argsAndSenderConfiguredBuilder
-      .execution { context ->
+      .execution { context =>
         val subHomeId = context.args.parsed[0] as Int
         val player = context.sender
         val playerData = SeichiAssist.playermap[player.uniqueId]!!
@@ -57,7 +57,7 @@ object SubHomeCommand {
       .build()
 
   private val nameExecutor = argsAndSenderConfiguredBuilder
-      .execution { context ->
+      .execution { context =>
         val subHomeId = context.args.parsed[0] as Int
         val player = context.sender
         val playerData = SeichiAssist.playermap[player.uniqueId]!!

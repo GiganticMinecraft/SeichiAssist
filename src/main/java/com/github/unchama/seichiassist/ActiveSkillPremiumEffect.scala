@@ -25,13 +25,13 @@ enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, 
           "com.github.unchama.seichiassist.effect.toXYZTuple",
           "com.github.unchama.seichiassist.effect.toXYZTuple")
   )
-  def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set<Block>, start: Coordinate, end: Coordinate, standard: Location) {
+  def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set[Block], start: Coordinate, end: Coordinate, standard: Location) {
     runBreakEffect(player, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard)
   }
 
-  def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set<Block>, start: XYZTuple, end: XYZTuple, standard: Location) {
+  def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set[Block], start: XYZTuple, end: XYZTuple, standard: Location) {
     when (this) {
-      MAGIC -> if (SeichiAssist.DEBUG) {
+      MAGIC => if (SeichiAssist.DEBUG) {
         MagicTask(player, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 100)
       } else {
         MagicTask(player, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 10)
@@ -42,7 +42,7 @@ enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, 
   //エフェクトの実行処理分岐
   def runArrowEffect(player: Player) {
     val effect = when (this) {
-      MAGIC -> ArrowEffects.singleArrowMagicEffect
+      MAGIC => ArrowEffects.singleArrowMagicEffect
     }
 
     GlobalScope.launch {
@@ -53,6 +53,6 @@ enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, 
 
 object ActiveSkillPremiumEffect {
   def fromSqlName(sqlName: String): ActiveSkillPremiumEffect = {
-    return values().find { effect -> sqlName == effect.sql_name }
+    return values().find { effect => sqlName == effect.sql_name }
   }
 }

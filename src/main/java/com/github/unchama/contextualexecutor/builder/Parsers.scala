@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender
 object Parsers {
   val identity: SingleArgumentParser = parser { succeedWith(it) }
 
-  def integer(failureMessage: TargetedEffect<CommandSender> = EmptyEffect): SingleArgumentParser = {
+  def integer(failureMessage: TargetedEffect[CommandSender] = EmptyEffect): SingleArgumentParser = {
     val parseResult = it.toIntOrNull()
 
     if (parseResult != null) succeedWith(parseResult) else failWith(failureMessage)
@@ -19,7 +19,7 @@ object Parsers {
    */
   def closedRangeInt(
       smallEnd: Int, largeEnd: Int,
-      failureMessage: TargetedEffect<CommandSender> = EmptyEffect): SingleArgumentParser = { arg ->
+      failureMessage: TargetedEffect[CommandSender] = EmptyEffect): SingleArgumentParser = { arg =>
     integer(failureMessage)(arg).flatMap {
       val parsed = it as Int
 
@@ -27,10 +27,10 @@ object Parsers {
     }
   }
 
-  def nonNegativeInteger(failureMessage: TargetedEffect<CommandSender> = EmptyEffect): SingleArgumentParser =
+  def nonNegativeInteger(failureMessage: TargetedEffect[CommandSender] = EmptyEffect): SingleArgumentParser =
       closedRangeInt(0, Int.MAX_VALUE, failureMessage)
 
-  def double(failureMessage: TargetedEffect<CommandSender> = EmptyEffect): SingleArgumentParser = {
+  def double(failureMessage: TargetedEffect[CommandSender] = EmptyEffect): SingleArgumentParser = {
     val parseResult = it.toDoubleOrNull()
 
     if (parseResult != null) succeedWith(parseResult) else failWith(failureMessage)

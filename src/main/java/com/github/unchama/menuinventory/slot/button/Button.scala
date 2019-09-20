@@ -13,14 +13,14 @@ import org.bukkit.inventory.ItemStack
  * @author karayuu
  */
 case class Button(override val itemStack: ItemStack,
-                  private val effects: List<ButtonEffect>) : Slot {
+                  private val effects: List[ButtonEffect]) : Slot {
 
   /**
    * [effects]をひとつずつ作用として発生させる [Slot] を構築します.
    */
   def this(itemStack: ItemStack, vararg effects: ButtonEffect): this(itemStack, effects.toList())
 
-  override def effectOn(event: InventoryClickEvent): TargetedEffect<Player> =
+  override def effectOn(event: InventoryClickEvent): TargetedEffect[Player] =
       UnfocusedEffect { event.isCancelled = true } + this.effects.map { it.asyncEffectOn(event) }.asSequentialEffect()
 
   def withAnotherEffect(effect: ButtonEffect): Button = this.copy(effects = effects + effect)

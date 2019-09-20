@@ -87,7 +87,7 @@ class SeichiAssist : JavaPlugin() {
         "gtfever" to GiganticFeverCommand.executor,
         "minehead" to MineHeadCommand.executor,
         "x-transfer" to RegionOwnerTransferCommand.executor
-    ).forEach { (commandName, executor) -> getCommand(commandName).executor = executor }
+    ).forEach { (commandName, executor) => getCommand(commandName).executor = executor }
 
     //リスナーの登録
     listOf(
@@ -176,7 +176,7 @@ class SeichiAssist : JavaPlugin() {
     buildAssist.onDisable()
   }
 
-  override def onCommand(sender: CommandSender?, command: Command?, label: String?, args: Array<String>?)
+  override def onCommand(sender: CommandSender?, command: Command?, label: String?, args: Array[String]?)
       = buildAssist.onCommand(sender!!, command!!, label!!, args!!)
 
   private def startRepeatedJobs() {
@@ -216,28 +216,28 @@ object SeichiAssist {
   lateinit var buildAssist: BuildAssist
 
   //Gachadataに依存するデータリスト
-  val gachadatalist: MutableList<GachaPrize> = ArrayList()
+  val gachadatalist: MutableList[GachaPrize] = ArrayList()
 
   //(minestackに格納する)Gachadataに依存するデータリスト
-  var msgachadatalist: MutableList<MineStackGachaData> = ArrayList()
+  var msgachadatalist: MutableList[MineStackGachaData] = ArrayList()
 
   //Playerdataに依存するデータリスト
-  val playermap = HashMap<UUID, PlayerData>()
+  val playermap = HashMap[UUID, PlayerData]()
 
   //総採掘量ランキング表示用データリスト
-  val ranklist: MutableList<RankData> = ArrayList()
+  val ranklist: MutableList[RankData] = ArrayList()
 
   //プレイ時間ランキング表示用データリスト
-  val ranklist_playtick: MutableList<RankData> = ArrayList()
+  val ranklist_playtick: MutableList[RankData] = ArrayList()
 
   //投票ポイント表示用データリスト
-  val ranklist_p_vote: MutableList<RankData> = ArrayList()
+  val ranklist_p_vote: MutableList[RankData] = ArrayList()
 
   //マナ妖精表示用のデータリスト
-  val ranklist_p_apple: MutableList<RankData> = ArrayList()
+  val ranklist_p_apple: MutableList[RankData] = ArrayList()
 
   //プレミアムエフェクトポイント表示用データリスト
-  val ranklist_premiumeffectpoint: MutableList<RankData> = ArrayList()
+  val ranklist_premiumeffectpoint: MutableList[RankData] = ArrayList()
 
   //総採掘量表示用
   var allplayerbreakblockint = 0L
@@ -245,13 +245,13 @@ object SeichiAssist {
   var allplayergiveapplelong = 0L
 
   //プラグインで出すエンティティの保存
-  val entitylist: MutableList<Entity> = ArrayList()
+  val entitylist: MutableList[Entity] = ArrayList()
 
   //プレイヤーがスキルで破壊するブロックリスト
-  val allblocklist: MutableList<Block> = LinkedList()
+  val allblocklist: MutableList[Block] = LinkedList()
 
-  private def generateGachaPrizes(): List<MineStackObj> {
-    val minestacklist = ArrayList<MineStackObj>()
+  private def generateGachaPrizes(): List[MineStackObj] {
+    val minestacklist = ArrayList[MineStackObj]()
     for (i in msgachadatalist.indices) {
     val g = msgachadatalist[i]
     if (g.itemStack.type !== Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外

@@ -21,7 +21,7 @@ class MenuSession private[menuinventory] (view: MenuInventoryView): InventoryHol
    *
    * @param syncExecutionContext インベントリを開くコルーチンの実行コンテキスト
    */
-  def openEffectThrough(syncExecutionContext: CoroutineContext): TargetedEffect<Player> = TargetedEffect {
+  def openEffectThrough(syncExecutionContext: CoroutineContext): TargetedEffect[Player] = TargetedEffect {
     withContext(syncExecutionContext) {
       it.openInventory(sessionInventory)
     }

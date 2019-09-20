@@ -21,7 +21,7 @@ trait Slot {
    * @param event [InventoryClickEvent]
    * @return クリックした[Player]へ及ぼすべき作用
    */
-  def effectOn(event: InventoryClickEvent): TargetedEffect<Player>
+  def effectOn(event: InventoryClickEvent): TargetedEffect[Player]
 }
 
 object Slot {

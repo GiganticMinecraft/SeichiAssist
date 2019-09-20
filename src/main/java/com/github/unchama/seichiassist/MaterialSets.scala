@@ -7,7 +7,7 @@ import org.bukkit.Material
 object MaterialSets {
   // このMaterialは整地スキルに対応するブロック群を示しています。
   @JvmStatic
-  val materials: Set<Material> = EnumSet.of(
+  val materials: Set[Material] = EnumSet.of(
       Material.STONE, Material.NETHERRACK, Material.NETHER_BRICK, Material.DIRT, Material.GRAVEL, Material.LOG,
       Material.LOG_2, Material.GRASS, Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.DIAMOND_ORE,
       Material.LAPIS_ORE, Material.EMERALD_ORE, Material.REDSTONE_ORE, Material.GLOWING_REDSTONE_ORE, Material.SAND,
@@ -29,29 +29,29 @@ object MaterialSets {
       Material.PURPUR_STAIRS, Material.END_BRICKS, Material.PURPUR_SLAB, Material.ENDER_CHEST, Material.PURPUR_SLAB, Material.STEP
   )
 
-  val luckMaterials: Set<Material> = EnumSet.of(
+  val luckMaterials: Set[Material] = EnumSet.of(
       Material.COAL_ORE, Material.DIAMOND_ORE, Material.LAPIS_ORE, Material.EMERALD_ORE,
       Material.REDSTONE_ORE, Material.GLOWING_REDSTONE_ORE, Material.QUARTZ_ORE
   )
 
-  val breakMaterials: Set<Material> = EnumSet.of(
+  val breakMaterials: Set[Material] = EnumSet.of(
       Material.DIAMOND_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SPADE,
       Material.WOOD_PICKAXE, Material.WOOD_SPADE,
       Material.IRON_PICKAXE, Material.IRON_AXE, Material.IRON_SPADE,
       Material.GOLD_PICKAXE, Material.GOLD_AXE, Material.GOLD_SPADE
   )
 
-  val cancelledMaterials: Set<Material> = EnumSet.of(
+  val cancelledMaterials: Set[Material] = EnumSet.of(
       Material.CHEST, Material.ENDER_CHEST, Material.TRAPPED_CHEST, Material.ANVIL, Material.ARMOR_STAND,
       Material.BEACON, Material.BIRCH_DOOR, Material.BIRCH_FENCE_GATE, Material.BIRCH_WOOD_STAIRS,
       Material.BOAT, Material.FURNACE, Material.WORKBENCH, Material.HOPPER, Material.MINECART
   )
 
-  val transparentMaterials: Set<Material> = EnumSet.of(
+  val transparentMaterials: Set[Material] = EnumSet.of(
       Material.BEDROCK, Material.AIR
   )
 
-  val gravityMaterials: Set<Material> = EnumSet.of(
+  val gravityMaterials: Set[Material] = EnumSet.of(
       Material.LOG, Material.LOG_2, Material.LEAVES, Material.LEAVES_2
   )
 }

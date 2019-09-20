@@ -26,7 +26,7 @@ object RegionMenu : Menu {
               *wandUsage,
               "$DARK_RED${UNDERLINE}クリックで召喚",
               "$DARK_GREEN${UNDERLINE}※インベントリを空けておこう",
-              "${DARK_GRAY}command->[//wand]")
+              "${DARK_GRAY}command=>[//wand]")
           .build()
 
       Button(
@@ -58,7 +58,7 @@ object RegionMenu : Menu {
               "$RED$UNDERLINE/rg removemenber 保護名 プレイヤー名",
               "${GRAY}該当保護の指定メンバーを削除",
               "${DARK_GRAY}その他のコマンドはwikiを参照",
-              "${DARK_GRAY}command->[/rg list]")
+              "${DARK_GRAY}command=>[/rg list]")
           .build()
 
       Button(
@@ -80,7 +80,7 @@ object RegionMenu : Menu {
               "${RED}保護の管理が超簡単に！",
               "${YELLOW}自分の所有する保護内でクリックすると",
               "${YELLOW}保護の各種設定や削除が行えます",
-              "${DARK_GRAY}command->[/land]")
+              "${DARK_GRAY}command=>[/land]")
           .build()
 
       Button(
@@ -134,16 +134,16 @@ object RegionMenu : Menu {
           .title("$YELLOW$UNDERLINE${BOLD}保護の申請")
           .lore(
               *when {
-                !playerHasPermission -> arrayOf(
+                !playerHasPermission => arrayOf(
                     "${RED}このワールドでは",
                     "${RED}保護を申請できません")
-                isSelectionNull -> arrayOf(
+                isSelectionNull => arrayOf(
                     "${RED}範囲指定されていません",
                     "${RED}先に木の斧で2か所クリックしてネ")
-                !selectionHasEnoughSpace -> arrayOf(
+                !selectionHasEnoughSpace => arrayOf(
                     "${RED}選択された範囲が狭すぎます",
                     "${RED}一辺当たり最低10ブロック以上にしてネ")
-                else -> arrayOf(
+                else => arrayOf(
                     "$DARK_GREEN${UNDERLINE}範囲指定されています",
                     "$DARK_GREEN${UNDERLINE}クリックすると保護を申請します")
               },
@@ -164,16 +164,16 @@ object RegionMenu : Menu {
           iconItemStack,
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK,
               when {
-                !playerHasPermission -> "${RED}このワールドでは保護を申請できません".asMessageEffect()
-                isSelectionNull -> sequentialEffect(
+                !playerHasPermission => "${RED}このワールドでは保護を申請できません".asMessageEffect()
+                isSelectionNull => sequentialEffect(
                     "${RED}先に木の斧で範囲を指定してからこのボタンを押してください".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
                 )
-                !selectionHasEnoughSpace -> sequentialEffect(
+                !selectionHasEnoughSpace => sequentialEffect(
                     "${RED}指定された範囲が狭すぎます。1辺当たり最低10ブロック以上にしてください".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
                 )
-                else -> sequentialEffect(
+                else => sequentialEffect(
                     "/expand vert".asCommandEffect(),
                     "rg claim ${player.name}_${openerData.regionCount}".asCommandEffect(),
                     deferredEffect { openerData.incrementRegionNumber },
@@ -200,7 +200,7 @@ object RegionMenu : Menu {
         }
       }
 
-  override val open: TargetedEffect<Player> = computedEffect { player ->
+  override val open: TargetedEffect[Player] = computedEffect { player =>
     val session = MenuInventoryView(Right(InventoryType.HOPPER), "${BLACK}保護メニュー").createNewSession()
 
     sequentialEffect(

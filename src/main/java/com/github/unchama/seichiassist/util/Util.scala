@@ -4,8 +4,8 @@ import com.github.unchama.seichiassist.minestack.MineStackObj
 import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.block.Block
 import org.bukkit.entity.{EntityType, Firework, Player}
-import org.bukkit.inventory.{ItemStack, PlayerInventory}
 import org.bukkit.inventory.meta.SkullMeta
+import org.bukkit.inventory.{ItemStack, PlayerInventory}
 
 object Util {
 
@@ -140,92 +140,92 @@ object Util {
 
   def getEnchantName(vaname: String, enchlevel: Int): String {
     when (vaname) {
-      "PROTECTION_ENVIRONMENTAL" -> return "ダメージ軽減" + " " + getEnchantLevelRome(enchlevel)
+      "PROTECTION_ENVIRONMENTAL" => return "ダメージ軽減" + " " + getEnchantLevelRome(enchlevel)
 
-      "PROTECTION_FIRE" -> return "火炎耐性" + " " + getEnchantLevelRome(enchlevel)
+      "PROTECTION_FIRE" => return "火炎耐性" + " " + getEnchantLevelRome(enchlevel)
 
-      "PROTECTION_FALL" -> return "落下耐性" + " " + getEnchantLevelRome(enchlevel)
+      "PROTECTION_FALL" => return "落下耐性" + " " + getEnchantLevelRome(enchlevel)
 
-      "PROTECTION_EXPLOSIONS" -> return "爆発耐性" + " " + getEnchantLevelRome(enchlevel)
+      "PROTECTION_EXPLOSIONS" => return "爆発耐性" + " " + getEnchantLevelRome(enchlevel)
 
-      "PROTECTION_PROJECTILE" -> return "飛び道具耐性" + " " + getEnchantLevelRome(enchlevel)
+      "PROTECTION_PROJECTILE" => return "飛び道具耐性" + " " + getEnchantLevelRome(enchlevel)
 
-      "OXYGEN" -> return "水中呼吸" + " " + getEnchantLevelRome(enchlevel)
+      "OXYGEN" => return "水中呼吸" + " " + getEnchantLevelRome(enchlevel)
 
-      "WATER_WORKER" -> return "水中採掘"
+      "WATER_WORKER" => return "水中採掘"
 
-      "THORNS" -> return "棘の鎧" + " " + getEnchantLevelRome(enchlevel)
+      "THORNS" => return "棘の鎧" + " " + getEnchantLevelRome(enchlevel)
 
-      "DEPTH_STRIDER" -> return "水中歩行" + " " + getEnchantLevelRome(enchlevel)
+      "DEPTH_STRIDER" => return "水中歩行" + " " + getEnchantLevelRome(enchlevel)
 
-      "FROST_WALKER" -> return "氷渡り" + " " + getEnchantLevelRome(enchlevel)
+      "FROST_WALKER" => return "氷渡り" + " " + getEnchantLevelRome(enchlevel)
 
-      "DAMAGE_ALL" -> return "ダメージ増加" + " " + getEnchantLevelRome(enchlevel)
+      "DAMAGE_ALL" => return "ダメージ増加" + " " + getEnchantLevelRome(enchlevel)
 
-      "DAMAGE_UNDEAD" -> return "アンデッド特効" + " " + getEnchantLevelRome(enchlevel)
+      "DAMAGE_UNDEAD" => return "アンデッド特効" + " " + getEnchantLevelRome(enchlevel)
 
-      "DAMAGE_ARTHROPODS" -> return "虫特効" + " " + getEnchantLevelRome(enchlevel)
+      "DAMAGE_ARTHROPODS" => return "虫特効" + " " + getEnchantLevelRome(enchlevel)
 
-      "KNOCKBACK" -> return "ノックバック" + " " + getEnchantLevelRome(enchlevel)
+      "KNOCKBACK" => return "ノックバック" + " " + getEnchantLevelRome(enchlevel)
 
-      "FIRE_ASPECT" -> return "火属性" + " " + getEnchantLevelRome(enchlevel)
+      "FIRE_ASPECT" => return "火属性" + " " + getEnchantLevelRome(enchlevel)
 
-      "LOOT_BONUS_MOBS" -> return "ドロップ増加" + " " + getEnchantLevelRome(enchlevel)
+      "LOOT_BONUS_MOBS" => return "ドロップ増加" + " " + getEnchantLevelRome(enchlevel)
 
-      "DIG_SPEED" -> return "効率強化" + " " + getEnchantLevelRome(enchlevel)
+      "DIG_SPEED" => return "効率強化" + " " + getEnchantLevelRome(enchlevel)
 
-      "SILK_TOUCH" -> return "シルクタッチ"
+      "SILK_TOUCH" => return "シルクタッチ"
 
-      "DURABILITY" -> return "耐久力" + " " + getEnchantLevelRome(enchlevel)
+      "DURABILITY" => return "耐久力" + " " + getEnchantLevelRome(enchlevel)
 
-      "LOOT_BONUS_BLOCKS" -> return "幸運" + " " + getEnchantLevelRome(enchlevel)
+      "LOOT_BONUS_BLOCKS" => return "幸運" + " " + getEnchantLevelRome(enchlevel)
 
-      "ARROW_DAMAGE" -> return "射撃ダメージ増加" + " " + getEnchantLevelRome(enchlevel)
+      "ARROW_DAMAGE" => return "射撃ダメージ増加" + " " + getEnchantLevelRome(enchlevel)
 
-      "ARROW_KNOCKBACK" -> return "パンチ" + " " + getEnchantLevelRome(enchlevel)
+      "ARROW_KNOCKBACK" => return "パンチ" + " " + getEnchantLevelRome(enchlevel)
 
-      "ARROW_FIRE" -> return "フレイム"
+      "ARROW_FIRE" => return "フレイム"
 
-      "ARROW_INFINITE" -> return "無限"
+      "ARROW_INFINITE" => return "無限"
 
-      "LUCK" -> return "宝釣り" + " " + getEnchantLevelRome(enchlevel)
+      "LUCK" => return "宝釣り" + " " + getEnchantLevelRome(enchlevel)
 
-      "LURE" -> return "入れ食い" + " " + getEnchantLevelRome(enchlevel)
+      "LURE" => return "入れ食い" + " " + getEnchantLevelRome(enchlevel)
 
-      "MENDING" -> return "修繕"
+      "MENDING" => return "修繕"
 
-      else -> return vaname
+      else => return vaname
     }
   }
 
   private def getEnchantLevelRome(enchantlevel: Int): String {
     when (enchantlevel) {
-      1 -> return "Ⅰ"
+      1 => return "Ⅰ"
 
-      2 -> return "Ⅱ"
+      2 => return "Ⅱ"
 
-      3 -> return "Ⅲ"
+      3 => return "Ⅲ"
 
-      4 -> return "Ⅳ"
+      4 => return "Ⅳ"
 
-      5 -> return "Ⅴ"
+      5 => return "Ⅴ"
 
-      6 -> return "Ⅵ"
+      6 => return "Ⅵ"
 
-      7 -> return "Ⅶ"
+      7 => return "Ⅶ"
 
-      8 -> return "Ⅷ"
+      8 => return "Ⅷ"
 
-      9 -> return "Ⅸ"
+      9 => return "Ⅸ"
 
-      10 -> return "Ⅹ"
+      10 => return "Ⅹ"
 
-      else -> return enchantlevel.toString()
+      else => return enchantlevel.toString()
     }
 
   }
 
-  def getDescFormat(list: List<String>): String {
+  def getDescFormat(list: List[String]): String {
     return " " + list.joinToString("\n") + "\n"
   }
 
@@ -285,7 +285,7 @@ object Util {
   }
 
   //カラーをランダムで決める
-  def getRandomColors(length: Int): Array<Color> {
+  def getRandomColors(length: Int): Array[Color] {
     // 配列を作る
     val rand = Random()
     // 配列の要素を順に処理していく
@@ -320,9 +320,9 @@ object Util {
    * @param find 探す文字列
    * @return 見つかった場合はその添字、見つからなかった場合は-1
    */
-  def loreIndexOf(lore: List<String>, find: String): Int {
+  def loreIndexOf(lore: List[String], find: String): Int {
     return IntStream.range(0, lore.size)
-        .filter { i -> lore[i].contains(find) }
+        .filter { i => lore[i].contains(find) }
         .findFirst()
         .orElse(-1)
   }
@@ -399,7 +399,7 @@ object Util {
   def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean {
     val meta = itemstack.itemMeta
 
-    val lore: List<String> = if (meta.hasLore()) {
+    val lore: List[String] = if (meta.hasLore()) {
       meta.lore
     } else {
       ArrayList()
@@ -431,7 +431,7 @@ object Util {
    * @return ItemStack型のメニューアイコン
    */
   def getMenuIcon(material: Material?, amount: Int,
-                  displayName: String?, lore: List<String>?, isHideFlags: Boolean): ItemStack {
+                  displayName: String?, lore: List[String]?, isHideFlags: Boolean): ItemStack {
     if (material == null || displayName == null || lore == null) {
       throw IllegalArgumentException("Material,DisplayName,LoreにNullは指定できません。")
     }
@@ -461,7 +461,7 @@ object Util {
    * @return ItemStack型のメニューアイコン
    */
   def getMenuIcon(material: Material?, amount: Int, durabity: Int,
-                  displayName: String?, lore: List<String>?, isHideFlags: Boolean): ItemStack {
+                  displayName: String?, lore: List[String]?, isHideFlags: Boolean): ItemStack {
     if (material == null || displayName == null || lore == null) {
       throw IllegalArgumentException("Material,DisplayName,LoreにNullは指定できません。")
     }
@@ -554,7 +554,7 @@ object Util {
     return cur.after(start) && cur.before(end)
   }
 
-  def setDifficulty(worldNameList: List<String>, difficulty: Difficulty) {
+  def setDifficulty(worldNameList: List[String], difficulty: Difficulty) {
     for (name in worldNameList) {
       val world = Bukkit.getWorld(name)
       if (world == null) {
@@ -572,33 +572,33 @@ object Util {
   @Deprecated("")
   def findMineStackObjectByName(name: String): MineStackObj? {
     return MineStackObjectList.minestacklist!!.stream()
-        .filter { obj -> name == obj.mineStackObjName }
+        .filter { obj => name == obj.mineStackObjName }
         .findFirst().orElse(null)
   }
 
   def isEnemy(type: EntityType): Boolean {
     when (type) {
       //通常世界MOB
-      EntityType.CAVE_SPIDER -> return true
-      EntityType.CREEPER -> return true
-      EntityType.GUARDIAN -> return true
-      EntityType.SILVERFISH -> return true
-      EntityType.SKELETON -> return true
-      EntityType.SLIME -> return true
-      EntityType.SPIDER -> return true
-      EntityType.WITCH -> return true
-      EntityType.ZOMBIE -> return true
+      EntityType.CAVE_SPIDER => return true
+      EntityType.CREEPER => return true
+      EntityType.GUARDIAN => return true
+      EntityType.SILVERFISH => return true
+      EntityType.SKELETON => return true
+      EntityType.SLIME => return true
+      EntityType.SPIDER => return true
+      EntityType.WITCH => return true
+      EntityType.ZOMBIE => return true
       //ネザーMOB
-      EntityType.BLAZE -> return true
-      EntityType.GHAST -> return true
-      EntityType.MAGMA_CUBE -> return true
-      EntityType.PIG_ZOMBIE -> return true
+      EntityType.BLAZE => return true
+      EntityType.GHAST => return true
+      EntityType.MAGMA_CUBE => return true
+      EntityType.PIG_ZOMBIE => return true
       //エンドMOB
-      EntityType.ENDERMAN -> return true
-      EntityType.ENDERMITE -> return true
-      EntityType.SHULKER -> return true
+      EntityType.ENDERMAN => return true
+      EntityType.ENDERMITE => return true
+      EntityType.SHULKER => return true
       //敵MOB以外(エンドラ,ウィザーは除外)
-      else -> return false
+      else => return false
     }
   }
 
@@ -618,12 +618,12 @@ object Util {
     //SkullTypeがプレイヤー以外の場合，SkullTypeだけ設定して終わり
     if (skull.skullType != SkullType.PLAYER) {
       when (skull.skullType) {
-        SkullType.CREEPER -> itemStack.durability = SkullType.CREEPER.ordinal.toShort()
-        SkullType.DRAGON -> itemStack.durability = SkullType.DRAGON.ordinal.toShort()
-        SkullType.SKELETON -> itemStack.durability = SkullType.SKELETON.ordinal.toShort()
-        SkullType.WITHER -> itemStack.durability = SkullType.WITHER.ordinal.toShort()
-        SkullType.ZOMBIE -> itemStack.durability = SkullType.ZOMBIE.ordinal.toShort()
-        else -> {
+        SkullType.CREEPER => itemStack.durability = SkullType.CREEPER.ordinal.toShort()
+        SkullType.DRAGON => itemStack.durability = SkullType.DRAGON.ordinal.toShort()
+        SkullType.SKELETON => itemStack.durability = SkullType.SKELETON.ordinal.toShort()
+        SkullType.WITHER => itemStack.durability = SkullType.WITHER.ordinal.toShort()
+        SkullType.ZOMBIE => itemStack.durability = SkullType.ZOMBIE.ordinal.toShort()
+        else => {
         }
       }
       return itemStack

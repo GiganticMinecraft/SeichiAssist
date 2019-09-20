@@ -10,7 +10,7 @@ class WarningsGenerator(player: Player) {
   /**
    * 整地ワールド以外では建築量・ガチャ券が増加しないという警告.
    */
-  val noRewardsOutsideSeichiWorld: List<String> =
+  val noRewardsOutsideSeichiWorld: List[String] =
     if (player.world.asManagedWorld()?.isSeichi == true)
       emptyList()
     else

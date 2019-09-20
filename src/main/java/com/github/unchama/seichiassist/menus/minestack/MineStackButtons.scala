@@ -7,7 +7,7 @@ import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
 internal object MineStackButtons {
-  private def withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect<Player> {
+  private def withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect[Player] {
     def ItemStack.withAmount(amount: Int): ItemStack = clone().apply { this.amount = amount }
     def MineStackObj.generateParameterizedStack(player: Player): ItemStack {
       // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
@@ -24,7 +24,7 @@ internal object MineStackButtons {
       return mineStackObj.itemStack.clone()
     }
 
-    return computedEffect { player ->
+    return computedEffect { player =>
       val playerData = SeichiAssist.playermap[player.uniqueId]!!
       val currentAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
       val grantAmount = min(mineStackObj.itemStack.maxStackSize.toLong(), currentAmount).toInt()
@@ -112,11 +112,11 @@ internal object MineStackButtons {
             val message: String
             val soundPitch: Float
             when {
-              playerData.settings.autoMineStack -> {
+              playerData.settings.autoMineStack => {
                 message = "${GREEN}対象ブロック自動スタック機能:ON"
                 soundPitch = 1.0f
               }
-              else -> {
+              else => {
                 message = "${RED}対象ブロック自動スタック機能:OFF"
                 soundPitch = 0.5f
               }

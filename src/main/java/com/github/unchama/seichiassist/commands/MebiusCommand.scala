@@ -10,14 +10,14 @@ object MebiusCommand {
   private object Messages {
     val commandDescription = listOf(
         "${ChatColor.RED}[Usage]",
-        "${ChatColor.RED}/mebius naming <name>",
-        "${ChatColor.RED}  現在頭に装着中のMEBIUSに<name>を命名します。",
+        "${ChatColor.RED}/mebius naming [name]",
+        "${ChatColor.RED}  現在頭に装着中のMEBIUSに[name]を命名します。",
         "",
         "${ChatColor.RED}/mebius nickname",
         "${ChatColor.RED}  MEBIUSから呼ばれる名前を表示します",
         "",
-        "${ChatColor.RED}/mebius nickname set <name>",
-        "${ChatColor.RED}  MEBIUSから呼ばれる名前を<name>に変更します",
+        "${ChatColor.RED}/mebius nickname set [name]",
+        "${ChatColor.RED}  MEBIUSから呼ばれる名前を[name]に変更します",
         "",
         "${ChatColor.RED}/mebius nickname reset",
         "${ChatColor.RED}  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
@@ -33,7 +33,7 @@ object MebiusCommand {
         .build()
 
     val getExecutor = playerCommandBuilder
-        .execution { context ->
+        .execution { context =>
           if (!context.sender.isOp) Messages.permissionWarning else {
             MebiusListener.debugGive(context.sender)
             EmptyEffect
@@ -42,7 +42,7 @@ object MebiusCommand {
         .build()
 
     val reloadExecutor = playerCommandBuilder
-        .execution { context ->
+        .execution { context =>
           if (!context.sender.isOp) Messages.permissionWarning else {
             MebiusListener.reload()
             EmptyEffect
@@ -51,7 +51,7 @@ object MebiusCommand {
         .build()
 
     val debugExecutor = playerCommandBuilder
-        .execution { context ->
+        .execution { context =>
           if (!context.sender.isOp) Messages.permissionWarning else {
             MebiusListener.debug(context.sender)
             EmptyEffect
@@ -61,7 +61,7 @@ object MebiusCommand {
 
     object NickNameCommand {
       private val checkNickNameExecutor = playerCommandBuilder
-          .execution { context ->
+          .execution { context =>
             val message = MebiusListener.getNickname(context.sender)
                 ?.let { "${ChatColor.GREEN}現在のメビウスからの呼び名 : $it" }
                 ?: "${ChatColor.RED}呼び名の確認はMEBIUSを装着して行ってください."
@@ -71,7 +71,7 @@ object MebiusCommand {
           .build()
 
       private val resetNickNameExecutor = playerCommandBuilder
-          .execution { context ->
+          .execution { context =>
             val message = if (MebiusListener.setNickname(context.sender, context.sender.name)) {
               "${ChatColor.GREEN}メビウスからの呼び名を${context.sender.name}にリセットしました."
             } else {
@@ -84,7 +84,7 @@ object MebiusCommand {
 
       private val setNickNameExecutor = playerCommandBuilder
           .argumentsParsers(listOf(Parsers.identity), onMissingArguments = printDescriptionExecutor)
-          .execution { context ->
+          .execution { context =>
             val newName = "${context.args.parsed[0] as String} ${context.args.yetToBeParsed.joinToString(" ")}"
             val message = if (!MebiusListener.setNickname(context.sender, newName)) {
               "${ChatColor.RED}呼び名の設定はMEBIUSを装着して行ってください."
@@ -104,7 +104,7 @@ object MebiusCommand {
 
     val namingExecutor = playerCommandBuilder
         .argumentsParsers(listOf(Parsers.identity))
-        .execution { context ->
+        .execution { context =>
           val newName = "${context.args.parsed[0] as String} ${context.args.yetToBeParsed.joinToString(" ")}"
 
           if (!MebiusListener.setName(context.sender, newName)) {

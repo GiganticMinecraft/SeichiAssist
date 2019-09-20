@@ -48,7 +48,7 @@ object SeichiAssistCommand {
       .build()
 
   private val setAnniversaryFlagExecutor = ContextualExecutorBuilder.beginConfiguration()
-      .refineSenderWithError<ConsoleCommandSender>("コンソール専用コマンドです")
+      .refineSenderWithError[ConsoleCommandSender]("コンソール専用コマンドです")
       .execution {
         SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(true, null)
 

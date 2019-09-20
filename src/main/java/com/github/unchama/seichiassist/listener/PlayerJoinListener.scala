@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 class PlayerJoinListener : Listener {
-  private val playerMap: HashMap<UUID, PlayerData> = SeichiAssist.playermap
+  private val playerMap: HashMap[UUID, PlayerData] = SeichiAssist.playermap
   private val databaseGateway = SeichiAssist.databaseGateway
 
   private def loadPlayerData(playerUuid: UUID, playerName: String) {
@@ -16,7 +16,7 @@ class PlayerJoinListener : Listener {
   def onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent) {
     val maxTryCount = 10
     runBlocking {
-      (1 until maxTryCount + 1).forEach { tryCount ->
+      (1 until maxTryCount + 1).forEach { tryCount =>
         val isLastTry = tryCount == maxTryCount
 
         try {

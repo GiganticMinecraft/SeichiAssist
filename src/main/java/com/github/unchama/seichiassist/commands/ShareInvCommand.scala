@@ -14,13 +14,13 @@ object ShareInvCommand {
     }
   }
 
-  private suspend def withdrawFromSharedInventory(player: Player): TargetedEffect<Player> {
+  private suspend def withdrawFromSharedInventory(player: Player): TargetedEffect[Player] {
     val playerData = SeichiAssist.playermap[player.uniqueId]!!
     val databaseGateway = SeichiAssist.databaseGateway
 
     val serial = when (val either = databaseGateway.playerDataManipulator.loadShareInv(player, playerData)) {
-      is Either.Left -> return either.a
-      is Either.Right -> either.b
+      is Either.Left => return either.a
+      is Either.Right => either.b
     }
 
     if (serial == "") return "${ChatColor.RESET}${ChatColor.RED}${ChatColor.BOLD}収納アイテムが存在しません。".asMessageEffect()
@@ -29,7 +29,7 @@ object ShareInvCommand {
 
     // 永続データをクリア
     when (val clearResult = databaseGateway.playerDataManipulator.clearShareInv(player, playerData)) {
-      is Either.Left -> return clearResult.a
+      is Either.Left => return clearResult.a
     }
 
     // アイテムを取り出す. 手持ちはドロップさせる
@@ -42,7 +42,7 @@ object ShareInvCommand {
     return "${ChatColor.GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。".asMessageEffect()
   }
 
-  private suspend def depositToSharedInventory(player: Player): TargetedEffect<Player> {
+  private suspend def depositToSharedInventory(player: Player): TargetedEffect[Player] {
     val playerData = SeichiAssist.playermap[player.uniqueId]!!
     val databaseGateway = SeichiAssist.databaseGateway
 
@@ -66,7 +66,7 @@ object ShareInvCommand {
   }
 
   val executor = playerCommandBuilder
-      .execution { context ->
+      .execution { context =>
         val senderData = SeichiAssist.playermap[context.sender.uniqueId]!!
 
         if (senderData.contentsPresentInSharedInventory) {

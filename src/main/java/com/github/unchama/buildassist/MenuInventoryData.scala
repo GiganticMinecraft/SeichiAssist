@@ -2,17 +2,17 @@ package com.github.unchama.buildassist
 
 import com.github.unchama.buildassist.util.AsyncInventorySetter
 import com.github.unchama.seichiassist.util.ItemMetaFactory
-import org.bukkit.{Bukkit, ChatColor, Material}
 import org.bukkit.entity.Player
-import org.bukkit.inventory.{Inventory, ItemStack}
 import org.bukkit.inventory.meta.{ItemMeta, SkullMeta}
+import org.bukkit.inventory.{Inventory, ItemStack}
+import org.bukkit.{Bukkit, ChatColor, Material}
 
 object MenuInventoryData {
 
   /**
-   * インデックス0 = 10 ** 0 (-> 1)
-   * インデックス1 = 10 ** 1 (-> 10)
-   * インデックス2 = 10 ** 2 (-> 100)
+   * インデックス0 = 10 ** 0 (=> 1)
+   * インデックス1 = 10 ** 1 (=> 10)
+   * インデックス2 = 10 ** 2 (=> 100)
    * ...
    * インデックスn = 10 ** n
    */
@@ -241,7 +241,7 @@ object MenuInventoryData {
     var itemstack: ItemStack
     var itemmeta: ItemMeta
     var skullmeta = ItemMetaFactory.SKULL.value
-    var lore: List<String>
+    var lore: List[String]
 
     // ホーム目を開く
     itemstack = ItemStack(Material.SKULL_ITEM, 1, 3.toShort())
@@ -406,7 +406,7 @@ object MenuInventoryData {
     var itemstack: ItemStack
     var itemmeta: ItemMeta
     var skullmeta: SkullMeta = ItemMetaFactory.SKULL.value
-    var lore: List<String>
+    var lore: List[String]
 
     // 1ページ目を開く
     itemstack = ItemStack(Material.SKULL_ITEM, 1, 3)
@@ -602,7 +602,7 @@ object MenuInventoryData {
     var itemstack: ItemStack
     var itemmeta: ItemMeta
     val skullmeta: SkullMeta = ItemMetaFactory.SKULL.value
-    var lore: List<String>
+    var lore: List[String]
 
     // 2ページ目を開く
     itemstack = ItemStack(Material.SKULL_ITEM, 1, 3.toShort())

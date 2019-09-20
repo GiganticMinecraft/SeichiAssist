@@ -9,7 +9,7 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
 
   //ガチャデータロード
   def loadGachaData(): Boolean {
-    val prizes = ArrayList<GachaPrize>()
+    val prizes = ArrayList[GachaPrize]()
 
     val command = "select * from $tableReference"
     try {

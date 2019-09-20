@@ -5,4 +5,4 @@ package com.github.unchama.util.data
  *
  * @return この[Either]に入っている値
  */
-def <T> Either<T, T>.merge(): T = this.fold({ it }, { it })
+def [T] Either[T, T].merge(): T = this.fold({ it }, { it })

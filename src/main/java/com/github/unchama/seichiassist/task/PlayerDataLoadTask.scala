@@ -70,12 +70,12 @@ def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
      * そのリストをラップするオブジェクトに同期された形でこのオブジェクトがもたれるべきであり、
      * ロードされるたびに再計算されるべきではない
      */
-    val nameObjectMappings: Map<String, MineStackObj> =
+    val nameObjectMappings: Map[String, MineStackObj] =
         MineStackObjectList.minestacklist!!
             .map { it.mineStackObjName to it }
             .toMap()
 
-    val objectAmounts = HashMap<MineStackObj, Long>()
+    val objectAmounts = HashMap[MineStackObj, Long]()
 
     stmt.executeQuery(mineStackDataQuery).recordIteration {
       val objectName = getString("object_name")
@@ -100,8 +100,8 @@ def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
         + db + "." + DatabaseConstants.GRID_TEMPLATE_TABLENAME + " where "
         + "designer_uuid like '" + stringUuid + "'")
 
-    stmt.executeQuery(gridTemplateDataQuery).use { resultSet ->
-      val templateMap = HashMap<Int, GridTemplate>()
+    stmt.executeQuery(gridTemplateDataQuery).use { resultSet =>
+      val templateMap = HashMap[Int, GridTemplate]()
 
       while (resultSet.next()) {
         val templateId = resultSet.getInt("id")
@@ -126,7 +126,7 @@ def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
         + db + "." + DatabaseConstants.SKILL_EFFECT_TABLENAME + " where "
         + "player_uuid like '" + stringUuid + "'")
 
-    stmt.executeQuery(unlockedSkillEffectQuery).use { resultSet ->
+    stmt.executeQuery(unlockedSkillEffectQuery).use { resultSet =>
       while (resultSet.next()) {
         val effectName = resultSet.getString("effect_name")
 
@@ -142,7 +142,7 @@ def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
         + db + "." + DatabaseConstants.SKILL_PREMIUM_EFFECT_TABLENAME + " where "
         + "player_uuid like '" + stringUuid + "'")
 
-    stmt.executeQuery(unlockedSkillEffectQuery).use { resultSet ->
+    stmt.executeQuery(unlockedSkillEffectQuery).use { resultSet =>
       while (resultSet.next()) {
         val effectName = resultSet.getString("effect_name")
 
@@ -292,7 +292,7 @@ def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
       //初回nullエラー回避のための分岐
       try {
         val Titlenums = rs.getString("TitleFlags").split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        val Titlearray = Arrays.stream(Titlenums).mapToLong { x: String -> java.lang.Long.parseUnsignedLong(x, 16) }.toArray()
+        val Titlearray = Arrays.stream(Titlenums).mapToLong { x: String => java.lang.Long.parseUnsignedLong(x, 16) }.toArray()
         @NotNull
         val TitleFlags = BitSet.valueOf(Titlearray)
         playerData.TitleFlags = TitleFlags
@@ -370,7 +370,7 @@ def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
   return playerData
 }
 
-inline def ResultSet.recordIteration(operation: ResultSet.() -> Unit) {
+inline def ResultSet.recordIteration(operation: ResultSet.() => Unit) {
   use {
     while (next()) {
       operation()

@@ -9,7 +9,7 @@ class MineStackGachaDataManipulator(private val gateway: DatabaseGateway) {
 
   //MineStack用ガチャデータロード
   def loadMineStackGachaData(): Boolean {
-    val gachadatalist = ArrayList<MineStackGachaData>()
+    val gachadatalist = ArrayList[MineStackGachaData]()
 
     val command = "select * from $tableReference"
     try {

@@ -12,8 +12,6 @@ import scala.util.control.Breaks
 
 class BlockLineUp extends Listener {
 
-  import com.github.unchama.util.syntax.Nullability._
-
   import collection.JavaConverters._
 
   @EventHandler
@@ -68,18 +66,18 @@ class BlockLineUp extends Listener {
     if (pitch > 45) {
       step_y = -1
       py = pl.getBlockY
-    } else if (pitch < -45) {
+    } else if (pitch [ -45) {
       step_y = 1
     } else {
       if (buildAssistData.line_up_flg == 2) {
         //下設置設定の場合は一段下げる
         py -= 1
       }
-      if (yaw > 315 || yaw < 45) {//南
+      if (yaw ] 315 || yaw < 45) {//南
         step_z = 1
       } else if (yaw < 135) {//西
         step_x = -1
-      } else if (yaw < 225) {//北
+      } else if (yaw [ 225) {//北
         step_z = -1
       } else {//東
         step_x = 1
@@ -90,7 +88,7 @@ class BlockLineUp extends Listener {
 
     val mineStackObjectToBeUsed =
         if (buildAssistData.line_up_minestack_flg == 1)
-          MineStackObjectList.getMinestacklist.asScala.find { obj =>
+          MineStackObjectList.getMinestacklist.asScala.find { obj =]
             mainHandItem.getType == obj.getMaterial && mainHandItemData.toInt == obj.getDurability
           }
         else None

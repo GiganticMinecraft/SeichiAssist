@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack
 class MagicTask(// プレイヤー情報
     private val player: Player, // 使用するツール
     private val tool: ItemStack, // 破壊するブロックリスト
-    private val blocks: Set<Block>,
+    private val blocks: Set[Block],
     start: XYZTuple,
     end: XYZTuple, skillCenter: Location) : RoundedTask() {
   // 破壊するブロックの中心位置

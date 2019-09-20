@@ -71,10 +71,10 @@ class PlayerClickListener : Listener {
           //エフェクトが指定されていないときの処理
           if (playerdata.activeskilldata.effectnum == 0) {
             runArrowSkill(player, Arrow::class.java)
-          } else if (playerdata.activeskilldata.effectnum <= 100) {
+          } else if (playerdata.activeskilldata.effectnum [= 100) {
             val skilleffect = ActiveSkillEffect.values()
             skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player)
-          } else if (playerdata.activeskilldata.effectnum > 100) {
+          } else if (playerdata.activeskilldata.effectnum ] 100) {
             val premiumeffect = ActiveSkillPremiumEffect.values()
             premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runArrowEffect(player)
           }//エフェクトが指定されているときの処理
@@ -106,10 +106,10 @@ class PlayerClickListener : Listener {
           //エフェクトが指定されていないときの処理
           if (playerdata.activeskilldata.effectnum == 0) {
             runArrowSkill(player, Arrow::class.java)
-          } else if (playerdata.activeskilldata.effectnum <= 100) {
+          } else if (playerdata.activeskilldata.effectnum [= 100) {
             val skilleffect = ActiveSkillEffect.values()
             skilleffect[playerdata.activeskilldata.effectnum - 1].runArrowEffect(player)
-          } else if (playerdata.activeskilldata.effectnum > 100) {
+          } else if (playerdata.activeskilldata.effectnum ] 100) {
             val premiumeffect = ActiveSkillPremiumEffect.values()
             premiumeffect[playerdata.activeskilldata.effectnum - 1 - 100].runArrowEffect(player)
           }//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
@@ -120,7 +120,7 @@ class PlayerClickListener : Listener {
     }
   }
 
-  private def <T : org.bukkit.entity.Projectile> runArrowSkill(player: Player, clazz: Class<T>) {
+  private def [T  <: org.bukkit.entity.Projectile] runArrowSkill(player: Player, clazz: Class[T]) {
     //プレイヤーの位置を取得
     val ploc = player.location
 
@@ -244,7 +244,7 @@ class PlayerClickListener : Listener {
             .filterNot { it == "§r§2所有者：${player.name}" }
 
         val localizedEnchantmentList = givenItem.itemMeta.enchants
-            .map { (enchantment, level) ->
+            .map { (enchantment, level) =>
               "$GRAY${Util.getEnchantName(enchantment.name, level)}"
             }
 
@@ -352,10 +352,10 @@ class PlayerClickListener : Listener {
 
           activemineflagnum = (activemineflagnum + 1) % 3
           val status = when (activemineflagnum) {
-            0 -> "：OFF"
-            1 -> ":ON-Above(上向き）"
-            2 -> ":ON-Under(下向き）"
-            else -> throw RuntimeException("This branch should not be reached")
+            0 => "：OFF"
+            1 => ":ON-Above(上向き）"
+            2 => ":ON-Under(下向き）"
+            else => throw RuntimeException("This branch should not be reached")
           }
           player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + status)
           playerdata.activeskilldata.updateSkill(player, skillTypeId, skillNumber, activemineflagnum)
@@ -364,8 +364,8 @@ class PlayerClickListener : Listener {
             && skillTypeId < 4) {
           activemineflagnum = (activemineflagnum + 1) % 2
           when (activemineflagnum) {
-            0 -> player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + "：OFF")
-            1 -> player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + ":ON")
+            0 => player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + "：OFF")
+            1 => player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + ":ON")
           }
           playerdata.activeskilldata.updateSkill(player, skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.location, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
@@ -443,7 +443,7 @@ class PlayerClickListener : Listener {
       //念のためエラー分岐
       if (playerdata == null) {
         Util.sendPlayerDataNullMessage(player)
-        plugin.logger.warning(player.name + " -> PlayerData not found.")
+        plugin.logger.warning(player.name + " => PlayerData not found.")
         plugin.logger.warning("PlayerClickListener.onPlayerOpenInventorySkillEvent")
         return
       }

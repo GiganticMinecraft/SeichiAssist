@@ -5,8 +5,8 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.Material
-import org.bukkit.inventory.{Inventory, ItemStack}
 import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.inventory.{Inventory, ItemStack}
 
 class DonateDataManipulator(private val gateway: DatabaseGateway) {
 
@@ -44,7 +44,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
     var itemstack: ItemStack
     var itemmeta: ItemMeta
     var material: Material
-    var lore2: List<String>
+    var lore2: List[String]
     var count = 0
     val effect = ActiveSkillPremiumEffect.values()
 

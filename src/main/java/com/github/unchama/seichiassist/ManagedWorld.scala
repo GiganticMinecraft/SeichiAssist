@@ -26,8 +26,8 @@ object ManagedWorld {
 
 val ManagedWorld.isSeichi: Boolean
   get() = when (this) {
-    WORLD_SW, WORLD_SW_2, WORLD_SW_3, WORLD_SW_4, WORLD_SW_NETHER, WORLD_SW_END -> true
-    else -> false
+    WORLD_SW, WORLD_SW_2, WORLD_SW_3, WORLD_SW_4, WORLD_SW_NETHER, WORLD_SW_END => true
+    else => false
   }
 
 /**
@@ -35,8 +35,8 @@ val ManagedWorld.isSeichi: Boolean
  */
 val ManagedWorld.isSeichiWorldWithWGRegions: Boolean
   get() = when (this) {
-    WORLD_SW_2, WORLD_SW_4 -> true
-    else -> false
+    WORLD_SW_2, WORLD_SW_4 => true
+    else => false
   }
 
 val ManagedWorld.shouldMuteCoreProtect: Boolean

@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.util.Util
 
 object EventCommand {
   val executor = playerCommandBuilder
-      .execution { context ->
+      .execution { context =>
         if (context.args.yetToBeParsed.firstOrNull() != "get") return@execution EmptyEffect
 
         val player = context.sender

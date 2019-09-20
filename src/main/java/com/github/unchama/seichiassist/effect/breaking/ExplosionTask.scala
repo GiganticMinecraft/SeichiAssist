@@ -9,13 +9,13 @@ import org.bukkit.inventory.ItemStack
 class ExplosionTask(private val player: Player,
                     private val step: Boolean,
                     private val tool: ItemStack,
-                    private val blocks: Set<Block>,
+                    private val blocks: Set[Block],
                     private val start: XYZTuple,
                     private val end: XYZTuple,
                     private val droploc: Location) : BukkitRunnable() {
 
   override def run() {
-    AxisAlignedCuboid(start, end).forEachGridPoint(2) { (x, y, z) ->
+    AxisAlignedCuboid(start, end).forEachGridPoint(2) { (x, y, z) =>
       val explosionLocation = droploc.clone()
       explosionLocation.add(x.toDouble(), y.toDouble(), z.toDouble())
 

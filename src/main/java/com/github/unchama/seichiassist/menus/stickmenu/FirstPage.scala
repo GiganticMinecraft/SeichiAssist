@@ -45,7 +45,7 @@ private object FirstPage: Menu {
           "${GRAY}・整地ワールド",
           "${GRAY}間を移動するときに使います",
           "$DARK_RED${UNDERLINE}クリックするとワープします",
-          "${DARK_GRAY}command->[/spawn]"
+          "${DARK_GRAY}command=>[/spawn]"
       )
 
       Button(
@@ -216,7 +216,7 @@ private object FirstPage: Menu {
                   "$RESET${GRAY}整地ワールドで使うと、良さげな土地にワープします",
                   "$RESET${GRAY}βテスト中のため、謎挙動にご注意ください",
                   "$RESET$DARK_RED${UNDERLINE}クリックで発動",
-                  "$RESET${DARK_GRAY}command->[/rtp]"
+                  "$RESET${DARK_GRAY}command=>[/rtp]"
               ))
               .build()
 
@@ -238,7 +238,7 @@ private object FirstPage: Menu {
                   "$RESET${RED}ただの作業台じゃないんです…",
                   "$RESET${YELLOW}自動レシピ補完機能付きの",
                   "$RESET${YELLOW}最強な作業台はこちら",
-                  "$RESET${DARK_GRAY}command->[/fc craft]"
+                  "$RESET${DARK_GRAY}command=>[/fc craft]"
               ))
               .build()
 
@@ -349,7 +349,7 @@ private object FirstPage: Menu {
     suspend def Player.computeEffectSuppressionButton(): Button = recomputedButton {
       val openerData = SeichiAssist.playermap[uniqueId]!!
 
-      val buttonLore: List<String> = run {
+      val buttonLore: List[String] = run {
         val toggleNavigation = listOf(
             openerData.settings.fastDiggingEffectSuppression.currentStatus(),
             "$RESET$DARK_RED${UNDERLINE}クリックで" + openerData.settings.fastDiggingEffectSuppression.nextToggledStatus()
@@ -419,7 +419,7 @@ private object FirstPage: Menu {
 
       val minimumLevelRequired = SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
 
-      val buttonLore: List<String> = run {
+      val buttonLore: List[String] = run {
         val explanation = listOf(
             "$RESET${GREEN}説明しよう!MineStackとは…",
             "${RESET}主要アイテムを無限にスタック出来る!",
@@ -745,7 +745,7 @@ private object FirstPage: Menu {
                 .enchanted()
                 .title("プレゼントボックス")
                 .lore(listOf(
-                    "$RESET$RED<バレンタインイベント記念>",
+                    "$RESET$RED[バレンタインイベント記念]",
                     "$RESET${AQUA}記念品として",
                     "$RESET${GREEN}チョコチップクッキー×64個",
                     "$RESET${AQUA}を配布します。",
@@ -812,7 +812,7 @@ private object FirstPage: Menu {
         }
       }
 
-  override val open: TargetedEffect<Player> = computedEffect { player ->
+  override val open: TargetedEffect[Player] = computedEffect { player =>
     val session = MenuInventoryView(4.rows(), "${LIGHT_PURPLE}木の棒メニュー").createNewSession()
 
     sequentialEffect(

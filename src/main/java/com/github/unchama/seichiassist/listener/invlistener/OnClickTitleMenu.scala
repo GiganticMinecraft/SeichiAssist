@@ -44,7 +44,7 @@ object OnClickTitleMenu : Listener {
     val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
     val prefix = "${ChatColor.DARK_PURPLE}${ChatColor.BOLD}"
     when (title) {
-      "${prefix}実績・二つ名システム" -> {
+      "${prefix}実績・二つ名システム" => {
         event.isCancelled = true
 
         //プレイヤーインベントリのクリックの場合終了
@@ -111,7 +111,7 @@ object OnClickTitleMenu : Listener {
         //予約付与システム受け取り処理
       }
 
-      "${prefix}カテゴリ「整地」" -> {
+      "${prefix}カテゴリ「整地」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -142,7 +142,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}カテゴリ「建築」" -> {
+      "${prefix}カテゴリ「建築」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -160,7 +160,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}カテゴリ「ログイン」" -> {
+      "${prefix}カテゴリ「ログイン」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -198,7 +198,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}カテゴリ「やりこみ」" -> {
+      "${prefix}カテゴリ「やりこみ」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -216,7 +216,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}カテゴリ「特殊」" -> {
+      "${prefix}カテゴリ「特殊」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -248,7 +248,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}二つ名組合せシステム" -> {
+      "${prefix}二つ名組合せシステム" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -263,7 +263,7 @@ object OnClickTitleMenu : Listener {
          */
         when (itemstackcurrent.type) {
           //実績ポイント最新化
-          Material.EMERALD_ORE -> {
+          Material.EMERALD_ORE => {
 
             player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             playerdata.recalculateAchievePoint()
@@ -271,7 +271,7 @@ object OnClickTitleMenu : Listener {
           }
 
           //エフェクトポイント→実績ポイント変換
-          Material.EMERALD -> {
+          Material.EMERALD => {
             player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             //不足してたらスルー
             if (playerdata.activeskilldata.effectpoint < 10) {
@@ -286,32 +286,32 @@ object OnClickTitleMenu : Listener {
           }
 
           //パーツショップ
-          Material.ITEM_FRAME -> {
+          Material.ITEM_FRAME => {
 
             player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
             player.openInventory(MenuInventoryData.setTitleShopData(player))
           }
 
           //前パーツ
-          Material.WATER_BUCKET -> {
+          Material.WATER_BUCKET => {
 
             player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
             player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
           }
 
           //中パーツ
-          Material.MILK_BUCKET -> {
+          Material.MILK_BUCKET => {
 
             player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
             player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
           }
 
           //後パーツ
-          Material.LAVA_BUCKET -> {
+          Material.LAVA_BUCKET => {
 
             player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
             player.openInventory(MenuInventoryData.setFreeTitle3Data(player))}
-          else -> {
+          else => {
             // NOP
           }
         }
@@ -323,7 +323,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}二つ名組合せ「前」" -> {
+      "${prefix}二つ名組合せ「前」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -365,7 +365,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}二つ名組合せ「中」" -> {
+      "${prefix}二つ名組合せ「中」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -407,7 +407,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}二つ名組合せ「後」" -> {
+      "${prefix}二つ名組合せ「後」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -449,7 +449,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}実績ポイントショップ" -> {
+      "${prefix}実績ポイントショップ" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -513,7 +513,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}実績「整地神ランキング」" -> {
+      "${prefix}実績「整地神ランキング」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -536,34 +536,34 @@ object OnClickTitleMenu : Listener {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           val name = itemstackcurrent.itemMeta.displayName
           when {
-            "No1001「" + SeichiAssist.seichiAssistConfig.getTitle1(1001) + "」" in name -> setTitle(first = 1001)
-            "No1002「" + SeichiAssist.seichiAssistConfig.getTitle1(1002) + "」" in name -> setTitle(first = 1002)
-            "No1003「" + SeichiAssist.seichiAssistConfig.getTitle1(1003) + "」" in name -> setTitle(first = 1003)
-            "No1004「" + SeichiAssist.seichiAssistConfig.getTitle1(1004) + "」" in name -> setTitle(first = 1004)
-            "No1010「" + SeichiAssist.seichiAssistConfig.getTitle1(1010) + "」" in name -> setTitle(first = 1010)
+            "No1001「" + SeichiAssist.seichiAssistConfig.getTitle1(1001) + "」" in name => setTitle(first = 1001)
+            "No1002「" + SeichiAssist.seichiAssistConfig.getTitle1(1002) + "」" in name => setTitle(first = 1002)
+            "No1003「" + SeichiAssist.seichiAssistConfig.getTitle1(1003) + "」" in name => setTitle(first = 1003)
+            "No1004「" + SeichiAssist.seichiAssistConfig.getTitle1(1004) + "」" in name => setTitle(first = 1004)
+            "No1010「" + SeichiAssist.seichiAssistConfig.getTitle1(1010) + "」" in name => setTitle(first = 1010)
             ("No1011「" + SeichiAssist.seichiAssistConfig.getTitle1(1011)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9904) + SeichiAssist.seichiAssistConfig.getTitle3(1011) + "」") in name -> {
+                + SeichiAssist.seichiAssistConfig.getTitle2(9904) + SeichiAssist.seichiAssistConfig.getTitle3(1011) + "」") in name => {
               setTitle(1011, 9904, 1011)
             }
             ("No1012「" + SeichiAssist.seichiAssistConfig.getTitle1(1012)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(1012) + "」") in name -> {
+                + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(1012) + "」") in name => {
               setTitle(1012, 9901, 1012)
             }
             ("No1005「" + SeichiAssist.seichiAssistConfig.getTitle1(1005)
-                + SeichiAssist.seichiAssistConfig.getTitle3(1005) + "」") in name -> {
+                + SeichiAssist.seichiAssistConfig.getTitle3(1005) + "」") in name => {
               setTitle(first = 1005, third = 1012)
             }
-            ("No1006「" + SeichiAssist.seichiAssistConfig.getTitle1(1006) + "」") in name -> setTitle(first = 1006)
+            ("No1006「" + SeichiAssist.seichiAssistConfig.getTitle1(1006) + "」") in name => setTitle(first = 1006)
             ("No1007「" + SeichiAssist.seichiAssistConfig.getTitle1(1007)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9904) + SeichiAssist.seichiAssistConfig.getTitle3(1007) + "」") in name -> {
+                + SeichiAssist.seichiAssistConfig.getTitle2(9904) + SeichiAssist.seichiAssistConfig.getTitle3(1007) + "」") in name => {
               setTitle(1007, 9904, 1007)
             }
             ("No1008「" + SeichiAssist.seichiAssistConfig.getTitle1(1008)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(1008) + "」") in name -> {
+                + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(1008) + "」") in name => {
               setTitle(1008, 9901, 1008)
             }
             ("No1009「" + SeichiAssist.seichiAssistConfig.getTitle1(1009)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9909) + SeichiAssist.seichiAssistConfig.getTitle3(1009) + "」") in name -> {
+                + SeichiAssist.seichiAssistConfig.getTitle2(9909) + SeichiAssist.seichiAssistConfig.getTitle3(1009) + "」") in name => {
               setTitle(1009, 9909, 1009)
             }
           }
@@ -576,7 +576,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「整地量」" -> {
+      "${prefix}実績「整地量」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -599,34 +599,34 @@ object OnClickTitleMenu : Listener {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           val name = itemstackcurrent.itemMeta.displayName
           when {
-            "No3001「" + SeichiAssist.seichiAssistConfig.getTitle1(3001) + "」" in name -> setTitle(first = 3001)
+            "No3001「" + SeichiAssist.seichiAssistConfig.getTitle1(3001) + "」" in name => setTitle(first = 3001)
             ("No3002「" + SeichiAssist.seichiAssistConfig.getTitle1(3002)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(3002) + "」") in name -> setTitle(3002, 9905, 3002)
-            "No3003「" + SeichiAssist.seichiAssistConfig.getTitle1(3003) + "」" in name -> setTitle(first = 3003)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(3002) + "」") in name => setTitle(3002, 9905, 3002)
+            "No3003「" + SeichiAssist.seichiAssistConfig.getTitle1(3003) + "」" in name => setTitle(first = 3003)
             ("No3004「" + SeichiAssist.seichiAssistConfig.getTitle1(3004)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9902) + "」") in name -> setTitle(first = 3004, second = 9902)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9902) + "」") in name => setTitle(first = 3004, second = 9902)
             ("No3005「" + SeichiAssist.seichiAssistConfig.getTitle1(3005)
-                + SeichiAssist.seichiAssistConfig.getTitle3(3005) + "」") in name -> setTitle(first = 3005, third = 3005)
-            "No3006「" + SeichiAssist.seichiAssistConfig.getTitle1(3006) + "」" in name -> setTitle(first = 3006)
+                + SeichiAssist.seichiAssistConfig.getTitle3(3005) + "」") in name => setTitle(first = 3005, third = 3005)
+            "No3006「" + SeichiAssist.seichiAssistConfig.getTitle1(3006) + "」" in name => setTitle(first = 3006)
             ("No3007「" + SeichiAssist.seichiAssistConfig.getTitle1(3007)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + "」") in name -> setTitle(first = 3007, second = 9905)
-            "No3008「" + SeichiAssist.seichiAssistConfig.getTitle1(3008) + "」" in name -> setTitle(first = 3008)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + "」") in name => setTitle(first = 3007, second = 9905)
+            "No3008「" + SeichiAssist.seichiAssistConfig.getTitle1(3008) + "」" in name => setTitle(first = 3008)
             ("No3009「" + SeichiAssist.seichiAssistConfig.getTitle1(3009)
-                + SeichiAssist.seichiAssistConfig.getTitle3(3009) + "」") in name -> setTitle(first = 3009, third = 3009)
+                + SeichiAssist.seichiAssistConfig.getTitle3(3009) + "」") in name => setTitle(first = 3009, third = 3009)
             ("No3010「" + SeichiAssist.seichiAssistConfig.getTitle1(3010)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9909) + SeichiAssist.seichiAssistConfig.getTitle3(3010) + "」") in name -> setTitle(3010, 9909, 3010)
-            "No3011「" + SeichiAssist.seichiAssistConfig.getTitle1(3011) + "」" in name -> setTitle(first = 3011)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9909) + SeichiAssist.seichiAssistConfig.getTitle3(3010) + "」") in name => setTitle(3010, 9909, 3010)
+            "No3011「" + SeichiAssist.seichiAssistConfig.getTitle1(3011) + "」" in name => setTitle(first = 3011)
             ("No3012「" + SeichiAssist.seichiAssistConfig.getTitle1(3012)
-                + SeichiAssist.seichiAssistConfig.getTitle3(3012) + "」") in name -> setTitle(first = 3012, third = 3012)
+                + SeichiAssist.seichiAssistConfig.getTitle3(3012) + "」") in name => setTitle(first = 3012, third = 3012)
             ("No3013「" + SeichiAssist.seichiAssistConfig.getTitle1(3013)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(3013) + "」") in name -> setTitle(3013, 9905, 3013)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(3013) + "」") in name => setTitle(3013, 9905, 3013)
             ("No3014「" + SeichiAssist.seichiAssistConfig.getTitle1(3014)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9909) + SeichiAssist.seichiAssistConfig.getTitle3(3014) + "」") in name -> setTitle(3014, 9909, 3014)
-            "No3015「" + SeichiAssist.seichiAssistConfig.getTitle1(3015) + "」" in name -> setTitle(first = 3015)
-            "No3016「" + SeichiAssist.seichiAssistConfig.getTitle1(3016) + "」" in name -> setTitle(first = 3016)
-            "No3017「" + SeichiAssist.seichiAssistConfig.getTitle1(3017) + "」" in name -> setTitle(first = 3017)
-            "No3018「" + SeichiAssist.seichiAssistConfig.getTitle1(3018) + "」" in name -> setTitle(first = 3018)
-            "No3019「" + SeichiAssist.seichiAssistConfig.getTitle1(3019) + "」" in name -> setTitle(first = 3019)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9909) + SeichiAssist.seichiAssistConfig.getTitle3(3014) + "」") in name => setTitle(3014, 9909, 3014)
+            "No3015「" + SeichiAssist.seichiAssistConfig.getTitle1(3015) + "」" in name => setTitle(first = 3015)
+            "No3016「" + SeichiAssist.seichiAssistConfig.getTitle1(3016) + "」" in name => setTitle(first = 3016)
+            "No3017「" + SeichiAssist.seichiAssistConfig.getTitle1(3017) + "」" in name => setTitle(first = 3017)
+            "No3018「" + SeichiAssist.seichiAssistConfig.getTitle1(3018) + "」" in name => setTitle(first = 3018)
+            "No3019「" + SeichiAssist.seichiAssistConfig.getTitle1(3019) + "」" in name => setTitle(first = 3019)
           }
           player.openInventory(MenuInventoryData.getTitleAmountData(player))
 
@@ -637,7 +637,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「参加時間」" -> {
+      "${prefix}実績「参加時間」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -748,7 +748,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「通算ログイン」" -> {
+      "${prefix}実績「通算ログイン」" => {
         event.isCancelled = true
 
         //プレイヤーインベントリのクリックの場合終了
@@ -833,7 +833,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「連続ログイン」" -> {
+      "${prefix}実績「連続ログイン」" => {
         event.isCancelled = true
 
         //プレイヤーインベントリのクリックの場合終了
@@ -855,19 +855,19 @@ object OnClickTitleMenu : Listener {
 
           when {
             ("No5001「" + SeichiAssist.seichiAssistConfig.getTitle1(5001)
-                + SeichiAssist.seichiAssistConfig.getTitle2(5001) + "」") in name -> setTitle(first = 5001, second = 5001)
+                + SeichiAssist.seichiAssistConfig.getTitle2(5001) + "」") in name => setTitle(first = 5001, second = 5001)
             ("No5002「" + SeichiAssist.seichiAssistConfig.getTitle1(5002)
-                + SeichiAssist.seichiAssistConfig.getTitle3(5002) + "」") in name -> setTitle(first = 5002, third = 5002)
-            "No5003「" + SeichiAssist.seichiAssistConfig.getTitle1(5003) + "」" in name -> setTitle(first = 5003)
+                + SeichiAssist.seichiAssistConfig.getTitle3(5002) + "」") in name => setTitle(first = 5002, third = 5002)
+            "No5003「" + SeichiAssist.seichiAssistConfig.getTitle1(5003) + "」" in name => setTitle(first = 5003)
             ("No5004「" + SeichiAssist.seichiAssistConfig.getTitle1(5004)
-                + SeichiAssist.seichiAssistConfig.getTitle3(5004) + "」") in name -> setTitle(first = 5004, third = 5004)
+                + SeichiAssist.seichiAssistConfig.getTitle3(5004) + "」") in name => setTitle(first = 5004, third = 5004)
             ("No5005「" + SeichiAssist.seichiAssistConfig.getTitle1(5005)
-                + SeichiAssist.seichiAssistConfig.getTitle3(5005) + "」") in name -> setTitle(first = 5005, third = 5005)
+                + SeichiAssist.seichiAssistConfig.getTitle3(5005) + "」") in name => setTitle(first = 5005, third = 5005)
             ("No5006「" + SeichiAssist.seichiAssistConfig.getTitle1(5006)
-                + SeichiAssist.seichiAssistConfig.getTitle3(5006) + "」") in name -> setTitle(first = 5006, third = 5006)
-            "No5007「" + SeichiAssist.seichiAssistConfig.getTitle1(5007) + "」" in name -> setTitle(first = 5007)
+                + SeichiAssist.seichiAssistConfig.getTitle3(5006) + "」") in name => setTitle(first = 5006, third = 5006)
+            "No5007「" + SeichiAssist.seichiAssistConfig.getTitle1(5007) + "」" in name => setTitle(first = 5007)
             ("No5008「" + SeichiAssist.seichiAssistConfig.getTitle1(5008)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + "」") in name -> setTitle(first = 5008, second = 9905)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + "」") in name => setTitle(first = 5008, second = 9905)
           }
 
           player.openInventory(MenuInventoryData.getTitleJoinChainData(player))
@@ -879,7 +879,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「JMS投票数」" -> {
+      "${prefix}実績「JMS投票数」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -932,7 +932,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「公式イベント」" -> {
+      "${prefix}実績「公式イベント」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -1065,7 +1065,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「記念日」" -> {
+      "${prefix}実績「記念日」" => {
         event.isCancelled = true
 
         //プレイヤーインベントリのクリックの場合終了
@@ -1209,7 +1209,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}実績「極秘任務」" -> {
+      "${prefix}実績「極秘任務」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -1234,11 +1234,11 @@ object OnClickTitleMenu : Listener {
 
           when {
             ("No8001「" + SeichiAssist.seichiAssistConfig.getTitle1(8001)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(8001) + "」") in name -> setTitle(8001, 9905, 8001)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(8001) + "」") in name => setTitle(8001, 9905, 8001)
             ("No8002「" + SeichiAssist.seichiAssistConfig.getTitle1(8002)
-                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(8002) + "」") in name -> setTitle(8002, 9905, 8002)
+                + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(8002) + "」") in name => setTitle(8002, 9905, 8002)
             ("No8003「" + SeichiAssist.seichiAssistConfig.getTitle1(8003)
-                + SeichiAssist.seichiAssistConfig.getTitle3(8003) + "」") in name -> setTitle(first = 8003, third = 8003)
+                + SeichiAssist.seichiAssistConfig.getTitle3(8003) + "」") in name => setTitle(first = 8003, third = 8003)
           }
           player.openInventory(MenuInventoryData.getTitleSecretData(player))
 
@@ -1247,16 +1247,16 @@ object OnClickTitleMenu : Listener {
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
         }//実績メニューに戻る
       }
-      else -> {
+      else => {
         // NOP
       }
     }
   }
 
   private def getTitle(where: Int, id: Int) = when (where) {
-    1 -> SeichiAssist.seichiAssistConfig.getTitle1(id)
-    2 -> SeichiAssist.seichiAssistConfig.getTitle2(id)
-    3 -> SeichiAssist.seichiAssistConfig.getTitle3(id)
-    else -> throw RuntimeException("メソッドの呼び出し規約違反: whereは、1..3のいずれかでなければいけません。")
+    1 => SeichiAssist.seichiAssistConfig.getTitle1(id)
+    2 => SeichiAssist.seichiAssistConfig.getTitle2(id)
+    3 => SeichiAssist.seichiAssistConfig.getTitle3(id)
+    else => throw RuntimeException("メソッドの呼び出し規約違反: whereは、1..3のいずれかでなければいけません。")
   }
 }

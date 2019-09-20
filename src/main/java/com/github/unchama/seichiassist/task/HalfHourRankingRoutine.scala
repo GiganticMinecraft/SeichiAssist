@@ -35,7 +35,7 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
       totalBreakCount += halfHourBlock.increase.toInt()
     }
 
-    // ここで、0 -> 第一位、 1 -> 第二位、・・・n -> 第(n+1)位にする (つまり降順)
+    // ここで、0 => 第一位、 1 => 第二位、・・・n => 第(n+1)位にする (つまり降順)
     val sortedPlayerData = SeichiAssist.playermap.values.toList()
         .filter { it.halfhourblock.increase != 0L }
         .sortedBy { it.halfhourblock.increase }
@@ -52,7 +52,7 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
       sortedPlayerData
           .take(3) // 1から3位まで
           .zip(rankingPositionColor)
-          .forEachIndexed { index, (playerData, positionColor) ->
+          .forEachIndexed { index, (playerData, positionColor) =>
             val playerNameText = "$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}${ChatColor.WHITE}"
             val increaseAmountText = "${ChatColor.AQUA}${playerData.halfhourblock.increase}${ChatColor.WHITE}"
 

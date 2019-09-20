@@ -10,15 +10,15 @@ object MineStackMainMenu: Menu {
   private object ButtonComputations {
     val categoryButtonLayout = run {
       def iconMaterialFor(category: MineStackObjectCategory): Material = when (category) {
-        ORES -> Material.DIAMOND_ORE
-        MOB_DROP -> Material.ENDER_PEARL
-        AGRICULTURAL -> Material.SEEDS
-        BUILDING -> Material.SMOOTH_BRICK
-        REDSTONE_AND_TRANSPORTATION -> Material.REDSTONE
-        GACHA_PRIZES -> Material.GOLDEN_APPLE
+        ORES => Material.DIAMOND_ORE
+        MOB_DROP => Material.ENDER_PEARL
+        AGRICULTURAL => Material.SEEDS
+        BUILDING => Material.SMOOTH_BRICK
+        REDSTONE_AND_TRANSPORTATION => Material.REDSTONE
+        GACHA_PRIZES => Material.GOLDEN_APPLE
       }
 
-      val layoutMap = MineStackObjectCategory.values().mapIndexed { index, category ->
+      val layoutMap = MineStackObjectCategory.values().mapIndexed { index, category =>
         val slotIndex = index + 1 // 0には自動スタック機能トグルが入るので、1から入れ始める
         val iconItemStack = IconItemStackBuilder(iconMaterialFor(category))
             .title("$BLUE$UNDERLINE$BOLD${category.uiLabel}")
@@ -43,7 +43,7 @@ object MineStackMainMenu: Menu {
     suspend def Player.computeHistoricalMineStackLayout(): IndexedSlotLayout {
       val playerData = SeichiAssist.playermap[uniqueId]!!
 
-      val buttonMapping = playerData.hisotryData.usageHistory.mapIndexed { index, mineStackObject ->
+      val buttonMapping = playerData.hisotryData.usageHistory.mapIndexed { index, mineStackObject =>
         val slotIndex = 18 + index // 3行目から入れだす
         val button = with(MineStackButtons) { getMineStackItemButtonOf(mineStackObject) }
 
@@ -65,7 +65,7 @@ object MineStackMainMenu: Menu {
     }
   }
 
-  override val open: TargetedEffect<Player> = computedEffect { player ->
+  override val open: TargetedEffect[Player] = computedEffect { player =>
     val session = MenuInventoryView(
         6.rows(),
         "$DARK_PURPLE${BOLD}MineStackメインメニュー"

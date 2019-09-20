@@ -525,5 +525,5 @@ object MineStackObjectList {
   val minestackGachaPrizes = minestackBuiltinGachaPrizes.toMutableList()
 
   // ランダムアクセスしないので
-  val minestacklist: MutableList<MineStackObj> = LinkedList()
+  val minestacklist: MutableList[MineStackObj] = LinkedList()
 }

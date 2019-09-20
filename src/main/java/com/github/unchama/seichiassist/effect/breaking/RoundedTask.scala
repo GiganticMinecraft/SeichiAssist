@@ -14,9 +14,9 @@ abstract class RoundedTask : BukkitRunnable() {
   override def run() {
     round++
     when (round) {
-      1 -> firstAction()
-      2 -> secondAction()
-      else -> otherwiseAction()
+      1 => firstAction()
+      2 => secondAction()
+      else => otherwiseAction()
     }
   }
 }

@@ -11,8 +11,8 @@ class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
     val `in` = DataInputStream(stream)
     try {
       when (`in`.readUTF()) {
-        "GetLocation" -> getLocation(`in`.readUTF(), `in`.readUTF(), `in`.readUTF())
-        "UnloadPlayerData" -> savePlayerDataOnUpstreamRequest(`in`.readUTF())
+        "GetLocation" => getLocation(`in`.readUTF(), `in`.readUTF(), `in`.readUTF())
+        "UnloadPlayerData" => savePlayerDataOnUpstreamRequest(`in`.readUTF())
       }
     } catch (e: IOException) {
       e.printStackTrace()

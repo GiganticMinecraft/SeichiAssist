@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack
 
 class BlizzardTask(private val player: Player, private val skillData: ActiveSkillData,
                    private val tool: ItemStack,
-                   private val blocks: Set<Block>,
+                   private val blocks: Set[Block],
                    private val start: Coordinate,
                    private val end: Coordinate,
                    private val droploc: Location) : RoundedTask() {
@@ -36,7 +36,7 @@ class BlizzardTask(private val player: Player, private val skillData: ActiveSkil
 
   override def secondAction() {
     //2回目のrun
-    AxisAlignedCuboid(XYZTuple(start.x, start.y, start.z), XYZTuple(end.x, end.y, end.z)).forEachGridPoint { xyzTuple ->
+    AxisAlignedCuboid(XYZTuple(start.x, start.y, start.z), XYZTuple(end.x, end.y, end.z)).forEachGridPoint { xyzTuple =>
       //逐一更新が必要な位置
       val effectloc = droploc.clone().add(xyzTuple.x.toDouble(), xyzTuple.y.toDouble(), xyzTuple.z.toDouble())
       if (blocks.contains(effectloc.block)) {

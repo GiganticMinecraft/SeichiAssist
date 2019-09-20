@@ -267,7 +267,7 @@ object BlockPlacementSkillMenu extends Menu {
       35 to computeButtonToToggleConsumingMineStack()
   )
 
-  override val open: TargetedEffect<Player> = computedEffect { player ->
+  override val open: TargetedEffect[Player] = computedEffect { player =>
     val session = MenuInventoryView(4.rows(), "$DARK_PURPLE${BOLD}「範囲設置スキル」設定画面").createNewSession()
 
     sequentialEffect(

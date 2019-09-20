@@ -278,7 +278,7 @@ object BuildMainMenu : Menu {
         )
       }
 
-  override val open: TargetedEffect<Player> = computedEffect { player ->
+  override val open: TargetedEffect[Player] = computedEffect { player =>
     val session = MenuInventoryView(4.rows(), "${LIGHT_PURPLE}木の棒メニューB").createNewSession()
 
     sequentialEffect(

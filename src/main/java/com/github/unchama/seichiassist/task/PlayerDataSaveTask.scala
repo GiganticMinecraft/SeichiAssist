@@ -44,7 +44,7 @@ suspend def savePlayerData(playerdata: PlayerData) {
           + "location_z = values(location_z), "
           + "world_name = values(world_name)")
 
-      databaseGateway.con.prepareStatement(template).use { statement ->
+      databaseGateway.con.prepareStatement(template).use { statement =>
         statement.setString(1, playerUuid)
         statement.setInt(2, serverId)
         statement.setInt(3, subHomeId)

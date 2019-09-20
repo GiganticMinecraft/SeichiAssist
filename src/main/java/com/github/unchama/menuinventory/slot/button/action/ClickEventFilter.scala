@@ -5,7 +5,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 /**
  * @author karayuu
  */
-enum class ClickEventFilter(private val predicate: (InventoryClickEvent) -> Boolean) {
+enum class ClickEventFilter(private val predicate: (InventoryClickEvent) => Boolean) {
   /**
    * 左クリックを表す [ClickEventFilter] です.
    */

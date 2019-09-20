@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 
 object RegionOwnerTransferCommand {
   @Suppress("RedundantSuspendModifier")
-  private suspend def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): TargetedEffect<Player> {
+  private suspend def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): TargetedEffect[Player] {
     val owners = region.owners
 
     if (!owners.contains(donner.uniqueId)) {
@@ -29,7 +29,7 @@ object RegionOwnerTransferCommand {
   val executor = playerCommandBuilder
       .argumentsParsers(listOf(
           Parsers.identity,
-          parser { recipientName ->
+          parser { recipientName =>
             val recipient = Bukkit.getPlayer(recipientName)
 
             if (recipient != null) {
@@ -39,7 +39,7 @@ object RegionOwnerTransferCommand {
             }
           }
       ))
-      .execution { context ->
+      .execution { context =>
         val regionName = context.args.parsed[0] as String
         val newOwner = context.args.parsed[1] as Player
 

@@ -18,13 +18,13 @@ enum class ActiveSkillEffect (
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
                      tool: ItemStack,
-                     breaklist: Set<Block>,
+                     breaklist: Set[Block],
                      start: Coordinate, end: Coordinate,
                      standard: Location) {
     val skillId = skillData.skillnum
     when (this) {
-      EXPLOSION -> ExplosionTask(player, skillId <= 2, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
-      BLIZZARD -> {
+      EXPLOSION => ExplosionTask(player, skillId <= 2, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
+      BLIZZARD => {
         val effect = BlizzardTask(player, skillData, tool, breaklist, start, end, standard)
 
         if (skillId < 3) {
@@ -34,7 +34,7 @@ enum class ActiveSkillEffect (
           effect.runTaskTimer(plugin, 0, period)
         }
       }
-      METEO -> {
+      METEO => {
         val delay = if (skillId < 3) 1L else 10L
 
         MeteoTask(player, skillData, tool, breaklist, start, end, standard)
@@ -46,9 +46,9 @@ enum class ActiveSkillEffect (
   //エフェクトの実行処理分岐
   def runArrowEffect(player: Player) {
     val effect = when (this@ActiveSkillEffect) {
-      EXPLOSION -> ArrowEffects.singleArrowExplosionEffect
-      BLIZZARD -> ArrowEffects.singleArrowBlizzardEffect
-      METEO -> ArrowEffects.singleArrowMeteoEffect
+      EXPLOSION => ArrowEffects.singleArrowExplosionEffect
+      BLIZZARD => ArrowEffects.singleArrowBlizzardEffect
+      METEO => ArrowEffects.singleArrowMeteoEffect
     }
 
     GlobalScope.launch(Schedulers.async) { effect.runFor(player) }
@@ -57,9 +57,9 @@ enum class ActiveSkillEffect (
 
 object ActiveSkillEffect {
   def getNamebyNum(effectnum: Int): String = values()
-    .find { activeSkillEffect -> activeSkillEffect.num == effectnum }
+    .find { activeSkillEffect => activeSkillEffect.num == effectnum }
   ?.let { it.nameOnUI } ?: "未設定"
 
   def fromSqlName(sqlName: String): ActiveSkillEffect? = values()
-    .find { effect -> sqlName == effect.nameOnDatabase }
+    .find { effect => sqlName == effect.nameOnDatabase }
 }

@@ -10,20 +10,20 @@ object SeichiHasteCommand {
   }
   object ScopeSpecification {
     def fromString(string: String) = when (string) {
-      "player" -> PLAYER
-      "all" -> ALL
-      else -> null
+      "player" => PLAYER
+      "all" => ALL
+      else => null
     }
   }
 
   private val descriptionPrintExecutor = EchoExecutor(listOf(
-      "${ChatColor.RED}/seichihaste <説明文id> <効果の持続ティック数> <効果の強さ> <スコープ指定子>",
+      "${ChatColor.RED}/seichihaste [説明文id] [効果の持続ティック数] [効果の強さ] [スコープ指定子]",
       "指定されたプレイヤーに採掘速度上昇効果を付与します。",
       "同じサーバーにログイン中であるプレーヤーにしか適用されません。",
       "",
-      "<スコープ指定子>は、 player <プレーヤー名> または all のどちらかです。",
+      "[スコープ指定子]は、 player [プレーヤー名] または all のどちらかです。",
       "",
-      "<説明文id>は上昇値に付加する説明文を指定します。",
+      "[説明文id]は上昇値に付加する説明文を指定します。",
       "指定できるidは0から5の整数で、それぞれ次の説明文を指します。",
       " - 0 不明な上昇値",
       " - 1 接続人数から",
@@ -39,7 +39,7 @@ object SeichiHasteCommand {
               Parsers.closedRangeInt(0, 5, "説明文idは0から5の整数を指定してください。".asMessageEffect()),
               Parsers.nonNegativeInteger("効果の持続ティック数は非負の整数を指定してください。".asMessageEffect()),
               Parsers.double("効果の強さは実数を指定してください。".asMessageEffect()),
-              parser { argument ->
+              parser { argument =>
                 ScopeSpecification.fromString(argument)
                     ?.let { succeedWith(it) }
                     ?: failWith("スコープ指定子はallかplayerのどちらかを指定してください。")
@@ -47,7 +47,7 @@ object SeichiHasteCommand {
           ),
           onMissingArguments = descriptionPrintExecutor
       )
-      .execution { context ->
+      .execution { context =>
         val descriptionId = context.args.parsed[0] as Int
         val effectLengthInTick = context.args.parsed[1] as Int
         val effectAmplifier = context.args.parsed[2] as Double
@@ -57,7 +57,7 @@ object SeichiHasteCommand {
         val effectLengthString = TypeConverter.toTimeString(effectLengthInTick / 20)
 
         when (scope) {
-          ScopeSpecification.PLAYER -> {
+          ScopeSpecification.PLAYER => {
             val playerName = context.args.yetToBeParsed.firstOrNull()
                 ?: return@execution "対象のプレーヤー名を指定してください。".asMessageEffect()
 
@@ -68,7 +68,7 @@ object SeichiHasteCommand {
 
             "${ChatColor.LIGHT_PURPLE}$playerName に上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
           }
-          ScopeSpecification.ALL -> {
+          ScopeSpecification.ALL => {
             SeichiAssist.playermap.values.forEach {
               it.effectdatalist.add(effectData)
             }

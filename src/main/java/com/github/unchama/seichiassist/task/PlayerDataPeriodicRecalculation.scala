@@ -153,7 +153,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
           5101 until 5020,
           6001 until 6008,
           8001 until 8002
-      ).flatten().forEach { achievementNumber ->
+      ).flatten().forEach { achievementNumber =>
         if (!playerData.TitleFlags.get(achievementNumber)) {
           SeichiAchievement.tryAchieve(player, achievementNumber)
         }

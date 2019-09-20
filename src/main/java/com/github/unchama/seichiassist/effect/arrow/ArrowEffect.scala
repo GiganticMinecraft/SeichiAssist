@@ -4,12 +4,12 @@ import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionType
 import org.bukkit.{Bukkit, Material, Sound}
 
-inline def <reified P: Projectile> arrowEffect(spawnConfiguration: ProjectileSpawnConfiguration,
+inline def [reified P <: Projectile] arrowEffect(spawnConfiguration: ProjectileSpawnConfiguration,
                                                                  sound: Sound? = null,
-                                                                 crossinline projectileModifier: P.() -> Unit = {}): TargetedEffect<Player> =
+                                                                 crossinline projectileModifier: P.() => Unit = {}): TargetedEffect[Player] =
     sequentialEffect(
         if (sound != null) FocusedSoundEffect(sound, 1.0f, 1.3f) else EmptyEffect,
-        computedEffect { player ->
+        computedEffect { player =>
           val playerLocation = player.location.clone()
 
           UnfocusedEffect {
@@ -37,7 +37,7 @@ inline def <reified P: Projectile> arrowEffect(spawnConfiguration: ProjectileSpa
     )
 
 object ArrowEffects {
-  val singleArrowBlizzardEffect: TargetedEffect<Player> = arrowEffect<Snowball>(
+  val singleArrowBlizzardEffect: TargetedEffect[Player] = arrowEffect[Snowball](
       ProjectileSpawnConfiguration(
           1.0,
           Triple(0.0, 1.6, 0.0),
@@ -46,14 +46,14 @@ object ArrowEffects {
       Sound.ENTITY_SNOWBALL_THROW
   )
 
-  val singleArrowMagicEffect: TargetedEffect<Player> = run {
+  val singleArrowMagicEffect: TargetedEffect[Player] = run {
     val thrownPotionItem = ItemStack(Material.SPLASH_POTION).apply {
       itemMeta = (Bukkit.getItemFactory().getItemMeta(Material.SPLASH_POTION) as PotionMeta).apply {
         basePotionData = PotionData(PotionType.INSTANT_HEAL)
       }
     }
 
-    arrowEffect<ThrownPotion>(
+    arrowEffect[ThrownPotion](
         ProjectileSpawnConfiguration(
             0.8,
             Triple(0.0, 1.6, 0.0),
@@ -63,7 +63,7 @@ object ArrowEffects {
     ) { item = thrownPotionItem }
   }
 
-  val singleArrowMeteoEffect: TargetedEffect<Player> = arrowEffect<ThrownPotion>(
+  val singleArrowMeteoEffect: TargetedEffect[Player] = arrowEffect[ThrownPotion](
       ProjectileSpawnConfiguration(
           1.0,
           Triple(0.0, 1.6, 0.0),
@@ -72,7 +72,7 @@ object ArrowEffects {
       Sound.ENTITY_ARROW_SHOOT
   ) { isGlowing = true }
 
-  val singleArrowExplosionEffect: TargetedEffect<Player> = arrowEffect<SmallFireball>(
+  val singleArrowExplosionEffect: TargetedEffect[Player] = arrowEffect[SmallFireball](
       ProjectileSpawnConfiguration(
           0.4,
           Triple(0.0, 1.6, 0.0),

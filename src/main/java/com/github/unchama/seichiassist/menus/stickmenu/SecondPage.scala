@@ -202,7 +202,7 @@ object SecondPage: Menu {
           .title("$YELLOW$UNDERLINE${BOLD}ロビーサーバーへ移動")
           .lore(listOf(
               "$RESET$DARK_RED${UNDERLINE}クリックすると移動します",
-              "$RESET${DARK_GRAY}command->[/hub]"
+              "$RESET${DARK_GRAY}command=>[/hub]"
           ))
           .build()
 
@@ -307,9 +307,9 @@ object SecondPage: Menu {
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
                 deferredEffect {
                   when (playerData.settings.getBroadcastMutingSettings()) {
-                    RECEIVE_MESSAGE_AND_SOUND -> "${GREEN}非表示/消音設定を解除しました"
-                    RECEIVE_MESSAGE_ONLY -> "${RED}消音可能な全体通知音を消音します"
-                    MUTE_MESSAGE_AND_SOUND -> "${RED}非表示可能な全体メッセージを非表示にします"
+                    RECEIVE_MESSAGE_AND_SOUND => "${GREEN}非表示/消音設定を解除しました"
+                    RECEIVE_MESSAGE_ONLY => "${RED}消音可能な全体通知音を消音します"
+                    MUTE_MESSAGE_AND_SOUND => "${RED}非表示可能な全体メッセージを非表示にします"
                   }.asMessageEffect()
                 }
             )
@@ -471,7 +471,7 @@ object SecondPage: Menu {
         }
       }
 
-  override val open: TargetedEffect<Player> = computedEffect { player ->
+  override val open: TargetedEffect[Player] = computedEffect { player =>
     val session = MenuInventoryView(4.rows(), "${LIGHT_PURPLE}木の棒メニュー").createNewSession()
 
     sequentialEffect(
