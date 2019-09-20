@@ -22,24 +22,28 @@ object ManagedWorld {
   def fromName(worldName: String): ManagedWorld? = values().find { it.alphabetName == worldName }
 
   def fromBukkitWorld(world: World): ManagedWorld? = fromName(world.name)
+
+  implicit class ManagedWorldOps(val managedWorld: ManagedWorld) extends AnyVal {
+    val ManagedWorld.isSeichi: Boolean
+    get() = when (this) {
+      WORLD_SW, WORLD_SW_2, WORLD_SW_3, WORLD_SW_4, WORLD_SW_NETHER, WORLD_SW_END => true
+      else => false
+    }
+
+    /**
+     * 保護を掛けて整地するワールドであるかどうか
+     */
+    val ManagedWorld.isSeichiWorldWithWGRegions: Boolean
+    get() = when (this) {
+      WORLD_SW_2, WORLD_SW_4 => true
+      else => false
+    }
+
+    val ManagedWorld.shouldMuteCoreProtect: Boolean
+    get() = this.isSeichiWorldWithWGRegions
+  }
+
+  implicit class WorldOps(val world: World) {
+    def asManagedWorld(): ManagedWorld? = fromBukkitWorld(world)
+  }
 }
-
-val ManagedWorld.isSeichi: Boolean
-  get() = when (this) {
-    WORLD_SW, WORLD_SW_2, WORLD_SW_3, WORLD_SW_4, WORLD_SW_NETHER, WORLD_SW_END => true
-    else => false
-  }
-
-/**
- * 保護を掛けて整地するワールドであるかどうか
- */
-val ManagedWorld.isSeichiWorldWithWGRegions: Boolean
-  get() = when (this) {
-    WORLD_SW_2, WORLD_SW_4 => true
-    else => false
-  }
-
-val ManagedWorld.shouldMuteCoreProtect: Boolean
-  get() = this.isSeichiWorldWithWGRegions
-
-def World.asManagedWorld(): ManagedWorld? = Companion.fromBukkitWorld(this)

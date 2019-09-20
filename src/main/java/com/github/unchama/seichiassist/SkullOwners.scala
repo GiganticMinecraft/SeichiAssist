@@ -15,6 +15,8 @@ object SkullOwners {
   val MHF_Exclamation = "MHF_Exclamation".asSkullOwnerReference()
 
   val MHF_Villager = "MHF_Villager".asSkullOwnerReference()
-}
 
-def String.asSkullOwnerReference(): SkullOwnerReference = Right(this)
+  implicit class StringOps(val string: String) {
+    def String.asSkullOwnerReference(): SkullOwnerReference = Right(this)
+  }
+}

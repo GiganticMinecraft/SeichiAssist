@@ -4,39 +4,40 @@ import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionType
 import org.bukkit.{Bukkit, Material, Sound}
 
-inline def arrowEffect[reified P <: Projectile](spawnConfiguration: ProjectileSpawnConfiguration,
-                                                                 sound: Sound? = null,
-                                                                 crossinline projectileModifier: P.() => Unit = {}): TargetedEffect[Player] =
+object ArrowEffects {
+  def arrowEffect[reified P <: Projectile](
+    spawnConfiguration: ProjectileSpawnConfiguration,
+    sound: Sound? = null,
+    projectileModifier: P => Unit = {}): TargetedEffect[Player] =
     sequentialEffect(
-        if (sound != null) FocusedSoundEffect(sound, 1.0f, 1.3f) else EmptyEffect,
-        computedEffect { player =>
-          val playerLocation = player.location.clone()
+      if (sound != null) FocusedSoundEffect(sound, 1.0f, 1.3f) else EmptyEffect,
+      computedEffect { player =>
+        val playerLocation = player.location.clone()
 
-          UnfocusedEffect {
-            val spawnLocation = playerLocation.clone()
-                .add(playerLocation.direction)
-                .add(spawnConfiguration.offset)
+        UnfocusedEffect {
+          val spawnLocation = playerLocation.clone()
+            .add(playerLocation.direction)
+            .add(spawnConfiguration.offset)
 
-            withContext(Schedulers.sync) {
-              val projectile = playerLocation.world.spawn(spawnLocation, P::class.java)
-                  .apply {
-                    shooter = player
-                    setGravity(spawnConfiguration.gravity)
-                    setMetadata("ArrowSkill", FixedMetadataValues.TRUE)
-                    velocity = playerLocation.direction.clone().multiply(spawnConfiguration.speed)
-                  }
-                  .apply(projectileModifier)
-                  .also { SeichiAssist.entitylist += it }
-
-              delay(100 * 50)
-              projectile.remove()
-              SeichiAssist.entitylist -= projectile
+          withContext(Schedulers.sync) {
+            val projectile = playerLocation.world.spawn(spawnLocation, P::class.java)
+            .apply {
+              shooter = player
+              setGravity(spawnConfiguration.gravity)
+              setMetadata("ArrowSkill", FixedMetadataValues.TRUE)
+              velocity = playerLocation.direction.clone().multiply(spawnConfiguration.speed)
             }
+              .apply(projectileModifier)
+              .also { SeichiAssist.entitylist += it }
+
+            delay(100 * 50)
+            projectile.remove()
+            SeichiAssist.entitylist -= projectile
           }
         }
+      }
     )
 
-object ArrowEffects {
   val singleArrowBlizzardEffect: TargetedEffect[Player] = arrowEffect[Snowball](
       ProjectileSpawnConfiguration(
           1.0,

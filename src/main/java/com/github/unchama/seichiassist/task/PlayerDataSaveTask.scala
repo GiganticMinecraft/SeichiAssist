@@ -2,39 +2,40 @@ package com.github.unchama.seichiassist.task
 
 import java.sql.SQLException
 
-/**
- * プレイヤーデータをDBに保存する処理(非同期で実行すること)
- * DBにセーブしたい値が増えた/減った場合は更新すること
- * @param playerdata 保存するプレーヤーデータ
- * @author unchama
- */
-suspend def savePlayerData(playerdata: PlayerData) {
-  val databaseGateway = SeichiAssist.databaseGateway
-  val serverId = SeichiAssist.seichiAssistConfig.serverNum
+object PlayerDataSaving {
+  /**
+   * プレイヤーデータをDBに保存する処理(非同期で実行すること)
+   * DBにセーブしたい値が増えた/減った場合は更新すること
+   * @param playerdata 保存するプレーヤーデータ
+   * @author unchama
+   */
+  suspend def savePlayerData(playerdata: PlayerData) {
+    val databaseGateway = SeichiAssist.databaseGateway
+    val serverId = SeichiAssist.seichiAssistConfig.serverNum
 
-  @Throws(SQLException::class)
-  def updatePlayerMineStack(stmt: Statement) {
-    val playerUuid = playerdata.uuid.toString()
-    for (mineStackObj in MineStackObjectList.minestacklist!!) {
-      val iThObjectName = mineStackObj.mineStackObjName
-      val iThObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj)
+    @Throws(SQLException::class)
+    def updatePlayerMineStack(stmt: Statement) {
+      val playerUuid = playerdata.uuid.toString()
+      for (mineStackObj in MineStackObjectList.minestacklist!!) {
+        val iThObjectName = mineStackObj.mineStackObjName
+        val iThObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj)
 
-      val updateCommand = ("insert into seichiassist.mine_stack"
+        val updateCommand = ("insert into seichiassist.mine_stack"
           + "(player_uuid, object_name, amount) values "
           + "('" + playerUuid + "', '" + iThObjectName + "', '" + iThObjectAmount + "') "
           + "on duplicate key update amount = values(amount)")
 
-      stmt.executeUpdate(updateCommand)
+        stmt.executeUpdate(updateCommand)
+      }
     }
-  }
 
-  @Throws(SQLException::class)
-  def updateSubHome() {
-    val playerUuid = playerdata.uuid.toString()
-    for ((subHomeId, subHome) in playerdata.subHomeEntries) {
-      val subHomeLocation = subHome.location
+    @Throws(SQLException::class)
+    def updateSubHome() {
+      val playerUuid = playerdata.uuid.toString()
+      for ((subHomeId, subHome) in playerdata.subHomeEntries) {
+        val subHomeLocation = subHome.location
 
-      val template = ("insert into seichiassist.sub_home"
+        val template = ("insert into seichiassist.sub_home"
           + "(player_uuid,server_id,id,name,location_x,location_y,location_z,world_name) values "
           + "(?,?,?,?,?,?,?,?) "
           + "on duplicate key update "
@@ -44,32 +45,32 @@ suspend def savePlayerData(playerdata: PlayerData) {
           + "location_z = values(location_z), "
           + "world_name = values(world_name)")
 
-      databaseGateway.con.prepareStatement(template).use { statement =>
-        statement.setString(1, playerUuid)
-        statement.setInt(2, serverId)
-        statement.setInt(3, subHomeId)
-        statement.setString(4, subHome.name)
-        statement.setInt(5, subHomeLocation.x.toInt())
-        statement.setInt(6, subHomeLocation.y.toInt())
-        statement.setInt(7, subHomeLocation.z.toInt())
-        statement.setString(8, subHomeLocation.world.name)
+        databaseGateway.con.prepareStatement(template).use { statement =>
+          statement.setString(1, playerUuid)
+          statement.setInt(2, serverId)
+          statement.setInt(3, subHomeId)
+          statement.setString(4, subHome.name)
+          statement.setInt(5, subHomeLocation.x.toInt())
+          statement.setInt(6, subHomeLocation.y.toInt())
+          statement.setInt(7, subHomeLocation.z.toInt())
+          statement.setString(8, subHomeLocation.world.name)
 
-        statement.executeUpdate()
+          statement.executeUpdate()
+        }
       }
     }
-  }
 
-  @Throws(SQLException::class)
-  def updateGridTemplate(stmt: Statement) {
-    val playerUuid = playerdata.uuid.toString()
+    @Throws(SQLException::class)
+    def updateGridTemplate(stmt: Statement) {
+      val playerUuid = playerdata.uuid.toString()
 
-    // 既存データをすべてクリアする
-    stmt.executeUpdate(s"delete from seichiassist.grid_template where designer_uuid = '$playerUuid'")
+      // 既存データをすべてクリアする
+      stmt.executeUpdate(s"delete from seichiassist.grid_template where designer_uuid = '$playerUuid'")
 
-    // 各グリッドテンプレートについてデータを保存する
-    for ((gridTemplateId, gridTemplate) in playerdata.templateMap!!) {
+      // 各グリッドテンプレートについてデータを保存する
+      for ((gridTemplateId, gridTemplate) in playerdata.templateMap!!) {
 
-      val updateCommand = "insert into seichiassist.grid_template set " +
+        val updateCommand = "insert into seichiassist.grid_template set " +
           "id = " + gridTemplateId + ", " +
           "designer_uuid = '" + playerUuid + "', " +
           "ahead_length = " + gridTemplate.aheadAmount + ", " +
@@ -77,71 +78,71 @@ suspend def savePlayerData(playerdata: PlayerData) {
           "right_length = " + gridTemplate.rightAmount + ", " +
           "left_length = " + gridTemplate.leftAmount
 
-      stmt.executeUpdate(updateCommand)
+        stmt.executeUpdate(updateCommand)
+      }
     }
-  }
 
-  @Throws(SQLException::class)
-  def updateActiveSkillEffectUnlockState(stmt: Statement) {
-    val playerUuid = playerdata.uuid.toString()
-    val activeSkillEffects = ActiveSkillEffect.values()
-    val obtainedEffects = playerdata.activeskilldata.obtainedSkillEffects
+    @Throws(SQLException::class)
+    def updateActiveSkillEffectUnlockState(stmt: Statement) {
+      val playerUuid = playerdata.uuid.toString()
+      val activeSkillEffects = ActiveSkillEffect.values()
+      val obtainedEffects = playerdata.activeskilldata.obtainedSkillEffects
 
-    val removeCommand = ("delete from "
+      val removeCommand = ("delete from "
         + "seichiassist.unlocked_active_skill_effect "
         + "where player_uuid like '" + playerUuid + "'")
-    stmt.executeUpdate(removeCommand)
+      stmt.executeUpdate(removeCommand)
 
-    for (activeSkillEffect in activeSkillEffects) {
-      val effectName = activeSkillEffect.nameOnDatabase
-      val isEffectUnlocked = obtainedEffects.contains(activeSkillEffect)
+      for (activeSkillEffect in activeSkillEffects) {
+        val effectName = activeSkillEffect.nameOnDatabase
+        val isEffectUnlocked = obtainedEffects.contains(activeSkillEffect)
 
-      if (isEffectUnlocked) {
-        val updateCommand = ("insert into "
+        if (isEffectUnlocked) {
+          val updateCommand = ("insert into "
             + "seichiassist.unlocked_active_skill_effect(player_uuid, effect_name) "
             + "values ('" + playerUuid + "', '" + effectName + "')")
 
-        stmt.executeUpdate(updateCommand)
+          stmt.executeUpdate(updateCommand)
+        }
       }
     }
-  }
 
-  @Throws(SQLException::class)
-  def updateActiveSkillPremiumEffectUnlockState(stmt: Statement) {
-    val playerUuid = playerdata.uuid.toString()
-    val activeSkillPremiumEffects = ActiveSkillPremiumEffect.values()
-    val obtainedEffects = playerdata.activeskilldata.obtainedSkillPremiumEffects
+    @Throws(SQLException::class)
+    def updateActiveSkillPremiumEffectUnlockState(stmt: Statement) {
+      val playerUuid = playerdata.uuid.toString()
+      val activeSkillPremiumEffects = ActiveSkillPremiumEffect.values()
+      val obtainedEffects = playerdata.activeskilldata.obtainedSkillPremiumEffects
 
-    val removeCommand = ("delete from "
+      val removeCommand = ("delete from "
         + "seichiassist.unlocked_active_skill_premium_effect where "
         + "player_uuid like '" + playerUuid + "'")
-    stmt.executeUpdate(removeCommand)
+      stmt.executeUpdate(removeCommand)
 
-    for (activeSkillPremiumEffect in activeSkillPremiumEffects) {
-      val effectName = activeSkillPremiumEffect.getsqlName()
-      val isEffectUnlocked = obtainedEffects.contains(activeSkillPremiumEffect)
+      for (activeSkillPremiumEffect in activeSkillPremiumEffects) {
+        val effectName = activeSkillPremiumEffect.getsqlName()
+        val isEffectUnlocked = obtainedEffects.contains(activeSkillPremiumEffect)
 
-      if (isEffectUnlocked) {
-        val updateCommand = ("insert into "
+        if (isEffectUnlocked) {
+          val updateCommand = ("insert into "
             + "seichiassist.unlocked_active_skill_premium_effect(player_uuid, effect_name) "
             + "values ('" + playerUuid + "', '" + effectName + "')")
 
-        stmt.executeUpdate(updateCommand)
+          stmt.executeUpdate(updateCommand)
+        }
       }
     }
-  }
 
-  @ExperimentalUnsignedTypes
-  @Throws(SQLException::class)
-  def updatePlayerDataColumns(stmt: Statement) {
-    val playerUuid = playerdata.uuid.toString()
+    @ExperimentalUnsignedTypes
+    @Throws(SQLException::class)
+    def updatePlayerDataColumns(stmt: Statement) {
+      val playerUuid = playerdata.uuid.toString()
 
-    //実績のフラグ(BitSet)保存用変換処理
-    val titleArray = playerdata.TitleFlags.toLongArray()
-    val flagString = titleArray.joinToString(",") { it.toULong().toString(16) }
+      //実績のフラグ(BitSet)保存用変換処理
+      val titleArray = playerdata.TitleFlags.toLongArray()
+      val flagString = titleArray.joinToString(",") { it.toULong().toString(16) }
 
-    val command = runBlocking {
-      ("update seichiassist.playerdata set"
+      val command = runBlocking {
+        ("update seichiassist.playerdata set"
           //名前更新処理
           + " name = '" + playerdata.lowercaseName + "'"
 
@@ -233,13 +234,13 @@ suspend def savePlayerData(playerdata: PlayerData) {
           + ",hasChocoGave = " + playerdata.hasChocoGave
 
           + " where uuid like '" + playerUuid + "'")
+      }
+
+      stmt.executeUpdate(command)
     }
 
-    stmt.executeUpdate(command)
-  }
-
-  def executeUpdate(): ActionStatus {
-    try {
+    def executeUpdate(): ActionStatus {
+      try {
       //sqlコネクションチェック
       databaseGateway.ensureConnection()
 
@@ -258,15 +259,16 @@ suspend def savePlayerData(playerdata: PlayerData) {
       return Fail
     }
 
-  }
-
-  for (i in 0 until 3) {
-    val result = executeUpdate()
-    if (result == Ok) {
-      println(s"${ChatColor.GREEN}${playerdata.lowercaseName}のプレイヤーデータ保存完了")
-      return
     }
-  }
 
-  println(s"${ChatColor.RED}${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
+    for (i in 0 until 3) {
+      val result = executeUpdate()
+      if (result == Ok) {
+        println(s"${ChatColor.GREEN}${playerdata.lowercaseName}のプレイヤーデータ保存完了")
+        return
+      }
+    }
+
+    println(s"${ChatColor.RED}${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
+  }
 }

@@ -45,9 +45,11 @@ case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
   internal def altered(slotReplacement: Pair[Int, Slot]) = copy(map = map + slotReplacement)
 }
 
-val emptyLayout = IndexedSlotLayout()
+object IndexedSlotLayout {
+  val emptyLayout = IndexedSlotLayout()
 
-inline def singleSlotLayout(indexedSlot: () => Pair[Int, Slot]): IndexedSlotLayout = IndexedSlotLayout(indexedSlot())
+  inline def singleSlotLayout(indexedSlot: () => Pair[Int, Slot]): IndexedSlotLayout = IndexedSlotLayout(indexedSlot())
 
-def combinedLayout(vararg layouts: IndexedSlotLayout): IndexedSlotLayout =
+  def combinedLayout(vararg layouts: IndexedSlotLayout): IndexedSlotLayout =
     layouts.toList().fold(emptyLayout) { acc, layout => acc.merge(layout) }
+}
