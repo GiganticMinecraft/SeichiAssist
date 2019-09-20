@@ -5,7 +5,7 @@ import kotlin.coroutines.Continuation
 import org.bukkit.command.{Command, CommandSender, TabExecutor}
 
 /**
- * コマンド実行時に[TabExecutor]へ渡される情報をラップした[RawCommandContext]を用いて処理を行うオブジェクトへのinterface.
+ * コマンド実行時に[TabExecutor]へ渡される情報をラップした[RawCommandContext]を用いて処理を行うオブジェクトへのtrait.
  */
 trait ContextualExecutor {
 

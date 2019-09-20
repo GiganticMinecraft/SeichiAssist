@@ -5,7 +5,7 @@ import kotlin.coroutines.Continuation
 
 /**
  * Minecraft内の何らかの対象[T]に向けた作用を持ち,
- * [runFor]メソッドにより作用を[T]に及ぼすことができるオブジェクトへのinterface.
+ * [runFor]メソッドにより作用を[T]に及ぼすことができるオブジェクトへのtrait.
  *
  * [runFor]の副作用は, Arrow Fxの設計理念に従いコルーチンの中で発動される.
  */

@@ -1,9 +1,9 @@
 package com.github.unchama.menuinventory.slot.button.action
 
 /**
- * メニューインベントリ上のボタンが[InventoryClickEvent]に対して発火すべき作用を計算するオブジェクトへのinterface.
+ * メニューインベントリ上のボタンが[InventoryClickEvent]に対して発火すべき作用を計算するオブジェクトへのtrait.
  */
-interface ButtonEffect {
+trait ButtonEffect {
 
   /**
    * [event]に基づいてボタンが発生させるべき作用を計算する.
