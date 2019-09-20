@@ -15,7 +15,7 @@ import org.bukkit.{Material, Sound}
  *
  * @author karayuu
  */
-private object FirstPage: Menu {
+private object FirstPage extends Menu {
   private object ConstantButtons {
     val teleportServerButton = run {
       val buttonLore = List(

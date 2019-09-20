@@ -5,7 +5,7 @@ package com.github.unchama.menuinventory
  *
  * @author karayuu
  */
-object MenuHandler : Listener {
+object MenuHandler extends Listener {
   @EventHandler
   def onInventoryClick(event: InventoryClickEvent) {
     val whoClicked = event.whoClicked as? Player ?: return

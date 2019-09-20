@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.task
 
-object HalfHourRankingRoutine: RepeatedTaskLauncher() {
+object HalfHourRankingRoutine extends RepeatedTaskLauncher() {
   override def getRepeatIntervalTicks(): Long = if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 30
 
   override suspend def runRoutine() {

@@ -8,7 +8,7 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
-object RegionMenu : Menu {
+object RegionMenu extends Menu {
 
   private object ConstantButtons {
 

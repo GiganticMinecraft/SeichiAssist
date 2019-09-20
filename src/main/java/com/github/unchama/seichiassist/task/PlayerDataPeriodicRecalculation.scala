@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.task
 
-object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
+object PlayerDataPeriodicRecalculation extends RepeatedTaskLauncher() {
   override def getRepeatIntervalTicks(): Long = if (SeichiAssist.DEBUG) 20 * 10 else 20 * 60
 
   override suspend def runRoutine() {

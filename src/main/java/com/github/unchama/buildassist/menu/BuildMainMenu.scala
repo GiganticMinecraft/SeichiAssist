@@ -8,7 +8,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.{Material, Sound}
 
-object BuildMainMenu : Menu {
+object BuildMainMenu extends Menu {
 
   private object ButtonComputations {
 

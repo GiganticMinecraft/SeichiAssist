@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener.invlistener
 
-object OnClickTitleMenu : Listener {
+object OnClickTitleMenu extends Listener {
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
     if (event.clickedInventory == null) {

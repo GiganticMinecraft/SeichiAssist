@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.task
 
-object PlayerDataBackupTask: RepeatedTaskLauncher() {
+object PlayerDataBackupTask extends RepeatedTaskLauncher() {
   override def getRepeatIntervalTicks(): Long = if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 10
 
   override suspend def runRoutine() {

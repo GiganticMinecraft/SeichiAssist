@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener.invlistener
 
-object OnActiveSkillUnselect : Listener {
+object OnActiveSkillUnselect extends Listener {
   def onPlayerClickActiveSkillReleaseEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
     if (event.clickedInventory == null) {

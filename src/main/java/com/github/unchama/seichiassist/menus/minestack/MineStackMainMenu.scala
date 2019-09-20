@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
-object MineStackMainMenu: Menu {
+object MineStackMainMenu extends Menu {
   private object ButtonComputations {
     val categoryButtonLayout = run {
       def iconMaterialFor(category: MineStackObjectCategory): Material = when (category) {

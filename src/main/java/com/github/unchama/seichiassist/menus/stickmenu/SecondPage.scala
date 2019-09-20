@@ -13,7 +13,7 @@ import org.bukkit.{Material, Sound}
 /**
  * 木の棒メニュー2ページ目
  */
-object SecondPage: Menu {
+object SecondPage extends Menu {
   private object ConstantButtons {
     val officialWikiNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.BOOK)
