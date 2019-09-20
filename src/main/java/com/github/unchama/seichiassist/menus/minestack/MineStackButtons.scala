@@ -16,7 +16,7 @@ internal object MineStackButtons {
         if (gachaData.probability < 0.1) {
           return this.itemStack.clone().apply {
             val itemLore = if (itemMeta.hasLore()) itemMeta.lore else listOf()
-            lore = itemLore + "$RESET${DARK_GREEN}所有者：${player.name}"
+            lore = itemLore + s"$RESET${DARK_GREEN}所有者：${player.name}"
           }
         }
       }
@@ -51,16 +51,16 @@ internal object MineStackButtons {
         displayName = run {
           val name = mineStackObj.uiName ?: (if (hasDisplayName()) displayName else type.toString())
 
-          "$YELLOW$UNDERLINE$BOLD$name"
+          s"$YELLOW$UNDERLINE$BOLD$name"
         }
 
         lore = run {
           val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
 
           listOf(
-              "$RESET$GREEN${stackedAmount}個",
-              "$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
-              "$RESET$DARK_RED${UNDERLINE}クリックで1スタック取り出し"
+              s"$RESET$GREEN${stackedAmount}個",
+              s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
+              s"$RESET$DARK_RED${UNDERLINE}クリックで1スタック取り出し"
           )
         }
       }
@@ -87,20 +87,20 @@ internal object MineStackButtons {
     val iconItemStack = run {
       val baseBuilder =
           IconItemStackBuilder(Material.IRON_PICKAXE)
-              .title("$YELLOW$UNDERLINE${BOLD}対象ブロック自動スタック機能")
+              .title(s"$YELLOW$UNDERLINE${BOLD}対象ブロック自動スタック機能")
 
       if (playerData.settings.autoMineStack) {
         baseBuilder
             .enchanted()
             .lore(listOf(
-                "$RESET${GREEN}現在ONです",
-                "$RESET$DARK_RED${UNDERLINE}クリックでOFF"
+                s"$RESET${GREEN}現在ONです",
+                s"$RESET$DARK_RED${UNDERLINE}クリックでOFF"
             ))
       } else {
         baseBuilder
             .lore(listOf(
-                "$RESET${RED}現在OFFです",
-                "$RESET$DARK_GREEN${UNDERLINE}クリックでON"
+                s"$RESET${RED}現在OFFです",
+                s"$RESET$DARK_GREEN${UNDERLINE}クリックでON"
             ))
       }.build()
     }
@@ -113,11 +113,11 @@ internal object MineStackButtons {
             val soundPitch: Float
             when {
               playerData.settings.autoMineStack => {
-                message = "${GREEN}対象ブロック自動スタック機能:ON"
+                message = s"${GREEN}対象ブロック自動スタック機能:ON"
                 soundPitch = 1.0f
               }
               else => {
-                message = "${RED}対象ブロック自動スタック機能:OFF"
+                message = s"${RED}対象ブロック自動スタック機能:OFF"
                 soundPitch = 0.5f
               }
             }

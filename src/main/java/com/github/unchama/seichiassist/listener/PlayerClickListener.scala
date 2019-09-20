@@ -198,7 +198,7 @@ class PlayerClickListener : Listener {
         if (player.isSneaking) {
           clickedItemStack.amount
               .also {
-                player.sendMessage("$AQUA${it}回ガチャを回しました。")
+                player.sendMessage(s"$AQUA${it}回ガチャを回しました。")
               }
         }
         else 1
@@ -227,7 +227,7 @@ class PlayerClickListener : Listener {
             ""
           } else {
             Util.dropItem(player, givenItem)
-            "${AQUA}プレゼントがドロップしました。"
+            s"${AQUA}プレゼントがドロップしました。"
           }
 
       //確率に応じてメッセージを送信
@@ -241,21 +241,21 @@ class PlayerClickListener : Listener {
         }
 
         val loreWithoutOwnerName = givenItem.itemMeta.lore
-            .filterNot { it == "§r§2所有者：${player.name}" }
+            .filterNot { it == s"§r§2所有者：${player.name}" }
 
         val localizedEnchantmentList = givenItem.itemMeta.enchants
             .map { (enchantment, level) =>
-              "$GRAY${Util.getEnchantName(enchantment.name, level)}"
+              s"$GRAY${Util.getEnchantName(enchantment.name, level)}"
             }
 
         val message =
             TextComponent().apply {
-              text = "$AQUA${givenItem.itemMeta.displayName}${GOLD}を引きました！おめでとうございます！"
+              text = s"$AQUA${givenItem.itemMeta.displayName}${GOLD}を引きました！おめでとうございます！"
               hoverEvent = HoverEvent(
                   HoverEvent.Action.SHOW_TEXT,
                   arrayOf(
                       TextComponent(
-                          " ${givenItem.itemMeta.displayName}\n" +
+                          s" ${givenItem.itemMeta.displayName}\n" +
                               Util.getDescFormat(localizedEnchantmentList) +
                               Util.getDescFormat(loreWithoutOwnerName)
                       )
@@ -263,17 +263,17 @@ class PlayerClickListener : Listener {
               )
             }
 
-        player.sendMessage("${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
-        Util.sendEveryMessageWithoutIgnore("$GOLD${player.displayName}がガチャでGigantic☆大当たり！")
+        player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
+        Util.sendEveryMessageWithoutIgnore(s"$GOLD${player.displayName}がガチャでGigantic☆大当たり！")
         Util.sendEveryMessageWithoutIgnore(message)
       } else if (probabilityOfItem < 0.01) {
         player.playSound(player.location, Sound.ENTITY_WITHER_SPAWN, 0.8.toFloat(), 1f)
-        player.sendMessage("${GOLD}おめでとう！！大当たり！$additionalMessage")
+        player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
       } else if (probabilityOfItem < 0.1) {
-        player.sendMessage("${YELLOW}おめでとう！当たり！$additionalMessage")
+        player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
       } else {
         if (count == 1) {
-          player.sendMessage("${WHITE}はずれ！また遊んでね！$additionalMessage")
+          player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
         }
       }
     }

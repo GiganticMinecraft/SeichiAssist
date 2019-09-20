@@ -122,8 +122,8 @@ object BreakUtil {
     if (player.gameMode != GameMode.SURVIVAL) return false
 
     if (SeichiAssist.DEBUG) {
-      player.sendMessage("${ChatColor.RED}minestackAdd:$itemstack")
-      player.sendMessage("${ChatColor.RED}mineDurability:${itemstack.durability}")
+      player.sendMessage(s"${ChatColor.RED}minestackAdd:$itemstack")
+      player.sendMessage(s"${ChatColor.RED}mineDurability:${itemstack.durability}")
     }
 
     val config = SeichiAssist.seichiAssistConfig

@@ -23,7 +23,7 @@ object ShareInvCommand {
       is Either.Right => either.b
     }
 
-    if (serial == "") return "${ChatColor.RESET}${ChatColor.RED}${ChatColor.BOLD}収納アイテムが存在しません。".asMessageEffect()
+    if (serial == s"") return "${ChatColor.RESET}${ChatColor.RED}${ChatColor.BOLD}収納アイテムが存在しません。".asMessageEffect()
 
     val playerInventory = player.inventory
 
@@ -38,8 +38,8 @@ object ShareInvCommand {
 
     playerData.contentsPresentInSharedInventory = false
 
-    Bukkit.getLogger().info("${player.name}がアイテム取り出しを実施(DB書き換え成功)")
-    return "${ChatColor.GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。".asMessageEffect()
+    Bukkit.getLogger().info(s"${player.name}がアイテム取り出しを実施(DB書き換え成功)")
+    return s"${ChatColor.GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。".asMessageEffect()
   }
 
   private suspend def depositToSharedInventory(player: Player): TargetedEffect[Player] {
@@ -50,7 +50,7 @@ object ShareInvCommand {
 
     // アイテム一覧をシリアル化する
     val serializedInventory = ItemListSerialization.serializeToBase64(playerInventory.contents.toList())
-        ?: return "${ChatColor.RESET}${ChatColor.RED}${ChatColor.BOLD}収納アイテムの変換に失敗しました。".asMessageEffect()
+        ?: return s"${ChatColor.RESET}${ChatColor.RED}${ChatColor.BOLD}収納アイテムの変換に失敗しました。".asMessageEffect()
 
     return databaseGateway.playerDataManipulator.saveSharedInventory(player, playerData, serializedInventory).map {
       // 現所持アイテムを全て削除
@@ -60,8 +60,8 @@ object ShareInvCommand {
       // 木の棒を取得させる
       player.performCommand("stick")
 
-      Bukkit.getLogger().info("${player.name}がアイテム収納を実施(SQL送信成功)")
-      "${ChatColor.GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。".asMessageEffect()
+      Bukkit.getLogger().info(s"${player.name}がアイテム収納を実施(SQL送信成功)")
+      s"${ChatColor.GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。".asMessageEffect()
     }.merge()
   }
 

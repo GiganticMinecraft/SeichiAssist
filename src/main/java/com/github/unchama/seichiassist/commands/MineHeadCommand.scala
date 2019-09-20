@@ -8,7 +8,7 @@ object MineHeadCommand {
       .execution { context =>
         Util.addItemToPlayerSafely(context.sender, StaticGachaPrizeFactory.getMineHeadItem())
 
-        "${ChatColor.GREEN}専用アイテムを付与しました。".asMessageEffect()
+        s"${ChatColor.GREEN}専用アイテムを付与しました。".asMessageEffect()
       }
       .build()
       .asNonBlockingTabExecutor()

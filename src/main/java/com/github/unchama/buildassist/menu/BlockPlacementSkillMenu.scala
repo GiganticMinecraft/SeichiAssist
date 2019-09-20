@@ -11,8 +11,8 @@ object BlockPlacementSkillMenu extends Menu {
 
   private val buttonToOpenPreviousPage = run {
     val iconItemStack = IconItemStackBuilder(Material.BARRIER)
-        .title("$YELLOW$UNDERLINE${BOLD}元のページへ")
-        .lore("$RESET$DARK_RED${UNDERLINE}クリックで移動")
+        .title(s"$YELLOW$UNDERLINE${BOLD}元のページへ")
+        .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
         .build()
 
     Button(
@@ -29,10 +29,10 @@ object BlockPlacementSkillMenu extends Menu {
     val currentStatus = playerData.zsSkillDirtFlag
 
     val iconItemStack = IconItemStackBuilder(Material.DIRT)
-        .title("$YELLOW$UNDERLINE${BOLD}設置時に下の空洞を埋める機能")
+        .title(s"$YELLOW$UNDERLINE${BOLD}設置時に下の空洞を埋める機能")
         .lore(
-            "$RESET$AQUA${UNDERLINE}機能の使用設定： ${if (currentStatus) "ON" else "OFF"}",
-            "$RESET$AQUA${UNDERLINE}機能の範囲： 地下5マスまで"
+            s"$RESET$AQUA${UNDERLINE}機能の使用設定： ${if (currentStatus) "ON" else "OFF"}",
+            s"$RESET$AQUA${UNDERLINE}機能の範囲： 地下5マスまで"
         )
         .build()
 
@@ -41,7 +41,7 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             UnfocusedEffect { playerData.zsSkillDirtFlag = !currentStatus },
-            "${RED}土設置機能${if (currentStatus) "OFF" else "ON"}".asMessageEffect()
+            s"${RED}土設置機能${if (currentStatus) "OFF" else "ON"}".asMessageEffect()
         )
     )
   }
@@ -53,11 +53,11 @@ object BlockPlacementSkillMenu extends Menu {
     val isConsumingMineStack = playerData.zs_minestack_flag
 
     val iconItemStack = IconItemStackBuilder(Material.STONE)
-        .title("$YELLOW$UNDERLINE${BOLD}現在の設定は以下の通りです")
+        .title(s"$YELLOW$UNDERLINE${BOLD}現在の設定は以下の通りです")
         .lore(
-            "$RESET$AQUA${UNDERLINE}スキルの使用設定: ${if (isSkillEnabled) "ON" else "OFF"}",
-            "$RESET$AQUA${UNDERLINE}スキルの範囲設定: $skillRange×$skillRange",
-            "$RESET$AQUA${UNDERLINE}MineStack優先設定: ${if (isConsumingMineStack) "ON" else "OFF"}"
+            s"$RESET$AQUA${UNDERLINE}スキルの使用設定: ${if (isSkillEnabled) "ON" else "OFF"}",
+            s"$RESET$AQUA${UNDERLINE}スキルの範囲設定: $skillRange×$skillRange",
+            s"$RESET$AQUA${UNDERLINE}MineStack優先設定: ${if (isConsumingMineStack) "ON" else "OFF"}"
         )
         .build()
 
@@ -69,10 +69,10 @@ object BlockPlacementSkillMenu extends Menu {
     val currentRange = playerData.computeCurrentSkillRange()
 
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowUp")
-        .title("$RED$UNDERLINE${BOLD}範囲設定を最大値に変更")
+        .title(s"$RED$UNDERLINE${BOLD}範囲設定を最大値に変更")
         .lore(
-            "$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
-            "$RESET$AQUA${UNDERLINE}変更後の範囲設定： 11×11"
+            s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
+            s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： 11×11"
         )
         .amount(11)
         .build()
@@ -82,7 +82,7 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             UnfocusedEffect { playerData.AREAint = 5 },
-            "${RED}現在の範囲設定は 11×11 です".asMessageEffect(),
+            s"${RED}現在の範囲設定は 11×11 です".asMessageEffect(),
             open
         )
     )
@@ -94,19 +94,19 @@ object BlockPlacementSkillMenu extends Menu {
     val changedRange = currentRange + 2
 
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowUp")
-        .title("$YELLOW$UNDERLINE${BOLD}範囲設定を一段階大きくする")
+        .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階大きくする")
         .lore(
             listOf(
-                "$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange"
+                s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange"
             ) +
                 if (playerData.AREAint == 5) {
                   listOf(
-                      "$RESET${RED}これ以上範囲設定を大きくできません。"
+                      s"$RESET${RED}これ以上範囲設定を大きくできません。"
                   )
                 } else {
                   listOf(
-                      "$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
-                      "$RESET${RED}※範囲設定の最大値は11×11※"
+                      s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
+                      s"$RESET${RED}※範囲設定の最大値は11×11※"
                   )
                 }
         )
@@ -121,7 +121,7 @@ object BlockPlacementSkillMenu extends Menu {
                 sequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                     UnfocusedEffect { playerData.AREAint++ },
-                    "${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
+                    s"${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
                     open
                 )
               else EmptyEffect
@@ -135,10 +135,10 @@ object BlockPlacementSkillMenu extends Menu {
     val currentRange = playerData.computeCurrentSkillRange()
 
     val iconItemStack = SkullItemStackBuilder("MHF_TNT")
-        .title("$RED$UNDERLINE${BOLD}範囲設定を初期値に変更")
+        .title(s"$RED$UNDERLINE${BOLD}範囲設定を初期値に変更")
         .lore(
-            "$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
-            "$RESET$AQUA${UNDERLINE}変更後の範囲設定： 5×5"
+            s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
+            s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： 5×5"
         )
         .amount(5)
         .build()
@@ -148,7 +148,7 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             UnfocusedEffect { playerData.AREAint = 2 },
-            "${RED}現在の範囲設定は 5×5 です".asMessageEffect(),
+            s"${RED}現在の範囲設定は 5×5 です".asMessageEffect(),
             open
         )
     )
@@ -160,19 +160,19 @@ object BlockPlacementSkillMenu extends Menu {
     val changedRange = currentRange + -2
 
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowDown")
-        .title("$YELLOW$UNDERLINE${BOLD}範囲設定を一段階小さくする")
+        .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階小さくする")
         .lore(
             listOf(
-                "$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange"
+                s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange"
             ) +
                 if (playerData.AREAint == 1) {
                   listOf(
-                      "${RED}これ以上範囲設定を小さくできません。"
+                      s"${RED}これ以上範囲設定を小さくできません。"
                   )
                 } else {
                   listOf(
-                      "$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
-                      "$RESET${RED}※範囲設定の最大値は3×3※"
+                      s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
+                      s"$RESET${RED}※範囲設定の最大値は3×3※"
                   )
                 }
         )
@@ -187,7 +187,7 @@ object BlockPlacementSkillMenu extends Menu {
                 sequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                     UnfocusedEffect { playerData.AREAint-- },
-                    "${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
+                    s"${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
                     open
                 )
               else EmptyEffect
@@ -201,10 +201,10 @@ object BlockPlacementSkillMenu extends Menu {
     val currentRange = playerData.computeCurrentSkillRange()
 
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowDown")
-        .title("$RED$UNDERLINE${BOLD}範囲設定を最小値に変更")
+        .title(s"$RED$UNDERLINE${BOLD}範囲設定を最小値に変更")
         .lore(
-            "$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
-            "$RESET$AQUA${UNDERLINE}変更後の範囲設定： 3×3"
+            s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange",
+            s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： 3×3"
         )
         .amount(1)
         .build()
@@ -214,7 +214,7 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             UnfocusedEffect { playerData.AREAint = 1 },
-            "${RED}現在の範囲設定は 3×3 です".asMessageEffect(),
+            s"${RED}現在の範囲設定は 3×3 です".asMessageEffect(),
             open
         )
     )
@@ -225,12 +225,12 @@ object BlockPlacementSkillMenu extends Menu {
     val currentStatus = playerData.zs_minestack_flag
 
     val iconItemStackBuilder = IconItemStackBuilder(Material.CHEST)
-        .title("$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}")
+        .title(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}")
         .lore(
-            "$RESET${GRAY}スキルでブロックを並べるとき",
-            "$RESET${GRAY}MineStackの在庫を優先して消費します。",
-            "$RESET${GRAY}建築LV ${BuildAssist.config.getblocklineupMinestacklevel()} 以上で利用可能",
-            "$RESET${GRAY}クリックで切り替え"
+            s"$RESET${GRAY}スキルでブロックを並べるとき",
+            s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
+            s"$RESET${GRAY}建築LV ${BuildAssist.config.getblocklineupMinestacklevel()} 以上で利用可能",
+            s"$RESET${GRAY}クリックで切り替え"
         )
         .build()
 
@@ -240,11 +240,11 @@ object BlockPlacementSkillMenu extends Menu {
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             deferredEffect {
               if (playerData.level < BuildAssist.config.zoneskillMinestacklevel) {
-                "$RED\"建築LVが足りません\"".asMessageEffect()
+                s"$RED\"建築LVが足りません\"".asMessageEffect()
               } else {
                 sequentialEffect(
                     UnfocusedEffect { playerData.zs_minestack_flag = !currentStatus },
-                    "MineStack優先設定${if (currentStatus) "OFF" else "ON"}".asMessageEffect(),
+                    s"MineStack優先設定${if (currentStatus) "OFF" else "ON"}".asMessageEffect(),
                     open
                 )
               }
@@ -268,7 +268,7 @@ object BlockPlacementSkillMenu extends Menu {
   )
 
   override val open: TargetedEffect[Player] = computedEffect { player =>
-    val session = MenuInventoryView(4.rows(), "$DARK_PURPLE${BOLD}「範囲設置スキル」設定画面").createNewSession()
+    val session = MenuInventoryView(4.rows(), s"$DARK_PURPLE${BOLD}「範囲設置スキル」設定画面").createNewSession()
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),

@@ -25,8 +25,8 @@ object CategorizedMineStackMenu {
     val uiOperationSection = run {
       def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference) = Button(
           SkullItemStackBuilder(skullOwnerReference)
-              .title("$YELLOW$UNDERLINE${BOLD}MineStack${pageIndex + 1}ページ目へ")
-              .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
+              .title(s"$YELLOW$UNDERLINE${BOLD}MineStack${pageIndex + 1}ページ目へ")
+              .lore(listOf(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
               .build(),
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
@@ -39,8 +39,8 @@ object CategorizedMineStackMenu {
       val mineStackMainMenuButtonSection = run {
         val mineStackMainMenuButton = Button(
             SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
-                .title("$YELLOW$UNDERLINE${BOLD}MineStackメインメニューへ")
-                .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
+                .title(s"$YELLOW$UNDERLINE${BOLD}MineStackメインメニューへ")
+                .lore(listOf(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
                 .build(),
             FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
               sequentialEffect(
@@ -87,7 +87,7 @@ object CategorizedMineStackMenu {
     override val open: TargetedEffect[Player] = computedEffect { player =>
       val session = MenuInventoryView(
           6.rows(),
-          "$DARK_BLUE${BOLD}MineStack(${category.uiLabel})"
+          s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})"
       ).createNewSession()
 
       sequentialEffect(

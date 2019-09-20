@@ -13,19 +13,19 @@ object ContributeCommand {
           .map {
             val operationResponse =
                 if (point >= 0) {
-                  "${ChatColor.GREEN}${targetPlayerName}に貢献度ポイントを${point}追加しました"
+                  s"${ChatColor.GREEN}${targetPlayerName}に貢献度ポイントを${point}追加しました"
                 } else {
-                  "${ChatColor.GREEN}${targetPlayerName}の貢献度ポイントを${point}減少させました"
+                  s"${ChatColor.GREEN}${targetPlayerName}の貢献度ポイントを${point}減少させました"
                 }
 
             operationResponse.asMessageEffect()
           }.merge()
 
   private val helpMessage: TargetedEffect[CommandSender] = listOf(
-      "${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
-      "${ChatColor.RED}/contribute add [プレイヤー名] [増加分ポイント]",
+      s"${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
+      s"${ChatColor.RED}/contribute add [プレイヤー名] [増加分ポイント]",
       "指定されたプレイヤーの貢献度ptを指定分増加させます",
-      "${ChatColor.RED}/contribute remove [プレイヤー名] [減少分ポイント]",
+      s"${ChatColor.RED}/contribute remove [プレイヤー名] [減少分ポイント]",
       "指定されたプレイヤーの貢献度ptを指定分減少させます(入力ミス回避用)"
   ).asMessageEffect()
 
@@ -36,7 +36,7 @@ object ContributeCommand {
   private val parserConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
       .argumentsParsers(listOf(
           identity,
-          nonNegativeInteger("${ChatColor.RED}増加分ポイントは0以上の整数を指定してください。".asMessageEffect())
+          nonNegativeInteger(s"${ChatColor.RED}増加分ポイントは0以上の整数を指定してください。".asMessageEffect())
       ), onMissingArguments = printHelpExecutor)
 
   private val addPointExecutor: ContextualExecutor = parserConfiguredBuilder

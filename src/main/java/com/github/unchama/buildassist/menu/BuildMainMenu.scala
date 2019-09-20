@@ -16,11 +16,11 @@ object BuildMainMenu : Menu {
       val openerData = BuildAssist.playermap[uniqueId]!!
       val iconItemStack = SkullItemStackBuilder(uniqueId)
           .enchanted()
-          .title("$YELLOW$EMPHASIZE${openerData.name}の建築データ")
+          .title(s"$YELLOW$EMPHASIZE${openerData.name}の建築データ")
           .lore(
-              "$RESET${AQUA}建築レベル: ${openerData.level}",
-              "$RESET${AQUA}総建築量: ${openerData.totalbuildnum.toDouble()}",
-              "$RESET${DARK_GRAY}※1分毎に更新"
+              s"$RESET${AQUA}建築レベル: ${openerData.level}",
+              s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.toDouble()}",
+              s"$RESET${DARK_GRAY}※1分毎に更新"
           )
           .build()
 
@@ -30,10 +30,10 @@ object BuildMainMenu : Menu {
     suspend def Player.computeButtonToShowStateOfFlying() = run {
       val openerData = BuildAssist.playermap[uniqueId]!!
       val iconItemStack = IconItemStackBuilder(Material.COOKED_CHICKEN)
-          .title("$YELLOW${EMPHASIZE}FLY機能 情報表示")
+          .title(s"$YELLOW${EMPHASIZE}FLY機能 情報表示")
           .lore(
-              "$RESET${AQUA}FLY 効果: ${if (openerData.flyflag) "ON" else "OFF"}",
-              "$RESET${AQUA}FLY 残り時間: ${openerData.flytime.toString().takeUnless { openerData.endlessfly } ?: "∞"}"
+              s"$RESET${AQUA}FLY 効果: ${if (openerData.flyflag) "ON" else "OFF"}",
+              s"$RESET${AQUA}FLY 残り時間: ${openerData.flytime.toString().takeUnless { openerData.endlessfly } ?: "∞"}"
           )
           .build()
 
@@ -43,11 +43,11 @@ object BuildMainMenu : Menu {
     val buttonToFlyFor1Minute = run {
       val iconItemStack = IconItemStackBuilder(Material.FEATHER)
           .amount(1)
-          .title("$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(1分)")
+          .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(1分)")
           .lore(
-              "$RESET${YELLOW}クリックすると以降1分間に渡り",
-              "$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
-              "$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.flyExp}"
+              s"$RESET${YELLOW}クリックすると以降1分間に渡り",
+              s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
+              s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.flyExp}"
           )
           .build()
 
@@ -66,11 +66,11 @@ object BuildMainMenu : Menu {
     val buttonToFlyFor5Minutes = run {
       val iconItemStack = IconItemStackBuilder(Material.FEATHER)
           .amount(5)
-          .title("$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(5分)")
+          .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(5分)")
           .lore(
-              "$RESET${YELLOW}クリックすると以降5分間に渡り",
-              "$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
-              "$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.flyExp}"
+              s"$RESET${YELLOW}クリックすると以降5分間に渡り",
+              s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
+              s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.flyExp}"
           )
           .build()
 
@@ -88,11 +88,11 @@ object BuildMainMenu : Menu {
 
     val buttonToFlyEndlessly = run {
       val iconItemStack = IconItemStackBuilder(Material.ELYTRA)
-          .title("$YELLOW${EMPHASIZE}FLY機能、ON$RED$EMPHASIZE(無制限)")
+          .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$RED$EMPHASIZE(無制限)")
           .lore(
-              "$RESET${YELLOW}クリックすると以降OFFにするまで",
-              "$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
-              "$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.flyExp}"
+              s"$RESET${YELLOW}クリックすると以降OFFにするまで",
+              s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
+              s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.flyExp}"
           )
           .build()
 
@@ -110,10 +110,10 @@ object BuildMainMenu : Menu {
 
     val buttonToTerminateFlight = run {
       val iconItemStack = IconItemStackBuilder(Material.CHAINMAIL_BOOTS)
-          .title("$YELLOW${EMPHASIZE}FLY機能、OFF")
+          .title(s"$YELLOW${EMPHASIZE}FLY機能、OFF")
           .lore(
-              "$RESET${RED}クリックすると、残り時間にかかわらず",
-              "$RESET${RED}FLYを終了します。"
+              s"$RESET${RED}クリックすると、残り時間にかかわらず",
+              s"$RESET${RED}FLYを終了します。"
           )
           .flagged(ItemFlag.HIDE_ATTRIBUTES)
           .build()
@@ -133,12 +133,12 @@ object BuildMainMenu : Menu {
     suspend def Player.computeButtonToToggleRangedPlaceSkill() = recomputedButton {
       val openerData = BuildAssist.playermap[uniqueId]!!
       val iconItemStack = IconItemStackBuilder(Material.STONE)
-          .title("$GREEN${EMPHASIZE}「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
+          .title(s"$GREEN${EMPHASIZE}「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
           .lore(
-              "$RESET${YELLOW}「スニーク+左クリック」をすると、",
-              "$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
-              "$RESET${YELLOW}インベントリ内から消費し設置します。",
-              "$RESET${LIGHT_PURPLE}＜クリックでON/OFF切り替え＞"
+              s"$RESET${YELLOW}「スニーク+左クリック」をすると、",
+              s"$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
+              s"$RESET${YELLOW}インベントリ内から消費し設置します。",
+              s"$RESET${LIGHT_PURPLE}＜クリックでON/OFF切り替え＞"
           )
           .build()
 
@@ -149,14 +149,14 @@ object BuildMainMenu : Menu {
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                 deferredEffect {
                   if (openerData.level < BuildAssist.config.zoneSetSkillLevel) {
-                    "${RED}建築LVが足りません".asMessageEffect()
+                    s"${RED}建築LVが足りません".asMessageEffect()
                   } else {
                     if (openerData.ZoneSetSkillFlag) sequentialEffect(
                         UnfocusedEffect { openerData.ZoneSetSkillFlag = false },
-                        "${RED}範囲設置スキルOFF".asMessageEffect()
+                        s"${RED}範囲設置スキルOFF".asMessageEffect()
                     ) else sequentialEffect(
                         UnfocusedEffect { openerData.ZoneSetSkillFlag = true },
-                        "${RED}範囲設置スキルON".asMessageEffect()
+                        s"${RED}範囲設置スキルON".asMessageEffect()
                     )
                   }
                 }
@@ -168,11 +168,11 @@ object BuildMainMenu : Menu {
     suspend def Player.computeButtonToOpenRangedPlaceSkillMenu() = run {
       val openerData = BuildAssist.playermap[uniqueId]!!
       val iconItemStack = SkullItemStackBuilder(SkullOwners.MHF_Exclamation)
-          .title("$YELLOW${EMPHASIZE}「範囲設置スキル」設定画面へ")
+          .title(s"$YELLOW${EMPHASIZE}「範囲設置スキル」設定画面へ")
           .lore(
-              "$RESET$DARK_RED${UNDERLINE}クリックで移動",
-              "$RESET${GRAY}現在の設定",
-              "$RESET${GRAY}MineStack優先設定:${if (openerData.zs_minestack_flag) "ON" else "OFF"}"
+              s"$RESET$DARK_RED${UNDERLINE}クリックで移動",
+              s"$RESET${GRAY}現在の設定",
+              s"$RESET${GRAY}MineStack優先設定:${if (openerData.zs_minestack_flag) "ON" else "OFF"}"
           )
           .build()
 
@@ -182,7 +182,7 @@ object BuildMainMenu : Menu {
                 FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
                 deferredEffect {
                   if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
-                    "${RED}建築LVが足りません".asMessageEffect()
+                    s"${RED}建築LVが足りません".asMessageEffect()
                   } else {
                     BlockPlacementSkillMenu.open
                   }
@@ -195,11 +195,11 @@ object BuildMainMenu : Menu {
     suspend def Player.computeButtonToLineUpBlocks() = recomputedButton {
       val openerData = BuildAssist.playermap[uniqueId]!!
       val iconItemStack = IconItemStackBuilder(Material.WOOD)
-          .title("$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}")
+          .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}")
           .lore(
-              "$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
-              "$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
-              "$RESET${GRAY}クリックで切り替え"
+              s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
+              s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
+              s"$RESET${GRAY}クリックで切り替え"
           )
           .build()
 
@@ -207,7 +207,7 @@ object BuildMainMenu : Menu {
           FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
             deferredEffect {
               if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
-                "${RED}建築LVが足りません".asMessageEffect()
+                s"${RED}建築LVが足りません".asMessageEffect()
               } else {
                 sequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
@@ -215,7 +215,7 @@ object BuildMainMenu : Menu {
                       openerData.line_up_flg += 1
                       openerData.line_up_flg %= 3
                     },
-                    deferredEffect { "${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}".asMessageEffect() }
+                    deferredEffect { s"${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}".asMessageEffect() }
                 )
               }
             }
@@ -226,13 +226,13 @@ object BuildMainMenu : Menu {
     suspend def Player.computeButtonToOpenLineUpBlocksMenu() = run {
       val openerData = BuildAssist.playermap[uniqueId]!!
       val iconItemStack = IconItemStackBuilder(Material.PAPER)
-          .title("$YELLOW${EMPHASIZE}「ブロックを並べるスキル（仮） 」設定画面へ")
+          .title(s"$YELLOW${EMPHASIZE}「ブロックを並べるスキル（仮） 」設定画面へ")
           .lore(
-              "$RESET${GRAY}現在の設定",
-              "$RESET${GRAY}スキル設定: ${BuildAssist.line_up_str[openerData.line_up_flg]}",
-              "$RESET${GRAY}ハーフブロック設定: ${BuildAssist.line_up_step_str[openerData.line_up_step_flg]}",
-              "$RESET${GRAY}破壊設定: ${BuildAssist.line_up_off_on_str[openerData.line_up_des_flg]}",
-              "$RESET${GRAY}MineStack優先設定: ${BuildAssist.line_up_off_on_str[openerData.line_up_minestack_flg]}"
+              s"$RESET${GRAY}現在の設定",
+              s"$RESET${GRAY}スキル設定: ${BuildAssist.line_up_str[openerData.line_up_flg]}",
+              s"$RESET${GRAY}ハーフブロック設定: ${BuildAssist.line_up_step_str[openerData.line_up_step_flg]}",
+              s"$RESET${GRAY}破壊設定: ${BuildAssist.line_up_off_on_str[openerData.line_up_des_flg]}",
+              s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.line_up_off_on_str[openerData.line_up_minestack_flg]}"
           )
           .build()
 
@@ -248,8 +248,8 @@ object BuildMainMenu : Menu {
 
     suspend def Player.computeButtonToOpenMenuToCraftItemsWhereMineStack() = run {
       val iconItemStackBuilder = IconItemStackBuilder(Material.WORKBENCH)
-          .title("$YELLOW${EMPHASIZE}MineStackブロック一括クラフト画面へ")
-          .lore("$RESET$DARK_RED${UNDERLINE}クリックで移動")
+          .title(s"$YELLOW${EMPHASIZE}MineStackブロック一括クラフト画面へ")
+          .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
           .build()
 
       Button(iconItemStackBuilder,
@@ -279,7 +279,7 @@ object BuildMainMenu : Menu {
       }
 
   override val open: TargetedEffect[Player] = computedEffect { player =>
-    val session = MenuInventoryView(4.rows(), "${LIGHT_PURPLE}木の棒メニューB").createNewSession()
+    val session = MenuInventoryView(4.rows(), s"${LIGHT_PURPLE}木の棒メニューB").createNewSession()
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
@@ -287,6 +287,6 @@ object BuildMainMenu : Menu {
     )
   }
 
-  private val EMPHASIZE = "$UNDERLINE$BOLD"
+  private val EMPHASIZE = s"$UNDERLINE$BOLD"
 
 }

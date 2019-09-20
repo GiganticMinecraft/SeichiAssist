@@ -12,15 +12,15 @@ object GiganticFeverCommand {
       .execution {
         val config = SeichiAssist.seichiAssistConfig
 
-        Util.sendEveryMessage("${ChatColor.AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！")
-        Util.sendEveryMessage("${ChatColor.AQUA}(${config.giganticFeverDisplayTime}間)")
+        Util.sendEveryMessage(s"${ChatColor.AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！")
+        Util.sendEveryMessage(s"${ChatColor.AQUA}(${config.giganticFeverDisplayTime}間)")
 
         Util.setDifficulty(worldsToToggleDifficulty, Difficulty.PEACEFUL)
 
         delay(config.giganticFeverMinutes * 60L * 1000L)
 
         Util.setDifficulty(worldsToToggleDifficulty, Difficulty.HARD)
-        Util.sendEveryMessage("${ChatColor.AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
+        Util.sendEveryMessage(s"${ChatColor.AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
 
         EmptyEffect
       }

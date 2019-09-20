@@ -10,7 +10,7 @@ class MillisecondTimer private() {
   def sendLapTimeMessage(message: String) {
     val recordedNanoSecondDuration = System.nanoTime() - startTime
 
-    println("$message(time: ${recordedNanoSecondDuration / 1000L} ms)")
+    println(s"$message(time: ${recordedNanoSecondDuration / 1000L} ms)")
 
     startTime = System.nanoTime()
   }

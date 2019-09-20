@@ -24,15 +24,15 @@ class SeichiAssist : JavaPlugin() {
 
     if (SeichiAssist.seichiAssistConfig.debugMode == 1) {
       //debugmode=1の時は最初からデバッグモードで鯖を起動
-      logger.info("${RED}seichiassistをデバッグモードで起動します")
-      logger.info("${RED}コンソールから/seichi debugmode")
-      logger.info("${RED}を実行するといつでもONOFFを切り替えられます")
+      logger.info(s"${RED}seichiassistをデバッグモードで起動します")
+      logger.info(s"${RED}コンソールから/seichi debugmode")
+      logger.info(s"${RED}を実行するといつでもONOFFを切り替えられます")
       DEBUG = true
     } else {
       //debugmode=0の時は/seichi debugmodeによる変更コマンドも使えない
-      logger.info("${GREEN}seichiassistを通常モードで起動します")
-      logger.info("${GREEN}デバッグモードを使用する場合は")
-      logger.info("${GREEN}config.ymlの設定値を書き換えて再起動してください")
+      logger.info(s"${GREEN}seichiassistを通常モードで起動します")
+      logger.info(s"${GREEN}デバッグモードを使用する場合は")
+      logger.info(s"${GREEN}config.ymlの設定値を書き換えて再起動してください")
     }
 
     try {

@@ -19,16 +19,16 @@ private object FirstPage: Menu {
   private object ConstantButtons {
     val teleportServerButton = run {
       val buttonLore = listOf(
-          "${GRAY}・各サバイバルサーバー",
-          "${GRAY}・建築サーバー",
-          "${GRAY}・公共施設サーバー",
-          "${GRAY}間を移動する時に使います",
-          "$DARK_RED${UNDERLINE}クリックして開く"
+          s"${GRAY}・各サバイバルサーバー",
+          s"${GRAY}・建築サーバー",
+          s"${GRAY}・公共施設サーバー",
+          s"${GRAY}間を移動する時に使います",
+          s"$DARK_RED${UNDERLINE}クリックして開く"
       )
 
       Button(
           IconItemStackBuilder(Material.NETHER_STAR)
-              .title("$RED$UNDERLINE${BOLD}サーバー間移動メニューへ")
+              .title(s"$RED$UNDERLINE${BOLD}サーバー間移動メニューへ")
               .lore(buttonLore)
               .build(),
           LeftClickButtonEffect(
@@ -41,16 +41,16 @@ private object FirstPage: Menu {
 
     val spawnCommandButton = run {
       val buttonLore = listOf(
-          "${GRAY}・メインワールド",
-          "${GRAY}・整地ワールド",
-          "${GRAY}間を移動するときに使います",
-          "$DARK_RED${UNDERLINE}クリックするとワープします",
-          "${DARK_GRAY}command=>[/spawn]"
+          s"${GRAY}・メインワールド",
+          s"${GRAY}・整地ワールド",
+          s"${GRAY}間を移動するときに使います",
+          s"$DARK_RED${UNDERLINE}クリックするとワープします",
+          s"${DARK_GRAY}command=>[/spawn]"
       )
 
       Button(
           IconItemStackBuilder(Material.BEACON)
-              .title("$YELLOW$UNDERLINE${BOLD}スポーンワールドへワープ")
+              .title(s"$YELLOW$UNDERLINE${BOLD}スポーンワールドへワープ")
               .lore(buttonLore)
               .build(),
           LeftClickButtonEffect(
@@ -63,14 +63,14 @@ private object FirstPage: Menu {
 
     val achievementSystemButton = run {
       val buttonLore = listOf(
-          "${GRAY}様々な実績に挑んで、",
-          "${GRAY}いろんな二つ名を手に入れよう！",
-          "$DARK_GRAY${UNDERLINE}クリックで設定画面へ移動"
+          s"${GRAY}様々な実績に挑んで、",
+          s"${GRAY}いろんな二つ名を手に入れよう！",
+          s"$DARK_GRAY${UNDERLINE}クリックで設定画面へ移動"
       )
 
       Button(
           IconItemStackBuilder(Material.END_CRYSTAL)
-              .title("$YELLOW$UNDERLINE${BOLD}実績・二つ名システム")
+              .title(s"$YELLOW$UNDERLINE${BOLD}実績・二つ名システム")
               .lore(buttonLore)
               .build(),
           LeftClickButtonEffect(
@@ -84,10 +84,10 @@ private object FirstPage: Menu {
     val seichiGodRankingButton = run {
       val iconItemStack =
           IconItemStackBuilder(Material.COOKIE)
-              .title("$YELLOW$UNDERLINE${BOLD}整地神ランキングを見る")
+              .title(s"$YELLOW$UNDERLINE${BOLD}整地神ランキングを見る")
               .lore(listOf(
-                  "$RESET$RED(整地神ランキング150位以内のプレイヤーのみ表記されます)",
-                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+                  s"$RESET$RED(整地神ランキング150位以内のプレイヤーのみ表記されます)",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
 
@@ -104,10 +104,10 @@ private object FirstPage: Menu {
     val loginGodRankingButton = run {
       val iconItemStack =
           IconItemStackBuilder(Material.COOKIE)
-              .title("$YELLOW$UNDERLINE${BOLD}ログイン神ランキングを見る")
+              .title(s"$YELLOW$UNDERLINE${BOLD}ログイン神ランキングを見る")
               .lore(listOf(
-                  "$RESET$RED(ログイン神ランキング150位以内のプレイヤーのみ表記されます)",
-                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"))
+                  s"$RESET$RED(ログイン神ランキング150位以内のプレイヤーのみ表記されます)",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックで開く"))
               .build()
 
       Button(
@@ -123,10 +123,10 @@ private object FirstPage: Menu {
     val voteGodRankingButton = run {
       val iconItemStack =
           IconItemStackBuilder(Material.COOKIE)
-              .title("$YELLOW$UNDERLINE${BOLD}投票神ランキングを見る")
+              .title(s"$YELLOW$UNDERLINE${BOLD}投票神ランキングを見る")
               .lore(listOf(
-                  "$RESET$RED(投票神ランキング150位以内のプレイヤーのみ表記されます)",
-                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+                  s"$RESET$RED(投票神ランキング150位以内のプレイヤーのみ表記されます)",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
 
@@ -143,8 +143,8 @@ private object FirstPage: Menu {
     val secondPageButton = run {
       val iconItemStack =
           SkullItemStackBuilder(SkullOwners.MHF_ArrowRight)
-              .title("$YELLOW$UNDERLINE${BOLD}2ページ目へ")
-              .lore(listOf("$RESET$DARK_RED${UNDERLINE}クリックで移動"))
+              .title(s"$YELLOW$UNDERLINE${BOLD}2ページ目へ")
+              .lore(listOf(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
               .build()
 
       Button(
@@ -159,16 +159,16 @@ private object FirstPage: Menu {
     val gachaPrizeExchangeButton = run {
       val iconItemStack =
           IconItemStackBuilder(Material.NOTE_BLOCK)
-              .title("$YELLOW$UNDERLINE${BOLD}不要ガチャ景品交換システム")
+              .title(s"$YELLOW$UNDERLINE${BOLD}不要ガチャ景品交換システム")
               .lore(listOf(
-                  "$RESET${GREEN}不必要な当たり、大当たり景品を",
-                  "$RESET${GREEN}ガチャ券と交換出来ます",
-                  "$RESET${GREEN}出てきたインベントリ―に",
-                  "$RESET${GREEN}交換したい景品を入れて",
-                  "$RESET${GREEN}escキーを押してください",
-                  "$RESET${DARK_GRAY}たまにアイテムが消失するから",
-                  "$RESET${DARK_GRAY}大事なものはいれないでネ",
-                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+                  s"$RESET${GREEN}不必要な当たり、大当たり景品を",
+                  s"$RESET${GREEN}ガチャ券と交換出来ます",
+                  s"$RESET${GREEN}出てきたインベントリ―に",
+                  s"$RESET${GREEN}交換したい景品を入れて",
+                  s"$RESET${GREEN}escキーを押してください",
+                  s"$RESET${DARK_GRAY}たまにアイテムが消失するから",
+                  s"$RESET${DARK_GRAY}大事なものはいれないでネ",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
 
@@ -181,7 +181,7 @@ private object FirstPage: Menu {
                 it.openInventory(
                     createInventory(
                         size = 4.rows(),
-                        title = "$LIGHT_PURPLE${BOLD}交換したい景品を入れてください"
+                        title = s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください"
                     )
                 )
               }
@@ -192,10 +192,10 @@ private object FirstPage: Menu {
     val homePointMenuButton = run {
       val iconItemStack =
           IconItemStackBuilder(Material.BED)
-              .title("$YELLOW$UNDERLINE${BOLD}ホームメニューを開く")
+              .title(s"$YELLOW$UNDERLINE${BOLD}ホームメニューを開く")
               .lore(listOf(
-                  "$RESET${GRAY}ホームポイントに関するメニュー",
-                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+                  s"$RESET${GRAY}ホームポイントに関するメニュー",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
 
@@ -211,12 +211,12 @@ private object FirstPage: Menu {
     val randomTeleportButton = run {
       val iconItemStack =
           IconItemStackBuilder(Material.COMPASS)
-              .title("$YELLOW$UNDERLINE${BOLD}ランダムテレポート(β)")
+              .title(s"$YELLOW$UNDERLINE${BOLD}ランダムテレポート(β)")
               .lore(listOf(
-                  "$RESET${GRAY}整地ワールドで使うと、良さげな土地にワープします",
-                  "$RESET${GRAY}βテスト中のため、謎挙動にご注意ください",
-                  "$RESET$DARK_RED${UNDERLINE}クリックで発動",
-                  "$RESET${DARK_GRAY}command=>[/rtp]"
+                  s"$RESET${GRAY}整地ワールドで使うと、良さげな土地にワープします",
+                  s"$RESET${GRAY}βテスト中のため、謎挙動にご注意ください",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックで発動",
+                  s"$RESET${DARK_GRAY}command=>[/rtp]"
               ))
               .build()
 
@@ -232,13 +232,13 @@ private object FirstPage: Menu {
     val fastCraftButton = run {
       val iconItemStack =
           IconItemStackBuilder(Material.WORKBENCH)
-              .title("$YELLOW$UNDERLINE${BOLD}FastCraft機能")
+              .title(s"$YELLOW$UNDERLINE${BOLD}FastCraft機能")
               .lore(listOf(
-                  "$RESET$DARK_RED${UNDERLINE}クリックで開く",
-                  "$RESET${RED}ただの作業台じゃないんです…",
-                  "$RESET${YELLOW}自動レシピ補完機能付きの",
-                  "$RESET${YELLOW}最強な作業台はこちら",
-                  "$RESET${DARK_GRAY}command=>[/fc craft]"
+                  s"$RESET$DARK_RED${UNDERLINE}クリックで開く",
+                  s"$RESET${RED}ただの作業台じゃないんです…",
+                  s"$RESET${YELLOW}自動レシピ補完機能付きの",
+                  s"$RESET${YELLOW}最強な作業台はこちら",
+                  s"$RESET${DARK_GRAY}command=>[/fc craft]"
               ))
               .build()
 
@@ -256,10 +256,10 @@ private object FirstPage: Menu {
       val iconItemStack =
           IconItemStackBuilder(Material.ENCHANTED_BOOK)
               .enchanted()
-              .title("$YELLOW$UNDERLINE${BOLD}パッシブスキルブック")
+              .title(s"$YELLOW$UNDERLINE${BOLD}パッシブスキルブック")
               .lore(listOf(
-                  "$RESET${GRAY}整地に便利なスキルを使用できるゾ",
-                  "$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く"
+                  s"$RESET${GRAY}整地に便利なスキルを使用できるゾ",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く"
               ))
               .build()
 
@@ -276,16 +276,16 @@ private object FirstPage: Menu {
     val oreExchangeButton = run {
       val iconItemStack =
           IconItemStackBuilder(Material.DIAMOND_ORE)
-              .title("$YELLOW$UNDERLINE${BOLD}鉱石・交換券変換システム")
+              .title(s"$YELLOW$UNDERLINE${BOLD}鉱石・交換券変換システム")
               .lore(listOf(
-                  "$RESET${GREEN}不必要な各種鉱石を",
-                  "$RESET${DARK_RED}交換券$RESET${GREEN}と交換できます",
-                  "$RESET${GREEN}出てきたインベントリ―に",
-                  "$RESET${GREEN}交換したい鉱石を入れて",
-                  "$RESET${GREEN}escキーを押してください",
-                  "$RESET${DARK_GRAY}たまにアイテムが消失するから",
-                  "$RESET${DARK_GRAY}大事なものはいれないでネ",
-                  "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+                  s"$RESET${GREEN}不必要な各種鉱石を",
+                  s"$RESET${DARK_RED}交換券$RESET${GREEN}と交換できます",
+                  s"$RESET${GREEN}出てきたインベントリ―に",
+                  s"$RESET${GREEN}交換したい鉱石を入れて",
+                  s"$RESET${GREEN}escキーを押してください",
+                  s"$RESET${DARK_GRAY}たまにアイテムが消失するから",
+                  s"$RESET${DARK_GRAY}大事なものはいれないでネ",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
               ))
               .build()
 
@@ -298,7 +298,7 @@ private object FirstPage: Menu {
                 it.openInventory(
                     createInventory(
                         size = 4.rows(),
-                        title = "$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください"
+                        title = s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください"
                     )
                 )
               }
@@ -310,8 +310,8 @@ private object FirstPage: Menu {
       val iconItemStack =
           IconItemStackBuilder(Material.DIAMOND)
               .enchanted()
-              .title("$YELLOW$UNDERLINE${BOLD}投票ptメニュー")
-              .lore(listOf("$RESET${GREEN}投票ptに関することはこちらから！"))
+              .title(s"$YELLOW$UNDERLINE${BOLD}投票ptメニュー")
+              .lore(listOf(s"$RESET${GREEN}投票ptに関することはこちらから！"))
               .build()
 
       Button(
@@ -331,7 +331,7 @@ private object FirstPage: Menu {
 
       Button(
           SkullItemStackBuilder(uniqueId)
-              .title("$YELLOW$BOLD$UNDERLINE${name}の統計データ")
+              .title(s"$YELLOW$BOLD$UNDERLINE${name}の統計データ")
               .lore(PlayerStatsLoreGenerator(openerData).computeLore())
               .build(),
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
@@ -352,26 +352,26 @@ private object FirstPage: Menu {
       val buttonLore: List[String] = run {
         val toggleNavigation = listOf(
             openerData.settings.fastDiggingEffectSuppression.currentStatus(),
-            "$RESET$DARK_RED${UNDERLINE}クリックで" + openerData.settings.fastDiggingEffectSuppression.nextToggledStatus()
+            s"$RESET$DARK_RED${UNDERLINE}クリックで" + openerData.settings.fastDiggingEffectSuppression.nextToggledStatus()
         )
 
         val explanation = listOf(
-            "$RESET${GRAY}採掘速度上昇効果とは",
-            "$RESET${GRAY}接続人数と1分間の採掘量に応じて",
-            "$RESET${GRAY}採掘速度が変化するシステムです",
-            "$RESET${GOLD}現在の採掘速度上昇Lv：${openerData.minespeedlv + 1}"
+            s"$RESET${GRAY}採掘速度上昇効果とは",
+            s"$RESET${GRAY}接続人数と1分間の採掘量に応じて",
+            s"$RESET${GRAY}採掘速度が変化するシステムです",
+            s"$RESET${GOLD}現在の採掘速度上昇Lv：${openerData.minespeedlv + 1}"
         )
 
         val effectStats =
-            listOf("$RESET$YELLOW${UNDERLINE}上昇量の内訳") +
-                openerData.effectdatalist.map { "$RESET$RED${it.effectDescription}" }
+            listOf(s"$RESET$YELLOW${UNDERLINE}上昇量の内訳") +
+                openerData.effectdatalist.map { s"$RESET$RED${it.effectDescription}" }
 
         toggleNavigation + explanation + effectStats
       }
 
       Button(
           IconItemStackBuilder(Material.DIAMOND_PICKAXE)
-              .title("$YELLOW$UNDERLINE${BOLD}採掘速度上昇効果")
+              .title(s"$YELLOW$UNDERLINE${BOLD}採掘速度上昇効果")
               .enchanted()
               .lore(buttonLore)
               .build(),
@@ -395,16 +395,16 @@ private object FirstPage: Menu {
             regionManager.getRegionCountOfPlayer(worldGuardPlugin.wrapPlayer(this))
 
         listOf(
-            "${GRAY}土地の保護が行えます",
-            "$DARK_RED${UNDERLINE}クリックで開く",
-            "${GRAY}保護作成上限：$AQUA$maxRegionCount",
-            "${GRAY}現在のあなたの保護作成数：$AQUA$currentPlayerRegionCount"
+            s"${GRAY}土地の保護が行えます",
+            s"$DARK_RED${UNDERLINE}クリックで開く",
+            s"${GRAY}保護作成上限：$AQUA$maxRegionCount",
+            s"${GRAY}現在のあなたの保護作成数：$AQUA$currentPlayerRegionCount"
         )
       }
 
       return Button(
           IconItemStackBuilder(Material.DIAMOND_AXE)
-              .title("$YELLOW${UNDERLINE}土地保護メニュー")
+              .title(s"$YELLOW${UNDERLINE}土地保護メニュー")
               .lore(buttonLore)
               .build(),
           LeftClickButtonEffect(
@@ -421,22 +421,22 @@ private object FirstPage: Menu {
 
       val buttonLore: List[String] = run {
         val explanation = listOf(
-            "$RESET${GREEN}説明しよう!MineStackとは…",
-            "${RESET}主要アイテムを無限にスタック出来る!",
-            "${RESET}スタックしたアイテムは",
-            "${RESET}ここから取り出せるゾ!"
+            s"$RESET${GREEN}説明しよう!MineStackとは…",
+            s"${RESET}主要アイテムを無限にスタック出来る!",
+            s"${RESET}スタックしたアイテムは",
+            s"${RESET}ここから取り出せるゾ!"
         )
 
         val actionGuidance = if (openerData.level >= minimumLevelRequired) {
-          "$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+          s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
         } else {
-          "$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumLevelRequired}以上必要です"
+          s"$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumLevelRequired}以上必要です"
         }
 
         val annotation = listOf(
-            "$RESET${DARK_GRAY}※スタックしたアイテムは",
-            "$RESET${DARK_GRAY}各サバイバルサーバー間で",
-            "$RESET${DARK_GRAY}共有されます"
+            s"$RESET${DARK_GRAY}※スタックしたアイテムは",
+            s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
+            s"$RESET${DARK_GRAY}共有されます"
         )
 
         explanation + actionGuidance + annotation
@@ -444,7 +444,7 @@ private object FirstPage: Menu {
 
       return Button(
           IconItemStackBuilder(Material.CHEST)
-              .title("$YELLOW$UNDERLINE${BOLD}MineStack機能")
+              .title(s"$YELLOW$UNDERLINE${BOLD}MineStack機能")
               .lore(buttonLore)
               .build(),
           LeftClickButtonEffect {
@@ -465,21 +465,21 @@ private object FirstPage: Menu {
 
       val iconItemStack = run {
         val loreAnnotation = listOf(
-            "$RESET${DARK_GRAY}※4次元ポケットの中身は",
-            "$RESET${DARK_GRAY}各サバイバルサーバー間で",
-            "$RESET${DARK_GRAY}共有されます"
+            s"$RESET${DARK_GRAY}※4次元ポケットの中身は",
+            s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
+            s"$RESET${DARK_GRAY}共有されます"
         )
         val loreHeading = if (playerData.level >= minimumRequiredLevel) {
           listOf(
-              "$RESET${GRAY}ポケットサイズ:${playerData.pocketInventory.size}スタック",
-              "$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+              s"$RESET${GRAY}ポケットサイズ:${playerData.pocketInventory.size}スタック",
+              s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
           )
         } else {
-          listOf("$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です")
+          listOf(s"$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です")
         }
 
         IconItemStackBuilder(Material.ENDER_PORTAL_FRAME)
-            .title("$YELLOW$UNDERLINE${BOLD}4次元ポケットを開く")
+            .title(s"$YELLOW$UNDERLINE${BOLD}4次元ポケットを開く")
             .lore(loreHeading + loreAnnotation)
             .build()
       }
@@ -506,14 +506,14 @@ private object FirstPage: Menu {
       val iconItemStack = run {
         val loreHeading = run {
           if (playerData.level >= minimumRequiredLevel) {
-            "$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+            s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
           } else {
-            "$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です"
+            s"$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です"
           }
         }
 
         IconItemStackBuilder(Material.ENDER_CHEST)
-            .title("$DARK_PURPLE$UNDERLINE${BOLD}どこでもエンダーチェスト")
+            .title(s"$DARK_PURPLE$UNDERLINE${BOLD}どこでもエンダーチェスト")
             .lore(listOf(loreHeading))
             .build()
       }
@@ -541,25 +541,25 @@ private object FirstPage: Menu {
       val iconItemStack = run {
         val lore = run {
           val explanation = listOf(
-              "$RESET${GRAY}運営からのガチャ券を受け取ります",
-              "$RESET${GRAY}以下の場合に配布されます",
-              "$RESET${GRAY}・各種不具合のお詫びとして",
-              "$RESET${GRAY}・イベント景品として",
-              "$RESET${GRAY}・各種謝礼として"
+              s"$RESET${GRAY}運営からのガチャ券を受け取ります",
+              s"$RESET${GRAY}以下の場合に配布されます",
+              s"$RESET${GRAY}・各種不具合のお詫びとして",
+              s"$RESET${GRAY}・イベント景品として",
+              s"$RESET${GRAY}・各種謝礼として"
           )
 
           val obtainableApologyItems = playerData.unclaimedApologyItems
           val currentStatus =
               if (obtainableApologyItems != 0)
-                "$RESET${AQUA}未獲得ガチャ券：${obtainableApologyItems}枚"
+                s"$RESET${AQUA}未獲得ガチャ券：${obtainableApologyItems}枚"
               else
-                "$RESET${RED}獲得できるガチャ券はありません"
+                s"$RESET${RED}獲得できるガチャ券はありません"
 
           explanation + currentStatus
         }
 
         SkullItemStackBuilder(SkullOwners.whitecat_haru)
-            .title("$DARK_AQUA$UNDERLINE${BOLD}運営からのガチャ券を受け取る")
+            .title(s"$DARK_AQUA$UNDERLINE${BOLD}運営からのガチャ券を受け取る")
             .lore(lore)
             .build()
       }
@@ -579,7 +579,7 @@ private object FirstPage: Menu {
                         playerData.unclaimedApologyItems = 0
                       },
                       FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
-                      "${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
+                      s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
                   )
                 } else EmptyEffect
               }
@@ -595,13 +595,13 @@ private object FirstPage: Menu {
             (playerData.starLevels.fromBreakAmount.toLong() + 1) * 87115000 - playerData.totalbreaknum
 
         val lore = listOf(
-            "$RESET$AQUA${BOLD}整地量：☆${playerData.starLevels.fromBreakAmount}",
-            "$RESET${AQUA}次の☆まで：あと$breakNumRequiredToNextStarLevel",
-            "$RESET$GREEN$UNDERLINE${BOLD}合計：☆${playerData.starLevels.total()}"
+            s"$RESET$AQUA${BOLD}整地量：☆${playerData.starLevels.fromBreakAmount}",
+            s"$RESET${AQUA}次の☆まで：あと$breakNumRequiredToNextStarLevel",
+            s"$RESET$GREEN$UNDERLINE${BOLD}合計：☆${playerData.starLevels.total()}"
         )
 
         IconItemStackBuilder(Material.GOLD_INGOT)
-            .title("$YELLOW$UNDERLINE${BOLD}スターレベル情報")
+            .title(s"$YELLOW$UNDERLINE${BOLD}スターレベル情報")
             .lore(lore)
             .build()
       }
@@ -614,18 +614,18 @@ private object FirstPage: Menu {
         val lore =
             if (Util.isSkillEnable(this))
               listOf(
-                  "$RESET${GRAY}整地に便利なスキルを使用できるゾ",
-                  "$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く"
+                  s"$RESET${GRAY}整地に便利なスキルを使用できるゾ",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く"
               )
             else
               listOf(
-                  "$RESET${RED}このワールドでは",
-                  "$RESET${RED}整地スキルを使えません"
+                  s"$RESET${RED}このワールドでは",
+                  s"$RESET${RED}整地スキルを使えません"
               )
 
         IconItemStackBuilder(Material.ENCHANTED_BOOK)
             .enchanted()
-            .title("$YELLOW$UNDERLINE${BOLD}アクティブスキルブック")
+            .title(s"$YELLOW$UNDERLINE${BOLD}アクティブスキルブック")
             .lore(lore)
             .build()
       }
@@ -649,17 +649,17 @@ private object FirstPage: Menu {
           val gachaPointToNextTicket = 1000 - playerData.gachapoint % 1000
 
           val gachaTicketStatus = if (obtainableGachaTicket != 0)
-            "$RESET${AQUA}未獲得ガチャ券：${obtainableGachaTicket}枚"
+            s"$RESET${AQUA}未獲得ガチャ券：${obtainableGachaTicket}枚"
           else
-            "$RESET${RED}獲得できるガチャ券はありません"
+            s"$RESET${RED}獲得できるガチャ券はありません"
 
-          val gachaPointStatus = "$RESET${AQUA}次のガチャ券まで:${gachaPointToNextTicket}ブロック"
+          val gachaPointStatus = s"$RESET${AQUA}次のガチャ券まで:${gachaPointToNextTicket}ブロック"
 
           listOf(gachaTicketStatus, gachaPointStatus)
         }
 
         SkullItemStackBuilder(SkullOwners.unchama)
-            .title("$DARK_AQUA$UNDERLINE${BOLD}整地報酬ガチャ券を受け取る")
+            .title(s"$DARK_AQUA$UNDERLINE${BOLD}整地報酬ガチャ券を受け取る")
             .lore(lore)
             .build()
       }
@@ -681,7 +681,7 @@ private object FirstPage: Menu {
                       playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
                       repeat(gachaTicketsToGive) { Util.addItemToPlayerSafely(this@computeGachaTicketButton, itemStackToGive) }
                     },
-                    "${ChatColor.GOLD}ガチャ券${gachaTicketsToGive}枚${ChatColor.WHITE}プレゼントフォーユー".asMessageEffect(),
+                    s"${ChatColor.GOLD}ガチャ券${gachaTicketsToGive}枚${ChatColor.WHITE}プレゼントフォーユー".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
                 )
               } else EmptyEffect
@@ -697,17 +697,17 @@ private object FirstPage: Menu {
         val lore = run {
           val settingsStatus =
               if (playerData.settings.receiveGachaTicketEveryMinute)
-                "$RESET${GREEN}毎分受け取ります"
+                s"$RESET${GREEN}毎分受け取ります"
               else
-                "$RESET${RED}後でまとめて受け取ります"
+                s"$RESET${RED}後でまとめて受け取ります"
 
-          val navigationMessage = "$RESET$DARK_RED${UNDERLINE}クリックで変更"
+          val navigationMessage = s"$RESET$DARK_RED${UNDERLINE}クリックで変更"
 
           listOf(settingsStatus, navigationMessage)
         }
 
         IconItemStackBuilder(Material.STONE_BUTTON)
-            .title("$YELLOW$UNDERLINE${BOLD}整地報酬ガチャ券受け取り方法")
+            .title(s"$YELLOW$UNDERLINE${BOLD}整地報酬ガチャ券受け取り方法")
             .lore(lore)
             .build()
       }
@@ -721,13 +721,13 @@ private object FirstPage: Menu {
               deferredEffect {
                 if (playerData.settings.receiveGachaTicketEveryMinute) {
                   sequentialEffect(
-                      "${ChatColor.GREEN}毎分のガチャ券受け取り:ON".asMessageEffect(),
+                      s"${ChatColor.GREEN}毎分のガチャ券受け取り:ON".asMessageEffect(),
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
                   )
                 } else {
                   sequentialEffect(
-                      "${ChatColor.RED}毎分のガチャ券受け取り:OFF".asMessageEffect(),
-                      "${ChatColor.GREEN}ガチャ券受け取りボタンを押すともらえます".asMessageEffect(),
+                      s"${ChatColor.RED}毎分のガチャ券受け取り:OFF".asMessageEffect(),
+                      s"${ChatColor.GREEN}ガチャ券受け取りボタンを押すともらえます".asMessageEffect(),
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1.0f, 1.0f)
                   )
                 }
@@ -745,11 +745,11 @@ private object FirstPage: Menu {
                 .enchanted()
                 .title("プレゼントボックス")
                 .lore(listOf(
-                    "$RESET$RED[バレンタインイベント記念]",
-                    "$RESET${AQUA}記念品として",
-                    "$RESET${GREEN}チョコチップクッキー×64個",
-                    "$RESET${AQUA}を配布します。",
-                    "$RESET$DARK_RED$UNDERLINE${BOLD}クリックで受け取る"
+                    s"$RESET$RED[バレンタインイベント記念]",
+                    s"$RESET${AQUA}記念品として",
+                    s"$RESET${GREEN}チョコチップクッキー×64個",
+                    s"$RESET${AQUA}を配布します。",
+                    s"$RESET$DARK_RED$UNDERLINE${BOLD}クリックで受け取る"
                 ))
                 .build()
 
@@ -764,7 +764,7 @@ private object FirstPage: Menu {
                           Valentine.giveChoco(this)
                           playerData.hasChocoGave = true
                         },
-                        "${ChatColor.AQUA}チョコチップクッキーを付与しました。".asMessageEffect()
+                        s"${ChatColor.AQUA}チョコチップクッキーを付与しました。".asMessageEffect()
                     )
                   } else {
                     EmptyEffect
@@ -813,7 +813,7 @@ private object FirstPage: Menu {
       }
 
   override val open: TargetedEffect[Player] = computedEffect { player =>
-    val session = MenuInventoryView(4.rows(), "${LIGHT_PURPLE}木の棒メニュー").createNewSession()
+    val session = MenuInventoryView(4.rows(), s"${LIGHT_PURPLE}木の棒メニュー").createNewSession()
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),

@@ -42,9 +42,9 @@ object OnClickTitleMenu : Listener {
     val title = topinventory.title
     //インベントリ名が以下の時処理
     val isSkull = itemstackcurrent.type == Material.SKULL_ITEM
-    val prefix = "${ChatColor.DARK_PURPLE}${ChatColor.BOLD}"
+    val prefix = s"${ChatColor.DARK_PURPLE}${ChatColor.BOLD}"
     when (title) {
-      "${prefix}実績・二つ名システム" => {
+      s"${prefix}実績・二つ名システム" => {
         event.isCancelled = true
 
         //プレイヤーインベントリのクリックの場合終了
@@ -111,7 +111,7 @@ object OnClickTitleMenu : Listener {
         //予約付与システム受け取り処理
       }
 
-      "${prefix}カテゴリ「整地」" => {
+      s"${prefix}カテゴリ「整地」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -142,7 +142,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}カテゴリ「建築」" => {
+      s"${prefix}カテゴリ「建築」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -160,7 +160,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}カテゴリ「ログイン」" => {
+      s"${prefix}カテゴリ「ログイン」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -198,7 +198,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}カテゴリ「やりこみ」" => {
+      s"${prefix}カテゴリ「やりこみ」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -216,7 +216,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}カテゴリ「特殊」" => {
+      s"${prefix}カテゴリ「特殊」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -248,7 +248,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}二つ名組合せシステム" => {
+      s"${prefix}二つ名組合せシステム" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -323,7 +323,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}二つ名組合せ「前」" => {
+      s"${prefix}二つ名組合せ「前」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -365,7 +365,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}二つ名組合せ「中」" => {
+      s"${prefix}二つ名組合せ「中」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -407,7 +407,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}二つ名組合せ「後」" => {
+      s"${prefix}二つ名組合せ「後」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -449,7 +449,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}実績ポイントショップ" => {
+      s"${prefix}実績ポイントショップ" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -513,7 +513,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}実績「整地神ランキング」" => {
+      s"${prefix}実績「整地神ランキング」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -576,7 +576,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「整地量」" => {
+      s"${prefix}実績「整地量」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -637,7 +637,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「参加時間」" => {
+      s"${prefix}実績「参加時間」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -748,7 +748,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「通算ログイン」" => {
+      s"${prefix}実績「通算ログイン」" => {
         event.isCancelled = true
 
         //プレイヤーインベントリのクリックの場合終了
@@ -833,7 +833,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「連続ログイン」" => {
+      s"${prefix}実績「連続ログイン」" => {
         event.isCancelled = true
 
         //プレイヤーインベントリのクリックの場合終了
@@ -879,7 +879,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「JMS投票数」" => {
+      s"${prefix}実績「JMS投票数」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -932,7 +932,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「公式イベント」" => {
+      s"${prefix}実績「公式イベント」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ
@@ -1065,7 +1065,7 @@ object OnClickTitleMenu : Listener {
         }//実績メニューに戻る
       }
 
-      "${prefix}実績「記念日」" => {
+      s"${prefix}実績「記念日」" => {
         event.isCancelled = true
 
         //プレイヤーインベントリのクリックの場合終了
@@ -1081,7 +1081,7 @@ object OnClickTitleMenu : Listener {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           val name = itemmeta.displayName
           for (i in 9001..9036) {
-            if ("No$i「???」" in name) {
+            if (s"No$i「???」" in name) {
               SeichiAchievement.tryAchieve(player, i)
             }
           }
@@ -1209,7 +1209,7 @@ object OnClickTitleMenu : Listener {
 
       }
 
-      "${prefix}実績「極秘任務」" => {
+      s"${prefix}実績「極秘任務」" => {
         event.isCancelled = true
 
         //実績解除処理部分の読みこみ

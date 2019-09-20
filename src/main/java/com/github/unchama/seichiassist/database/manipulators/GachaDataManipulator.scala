@@ -11,7 +11,7 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
   def loadGachaData(): Boolean {
     val prizes = ArrayList[GachaPrize]()
 
-    val command = "select * from $tableReference"
+    val command = s"select * from $tableReference"
     try {
       gateway.executeQuery(command).recordIteration {
         val lrs = this
@@ -44,7 +44,7 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
   def saveGachaData(): Boolean {
 
     //まずmysqlのガチャテーブルを初期化(中身全削除)
-    var command = "truncate table $tableReference"
+    var command = s"truncate table $tableReference"
     if (gateway.executeUpdate(command) == Fail) {
       return false
     }

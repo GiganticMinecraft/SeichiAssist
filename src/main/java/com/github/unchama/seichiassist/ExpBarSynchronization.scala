@@ -15,7 +15,7 @@ class ExpBarSynchronization {
 
     return if (playerLevel >= LevelThresholds.levelExpThresholds.size) {
       // BarをMAXにして総整地量を表示
-      val text = "$GOLD${BOLD}Lv $playerLevel(総整地量: ${String.format("%,d", playerData.totalbreaknum)})"
+      val text = s"$GOLD${BOLD}Lv $playerLevel(総整地量: ${String.format("%,d", playerData.totalbreaknum)})"
       val progress = 1.0
 
       ExpBarProperties(text, progress)
@@ -24,7 +24,7 @@ class ExpBarSynchronization {
       val nextLevelThreshold = LevelThresholds.levelExpThresholds[playerLevel]
       val previousLevelThreshold = LevelThresholds.levelExpThresholds[playerLevel - 1]
       val currentExp = playerData.totalbreaknum
-      val text = "$GOLD${BOLD}Lv $playerLevel(${String.format("%,d", currentExp)}/${String.format("%,d", nextLevelThreshold)})"
+      val text = s"$GOLD${BOLD}Lv $playerLevel(${String.format("%,d", currentExp)}/${String.format("%,d", nextLevelThreshold)})"
 
       val expAfterPreviousThreshold = currentExp - previousLevelThreshold
       val expBetweenLevels = nextLevelThreshold - previousLevelThreshold

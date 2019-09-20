@@ -17,7 +17,7 @@ object SeichiHasteCommand {
   }
 
   private val descriptionPrintExecutor = EchoExecutor(listOf(
-      "${ChatColor.RED}/seichihaste [説明文id] [効果の持続ティック数] [効果の強さ] [スコープ指定子]",
+      s"${ChatColor.RED}/seichihaste [説明文id] [効果の持続ティック数] [効果の強さ] [スコープ指定子]",
       "指定されたプレイヤーに採掘速度上昇効果を付与します。",
       "同じサーバーにログイン中であるプレーヤーにしか適用されません。",
       "",
@@ -62,18 +62,18 @@ object SeichiHasteCommand {
                 ?: return@execution "対象のプレーヤー名を指定してください。".asMessageEffect()
 
             val playerData = Bukkit.getPlayer(playerName)?.let { SeichiAssist.playermap[it.uniqueId] }
-                ?: return@execution "プレーヤー $playerName はオンラインではありません。".asMessageEffect()
+                ?: return@execution s"プレーヤー $playerName はオンラインではありません。".asMessageEffect()
 
             playerData.effectdatalist.add(effectData)
 
-            "${ChatColor.LIGHT_PURPLE}$playerName に上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
+            s"${ChatColor.LIGHT_PURPLE}$playerName に上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
           }
           ScopeSpecification.ALL => {
             SeichiAssist.playermap.values.forEach {
               it.effectdatalist.add(effectData)
             }
 
-            "${ChatColor.LIGHT_PURPLE}すべてのプレーヤーに上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
+            s"${ChatColor.LIGHT_PURPLE}すべてのプレーヤーに上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
           }
         }
       }

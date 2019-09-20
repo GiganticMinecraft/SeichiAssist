@@ -17,13 +17,13 @@ object SecondPage: Menu {
   private object ConstantButtons {
     val officialWikiNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.BOOK)
-          .title("$YELLOW$UNDERLINE${BOLD}公式Wikiにアクセス")
+          .title(s"$YELLOW$UNDERLINE${BOLD}公式Wikiにアクセス")
           .lore(listOf(
-              "$RESET${GREEN}鯖内の「困った」は公式Wikiで解決！",
-              "$RESET${DARK_GRAY}クリックするとチャット欄に",
-              "$RESET${DARK_GRAY}URLが表示されますので",
-              "$RESET${DARK_GRAY}Tキーを押してから",
-              "$RESET${DARK_GRAY}そのURLをクリックしてください"
+              s"$RESET${GREEN}鯖内の「困った」は公式Wikiで解決！",
+              s"$RESET${DARK_GRAY}クリックするとチャット欄に",
+              s"$RESET${DARK_GRAY}URLが表示されますので",
+              s"$RESET${DARK_GRAY}Tキーを押してから",
+              s"$RESET${DARK_GRAY}そのURLをクリックしてください"
           ))
           .build()
 
@@ -32,7 +32,7 @@ object SecondPage: Menu {
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 closeInventoryEffect,
-                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("official")}".asMessageEffect(),
+                s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("official")}".asMessageEffect(),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
             )
           }
@@ -41,13 +41,13 @@ object SecondPage: Menu {
 
     val rulesPageNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.PAPER)
-          .title("$YELLOW$UNDERLINE${BOLD}運営方針とルールを確認")
+          .title(s"$YELLOW$UNDERLINE${BOLD}運営方針とルールを確認")
           .lore(listOf(
-              "$RESET${GREEN}当鯖で遊ぶ前に確認してネ！",
-              "$RESET${DARK_GRAY}クリックするとチャット欄に",
-              "$RESET${DARK_GRAY}URLが表示されますので",
-              "$RESET${DARK_GRAY}Tキーを押してから",
-              "$RESET${DARK_GRAY}そのURLをクリックしてください"
+              s"$RESET${GREEN}当鯖で遊ぶ前に確認してネ！",
+              s"$RESET${DARK_GRAY}クリックするとチャット欄に",
+              s"$RESET${DARK_GRAY}URLが表示されますので",
+              s"$RESET${DARK_GRAY}Tキーを押してから",
+              s"$RESET${DARK_GRAY}そのURLをクリックしてください"
           ))
           .build()
 
@@ -56,7 +56,7 @@ object SecondPage: Menu {
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 closeInventoryEffect,
-                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("rule")}".asMessageEffect(),
+                s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("rule")}".asMessageEffect(),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
             )
           }
@@ -65,14 +65,14 @@ object SecondPage: Menu {
 
     val serverMapNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.MAP)
-          .title("$YELLOW$UNDERLINE${BOLD}鯖Mapを見る")
+          .title(s"$YELLOW$UNDERLINE${BOLD}鯖Mapを見る")
           .lore(listOf(
-              "$RESET${GREEN}webブラウザから鯖Mapを閲覧出来ます",
-              "$RESET${GREEN}他人の居場所や保護の場所を確認出来ます",
-              "$RESET${DARK_GRAY}クリックするとチャット欄に",
-              "$RESET${DARK_GRAY}URLが表示されますので",
-              "$RESET${DARK_GRAY}Tキーを押してから",
-              "$RESET${DARK_GRAY}そのURLをクリックしてください"
+              s"$RESET${GREEN}webブラウザから鯖Mapを閲覧出来ます",
+              s"$RESET${GREEN}他人の居場所や保護の場所を確認出来ます",
+              s"$RESET${DARK_GRAY}クリックするとチャット欄に",
+              s"$RESET${DARK_GRAY}URLが表示されますので",
+              s"$RESET${DARK_GRAY}Tキーを押してから",
+              s"$RESET${DARK_GRAY}そのURLをクリックしてください"
           ))
           .build()
 
@@ -81,7 +81,7 @@ object SecondPage: Menu {
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 closeInventoryEffect,
-                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("map")}".asMessageEffect(),
+                s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("map")}".asMessageEffect(),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
             )
           }
@@ -90,12 +90,12 @@ object SecondPage: Menu {
 
     val JMSNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.SIGN)
-          .title("$YELLOW$UNDERLINE${BOLD}JapanMinecraftServerリンク")
+          .title(s"$YELLOW$UNDERLINE${BOLD}JapanMinecraftServerリンク")
           .lore(listOf(
-              "$RESET${DARK_GRAY}クリックするとチャット欄に",
-              "$RESET${DARK_GRAY}URLが表示されますので",
-              "$RESET${DARK_GRAY}Tキーを押してから",
-              "$RESET${DARK_GRAY}そのURLをクリックしてください"
+              s"$RESET${DARK_GRAY}クリックするとチャット欄に",
+              s"$RESET${DARK_GRAY}URLが表示されますので",
+              s"$RESET${DARK_GRAY}Tキーを押してから",
+              s"$RESET${DARK_GRAY}そのURLをクリックしてください"
           ))
           .build()
 
@@ -104,7 +104,7 @@ object SecondPage: Menu {
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 closeInventoryEffect,
-                "$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("jms")}".asMessageEffect(),
+                s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("jms")}".asMessageEffect(),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
             )
           }
@@ -113,18 +113,18 @@ object SecondPage: Menu {
 
     val appleConversionButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.GOLDEN_APPLE, durability = 1)
-          .title("$YELLOW$UNDERLINE${BOLD}GT景品→椎名林檎変換システム")
+          .title(s"$YELLOW$UNDERLINE${BOLD}GT景品→椎名林檎変換システム")
           .lore(listOf(
-              "$RESET${GREEN}不必要なGT大当り景品を",
-              "$RESET${GOLD}椎名林檎$RESET${GREEN}と交換できます",
-              "$RESET${GREEN}出てきたインベントリーに",
-              "$RESET${GREEN}交換したい景品を入れて",
-              "$RESET${GREEN}escキーを押してください",
-              "$RESET${DARK_GRAY}たまにアイテムが消失しますが",
-              "$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
-              "$RESET${DARK_GRAY}神に祈りながら交換しよう",
-              "${RESET}現在の交換レート:GT景品1つにつき${SeichiAssist.seichiAssistConfig.rateGiganticToRingo()}個",
-              "$RESET$DARK_GRAY$DARK_RED${UNDERLINE}クリックで開く"
+              s"$RESET${GREEN}不必要なGT大当り景品を",
+              s"$RESET${GOLD}椎名林檎$RESET${GREEN}と交換できます",
+              s"$RESET${GREEN}出てきたインベントリーに",
+              s"$RESET${GREEN}交換したい景品を入れて",
+              s"$RESET${GREEN}escキーを押してください",
+              s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
+              s"$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
+              s"$RESET${DARK_GRAY}神に祈りながら交換しよう",
+              s"${RESET}現在の交換レート:GT景品1つにつき${SeichiAssist.seichiAssistConfig.rateGiganticToRingo()}個",
+              s"$RESET$DARK_GRAY$DARK_RED${UNDERLINE}クリックで開く"
           ))
           .build()
 
@@ -135,7 +135,7 @@ object SecondPage: Menu {
                 FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
                 TargetedEffect {
                   // TODO メニューインベントリに差し替える
-                  it.openInventory(createInventory(size = 4.rows(), title ="$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ"))
+                  it.openInventory(createInventory(size = 4.rows(), title =s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ"))
                 }
             )
           }
@@ -144,17 +144,17 @@ object SecondPage: Menu {
 
     val titanConversionButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.DIAMOND_AXE, durability = 1)
-          .title("$YELLOW$UNDERLINE${BOLD}限定タイタン修繕システム")
+          .title(s"$YELLOW$UNDERLINE${BOLD}限定タイタン修繕システム")
           .lore(listOf(
-              "$RESET${GREEN}不具合によりテクスチャが反映されなくなってしまった",
-              "$RESET${GOLD}ホワイトデーイベント限定タイタン$RESET${GREEN}を修繕できます",
-              "$RESET${GREEN}出てきたインベントリーに",
-              "$RESET${GREEN}修繕したいタイタンを入れて",
-              "$RESET${GREEN}escキーを押してください",
-              "$RESET${DARK_GRAY}たまにアイテムが消失しますが",
-              "$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
-              "$RESET${DARK_GRAY}神に祈りながら交換しよう",
-              "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+              s"$RESET${GREEN}不具合によりテクスチャが反映されなくなってしまった",
+              s"$RESET${GOLD}ホワイトデーイベント限定タイタン$RESET${GREEN}を修繕できます",
+              s"$RESET${GREEN}出てきたインベントリーに",
+              s"$RESET${GREEN}修繕したいタイタンを入れて",
+              s"$RESET${GREEN}escキーを押してください",
+              s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
+              s"$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
+              s"$RESET${DARK_GRAY}神に祈りながら交換しよう",
+              s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
           ))
           .unbreakable()
           .build()
@@ -166,7 +166,7 @@ object SecondPage: Menu {
                 FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
                 TargetedEffect {
                   // TODO メニューインベントリに差し替える
-                  it.openInventory(createInventory(size = 4.rows(), title ="$GOLD${BOLD}修繕したい限定タイタンを入れてネ"))
+                  it.openInventory(createInventory(size = 4.rows(), title =s"$GOLD${BOLD}修繕したい限定タイタンを入れてネ"))
                 }
             )
           }
@@ -175,11 +175,11 @@ object SecondPage: Menu {
 
     val recycleBinButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.BUCKET)
-          .title("$YELLOW$UNDERLINE${BOLD}ゴミ箱を開く")
+          .title(s"$YELLOW$UNDERLINE${BOLD}ゴミ箱を開く")
           .lore(listOf(
-              "$RESET${GREEN}不用品の大量処分にドウゾ！",
-              "$RESET${RED}復活しないので取扱注意",
-              "$RESET$DARK_RED${UNDERLINE}クリックで開く"
+              s"$RESET${GREEN}不用品の大量処分にドウゾ！",
+              s"$RESET${RED}復活しないので取扱注意",
+              s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
           ))
           .build()
 
@@ -190,7 +190,7 @@ object SecondPage: Menu {
                 FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
                 TargetedEffect {
                   // TODO メニューインベントリに差し替える
-                  it.openInventory(createInventory(size = 4.rows(), title = "$RED${BOLD}ゴミ箱(取扱注意)"))
+                  it.openInventory(createInventory(size = 4.rows(), title = s"$RED${BOLD}ゴミ箱(取扱注意)"))
                 }
             )
           }
@@ -199,10 +199,10 @@ object SecondPage: Menu {
 
     val hubCommandButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.NETHER_STAR)
-          .title("$YELLOW$UNDERLINE${BOLD}ロビーサーバーへ移動")
+          .title(s"$YELLOW$UNDERLINE${BOLD}ロビーサーバーへ移動")
           .lore(listOf(
-              "$RESET$DARK_RED${UNDERLINE}クリックすると移動します",
-              "$RESET${DARK_GRAY}command=>[/hub]"
+              s"$RESET$DARK_RED${UNDERLINE}クリックすると移動します",
+              s"$RESET${DARK_GRAY}command=>[/hub]"
           ))
           .build()
 
@@ -223,20 +223,20 @@ object SecondPage: Menu {
     suspend def Player.computeHeadSummoningButton(): Button = recomputedButton {
       val iconItemStack = run {
         val baseLore = listOf(
-            "$RESET${GRAY}経験値10000を消費して",
-            "$RESET${GRAY}自分の頭を召喚します",
-            "$RESET${GRAY}装飾用にドウゾ！"
+            s"$RESET${GRAY}経験値10000を消費して",
+            s"$RESET${GRAY}自分の頭を召喚します",
+            s"$RESET${GRAY}装飾用にドウゾ！"
         )
 
         val actionNavigation =
             if (ExperienceManager(this).hasExp(10000)) {
-              "$RESET$DARK_GREEN${UNDERLINE}クリックで召喚"
+              s"$RESET$DARK_GREEN${UNDERLINE}クリックで召喚"
             } else {
-              "$RESET$DARK_RED${UNDERLINE}経験値が足りません"
+              s"$RESET$DARK_RED${UNDERLINE}経験値が足りません"
             }
 
         SkullItemStackBuilder(SkullOwners.MHF_Villager)
-            .title("$YELLOW$UNDERLINE${BOLD}自分の頭を召喚")
+            .title(s"$YELLOW$UNDERLINE${BOLD}自分の頭を召喚")
             .lore(baseLore + actionNavigation)
             .build()
       }
@@ -254,12 +254,12 @@ object SecondPage: Menu {
                 sequentialEffect(
                     UnfocusedEffect { expManager.changeExp(-10000) },
                     UnfocusedEffect { Util.dropItem(it, skullToGive) },
-                    "${ChatColor.GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
+                    s"${ChatColor.GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
                 )
               } else {
                 sequentialEffect(
-                    "${ChatColor.RED}必要な経験値が足りません".asMessageEffect(),
+                    s"${ChatColor.RED}必要な経験値が足りません".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
                 )
               }
@@ -277,24 +277,24 @@ object SecondPage: Menu {
 
         val soundConfigurationState =
             if (currentSettings.shouldMuteSounds()) {
-              "$RESET${GREEN}全体通知音:消音しない"
+              s"$RESET${GREEN}全体通知音:消音しない"
             } else {
-              "$RESET${RED}全体通知音:消音する"
+              s"$RESET${RED}全体通知音:消音する"
             }
 
         val messageConfigurationState =
             if (currentSettings.shouldMuteMessages()) {
-              "$RESET${GREEN}全体メッセージ:表示する"
+              s"$RESET${GREEN}全体メッセージ:表示する"
             } else {
-              "$RESET${RED}全体メッセージ:表示しない"
+              s"$RESET${RED}全体メッセージ:表示しない"
             }
 
         IconItemStackBuilder(Material.JUKEBOX)
-            .title("$YELLOW$UNDERLINE${BOLD}全体通知切替")
+            .title(s"$YELLOW$UNDERLINE${BOLD}全体通知切替")
             .lore(listOf(
                 soundConfigurationState,
                 messageConfigurationState,
-                "$RESET$DARK_RED${UNDERLINE}クリックで変更"
+                s"$RESET$DARK_RED${UNDERLINE}クリックで変更"
             ))
             .build()
       }
@@ -307,9 +307,9 @@ object SecondPage: Menu {
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
                 deferredEffect {
                   when (playerData.settings.getBroadcastMutingSettings()) {
-                    RECEIVE_MESSAGE_AND_SOUND => "${GREEN}非表示/消音設定を解除しました"
-                    RECEIVE_MESSAGE_ONLY => "${RED}消音可能な全体通知音を消音します"
-                    MUTE_MESSAGE_AND_SOUND => "${RED}非表示可能な全体メッセージを非表示にします"
+                    RECEIVE_MESSAGE_AND_SOUND => s"${GREEN}非表示/消音設定を解除しました"
+                    RECEIVE_MESSAGE_ONLY => s"${RED}消音可能な全体通知音を消音します"
+                    MUTE_MESSAGE_AND_SOUND => s"${RED}非表示可能な全体メッセージを非表示にします"
                   }.asMessageEffect()
                 }
             )
@@ -323,20 +323,20 @@ object SecondPage: Menu {
       val iconItemStack = run {
         val baseBuilder =
             IconItemStackBuilder(Material.FLINT_AND_STEEL)
-                .title("$YELLOW$UNDERLINE${BOLD}死亡メッセージ表示切替")
+                .title(s"$YELLOW$UNDERLINE${BOLD}死亡メッセージ表示切替")
 
         if (playerData.settings.shouldDisplayDeathMessages) {
           baseBuilder
               .enchanted()
               .lore(listOf(
-                  "$RESET${GREEN}表示する",
-                  "$RESET$DARK_RED${UNDERLINE}クリックで隠す"
+                  s"$RESET${GREEN}表示する",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックで隠す"
               ))
         } else {
           baseBuilder
               .lore(listOf(
-                  "$RESET${RED}隠す",
-                  "$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"
+                  s"$RESET${RED}隠す",
+                  s"$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"
               ))
         }
       }.build()
@@ -349,9 +349,9 @@ object SecondPage: Menu {
                 deferredEffect {
                   val (soundPitch, message) =
                       if (playerData.settings.shouldDisplayDeathMessages)
-                        Pair(1.0f, "${GREEN}死亡メッセージ:表示")
+                        Pair(1.0f, s"${GREEN}死亡メッセージ:表示")
                       else
-                        Pair(0.5f, "${RED}死亡メッセージ:隠す")
+                        Pair(0.5f, s"${RED}死亡メッセージ:隠す")
 
                   sequentialEffect(
                       message.asMessageEffect(),
@@ -368,24 +368,24 @@ object SecondPage: Menu {
 
       val iconItemStack = run {
         val baseBuilder = IconItemStackBuilder(Material.BARRIER)
-            .title("$YELLOW$UNDERLINE${BOLD}ワールドガード保護メッセージ表示切替")
+            .title(s"$YELLOW$UNDERLINE${BOLD}ワールドガード保護メッセージ表示切替")
 
-        val loreHeading = "$RESET${GRAY}スキル使用時のワールドガード保護警告メッセージ"
+        val loreHeading = s"$RESET${GRAY}スキル使用時のワールドガード保護警告メッセージ"
 
         if (playerData.settings.shouldDisplayWorldGuardLogs) {
           baseBuilder
               .enchanted()
               .lore(listOf(
                   loreHeading,
-                  "$RESET${GREEN}表示する",
-                  "$RESET$DARK_RED${UNDERLINE}クリックで隠す"
+                  s"$RESET${GREEN}表示する",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックで隠す"
               ))
         } else {
           baseBuilder
               .lore(listOf(
                   loreHeading,
-                  "$RESET${RED}隠す",
-                  "$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"
+                  s"$RESET${RED}隠す",
+                  s"$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"
               ))
         }
       }.build()
@@ -398,9 +398,9 @@ object SecondPage: Menu {
                 deferredEffect {
                   val (soundPitch, message) =
                       if (playerData.settings.shouldDisplayWorldGuardLogs)
-                        Pair(1.0f, "${ChatColor.GREEN}ワールドガード保護メッセージ:表示")
+                        Pair(1.0f, s"${ChatColor.GREEN}ワールドガード保護メッセージ:表示")
                       else
-                        Pair(0.5f, "${ChatColor.RED}ワールドガード保護メッセージ:隠す")
+                        Pair(0.5f, s"${ChatColor.RED}ワールドガード保護メッセージ:隠す")
 
                   sequentialEffect(
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch),
@@ -418,21 +418,21 @@ object SecondPage: Menu {
           val playerData = SeichiAssist.playermap[uniqueId]!!
 
           val base = listOf(
-              "$RESET${GREEN}現在の装備・アイテムを移動します。",
-              "${RESET}サーバー間のアイテム移動にご利用ください。",
+              s"$RESET${GREEN}現在の装備・アイテムを移動します。",
+              s"${RESET}サーバー間のアイテム移動にご利用ください。",
               ""
           )
 
           val statusDisplay = if (playerData.contentsPresentInSharedInventory) {
             listOf(
-                "$RESET${GREEN}収納中",
-                "$RESET$DARK_RED${UNDERLINE}クリックでアイテムを取り出します。",
-                "$RESET${RED}現在の装備・アイテムが空であることを確認してください。"
+                s"$RESET${GREEN}収納中",
+                s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを取り出します。",
+                s"$RESET${RED}現在の装備・アイテムが空であることを確認してください。"
             )
           } else {
             listOf(
-                "$RESET${GREEN}非収納中",
-                "$RESET$DARK_RED${UNDERLINE}クリックでアイテムを収納します。"
+                s"$RESET${GREEN}非収納中",
+                s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを収納します。"
             )
           }
 
@@ -440,7 +440,7 @@ object SecondPage: Menu {
         }
 
         IconItemStackBuilder(Material.TRAPPED_CHEST)
-            .title("$YELLOW$UNDERLINE${BOLD}インベントリ共有")
+            .title(s"$YELLOW$UNDERLINE${BOLD}インベントリ共有")
             .lore(lore)
             .build()
       }
@@ -472,7 +472,7 @@ object SecondPage: Menu {
       }
 
   override val open: TargetedEffect[Player] = computedEffect { player =>
-    val session = MenuInventoryView(4.rows(), "${LIGHT_PURPLE}木の棒メニュー").createNewSession()
+    val session = MenuInventoryView(4.rows(), s"${LIGHT_PURPLE}木の棒メニュー").createNewSession()
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),

@@ -37,7 +37,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       var p_vote = 0
       var p_givenvote = 0
 
-      var command = "select p_vote,p_givenvote from $tableReference where uuid = '$struuid'"
+      var command = s"select p_vote,p_givenvote from $tableReference where uuid = '$struuid'"
       try {
         gateway.executeQuery(command).recordIteration {
           p_vote = getInt("p_vote")
@@ -73,7 +73,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       val struuid = playerdata.uuid.toString()
       var numofsorryforbug = 0
 
-      var command = "select numofsorryforbug from $tableReference where uuid = '$struuid'"
+      var command = s"select numofsorryforbug from $tableReference where uuid = '$struuid'"
       try {
         gateway.executeQuery(command).recordIteration {
           numofsorryforbug = getInt("numofsorryforbug")
@@ -159,7 +159,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     val lastVote: String
 
     try {
-      val readLastVote = gateway.executeQuery("SELECT lastvote FROM $tableReference WHERE name LIKE '$name'").use { lrs =>
+      val readLastVote = gateway.executeQuery(s"SELECT lastvote FROM $tableReference WHERE name LIKE '$name'").use { lrs =>
         // 初回のnextがnull→データが1件も無い場合
         if (!lrs.next()) return false
 
@@ -172,17 +172,17 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
           else
             readLastVote
 
-      val update = "UPDATE $tableReference  SET lastvote = '${dateFormat.format(calendar.time)}' WHERE name LIKE '$name'"
+      val update = s"UPDATE $tableReference  SET lastvote = '${dateFormat.format(calendar.time)}' WHERE name LIKE '$name'"
 
       gateway.executeUpdate(update)
     } catch (e: SQLException) {
-      Bukkit.getLogger().warning("${Util.getName(name)} sql failed. => lastvote")
+      Bukkit.getLogger().warning(s"${Util.getName(name)} sql failed. => lastvote")
       e.printStackTrace()
       return false
     }
 
     try {
-      gateway.executeQuery("SELECT chainvote FROM $tableReference WHERE name LIKE '$name'").use { lrs =>
+      gateway.executeQuery(s"SELECT chainvote FROM $tableReference WHERE name LIKE '$name'").use { lrs =>
         // 初回のnextがnull→データが1件も無い場合
         if (!lrs.next()) return false
 
@@ -206,7 +206,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             playerData.ChainVote = count
           }
 
-          gateway.executeUpdate("UPDATE $tableReference SET chainvote = $count WHERE name LIKE '$name'")
+          gateway.executeUpdate(s"UPDATE $tableReference SET chainvote = $count WHERE name LIKE '$name'")
         } catch (e: ParseException) {
           e.printStackTrace()
         }
@@ -223,28 +223,28 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   @Suppress("RedundantSuspendModifier")
   private suspend def assertPlayerDataExistenceFor(playerName: String): ResponseEffectOrResult[CommandSender, Unit] =
       try {
-        gateway.executeQuery("select * from $tableReference where name like $playerName").use { resultSet =>
+        gateway.executeQuery(s"select * from $tableReference where name like $playerName").use { resultSet =>
           if (!resultSet.next()) {
-            "${ChatColor.RED}$playerName はデータベースに登録されていません。".asMessageEffect().left()
+            s"${ChatColor.RED}$playerName はデータベースに登録されていません。".asMessageEffect().left()
           } else {
             Unit.right()
           }
         }
       } catch (e: SQLException) {
-        Bukkit.getLogger().warning("sql failed on checking data existence of $playerName")
+        Bukkit.getLogger().warning(s"sql failed on checking data existence of $playerName")
         e.printStackTrace()
 
-        "${ChatColor.RED}プレーヤーデータへのアクセスに失敗しました。".asMessageEffect().left()
+        s"${ChatColor.RED}プレーヤーデータへのアクセスに失敗しました。".asMessageEffect().left()
       }
 
   suspend def addContributionPoint(targetPlayerName: String, point: Int): ResponseEffectOrResult[CommandSender, Unit] {
     @Suppress("RedundantSuspendModifier")
     suspend def executeUpdate(): ResponseEffectOrResult[CommandSender, Unit] {
-      val updateCommand = "UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name LIKE '$targetPlayerName'"
+      val updateCommand = s"UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name LIKE '$targetPlayerName'"
 
       return if (gateway.executeUpdate(updateCommand) === Fail) {
-        Bukkit.getLogger().warning("sql failed on updating $targetPlayerName's contribute_point")
-        "${ChatColor.RED}貢献度ptの変更に失敗しました。".asMessageEffect().left()
+        Bukkit.getLogger().warning(s"sql failed on updating $targetPlayerName's contribute_point")
+        s"${ChatColor.RED}貢献度ptの変更に失敗しました。".asMessageEffect().left()
       } else {
         Unit.right()
       }
@@ -267,9 +267,9 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   // anniversary変更
   def setAnniversary(anniversary: Boolean, uuid: UUID?): Boolean {
-    var command = "UPDATE $tableReference SET anniversary = $anniversary"
+    var command = s"UPDATE $tableReference SET anniversary = $anniversary"
     if (uuid != null) {
-      command += " WHERE uuid = '$uuid'"
+      command += s" WHERE uuid = '$uuid'"
     }
     if (gateway.executeUpdate(command) === Fail) {
       Bukkit.getLogger().warning("sql failed. => setAnniversary")
@@ -283,35 +283,35 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   suspend def saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): ResponseEffectOrResult[CommandSender, Unit] {
     //連打による負荷防止の為クールダウン処理
     if (!playerData.shareinvcooldownflag) {
-      return "${ChatColor.RED}しばらく待ってからやり直してください".asMessageEffect().left()
+      return s"${ChatColor.RED}しばらく待ってからやり直してください".asMessageEffect().left()
     }
     CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
 
     try {
       // 共有インベントリに既にアイテムが格納されていないことを確認する
-      val selectCommand = "SELECT shareinv FROM $tableReference WHERE uuid = '${playerData.uuid}'"
+      val selectCommand = s"SELECT shareinv FROM $tableReference WHERE uuid = '${playerData.uuid}'"
       gateway.executeQuery(selectCommand).use { lrs =>
         lrs.next()
         val sharedInventorySerial = lrs.getString("shareinv")
         if (sharedInventorySerial != null && sharedInventorySerial != "") {
-          return "${ChatColor.RED}既にアイテムが収納されています".asMessageEffect().left()
+          return s"${ChatColor.RED}既にアイテムが収納されています".asMessageEffect().left()
         }
       }
 
       // シリアル化されたインベントリデータを書き込む
-      val updateCommand = "UPDATE $tableReference SET shareinv = '$serializedInventory' WHERE uuid = '${playerData.uuid}'"
+      val updateCommand = s"UPDATE $tableReference SET shareinv = '$serializedInventory' WHERE uuid = '${playerData.uuid}'"
       if (gateway.executeUpdate(updateCommand) === Fail) {
-        Bukkit.getLogger().warning("${player.name} sql failed. => saveSharedInventory(executeUpdate failed)")
+        Bukkit.getLogger().warning(s"${player.name} sql failed. => saveSharedInventory(executeUpdate failed)")
 
-        return "${ChatColor.RED}アイテムの収納に失敗しました".asMessageEffect().left()
+        return s"${ChatColor.RED}アイテムの収納に失敗しました".asMessageEffect().left()
       }
 
       return Unit.right()
     } catch (e: SQLException) {
-      Bukkit.getLogger().warning("${player.name} sql failed. => clearShareInv(SQLException)")
+      Bukkit.getLogger().warning(s"${player.name} sql failed. => clearShareInv(SQLException)")
       e.printStackTrace()
 
-      return "${ChatColor.RED}共有インベントリにアクセスできません".asMessageEffect().left()
+      return s"${ChatColor.RED}共有インベントリにアクセスできません".asMessageEffect().left()
     }
   }
 
@@ -319,11 +319,11 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   suspend def loadShareInv(player: Player, playerData: PlayerData): ResponseEffectOrResult[CommandSender, String] {
     //連打による負荷防止の為クールダウン処理
     if (!playerData.shareinvcooldownflag) {
-      return "${ChatColor.RED}しばらく待ってからやり直してください".asMessageEffect().left()
+      return s"${ChatColor.RED}しばらく待ってからやり直してください".asMessageEffect().left()
     }
     CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
 
-    val command = "SELECT shareinv FROM $tableReference WHERE uuid = '${playerData.uuid}'"
+    val command = s"SELECT shareinv FROM $tableReference WHERE uuid = '${playerData.uuid}'"
     try {
       gateway.executeQuery(command).use { lrs =>
         lrs.next()
@@ -333,17 +333,17 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       Bukkit.getLogger().warning(player.name + " sql failed. => loadShareInv")
       e.printStackTrace()
 
-      return "${ChatColor.RED}共有インベントリにアクセスできません".asMessageEffect().left()
+      return s"${ChatColor.RED}共有インベントリにアクセスできません".asMessageEffect().left()
     }
   }
 
   @Suppress("RedundantSuspendModifier")
   suspend def clearShareInv(player: Player, playerdata: PlayerData): ResponseEffectOrResult[CommandSender, Unit] {
-    val command = "UPDATE $tableReference SET shareinv = '' WHERE uuid = '${playerdata.uuid}'"
+    val command = s"UPDATE $tableReference SET shareinv = '' WHERE uuid = '${playerdata.uuid}'"
 
     if (gateway.executeUpdate(command) === Fail) {
-      Bukkit.getLogger().warning("${player.name} sql failed. => clearShareInv")
-      return "${ChatColor.RED}アイテムのクリアに失敗しました".asMessageEffect().left()
+      Bukkit.getLogger().warning(s"${player.name} sql failed. => clearShareInv")
+      return s"${ChatColor.RED}アイテムのクリアに失敗しました".asMessageEffect().left()
     }
 
     return Unit.right()
@@ -351,8 +351,8 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   @Suppress("RedundantSuspendModifier")
   suspend def selectLeaversUUIDs(days: Int): List[UUID]? {
-    val command = "select name, uuid from $tableReference " +
-        "where ((lastquit <= date_sub(curdate(), interval $days day)) " +
+    val command = s"select name, uuid from $tableReference " +
+        s"where ((lastquit <= date_sub(curdate(), interval $days day)) " +
         "or (lastquit is null)) and (name != '') and (uuid != '')"
     val uuidList = ArrayList[UUID]()
 
@@ -476,7 +476,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   private def successAppleNumberRankingUpdate(): Boolean {
     val ranklist = ArrayList[RankData]()
     SeichiAssist.allplayergiveapplelong = 0
-    val command = "select name,p_apple from $tableReference order by p_apple desc"
+    val command = s"select name,p_apple from $tableReference order by p_apple desc"
     try {
       gateway.executeQuery(command).recordIteration {
         val lrs = this
@@ -513,13 +513,13 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   //全員に詫びガチャの配布
   def addAllPlayerBug(amount: Int): ActionStatus {
-    val command = "update $tableReference set numofsorryforbug = numofsorryforbug + $amount"
+    val command = s"update $tableReference set numofsorryforbug = numofsorryforbug + $amount"
     return gateway.executeUpdate(command)
   }
 
   @Suppress("RedundantSuspendModifier")
   suspend def selectPocketInventoryOf(uuid: UUID): ResponseEffectOrResult[CommandSender, Inventory] {
-    val command = "select inventory from $tableReference where uuid like '$uuid'"
+    val command = s"select inventory from $tableReference where uuid like '$uuid'"
 
     try {
       gateway.executeQuery(command).recordIteration {
@@ -530,13 +530,13 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       e.printStackTrace()
     }
 
-    return "${ChatColor.RED}データベースから四次元ポケットのインベントリを取得できませんでした。".asMessageEffect().left()
+    return s"${ChatColor.RED}データベースから四次元ポケットのインベントリを取得できませんでした。".asMessageEffect().left()
   }
 
   @Suppress("RedundantSuspendModifier")
   suspend def inquireLastQuitOf(playerName: String): TargetedEffect[CommandSender] {
     suspend def fetchLastQuitData(): String? {
-      val command = "select lastquit from $tableReference where playerName = '$playerName'"
+      val command = s"select lastquit from $tableReference where playerName = '$playerName'"
       try {
         gateway.executeQuery(command).use { lrs =>
           return if (lrs.next()) lrs.getString("lastquit") else null
@@ -549,12 +549,12 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     return fetchLastQuitData()
-        ?.let { "${playerName}の最終ログアウト日時：$it".asMessageEffect() }
+        ?.let { s"${playerName}の最終ログアウト日時：$it".asMessageEffect() }
         ?: run {
           val messages = listOf(
-              "${ChatColor.RED}最終ログアウト日時の照会に失敗しました。",
-              "${ChatColor.RED}プレイヤー名やプレイヤー名が変更されていないか確認してください。",
-              "${ChatColor.RED}プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります。"
+              s"${ChatColor.RED}最終ログアウト日時の照会に失敗しました。",
+              s"${ChatColor.RED}プレイヤー名やプレイヤー名が変更されていないか確認してください。",
+              s"${ChatColor.RED}プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります。"
           )
 
           messages.asMessageEffect()
@@ -576,7 +576,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
     //uuidがsqlデータ内に存在するか検索
     val count = run {
-      val command = ("select count(*) as count from $db.$table where uuid = '$stringUuid'")
+      val command = (s"select count(*) as count from $db.$table where uuid = '$stringUuid'")
 
       stmt.executeQuery(command).use { resultSet =>
         resultSet.next()
@@ -587,10 +587,10 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     return when (count) {
       0 => {
         //uuidが存在しない時の処理
-        SeichiAssist.instance.server.consoleSender.sendMessage("${ChatColor.YELLOW}${playerName}は完全初見です。プレイヤーデータを作成します")
+        SeichiAssist.instance.server.consoleSender.sendMessage(s"${ChatColor.YELLOW}${playerName}は完全初見です。プレイヤーデータを作成します")
 
         //新しくuuidとnameを設定し行を作成
-        val command = "insert into $db.$table (name,uuid,loginflag) values('$playerName','$stringUuid','1')"
+        val command = s"insert into $db.$table (name,uuid,loginflag) values('$playerName','$stringUuid','1')"
         stmt!!.executeUpdate(command)
 
         PlayerData(playerUUID, playerName)

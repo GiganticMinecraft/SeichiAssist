@@ -11,7 +11,7 @@ class MineStackGachaDataManipulator(private val gateway: DatabaseGateway) {
   def loadMineStackGachaData(): Boolean {
     val gachadatalist = ArrayList[MineStackGachaData]()
 
-    val command = "select * from $tableReference"
+    val command = s"select * from $tableReference"
     try {
       gateway.executeQuery(command).recordIteration {
         val lrs = this
@@ -44,7 +44,7 @@ class MineStackGachaDataManipulator(private val gateway: DatabaseGateway) {
 
 
     //まずmysqlのガチャテーブルを初期化(中身全削除)
-    var command = "truncate table $tableReference"
+    var command = s"truncate table $tableReference"
     if (gateway.executeUpdate(command) == Fail) {
       return false
     }

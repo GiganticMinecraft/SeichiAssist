@@ -88,12 +88,12 @@ class PlayerData(
   //詫び券をあげる数
   var unclaimedApologyItems = 0
   //拡張インベントリ
-  var pocketInventory: Inventory = createInventory(size = 1.rows(), title = "$DARK_PURPLE${BOLD}4次元ポケット")
+  var pocketInventory: Inventory = createInventory(size = 1.rows(), title = s"$DARK_PURPLE${BOLD}4次元ポケット")
     get() {
       // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
       if (field.size < pocketSize) {
         field = Bukkit.getServer()
-            .createInventory(null, pocketSize, "$DARK_PURPLE${BOLD}4次元ポケット")
+            .createInventory(null, pocketSize, s"$DARK_PURPLE${BOLD}4次元ポケット")
             .also { field.forEachIndexed(it::setItem) }
       }
 
@@ -271,7 +271,7 @@ class PlayerData(
 
     if (unclaimedApologyItems > 0) {
       player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      player.sendMessage("${GREEN}運営チームから${unclaimedApologyItems}枚の${GOLD}ガチャ券${WHITE}が届いています！\n木の棒メニューから受け取ってください")
+      player.sendMessage(s"${GREEN}運営チームから${unclaimedApologyItems}枚の${GOLD}ガチャ券${WHITE}が届いています！\n木の棒メニューから受け取ってください")
     }
 
     activeskilldata.updateOnJoin(player, level)
@@ -363,15 +363,15 @@ class PlayerData(
     //表示を追加する処理
     displayname = idleColor + if (settings.nickName.id1 == 0 && settings.nickName.id2 == 0 && settings.nickName.id3 == 0) {
       if (totalStarLevel [= 0) {
-        "[ Lv$level ]$displayname$WHITE"
+        s"[ Lv$level ]$displayname$WHITE"
       } else {
-        "[Lv$level☆$totalStarLevel]$displayname$WHITE"
+        s"[Lv$level☆$totalStarLevel]$displayname$WHITE"
       }
     } else {
       val displayTitle1 = SeichiAssist.seichiAssistConfig.getTitle1(settings.nickName.id1)
       val displayTitle2 = SeichiAssist.seichiAssistConfig.getTitle2(settings.nickName.id2)
       val displayTitle3 = SeichiAssist.seichiAssistConfig.getTitle3(settings.nickName.id3)
-      "[$displayTitle1$displayTitle2$displayTitle3]$displayname$WHITE"
+      s"[$displayTitle1$displayTitle2$displayTitle3]$displayname$WHITE"
     }
 
     player.displayName = displayname
@@ -445,7 +445,7 @@ class PlayerData(
     val newStars: Int = starLevels.total()
     //合計値の確認
     if (oldStars < newStars) {
-      player.sendMessage("$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv200(☆($oldStars))→Lv200(☆($newStars))】")
+      player.sendMessage(s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv200(☆($oldStars))→Lv200(☆($newStars))】")
     }
   }
 
@@ -469,7 +469,7 @@ class PlayerData(
       sum += amount
       if (SeichiAssist.DEBUG) {
         if (amount > 0.0) {
-          player.sendMessage("calcの値:$amount($m)")
+          player.sendMessage(s"calcの値:$amount($m)")
         }
       }
       statisticsData[i] = materialStatistics
@@ -584,7 +584,7 @@ class PlayerData(
   def getSubHomeName(subHomeIndex: Int): String {
     val subHome = this.subHomeMap[subHomeIndex]
     val subHomeName = subHome?.name
-    return subHomeName ?: "サブホームポイント${subHomeIndex + 1}"
+    return subHomeName ?: s"サブホームポイント${subHomeIndex + 1}"
   }
 
   private def saveTotalExp() {
@@ -743,9 +743,9 @@ class PlayerData(
     settings.receiveFastDiggingEffectStats = !settings.receiveFastDiggingEffectStats
 
     val responseMessage = if (settings.receiveFastDiggingEffectStats) {
-      "${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
+      s"${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
     } else {
-      "${GREEN}内訳表示:OFF"
+      s"${GREEN}内訳表示:OFF"
     }
 
     return responseMessage.asMessageEffect()
@@ -762,11 +762,11 @@ class PlayerData(
   suspend def tryForcefullyUnlockAchievement(number: Int): TargetedEffect[CommandSender] =
       if (!TitleFlags[number]) {
         TitleFlags.set(number)
-        Bukkit.getPlayer(uuid)?.sendMessage("運営チームよりNo${number}の実績が配布されました。")
+        Bukkit.getPlayer(uuid)?.sendMessage(s"運営チームよりNo${number}の実績が配布されました。")
 
-        "$lowercaseName に実績No. $number を${GREEN}付与${RESET}しました。".asMessageEffect()
+        s"$lowercaseName に実績No. $number を${GREEN}付与${RESET}しました。".asMessageEffect()
       } else {
-        "$GRAY$lowercaseName は既に実績No. $number を獲得しています。".asMessageEffect()
+        s"$GRAY$lowercaseName は既に実績No. $number を獲得しています。".asMessageEffect()
       }
 
   /**
@@ -781,9 +781,9 @@ class PlayerData(
       if (!TitleFlags[number]) {
         TitleFlags[number] = false
 
-        "$lowercaseName から実績No. $number を${RED}剥奪${GREEN}しました。".asMessageEffect()
+        s"$lowercaseName から実績No. $number を${RED}剥奪${GREEN}しました。".asMessageEffect()
       } else {
-        "$GRAY$lowercaseName は実績No. $number を獲得していません。".asMessageEffect()
+        s"$GRAY$lowercaseName は実績No. $number を獲得していません。".asMessageEffect()
       }
 
   /**
@@ -823,8 +823,8 @@ class PlayerData(
         this.settings.isExpBarVisible = !this.settings.isExpBarVisible
       } + deferredEffect {
         when {
-          this.settings.isExpBarVisible => "${GREEN}整地量バー表示"
-          else => "${RED}整地量バー非表示"
+          this.settings.isExpBarVisible => s"${GREEN}整地量バー表示"
+          else => s"${RED}整地量バー非表示"
         }.asMessageEffect()
       } + UnfocusedEffect {
         SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)

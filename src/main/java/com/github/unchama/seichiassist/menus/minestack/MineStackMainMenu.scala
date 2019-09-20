@@ -21,7 +21,7 @@ object MineStackMainMenu: Menu {
       val layoutMap = MineStackObjectCategory.values().mapIndexed { index, category =>
         val slotIndex = index + 1 // 0には自動スタック機能トグルが入るので、1から入れ始める
         val iconItemStack = IconItemStackBuilder(iconMaterialFor(category))
-            .title("$BLUE$UNDERLINE$BOLD${category.uiLabel}")
+            .title(s"$BLUE$UNDERLINE$BOLD${category.uiLabel}")
             .build()
 
         val button = Button(
@@ -68,7 +68,7 @@ object MineStackMainMenu: Menu {
   override val open: TargetedEffect[Player] = computedEffect { player =>
     val session = MenuInventoryView(
         6.rows(),
-        "$DARK_PURPLE${BOLD}MineStackメインメニュー"
+        s"$DARK_PURPLE${BOLD}MineStackメインメニュー"
     ).createNewSession()
 
     sequentialEffect(

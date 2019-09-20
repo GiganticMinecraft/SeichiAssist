@@ -25,13 +25,13 @@ class FastDiggingEffect(var duration: Int, var amplifier: Double, private val id
       val formattedDuration = TypeConverter.toTimeString(duration / 20)
 
       return when (id) {
-        0 => "+$effectStrength 不明な上昇値_${formattedDuration}"
-        1 => "+$effectStrength 接続人数から"
-        2 => "+$effectStrength 整地量から"
-        3 => "+$effectStrength ﾄﾞﾗｹﾞﾅｲﾀｲﾑから_${formattedDuration}"
-        4 => "+$effectStrength 投票ボーナスから_${formattedDuration}"
-        5 => "+$effectStrength コマンド入力から_${formattedDuration}"
-        else => "+$effectStrength 不明な上昇値_${formattedDuration}"
+        0 => s"+$effectStrength 不明な上昇値_${formattedDuration}"
+        1 => s"+$effectStrength 接続人数から"
+        2 => s"+$effectStrength 整地量から"
+        3 => s"+$effectStrength ﾄﾞﾗｹﾞﾅｲﾀｲﾑから_${formattedDuration}"
+        4 => s"+$effectStrength 投票ボーナスから_${formattedDuration}"
+        5 => s"+$effectStrength コマンド入力から_${formattedDuration}"
+        else => s"+$effectStrength 不明な上昇値_${formattedDuration}"
       }
     }
 

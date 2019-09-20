@@ -22,6 +22,6 @@ def ItemStack.appendOwnerInformation(owner: Player) {
   itemMeta = itemMeta.apply {
     lore =
         (if (this.hasLore()) this.lore else ArrayList()) +
-            "$RESET${DARK_GREEN}所有者：${owner.name}"
+            s"$RESET${DARK_GREEN}所有者：${owner.name}"
   }
 }

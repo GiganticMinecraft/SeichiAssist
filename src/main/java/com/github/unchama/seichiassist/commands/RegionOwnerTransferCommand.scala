@@ -23,7 +23,7 @@ object RegionOwnerTransferCommand {
     owners.clear()
     owners.addPlayer(recipient.uniqueId)
 
-    return "${recipient.name}に${region.id}のオーナー権限を譲渡しました。".asMessageEffect()
+    return s"${recipient.name}に${region.id}のオーナー権限を譲渡しました。".asMessageEffect()
   }
 
   val executor = playerCommandBuilder
@@ -35,7 +35,7 @@ object RegionOwnerTransferCommand {
             if (recipient != null) {
               succeedWith(recipient)
             } else {
-              failWith("${recipientName}というプレイヤーはサーバーに参加したことがありません。")
+              failWith(s"${recipientName}というプレイヤーはサーバーに参加したことがありません。")
             }
           }
       ))
@@ -46,7 +46,7 @@ object RegionOwnerTransferCommand {
         val sender = context.sender
 
         val region = WorldGuardPlugin.inst().getRegionManager(sender.world).getRegion(regionName)
-            ?: return@execution "${regionName}という名前の保護は存在しません。".asMessageEffect()
+            ?: return@execution s"${regionName}という名前の保護は存在しません。".asMessageEffect()
 
         attemptRegionTransfer(sender, newOwner, region)
       }

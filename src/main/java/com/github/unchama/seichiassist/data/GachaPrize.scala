@@ -34,7 +34,7 @@ class GachaPrize(itemStack: ItemStack, var probability: Double) {
   def appendOwnerLore(name: String) {
     val meta = this.itemStack.itemMeta
     val lore = if (meta.hasLore()) meta.lore else ArrayList()
-    lore.add("${ChatColor.RESET}${ChatColor.DARK_GREEN}所有者：$name")
+    lore.add(s"${ChatColor.RESET}${ChatColor.DARK_GREEN}所有者：$name")
     this.itemStack.itemMeta.lore = lore
   }
 

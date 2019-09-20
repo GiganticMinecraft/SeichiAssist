@@ -21,7 +21,7 @@ object AchievementCommand {
 
   private val descriptionPrintExecutor = EchoExecutor(
       listOf(
-          "${ChatColor.RED}/achievement [操作] [実績No] [スコープ指定子]",
+          s"${ChatColor.RED}/achievement [操作] [実績No] [スコープ指定子]",
           "[操作]にはgive(実績付与)またはdeprive(実績剥奪)のいずれかを入力することができます。",
           "[スコープ指定子]にはuser [ユーザー名], server, worldのいずれかを入力することができます。"
       ).asMessageEffect()
@@ -44,14 +44,14 @@ object AchievementCommand {
   private val achievementNumberParser =
       Parsers.closedRangeInt(
           1000, 9999,
-          "${ChatColor.RED}操作の対象として指定できるのはNo1000～9999の実績です。".asMessageEffect()
+          s"${ChatColor.RED}操作の対象として指定できるのはNo1000～9999の実績です。".asMessageEffect()
       )
 
   private val scopeParser =
       parser { argument =>
         ScopeSpecification.fromString(argument)
             ?.let { succeedWith(it) }
-            ?: failWith("${ChatColor.RED}スコープ指定子はuser [ユーザー名], server, worldのみ入力できます。")
+            ?: failWith(s"${ChatColor.RED}スコープ指定子はuser [ユーザー名], server, worldのみ入力できます。")
       }
 
   val executor = ContextualExecutorBuilder.beginConfiguration()
@@ -69,7 +69,7 @@ object AchievementCommand {
           ScopeSpecification.USER => {
             val targetPlayerName =
                 context.args.yetToBeParsed.firstOrNull()
-                    ?: return@execution "${ChatColor.RED}プレーヤー名が未入力です。".asMessageEffect()
+                    ?: return@execution s"${ChatColor.RED}プレーヤー名が未入力です。".asMessageEffect()
 
             listOf(targetPlayerName)
           }
@@ -90,7 +90,7 @@ object AchievementCommand {
               AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
             }
           } else {
-            sender.sendMessage("$playerName は現在サーバーにログインしていません。")
+            sender.sendMessage(s"$playerName は現在サーバーにログインしていません。")
             // TODO 実績付与予約システムに書き込むようにする
           }
         }

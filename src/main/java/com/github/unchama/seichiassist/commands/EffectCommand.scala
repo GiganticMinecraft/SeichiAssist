@@ -8,10 +8,10 @@ object EffectCommand {
   private val printUsageExecutor: ContextualExecutor = playerCommandBuilder
       .execution {
         listOf(
-            "${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
-            "${ChatColor.RED}/ef",
+            s"${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
+            s"${ChatColor.RED}/ef",
             "採掘速度上昇効果の制限を変更することができます。",
-            "${ChatColor.RED}/ef smart",
+            s"${ChatColor.RED}/ef smart",
             "採掘速度上昇効果の内訳を表示するかしないかを変更することができます。"
         ).asMessageEffect()
       }

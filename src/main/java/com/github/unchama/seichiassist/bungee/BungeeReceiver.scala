@@ -33,7 +33,7 @@ class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
   }
 
   private def savePlayerDataOnUpstreamRequest(playerName: String) {
-    println("unloading data for $playerName by upstream request.")
+    println(s"unloading data for $playerName by upstream request.")
 
     val player: Player? = Bukkit.getServer().getPlayer(playerName)
 
@@ -48,14 +48,14 @@ class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
 
         val message = writtenMessage("PlayerDataUnloaded", playerName)
         player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
-        println("successfully unloaded data for $playerName by upstream request.")
+        println(s"successfully unloaded data for $playerName by upstream request.")
       }
     } catch (e: Exception) {
       e.printStackTrace()
       val message = writtenMessage("FailedToUnloadPlayerData", playerName)
       Bukkit.getOnlinePlayers().first().sendPluginMessage(plugin, "SeichiAssistBungee", message)
 
-      player?.kickPlayer("${playerName}のプレーヤーデータが正常にアンロードされませんでした。再接続した後サーバーを移動してください。")
+      player?.kickPlayer(s"${playerName}のプレーヤーデータが正常にアンロードされませんでした。再接続した後サーバーを移動してください。")
     }
   }
 
@@ -66,8 +66,8 @@ class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
     val message = writtenMessage(
         "GetLocation",
         wanter,
-        "${player.name}: 整地Lv${playerData.level} (総整地量: ${String.format("%,d", playerData.totalbreaknum)})",
-        "Server: $servername, World: ${player.world.name} (${player.location.blockX}, ${player.location.blockY}, ${player.location.blockZ})"
+        s"${player.name}: 整地Lv${playerData.level} (総整地量: ${String.format("%,d", playerData.totalbreaknum)})",
+        s"Server: $servername, World: ${player.world.name} (${player.location.blockX}, ${player.location.blockY}, ${player.location.blockZ})"
     )
 
     player.sendPluginMessage(plugin, "SeichiAssistBungee", message)

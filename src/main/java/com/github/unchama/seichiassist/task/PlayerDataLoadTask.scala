@@ -53,7 +53,7 @@ def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
         playerData.setSubHomeLocation(location, subHomeId)
         playerData.setSubHomeName(subHomeName, subHomeId)
       } else {
-        println("Resetting ${playerName}'s subhome ${subHomeName}(${subHomeId}) in $worldName - world name not found.")
+        println(s"Resetting ${playerName}'s subhome ${subHomeName}(${subHomeId}) in $worldName - world name not found.")
       }
     }
   }
@@ -87,7 +87,7 @@ def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
       } else {
         Bukkit
             .getLogger()
-            .warning("プレーヤー $playerName のMineStackオブジェクト $objectName は収納可能リストに見つかりませんでした。")
+            .warning(s"プレーヤー $playerName のMineStackオブジェクト $objectName は収納可能リストに見つかりませんでした。")
       }
     }
 
@@ -365,7 +365,7 @@ def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData {
     playerData.setContributionPoint(addMana)
   }
 
-  timer.sendLapTimeMessage("$GREEN${playerName}のプレイヤーデータ読込完了")
+  timer.sendLapTimeMessage(s"$GREEN${playerName}のプレイヤーデータ読込完了")
 
   return playerData
 }

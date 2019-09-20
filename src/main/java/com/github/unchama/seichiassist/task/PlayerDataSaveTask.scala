@@ -64,7 +64,7 @@ suspend def savePlayerData(playerdata: PlayerData) {
     val playerUuid = playerdata.uuid.toString()
 
     // 既存データをすべてクリアする
-    stmt.executeUpdate("delete from seichiassist.grid_template where designer_uuid = '$playerUuid'")
+    stmt.executeUpdate(s"delete from seichiassist.grid_template where designer_uuid = '$playerUuid'")
 
     // 各グリッドテンプレートについてデータを保存する
     for ((gridTemplateId, gridTemplate) in playerdata.templateMap!!) {
@@ -263,10 +263,10 @@ suspend def savePlayerData(playerdata: PlayerData) {
   for (i in 0 until 3) {
     val result = executeUpdate()
     if (result == Ok) {
-      println("${ChatColor.GREEN}${playerdata.lowercaseName}のプレイヤーデータ保存完了")
+      println(s"${ChatColor.GREEN}${playerdata.lowercaseName}のプレイヤーデータ保存完了")
       return
     }
   }
 
-  println("${ChatColor.RED}${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
+  println(s"${ChatColor.RED}${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
 }

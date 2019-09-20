@@ -9,22 +9,22 @@ import com.github.unchama.targetedeffect.EmptyEffect
 object MebiusCommand {
   private object Messages {
     val commandDescription = listOf(
-        "${ChatColor.RED}[Usage]",
-        "${ChatColor.RED}/mebius naming [name]",
-        "${ChatColor.RED}  現在頭に装着中のMEBIUSに[name]を命名します。",
+        s"${ChatColor.RED}[Usage]",
+        s"${ChatColor.RED}/mebius naming [name]",
+        s"${ChatColor.RED}  現在頭に装着中のMEBIUSに[name]を命名します。",
         "",
-        "${ChatColor.RED}/mebius nickname",
-        "${ChatColor.RED}  MEBIUSから呼ばれる名前を表示します",
+        s"${ChatColor.RED}/mebius nickname",
+        s"${ChatColor.RED}  MEBIUSから呼ばれる名前を表示します",
         "",
-        "${ChatColor.RED}/mebius nickname set [name]",
-        "${ChatColor.RED}  MEBIUSから呼ばれる名前を[name]に変更します",
+        s"${ChatColor.RED}/mebius nickname set [name]",
+        s"${ChatColor.RED}  MEBIUSから呼ばれる名前を[name]に変更します",
         "",
-        "${ChatColor.RED}/mebius nickname reset",
-        "${ChatColor.RED}  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
+        s"${ChatColor.RED}/mebius nickname reset",
+        s"${ChatColor.RED}  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
         ""
     ).asMessageEffect()
 
-    val permissionWarning = "${ChatColor.RED}このコマンドは権限者のみが実行可能です.".asMessageEffect()
+    val permissionWarning = s"${ChatColor.RED}このコマンドは権限者のみが実行可能です.".asMessageEffect()
   }
 
   private object ChildExecutors {
@@ -63,8 +63,8 @@ object MebiusCommand {
       private val checkNickNameExecutor = playerCommandBuilder
           .execution { context =>
             val message = MebiusListener.getNickname(context.sender)
-                ?.let { "${ChatColor.GREEN}現在のメビウスからの呼び名 : $it" }
-                ?: "${ChatColor.RED}呼び名の確認はMEBIUSを装着して行ってください."
+                ?.let { s"${ChatColor.GREEN}現在のメビウスからの呼び名 : $it" }
+                ?: s"${ChatColor.RED}呼び名の確認はMEBIUSを装着して行ってください."
 
             message.asMessageEffect()
           }
@@ -73,9 +73,9 @@ object MebiusCommand {
       private val resetNickNameExecutor = playerCommandBuilder
           .execution { context =>
             val message = if (MebiusListener.setNickname(context.sender, context.sender.name)) {
-              "${ChatColor.GREEN}メビウスからの呼び名を${context.sender.name}にリセットしました."
+              s"${ChatColor.GREEN}メビウスからの呼び名を${context.sender.name}にリセットしました."
             } else {
-              "${ChatColor.RED}呼び名のリセットはMEBIUSを装着して行ってください."
+              s"${ChatColor.RED}呼び名のリセットはMEBIUSを装着して行ってください."
             }
 
             message.asMessageEffect()
@@ -85,11 +85,11 @@ object MebiusCommand {
       private val setNickNameExecutor = playerCommandBuilder
           .argumentsParsers(listOf(Parsers.identity), onMissingArguments = printDescriptionExecutor)
           .execution { context =>
-            val newName = "${context.args.parsed[0] as String} ${context.args.yetToBeParsed.joinToString(" ")}"
+            val newName = s"${context.args.parsed[0] as String} ${context.args.yetToBeParsed.joinToString(" ")}"
             val message = if (!MebiusListener.setNickname(context.sender, newName)) {
-              "${ChatColor.RED}呼び名の設定はMEBIUSを装着して行ってください."
+              s"${ChatColor.RED}呼び名の設定はMEBIUSを装着して行ってください."
             } else {
-              "${ChatColor.GREEN}メビウスからの呼び名を${newName}にセットしました."
+              s"${ChatColor.GREEN}メビウスからの呼び名を${newName}にセットしました."
             }
 
             message.asMessageEffect()
@@ -105,10 +105,10 @@ object MebiusCommand {
     val namingExecutor = playerCommandBuilder
         .argumentsParsers(listOf(Parsers.identity))
         .execution { context =>
-          val newName = "${context.args.parsed[0] as String} ${context.args.yetToBeParsed.joinToString(" ")}"
+          val newName = s"${context.args.parsed[0] as String} ${context.args.yetToBeParsed.joinToString(" ")}"
 
           if (!MebiusListener.setName(context.sender, newName)) {
-            "${ChatColor.RED}命名はMEBIUSを装着して行ってください.".asMessageEffect()
+            s"${ChatColor.RED}命名はMEBIUSを装着して行ってください.".asMessageEffect()
           } else EmptyEffect
         }
         .build()

@@ -30,7 +30,7 @@ class PlayerInventoryListener : Listener {
     val player = he as Player
 
     //インベントリ名が以下の時処理
-    if (topinventory.title == "$DARK_RED${BOLD}サーバーを選択してください") {
+    if (topinventory.title == s"$DARK_RED${BOLD}サーバーを選択してください") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
@@ -225,12 +225,12 @@ class PlayerInventoryListener : Listener {
             if (potionmeta.basePotionData.type == ActiveSkill.ARROW.getPotionType(skilllevel)) {
               if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
                 player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-                player.sendMessage("${YELLOW}選択を解除しました")
+                player.sendMessage(s"${YELLOW}選択を解除しました")
                 playerdata.activeskilldata.skilltype = 0
                 playerdata.activeskilldata.skillnum = 0
               } else {
                 playerdata.activeskilldata.updateSkill(player, type, skilllevel, 1)
-                player.sendMessage("${GREEN}アクティブスキル:$name  が選択されました")
+                player.sendMessage(s"${GREEN}アクティブスキル:$name  が選択されました")
                 player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
               }
             }
@@ -245,12 +245,12 @@ class PlayerInventoryListener : Listener {
           if (itemstackcurrent.type == ActiveSkill.MULTI.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-              player.sendMessage("${YELLOW}選択を解除しました")
+              player.sendMessage(s"${YELLOW}選択を解除しました")
               playerdata.activeskilldata.skilltype = 0
               playerdata.activeskilldata.skillnum = 0
             } else {
               playerdata.activeskilldata.updateSkill(player, type, skilllevel, 1)
-              player.sendMessage("${GREEN}アクティブスキル:$name  が選択されました")
+              player.sendMessage(s"${GREEN}アクティブスキル:$name  が選択されました")
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
             }
           }
@@ -264,12 +264,12 @@ class PlayerInventoryListener : Listener {
           if (itemstackcurrent.type == ActiveSkill.BREAK.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-              player.sendMessage("${YELLOW}選択を解除しました")
+              player.sendMessage(s"${YELLOW}選択を解除しました")
               playerdata.activeskilldata.skilltype = 0
               playerdata.activeskilldata.skillnum = 0
             } else {
               playerdata.activeskilldata.updateSkill(player, type, skilllevel, 1)
-              player.sendMessage("${GREEN}アクティブスキル:$name  が選択されました")
+              player.sendMessage(s"${GREEN}アクティブスキル:$name  が選択されました")
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
             }
           }
@@ -284,12 +284,12 @@ class PlayerInventoryListener : Listener {
           if (itemstackcurrent.type == ActiveSkill.WATERCONDENSE.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.assaulttype == type && playerdata.activeskilldata.assaultnum == skilllevel) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-              player.sendMessage("${YELLOW}選択を解除しました")
+              player.sendMessage(s"${YELLOW}選択を解除しました")
               playerdata.activeskilldata.assaulttype = 0
               playerdata.activeskilldata.assaultnum = 0
             } else {
               playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
-              player.sendMessage("${DARK_GREEN}アサルトスキル:$name  が選択されました")
+              player.sendMessage(s"${DARK_GREEN}アサルトスキル:$name  が選択されました")
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
             }
           }
@@ -303,12 +303,12 @@ class PlayerInventoryListener : Listener {
           if (itemstackcurrent.type == ActiveSkill.LAVACONDENSE.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.assaulttype == type && playerdata.activeskilldata.assaultnum == skilllevel) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-              player.sendMessage("${YELLOW}選択を解除しました")
+              player.sendMessage(s"${YELLOW}選択を解除しました")
               playerdata.activeskilldata.assaulttype = 0
               playerdata.activeskilldata.assaultnum = 0
             } else {
               playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
-              player.sendMessage("${DARK_GREEN}アサルトスキル:$name  が選択されました")
+              player.sendMessage(s"${DARK_GREEN}アサルトスキル:$name  が選択されました")
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
             }
           }
@@ -320,12 +320,12 @@ class PlayerInventoryListener : Listener {
           if (itemstackcurrent.type == ActiveSkill.FLUIDCONDENSE.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-              player.sendMessage("${YELLOW}選択を解除しました")
+              player.sendMessage(s"${YELLOW}選択を解除しました")
               playerdata.activeskilldata.assaulttype = 0
               playerdata.activeskilldata.assaultnum = 0
             } else {
               playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
-              player.sendMessage("${DARK_GREEN}アサルトスキル:ヴェンダー・ブリザード が選択されました")
+              player.sendMessage(s"${DARK_GREEN}アサルトスキル:ヴェンダー・ブリザード が選択されました")
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
             }
           }
@@ -338,12 +338,12 @@ class PlayerInventoryListener : Listener {
           if (itemstackcurrent.type == ActiveSkill.ARMOR.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
-              player.sendMessage("${YELLOW}選択を解除しました")
+              player.sendMessage(s"${YELLOW}選択を解除しました")
               playerdata.activeskilldata.assaulttype = 0
               playerdata.activeskilldata.assaultnum = 0
             } else {
               playerdata.activeskilldata.updateAssaultSkill(player, type, skilllevel, 1)
-              player.sendMessage("${DARK_GREEN}アサルトスキル:アサルト・アーマー が選択されました")
+              player.sendMessage(s"${DARK_GREEN}アサルトスキル:アサルト・アーマー が選択されました")
               player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat())
             }
           }
@@ -1042,7 +1042,7 @@ class PlayerInventoryListener : Listener {
     //インベントリサイズが36でない時終了
     if (inventory.row != 4) return
 
-    if (inventory.title != "$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください") return
+    if (inventory.title != s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください") return
 
     /*
      * step1 for文でinventory内の対象商品の個数を計算
@@ -1076,9 +1076,9 @@ class PlayerInventoryListener : Listener {
 
     //プレイヤー通知
     if (ticketAmount == 0) {
-      player.sendMessage("${YELLOW}鉱石を認識しなかったか数が不足しています。全てのアイテムを返却します")
+      player.sendMessage(s"${YELLOW}鉱石を認識しなかったか数が不足しています。全てのアイテムを返却します")
     } else {
-      player.sendMessage("${DARK_RED}交換券$RESET${GREEN}を${ticketAmount}枚付与しました")
+      player.sendMessage(s"${DARK_RED}交換券$RESET${GREEN}を${ticketAmount}枚付与しました")
     }
 
     /*
@@ -1087,7 +1087,7 @@ class PlayerInventoryListener : Listener {
     val exchangeTicket = run {
       ItemStack(Material.PAPER).apply {
         itemMeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER).apply {
-          displayName = "$DARK_RED${BOLD}交換券"
+          displayName = s"$DARK_RED${BOLD}交換券"
           addEnchant(Enchantment.PROTECTION_FIRE, 1, false)
           addItemFlags(ItemFlag.HIDE_ENCHANTS)
         }
@@ -1100,7 +1100,7 @@ class PlayerInventoryListener : Listener {
 
     if (ticketAmount > 0) {
       player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      player.sendMessage("${GREEN}交換券の付与が終わりました")
+      player.sendMessage(s"${GREEN}交換券の付与が終わりました")
     }
 
     /*
@@ -1498,10 +1498,10 @@ class PlayerInventoryListener : Listener {
       }
       for (x in 1..SeichiAssist.seichiAssistConfig.subHomeMax) {
         if (itemmeta.displayName.contains("サブホームポイント" + x + "にワープ")) {
-          player.chat("/subhome warp $x")
+          player.chat(s"/subhome warp $x")
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         } else if (itemmeta.displayName.contains("サブホームポイント" + x + "の情報")) {
-          player.chat("/subhome name $x")
+          player.chat(s"/subhome name $x")
           player.closeInventory()
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         } else if (itemmeta.displayName.contains("サブホームポイント" + x + "を設定")) {

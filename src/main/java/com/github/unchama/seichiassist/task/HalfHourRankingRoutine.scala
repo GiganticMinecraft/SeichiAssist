@@ -23,7 +23,7 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
 
         //increaseが0超過の場合プレイヤー個人に個人整地量を通知
         if (halfHourBlock.increase > 0) {
-          player.sendMessage("あなたの整地量は ${ChatColor.AQUA}${halfHourBlock.increase}${ChatColor.WHITE} でした")
+          player.sendMessage(s"あなたの整地量は ${ChatColor.AQUA}${halfHourBlock.increase}${ChatColor.WHITE} でした")
         }
       } else {
         //ﾌﾟﾚｲﾔｰがオフラインの時の処理
@@ -53,10 +53,10 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
           .take(3) // 1から3位まで
           .zip(rankingPositionColor)
           .forEachIndexed { index, (playerData, positionColor) =>
-            val playerNameText = "$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}${ChatColor.WHITE}"
-            val increaseAmountText = "${ChatColor.AQUA}${playerData.halfhourblock.increase}${ChatColor.WHITE}"
+            val playerNameText = s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}${ChatColor.WHITE}"
+            val increaseAmountText = s"${ChatColor.AQUA}${playerData.halfhourblock.increase}${ChatColor.WHITE}"
 
-            Util.sendEveryMessage("整地量第${index + 1}位は${playerNameText}で${increaseAmountText}でした")
+            Util.sendEveryMessage(s"整地量第${index + 1}位は${playerNameText}で${increaseAmountText}でした")
           }
     }
 

@@ -65,8 +65,8 @@ class PlayerSettings {
   suspend def toggleHalfBreakFlag(): TargetedEffect[Player] {
     allowBreakingHalfBlocks = !allowBreakingHalfBlocks
 
-    val newStatus = if (allowBreakingHalfBlocks) "${ChatColor.GREEN}破壊可能" else "${ChatColor.RED}破壊不可能"
-    val responseMessage = "現在ハーフブロックは$newStatus${ChatColor.RESET}です."
+    val newStatus = if (allowBreakingHalfBlocks) s"${ChatColor.GREEN}破壊可能" else "${ChatColor.RED}破壊不可能"
+    val responseMessage = s"現在ハーフブロックは$newStatus${ChatColor.RESET}です."
 
     return responseMessage.asMessageEffect()
   }
