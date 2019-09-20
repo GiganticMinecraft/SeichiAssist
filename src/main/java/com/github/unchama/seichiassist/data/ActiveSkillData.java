@@ -122,7 +122,7 @@ public class ActiveSkillData {
 				.map(ActiveSkillData::decreasePoint)
 				.sum();
 		//熔岩凝固スキル
-		point -= IntStream.rangeClosed(7, watercondenskill)
+		point -= IntStream.rangeClosed(7, lavacondenskill)
 				.map(ActiveSkillData::decreasePoint)
 				.sum();
 		if (fluidcondenskill == 10){
