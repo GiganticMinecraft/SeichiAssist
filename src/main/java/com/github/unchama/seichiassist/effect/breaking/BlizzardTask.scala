@@ -11,7 +11,7 @@ class BlizzardTask(private val player: Player, private val skillData: ActiveSkil
                    private val blocks: Set[Block],
                    private val start: Coordinate,
                    private val end: Coordinate,
-                   private val droploc: Location) : RoundedTask() {
+                   private val droploc: Location) extends RoundedTask() {
   //音の聞こえる距離
   private var soundRadius: Int = 0
   private var setRadius: Boolean = false

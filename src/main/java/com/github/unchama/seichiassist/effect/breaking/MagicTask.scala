@@ -10,7 +10,7 @@ class MagicTask(// プレイヤー情報
     private val tool: ItemStack, // 破壊するブロックリスト
     private val blocks: Set[Block],
     start: XYZTuple,
-    end: XYZTuple, skillCenter: Location) : RoundedTask() {
+    end: XYZTuple, skillCenter: Location) extends RoundedTask() {
   // 破壊するブロックの中心位置
   private val centerBreak: Location
   // スキルが発動される中心位置

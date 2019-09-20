@@ -5,7 +5,7 @@ import org.bukkit.inventory.ItemStack
 class MineStackGachaData(val objName: String,
                          itemStack: ItemStack,
                          val probability: Double,
-                         val level: Int) : Cloneable {
+                         val level: Int) extends Cloneable {
   @Deprecated("", ReplaceWith("use itemStack.amount"))
   val amount
     get() = itemStack.amount

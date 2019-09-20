@@ -9,7 +9,7 @@ package com.github.unchama.menuinventory.slot.button.action
  * [effect]は[clickEventFilter] がtrueを返した際に発火されます.
  */
 case class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter,
-                                private val effect: ButtonEffectScope.() => TargetedEffect[Player]): ButtonEffect = {
+                                private val effect: ButtonEffectScope.() => TargetedEffect[Player]) extends ButtonEffect {
 
   /**
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[FilteredButtonEffect]を構築する.

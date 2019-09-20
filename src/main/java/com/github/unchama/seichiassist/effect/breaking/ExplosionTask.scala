@@ -12,7 +12,7 @@ class ExplosionTask(private val player: Player,
                     private val blocks: Set[Block],
                     private val start: XYZTuple,
                     private val end: XYZTuple,
-                    private val droploc: Location) : BukkitRunnable() {
+                    private val droploc: Location) extends BukkitRunnable() {
 
   override def run() {
     AxisAlignedCuboid(start, end).forEachGridPoint(2) { (x, y, z) =>

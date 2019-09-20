@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack
  * @author karayuu
  */
 case class Button(override val itemStack: ItemStack,
-                  private val effects: List[ButtonEffect]) : Slot {
+                  private val effects: List[ButtonEffect]) extends Slot {
 
   /**
    * [effects]をひとつずつ作用として発生させる [Slot] を構築します.
