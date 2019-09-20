@@ -13,7 +13,7 @@ object BuildMainMenu extends Menu {
   private object ButtonComputations {
 
     suspend def Player.computeNotationOfStats(): Button = recomputedButton {
-      val openerData = BuildAssist.playermap[uniqueId]!!
+      val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = SkullItemStackBuilder(uniqueId)
           .enchanted()
           .title(s"$YELLOW$EMPHASIZE${openerData.name}の建築データ")
@@ -28,7 +28,7 @@ object BuildMainMenu extends Menu {
     }
 
     suspend def Player.computeButtonToShowStateOfFlying() = run {
-      val openerData = BuildAssist.playermap[uniqueId]!!
+      val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = IconItemStackBuilder(Material.COOKED_CHICKEN)
           .title(s"$YELLOW${EMPHASIZE}FLY機能 情報表示")
           .lore(
@@ -131,7 +131,7 @@ object BuildMainMenu extends Menu {
     }
 
     suspend def Player.computeButtonToToggleRangedPlaceSkill() = recomputedButton {
-      val openerData = BuildAssist.playermap[uniqueId]!!
+      val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = IconItemStackBuilder(Material.STONE)
           .title(s"$GREEN${EMPHASIZE}「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
           .lore(
@@ -166,7 +166,7 @@ object BuildMainMenu extends Menu {
     }
 
     suspend def Player.computeButtonToOpenRangedPlaceSkillMenu() = run {
-      val openerData = BuildAssist.playermap[uniqueId]!!
+      val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = SkullItemStackBuilder(SkullOwners.MHF_Exclamation)
           .title(s"$YELLOW${EMPHASIZE}「範囲設置スキル」設定画面へ")
           .lore(
@@ -193,7 +193,7 @@ object BuildMainMenu extends Menu {
     }
 
     suspend def Player.computeButtonToLineUpBlocks() = recomputedButton {
-      val openerData = BuildAssist.playermap[uniqueId]!!
+      val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = IconItemStackBuilder(Material.WOOD)
           .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}")
           .lore(
@@ -224,7 +224,7 @@ object BuildMainMenu extends Menu {
     }
 
     suspend def Player.computeButtonToOpenLineUpBlocksMenu() = run {
-      val openerData = BuildAssist.playermap[uniqueId]!!
+      val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = IconItemStackBuilder(Material.PAPER)
           .title(s"$YELLOW${EMPHASIZE}「ブロックを並べるスキル（仮） 」設定画面へ")
           .lore(

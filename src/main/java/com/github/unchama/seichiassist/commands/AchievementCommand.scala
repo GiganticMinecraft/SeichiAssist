@@ -84,7 +84,7 @@ object AchievementCommand {
           val targetPlayer = Bukkit.getPlayer(playerName)
 
           if (targetPlayer != null) {
-            val playerData = SeichiAssist.playermap[targetPlayer.uniqueId]!!
+            val playerData = SeichiAssist.playermap[targetPlayer.uniqueId]
             when (operation) {
               AchievementOperation.GIVE => playerData.tryForcefullyUnlockAchievement(achievementNumber)
               AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)

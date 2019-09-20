@@ -25,7 +25,7 @@ object BlockPlacementSkillMenu extends Menu {
   }
 
   private suspend def Player.computeButtonToToggleDirtPlacement() = recomputedButton {
-    val playerData = BuildAssist.playermap[uniqueId]!!
+    val playerData = BuildAssist.playermap[uniqueId]
     val currentStatus = playerData.zsSkillDirtFlag
 
     val iconItemStack = IconItemStackBuilder(Material.DIRT)
@@ -47,7 +47,7 @@ object BlockPlacementSkillMenu extends Menu {
   }
 
   private suspend def Player.computeButtonToShowCurrentStatus() = recomputedButton {
-    val playerData = BuildAssist.playermap[uniqueId]!!
+    val playerData = BuildAssist.playermap[uniqueId]
     val isSkillEnabled = playerData.ZoneSetSkillFlag
     val skillRange = playerData.computeCurrentSkillRange()
     val isConsumingMineStack = playerData.zs_minestack_flag
@@ -65,7 +65,7 @@ object BlockPlacementSkillMenu extends Menu {
   }
 
   private def Player.computeButtonToMaximizeRange() = run {
-    val playerData = BuildAssist.playermap[uniqueId]!!
+    val playerData = BuildAssist.playermap[uniqueId]
     val currentRange = playerData.computeCurrentSkillRange()
 
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowUp")
@@ -89,7 +89,7 @@ object BlockPlacementSkillMenu extends Menu {
   }
 
   private def Player.computeButtonToIncreaseRange() = run {
-    val playerData = BuildAssist.playermap[uniqueId]!!
+    val playerData = BuildAssist.playermap[uniqueId]
     val currentRange = playerData.computeCurrentSkillRange()
     val changedRange = currentRange + 2
 
@@ -131,7 +131,7 @@ object BlockPlacementSkillMenu extends Menu {
   }
 
   private def Player.computeButtonToResetRange() = run {
-    val playerData = BuildAssist.playermap[uniqueId]!!
+    val playerData = BuildAssist.playermap[uniqueId]
     val currentRange = playerData.computeCurrentSkillRange()
 
     val iconItemStack = SkullItemStackBuilder("MHF_TNT")
@@ -155,7 +155,7 @@ object BlockPlacementSkillMenu extends Menu {
   }
 
   private def Player.computeButtonToDecreaseRange() = run {
-    val playerData = BuildAssist.playermap[uniqueId]!!
+    val playerData = BuildAssist.playermap[uniqueId]
     val currentRange = playerData.computeCurrentSkillRange()
     val changedRange = currentRange + -2
 
@@ -197,7 +197,7 @@ object BlockPlacementSkillMenu extends Menu {
   }
 
   private def Player.computeButtonToMinimizeRange() = run {
-    val playerData = BuildAssist.playermap[uniqueId]!!
+    val playerData = BuildAssist.playermap[uniqueId]
     val currentRange = playerData.computeCurrentSkillRange()
 
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowDown")
@@ -221,7 +221,7 @@ object BlockPlacementSkillMenu extends Menu {
   }
 
   private suspend def Player.computeButtonToToggleConsumingMineStack() = recomputedButton {
-    val playerData = BuildAssist.playermap[uniqueId]!!
+    val playerData = BuildAssist.playermap[uniqueId]
     val currentStatus = playerData.zs_minestack_flag
 
     val iconItemStackBuilder = IconItemStackBuilder(Material.CHEST)

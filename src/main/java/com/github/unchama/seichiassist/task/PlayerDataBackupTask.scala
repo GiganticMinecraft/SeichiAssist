@@ -15,7 +15,7 @@ object PlayerDataBackupTask extends RepeatedTaskLauncher() {
     GlobalScope.launch {
       //現在オンラインのプレイヤーのプレイヤーデータを永続化する
       Bukkit.getOnlinePlayers()
-          .map { playerMap[it.uniqueId]!! }
+          .map { playerMap[it.uniqueId] }
           .forEach { savePlayerData(it) }
     }
 

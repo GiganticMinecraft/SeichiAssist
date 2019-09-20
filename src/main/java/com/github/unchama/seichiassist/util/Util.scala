@@ -112,7 +112,7 @@ object Util {
   def sendEveryMessageWithoutIgnore(str: String) {
     runBlocking {
       for (player in Bukkit.getOnlinePlayers()) {
-        if (SeichiAssist.playermap[player.uniqueId]!!.settings.getBroadcastMutingSettings().shouldMuteMessages()) {
+        if (SeichiAssist.playermap[player.uniqueId].settings.getBroadcastMutingSettings().shouldMuteMessages()) {
           player.sendMessage(str)
         }
       }
@@ -122,7 +122,7 @@ object Util {
   def sendEveryMessageWithoutIgnore(base: BaseComponent) {
     runBlocking {
       for (player in Bukkit.getOnlinePlayers()) {
-        if (SeichiAssist.playermap[player.uniqueId]!!.settings.getBroadcastMutingSettings().shouldMuteMessages()) {
+        if (SeichiAssist.playermap[player.uniqueId].settings.getBroadcastMutingSettings().shouldMuteMessages()) {
           player.spigot().sendMessage(base)
         }
       }
@@ -238,7 +238,7 @@ object Util {
   def sendEverySoundWithoutIgnore(kind: Sound, a: Float, b: Float) {
     runBlocking {
       for (player in Bukkit.getOnlinePlayers()) {
-        if (SeichiAssist.playermap[player.uniqueId]!!.settings.getBroadcastMutingSettings().shouldMuteSounds()) {
+        if (SeichiAssist.playermap[player.uniqueId].settings.getBroadcastMutingSettings().shouldMuteSounds()) {
           player.playSound(player.location, kind, a, b)
         }
       }
@@ -571,7 +571,7 @@ object Util {
   // TODO これはここにあるべきではない
   @Deprecated("")
   def findMineStackObjectByName(name: String): MineStackObj? = {
-    return MineStackObjectList.minestacklist!!.stream()
+    return MineStackObjectList.minestacklist.stream()
         .filter { obj => name == obj.mineStackObjName }
         .findFirst().orElse(null)
   }

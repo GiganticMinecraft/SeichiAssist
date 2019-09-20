@@ -51,7 +51,7 @@ class RegionInventoryListener  extends  Listener {
 			 */
       val player = view.player as Player
       val uuid = player.uniqueId
-      val playerData = playermap[uuid]!!
+      val playerData = playermap[uuid]
 
       //チャンク延長
       if (itemstackcurrent.type == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 14) {
@@ -84,8 +84,8 @@ class RegionInventoryListener  extends  Listener {
   }
 
   private def createRegion(player: Player) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]!!
-    val selection = We!!.getSelection(player)
+    val playerData = SeichiAssist.playermap[player.uniqueId]
+    val selection = We.getSelection(player)
 
     val region = ProtectedCuboidRegion(player.name + "_" + playerData.regionCount,
         selection.getNativeMinimumPoint().toBlockVector(), selection.getNativeMaximumPoint().toBlockVector())
@@ -135,7 +135,7 @@ class RegionInventoryListener  extends  Listener {
 			 */
       val player = view.player as Player
       val uuid = player.uniqueId
-      val playerData = playermap[uuid]!!
+      val playerData = playermap[uuid]
 
       //戻るボタン
       if (itemstackcurrent.type == Material.BARRIER) {
@@ -184,7 +184,7 @@ object RegionInventoryListener {
   internal var config = SeichiAssist.seichiAssistConfig
 
   private def gridResetFunction(player: Player) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    val playerData = SeichiAssist.playermap[player.uniqueId]
       playerData.setUnitAmount(DirectionType.AHEAD, 0)
     playerData.setUnitAmount(DirectionType.BEHIND, 0)
     playerData.setUnitAmount(DirectionType.RIGHT, 0)
@@ -194,13 +194,13 @@ object RegionInventoryListener {
     //終点座標Map(最短)
     val end = getNearlyUnitEnd(player)
     //範囲選択
-    wgSelect(Location(player.world, start["x"]!!, 0.0, start["z"]!!),
-      Location(player.world, end["x"]!!, 256.0, end["z"]!!), player)
+    wgSelect(Location(player.world, start["x"], 0.0, start["z"]),
+      Location(player.world, end["x"], 256.0, end["z"]), player)
     canCreateRegion(player)
   }
 
   private def gridChangeFunction(player: Player, directionType: DirectionType, event: InventoryClickEvent) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    val playerData = SeichiAssist.playermap[player.uniqueId]
     if (event.isLeftClick) {
       if (playerData.canGridExtend(directionType, player.world.name)) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -221,21 +221,21 @@ object RegionInventoryListener {
   }
 
   private def setWGSelection(player: Player) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    val playerData = SeichiAssist.playermap[player.uniqueId]
     val unitMap = playerData.unitMap
     val direction = Util.getPlayerDirection(player)
     val world = player.world
 
-    val aheadUnitAmount = unitMap[DirectionType.AHEAD]!!
-    val leftsideUnitAmount = unitMap[DirectionType.LEFT]!!
-    val rightsideUnitAmount = unitMap[DirectionType.RIGHT]!!
-    val behindUnitAmount = unitMap[DirectionType.BEHIND]!!
+    val aheadUnitAmount = unitMap[DirectionType.AHEAD]
+    val leftsideUnitAmount = unitMap[DirectionType.LEFT]
+    val rightsideUnitAmount = unitMap[DirectionType.RIGHT]
+    val behindUnitAmount = unitMap[DirectionType.BEHIND]
 
     //0ユニット指定の始点/終点のx,z座標
-    val start_x = getNearlyUnitStart(player)["x"]!!
-    val start_z = getNearlyUnitStart(player)["z"]!!
-    val end_x = getNearlyUnitEnd(player)["x"]!!
-    val end_z = getNearlyUnitEnd(player)["z"]!!
+    val start_x = getNearlyUnitStart(player)["x"]
+    val start_z = getNearlyUnitStart(player)["z"]
+    val end_x = getNearlyUnitEnd(player)["x"]
+    val end_z = getNearlyUnitEnd(player)["z"]
 
     var start_loc: Location? = null
     var end_loc: Location? = null
@@ -261,7 +261,7 @@ object RegionInventoryListener {
         end_loc = Location(world, end_x + 15 * behindUnitAmount, 256.0, end_z + 15 * leftsideUnitAmount)
       }
     }//わざと何もしない。
-    wgSelect(start_loc!!, end_loc!!, player)
+    wgSelect(start_loc, end_loc, player)
   }
 
   private def wgSelect(loc1: Location, loc2: Location, player: Player) {
@@ -271,8 +271,8 @@ object RegionInventoryListener {
   }
 
   private def canCreateRegion(player: Player) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]!!
-    val selection = We!!.getSelection(player)
+    val playerData = SeichiAssist.playermap[player.uniqueId]
+    val selection = We.getSelection(player)
     val manager = Wg.getRegionManager(player.world)
     val wcfg = Wg.getGlobalStateManager().get(player.world)
 
@@ -281,7 +281,7 @@ object RegionInventoryListener {
     }
 
     val region = ProtectedCuboidRegion(player.name + "_" + playerData.regionCount,
-      selection!!.getNativeMinimumPoint().toBlockVector(), selection!!.getNativeMaximumPoint().toBlockVector())
+      selection.getNativeMinimumPoint().toBlockVector(), selection.getNativeMaximumPoint().toBlockVector())
     val regions = manager.getApplicableRegions(region)
 
     if (regions.size() !== 0) {
@@ -299,13 +299,13 @@ object RegionInventoryListener {
   }
 
   private def playerGridTemplateSave(player: Player, i: Int) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    val playerData = SeichiAssist.playermap[player.uniqueId]
     val unitMap = playerData.unitMap
 
     player.sendMessage(ChatColor.GREEN.toString() + "グリッド式保護の現在の設定を保存しました。")
     player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f)
-    val template = GridTemplate(unitMap[DirectionType.AHEAD]!!, unitMap[DirectionType.BEHIND]!!,
-      unitMap[DirectionType.RIGHT]!!, unitMap[DirectionType.LEFT]!!)
+    val template = GridTemplate(unitMap[DirectionType.AHEAD], unitMap[DirectionType.BEHIND],
+      unitMap[DirectionType.RIGHT], unitMap[DirectionType.LEFT])
     playerData.templateMap[i] = template
   }
 
@@ -344,8 +344,8 @@ object RegionInventoryListener {
 
     val resultMap = HashMap[String, Double]()
 
-    resultMap["x"] = startCoordinate["x"]!! + 14.0
-    resultMap["z"] = startCoordinate["z"]!! + 14.0
+    resultMap["x"] = startCoordinate["x"] + 14.0
+    resultMap["z"] = startCoordinate["z"] + 14.0
 
     return resultMap
   }

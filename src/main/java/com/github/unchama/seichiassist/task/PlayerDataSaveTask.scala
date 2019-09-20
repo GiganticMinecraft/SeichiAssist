@@ -16,7 +16,7 @@ object PlayerDataSaving {
     @Throws(SQLException::class)
     def updatePlayerMineStack(stmt: Statement) {
       val playerUuid = playerdata.uuid.toString()
-      for (mineStackObj in MineStackObjectList.minestacklist!!) {
+      for (mineStackObj in MineStackObjectList.minestacklist) {
         val iThObjectName = mineStackObj.mineStackObjName
         val iThObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj)
 
@@ -68,7 +68,7 @@ object PlayerDataSaving {
       stmt.executeUpdate(s"delete from seichiassist.grid_template where designer_uuid = '$playerUuid'")
 
       // 各グリッドテンプレートについてデータを保存する
-      for ((gridTemplateId, gridTemplate) in playerdata.templateMap!!) {
+      for ((gridTemplateId, gridTemplate) in playerdata.templateMap) {
 
         val updateCommand = "insert into seichiassist.grid_template set " +
           "id = " + gridTemplateId + ", " +

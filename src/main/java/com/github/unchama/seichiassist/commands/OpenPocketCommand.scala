@@ -19,7 +19,7 @@ object OpenPocketCommand {
         val player = Bukkit.getPlayer(playerName)
 
         if (player != null) {
-          val playerData = SeichiAssist.playermap[player.uniqueId]!!
+          val playerData = SeichiAssist.playermap[player.uniqueId]
           val targetInventory = playerData.pocketInventory
 
           context.sender.openInventory(targetInventory)

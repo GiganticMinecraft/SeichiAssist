@@ -25,7 +25,7 @@ internal object MineStackButtons {
     }
 
     return computedEffect { player =>
-      val playerData = SeichiAssist.playermap[player.uniqueId]!!
+      val playerData = SeichiAssist.playermap[player.uniqueId]
       val currentAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
       val grantAmount = min(mineStackObj.itemStack.maxStackSize.toLong(), currentAmount).toInt()
 
@@ -43,7 +43,7 @@ internal object MineStackButtons {
   }
 
   suspend def Player.getMineStackItemButtonOf(mineStackObj: MineStackObj): Button = recomputedButton {
-    val playerData = SeichiAssist.playermap[uniqueId]!!
+    val playerData = SeichiAssist.playermap[uniqueId]
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
     val itemStack = mineStackObj.itemStack.clone().apply {
@@ -82,7 +82,7 @@ internal object MineStackButtons {
   }
 
   suspend def Player.computeAutoMineStackToggleButton(): Button = recomputedButton {
-    val playerData = SeichiAssist.playermap[uniqueId]!!
+    val playerData = SeichiAssist.playermap[uniqueId]
 
     val iconItemStack = run {
       val baseBuilder =

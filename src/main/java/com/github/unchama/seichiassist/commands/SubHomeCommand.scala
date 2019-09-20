@@ -48,7 +48,7 @@ object SubHomeCommand {
       .execution { context =>
         val subHomeId = context.args.parsed[0] as Int
         val player = context.sender
-        val playerData = SeichiAssist.playermap[player.uniqueId]!!
+        val playerData = SeichiAssist.playermap[player.uniqueId]
 
         playerData.setSubHomeLocation(player.location, subHomeId - 1)
 
@@ -60,7 +60,7 @@ object SubHomeCommand {
       .execution { context =>
         val subHomeId = context.args.parsed[0] as Int
         val player = context.sender
-        val playerData = SeichiAssist.playermap[player.uniqueId]!!
+        val playerData = SeichiAssist.playermap[player.uniqueId]
 
         // TODO チャット傍受を手続き的に記述できるようにする
         playerData.setHomeNameNum = subHomeId

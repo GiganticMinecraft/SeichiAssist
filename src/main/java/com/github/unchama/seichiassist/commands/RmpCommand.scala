@@ -35,7 +35,7 @@ object RmpCommand {
     val leavers = databaseGateway.playerDataManipulator.selectLeaversUUIDs(daysThreshold)
         ?: return s"${ChatColor.RED}データベースアクセスに失敗しました。".asMessageEffect().left()
 
-    val regions = ExternalPlugins.getWorldGuard().regionContainer.get(world)!!.regions.toMap()
+    val regions = ExternalPlugins.getWorldGuard().regionContainer.get(world).regions.toMap()
     val oldRegions = regions.values.filter { region =>
       region.id != "__global__" && region.id != "spawn"
           && region.owners.uniqueIds.all { leavers.contains(it) }
@@ -56,7 +56,7 @@ object RmpCommand {
         getOldRegionsIn(world, days).map { removalTargets =>
           // 削除処理
           removalTargets.forEach { target =>
-            ExternalPlugins.getWorldGuard().regionContainer.get(world)!!.removeRegion(target.id)
+            ExternalPlugins.getWorldGuard().regionContainer.get(world).removeRegion(target.id)
           }
 
           // メッセージ生成

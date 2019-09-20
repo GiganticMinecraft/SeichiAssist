@@ -23,7 +23,7 @@ object OnActiveSkillUnselect extends Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = SeichiAssist.playermap[uuid]!!
+    val playerdata = SeichiAssist.playermap[uuid]
 
     //インベントリ名が以下の時処理
     if (topinventory.title == ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "整地スキル選択") {

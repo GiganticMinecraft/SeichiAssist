@@ -271,7 +271,7 @@ object SecondPage extends Menu {
     }
 
     suspend def Player.computeBroadcastMessageToggleButton(): Button = recomputedButton {
-      val playerData = SeichiAssist.playermap[uniqueId]!!
+      val playerData = SeichiAssist.playermap[uniqueId]
       val iconItemStack = run {
         val currentSettings = playerData.settings.getBroadcastMutingSettings()
 
@@ -318,7 +318,7 @@ object SecondPage extends Menu {
     }
 
     suspend def Player.computeDeathMessageToggleButton(): Button = recomputedButton {
-      val playerData = SeichiAssist.playermap[uniqueId]!!
+      val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
         val baseBuilder =
@@ -364,7 +364,7 @@ object SecondPage extends Menu {
     }
 
     suspend def Player.computeWorldGuardMessageToggleButton(): Button = recomputedButton {
-      val playerData = SeichiAssist.playermap[uniqueId]!!
+      val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
         val baseBuilder = IconItemStackBuilder(Material.BARRIER)
@@ -415,7 +415,7 @@ object SecondPage extends Menu {
     suspend def Player.computeShareInventoryButton(): Button = recomputedButton {
       val iconItemStack = run {
         val lore = run {
-          val playerData = SeichiAssist.playermap[uniqueId]!!
+          val playerData = SeichiAssist.playermap[uniqueId]
 
           val base = List(
               s"$RESET${GREEN}現在の装備・アイテムを移動します。",

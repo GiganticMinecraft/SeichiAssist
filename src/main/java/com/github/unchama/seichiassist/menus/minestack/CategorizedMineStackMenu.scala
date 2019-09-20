@@ -7,7 +7,7 @@ object CategorizedMineStackMenu {
   private const val mineStackObjectPerPage = 9 * 5
 
   private suspend def Player.computeMenuLayout(category: MineStackObjectCategory, page: Int): IndexedSlotLayout = {
-    val categoryItemList = MineStackObjectList.minestacklist!!.filter { it.category() === category }
+    val categoryItemList = MineStackObjectList.minestacklist.filter { it.category() === category }
     val totalNumberOfPages = ceil(categoryItemList.size / 45.0).toInt()
 
     // オブジェクトリストが更新されるなどの理由でpageが最大値を超えてしまった場合、最後のページを計算する

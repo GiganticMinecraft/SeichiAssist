@@ -117,7 +117,7 @@ object RegionMenu extends Menu {
   private object ButtonComputations {
 
     suspend def Player.computeButtonToClaimRegion(): Button = run {
-      val openerData = SeichiAssist.playermap[uniqueId]!!
+      val openerData = SeichiAssist.playermap[uniqueId]
       val selection = ExternalPlugins.getWorldEdit().getSelection(player)
 
       val playerHasPermission = player.hasPermission("worldguard.region.claim")

@@ -15,7 +15,7 @@ object ShareInvCommand {
   }
 
   private suspend def withdrawFromSharedInventory(player: Player): TargetedEffect[Player] = {
-    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    val playerData = SeichiAssist.playermap[player.uniqueId]
     val databaseGateway = SeichiAssist.databaseGateway
 
     val serial = when (val either = databaseGateway.playerDataManipulator.loadShareInv(player, playerData)) {
@@ -43,7 +43,7 @@ object ShareInvCommand {
   }
 
   private suspend def depositToSharedInventory(player: Player): TargetedEffect[Player] = {
-    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    val playerData = SeichiAssist.playermap[player.uniqueId]
     val databaseGateway = SeichiAssist.databaseGateway
 
     val playerInventory = player.inventory
@@ -67,7 +67,7 @@ object ShareInvCommand {
 
   val executor = playerCommandBuilder
       .execution { context =>
-        val senderData = SeichiAssist.playermap[context.sender.uniqueId]!!
+        val senderData = SeichiAssist.playermap[context.sender.uniqueId]
 
         if (senderData.contentsPresentInSharedInventory) {
           withdrawFromSharedInventory(context.sender)

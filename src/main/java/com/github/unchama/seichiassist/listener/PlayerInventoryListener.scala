@@ -85,7 +85,7 @@ class PlayerInventoryListener  extends  Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playerMap[uuid]!!
+    val playerdata = playerMap[uuid]
 
     //経験値変更用のクラスを設定
     //ExperienceManager expman = new ExperienceManager(player);
@@ -199,7 +199,7 @@ class PlayerInventoryListener  extends  Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playerMap[uuid]!!
+    val playerdata = playerMap[uuid]
 
     //経験値変更用のクラスを設定
     val expman = ExperienceManager(player)
@@ -428,7 +428,7 @@ class PlayerInventoryListener  extends  Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playerMap[uuid]!!
+    val playerdata = playerMap[uuid]
 
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキルエフェクト選択") {
@@ -1071,7 +1071,7 @@ class PlayerInventoryListener  extends  Listener {
         .mapValues { (_, stacks) => stacks.map { it.amount }.sum() }
 
     val ticketAmount = exchangingAmount
-        .map { (material, amount) => amount / requiredAmountPerTicket[material]!! }
+        .map { (material, amount) => amount / requiredAmountPerTicket[material] }
         .sum()
 
     //プレイヤー通知
@@ -1109,7 +1109,7 @@ class PlayerInventoryListener  extends  Listener {
     val itemStacksToReturn =
         exchangingAmount
             .mapNotNull { (exchangedMaterial, exchangedAmount) =>
-              val returningAmount = exchangedAmount % requiredAmountPerTicket[exchangedMaterial]!!
+              val returningAmount = exchangedAmount % requiredAmountPerTicket[exchangedMaterial]
 
               if (returningAmount != 0)
                 ItemStack(exchangedMaterial).apply { amount = returningAmount }
@@ -1315,7 +1315,7 @@ class PlayerInventoryListener  extends  Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playerMap[uuid]!!
+    val playerdata = playerMap[uuid]
 
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "投票ptメニュー") {
@@ -1440,7 +1440,7 @@ class PlayerInventoryListener  extends  Listener {
         VotingFairyListener.summon(player)
         player.closeInventory()
       } else if (itemstackcurrent.type === Material.COMPASS) {
-        VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.votingFairyEndTime!!) + "には帰るよー。", playerdata.toggleVFSound)
+        VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.votingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound)
         player.closeInventory()
       }//妖精召喚
       //妖精音トグル
@@ -1474,7 +1474,7 @@ class PlayerInventoryListener  extends  Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playerMap[uuid]!!
+    val playerdata = playerMap[uuid]
     val itemmeta = itemstackcurrent.itemMeta
 
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "ホームメニュー") {
@@ -1556,7 +1556,7 @@ class PlayerInventoryListener  extends  Listener {
     }
     val player = he as Player
     val uuid = player.uniqueId
-    val playerdata = playerMap[uuid]!!
+    val playerdata = playerMap[uuid]
 
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "スキルを進化させますか?") {
       event.isCancelled = true

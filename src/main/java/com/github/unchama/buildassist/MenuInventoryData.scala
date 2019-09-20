@@ -24,7 +24,7 @@ object MenuInventoryData {
     //UUID取得
     val uuid = player.uniqueId
     //プレイヤーデータ
-    val playerdata = BuildAssist.playermap[uuid]!! // If NPE, player is already offline
+    val playerdata = BuildAssist.playermap[uuid] // If NPE, player is already offline
 
     val inventory = Bukkit.getServer().createInventory(null, 4 * 9, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "「範囲設置スキル」設定画面")
     var itemstack = ItemStack(Material.BARRIER, 1)
@@ -157,7 +157,7 @@ object MenuInventoryData {
     //UUID取得
     val uuid = player.uniqueId
     //プレイヤーデータ
-    val playerdata = BuildAssist.playermap[uuid]!!
+    val playerdata = BuildAssist.playermap[uuid]
 
     val inventory = Bukkit.getServer().createInventory(null, 4 * 9, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "「ブロックを並べるスキル（仮）」設定")
     var itemstack = ItemStack(Material.SKULL_ITEM, 1)
@@ -235,7 +235,7 @@ object MenuInventoryData {
     val player = p.player
     //UUID取得
     val uuid = player.uniqueId
-    val playerdata_s = SeichiAssist.playermap[uuid]!! // if thrown NPE, player has already left
+    val playerdata_s = SeichiAssist.playermap[uuid] // if thrown NPE, player has already left
 
     val inventory = Bukkit.getServer().createInventory(null, 6 * 9, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "MineStackブロック一括クラフト1")
     var itemstack: ItemStack
@@ -263,8 +263,8 @@ object MenuInventoryData {
     AsyncInventorySetter.setItemAsync(inventory, 53, itemstack)
 
     //石を石ハーフブロックに変換10～10万
-    var num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("stone")!!)
-    var num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("step0")!!)
+    var num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("stone"))
+    var num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("step0"))
     for (x in 1..5) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.STEP, x)
@@ -282,8 +282,8 @@ object MenuInventoryData {
 
 
     //石を石レンガに変換10～10万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("stone")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("smooth_brick0")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("stone"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("smooth_brick0"))
     for (x in 1..5) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.SMOOTH_BRICK, x)
@@ -297,8 +297,8 @@ object MenuInventoryData {
     }
 
     //花崗岩を磨かれた花崗岩に変換10～1万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("granite")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("polished_granite")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("granite"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("polished_granite"))
     for (x in 1..4) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.STONE, x, 2.toShort())
@@ -312,8 +312,8 @@ object MenuInventoryData {
     }
 
     //閃緑岩を磨かれた閃緑岩に変換10～1万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("diorite")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("polished_diorite")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("diorite"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("polished_diorite"))
     for (x in 1..4) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.STONE, x, 4.toShort())
@@ -327,8 +327,8 @@ object MenuInventoryData {
     }
 
     //安山岩を磨かれた安山岩に変換10～1万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("andesite")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("polished_andesite")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("andesite"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("polished_andesite"))
     for (x in 1..4) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.STONE, x, 6.toShort())
@@ -342,8 +342,8 @@ object MenuInventoryData {
     }
 
     //ネザー水晶をネザー水晶ブロックに変換10～1万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("quartz")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("quartz_block")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("quartz"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("quartz_block"))
     for (x in 1..4) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.QUARTZ_BLOCK, x)
@@ -357,8 +357,8 @@ object MenuInventoryData {
     }
 
     //レンガをレンガブロックに変換10～1万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick_item")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick_item"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick"))
     for (x in 1..4) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.BRICK, x)
@@ -372,8 +372,8 @@ object MenuInventoryData {
     }
 
     //ネザーレンガをネザーレンガブロックに変換10～1万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_brick_item")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_brick")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_brick_item"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_brick"))
     for (x in 1..4) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.NETHER_BRICK, x)
@@ -400,7 +400,7 @@ object MenuInventoryData {
     //UUID取得
     val uuid = player.uniqueId
     //プレイヤーデータ
-    val playerdata_s = SeichiAssist.playermap[uuid]!!
+    val playerdata_s = SeichiAssist.playermap[uuid]
 
     val inventory = Bukkit.getServer().createInventory(null, 6 * 9, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "MineStackブロック一括クラフト2")
     var itemstack: ItemStack
@@ -428,8 +428,8 @@ object MenuInventoryData {
     AsyncInventorySetter.setItemAsync(inventory, 53, itemstack)
 
     //雪玉を雪（ブロック）に変換10～1万
-    var num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("snow_ball")!!)
-    var num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("snow_block")!!)
+    var num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("snow_ball"))
+    var num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("snow_block"))
     var num_3: Long
     for (x in 1..4) {
       val p10 = power10[x]
@@ -445,9 +445,9 @@ object MenuInventoryData {
 
 
     //ネザーウォートとネザーレンガを赤いネザーレンガに変換10～10万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_stalk")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("red_nether_brick")!!)
-    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_brick_item")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_stalk"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("red_nether_brick"))
+    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_brick_item"))
     for (x in 1..5) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.RED_NETHER_BRICK, x)
@@ -461,9 +461,9 @@ object MenuInventoryData {
     }
 
     //石炭を消費して鉄鉱石を鉄インゴットに変換4～4000
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("iron_ore")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("iron_ingot")!!)
-    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("iron_ore"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("iron_ingot"))
+    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal"))
     for (x in 0..3) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.IRON_INGOT, x)
@@ -477,9 +477,9 @@ object MenuInventoryData {
     }
 
     //溶岩バケツを消費して鉄鉱石を鉄インゴットに変換50～5万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("iron_ore")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("iron_ingot")!!)
-    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("iron_ore"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("iron_ingot"))
+    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket"))
     for (x in 0..3) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.IRON_INGOT, x)
@@ -493,9 +493,9 @@ object MenuInventoryData {
     }
 
     //石炭を消費して金鉱石を金インゴットに変換4～4000
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("gold_ore")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("gold_ingot")!!)
-    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("gold_ore"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("gold_ingot"))
+    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal"))
     for (x in 0..3) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.GOLD_INGOT, x)
@@ -509,9 +509,9 @@ object MenuInventoryData {
     }
 
     //溶岩バケツを消費して金鉱石を金インゴットに変換50～5万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("gold_ore")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("gold_ingot")!!)
-    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("gold_ore"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("gold_ingot"))
+    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket"))
     for (x in 0..3) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.GOLD_INGOT, x)
@@ -525,9 +525,9 @@ object MenuInventoryData {
     }
 
     //石炭を消費して砂をガラスに変換4～4000
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("sand")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("glass")!!)
-    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("sand"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("glass"))
+    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal"))
     for (x in 0..3) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.GLASS, x)
@@ -541,9 +541,9 @@ object MenuInventoryData {
     }
 
     //溶岩バケツを消費して砂をガラスに変換50～5万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("sand")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("glass")!!)
-    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("sand"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("glass"))
+    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket"))
     for (x in 0..3) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.GLASS, x)
@@ -557,9 +557,9 @@ object MenuInventoryData {
     }
 
     //石炭を消費してネザーラックをネザーレンガに変換4～4000
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("netherrack")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_brick_item")!!)
-    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("netherrack"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_brick_item"))
+    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal"))
     for (x in 0..3) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.NETHER_BRICK_ITEM, x)
@@ -573,9 +573,9 @@ object MenuInventoryData {
     }
 
     //溶岩バケツを消費してネザーラックをネザーレンガに変換50～5万
-    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("netherrack")!!)
-    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_brick_item")!!)
-    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket")!!)
+    num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("netherrack"))
+    num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_brick_item"))
+    num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket"))
     for (x in 0..3) {
       val p10 = power10[x]
       itemstack = ItemStack(Material.NETHER_BRICK_ITEM, x)
@@ -596,7 +596,7 @@ object MenuInventoryData {
     val player = p.player
     //UUID取得
     val uuid = player.uniqueId
-    val playerdata_s = SeichiAssist.playermap[uuid]!!
+    val playerdata_s = SeichiAssist.playermap[uuid]
 
     val inventory = Bukkit.getServer().createInventory(null, 6 * 9, ChatColor.DARK_PURPLE.toString() + "" + ChatColor.BOLD + "MineStackブロック一括クラフト3")
     var itemstack: ItemStack
@@ -615,9 +615,9 @@ object MenuInventoryData {
 
     //石炭を消費して粘土をレンガに変換4～4000
     run {
-      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("clay_ball")!!)
-      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick_item")!!)
-      val num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal")!!)
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("clay_ball"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick_item"))
+      val num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal"))
       for (x in 0..3) {
         val p10 = power10[x]
         itemstack = ItemStack(Material.CLAY_BRICK, x)
@@ -633,9 +633,9 @@ object MenuInventoryData {
 
     //溶岩バケツを消費して粘土をレンガに変換50～5万
     run {
-      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("clay_ball")!!)
-      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick_item")!!)
-      val num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket")!!)
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("clay_ball"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("brick_item"))
+      val num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket"))
       for (x in 0..3) {
         val p10 = power10[x]
         itemstack = ItemStack(Material.CLAY_BRICK, x)

@@ -201,7 +201,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
           //プレイヤーがオンラインの時即時反映させる
           Bukkit.getServer().getPlayer(name)?.let { player =>
-            val playerData = SeichiAssist.playermap[player.uniqueId]!!
+            val playerData = SeichiAssist.playermap[player.uniqueId]
 
             playerData.ChainVote = count
           }
@@ -591,7 +591,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
         //新しくuuidとnameを設定し行を作成
         val command = s"insert into $db.$table (name,uuid,loginflag) values('$playerName','$stringUuid','1')"
-        stmt!!.executeUpdate(command)
+        stmt.executeUpdate(command)
 
         PlayerData(playerUUID, playerName)
       }

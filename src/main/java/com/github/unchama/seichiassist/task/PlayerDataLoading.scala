@@ -72,7 +72,7 @@ object PlayerDataLoading {
      * ロードされるたびに再計算されるべきではない
      */
     val nameObjectMappings: Map[String, MineStackObj] =
-    MineStackObjectList.minestacklist!!
+    MineStackObjectList.minestacklist
     .map { it.mineStackObjName to it }
     .toMap()
 

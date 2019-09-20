@@ -15,7 +15,7 @@ object BreakUtil {
     }
     val playermap = SeichiAssist.playermap
     val uuid = player.uniqueId
-    val playerdata = playermap[uuid]!!
+    val playerdata = playermap[uuid]
 
     //壊されるブロックのMaterialを取得
     val material = breakblock.type
@@ -128,7 +128,7 @@ object BreakUtil {
 
     val config = SeichiAssist.seichiAssistConfig
 
-    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    val playerData = SeichiAssist.playermap[player.uniqueId]
 
     //minestackflagがfalseの時は処理を終了
     if (!playerData.settings.autoMineStack) return false
@@ -145,7 +145,7 @@ object BreakUtil {
       itemstack.durability = 0.toShort()
     }
 
-    MineStackObjectList.minestacklist!!.forEach { mineStackObj =>
+    MineStackObjectList.minestacklist.forEach { mineStackObj =>
       def addToMineStackAfterLevelCheck(): Boolean =
           if (playerData.level < config.getMineStacklevel(mineStackObj.level)) {
             false
@@ -428,7 +428,7 @@ object BreakUtil {
 
     // 2. 破壊要因判定
     /** 該当プレイヤーのPlayerData  */
-    val playerdata = SeichiAssist.playermap[player.uniqueId]!!
+    val playerdata = SeichiAssist.playermap[player.uniqueId]
     /** ActiveSkillのリスト  */
     val skilllist = ActiveSkill.values()
     /** 重力値の計算を始めるY座標  */

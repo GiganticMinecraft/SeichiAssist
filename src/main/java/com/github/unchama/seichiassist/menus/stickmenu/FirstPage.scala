@@ -327,7 +327,7 @@ private object FirstPage extends Menu {
 
   private object ButtonComputations {
     suspend def Player.computeStatsButton(): Button = recomputedButton {
-      val openerData = SeichiAssist.playermap[uniqueId]!!
+      val openerData = SeichiAssist.playermap[uniqueId]
 
       Button(
           SkullItemStackBuilder(uniqueId)
@@ -347,7 +347,7 @@ private object FirstPage extends Menu {
     }
 
     suspend def Player.computeEffectSuppressionButton(): Button = recomputedButton {
-      val openerData = SeichiAssist.playermap[uniqueId]!!
+      val openerData = SeichiAssist.playermap[uniqueId]
 
       val buttonLore: List[String] = run {
         val toggleNavigation = List(
@@ -415,7 +415,7 @@ private object FirstPage extends Menu {
     }
 
     suspend def Player.computeMineStackButton(): Button = {
-      val openerData = SeichiAssist.playermap[uniqueId]!!
+      val openerData = SeichiAssist.playermap[uniqueId]
 
       val minimumLevelRequired = SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
 
@@ -459,7 +459,7 @@ private object FirstPage extends Menu {
     }
 
     suspend def Player.computePocketOpenButton(): Button = {
-      val playerData = SeichiAssist.playermap[uniqueId]!!
+      val playerData = SeichiAssist.playermap[uniqueId]
 
       val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
 
@@ -500,7 +500,7 @@ private object FirstPage extends Menu {
     }
 
     suspend def Player.computeEnderChestButton(): Button = {
-      val playerData = SeichiAssist.playermap[uniqueId]!!
+      val playerData = SeichiAssist.playermap[uniqueId]
       val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
 
       val iconItemStack = run {
@@ -536,7 +536,7 @@ private object FirstPage extends Menu {
     }
 
     suspend def Player.computeApologyItemsButton(): Button = recomputedButton {
-      val playerData = SeichiAssist.playermap[uniqueId]!!
+      val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
         val lore = run {
@@ -588,7 +588,7 @@ private object FirstPage extends Menu {
     }
 
     suspend def Player.computeStarLevelStatsButton(): Button = {
-      val playerData = SeichiAssist.playermap[uniqueId]!!
+      val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
         val breakNumRequiredToNextStarLevel =
@@ -641,7 +641,7 @@ private object FirstPage extends Menu {
     }
 
     suspend def Player.computeGachaTicketButton(): Button = recomputedButton {
-      val playerData = SeichiAssist.playermap[uniqueId]!!
+      val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
         val lore = run {
@@ -691,7 +691,7 @@ private object FirstPage extends Menu {
     }
 
     suspend def Player.computeGachaTicketDeliveryButton(): Button = recomputedButton {
-      val playerData = SeichiAssist.playermap[uniqueId]!!
+      val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
         val lore = run {
@@ -737,7 +737,7 @@ private object FirstPage extends Menu {
     }
 
     suspend def Player.computeValentineChocolateButton(): Button = recomputedButton {
-      val playerData = SeichiAssist.playermap[uniqueId]!!
+      val playerData = SeichiAssist.playermap[uniqueId]
 
       if (playerData.hasChocoGave && Valentine.isInEvent) {
         val iconItemStack =

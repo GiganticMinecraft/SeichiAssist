@@ -177,7 +177,7 @@ class SeichiAssist  extends  JavaPlugin() {
   }
 
   override def onCommand(sender: CommandSender?, command: Command?, label: String?, args: Array[String]?)
-      = buildAssist.onCommand(sender!!, command!!, label!!, args!!)
+      = buildAssist.onCommand(sender, command, label, args)
 
   private def startRepeatedJobs() {
     repeatedJobCoroutine = CoroutineScope(Schedulers.sync).launch {

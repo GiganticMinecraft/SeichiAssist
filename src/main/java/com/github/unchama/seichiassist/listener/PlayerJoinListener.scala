@@ -61,7 +61,7 @@ class PlayerJoinListener  extends  Listener {
 
     run {
       val limitedLoginEvent = LimitedLoginEvent()
-      val playerData = playerMap[player.uniqueId]!!
+      val playerData = playerMap[player.uniqueId]
 
       //期間限定ログインイベント判別処理
       limitedLoginEvent.getLastcheck(playerData.lastcheckdate)
@@ -112,7 +112,7 @@ class PlayerJoinListener  extends  Listener {
     // 整地ワールドから他のワールドに移動したとき
     if (ManagedWorld.fromBukkitWorld(event.from)?.isSeichi == true) {
       val p = event.player
-      val pd = playerMap[p.uniqueId]!!
+      val pd = playerMap[p.uniqueId]
 
       // coreprotectを切る
       // inspectマップにtrueで登録されている場合
