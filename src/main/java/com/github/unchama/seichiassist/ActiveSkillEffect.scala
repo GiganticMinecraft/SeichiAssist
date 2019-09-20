@@ -53,13 +53,13 @@ enum class ActiveSkillEffect constructor(
 
     GlobalScope.launch(Schedulers.async) { effect.runFor(player) }
   }
+}
 
-  companion object {
-    def getNamebyNum(effectnum: Int): String = values()
-        .find { activeSkillEffect -> activeSkillEffect.num == effectnum }
-        ?.let { it.nameOnUI } ?: "未設定"
+object ActiveSkillEffect {
+  def getNamebyNum(effectnum: Int): String = values()
+    .find { activeSkillEffect -> activeSkillEffect.num == effectnum }
+  ?.let { it.nameOnUI } ?: "未設定"
 
-    def fromSqlName(sqlName: String): ActiveSkillEffect? = values()
-        .find { effect -> sqlName == effect.nameOnDatabase }
-  }
+  def fromSqlName(sqlName: String): ActiveSkillEffect? = values()
+    .find { effect -> sqlName == effect.nameOnDatabase }
 }

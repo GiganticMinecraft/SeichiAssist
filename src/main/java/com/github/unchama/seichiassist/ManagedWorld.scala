@@ -14,14 +14,14 @@ enum class ManagedWorld(
   WORLD_SW_4("world_SW_4", "第四整地ワールド"),
   WORLD_SW_NETHER("world_SW_nether", "整地ネザー"),
   WORLD_SW_END("world_SW_the_end", "整地エンド");
+}
 
-  companion object {
-    val seichiWorlds = values().filter { it.isSeichi }
+object ManagedWorld {
+  val seichiWorlds = values().filter { it.isSeichi }
 
-    def fromName(worldName: String): ManagedWorld? = values().find { it.alphabetName == worldName }
+  def fromName(worldName: String): ManagedWorld? = values().find { it.alphabetName == worldName }
 
-    def fromBukkitWorld(world: World): ManagedWorld? = fromName(world.name)
-  }
+  def fromBukkitWorld(world: World): ManagedWorld? = fromName(world.name)
 }
 
 val ManagedWorld.isSeichi: Boolean

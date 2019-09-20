@@ -7,12 +7,12 @@ import org.bukkit.Bukkit
 object SeichiHasteCommand {
   private enum class ScopeSpecification {
     PLAYER, ALL;
-    companion object {
-      def fromString(string: String) = when (string) {
-        "player" -> PLAYER
-        "all" -> ALL
-        else -> null
-      }
+  }
+  object ScopeSpecification {
+    def fromString(string: String) = when (string) {
+      "player" -> PLAYER
+      "all" -> ALL
+      else -> null
     }
   }
 

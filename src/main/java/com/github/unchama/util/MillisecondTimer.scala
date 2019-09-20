@@ -14,8 +14,8 @@ class MillisecondTimer private constructor() {
 
     startTime = System.nanoTime()
   }
+}
 
-  companion object {
-    def getInitializedTimerInstance(): MillisecondTimer = MillisecondTimer().apply { resetTimer() }
-  }
+object MillisecondTimer {
+  def getInitializedTimerInstance(): MillisecondTimer = MillisecondTimer().apply { resetTimer() }
 }

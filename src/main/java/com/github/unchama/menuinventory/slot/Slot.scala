@@ -7,7 +7,7 @@ package com.github.unchama.menuinventory.slot
  *
  * @author karayuu
  */
-interface Slot {
+trait Slot {
   /**
    * この [Slot] にセットされている [ItemStack].
    */
@@ -22,15 +22,15 @@ interface Slot {
    * @return クリックした[Player]へ及ぼすべき作用
    */
   def effectOn(event: InventoryClickEvent): TargetedEffect<Player>
+}
 
-  companion object {
-    /**
-     * クリックしたときにイベントをキャンセルすることもせず
-     * 何も追加の作用を発生させない, [itemStack]が入っただけの[Slot]を作成する.
-     */
-    def plainSlotWith(itemStack: ItemStack): Slot = object : Slot {
-      override val itemStack = itemStack
-      override def effectOn(event: InventoryClickEvent) = EmptyEffect
-    }
+object Slot {
+  /**
+   * クリックしたときにイベントをキャンセルすることもせず
+   * 何も追加の作用を発生させない, [itemStack]が入っただけの[Slot]を作成する.
+   */
+  def plainSlotWith(itemStack: ItemStack): Slot = object : Slot {
+    override val itemStack = itemStack
+    override def effectOn(event: InventoryClickEvent) = EmptyEffect
   }
 }

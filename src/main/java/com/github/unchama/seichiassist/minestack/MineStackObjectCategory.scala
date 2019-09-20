@@ -13,10 +13,10 @@ enum class MineStackObjectCategory(val serializedValue: Int, val uiLabel: String
   BUILDING(3, "建築系アイテム"),
   REDSTONE_AND_TRANSPORTATION(4, "レッドストーン・移動系アイテム"),
   GACHA_PRIZES(5, "ガチャ品");
-
-  companion object {
-    def fromSerializedValue(value: Int): MineStackObjectCategory? = values().find { it.serializedValue == value }
-  }
 }
 
-def MineStackObj.category(): MineStackObjectCategory = this.stackType
+object MineStackObjectCategory {
+  def fromSerializedValue(value: Int): MineStackObjectCategory? = values().find { it.serializedValue == value }
+
+  def MineStackObj.category(): MineStackObjectCategory = this.stackType
+}

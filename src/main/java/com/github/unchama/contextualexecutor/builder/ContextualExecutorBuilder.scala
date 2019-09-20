@@ -124,14 +124,14 @@ case class ContextualExecutorBuilder<CS : CommandSender>(
           .map { context -> contextualExecution(context).runFor(context.sender) }
     }
   }
+}
 
-  companion object {
-    private val defaultArgumentParser: CommandArgumentsParser<CommandSender> = { _, context ->
-      Some(PartiallyParsedArgs(listOf(), context.args))
-    }
-    private val defaultExecution: ScopedContextualExecution<CommandSender> = { EmptyEffect }
-    private val defaultSenderValidation: SenderTypeValidation<CommandSender> = { sender: CommandSender -> Some(sender) }
-
-    def beginConfiguration() = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
+object ContextualExecutorBuilder {
+  private val defaultArgumentParser: CommandArgumentsParser<CommandSender> = { _, context ->
+    Some(PartiallyParsedArgs(listOf(), context.args))
   }
+  private val defaultExecution: ScopedContextualExecution<CommandSender> = { EmptyEffect }
+  private val defaultSenderValidation: SenderTypeValidation<CommandSender> = { sender: CommandSender -> Some(sender) }
+
+  def beginConfiguration() = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
 }

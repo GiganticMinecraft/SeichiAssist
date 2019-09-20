@@ -4,10 +4,10 @@ import com.github.unchama.seichiassist.data.Coordinate
 import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import kotlinx.coroutines.GlobalScope
-import org.bukkit.{ChatColor, Location, Material}
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.{ChatColor, Location, Material}
 
 enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, val desc: String, val explain: String, val usePoint: Int, val material: Material) {
   MAGIC(1, "ef_magic", ChatColor.RED.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マジック", "鶏が出る手品", 10, Material.RED_ROSE);
@@ -49,11 +49,10 @@ enum class ActiveSkillPremiumEffect(val num: Int, private val sql_name: String, 
       effect.runFor(player)
     }
   }
+}
 
-  companion object {
-
-    def fromSqlName(sqlName: String): ActiveSkillPremiumEffect? {
-      return values().find { effect -> sqlName == effect.sql_name }
-    }
+object ActiveSkillPremiumEffect {
+  def fromSqlName(sqlName: String): ActiveSkillPremiumEffect = {
+    return values().find { effect -> sqlName == effect.sql_name }
   }
 }

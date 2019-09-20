@@ -5,15 +5,14 @@ case class PlayerNickName(val style: Style = Style.SecondaryName, val id1: Int =
     Level(true),
     SecondaryName(false),
     ;
+  }
 
-    companion object {
-      def marshal(isLevel: Boolean): Style {
-        return if (isLevel) {
-          Level
-        } else {
-          SecondaryName
-        }
-      }
+  object Style {
+    def marshal(isLevel: Boolean): Style = {
+      return if (isLevel) {
+      Level
+    } else {
+      SecondaryName
     }
   }
 }

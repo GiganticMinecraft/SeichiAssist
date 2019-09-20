@@ -9,13 +9,13 @@ object AchievementCommand {
   private enum class AchievementOperation { GIVE, DEPRIVE }
   private enum class ScopeSpecification {
     USER, SERVER, WORLD;
-    companion object {
-      def fromString(string: String) = when (string) {
-        "user" -> USER
-        "server" -> SERVER
-        "world" -> WORLD
-        else -> null
-      }
+  }
+  object ScopeSpecification {
+    def fromString(string: String) = when (string) {
+      "user" -> USER
+      "server" -> SERVER
+      "world" -> WORLD
+      else -> null
     }
   }
 

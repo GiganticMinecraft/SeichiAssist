@@ -39,20 +39,20 @@ class GachaPrize(itemStack: ItemStack, var probability: Double) {
   }
 
   def copy(): GachaPrize = GachaPrize(this.itemStack.clone(), probability)
+}
 
-  companion object {
-    // TODO ここにあるべきではない
-    def runGacha(): GachaPrize {
-      var sum = 1.0
-      val rand = Math.random()
+object GachaPrize {
+  // TODO ここにあるべきではない
+  def runGacha(): GachaPrize = {
+    var sum = 1.0
+    val rand = Math.random()
 
-      for (gachadata in SeichiAssist.gachadatalist) {
-        sum -= gachadata.probability
-        if (sum <= rand) {
-          return gachadata.copy()
-        }
+    for (gachadata in SeichiAssist.gachadatalist) {
+      sum -= gachadata.probability
+      if (sum <= rand) {
+        return gachadata.copy()
       }
-      return GachaPrize(StaticGachaPrizeFactory.getGachaRingo(), 1.0)
     }
+    return GachaPrize(StaticGachaPrizeFactory.getGachaRingo(), 1.0)
   }
 }

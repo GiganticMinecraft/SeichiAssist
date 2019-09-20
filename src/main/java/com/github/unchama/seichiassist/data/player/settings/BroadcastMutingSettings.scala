@@ -21,13 +21,13 @@ enum class BroadcastMutingSettings {
     RECEIVE_MESSAGE_AND_SOUND -> true
     RECEIVE_MESSAGE_ONLY, MUTE_MESSAGE_AND_SOUND -> false
   }
+}
 
-  companion object {
-    def fromBooleanSettings(displayMessages: Boolean, playSounds: Boolean): BroadcastMutingSettings =
-        if (displayMessages) {
-          if (playSounds) RECEIVE_MESSAGE_AND_SOUND else RECEIVE_MESSAGE_ONLY
-        } else {
-          MUTE_MESSAGE_AND_SOUND
-        }
-  }
+object BroadcastMutingSettings {
+  def fromBooleanSettings(displayMessages: Boolean, playSounds: Boolean): BroadcastMutingSettings =
+    if (displayMessages) {
+      if (playSounds) RECEIVE_MESSAGE_AND_SOUND else RECEIVE_MESSAGE_ONLY
+    } else {
+      MUTE_MESSAGE_AND_SOUND
+    }
 }

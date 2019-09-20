@@ -176,177 +176,177 @@ class RegionInventoryListener : Listener {
       }
     }
   }
+}
 
-  companion object {
-    internal var Wg = ExternalPlugins.getWorldGuard()
-    internal var We = ExternalPlugins.getWorldEdit()
-    internal var config = SeichiAssist.seichiAssistConfig
+object RegionInventoryListener {
+  internal var Wg = ExternalPlugins.getWorldGuard()
+  internal var We = ExternalPlugins.getWorldEdit()
+  internal var config = SeichiAssist.seichiAssistConfig
 
-    private def gridResetFunction(player: Player) {
-      val playerData = SeichiAssist.playermap[player.uniqueId]!!
+  private def gridResetFunction(player: Player) {
+    val playerData = SeichiAssist.playermap[player.uniqueId]!!
       playerData.setUnitAmount(DirectionType.AHEAD, 0)
-      playerData.setUnitAmount(DirectionType.BEHIND, 0)
-      playerData.setUnitAmount(DirectionType.RIGHT, 0)
-      playerData.setUnitAmount(DirectionType.LEFT, 0)
-      //始点座標Map(最短)
-      val start = getNearlyUnitStart(player)
-      //終点座標Map(最短)
-      val end = getNearlyUnitEnd(player)
-      //範囲選択
-      wgSelect(Location(player.world, start["x"]!!, 0.0, start["z"]!!),
-          Location(player.world, end["x"]!!, 256.0, end["z"]!!), player)
-      canCreateRegion(player)
-    }
+    playerData.setUnitAmount(DirectionType.BEHIND, 0)
+    playerData.setUnitAmount(DirectionType.RIGHT, 0)
+    playerData.setUnitAmount(DirectionType.LEFT, 0)
+    //始点座標Map(最短)
+    val start = getNearlyUnitStart(player)
+    //終点座標Map(最短)
+    val end = getNearlyUnitEnd(player)
+    //範囲選択
+    wgSelect(Location(player.world, start["x"]!!, 0.0, start["z"]!!),
+      Location(player.world, end["x"]!!, 256.0, end["z"]!!), player)
+    canCreateRegion(player)
+  }
 
-    private def gridChangeFunction(player: Player, directionType: DirectionType, event: InventoryClickEvent) {
-      val playerData = SeichiAssist.playermap[player.uniqueId]!!
-      if (event.isLeftClick) {
-        if (playerData.canGridExtend(directionType, player.world.name)) {
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          playerData.addUnitAmount(directionType, playerData.unitPerClick)
-          setWGSelection(player)
-          canCreateRegion(player)
-          player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
-        }
-      } else if (event.isRightClick) {
-        if (playerData.canGridReduce(directionType)) {
-          player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          playerData.addUnitAmount(directionType, playerData.unitPerClick * -1)
-          setWGSelection(player)
-          canCreateRegion(player)
-          player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
-        }
+  private def gridChangeFunction(player: Player, directionType: DirectionType, event: InventoryClickEvent) {
+    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    if (event.isLeftClick) {
+      if (playerData.canGridExtend(directionType, player.world.name)) {
+        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+        playerData.addUnitAmount(directionType, playerData.unitPerClick)
+        setWGSelection(player)
+        canCreateRegion(player)
+        player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
+      }
+    } else if (event.isRightClick) {
+      if (playerData.canGridReduce(directionType)) {
+        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+        playerData.addUnitAmount(directionType, playerData.unitPerClick * -1)
+        setWGSelection(player)
+        canCreateRegion(player)
+        player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
       }
     }
+  }
 
-    private def setWGSelection(player: Player) {
-      val playerData = SeichiAssist.playermap[player.uniqueId]!!
-      val unitMap = playerData.unitMap
-      val direction = Util.getPlayerDirection(player)
-      val world = player.world
+  private def setWGSelection(player: Player) {
+    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    val unitMap = playerData.unitMap
+    val direction = Util.getPlayerDirection(player)
+    val world = player.world
 
-      val aheadUnitAmount = unitMap[DirectionType.AHEAD]!!
-      val leftsideUnitAmount = unitMap[DirectionType.LEFT]!!
-      val rightsideUnitAmount = unitMap[DirectionType.RIGHT]!!
-      val behindUnitAmount = unitMap[DirectionType.BEHIND]!!
+    val aheadUnitAmount = unitMap[DirectionType.AHEAD]!!
+    val leftsideUnitAmount = unitMap[DirectionType.LEFT]!!
+    val rightsideUnitAmount = unitMap[DirectionType.RIGHT]!!
+    val behindUnitAmount = unitMap[DirectionType.BEHIND]!!
 
-      //0ユニット指定の始点/終点のx,z座標
-      val start_x = getNearlyUnitStart(player)["x"]!!
-      val start_z = getNearlyUnitStart(player)["z"]!!
-      val end_x = getNearlyUnitEnd(player)["x"]!!
-      val end_z = getNearlyUnitEnd(player)["z"]!!
+    //0ユニット指定の始点/終点のx,z座標
+    val start_x = getNearlyUnitStart(player)["x"]!!
+    val start_z = getNearlyUnitStart(player)["z"]!!
+    val end_x = getNearlyUnitEnd(player)["x"]!!
+    val end_z = getNearlyUnitEnd(player)["z"]!!
 
-      var start_loc: Location? = null
-      var end_loc: Location? = null
+    var start_loc: Location? = null
+    var end_loc: Location? = null
 
-      when (direction) {
-        Util.Direction.NORTH -> {
-          start_loc = Location(world, start_x - 15 * leftsideUnitAmount, 0.0, start_z - 15 * aheadUnitAmount)
-          end_loc = Location(world, end_x + 15 * rightsideUnitAmount, 256.0, end_z + 15 * behindUnitAmount)
-        }
-
-        Util.Direction.EAST -> {
-          start_loc = Location(world, start_x - 15 * behindUnitAmount, 0.0, start_z + 15 * leftsideUnitAmount)
-          end_loc = Location(world, end_x + 15 * aheadUnitAmount, 256.0, end_z + 15 * rightsideUnitAmount)
-        }
-
-        Util.Direction.SOUTH -> {
-          start_loc = Location(world, start_x - 15 * rightsideUnitAmount, 0.0, start_z - 15 * behindUnitAmount)
-          end_loc = Location(world, end_x + 15 * leftsideUnitAmount, 256.0, end_z + 15 * aheadUnitAmount)
-        }
-
-        Util.Direction.WEST -> {
-          start_loc = Location(world, start_x - 15 * aheadUnitAmount, 0.0, start_z - 15 * rightsideUnitAmount)
-          end_loc = Location(world, end_x + 15 * behindUnitAmount, 256.0, end_z + 15 * leftsideUnitAmount)
-        }
-      }//わざと何もしない。
-      wgSelect(start_loc!!, end_loc!!, player)
-    }
-
-    private def wgSelect(loc1: Location, loc2: Location, player: Player) {
-      player.chat("//;")
-      player.chat("//pos1 " + loc1.x.toInt() + "," + loc1.y.toInt() + "," + loc1.z.toInt())
-      player.chat("//pos2 " + loc2.x.toInt() + "," + loc2.y.toInt() + "," + loc2.z.toInt())
-    }
-
-    private def canCreateRegion(player: Player) {
-      val playerData = SeichiAssist.playermap[player.uniqueId]!!
-      val selection = We!!.getSelection(player)
-      val manager = Wg.getRegionManager(player.world)
-      val wcfg = Wg.getGlobalStateManager().get(player.world)
-
-      if (selection == null) {
-        playerData.canCreateRegion = false
+    when (direction) {
+      Util.Direction.NORTH -> {
+        start_loc = Location(world, start_x - 15 * leftsideUnitAmount, 0.0, start_z - 15 * aheadUnitAmount)
+        end_loc = Location(world, end_x + 15 * rightsideUnitAmount, 256.0, end_z + 15 * behindUnitAmount)
       }
 
-      val region = ProtectedCuboidRegion(player.name + "_" + playerData.regionCount,
-          selection!!.getNativeMinimumPoint().toBlockVector(), selection!!.getNativeMaximumPoint().toBlockVector())
-      val regions = manager.getApplicableRegions(region)
-
-      if (regions.size() !== 0) {
-        playerData.canCreateRegion = false
-        return
+      Util.Direction.EAST -> {
+        start_loc = Location(world, start_x - 15 * behindUnitAmount, 0.0, start_z + 15 * leftsideUnitAmount)
+        end_loc = Location(world, end_x + 15 * aheadUnitAmount, 256.0, end_z + 15 * rightsideUnitAmount)
       }
 
-      val maxRegionCount = wcfg.getMaxRegionCount(player)
-      if (maxRegionCount >= 0 && manager.getRegionCountOfPlayer(Wg.wrapPlayer(player)) >= maxRegionCount) {
-        playerData.canCreateRegion = false
-        return
+      Util.Direction.SOUTH -> {
+        start_loc = Location(world, start_x - 15 * rightsideUnitAmount, 0.0, start_z - 15 * behindUnitAmount)
+        end_loc = Location(world, end_x + 15 * leftsideUnitAmount, 256.0, end_z + 15 * aheadUnitAmount)
       }
 
-      playerData.canCreateRegion = true
-    }
-
-    private def playerGridTemplateSave(player: Player, i: Int) {
-      val playerData = SeichiAssist.playermap[player.uniqueId]!!
-      val unitMap = playerData.unitMap
-
-      player.sendMessage(ChatColor.GREEN.toString() + "グリッド式保護の現在の設定を保存しました。")
-      player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f)
-      val template = GridTemplate(unitMap[DirectionType.AHEAD]!!, unitMap[DirectionType.BEHIND]!!,
-          unitMap[DirectionType.RIGHT]!!, unitMap[DirectionType.LEFT]!!)
-      playerData.templateMap[i] = template
-    }
-
-    /**
-     * ユニット単位における最短の始点のx,z座標を取得します。
-     * @param player 該当プレイヤー
-     * @return x,z座標のMap
-     */
-    def getNearlyUnitStart(player: Player): Map<String, Double> {
-      val result = HashMap<String, Double>()
-
-      val player_x = player.location.blockX.toDouble()
-      val player_z = player.location.blockZ.toDouble()
-
-      if (player_x % 15 == 0.0) {
-        result["x"] = player_x
-      } else {
-        result["x"] = Math.floor(player_x / 15) * 15
+      Util.Direction.WEST -> {
+        start_loc = Location(world, start_x - 15 * aheadUnitAmount, 0.0, start_z - 15 * rightsideUnitAmount)
+        end_loc = Location(world, end_x + 15 * behindUnitAmount, 256.0, end_z + 15 * leftsideUnitAmount)
       }
+    }//わざと何もしない。
+    wgSelect(start_loc!!, end_loc!!, player)
+  }
 
-      if (player_z % 15 == 0.0) {
-        result["z"] = player_z
-      } else {
-        result["z"] = Math.floor(player_z / 15) * 15
-      }
-      return result
+  private def wgSelect(loc1: Location, loc2: Location, player: Player) {
+    player.chat("//;")
+    player.chat("//pos1 " + loc1.x.toInt() + "," + loc1.y.toInt() + "," + loc1.z.toInt())
+    player.chat("//pos2 " + loc2.x.toInt() + "," + loc2.y.toInt() + "," + loc2.z.toInt())
+  }
+
+  private def canCreateRegion(player: Player) {
+    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    val selection = We!!.getSelection(player)
+    val manager = Wg.getRegionManager(player.world)
+    val wcfg = Wg.getGlobalStateManager().get(player.world)
+
+    if (selection == null) {
+      playerData.canCreateRegion = false
     }
 
-    /**
-     * ユニット単位における最短の終点(始点から対角になる)のx,z座標を取得します。
-     * @param player 該当プレイヤー
-     * @return x,z座標のMap
-     */
-    def getNearlyUnitEnd(player: Player): Map<String, Double> {
-      val startCoordinate = getNearlyUnitStart(player)
+    val region = ProtectedCuboidRegion(player.name + "_" + playerData.regionCount,
+      selection!!.getNativeMinimumPoint().toBlockVector(), selection!!.getNativeMaximumPoint().toBlockVector())
+    val regions = manager.getApplicableRegions(region)
 
-      val resultMap = HashMap<String, Double>()
-
-      resultMap["x"] = startCoordinate["x"]!! + 14.0
-      resultMap["z"] = startCoordinate["z"]!! + 14.0
-
-      return resultMap
+    if (regions.size() !== 0) {
+      playerData.canCreateRegion = false
+      return
     }
+
+    val maxRegionCount = wcfg.getMaxRegionCount(player)
+    if (maxRegionCount >= 0 && manager.getRegionCountOfPlayer(Wg.wrapPlayer(player)) >= maxRegionCount) {
+      playerData.canCreateRegion = false
+      return
+    }
+
+    playerData.canCreateRegion = true
+  }
+
+  private def playerGridTemplateSave(player: Player, i: Int) {
+    val playerData = SeichiAssist.playermap[player.uniqueId]!!
+    val unitMap = playerData.unitMap
+
+    player.sendMessage(ChatColor.GREEN.toString() + "グリッド式保護の現在の設定を保存しました。")
+    player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f)
+    val template = GridTemplate(unitMap[DirectionType.AHEAD]!!, unitMap[DirectionType.BEHIND]!!,
+      unitMap[DirectionType.RIGHT]!!, unitMap[DirectionType.LEFT]!!)
+    playerData.templateMap[i] = template
+  }
+
+  /**
+   * ユニット単位における最短の始点のx,z座標を取得します。
+   * @param player 該当プレイヤー
+   * @return x,z座標のMap
+   */
+  def getNearlyUnitStart(player: Player): Map<String, Double> {
+    val result = HashMap<String, Double>()
+
+    val player_x = player.location.blockX.toDouble()
+    val player_z = player.location.blockZ.toDouble()
+
+    if (player_x % 15 == 0.0) {
+      result["x"] = player_x
+    } else {
+      result["x"] = Math.floor(player_x / 15) * 15
+    }
+
+    if (player_z % 15 == 0.0) {
+      result["z"] = player_z
+    } else {
+      result["z"] = Math.floor(player_z / 15) * 15
+    }
+    return result
+  }
+
+  /**
+   * ユニット単位における最短の終点(始点から対角になる)のx,z座標を取得します。
+   * @param player 該当プレイヤー
+   * @return x,z座標のMap
+   */
+  def getNearlyUnitEnd(player: Player): Map<String, Double> {
+    val startCoordinate = getNearlyUnitStart(player)
+
+    val resultMap = HashMap<String, Double>()
+
+    resultMap["x"] = startCoordinate["x"]!! + 14.0
+    resultMap["z"] = startCoordinate["z"]!! + 14.0
+
+    return resultMap
   }
 }

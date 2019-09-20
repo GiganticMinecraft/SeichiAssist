@@ -10,11 +10,11 @@ interface ButtonEffect {
    */
   def asyncEffectOn(event: InventoryClickEvent): TargetedEffect<Player>
 
-  companion object {
-    operator def invoke(effect: ButtonEffectScope.() -> TargetedEffect<Player>): ButtonEffect = object : ButtonEffect {
-      override def asyncEffectOn(event: InventoryClickEvent): TargetedEffect<Player> = effect(ButtonEffectScope(event))
-    }
-  }
+}
 
+object ButtonEffect {
+  def apply(effect: ButtonEffectScope.() -> TargetedEffect<Player>): ButtonEffect = object : ButtonEffect {
+    override def asyncEffectOn(event: InventoryClickEvent): TargetedEffect<Player> = effect(ButtonEffectScope(event))
+  }
 }
 

@@ -829,14 +829,14 @@ class PlayerData constructor(
       } + UnfocusedEffect {
         SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
       }
+}
 
-  companion object {
-    internal var config = SeichiAssist.seichiAssistConfig
+object PlayerData {
+  var config = SeichiAssist.seichiAssistConfig
 
-    //TODO:もちろんここにあるべきではない
-    const val passiveSkillProbability = 10
+  //TODO:もちろんここにあるべきではない
+  val passiveSkillProbability = 10
 
-    val exclude = EnumSet.of(Material.GRASS_PATH, Material.SOIL, Material.MOB_SPAWNER,
-        Material.CAULDRON, Material.ENDER_CHEST)
-  }
+  val exclude = EnumSet.of(Material.GRASS_PATH, Material.SOIL, Material.MOB_SPAWNER,
+    Material.CAULDRON, Material.ENDER_CHEST)
 }

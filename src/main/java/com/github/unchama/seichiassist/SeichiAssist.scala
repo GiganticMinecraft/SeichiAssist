@@ -195,73 +195,69 @@ class SeichiAssist : JavaPlugin() {
     cancelRepeatedJobs()
     startRepeatedJobs()
   }
-
-  companion object {
-    lateinit var instance: SeichiAssist
-
-    //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
-    var DEBUG = false
-
-    //ガチャシステムのメンテナンスフラグ
-    var gachamente = false
-
-    val SEICHIWORLDNAME = "world_sw"
-    val DEBUGWORLDNAME = "world"
-
-    // TODO staticであるべきではない
-    lateinit var databaseGateway: DatabaseGateway
-    lateinit var seichiAssistConfig: Config
-
-    lateinit var buildAssist: BuildAssist
-
-    //Gachadataに依存するデータリスト
-    val gachadatalist: MutableList<GachaPrize> = ArrayList()
-
-    //(minestackに格納する)Gachadataに依存するデータリスト
-    var msgachadatalist: MutableList<MineStackGachaData> = ArrayList()
-
-    //Playerdataに依存するデータリスト
-    val playermap = HashMap<UUID, PlayerData>()
-
-    //総採掘量ランキング表示用データリスト
-    val ranklist: MutableList<RankData> = ArrayList()
-
-    //プレイ時間ランキング表示用データリスト
-    val ranklist_playtick: MutableList<RankData> = ArrayList()
-
-    //投票ポイント表示用データリスト
-    val ranklist_p_vote: MutableList<RankData> = ArrayList()
-
-    //マナ妖精表示用のデータリスト
-    val ranklist_p_apple: MutableList<RankData> = ArrayList()
-
-    //プレミアムエフェクトポイント表示用データリスト
-    val ranklist_premiumeffectpoint: MutableList<RankData> = ArrayList()
-
-    //総採掘量表示用
-    var allplayerbreakblockint = 0L
-
-    var allplayergiveapplelong = 0L
-
-    //プラグインで出すエンティティの保存
-    val entitylist: MutableList<Entity> = ArrayList()
-
-    //プレイヤーがスキルで破壊するブロックリスト
-    val allblocklist: MutableList<Block> = LinkedList()
-
-    private def generateGachaPrizes(): List<MineStackObj> {
-      val minestacklist = ArrayList<MineStackObj>()
-      for (i in msgachadatalist.indices) {
-        val g = msgachadatalist[i]
-        if (g.itemStack.type !== Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外
-          minestacklist += MineStackObj(g.objName, null, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES)
-        }
-      }
-      return minestacklist
-    }
-  }
-
-
 }
 
+object SeichiAssist {
+  lateinit var instance: SeichiAssist
 
+  //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
+  var DEBUG = false
+
+  //ガチャシステムのメンテナンスフラグ
+  var gachamente = false
+
+  val SEICHIWORLDNAME = "world_sw"
+  val DEBUGWORLDNAME = "world"
+
+  // TODO staticであるべきではない
+  lateinit var databaseGateway: DatabaseGateway
+  lateinit var seichiAssistConfig: Config
+
+  lateinit var buildAssist: BuildAssist
+
+  //Gachadataに依存するデータリスト
+  val gachadatalist: MutableList<GachaPrize> = ArrayList()
+
+  //(minestackに格納する)Gachadataに依存するデータリスト
+  var msgachadatalist: MutableList<MineStackGachaData> = ArrayList()
+
+  //Playerdataに依存するデータリスト
+  val playermap = HashMap<UUID, PlayerData>()
+
+  //総採掘量ランキング表示用データリスト
+  val ranklist: MutableList<RankData> = ArrayList()
+
+  //プレイ時間ランキング表示用データリスト
+  val ranklist_playtick: MutableList<RankData> = ArrayList()
+
+  //投票ポイント表示用データリスト
+  val ranklist_p_vote: MutableList<RankData> = ArrayList()
+
+  //マナ妖精表示用のデータリスト
+  val ranklist_p_apple: MutableList<RankData> = ArrayList()
+
+  //プレミアムエフェクトポイント表示用データリスト
+  val ranklist_premiumeffectpoint: MutableList<RankData> = ArrayList()
+
+  //総採掘量表示用
+  var allplayerbreakblockint = 0L
+
+  var allplayergiveapplelong = 0L
+
+  //プラグインで出すエンティティの保存
+  val entitylist: MutableList<Entity> = ArrayList()
+
+  //プレイヤーがスキルで破壊するブロックリスト
+  val allblocklist: MutableList<Block> = LinkedList()
+
+  private def generateGachaPrizes(): List<MineStackObj> {
+    val minestacklist = ArrayList<MineStackObj>()
+    for (i in msgachadatalist.indices) {
+    val g = msgachadatalist[i]
+    if (g.itemStack.type !== Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外
+    minestacklist += MineStackObj(g.objName, null, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES)
+  }
+  }
+    return minestacklist
+  }
+}
