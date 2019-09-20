@@ -7,7 +7,7 @@ package com.github.unchama.contextualexecutor.builder
  * [ArgumentParserScope.ScopeProvider.parser]を通してスコープ付き関数をそのような関数に変換できる.
  */
 object ArgumentParserScope {
-  def [CS] failWith(message: TargetedEffect[CS]): ResponseEffectOrResult[CS, Nothing] = Left(message)
+  def failWith[CS](message: TargetedEffect[CS]): ResponseEffectOrResult[CS, Nothing] = Left(message)
 
   /**
    * メッセージなしで「失敗」を表す[ResponseEffectOrResult]を作成する.
@@ -33,7 +33,7 @@ object ArgumentParserScope {
     /**
      * [ArgumentParserScope]のスコープ付き関数をプレーンな関数へと変換する.
      */
-    def [CS] parser(
+    def parser[CS](
         parse: ArgumentParserScope.(String) => ResponseEffectOrResult[CS, Any]
     ): (String) => ResponseEffectOrResult[CS, Any] = { argument => with(ArgumentParserScope) { parse(argument) } }
   }

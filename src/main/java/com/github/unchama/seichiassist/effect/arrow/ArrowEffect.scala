@@ -4,7 +4,7 @@ import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionType
 import org.bukkit.{Bukkit, Material, Sound}
 
-inline def [reified P <: Projectile] arrowEffect(spawnConfiguration: ProjectileSpawnConfiguration,
+inline def arrowEffect[reified P <: Projectile](spawnConfiguration: ProjectileSpawnConfiguration,
                                                                  sound: Sound? = null,
                                                                  crossinline projectileModifier: P.() => Unit = {}): TargetedEffect[Player] =
     sequentialEffect(

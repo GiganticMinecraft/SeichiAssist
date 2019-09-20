@@ -120,7 +120,7 @@ class PlayerClickListener  extends  Listener {
     }
   }
 
-  private def [T  <: org.bukkit.entity.Projectile] runArrowSkill(player: Player, clazz: Class[T]) {
+  private def runArrowSkill[T  <: org.bukkit.entity.Projectile](player: Player, clazz: Class[T]) {
     //プレイヤーの位置を取得
     val ploc = player.location
 
