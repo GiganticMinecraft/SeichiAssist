@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.bungee
 
 import com.github.unchama.seichiassist.SeichiAssist
 
-class BungeeReceiver(private val plugin: SeichiAssist) : PluginMessageListener {
+class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageListener {
 
   @Synchronized
   override def onPluginMessageReceived(channel: String, player: Player, message: ByteArray) {

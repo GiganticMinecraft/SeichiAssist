@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-class PlayerPickupItemListener : Listener {
+class PlayerPickupItemListener  extends  Listener {
   private val playerMap = SeichiAssist.playermap
   private val config = SeichiAssist.seichiAssistConfig
 

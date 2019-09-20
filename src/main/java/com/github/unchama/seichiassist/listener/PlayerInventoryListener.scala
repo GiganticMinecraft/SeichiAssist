@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-class PlayerInventoryListener : Listener {
+class PlayerInventoryListener  extends  Listener {
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
   private val databaseGateway = SeichiAssist.databaseGateway

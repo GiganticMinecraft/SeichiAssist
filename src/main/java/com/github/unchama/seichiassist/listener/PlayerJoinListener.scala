@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-class PlayerJoinListener : Listener {
+class PlayerJoinListener  extends  Listener {
   private val playerMap: HashMap[UUID, PlayerData] = SeichiAssist.playermap
   private val databaseGateway = SeichiAssist.databaseGateway
 

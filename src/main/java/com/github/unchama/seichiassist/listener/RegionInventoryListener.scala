@@ -5,7 +5,7 @@ package com.github.unchama.seichiassist.listener
  * @author karayuu
  * 2017/09/02
  */
-class RegionInventoryListener : Listener {
+class RegionInventoryListener  extends  Listener {
   internal var playermap = SeichiAssist.playermap
 
   /**

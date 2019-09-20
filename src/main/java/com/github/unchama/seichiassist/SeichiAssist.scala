@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist
 
 
-class SeichiAssist : JavaPlugin() {
+class SeichiAssist  extends  JavaPlugin() {
   init { instance = this }
 
   private var repeatedJobCoroutine: Job? = null

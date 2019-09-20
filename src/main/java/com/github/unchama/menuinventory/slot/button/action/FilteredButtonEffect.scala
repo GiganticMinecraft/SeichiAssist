@@ -32,7 +32,7 @@ case class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter,
 /**
  * 左クリックに限定した[FilteredButtonEffect]
  */
-case class LeftClickButtonEffect(private val effect: ButtonEffectScope.() => TargetedEffect[Player]):
+case class LeftClickButtonEffect(private val effect: ButtonEffectScope.() => TargetedEffect[Player]) extends
     ButtonEffect by FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, effect) {
 
   /**

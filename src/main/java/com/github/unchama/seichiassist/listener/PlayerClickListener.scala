@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-class PlayerClickListener : Listener {
+class PlayerClickListener  extends  Listener {
   private val plugin = SeichiAssist.instance
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist

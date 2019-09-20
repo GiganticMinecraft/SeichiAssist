@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-class PlayerQuitListener : Listener {
+class PlayerQuitListener  extends  Listener {
   private val playerMap = SeichiAssist.playermap
 
   //プレイヤーがquitした時に実行

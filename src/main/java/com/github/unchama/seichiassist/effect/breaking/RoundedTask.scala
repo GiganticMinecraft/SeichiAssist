@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.effect.breaking
 
-abstract class RoundedTask : BukkitRunnable() {
+abstract class RoundedTask  extends  BukkitRunnable() {
   private var round = 0
 
   abstract def firstAction()
