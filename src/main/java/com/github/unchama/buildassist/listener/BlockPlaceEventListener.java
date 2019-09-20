@@ -13,7 +13,7 @@ import java.util.UUID;
 
 
 public class BlockPlaceEventListener implements TypedEventListener<BlockPlaceEvent> {
-    private final HashMap<UUID, PlayerData> playermap = BuildAssist.Companion.getPlayermap();
+    private final HashMap<UUID, PlayerData> playermap = BuildAssist.playermap();
 
     @Override
     @EventHandler

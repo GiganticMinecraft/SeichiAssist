@@ -24,7 +24,7 @@ public class BuildBlock {
 
 	static BigDecimal calcBuildBlock(final Player player) {
 		BigDecimal sum = BigDecimal.ZERO;
-		for (final Material m : BuildAssist.Companion.getMateriallist()) {
+        for (final Material m : BuildAssist.getMateriallist()) {
 			sum = new BigDecimal(player.getStatistic(Statistic.USE_ITEM, m));
 		}
 		return sum;

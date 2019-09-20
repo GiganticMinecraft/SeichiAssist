@@ -51,7 +51,7 @@ public class MebiusListener implements Listener {
 	// 起動時
 	public MebiusListener() {
 		me = this;
-		if (SeichiAssist.Companion.getSeichiAssistConfig().getMebiusDebug() == 1) {
+		if (SeichiAssist.getSeichiAssistConfig().getMebiusDebug() == 1) {
 			// mebiusdebug=1の時はコマンドでトグル可能
 			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "メビウス帽子のdebugモードトグル機能：有効");
 			DEBUGENABLE = true;
@@ -371,7 +371,7 @@ public class MebiusListener implements Listener {
 
 	// PlayerData取得
 	private static PlayerData getPlayerData(Player player) {
-		return SeichiAssist.Companion.getPlayermap().get(player.getUniqueId());
+		return SeichiAssist.getPlayermap().get(player.getUniqueId());
 	}
 
 	// ItemStackがMebiusか
@@ -398,7 +398,7 @@ public class MebiusListener implements Listener {
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "おめでとうございます。採掘中にMEBIUSを発見しました。");
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "MEBIUSはプレイヤーと共に成長するヘルメットです。");
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなただけのMEBIUSを育てましょう！");
-		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> getPlayerData(player).getMebius().speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！"), 10);
+		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.getInstance(), () -> getPlayerData(player).getMebius().speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！"), 10);
 		player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
 		if (!Util.INSTANCE.isPlayerInventoryFull(player)) {
 			Util.INSTANCE.addItem(player, mebius);

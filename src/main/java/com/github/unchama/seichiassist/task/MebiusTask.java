@@ -29,7 +29,7 @@ public class MebiusTask extends BukkitRunnable {
 		if (MebiusListener.isEquip(p)) {
 			speak("おかえり" +Objects.requireNonNull(MebiusListener.getNickname(p))  + "！待ってたよ！");
 		}
-		runTaskTimerAsynchronously(SeichiAssist.Companion.getInstance(), 2400, 2400);
+		runTaskTimerAsynchronously(SeichiAssist.getInstance(), 2400, 2400);
 	}
 
 	// 2分周期で呼び出される
@@ -69,7 +69,7 @@ public class MebiusTask extends BukkitRunnable {
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.0f);
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.0f);
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.0f);
-		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> {
+		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.getInstance(), () -> {
 			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
 			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
 			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);

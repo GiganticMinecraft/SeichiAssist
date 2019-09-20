@@ -26,8 +26,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public class AssaultTask extends BukkitRunnable{
-	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	SeichiAssist plugin = SeichiAssist.getInstance();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.getPlayermap();
 	Player player;
 	UUID uuid;
 	PlayerData playerdata;
@@ -180,7 +180,7 @@ public class AssaultTask extends BukkitRunnable{
 				&&((lastloc.getBlockZ()-10) < player.getLocation().getBlockZ())
 				&&((lastloc.getBlockZ()+10) > player.getLocation().getBlockZ())
 				){
-			if(SeichiAssist.Companion.getDEBUG()){
+			if(SeichiAssist.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "放置を検出");
 			}
 			idletime ++;
@@ -206,7 +206,7 @@ public class AssaultTask extends BukkitRunnable{
 		ItemStack offhanditem = inventory.getItemInOffHand();
 		//最初に登録したツールと今のツールが違う場合
 		if(!tool.equals(offhanditem)){
-			if(SeichiAssist.Companion.getDEBUG()){
+			if(SeichiAssist.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "ツールの変更を検知しました");
 			}
 			setCancel();
@@ -247,7 +247,7 @@ public class AssaultTask extends BukkitRunnable{
 									waters.add(breakblock);
 								}else{
 									blocks.add(breakblock);
-									SeichiAssist.Companion.getAllblocklist().add(breakblock);
+									SeichiAssist.getAllblocklist().add(breakblock);
 								}
 							}
 						}
@@ -286,7 +286,7 @@ public class AssaultTask extends BukkitRunnable{
 		//重力値の判定
 		if(gravity > 15){
 			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-			SeichiAssist.Companion.getAllblocklist().removeAll(blocks);
+			SeichiAssist.getAllblocklist().removeAll(blocks);
 			setCancel();
 			return;
 		}
@@ -294,10 +294,10 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に経験値を減らせるか判定
 		if(!mana.has(useMana)){
 			//デバッグ用
-			if(SeichiAssist.Companion.getDEBUG()){
+			if(SeichiAssist.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
-			SeichiAssist.Companion.getAllblocklist().removeAll(blocks);
+			SeichiAssist.getAllblocklist().removeAll(blocks);
 			setCancel();
 			return;
 		}
@@ -306,10 +306,10 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に耐久値を減らせるか判定
 		if(tool.getType().getMaxDurability() <= durability && !tool.getItemMeta().spigot().isUnbreakable()){
 			//デバッグ用
-			if(SeichiAssist.Companion.getDEBUG()){
+			if(SeichiAssist.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
-			SeichiAssist.Companion.getAllblocklist().removeAll(blocks);
+			SeichiAssist.getAllblocklist().removeAll(blocks);
 			setCancel();
 			return;
 		}
@@ -354,10 +354,10 @@ public class AssaultTask extends BukkitRunnable{
 			}
 			for(Block b:blocks){
 				BreakUtil.INSTANCE.breakBlock(player, b, player.getLocation(), tool,false);
-				SeichiAssist.Companion.getAllblocklist().remove(b);
+				SeichiAssist.getAllblocklist().remove(b);
 			}
 		}
-		SeichiAssist.Companion.getAllblocklist().removeAll(blocks);
+		SeichiAssist.getAllblocklist().removeAll(blocks);
 	}
 
 	private boolean isCanceled() {

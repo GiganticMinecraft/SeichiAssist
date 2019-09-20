@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class GachaItemListener implements Listener {
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.getPlayermap();
 	//private SeichiAssist instance = SeichiAssist.instance;
 	@EventHandler
 	public void onPlayerItemConsumeEvent(PlayerItemConsumeEvent e){

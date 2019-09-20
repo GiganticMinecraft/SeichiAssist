@@ -18,8 +18,8 @@ import java.util.UUID;
 //import org.bukkit.instance.java.JavaPlugin;
 
 public class LimitedLoginEvent {
-	private static Config config = SeichiAssist.Companion.getSeichiAssistConfig();
-	HashMap<UUID, PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+    private static Config config = SeichiAssist.getSeichiAssistConfig();
+    HashMap<UUID, PlayerData> playermap = SeichiAssist.getPlayermap();
 	Player player;
 	PlayerData playerdata;
 	String lastcheckdate ;

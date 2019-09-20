@@ -17,7 +17,7 @@ public class VotingFairyTask {
 
 	//MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
 	public static void run(Player p) {
-		HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+		HashMap<UUID,PlayerData> playermap = SeichiAssist.getPlayermap();
 		UUID uuid = p.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
 
@@ -41,9 +41,9 @@ public class VotingFairyTask {
 	//妖精効果音
 	public static void playSe(Player p) {
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 2.0f, 1.0f);
-		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> {
+		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.getInstance(), () -> {
 			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 2.0f, 1.5f);
-			Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.Companion.getInstance(), () -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 2.0f, 2.0f), 2);
+			Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.getInstance(), () -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 2.0f, 2.0f), 2);
 		}, 2);
 	}
 

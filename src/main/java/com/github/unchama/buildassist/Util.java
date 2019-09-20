@@ -46,28 +46,24 @@ public final class Util {
 	 */
 	public static boolean isSkillEnable(final Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
-		String worldname = SeichiAssist.Companion.getSEICHIWORLDNAME();
-		if(SeichiAssist.Companion.getDEBUG()){
-			worldname = SeichiAssist.Companion.getDEBUGWORLDNAME();
+        String worldname = SeichiAssist.getSEICHIWORLDNAME();
+        if (SeichiAssist.getDEBUG()) {
+            worldname = SeichiAssist.getDEBUGWORLDNAME();
 		}
 		//プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)または各種TTワールドにいる場合
         // TODO: ManagedWorldへ移行
 		final String name = player.getWorld().getName();
-		if(name.toLowerCase().startsWith(worldname)
-				|| name.equalsIgnoreCase("world")
-				|| name.equalsIgnoreCase("world_2")
-				|| name.equalsIgnoreCase("world_nether")
-				|| name.equalsIgnoreCase("world_the_end")
-				|| name.equalsIgnoreCase("world_TT")
-				|| name.equalsIgnoreCase("world_nether_TT")
-				|| name.equalsIgnoreCase("world_the_end_TT")
-				|| name.equalsIgnoreCase("world_dot")
-				){
-			return true;
-		}
+        return name.toLowerCase().startsWith(worldname)
+                || name.equalsIgnoreCase("world")
+                || name.equalsIgnoreCase("world_2")
+                || name.equalsIgnoreCase("world_nether")
+                || name.equalsIgnoreCase("world_the_end")
+                || name.equalsIgnoreCase("world_TT")
+                || name.equalsIgnoreCase("world_nether_TT")
+                || name.equalsIgnoreCase("world_the_end_TT")
+                || name.equalsIgnoreCase("world_dot");
 		//それ以外のワールドの場合
-		return false;
-	}
+    }
 
 	/**
 	 * ブロックがカウントされるワールドにプレイヤーが居るか判定する
@@ -76,23 +72,19 @@ public final class Util {
 	 */
 	public static boolean inTrackedWorld(final Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
-		if(SeichiAssist.Companion.getDEBUG()){
+        if (SeichiAssist.getDEBUG()) {
 			return true;
 		}
 		final String name = player.getWorld().getName();
 		//プレイヤーの場所がメインワールド(world)または各種整地ワールド(world_SW)にいる場合
-		if(name.toLowerCase().startsWith(SeichiAssist.Companion.getSEICHIWORLDNAME())
-			|| name.equalsIgnoreCase("world")
-			|| name.equalsIgnoreCase("world_2")
-			|| name.equalsIgnoreCase("world_nether")
-			|| name.equalsIgnoreCase("world_the_end")
-            || name.equalsIgnoreCase("world_dot")
-		){
-			return true;
-		}
+        return name.toLowerCase().startsWith(SeichiAssist.getSEICHIWORLDNAME())
+                || name.equalsIgnoreCase("world")
+                || name.equalsIgnoreCase("world_2")
+                || name.equalsIgnoreCase("world_nether")
+                || name.equalsIgnoreCase("world_the_end")
+                || name.equalsIgnoreCase("world_dot");
 		//それ以外のワールドの場合
-		return false;
-	}
+    }
 
 	/**
 	 * 指定した名前のマインスタックオブジェクトを返す
@@ -114,10 +106,10 @@ public final class Util {
 	 */
 	public static void addBuild1MinAmount(final Player player, final BigDecimal amount) {
 		//プレイヤーデータ取得
-		final PlayerData playerData = BuildAssist.Companion.getPlayermap().get(player.getUniqueId());
+        final PlayerData playerData = BuildAssist.getPlayermap().get(player.getUniqueId());
 		//player.sendMessage("足す数:" + amount.doubleValue() + ",かけた後:" + amount.multiply(new BigDecimal("0.1")).doubleValue());
 		//ワールドによって倍率変化
-		if (player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.Companion.getSEICHIWORLDNAME())) {
+        if (player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.getSEICHIWORLDNAME())) {
 			playerData.build_num_1min = playerData.build_num_1min.add(amount.multiply(new BigDecimal("0.1")));
 		} else {
 			playerData.build_num_1min = playerData.build_num_1min.add(amount);

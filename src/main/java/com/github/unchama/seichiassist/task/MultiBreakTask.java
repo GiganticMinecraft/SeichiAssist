@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class MultiBreakTask extends BukkitRunnable{
-	private HashMap<UUID, PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	private HashMap<UUID, PlayerData> playermap = SeichiAssist.getPlayermap();
 	private Player player;
 	private Location droploc;
 	private ItemStack tool;
@@ -48,7 +48,7 @@ public class MultiBreakTask extends BukkitRunnable{
 	@Override
 	public void run() {
 		if(count < breaknum){
-			if(SeichiAssist.Companion.getDEBUG()){
+			if(SeichiAssist.getDEBUG()){
 				player.sendMessage("" + count);
 			}
 			//溶岩の破壊する処理
@@ -64,7 +64,7 @@ public class MultiBreakTask extends BukkitRunnable{
 				//ブロックを破壊する処理
 				for(Block b:multibreaklist.get(count)){
 					BreakUtil.INSTANCE.breakBlock(player, b, droploc, tool,false);
-					SeichiAssist.Companion.getAllblocklist().remove(b);
+					SeichiAssist.getAllblocklist().remove(b);
 				}
 			}
 

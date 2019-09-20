@@ -84,13 +84,13 @@ public final class PlayerData {
 		//現在のランクの次を取得
 		int i = level;
 		//ランクが上がらなくなるまで処理
-		while(BuildAssist.Companion.getLevellist().get(i) <= totalbuildnum.doubleValue() && (i+2) <= BuildAssist.Companion.getLevellist().size()){
-			if(!BuildAssist.Companion.getDEBUG()){
+        while (BuildAssist.getLevellist().get(i) <= totalbuildnum.doubleValue() && (i + 2) <= BuildAssist.getLevellist().size()) {
+            if (!BuildAssist.getDEBUG()) {
 				//レベルアップ時のメッセージ
 				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(" + i +")→建築Lv(" + (i+1) + ")】");
 			}
 			i++;
-			if( (i+1) == BuildAssist.Companion.getLevellist().size()){
+            if ((i + 1) == BuildAssist.getLevellist().size()) {
 				player.sendMessage(ChatColor.GOLD+"最大Lvに到達したよ(`･ω･´)");
 			}
 		}
@@ -108,11 +108,11 @@ public final class PlayerData {
 	 * @return ture:読み込み成功　false:読み込み失敗
 	 */
 	boolean buildload(final Player player){
-		final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.Companion.getPlayermap().get(uuid);
+        final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.getPlayermap().get(uuid);
 		if(playerdata_s == null){
 			return false;
 		}
-		final int server_num = SeichiAssist.Companion.getSeichiAssistConfig().getServerNum();
+        final int server_num = SeichiAssist.getSeichiAssistConfig().getServerNum();
 
 		final BuildCount oldBuildCount = playerdata_s.getBuildCount();
 
@@ -144,7 +144,7 @@ public final class PlayerData {
 
 	/** 建築系データを保存 */
     public void buildsave(final Player player){
-		final com.github.unchama.seichiassist.data.player.PlayerData playerData = SeichiAssist.Companion.getPlayermap().get(uuid);
+        final com.github.unchama.seichiassist.data.player.PlayerData playerData = SeichiAssist.getPlayermap().get(uuid);
 		if (playerData == null){
 			player.sendMessage(ChatColor.RED+"建築系データ保存失敗しました");
 			return;
@@ -154,10 +154,10 @@ public final class PlayerData {
 
 		//1分制限の判断
 		final BigDecimal newBuildCount;
-		if (build_num_1min.doubleValue() <= BuildAssist.Companion.getConfig().getBuildNum1minLimit()) {
+        if (build_num_1min.doubleValue() <= BuildAssist.getConfig().getBuildNum1minLimit()) {
 			newBuildCount = totalbuildnum.add(build_num_1min);
 		} else {
-			newBuildCount = totalbuildnum.add(new BigDecimal(BuildAssist.Companion.getConfig().getBuildNum1minLimit()));
+            newBuildCount = totalbuildnum.add(new BigDecimal(BuildAssist.getConfig().getBuildNum1minLimit()));
 		}
 
 		playerData.setBuildCount(new BuildCount(level, newBuildCount, oldBuildCount.getMigrationFlag()));

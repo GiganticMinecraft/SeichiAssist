@@ -20,7 +20,7 @@ public class ManaRegeneTask extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		PlayerData pd = SeichiAssist.Companion.getPlayermap().get(p.getUniqueId());
+		PlayerData pd = SeichiAssist.getPlayermap().get(p.getUniqueId());
 		Mana mana = pd.getActiveskilldata().mana;
 		int lv = pd.getLevel();
 		// 最大マナを取得する

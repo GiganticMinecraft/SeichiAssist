@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class AreaControlTask extends BukkitRunnable{
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.getPlayermap();
 	Player player;
 	PlayerData playerdata;
 	//プレイヤーがターゲットしているブロックを取得

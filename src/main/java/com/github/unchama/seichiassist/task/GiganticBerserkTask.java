@@ -14,7 +14,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class GiganticBerserkTask {
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.getPlayermap();
 	Player player;
 	PlayerData playerdata;
 
@@ -25,8 +25,8 @@ public class GiganticBerserkTask {
 		Mana mana = playerdata.getActiveskilldata().mana;
 
 		playerdata.setGBcd(playerdata.getGiganticBerserk().getCd() + 1);
-		if (playerdata.getGiganticBerserk().getCd() >= SeichiAssist.Companion.getSeichiAssistConfig().getGiganticBerserkLimit()){
-			if(SeichiAssist.Companion.getDEBUG()){
+		if (playerdata.getGiganticBerserk().getCd() >= SeichiAssist.getSeichiAssistConfig().getGiganticBerserkLimit()){
+			if(SeichiAssist.getDEBUG()){
 				player.sendMessage("上限到達");
 			}
 			return;

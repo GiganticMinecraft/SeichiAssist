@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class CoolDownTask extends BukkitRunnable{
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.Companion.getPlayermap();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.getPlayermap();
 	private Player player;
 	UUID uuid;
 	PlayerData playerdata;
@@ -89,7 +89,7 @@ public class CoolDownTask extends BukkitRunnable{
 			}
 		}
 		//デバッグ用
-		if(SeichiAssist.Companion.getDEBUG()){
+		if(SeichiAssist.getDEBUG()){
 			player.sendMessage("クールダウンタイム終了");
 		}
 	}

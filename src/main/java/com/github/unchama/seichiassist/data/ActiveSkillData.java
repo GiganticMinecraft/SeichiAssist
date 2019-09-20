@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.stream.IntStream;
 
 public class ActiveSkillData {
-	SeichiAssist plugin = SeichiAssist.Companion.getInstance();
+	SeichiAssist plugin = SeichiAssist.getInstance();
 	//アクティブスキルポイント
 	public int skillpoint;
 	//アクティブスキルエフェクトポイント
@@ -100,7 +100,7 @@ public class ActiveSkillData {
 	public void updateActiveSkillPoint(Player player,int level) {
 		int point = IntStream.rangeClosed(1, level).map(i -> i / 10 + 1).sum();
 		//レベルに応じたスキルポイント量を取得
-		if(SeichiAssist.Companion.getDEBUG()){
+		if (SeichiAssist.getDEBUG()) {
 			player.sendMessage("あなたのレベルでの獲得アクティブスキルポイント：" + point);
 		}
 		//取得しているスキルを確認してその分のスキルポイントを引く
@@ -129,7 +129,7 @@ public class ActiveSkillData {
 			point -= 110;
 		}
 
-		if(SeichiAssist.Companion.getDEBUG()){
+		if (SeichiAssist.getDEBUG()) {
 			player.sendMessage("獲得済みスキルを考慮したアクティブスキルポイント：" + point);
 			point += 10000;
 		}
