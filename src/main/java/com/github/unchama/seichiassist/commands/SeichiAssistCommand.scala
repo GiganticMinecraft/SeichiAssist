@@ -5,7 +5,7 @@ import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import org.bukkit.command.ConsoleCommandSender
 
 object SeichiAssistCommand {
-  private val descriptionExecutor = EchoExecutor(listOf(
+  private val descriptionExecutor = EchoExecutor(List(
       s"${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
       s"${ChatColor.RED}/seichiassist reload-config",
       "config.ymlの設定値を再読み込みします",
@@ -39,7 +39,7 @@ object SeichiAssistCommand {
 
           resultMessage.asMessageEffect()
         } else {
-          listOf(
+          List(
             s"${ChatColor.RED}このコマンドは現在の設定では実行できません",
             s"${ChatColor.RED}config.ymlのdebugmodeの値を1に書き換えて再起動またはreloadしてください"
           ).asMessageEffect()

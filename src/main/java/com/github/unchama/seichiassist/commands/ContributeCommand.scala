@@ -21,7 +21,7 @@ object ContributeCommand {
             operationResponse.asMessageEffect()
           }.merge()
 
-  private val helpMessage: TargetedEffect[CommandSender] = listOf(
+  private val helpMessage: TargetedEffect[CommandSender] = List(
       s"${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
       s"${ChatColor.RED}/contribute add [プレイヤー名] [増加分ポイント]",
       "指定されたプレイヤーの貢献度ptを指定分増加させます",
@@ -34,7 +34,7 @@ object ContributeCommand {
       .build()
 
   private val parserConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
-      .argumentsParsers(listOf(
+      .argumentsParsers(List(
           identity,
           nonNegativeInteger(s"${ChatColor.RED}増加分ポイントは0以上の整数を指定してください。".asMessageEffect())
       ), onMissingArguments = printHelpExecutor)

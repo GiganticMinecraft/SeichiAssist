@@ -15,7 +15,7 @@ internal object MineStackButtons {
         val gachaData = SeichiAssist.msgachadatalist[this.gachaType]
         if (gachaData.probability < 0.1) {
           return this.itemStack.clone().apply {
-            val itemLore = if (itemMeta.hasLore()) itemMeta.lore else listOf()
+            val itemLore = if (itemMeta.hasLore()) itemMeta.lore else List()
             lore = itemLore + s"$RESET${DARK_GREEN}所有者：${player.name}"
           }
         }
@@ -57,7 +57,7 @@ internal object MineStackButtons {
         lore = run {
           val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
 
-          listOf(
+          List(
               s"$RESET$GREEN${stackedAmount}個",
               s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
               s"$RESET$DARK_RED${UNDERLINE}クリックで1スタック取り出し"
@@ -92,13 +92,13 @@ internal object MineStackButtons {
       if (playerData.settings.autoMineStack) {
         baseBuilder
             .enchanted()
-            .lore(listOf(
+            .lore(List(
                 s"$RESET${GREEN}現在ONです",
                 s"$RESET$DARK_RED${UNDERLINE}クリックでOFF"
             ))
       } else {
         baseBuilder
-            .lore(listOf(
+            .lore(List(
                 s"$RESET${RED}現在OFFです",
                 s"$RESET$DARK_GREEN${UNDERLINE}クリックでON"
             ))

@@ -90,7 +90,7 @@ class SeichiAssist : JavaPlugin() {
     ).forEach { (commandName, executor) => getCommand(commandName).executor = executor }
 
     //リスナーの登録
-    listOf(
+    List(
         PlayerJoinListener(),
         PlayerQuitListener(),
         PlayerClickListener(),

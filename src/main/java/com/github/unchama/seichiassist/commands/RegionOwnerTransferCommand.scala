@@ -27,7 +27,7 @@ object RegionOwnerTransferCommand {
   }
 
   val executor = playerCommandBuilder
-      .argumentsParsers(listOf(
+      .argumentsParsers(List(
           Parsers.identity,
           parser { recipientName =>
             val recipient = Bukkit.getPlayer(recipientName)

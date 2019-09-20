@@ -25,7 +25,7 @@ object LevelThresholds {
    * 199-200→1,500,000
    *
    */
-  val levelExpThresholds = listOf(
+  val levelExpThresholds = List(
       0, 15, 49, 106, 198, //5
       333, 705, 1265, 2105, 3347, //10
       4589, 5831, 7073, 8315, 9557, //15
@@ -68,7 +68,7 @@ object LevelThresholds {
       82165000, 83315000, 84465000, 85615000, 87115000  //200
   )
 
-  val giganticBerserkLevelList = listOf(
+  val giganticBerserkLevelList = List(
       20, 30, 40, 40, 50, 50, 60, 70, 80, 100,
       100, 110, 120, 130, 140, 150, 160, 170, 180, 200,
       250, 270, 300, 320, 350, 370, 400, 420, 450, 500,

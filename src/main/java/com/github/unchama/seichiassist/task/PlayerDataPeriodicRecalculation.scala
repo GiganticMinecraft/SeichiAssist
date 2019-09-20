@@ -145,7 +145,7 @@ object PlayerDataPeriodicRecalculation: RepeatedTaskLauncher() {
       /*
 			 * 実績解除判定
 			 */
-      listOf(
+      List(
           1001 until 1013,
           3001 until 3019,
           4001 until 4023,

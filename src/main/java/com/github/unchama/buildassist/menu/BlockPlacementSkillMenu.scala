@@ -96,15 +96,15 @@ object BlockPlacementSkillMenu extends Menu {
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowUp")
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階大きくする")
         .lore(
-            listOf(
+            List(
                 s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange"
             ) +
                 if (playerData.AREAint == 5) {
-                  listOf(
+                  List(
                       s"$RESET${RED}これ以上範囲設定を大きくできません。"
                   )
                 } else {
-                  listOf(
+                  List(
                       s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
                       s"$RESET${RED}※範囲設定の最大値は11×11※"
                   )
@@ -162,15 +162,15 @@ object BlockPlacementSkillMenu extends Menu {
     val iconItemStack = SkullItemStackBuilder("MHF_ArrowDown")
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階小さくする")
         .lore(
-            listOf(
+            List(
                 s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange"
             ) +
                 if (playerData.AREAint == 1) {
-                  listOf(
+                  List(
                       s"${RED}これ以上範囲設定を小さくできません。"
                   )
                 } else {
-                  listOf(
+                  List(
                       s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
                       s"$RESET${RED}※範囲設定の最大値は3×3※"
                   )

@@ -10,7 +10,7 @@ private tailrec suspend def [CS <: CommandSender]
           onMissingArguments: ContextualExecutor,
           context: RawCommandContext,
           refinedSender: CS,
-          reverseAccumulator: List[Any] = listOf()): Option[Pair[List[Any], List[String]]] {
+          reverseAccumulator: List[Any] = List()): Option[Pair[List[Any], List[String]]] {
   val firstParser = parsers.firstOrNull() ?: return Some(reverseAccumulator.reversed() to args)
   val firstArg = args.firstOrNull()
       ?: return None.also { onMissingArguments.executeWith(context) }
@@ -128,7 +128,7 @@ case class ContextualExecutorBuilder[CS  <: CommandSender](
 
 object ContextualExecutorBuilder {
   private val defaultArgumentParser: CommandArgumentsParser[CommandSender] = { _, context =>
-    Some(PartiallyParsedArgs(listOf(), context.args))
+    Some(PartiallyParsedArgs(List(), context.args))
   }
   private val defaultExecution: ScopedContextualExecution[CommandSender] = { EmptyEffect }
   private val defaultSenderValidation: SenderTypeValidation[CommandSender] = { sender: CommandSender => Some(sender) }

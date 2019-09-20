@@ -57,7 +57,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
         val usePoint = lrs.getInt("usepoint")
         if (getPoint > 0) {
           itemstack = ItemStack(Material.DIAMOND)
-          lore2 = listOf(ChatColor.RESET.toString() + "" + ChatColor.GREEN + "" + "金額：" + getPoint * 100,
+          lore2 = List(ChatColor.RESET.toString() + "" + ChatColor.GREEN + "" + "金額：" + getPoint * 100,
               "" + ChatColor.RESET + ChatColor.GREEN + "プレミアムエフェクトポイント：+" + getPoint,
               "" + ChatColor.RESET + ChatColor.GREEN + "日時：" + lrs.getString("date")
           )
@@ -71,7 +71,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
           material = effect[num].material
           itemstack = ItemStack(material)
 
-          lore2 = listOf("" + ChatColor.RESET + ChatColor.GOLD + "プレミアムエフェクトポイント： -" + usePoint,
+          lore2 = List("" + ChatColor.RESET + ChatColor.GOLD + "プレミアムエフェクトポイント： -" + usePoint,
               "" + ChatColor.RESET + ChatColor.GOLD + "日時：" + lrs.getString("date")
           )
           itemstack.itemMeta = Bukkit.getItemFactory().getItemMeta(material).apply {

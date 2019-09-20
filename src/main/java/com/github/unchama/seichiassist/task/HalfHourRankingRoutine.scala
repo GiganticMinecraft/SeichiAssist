@@ -47,7 +47,7 @@ object HalfHourRankingRoutine: RepeatedTaskLauncher() {
 
     // 第一位の整地量が非ゼロならば
     if (topPlayerData != null) {
-      val rankingPositionColor = listOf(ChatColor.DARK_PURPLE, ChatColor.BLUE, ChatColor.DARK_AQUA)
+      val rankingPositionColor = List(ChatColor.DARK_PURPLE, ChatColor.BLUE, ChatColor.DARK_AQUA)
 
       sortedPlayerData
           .take(3) // 1から3位まで

@@ -8,7 +8,7 @@ import com.github.unchama.targetedeffect.EmptyEffect
 
 object MebiusCommand {
   private object Messages {
-    val commandDescription = listOf(
+    val commandDescription = List(
         s"${ChatColor.RED}[Usage]",
         s"${ChatColor.RED}/mebius naming [name]",
         s"${ChatColor.RED}  現在頭に装着中のMEBIUSに[name]を命名します。",
@@ -83,7 +83,7 @@ object MebiusCommand {
           .build()
 
       private val setNickNameExecutor = playerCommandBuilder
-          .argumentsParsers(listOf(Parsers.identity), onMissingArguments = printDescriptionExecutor)
+          .argumentsParsers(List(Parsers.identity), onMissingArguments = printDescriptionExecutor)
           .execution { context =>
             val newName = s"${context.args.parsed[0] as String} ${context.args.yetToBeParsed.joinToString(" ")}"
             val message = if (!MebiusListener.setNickname(context.sender, newName)) {
@@ -103,7 +103,7 @@ object MebiusCommand {
     }
 
     val namingExecutor = playerCommandBuilder
-        .argumentsParsers(listOf(Parsers.identity))
+        .argumentsParsers(List(Parsers.identity))
         .execution { context =>
           val newName = s"${context.args.parsed[0] as String} ${context.args.yetToBeParsed.joinToString(" ")}"
 

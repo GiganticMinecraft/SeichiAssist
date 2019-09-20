@@ -9,7 +9,7 @@ import org.bukkit.{Bukkit, World}
 
 object RmpCommand {
   private val printDescriptionExecutor = EchoExecutor(
-    listOf(
+    List(
         s"${ChatColor.RED}/rmp remove [world名] [日数]",
         "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
         "",
@@ -20,7 +20,7 @@ object RmpCommand {
 
   private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
       .refineSenderWithError[ConsoleCommandSender](s"${ChatColor.GREEN}このコマンドはコンソールから実行してください")
-      .argumentsParsers(listOf(
+      .argumentsParsers(List(
           parser {
             Bukkit.getWorld(it)
                 ?.let { world => succeedWith(world) }

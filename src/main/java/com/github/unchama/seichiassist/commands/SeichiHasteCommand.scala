@@ -16,7 +16,7 @@ object SeichiHasteCommand {
     }
   }
 
-  private val descriptionPrintExecutor = EchoExecutor(listOf(
+  private val descriptionPrintExecutor = EchoExecutor(List(
       s"${ChatColor.RED}/seichihaste [説明文id] [効果の持続ティック数] [効果の強さ] [スコープ指定子]",
       "指定されたプレイヤーに採掘速度上昇効果を付与します。",
       "同じサーバーにログイン中であるプレーヤーにしか適用されません。",
@@ -35,7 +35,7 @@ object SeichiHasteCommand {
 
   val executor = ContextualExecutorBuilder.beginConfiguration()
       .argumentsParsers(
-          listOf(
+          List(
               Parsers.closedRangeInt(0, 5, "説明文idは0から5の整数を指定してください。".asMessageEffect()),
               Parsers.nonNegativeInteger("効果の持続ティック数は非負の整数を指定してください。".asMessageEffect()),
               Parsers.double("効果の強さは実数を指定してください。".asMessageEffect()),

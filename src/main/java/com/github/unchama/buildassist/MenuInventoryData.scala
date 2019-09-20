@@ -30,7 +30,7 @@ object MenuInventoryData {
     var itemstack = ItemStack(Material.BARRIER, 1)
     var itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BARRIER)
     var skullmeta = ItemMetaFactory.SKULL.value
-    var lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動")
+    var lore = List(ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動")
 
     // FIXME: BAD NAME
     val ZSSkill = if (playerdata.ZoneSetSkillFlag) {
@@ -67,7 +67,7 @@ object MenuInventoryData {
     itemstack = ItemStack(Material.DIRT, 1)
     itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE)
     itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "設置時に下の空洞を埋める機能"
-    lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "機能の使用設定：" + ZSDirt, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "機能の範囲：地下5マスまで")
+    lore = List(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "機能の使用設定：" + ZSDirt, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "機能の範囲：地下5マスまで")
     itemmeta.lore = lore
     itemstack.itemMeta = itemmeta
     inventory.setItem(4, itemstack)
@@ -76,7 +76,7 @@ object MenuInventoryData {
     itemstack = ItemStack(Material.STONE, 1)
     itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE)
     itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の設定は以下の通りです"
-    lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "スキルの使用設定：" + ZSSkill, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "スキルの範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "MineStack優先設定:" + ZSSkill_Minestack)
+    lore = List(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "スキルの使用設定：" + ZSSkill, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "スキルの範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "MineStack優先設定:" + ZSSkill_Minestack)
     itemmeta.lore = lore
     itemstack.itemMeta = itemmeta
     inventory.setItem(13, itemstack)
@@ -85,7 +85,7 @@ object MenuInventoryData {
     itemstack = ItemStack(Material.SKULL_ITEM, 11)
     itemstack.durability = 3.toShort()
     skullmeta.displayName = ChatColor.RED.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "範囲設定を最大値に変更"
-    lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + "現在の範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "変更後の範囲設定：11×11")
+    lore = List(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + "現在の範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "変更後の範囲設定：11×11")
     skullmeta.lore = lore
     skullmeta.owner = "MHF_ArrowUp"
     itemstack.itemMeta = skullmeta
@@ -96,7 +96,7 @@ object MenuInventoryData {
     skullmeta = ItemMetaFactory.SKULL.value
     itemstack.durability = 3.toShort()
     skullmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "範囲設定を一段階大きくする"
-    lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + "現在の範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "変更後の範囲設定：" + (ZSSkillA + 2) + "×" + (ZSSkillA + 2), ChatColor.RESET.toString() + "" + ChatColor.RED + "" + "※範囲設定の最大値は11×11※")
+    lore = List(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + "現在の範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "変更後の範囲設定：" + (ZSSkillA + 2) + "×" + (ZSSkillA + 2), ChatColor.RESET.toString() + "" + ChatColor.RED + "" + "※範囲設定の最大値は11×11※")
     skullmeta.lore = lore
     skullmeta.owner = "MHF_ArrowUp"
     itemstack.itemMeta = skullmeta
@@ -107,7 +107,7 @@ object MenuInventoryData {
     skullmeta = ItemMetaFactory.SKULL.value
     itemstack.durability = 3.toShort()
     skullmeta.displayName = ChatColor.RED.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "範囲設定を初期値に変更"
-    lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + "現在の範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "変更後の範囲設定：5×5")
+    lore = List(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + "現在の範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "変更後の範囲設定：5×5")
     skullmeta.lore = lore
     skullmeta.owner = "MHF_TNT"
     itemstack.itemMeta = skullmeta
@@ -118,7 +118,7 @@ object MenuInventoryData {
     skullmeta = ItemMetaFactory.SKULL.value
     itemstack.durability = 3.toShort()
     skullmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "範囲設定を一段階小さくする"
-    lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + "現在の範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "変更後の範囲設定：" + (ZSSkillA - 2) + "×" + (ZSSkillA - 2), ChatColor.RESET.toString() + "" + ChatColor.RED + "" + "※範囲設定の最小値は3×3※")
+    lore = List(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + "現在の範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "変更後の範囲設定：" + (ZSSkillA - 2) + "×" + (ZSSkillA - 2), ChatColor.RESET.toString() + "" + ChatColor.RED + "" + "※範囲設定の最小値は3×3※")
     skullmeta.lore = lore
     skullmeta.owner = "MHF_ArrowDown"
     itemstack.itemMeta = skullmeta
@@ -130,7 +130,7 @@ object MenuInventoryData {
     skullmeta = ItemMetaFactory.SKULL.value
     itemstack.durability = 3.toShort()
     skullmeta.displayName = ChatColor.RED.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "範囲設定を最小値に変更"
-    lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + "現在の範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "変更後の範囲設定：3×3")
+    lore = List(ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + "現在の範囲設定：" + ZSSkillA + "×" + ZSSkillA, ChatColor.RESET.toString() + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "変更後の範囲設定：3×3")
     skullmeta.lore = lore
     skullmeta.owner = "MHF_ArrowDown"
     itemstack.itemMeta = skullmeta
@@ -141,7 +141,7 @@ object MenuInventoryData {
     itemstack = ItemStack(Material.CHEST, 1)
     itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHEST)
     itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "MineStack優先設定：" + ZSSkill_Minestack
-    lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "スキルでブロックを並べるとき", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "MineStackの在庫を優先して消費します。", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.zoneskillMinestacklevel + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "クリックで切り替え"
+    lore = List(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "スキルでブロックを並べるとき", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "MineStackの在庫を優先して消費します。", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.zoneskillMinestacklevel + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "クリックで切り替え"
     )
     itemmeta.lore = lore
     itemstack.itemMeta = itemmeta
@@ -163,7 +163,7 @@ object MenuInventoryData {
     var itemstack = ItemStack(Material.SKULL_ITEM, 1)
     var itemmeta: ItemMeta = Bukkit.getItemFactory().getItemMeta(Material.WOOD)
     val skullmeta: SkullMeta = ItemMetaFactory.SKULL.value
-    var lore = listOf(s"${ChatColor.RESET}${ChatColor.DARK_RED}${ChatColor.UNDERLINE}クリックで移動")
+    var lore = List(s"${ChatColor.RESET}${ChatColor.DARK_RED}${ChatColor.UNDERLINE}クリックで移動")
 
     // ホームを開く
     itemstack.durability = 3.toShort()
@@ -176,7 +176,7 @@ object MenuInventoryData {
     //ブロックを並べるスキル設定
     itemstack = ItemStack(Material.WOOD, 1)
     itemmeta.displayName = s"${ChatColor.YELLOW}${ChatColor.UNDERLINE}${ChatColor.BOLD}ブロックを並べるスキル（仮） ：${BuildAssist.line_up_str[playerdata.line_up_flg]}"
-    lore = listOf(
+    lore = List(
         s"${ChatColor.RESET}${ChatColor.GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
         s"${ChatColor.RESET}${ChatColor.GRAY}左クリックすると向いてる方向に並べて設置します。",
         s"${ChatColor.RESET}${ChatColor.GRAY}建築LV${BuildAssist.config.getblocklineuplevel()}以上で利用可能",
@@ -190,7 +190,7 @@ object MenuInventoryData {
     itemstack = ItemStack(Material.STEP, 1)
     itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STEP)
     itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ハーフブロック設定 ：" + BuildAssist.line_up_step_str[playerdata.line_up_step_flg]
-    lore = listOf(
+    lore = List(
         s"${ChatColor.RESET}${ChatColor.GRAY}ハーフブロックを並べる時の位置を決めます。",
         s"${ChatColor.RESET}${ChatColor.GRAY}クリックで切り替え"
     )
@@ -202,7 +202,7 @@ object MenuInventoryData {
     itemstack = ItemStack(Material.TNT, 1)
     itemmeta = Bukkit.getItemFactory().getItemMeta(Material.TNT)
     itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "破壊設定 ：" + BuildAssist.line_up_off_on_str[playerdata.line_up_des_flg]
-    lore = listOf(
+    lore = List(
         s"${ChatColor.RESET}${ChatColor.GRAY}ブロックを並べるとき特定のブロックを破壊して並べます。",
         s"${ChatColor.RESET}${ChatColor.GRAY}破壊対象ブロック：草,花,水,雪,松明,きのこ",
         s"${ChatColor.RESET}${ChatColor.GRAY}クリックで切り替え"
@@ -215,7 +215,7 @@ object MenuInventoryData {
     itemstack = ItemStack(Material.CHEST, 1)
     itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHEST)
     itemmeta.displayName = s"${ChatColor.YELLOW}${ChatColor.UNDERLINE}${ChatColor.BOLD}MineStack優先設定 ：${BuildAssist.line_up_off_on_str[playerdata.line_up_minestack_flg]}"
-    lore = listOf(
+    lore = List(
         s"${ChatColor.RESET}${ChatColor.GRAY}スキルでブロックを並べるとき",
         s"${ChatColor.RESET}${ChatColor.GRAY}MineStackの在庫を優先して消費します。",
         s"${ChatColor.RESET}${ChatColor.GRAY}建築LV${BuildAssist.config.getblocklineupMinestacklevel()}以上で利用可能",
@@ -256,7 +256,7 @@ object MenuInventoryData {
     itemstack = ItemStack(Material.SKULL_ITEM, 1, 3.toShort())
     skullmeta = ItemMetaFactory.SKULL.value
     skullmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "2ページ目へ"
-    lore = listOf(s"${ChatColor.RESET}${ChatColor.DARK_RED}${ChatColor.UNDERLINE}クリックで移動")
+    lore = List(s"${ChatColor.RESET}${ChatColor.DARK_RED}${ChatColor.UNDERLINE}クリックで移動")
     skullmeta.lore = lore
     skullmeta.owner = "MHF_ArrowDown"
     itemstack.itemMeta = skullmeta
@@ -270,7 +270,7 @@ object MenuInventoryData {
       itemstack = ItemStack(Material.STEP, x)
       itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STEP)
       itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "石を石ハーフブロックに変換します"
-      lore = listOf(
+      lore = List(
           s"${ChatColor.RESET}${ChatColor.GRAY}石${p10}個→石ハーフブロック${p10 * 2}個",
           s"${ChatColor.RESET}${ChatColor.GRAY}石の数:${comma(num_1)}",
           s"${ChatColor.RESET}${ChatColor.GRAY}石ハーフブロックの数:${comma(num_2)}", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(1) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
@@ -289,7 +289,7 @@ object MenuInventoryData {
       itemstack = ItemStack(Material.SMOOTH_BRICK, x)
       itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SMOOTH_BRICK)
       itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "石を石レンガに変換します"
-      lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "石" + p10 + "個→石レンガ" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "石の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "石レンガの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(1) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
+      lore = List(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "石" + p10 + "個→石レンガ" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "石の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "石レンガの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(1) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
       )
       itemmeta.lore = lore
       itemstack.itemMeta = itemmeta
@@ -304,7 +304,7 @@ object MenuInventoryData {
       itemstack = ItemStack(Material.STONE, x, 2.toShort())
       itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE)
       itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "花崗岩を磨かれた花崗岩に変換します"
-      lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "花崗岩" + p10 + "個→磨かれた花崗岩" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "花崗岩の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "磨かれた花崗岩の数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
+      lore = List(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "花崗岩" + p10 + "個→磨かれた花崗岩" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "花崗岩の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "磨かれた花崗岩の数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
       )
       itemmeta.lore = lore
       itemstack.itemMeta = itemmeta
@@ -319,7 +319,7 @@ object MenuInventoryData {
       itemstack = ItemStack(Material.STONE, x, 4.toShort())
       itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE)
       itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "閃緑岩を磨かれた閃緑岩に変換します"
-      lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "閃緑岩" + p10 + "個→磨かれた閃緑岩" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "閃緑岩の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "磨かれた閃緑岩の数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
+      lore = List(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "閃緑岩" + p10 + "個→磨かれた閃緑岩" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "閃緑岩の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "磨かれた閃緑岩の数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
       )
       itemmeta.lore = lore
       itemstack.itemMeta = itemmeta
@@ -334,7 +334,7 @@ object MenuInventoryData {
       itemstack = ItemStack(Material.STONE, x, 6.toShort())
       itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE)
       itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "安山岩を磨かれた安山岩に変換します"
-      lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "安山岩" + p10 + "個→磨かれた安山岩" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "安山岩の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "磨かれた安山岩の数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
+      lore = List(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "安山岩" + p10 + "個→磨かれた安山岩" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "安山岩の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "磨かれた安山岩の数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
       )
       itemmeta.lore = lore
       itemstack.itemMeta = itemmeta
@@ -349,7 +349,7 @@ object MenuInventoryData {
       itemstack = ItemStack(Material.QUARTZ_BLOCK, x)
       itemmeta = Bukkit.getItemFactory().getItemMeta(Material.QUARTZ_BLOCK)
       itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ネザー水晶をネザー水晶ブロックに変換します"
-      lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザー水晶" + p10 * 4 + "個→ネザー水晶ブロック" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザー水晶の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザー水晶ブロックの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
+      lore = List(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザー水晶" + p10 * 4 + "個→ネザー水晶ブロック" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザー水晶の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザー水晶ブロックの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
       )
       itemmeta.lore = lore
       itemstack.itemMeta = itemmeta
@@ -364,7 +364,7 @@ object MenuInventoryData {
       itemstack = ItemStack(Material.BRICK, x)
       itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BRICK)
       itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "レンガをレンガブロックに変換します"
-      lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガ" + p10 * 4 + "個→レンガブロック" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガの数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガブロックの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
+      lore = List(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガ" + p10 * 4 + "個→レンガブロック" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガの数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガブロックの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
       )
       itemmeta.lore = lore
       itemstack.itemMeta = itemmeta
@@ -379,7 +379,7 @@ object MenuInventoryData {
       itemstack = ItemStack(Material.NETHER_BRICK, x)
       itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_BRICK)
       itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ネザーレンガをネザーレンガブロックに変換します"
-      lore = listOf(
+      lore = List(
           s"${ChatColor.RESET}${ChatColor.GRAY}ネザーレンガ${p10 * 4}個→ネザーレンガブロック${p10}個",
           s"${ChatColor.RESET}${ChatColor.GRAY}ネザーレンガの数:${comma(num_1)}",
           s"${ChatColor.RESET}${ChatColor.GRAY}ネザーレンガブロックの数:${comma(num_2)}",
@@ -453,7 +453,7 @@ object MenuInventoryData {
       itemstack = ItemStack(Material.RED_NETHER_BRICK, x)
       itemmeta = Bukkit.getItemFactory().getItemMeta(Material.RED_NETHER_BRICK)
       itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ネザーウォートとネザーレンガを赤いネザーレンガに変換します"
-      lore = listOf(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザーウォート" + p10 * 2 + "個+ネザーレンガ" + p10 * 2 + "個→赤いネザーレンガ" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザーウォートの数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザーレンガの数:" + comma(num_3), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "赤いネザーレンガの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
+      lore = List(ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザーウォート" + p10 * 2 + "個+ネザーレンガ" + p10 * 2 + "個→赤いネザーレンガ" + p10 + "個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザーウォートの数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "ネザーレンガの数:" + comma(num_3), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "赤いネザーレンガの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
       )
       itemmeta.lore = lore
       itemstack.itemMeta = itemmeta
@@ -623,7 +623,7 @@ object MenuInventoryData {
         itemstack = ItemStack(Material.CLAY_BRICK, x)
         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CLAY_BRICK)
         itemmeta.displayName = ChatColor.YELLOW.toString() + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "石炭を消費して粘土をレンガに変換します"
-        lore = listOf(s"${ChatColor.RESET}${ChatColor.GRAY}粘土${p10 * 4}個+石炭${p10}個→レンガ${p10 * 4}個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "粘土の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "石炭の数:" + comma(num_3), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
+        lore = List(s"${ChatColor.RESET}${ChatColor.GRAY}粘土${p10 * 4}個+石炭${p10}個→レンガ${p10 * 4}個", ChatColor.RESET.toString() + "" + ChatColor.GRAY + "粘土の数:" + comma(num_1), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "石炭の数:" + comma(num_3), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "レンガの数:" + comma(num_2), ChatColor.RESET.toString() + "" + ChatColor.GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能", ChatColor.RESET.toString() + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで変換"
         )
         itemmeta.lore = lore
         itemstack.itemMeta = itemmeta

@@ -551,7 +551,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     return fetchLastQuitData()
         ?.let { s"${playerName}の最終ログアウト日時：$it".asMessageEffect() }
         ?: run {
-          val messages = listOf(
+          val messages = List(
               s"${ChatColor.RED}最終ログアウト日時の照会に失敗しました。",
               s"${ChatColor.RED}プレイヤー名やプレイヤー名が変更されていないか確認してください。",
               s"${ChatColor.RED}プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります。"

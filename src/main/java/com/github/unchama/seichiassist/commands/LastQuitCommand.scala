@@ -4,7 +4,7 @@ import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder,
 
 object LastQuitCommand {
   val executor = ContextualExecutorBuilder.beginConfiguration()
-      .argumentsParsers(listOf(Parsers.identity))
+      .argumentsParsers(List(Parsers.identity))
       .execution { context =>
         val playerName = context.args.parsed[0] as String
 

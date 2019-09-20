@@ -6,14 +6,14 @@ import com.github.unchama.targetedeffect.EmptyEffect
 import org.bukkit.Bukkit
 
 object OpenPocketCommand {
-  private val descriptionPrintExecutor = EchoExecutor(listOf(
+  private val descriptionPrintExecutor = EchoExecutor(List(
       s"${ChatColor.RED}/openpocket [プレイヤー名]",
       "対象プレイヤーの四次元ポケットを開きます。",
       "編集結果はオンラインのプレイヤーにのみ反映されます。"
   ).asMessageEffect())
 
   val executor = playerCommandBuilder
-      .argumentsParsers(listOf(Parsers.identity), onMissingArguments = descriptionPrintExecutor)
+      .argumentsParsers(List(Parsers.identity), onMissingArguments = descriptionPrintExecutor)
       .execution { context =>
         val playerName = context.args.parsed[0] as String
         val player = Bukkit.getPlayer(playerName)

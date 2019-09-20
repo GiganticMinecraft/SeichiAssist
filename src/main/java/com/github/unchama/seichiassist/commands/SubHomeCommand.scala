@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 
 object SubHomeCommand {
   private val printDescriptionExecutor = EchoExecutor(
-      listOf(
+      List(
           s"${ChatColor.GREEN}/subhome コマンドの使い方",
           s"${ChatColor.GREEN}移動する場合",
           s"${ChatColor.GREEN}/subhome warp [移動したいサブホームの番号]",
@@ -19,7 +19,7 @@ object SubHomeCommand {
 
   private val argsAndSenderConfiguredBuilder = playerCommandBuilder
       .argumentsParsers(
-          listOf(
+          List(
               SeichiAssist.seichiAssistConfig.subHomeMax.let { subHomeMax =>
                 Parsers.closedRangeInt(
                     0, subHomeMax,
@@ -65,7 +65,7 @@ object SubHomeCommand {
         // TODO チャット傍受を手続き的に記述できるようにする
         playerData.setHomeNameNum = subHomeId
 
-        listOf(
+        List(
             s"サブホームポイント${subHomeId}に設定する名前をチャットで入力してください",
             s"${ChatColor.YELLOW}※入力されたチャット内容は他のプレイヤーには見えません"
         ).asMessageEffect()

@@ -26,7 +26,7 @@ object CategorizedMineStackMenu {
       def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference) = Button(
           SkullItemStackBuilder(skullOwnerReference)
               .title(s"$YELLOW$UNDERLINE${BOLD}MineStack${pageIndex + 1}ページ目へ")
-              .lore(listOf(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
+              .lore(List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
               .build(),
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
@@ -40,7 +40,7 @@ object CategorizedMineStackMenu {
         val mineStackMainMenuButton = Button(
             SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
                 .title(s"$YELLOW$UNDERLINE${BOLD}MineStackメインメニューへ")
-                .lore(listOf(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
+                .lore(List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
                 .build(),
             FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
               sequentialEffect(

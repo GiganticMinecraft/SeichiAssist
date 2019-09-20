@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 object EffectCommand {
   private val printUsageExecutor: ContextualExecutor = playerCommandBuilder
       .execution {
-        listOf(
+        List(
             s"${ChatColor.YELLOW}${ChatColor.BOLD}[コマンドリファレンス]",
             s"${ChatColor.RED}/ef",
             "採掘速度上昇効果の制限を変更することができます。",

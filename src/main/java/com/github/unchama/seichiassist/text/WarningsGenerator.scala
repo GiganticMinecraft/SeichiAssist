@@ -14,7 +14,7 @@ class WarningsGenerator(player: Player) {
     if (player.world.asManagedWorld()?.isSeichi == true)
       emptyList()
     else
-      listOf(
+      List(
           s"${RED}整地ワールド以外では",
           s"${RED}整地量とガチャ券は増えません"
       )

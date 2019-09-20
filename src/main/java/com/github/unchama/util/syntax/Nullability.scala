@@ -6,5 +6,5 @@ object Nullability {
     def ifNotNull[R <: AnyRef](f: T => R): R = if (receiver != null) f(receiver) else null.asInstanceOf[R]
   }
 
-  def listOfNotNull[T](elements: T*): Seq[T] = List(elements: _*).filter(_ != null)
+  def ListNotNull[T](elements: T*): Seq[T] = List(elements: _*).filter(_ != null)
 }

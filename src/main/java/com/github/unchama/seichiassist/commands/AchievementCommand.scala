@@ -20,7 +20,7 @@ object AchievementCommand {
   }
 
   private val descriptionPrintExecutor = EchoExecutor(
-      listOf(
+      List(
           s"${ChatColor.RED}/achievement [操作] [実績No] [スコープ指定子]",
           "[操作]にはgive(実績付与)またはdeprive(実績剥奪)のいずれかを入力することができます。",
           "[スコープ指定子]にはuser [ユーザー名], server, worldのいずれかを入力することができます。"
@@ -56,7 +56,7 @@ object AchievementCommand {
 
   val executor = ContextualExecutorBuilder.beginConfiguration()
       .argumentsParsers(
-          listOf(operationParser, achievementNumberParser, scopeParser),
+          List(operationParser, achievementNumberParser, scopeParser),
           onMissingArguments = descriptionPrintExecutor
       )
       .execution { context =>
@@ -71,7 +71,7 @@ object AchievementCommand {
                 context.args.yetToBeParsed.firstOrNull()
                     ?: return@execution s"${ChatColor.RED}プレーヤー名が未入力です。".asMessageEffect()
 
-            listOf(targetPlayerName)
+            List(targetPlayerName)
           }
           ScopeSpecification.SERVER => Bukkit.getServer().onlinePlayers.map { it.name }
           ScopeSpecification.WORLD => {

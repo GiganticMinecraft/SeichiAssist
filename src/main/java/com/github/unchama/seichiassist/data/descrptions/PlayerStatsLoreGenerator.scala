@@ -16,23 +16,23 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
   @Suppress("RedundantSuspendModifier")
   suspend def computeLore(): List[String] {
     return with(WarningsGenerator(targetPlayer)) {
-      listOf(
-          listOf(seichiLevelDescription()),
+      List(
+          List(seichiLevelDescription()),
           levelProgressionDescription(),
           noRewardsOutsideSeichiWorld,
           passiveSkillDescription(),
-          listOf(
+          List(
               totalBreakAmountDescription(),
               rankingDescription()
           ),
           rankingDiffDescription(),
-          listOf(
+          List(
               totalLoginTimeDescrpition(),
               totalLoginDaysDescrption(),
               totalChainLoginDaysDescription()
           ),
           totalChainVoteDaysDescription(),
-          listOf(
+          List(
               s"$DARK_GRAY※1分毎に更新",
               s"${GREEN}統計データは",
               s"${GREEN}各サバイバルサーバー間で",
@@ -66,7 +66,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
       //TODO:この計算は,ここにあるべきではない.
       val expRequiredToLevelUp = LevelThresholds.levelExpThresholds[playerData.level] - playerData.totalbreaknum
 
-      listOf(s"${AQUA}次のレベルまで:$expRequiredToLevelUp")
+      List(s"${AQUA}次のレベルまで:$expRequiredToLevelUp")
     } else {
       emptyList()
     }
@@ -76,7 +76,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * パッシブスキルの説明文
    */
   private def passiveSkillDescription(): List[String] {
-    return listOf(
+    return List(
         s"${DARK_GRAY}パッシブスキル効果：",
         s"${DARK_GRAY}1ブロック整地ごとに",
         s"$DARK_GRAY${PlayerData.passiveSkillProbability}%の確率で",
@@ -104,7 +104,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
         val rankData = SeichiAssist.ranklist[playerRanking - 2]
         val differenceToTheBest = rankData.totalbreaknum - playerData.totalbreaknum
 
-        listOf(s"$AQUA${playerRanking - 1}位(${rankData.name})との差：$differenceToTheBest")
+        List(s"$AQUA${playerRanking - 1}位(${rankData.name})との差：$differenceToTheBest")
       } else {
         emptyList()
       }
@@ -130,7 +130,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    */
   private def totalChainVoteDaysDescription(): List[String] =
       if (playerData.ChainVote > 0)
-        listOf(s"$RESET${GRAY}連続投票日数：${playerData.ChainVote}日")
+        List(s"$RESET${GRAY}連続投票日数：${playerData.ChainVote}日")
       else
         emptyList()
 
@@ -139,12 +139,12 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    */
   private def expBarDescription(): List[String] {
     return if (playerData.settings.isExpBarVisible) {
-      listOf(
+      List(
           s"${GREEN}整地量バーを表示",
           s"$DARK_RED${UNDERLINE}クリックで非表示"
       )
     } else {
-      listOf(
+      List(
           s"${RED}整地量バーを非表示",
           s"$DARK_GREEN${UNDERLINE}クリックで表示"
       )

@@ -19,7 +19,7 @@ object CommonButtons {
     Button(
         SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
             .title(s"${ChatColor.YELLOW}${ChatColor.UNDERLINE}${ChatColor.BOLD}ホームへ")
-            .lore(listOf(s"${ChatColor.RESET}${ChatColor.DARK_RED}${ChatColor.UNDERLINE}クリックで移動"))
+            .lore(List(s"${ChatColor.RESET}${ChatColor.DARK_RED}${ChatColor.UNDERLINE}クリックで移動"))
             .build(),
         FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE, buttonEffect)
     )

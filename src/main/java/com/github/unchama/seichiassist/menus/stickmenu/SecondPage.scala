@@ -18,7 +18,7 @@ object SecondPage: Menu {
     val officialWikiNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.BOOK)
           .title(s"$YELLOW$UNDERLINE${BOLD}公式Wikiにアクセス")
-          .lore(listOf(
+          .lore(List(
               s"$RESET${GREEN}鯖内の「困った」は公式Wikiで解決！",
               s"$RESET${DARK_GRAY}クリックするとチャット欄に",
               s"$RESET${DARK_GRAY}URLが表示されますので",
@@ -42,7 +42,7 @@ object SecondPage: Menu {
     val rulesPageNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.PAPER)
           .title(s"$YELLOW$UNDERLINE${BOLD}運営方針とルールを確認")
-          .lore(listOf(
+          .lore(List(
               s"$RESET${GREEN}当鯖で遊ぶ前に確認してネ！",
               s"$RESET${DARK_GRAY}クリックするとチャット欄に",
               s"$RESET${DARK_GRAY}URLが表示されますので",
@@ -66,7 +66,7 @@ object SecondPage: Menu {
     val serverMapNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.MAP)
           .title(s"$YELLOW$UNDERLINE${BOLD}鯖Mapを見る")
-          .lore(listOf(
+          .lore(List(
               s"$RESET${GREEN}webブラウザから鯖Mapを閲覧出来ます",
               s"$RESET${GREEN}他人の居場所や保護の場所を確認出来ます",
               s"$RESET${DARK_GRAY}クリックするとチャット欄に",
@@ -91,7 +91,7 @@ object SecondPage: Menu {
     val JMSNavigationButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.SIGN)
           .title(s"$YELLOW$UNDERLINE${BOLD}JapanMinecraftServerリンク")
-          .lore(listOf(
+          .lore(List(
               s"$RESET${DARK_GRAY}クリックするとチャット欄に",
               s"$RESET${DARK_GRAY}URLが表示されますので",
               s"$RESET${DARK_GRAY}Tキーを押してから",
@@ -114,7 +114,7 @@ object SecondPage: Menu {
     val appleConversionButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.GOLDEN_APPLE, durability = 1)
           .title(s"$YELLOW$UNDERLINE${BOLD}GT景品→椎名林檎変換システム")
-          .lore(listOf(
+          .lore(List(
               s"$RESET${GREEN}不必要なGT大当り景品を",
               s"$RESET${GOLD}椎名林檎$RESET${GREEN}と交換できます",
               s"$RESET${GREEN}出てきたインベントリーに",
@@ -145,7 +145,7 @@ object SecondPage: Menu {
     val titanConversionButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.DIAMOND_AXE, durability = 1)
           .title(s"$YELLOW$UNDERLINE${BOLD}限定タイタン修繕システム")
-          .lore(listOf(
+          .lore(List(
               s"$RESET${GREEN}不具合によりテクスチャが反映されなくなってしまった",
               s"$RESET${GOLD}ホワイトデーイベント限定タイタン$RESET${GREEN}を修繕できます",
               s"$RESET${GREEN}出てきたインベントリーに",
@@ -176,7 +176,7 @@ object SecondPage: Menu {
     val recycleBinButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.BUCKET)
           .title(s"$YELLOW$UNDERLINE${BOLD}ゴミ箱を開く")
-          .lore(listOf(
+          .lore(List(
               s"$RESET${GREEN}不用品の大量処分にドウゾ！",
               s"$RESET${RED}復活しないので取扱注意",
               s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
@@ -200,7 +200,7 @@ object SecondPage: Menu {
     val hubCommandButton: Button = run {
       val iconItemStack = IconItemStackBuilder(Material.NETHER_STAR)
           .title(s"$YELLOW$UNDERLINE${BOLD}ロビーサーバーへ移動")
-          .lore(listOf(
+          .lore(List(
               s"$RESET$DARK_RED${UNDERLINE}クリックすると移動します",
               s"$RESET${DARK_GRAY}command=>[/hub]"
           ))
@@ -222,7 +222,7 @@ object SecondPage: Menu {
   private object ButtonComputations {
     suspend def Player.computeHeadSummoningButton(): Button = recomputedButton {
       val iconItemStack = run {
-        val baseLore = listOf(
+        val baseLore = List(
             s"$RESET${GRAY}経験値10000を消費して",
             s"$RESET${GRAY}自分の頭を召喚します",
             s"$RESET${GRAY}装飾用にドウゾ！"
@@ -291,7 +291,7 @@ object SecondPage: Menu {
 
         IconItemStackBuilder(Material.JUKEBOX)
             .title(s"$YELLOW$UNDERLINE${BOLD}全体通知切替")
-            .lore(listOf(
+            .lore(List(
                 soundConfigurationState,
                 messageConfigurationState,
                 s"$RESET$DARK_RED${UNDERLINE}クリックで変更"
@@ -328,13 +328,13 @@ object SecondPage: Menu {
         if (playerData.settings.shouldDisplayDeathMessages) {
           baseBuilder
               .enchanted()
-              .lore(listOf(
+              .lore(List(
                   s"$RESET${GREEN}表示する",
                   s"$RESET$DARK_RED${UNDERLINE}クリックで隠す"
               ))
         } else {
           baseBuilder
-              .lore(listOf(
+              .lore(List(
                   s"$RESET${RED}隠す",
                   s"$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"
               ))
@@ -375,14 +375,14 @@ object SecondPage: Menu {
         if (playerData.settings.shouldDisplayWorldGuardLogs) {
           baseBuilder
               .enchanted()
-              .lore(listOf(
+              .lore(List(
                   loreHeading,
                   s"$RESET${GREEN}表示する",
                   s"$RESET$DARK_RED${UNDERLINE}クリックで隠す"
               ))
         } else {
           baseBuilder
-              .lore(listOf(
+              .lore(List(
                   loreHeading,
                   s"$RESET${RED}隠す",
                   s"$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"
@@ -417,20 +417,20 @@ object SecondPage: Menu {
         val lore = run {
           val playerData = SeichiAssist.playermap[uniqueId]!!
 
-          val base = listOf(
+          val base = List(
               s"$RESET${GREEN}現在の装備・アイテムを移動します。",
               s"${RESET}サーバー間のアイテム移動にご利用ください。",
               ""
           )
 
           val statusDisplay = if (playerData.contentsPresentInSharedInventory) {
-            listOf(
+            List(
                 s"$RESET${GREEN}収納中",
                 s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを取り出します。",
                 s"$RESET${RED}現在の装備・アイテムが空であることを確認してください。"
             )
           } else {
-            listOf(
+            List(
                 s"$RESET${GREEN}非収納中",
                 s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを収納します。"
             )
