@@ -17,7 +17,7 @@ object MenuHandler extends Listener {
     val openInventory = event.whoClicked.openInventory.topInventory
 
     //プレイヤーインベントリ内のクリック排除
-    if (openInventory.holder is MenuSession && clickedInventory.type === InventoryType.PLAYER) {
+    if (openInventory.holder is MenuSession && clickedInventory.getType === InventoryType.PLAYER) {
       event.isCancelled = true
       return
     }

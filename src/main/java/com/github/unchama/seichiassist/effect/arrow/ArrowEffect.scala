@@ -56,7 +56,7 @@ object ArrowEffects {
 
   val singleArrowMagicEffect: TargetedEffect[Player] = run {
     val thrownPotionItem = ItemStack(Material.SPLASH_POTION).apply {
-      itemMeta = (Bukkit.getItemFactory().getItemMeta(Material.SPLASH_POTION) as PotionMeta).apply {
+      itemMeta = (Bukkit.getItemFactory().getItemMeta(Material.SPLASH_POTION).asInstanceOf[PotionMeta]).apply {
         basePotionData = PotionData(PotionType.INSTANT_HEAL)
       }
     }

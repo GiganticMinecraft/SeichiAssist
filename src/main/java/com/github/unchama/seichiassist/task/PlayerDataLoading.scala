@@ -379,10 +379,12 @@ object PlayerDataLoading {
     return playerData
   }
 
-  inline def ResultSet.recordIteration(operation: ResultSet.() => Unit) {
-    use {
-      while (next()) {
-        operation()
+  implicit class ResultSetOps(val resultSet: ResultSet) {
+    def recordIteration(operation: ResultSet => Unit) {
+      use {
+        while (next()) {
+          operation()
+        }
       }
     }
   }

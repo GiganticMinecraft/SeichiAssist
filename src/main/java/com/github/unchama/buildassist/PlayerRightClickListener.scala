@@ -276,7 +276,7 @@ class PlayerRightClickListener extends Listener {
                             searchedInv += 1
                           }
                           //スロットアイテムがオフハンドと一致した場合
-                        } else if (ItemInInv.type == offhanditem.getType) {
+                        } else if (ItemInInv.getType == offhanditem.getType) {
                           //数量以外のデータ(各種メタ)が一致するかどうか検知(仮)
                           val ItemInInvCheck = ItemInInv
                           ItemInInvCheck.setAmount(1)

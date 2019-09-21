@@ -142,9 +142,9 @@ object BreakUtil {
 
     //線路・キノコなどの、拾った時と壊した時とでサブIDが違う場合の処理
     //拾った時のサブIDに合わせる
-    if (itemstack.type == Material.RAILS
-        || itemstack.type == Material.HUGE_MUSHROOM_1
-        || itemstack.type == Material.HUGE_MUSHROOM_2) {
+    if (itemstack.getType == Material.RAILS
+        || itemstack.getType == Material.HUGE_MUSHROOM_1
+        || itemstack.getType == Material.HUGE_MUSHROOM_2) {
 
       itemstack.durability = 0.toShort()
     }
@@ -517,7 +517,7 @@ object BreakUtil {
         // カウンタをクリア
         openCount = 0
         // 重力値を加算(水をは2倍にする)
-        if (target.type == Material.WATER) {
+        if (target.getType == Material.WATER) {
           gravity += 2
         } else {
           gravity++

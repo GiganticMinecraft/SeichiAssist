@@ -63,10 +63,10 @@ object AchievementCommand {
       .execution { context =>
         val sender = context.sender
 
-        val operation = context.args.parsed[0] as AchievementOperation
-        val achievementNumber = context.args.parsed[1] as Int
+        val operation = context.args.parsed[0].asInstanceOf[AchievementOperation]
+        val achievementNumber = context.args.parsed[1].asInstanceOf[Int]
 
-        val targetPlayerNames = when (context.args.parsed[2] as ScopeSpecification) {
+        val targetPlayerNames = when (context.args.parsed[2].asInstanceOf[ScopeSpecification]) {
           ScopeSpecification.USER => {
             val targetPlayerName =
                 context.args.yetToBeParsed.firstOrNull()

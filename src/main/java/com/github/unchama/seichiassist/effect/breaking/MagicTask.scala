@@ -33,7 +33,7 @@ class MagicTask(// プレイヤー情報
       BreakUtil.breakBlock(player, b, skillCenter, tool, false)
       b.type = Material.WOOL
       val state = b.state
-      val woolBlock = state.data as Wool
+      val woolBlock = state.data.asInstanceOf[Wool]
       woolBlock.color = colors[rd]
       state.update()
     }
@@ -42,7 +42,7 @@ class MagicTask(// プレイヤー情報
   override def secondAction() {
     //2回目のrun
     if (SeichiAssist.entitylist.isEmpty()) {
-      val e = player.world.spawnEntity(centerBreak, EntityType.CHICKEN) as Chicken
+      val e = player.world.spawnEntity(centerBreak, EntityType.CHICKEN).asInstanceOf[Chicken]
       SeichiAssist.entitylist += e
       e.playEffect(EntityEffect.WITCH_MAGIC)
       e.isInvulnerable = true

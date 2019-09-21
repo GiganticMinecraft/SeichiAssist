@@ -32,13 +32,13 @@ class RegionInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.getType != EntityType.PLAYER) {
       return
     }
     val topinventory = view.topInventory ?: return
     //インベントリが存在しない時終了
     //インベントリタイプがディスペンサーでない時終了
-    if (topinventory.type != InventoryType.DISPENSER) {
+    if (topinventory.getType != InventoryType.DISPENSER) {
       return
     }
 
@@ -47,41 +47,41 @@ class RegionInventoryListener  extends  Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.getType == InventoryType.PLAYER) {
         return
       }
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      val player = view.player as Player
+      val player = view.player.asInstanceOf[Player]
       val uuid = player.uniqueId
       val playerData = playermap[uuid]
 
       //チャンク延長
-      if (itemstackcurrent.type == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 14) {
+      if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 14) {
         gridChangeFunction(player, DirectionType.AHEAD, event)
-      } else if (itemstackcurrent.type == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 10) {
+      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 10) {
         gridChangeFunction(player, DirectionType.LEFT, event)
-      } else if (itemstackcurrent.type == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 5) {
+      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 5) {
         gridChangeFunction(player, DirectionType.RIGHT, event)
-      } else if (itemstackcurrent.type == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 13) {
+      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 13) {
         gridChangeFunction(player, DirectionType.BEHIND, event)
-      } else if (itemstackcurrent.type == Material.WOOL && itemstackcurrent.durability.toInt() == 11) {
+      } else if (itemstackcurrent.getType == Material.WOOL && itemstackcurrent.durability.toInt() == 11) {
         player.chat("//expand vert")
         createRegion(player)
         playerData.regionCount = playerData.regionCount + 1
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
         player.closeInventory()
-      } else if (itemstackcurrent.type == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 4) {
+      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 4) {
         gridResetFunction(player)
         player.playSound(player.location, Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
         player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
-      } else if (itemstackcurrent.type == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 0) {
+      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 0) {
         playerData.toggleUnitPerGrid()
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
         player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
-      } else if (itemstackcurrent.type == Material.CHEST) {
+      } else if (itemstackcurrent.getType == Material.CHEST) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
         player.openInventory(RegionMenuData.gridTemplateInventory(player))
       }
@@ -120,7 +120,7 @@ class RegionInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.getType != EntityType.PLAYER) {
       return
     }
     val topinventory = view.topInventory ?: return
@@ -131,19 +131,19 @@ class RegionInventoryListener  extends  Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type == InventoryType.PLAYER) {
+      if (event.clickedInventory.getType == InventoryType.PLAYER) {
         return
       }
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      val player = view.player as Player
+      val player = view.player.asInstanceOf[Player]
       val uuid = player.uniqueId
       val playerData = playermap[uuid]
 
       //戻るボタン
-      if (itemstackcurrent.type == Material.BARRIER) {
+      if (itemstackcurrent.getType == Material.BARRIER) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
       } else {

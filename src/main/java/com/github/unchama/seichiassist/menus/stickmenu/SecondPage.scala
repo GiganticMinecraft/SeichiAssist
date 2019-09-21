@@ -225,8 +225,8 @@ object SecondPage extends Menu {
     }
   }
 
-  private object ButtonComputations {
-    @SuspendingMethod def Player.computeHeadSummoningButton(): Button = recomputedButton {
+  private case class ButtonComputations(val player: Player) extends AnyVal {
+    @SuspendingMethod def computeHeadSummoningButton(): Button = recomputedButton {
       val iconItemStack = run {
         val baseLore = List(
             s"$RESET${GRAY}経験値10000を消費して",
@@ -247,14 +247,14 @@ object SecondPage extends Menu {
             .build()
       }
 
-      val effect = FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+      val effect = action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
         sequentialEffect(
             computedEffect {
               val expManager = ExperienceManager(it)
               if (expManager.hasExp(10000)) {
                 val skullToGive = SkullItemStackBuilder(uniqueId).build().apply {
                   //バレンタイン中(イベント中かどうかの判断はSeasonalEvent側で行う)
-                  itemMeta = Valentine.playerHeadLore(itemMeta as SkullMeta)
+                  itemMeta = Valentine.playerHeadLore(itemMeta.asInstanceOf[SkullMeta])
                 }
 
                 sequentialEffect(
@@ -276,7 +276,7 @@ object SecondPage extends Menu {
       Button(iconItemStack, effect)
     }
 
-    @SuspendingMethod def Player.computeBroadcastMessageToggleButton(): Button = recomputedButton {
+    @SuspendingMethod def computeBroadcastMessageToggleButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
       val iconItemStack = run {
         val currentSettings = playerData.settings.getBroadcastMutingSettings()
@@ -323,7 +323,7 @@ object SecondPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeDeathMessageToggleButton(): Button = recomputedButton {
+    @SuspendingMethod def computeDeathMessageToggleButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -369,7 +369,7 @@ object SecondPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeWorldGuardMessageToggleButton(): Button = recomputedButton {
+    @SuspendingMethod def computeWorldGuardMessageToggleButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -418,7 +418,7 @@ object SecondPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeShareInventoryButton(): Button = recomputedButton {
+    @SuspendingMethod def computeShareInventoryButton(): Button = recomputedButton {
       val iconItemStack = run {
         val lore = run {
           val playerData = SeichiAssist.playermap[uniqueId]
@@ -455,27 +455,28 @@ object SecondPage extends Menu {
     }
   }
 
-  private @SuspendingMethod def Player.computeMenuLayout(): IndexedSlotLayout =
-      with(ConstantButtons) {
-        with(ButtonComputations) {
-          menuinventory.IndexedSlotLayout(
-              0 to officialWikiNavigationButton,
-              1 to rulesPageNavigationButton,
-              2 to serverMapNavigationButton,
-              3 to JMSNavigationButton,
-              6 to computeShareInventoryButton(),
-              8 to hubCommandButton,
-              12 to computeHeadSummoningButton(),
-              13 to computeBroadcastMessageToggleButton(),
-              14 to computeDeathMessageToggleButton(),
-              15 to computeWorldGuardMessageToggleButton(),
-              27 to CommonButtons.openStickMenu,
-              30 to recycleBinButton,
-              34 to titanConversionButton,
-              35 to appleConversionButton
-          )
-        }
-      }
+  private @SuspendingMethod def computeMenuLayout(player: Player): IndexedSlotLayout = {
+    import ConstantButtons._
+    val computations = ButtonComputations(player)
+    import computations._
+
+    menuinventory.IndexedSlotLayout(
+      0 -> officialWikiNavigationButton,
+      1 -> rulesPageNavigationButton,
+      2 -> serverMapNavigationButton,
+      3 -> JMSNavigationButton,
+      6 -> computeShareInventoryButton(),
+      8 -> hubCommandButton,
+      12 -> computeHeadSummoningButton(),
+      13 -> computeBroadcastMessageToggleButton(),
+      14 -> computeDeathMessageToggleButton(),
+      15 -> computeWorldGuardMessageToggleButton(),
+      27 -> CommonButtons.openStickMenu,
+      30 -> recycleBinButton,
+      34 -> titanConversionButton,
+      35 -> appleConversionButton
+    )
+  }
 
   override val open: TargetedEffect[Player] = computedEffect { player =>
     val session = MenuInventoryView(4.rows(), s"${LIGHT_PURPLE}木の棒メニュー").createNewSession()
@@ -487,6 +488,5 @@ object SecondPage extends Menu {
   }
 }
 
-@Suppress("unused")
-val StickMenu.secondPage: Menu
+object StickMenu.secondPage: Menu
   get() = SecondPage

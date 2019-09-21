@@ -50,8 +50,8 @@ object RmpCommand {
 
   private val removeExecutor = argsAndSenderConfiguredBuilder
       .execution { context =>
-        val world = context.args.parsed[0] as World
-        val days = context.args.parsed[1] as Int
+        val world = context.args.parsed[0].asInstanceOf[World]
+        val days = context.args.parsed[1].asInstanceOf[Int]
 
         if (ManagedWorld.fromBukkitWorld(world)?.isSeichiWorldWithWGRegions == false) {
           return@execution "removeコマンドは保護をかけて整地する整地ワールドでのみ使用出来ます".asMessageEffect()
@@ -79,8 +79,8 @@ object RmpCommand {
 
   private val listExecutor = argsAndSenderConfiguredBuilder
       .execution { context =>
-        val world = context.args.parsed[0] as World
-        val days = context.args.parsed[1] as Int
+        val world = context.args.parsed[0].asInstanceOf[World]
+        val days = context.args.parsed[1].asInstanceOf[Int]
 
         getOldRegionsIn(world, days).map { removalTargets =>
           if (removalTargets.isEmpty()) {

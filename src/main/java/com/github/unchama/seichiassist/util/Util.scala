@@ -2,13 +2,14 @@ package com.github.unchama.seichiassist.util
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.util.collection.ImmutableListFactory
 import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.ChatColor._
-import org.bukkit.FireworkEffect
 import org.bukkit.block.Block
 import org.bukkit.entity.{EntityType, Firework, Player}
 import org.bukkit.inventory.meta.SkullMeta
-import org.bukkit.inventory.{ItemStack, PlayerInventory}
+import org.bukkit.inventory.{ItemFlag, ItemStack, PlayerInventory}
+import org.bukkit.{Bukkit, FireworkEffect, Material, SkullType}
 
 object Util {
 
@@ -306,7 +307,7 @@ object Util {
     for (itemStack in inventory) {
       material = itemStack.type
       if (material == Material.SKULL_ITEM) {
-        skullmeta = itemStack.itemMeta as SkullMeta
+        skullmeta = itemStack.itemMeta.asInstanceOf[SkullMeta]
         if (skullmeta.hasOwner()) {
           if (skullmeta.owner == "unchama") {
             return true
@@ -331,10 +332,10 @@ object Util {
   }
 
   def isGachaTicket(itemstack: ItemStack): Boolean = {
-    if (itemstack.type != Material.SKULL_ITEM) {
+    if (itemstack.getType != Material.SKULL_ITEM) {
       return false
     }
-    val skullmeta = itemstack.itemMeta as SkullMeta
+    val skullmeta = itemstack.itemMeta.asInstanceOf[SkullMeta]
 
     //ownerがいない場合処理終了
     return if (!skullmeta.hasOwner()) {
@@ -606,16 +607,16 @@ object Util {
   }
 
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
-    return itemstack.type == Material.CARROT_STICK && loreIndexOf(itemstack.itemMeta.lore, "頭を狩り取る形をしている...") >= 0
+    return itemstack.getType == Material.CARROT_STICK && loreIndexOf(itemstack.itemMeta.lore, "頭を狩り取る形をしている...") >= 0
   }
 
   def getSkullDataFromBlock(block: Block): ItemStack = {
     //ブロックがskullじゃない場合石でも返しとく
-    if (block.type != Material.SKULL) {
+    if (block.getType != Material.SKULL) {
       return ItemStack(Material.STONE)
     }
 
-    val skull = block.state as Skull
+    val skull = block.state.asInstanceOf[Skull]
     var itemStack = ItemStack(Material.SKULL_ITEM)
 
     //SkullTypeがプレイヤー以外の場合，SkullTypeだけ設定して終わり
@@ -643,7 +644,7 @@ object Util {
   }
 
   def isLimitedTitanItem(itemstack: ItemStack): Boolean = {
-    return itemstack.type == Material.DIAMOND_AXE && loreIndexOf(itemstack.itemMeta.lore, "特別なタイタンをあなたに♡") >= 0
+    return itemstack.getType == Material.DIAMOND_AXE && loreIndexOf(itemstack.itemMeta.lore, "特別なタイタンをあなたに♡") >= 0
   }
 
 }// インスタンスを作成したところでメソッドが呼べるわけでもないので封印

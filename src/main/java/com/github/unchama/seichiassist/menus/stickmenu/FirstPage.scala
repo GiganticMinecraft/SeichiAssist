@@ -336,8 +336,8 @@ private object FirstPage extends Menu {
     }
   }
 
-  private object ButtonComputations {
-    @SuspendingMethod def Player.computeStatsButton(): Button = recomputedButton {
+  private case class ButtonComputations(val player: Player) extends AnyVal {
+    @SuspendingMethod def computeStatsButton(): Button = recomputedButton {
       val openerData = SeichiAssist.playermap[uniqueId]
 
       Button(
@@ -357,7 +357,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeEffectSuppressionButton(): Button = recomputedButton {
+    @SuspendingMethod def computeEffectSuppressionButton(): Button = recomputedButton {
       val openerData = SeichiAssist.playermap[uniqueId]
 
       val buttonLore: List[String] = run {
@@ -396,7 +396,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeRegionMenuButton(): Button = {
+    @SuspendingMethod def computeRegionMenuButton(): Button = {
       val buttonLore = run {
         val worldGuardPlugin = ExternalPlugins.worldGuard()
         val regionManager = worldGuardPlugin.getRegionManager(world)
@@ -425,7 +425,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeMineStackButton(): Button = {
+    @SuspendingMethod def computeMineStackButton(): Button = {
       val openerData = SeichiAssist.playermap[uniqueId]
 
       val minimumLevelRequired = SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
@@ -469,7 +469,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computePocketOpenButton(): Button = {
+    @SuspendingMethod def computePocketOpenButton(): Button = {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
@@ -510,7 +510,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeEnderChestButton(): Button = {
+    @SuspendingMethod def computeEnderChestButton(): Button = {
       val playerData = SeichiAssist.playermap[uniqueId]
       val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
 
@@ -548,7 +548,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeApologyItemsButton(): Button = recomputedButton {
+    @SuspendingMethod def computeApologyItemsButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -600,7 +600,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeStarLevelStatsButton(): Button = {
+    @SuspendingMethod def computeStarLevelStatsButton(): Button = {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -622,7 +622,7 @@ private object FirstPage extends Menu {
       return Button(iconItemStack)
     }
 
-    @SuspendingMethod def Player.computeActiveSkillButton(): Button = {
+    @SuspendingMethod def computeActiveSkillButton(): Button = {
       val iconItemStack = run {
         val lore =
             if (Util.isSkillEnable(this))
@@ -653,7 +653,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeGachaTicketButton(): Button = recomputedButton {
+    @SuspendingMethod def computeGachaTicketButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -703,7 +703,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeGachaTicketDeliveryButton(): Button = recomputedButton {
+    @SuspendingMethod def computeGachaTicketDeliveryButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -749,7 +749,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    @SuspendingMethod def Player.computeValentineChocolateButton(): Button = recomputedButton {
+    @SuspendingMethod def computeValentineChocolateButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       if (playerData.hasChocoGave && Valentine.isInEvent) {
@@ -791,39 +791,40 @@ private object FirstPage extends Menu {
     }
   }
 
-  private @SuspendingMethod def Player.computeMenuLayout(): IndexedSlotLayout =
-      with(ConstantButtons) {
-        with(ButtonComputations) {
-          menuinventory.IndexedSlotLayout(
-              0 to computeStatsButton(),
-              1 to computeEffectSuppressionButton(),
-              3 to computeRegionMenuButton(),
-              5 to computeValentineChocolateButton(),
-              7 to teleportServerButton,
-              8 to spawnCommandButton,
-              9 to achievementSystemButton,
-              10 to computeStarLevelStatsButton(),
-              11 to passiveSkillBookButton,
-              13 to computeActiveSkillButton(),
-              16 to gachaPrizeExchangeButton,
-              17 to oreExchangeButton,
-              18 to homePointMenuButton,
-              19 to randomTeleportButton,
-              21 to computePocketOpenButton(),
-              22 to computeEnderChestButton(),
-              23 to fastCraftButton,
-              24 to computeMineStackButton(),
-              27 to computeGachaTicketButton(),
-              28 to computeGachaTicketDeliveryButton(),
-              29 to computeApologyItemsButton(),
-              30 to votePointMenuButton,
-              32 to seichiGodRankingButton,
-              33 to loginGodRankingButton,
-              34 to voteGodRankingButton,
-              35 to secondPageButton
-          )
-        }
-      }
+  private @SuspendingMethod def computeMenuLayout(player: Player): IndexedSlotLayout = {
+    import ConstantButtons._
+    val computations = ButtonComputations(player)
+    import computations._
+
+    menuinventory.IndexedSlotLayout(
+      0 -> computeStatsButton(),
+      1 -> computeEffectSuppressionButton(),
+      3 -> computeRegionMenuButton(),
+      5 -> computeValentineChocolateButton(),
+      7 -> teleportServerButton,
+      8 -> spawnCommandButton,
+      9 -> achievementSystemButton,
+      10 -> computeStarLevelStatsButton(),
+      11 -> passiveSkillBookButton,
+      13 -> computeActiveSkillButton(),
+      16 -> gachaPrizeExchangeButton,
+      17 -> oreExchangeButton,
+      18 -> homePointMenuButton,
+      19 -> randomTeleportButton,
+      21 -> computePocketOpenButton(),
+      22 -> computeEnderChestButton(),
+      23 -> fastCraftButton,
+      24 -> computeMineStackButton(),
+      27 -> computeGachaTicketButton(),
+      28 -> computeGachaTicketDeliveryButton(),
+      29 -> computeApologyItemsButton(),
+      30 -> votePointMenuButton,
+      32 -> seichiGodRankingButton,
+      33 -> loginGodRankingButton,
+      34 -> voteGodRankingButton,
+      35 -> secondPageButton
+    )
+  }
 
   override val open: TargetedEffect[Player] = computedEffect { player =>
     val session = menuinventory.MenuInventoryView(4.rows(), s"${LIGHT_PURPLE}木の棒メニュー").createNewSession()

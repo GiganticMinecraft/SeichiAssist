@@ -50,10 +50,10 @@ object SeichiHasteCommand {
           onMissingArguments = descriptionPrintExecutor
       )
       .execution { context =>
-        val descriptionId = context.args.parsed[0] as Int
-        val effectLengthInTick = context.args.parsed[1] as Int
-        val effectAmplifier = context.args.parsed[2] as Double
-        val scope = context.args.parsed[3] as ScopeSpecification
+        val descriptionId = context.args.parsed[0].asInstanceOf[Int]
+        val effectLengthInTick = context.args.parsed[1].asInstanceOf[Int]
+        val effectAmplifier = context.args.parsed[2].asInstanceOf[Double]
+        val scope = context.args.parsed[3].asInstanceOf[ScopeSpecification]
 
         val effectData = FastDiggingEffect(effectLengthInTick, effectAmplifier, descriptionId)
         val effectLengthString = TypeConverter.toTimeString(effectLengthInTick / 20)
