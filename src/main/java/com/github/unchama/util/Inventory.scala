@@ -4,7 +4,7 @@ import com.github.unchama.menuinventory.InventoryRowSize.InventorySize
 import org.bukkit.Bukkit
 import org.bukkit.inventory.{Inventory, InventoryHolder}
 object InventoryUtil {
-  import com.github.unchama.menuinventory.InventoryRowSize.IntToInventorySize
+  import com.github.unchama.menuinventory.InventoryRowSize.IntOps
   /**
    * 主にチェスト用。
    */
@@ -13,7 +13,7 @@ object InventoryUtil {
   }
 
   def createInventory(holder: InventoryHolder = null,
-                      size: InventorySize = 4.rows,
+                      size: InventorySize = 4.rows(),
                       title: String = null): Inventory =
     size match {
       case Left(a) => Bukkit.createInventory(holder, a.rows * 9, title)
