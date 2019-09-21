@@ -54,7 +54,7 @@ class RegionInventoryListener  extends  Listener {
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      val player = view.player as Player
+      val player = view.player.asInstanceOf[Player]
       val uuid = player.uniqueId
       val playerData = playermap[uuid]
 
@@ -138,7 +138,7 @@ class RegionInventoryListener  extends  Listener {
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      val player = view.player as Player
+      val player = view.player.asInstanceOf[Player]
       val uuid = player.uniqueId
       val playerData = playermap[uuid]
 

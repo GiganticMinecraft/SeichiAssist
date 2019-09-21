@@ -27,12 +27,12 @@ class MineStackGachaData(val objName: String,
       //盾、バナー用の模様判定
       val otherType = another.type
       if ((otherType === Material.SHIELD || otherType === Material.BANNER) && this.itemStack.getType === otherType) {
-        val bs0 = ant as BlockStateMeta
-        val b0 = bs0.blockState as Banner
+        val bs0 = ant.asInstanceOf[BlockStateMeta]
+        val b0 = bs0.blockState.asInstanceOf[Banner]
         val p0 = b0.patterns
 
-        val bs1 = crt as BlockStateMeta
-        val b1 = bs1.blockState as Banner
+        val bs1 = crt.asInstanceOf[BlockStateMeta]
+        val b1 = bs1.blockState.asInstanceOf[Banner]
         val p1 = b1.patterns
 
         return p0.containsAll(p1)

@@ -28,7 +28,7 @@ object OnActiveSkillUnselect extends Listener {
     if (topinventory.row != 5) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = SeichiAssist.playermap[uuid]
 

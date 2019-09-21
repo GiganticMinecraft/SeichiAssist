@@ -254,7 +254,7 @@ object SecondPage extends Menu {
               if (expManager.hasExp(10000)) {
                 val skullToGive = SkullItemStackBuilder(uniqueId).build().apply {
                   //バレンタイン中(イベント中かどうかの判断はSeasonalEvent側で行う)
-                  itemMeta = Valentine.playerHeadLore(itemMeta as SkullMeta)
+                  itemMeta = Valentine.playerHeadLore(itemMeta.asInstanceOf[SkullMeta])
                 }
 
                 sequentialEffect(

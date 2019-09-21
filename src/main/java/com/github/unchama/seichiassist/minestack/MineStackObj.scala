@@ -29,7 +29,7 @@ open class MineStackObj(val mineStackObjName: String,
 
   override def equals(other: Any?): Boolean = {
     if (this === other) return true
-    val that = other as MineStackObj?
+    val that = other.asInstanceOf[MineStackObj]?
     return mineStackObjName == that?.mineStackObjName
   }
 

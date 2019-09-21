@@ -10,11 +10,11 @@ import org.bukkit.event.inventory.InventoryClickEvent
  */
 case class ButtonEffectScope(val event: InventoryClickEvent) {
   def overwriteCurrentViewBy(newLayout: IndexedSlotLayout): UnfocusedEffect = UnfocusedEffect {
-    (event.inventory.holder as MenuSession).overwriteViewWith(newLayout)
+    (event.inventory.holder.asInstanceOf[MenuSession]).overwriteViewWith(newLayout)
   }
 
   def overwriteCurrentSlotBy(newSlot: Slot): UnfocusedEffect = UnfocusedEffect {
-    val session = event.inventory.holder as MenuSession
+    val session = event.inventory.holder.asInstanceOf[MenuSession]
     val newLayout = session.view.slotLayout.altered(event.slot to newSlot)
     session.overwriteViewWith(layout = newLayout)
   }

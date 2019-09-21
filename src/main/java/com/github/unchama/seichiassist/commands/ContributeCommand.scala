@@ -45,8 +45,8 @@ object ContributeCommand {
 
   private val addPointExecutor: ContextualExecutor = parserConfiguredBuilder
       .execution { context =>
-        val targetPlayerName = context.args.parsed[0] as String
-        val point = context.args.parsed[1] as Int
+        val targetPlayerName = context.args.parsed[0].asInstanceOf[String]
+        val point = context.args.parsed[1].asInstanceOf[Int]
 
         addContributionPoint(targetPlayerName, point)
       }
@@ -54,8 +54,8 @@ object ContributeCommand {
 
   private val removePointExecutor: ContextualExecutor = parserConfiguredBuilder
       .execution { context =>
-        val targetPlayerName = context.args.parsed[0] as String
-        val point = context.args.parsed[1] as Int
+        val targetPlayerName = context.args.parsed[0].asInstanceOf[String]
+        val point = context.args.parsed[1].asInstanceOf[Int]
 
         addContributionPoint(targetPlayerName, -point)
       }

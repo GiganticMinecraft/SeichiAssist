@@ -307,7 +307,7 @@ object Util {
     for (itemStack in inventory) {
       material = itemStack.type
       if (material == Material.SKULL_ITEM) {
-        skullmeta = itemStack.itemMeta as SkullMeta
+        skullmeta = itemStack.itemMeta.asInstanceOf[SkullMeta]
         if (skullmeta.hasOwner()) {
           if (skullmeta.owner == "unchama") {
             return true
@@ -335,7 +335,7 @@ object Util {
     if (itemstack.getType != Material.SKULL_ITEM) {
       return false
     }
-    val skullmeta = itemstack.itemMeta as SkullMeta
+    val skullmeta = itemstack.itemMeta.asInstanceOf[SkullMeta]
 
     //ownerがいない場合処理終了
     return if (!skullmeta.hasOwner()) {
@@ -616,7 +616,7 @@ object Util {
       return ItemStack(Material.STONE)
     }
 
-    val skull = block.state as Skull
+    val skull = block.state.asInstanceOf[Skull]
     var itemStack = ItemStack(Material.SKULL_ITEM)
 
     //SkullTypeがプレイヤー以外の場合，SkullTypeだけ設定して終わり

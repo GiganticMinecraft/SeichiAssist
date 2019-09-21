@@ -34,7 +34,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 2) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
 
     //インベントリ名が以下の時処理
     if (topinventory.title == s"$DARK_RED${BOLD}サーバーを選択してください") {
@@ -90,7 +90,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 4) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid]
 
@@ -115,7 +115,7 @@ class PlayerInventoryListener  extends  Listener {
       //ページ変更処理
       // =>
       // val swords = EnumSet.of(Material.WOOD_SWORD, Material.STONE_SWORD, Material.GOLD_SWORD, Material.IRON_SWORD, Material.DIAMOND_SWORD)
-      if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+      if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               CommonSoundEffects.menuTransitionFenceSound,
@@ -204,7 +204,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 5) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid]
 
@@ -228,7 +228,7 @@ class PlayerInventoryListener  extends  Listener {
         (4..9).forEach { skilllevel =>
           val name = ActiveSkill.ARROW.getName(skilllevel)
           if (itemstackcurrent.getType == ActiveSkill.ARROW.getMaterial(skilllevel)) {
-            val potionmeta = itemstackcurrent.itemMeta as PotionMeta
+            val potionmeta = itemstackcurrent.itemMeta.asInstanceOf[PotionMeta]
             if (potionmeta.basePotionData.getType == ActiveSkill.ARROW.getPotionType(skilllevel)) {
               if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
                 player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
@@ -358,7 +358,7 @@ class PlayerInventoryListener  extends  Listener {
       }
 
       //ページ変更処理
-      if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+      if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               CommonSoundEffects.menuTransitionFenceSound,
@@ -433,7 +433,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 6) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid]
 
@@ -453,7 +453,7 @@ class PlayerInventoryListener  extends  Listener {
 			 */
       //ページ変更処理
       val currentType = itemstackcurrent.getType
-      if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+      if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
         //開く音を再生
         player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1.toFloat())
         player.openInventory(ActiveSkillInventoryData.activeSkillMenuData(player))
@@ -576,7 +576,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 6) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
 
     val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
@@ -594,7 +594,7 @@ class PlayerInventoryListener  extends  Listener {
       //ページ変更処理
       if (isSkull) {
         // safe cast
-        val skullMeta = itemstackcurrent.itemMeta as SkullMeta
+        val skullMeta = itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]
         val name = skullMeta.displayName
         when (skullMeta.owner) {
           "MHF_ArrowLeft" => {
@@ -658,7 +658,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 6) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
 
     val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
@@ -674,14 +674,14 @@ class PlayerInventoryListener  extends  Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
       //ページ変更処理
-      if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+      if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
           ).runFor(player)
         }
-      } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowDown") {
+      } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowDown") {
         val itemmeta = itemstackcurrent.itemMeta
         if (itemmeta.displayName.contains("ログイン神ランキング") && itemmeta.displayName.contains("ページ目")) {//移動するページの種類を判定
           val page_display = Integer.parseInt(itemmeta.displayName.replace("[^0-9]".toRegex(), "")) //数字以外を全て消す
@@ -690,7 +690,7 @@ class PlayerInventoryListener  extends  Listener {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.rankingList_playtick(page_display - 1))
         }
-      } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowUp") {
+      } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowUp") {
         val itemmeta = itemstackcurrent.itemMeta
         if (itemmeta.displayName.contains("ログイン神ランキング") && itemmeta.displayName.contains("ページ目")) {//移動するページの種類を判定
           val page_display = Integer.parseInt(itemmeta.displayName.replace("[^0-9]".toRegex(), "")) //数字以外を全て消す
@@ -725,7 +725,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 6) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
 
     val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
@@ -742,7 +742,7 @@ class PlayerInventoryListener  extends  Listener {
 			 */
       //ページ変更処理
       if (isSkull) {
-        val skullMeta = (itemstackcurrent.itemMeta as SkullMeta)
+        val skullMeta = (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta])
         when (skullMeta.owner) {
           "MHF_ArrowLeft" => {
             GlobalScope.launch(Schedulers.async) {
@@ -801,7 +801,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 6) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
 
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "寄付神ランキング") {
@@ -818,7 +818,7 @@ class PlayerInventoryListener  extends  Listener {
 			 */
       //ページ変更処理
       if (isSkull) {
-        val skullMeta = itemstackcurrent.itemMeta as SkullMeta
+        val skullMeta = itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]
         val name = skullMeta.displayName
         when(skullMeta.owner) {
           "MHF_ArrowLeft" => {
@@ -876,7 +876,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 4) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
 
     //インベントリ名が以下の時処理
     if (topinventory.title == BLUE.toString() + "" + BOLD + "プレミアムエフェクト購入履歴") {
@@ -893,7 +893,7 @@ class PlayerInventoryListener  extends  Listener {
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
       //ページ変更処理
-      if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+      if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
         //開く音を再生
         player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1.toFloat())
         player.openInventory(MenuInventoryData.activeSkillEffectMenuData(player))
@@ -904,7 +904,7 @@ class PlayerInventoryListener  extends  Listener {
   //ガチャ交換システム
   @EventHandler
   def onGachaTradeEvent(event: InventoryCloseEvent) {
-    val player = event.player as Player
+    val player = event.player.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid] ?: return
     //エラー分岐
@@ -1041,7 +1041,7 @@ class PlayerInventoryListener  extends  Listener {
   //鉱石・交換券変換システム
   @EventHandler
   def onOreTradeEvent(event: InventoryCloseEvent) {
-    val player = event.player as Player
+    val player = event.player.asInstanceOf[Player]
 
     //エラー分岐
     val inventory = event.inventory
@@ -1133,7 +1133,7 @@ class PlayerInventoryListener  extends  Listener {
   //ギガンティック→椎名林檎交換システム
   @EventHandler
   def onGachaRingoEvent(event: InventoryCloseEvent) {
-    val player = event.player as Player
+    val player = event.player.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid] ?: return
     //エラー分岐
@@ -1255,7 +1255,7 @@ class PlayerInventoryListener  extends  Listener {
 
   @EventHandler
   def onTitanRepairEvent(event: InventoryCloseEvent) {
-    val player = event.player as Player
+    val player = event.player.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid] ?: return
     //エラー分岐
@@ -1320,7 +1320,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 4) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid]
 
@@ -1400,7 +1400,7 @@ class PlayerInventoryListener  extends  Listener {
         player.sendMessage(RED.toString() + "" + UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote")
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.closeInventory()
-      } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+      } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
         GlobalScope.launch(Schedulers.async) {
           sequentialEffect(
               CommonSoundEffects.menuTransitionFenceSound,
@@ -1479,7 +1479,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 3) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid]
     val itemmeta = itemstackcurrent.itemMeta
@@ -1561,7 +1561,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.row != 6) {
       return
     }
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid]
 

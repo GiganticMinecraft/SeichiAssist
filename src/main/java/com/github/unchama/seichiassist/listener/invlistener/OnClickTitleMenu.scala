@@ -32,7 +32,7 @@ object OnClickTitleMenu extends Listener {
     }
     val itemstackcurrent = event.currentItem
 
-    val player = he as Player
+    val player = he.asInstanceOf[Player]
     val playerdata = SeichiAssist.playermap[player.uniqueId]
 
     def setTitle(first: Int = 0, second: Int = 0, third: Int = 0, message: String =
@@ -72,7 +72,7 @@ object OnClickTitleMenu extends Listener {
           playerdata.updateNickname(style = PlayerNickName.Style.Level)
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.titleMenuData(player))
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_Present2") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_Present2") {
           SeichiAchievement.tryAchieve(player, playerdata.giveachvNo)
           playerdata.giveachvNo = 0
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -96,7 +96,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.titleSpecial(player))
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           GlobalScope.launch(Schedulers.async) {
             sequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
@@ -144,7 +144,7 @@ object OnClickTitleMenu extends Listener {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleRankData(player))
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleMenuData(player))
           return
@@ -159,7 +159,7 @@ object OnClickTitleMenu extends Listener {
         //プレイヤーインベントリのクリックの場合終了
         if (event.clickedInventory.getType == InventoryType.PLAYER) {
           return
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleMenuData(player))
           return
@@ -194,7 +194,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.titleExtraData(player))
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleMenuData(player))
           return
@@ -215,7 +215,7 @@ object OnClickTitleMenu extends Listener {
         //プレイヤーインベントリのクリックの場合終了
         if (event.clickedInventory.getType === InventoryType.PLAYER) {
           return
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleMenuData(player))
           return
@@ -245,7 +245,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.titleSecretData(player))
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleMenuData(player))
           return
@@ -324,7 +324,7 @@ object OnClickTitleMenu extends Listener {
             // NOP
           }
         }
-        if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleMenuData(player))
           return
@@ -363,7 +363,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
           return
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowRight") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowRight") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
           return
@@ -405,7 +405,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
           return
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowRight") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowRight") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
           return
@@ -447,7 +447,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
           return
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowRight") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowRight") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
           return
@@ -513,7 +513,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
           return
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowRight") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowRight") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.setTitleShopData(player))
           return
@@ -578,7 +578,7 @@ object OnClickTitleMenu extends Listener {
           }
           player.openInventory(MenuInventoryData.titleRankData(player))
 
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleSeichi(player))
           return
@@ -639,7 +639,7 @@ object OnClickTitleMenu extends Listener {
           }
           player.openInventory(MenuInventoryData.titleAmountData(player))
 
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleSeichi(player))
           return
@@ -750,7 +750,7 @@ object OnClickTitleMenu extends Listener {
           playerdata.TitleFlags.set(8003)
           player.sendMessage("お疲れ様でした！今日のお給料の代わりに二つ名をどうぞ！")
           player.openInventory(MenuInventoryData.titleTimeData(player))
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleLogin(player))
           return
@@ -835,7 +835,7 @@ object OnClickTitleMenu extends Listener {
 
           player.openInventory(MenuInventoryData.titleJoinAmountData(player))
 
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleLogin(player))
           return
@@ -881,7 +881,7 @@ object OnClickTitleMenu extends Listener {
 
           player.openInventory(MenuInventoryData.titleJoinChainData(player))
 
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.titleLogin(player))
           return
@@ -934,7 +934,7 @@ object OnClickTitleMenu extends Listener {
             setTitle(first = 6008)
           }
           player.openInventory(MenuInventoryData.titleSupportData(player))
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleSpecial(player))
           return
@@ -1067,7 +1067,7 @@ object OnClickTitleMenu extends Listener {
           }
           player.openInventory(MenuInventoryData.titleEventData(player))
 
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleSpecial(player))
           return
@@ -1204,11 +1204,11 @@ object OnClickTitleMenu extends Listener {
             setTitle(first = 9036, third = 9036)
           }
           player.openInventory(MenuInventoryData.titleExtraData(player))
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleLogin(player))
           return
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowRight") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowRight") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = playerdata.titlepage + 1
           player.openInventory(MenuInventoryData.titleExtraData(player))
@@ -1251,7 +1251,7 @@ object OnClickTitleMenu extends Listener {
           }
           player.openInventory(MenuInventoryData.titleSecretData(player))
 
-        } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
+        } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.titleSpecial(player))
         }//実績メニューに戻る

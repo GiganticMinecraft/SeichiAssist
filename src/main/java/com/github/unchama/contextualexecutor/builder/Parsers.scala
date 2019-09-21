@@ -22,7 +22,7 @@ object Parsers {
       smallEnd: Int, largeEnd: Int,
       failureMessage: TargetedEffect[CommandSender] = EmptyEffect): SingleArgumentParser = { arg =>
     integer(failureMessage)(arg).flatMap {
-      val parsed = it as Int
+      val parsed = it.asInstanceOf[Int]
 
       if (parsed in smallEnd..largeEnd) succeedWith(it) else failWith(failureMessage)
     }
