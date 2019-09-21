@@ -19,5 +19,7 @@ enum class MineStackObjectCategory(val serializedValue: Int, val uiLabel: String
 object MineStackObjectCategory {
   def fromSerializedValue(value: Int): MineStackObjectCategory? = values().find { it.serializedValue == value }
 
-  def MineStackObj.category(): MineStackObjectCategory = this.stackType
+  implicit class MineStackObjOps(val mineStackObj: MineStackObj) extends AnyVal {
+    def category(): MineStackObjectCategory = mineStackObj.stackType
+  }
 }

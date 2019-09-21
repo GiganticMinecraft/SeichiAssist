@@ -12,22 +12,26 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
-internal object MineStackButtons {
+private[minestack] case class MineStackButtons(player: Player) {
   private def withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect[Player] = {
-    def ItemStack.withAmount(amount: Int): ItemStack = clone().apply { this.amount = amount }
-    def MineStackObj.generateParameterizedStack(player: Player): ItemStack = {
-      // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
-      if (this.stackType == MineStackObjectCategory.GACHA_PRIZES && this.gachaType >= 0) {
-        val gachaData = SeichiAssist.msgachadatalist[this.gachaType]
-        if (gachaData.probability < 0.1) {
-          return this.itemStack.clone().apply {
-            val itemLore = if (itemMeta.hasLore()) itemMeta.lore else List()
-            lore = itemLore + s"$RESET${DARK_GREEN}所有者：${player.name}"
+    implicit class ItemStackOps(val itemStack: ItemStack) extends AnyVal {
+      def withAmount(amount: Int): ItemStack = clone().apply { this.amount = amount }
+    }
+    implicit class MineStackObjectOps(mineStackObj: MineStackObj) {
+      def generateParameterizedStack(player: Player): ItemStack = {
+        // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
+        if (this.stackType == MineStackObjectCategory.GACHA_PRIZES && this.gachaType >= 0) {
+          val gachaData = SeichiAssist.msgachadatalist[this.gachaType]
+          if (gachaData.probability < 0.1) {
+            return this.itemStack.clone().apply {
+              val itemLore = if (itemMeta.hasLore()) itemMeta.lore else List()
+              lore = itemLore + s"$RESET${DARK_GREEN}所有者：${player.name}"
+            }
           }
         }
-      }
 
-      return mineStackObj.itemStack.clone()
+        mineStackObj.itemStack.clone()
+      }
     }
 
     return computedEffect { player =>
@@ -48,7 +52,7 @@ internal object MineStackButtons {
     }
   }
 
-  @SuspendingMethod def Player.getMineStackItemButtonOf(mineStackObj: MineStackObj): Button = recomputedButton {
+  @SuspendingMethod def getMineStackItemButtonOf(mineStackObj: MineStackObj): Button = recomputedButton {
     val playerData = SeichiAssist.playermap[uniqueId]
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
@@ -74,10 +78,10 @@ internal object MineStackButtons {
 
     Button(
         itemStack,
-        FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
           sequentialEffect(
               withDrawOneStackEffect(mineStackObj),
-              UnfocusedEffect {
+              targetedeffect.UnfocusedEffect {
                 if (mineStackObj.category() !== MineStackObjectCategory.GACHA_PRIZES) {
                   playerData.hisotryData.add(mineStackObj)
                 }
@@ -87,7 +91,7 @@ internal object MineStackButtons {
     )
   }
 
-  @SuspendingMethod def Player.computeAutoMineStackToggleButton(): Button = recomputedButton {
+  @SuspendingMethod def computeAutoMineStackToggleButton(): Button = recomputedButton {
     val playerData = SeichiAssist.playermap[uniqueId]
 
     val iconItemStack = run {

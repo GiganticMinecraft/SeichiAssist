@@ -11,5 +11,7 @@ object InventoryRowSize {
    */
   type InventorySize = Either[InventoryRowSize, InventoryType]
 
-  def Int.rows(): InventorySize = InventoryRowSize(this).left()
+  implicit class IntOps(val rowNumber: Int) extends AnyVal {
+    def rows(): InventorySize = Left(InventoryRowSize(rowNumber))
+  }
 }

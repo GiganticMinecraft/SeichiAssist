@@ -4,6 +4,7 @@ import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.targetedeffect.{EmptyEffect, TargetedEffect}
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import kotlin.collections.IndexedValue
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
@@ -11,23 +12,17 @@ import org.bukkit.inventory.Inventory
  * どのインデックスがどの[Slot]と関連付けられているかの情報を持つ[Map]のラッパークラス.
  */
 case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
-  def this(): this(mapOf())
-
-  def this(vararg mappings: Pair[Int, Slot]): this(mapOf(*mappings))
-
-  def this(mapping: Iterable[IndexedValue[Slot]]): this(mapping.toMap())
-
   /**
    * クリックされた枠に対応した[Slot]が[InventoryClickEvent]に基づいて引き起こす作用を計算する.
    */
-  internal def computeAsyncEffectOn(event: InventoryClickEvent): TargetedEffect[Player] = {
+  def computeAsyncEffectOn(event: InventoryClickEvent): TargetedEffect[Player] = {
     return map[event.slot]?.effectOn(event) ?: EmptyEffect
   }
 
   /**
    * 指定した[Inventory]に[Slot]により構成されたレイアウトを敷き詰める.
    */
-  internal @SuspendingMethod def asynchronouslySetItemsOn(inventory: Inventory) {
+  @SuspendingMethod def asynchronouslySetItemsOn(inventory: Inventory) {
     coroutineScope {
       for (slotIndex in 0 until inventory.size) {
         launch {
@@ -49,14 +44,20 @@ case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
   /**
    * [slotReplacement]でレイアウトの一箇所を置き換えた新しいレイアウトを計算する.
    */
-  internal def altered(slotReplacement: Pair[Int, Slot]) = copy(map = map + slotReplacement)
+  def altered(slotReplacement: Pair[Int, Slot]) = copy(map = map + slotReplacement)
 }
 
 object IndexedSlotLayout {
   val emptyLayout = IndexedSlotLayout()
 
-  inline def singleSlotLayout(indexedSlot: () => Pair[Int, Slot]): IndexedSlotLayout = IndexedSlotLayout(indexedSlot())
+  def apply() = IndexedSlotLayout(Map[Int, Slot]())
 
-  def combinedLayout(vararg layouts: IndexedSlotLayout): IndexedSlotLayout =
+  def apply(mappings: (Int, Slot)*): IndexedSlotLayout = { IndexedSlotLayout(Map(mappings: _*)) }
+
+  def apply(mapping: Iterable[IndexedValue[Slot]]) = IndexedSlotLayout(mapping.toMap)
+
+  @inline def singleSlotLayout(indexedSlot: () => Pair[Int, Slot]): IndexedSlotLayout = IndexedSlotLayout(indexedSlot())
+
+  def combinedLayout(layouts: IndexedSlotLayout*): IndexedSlotLayout =
     layouts.toList().fold(emptyLayout) { acc, layout => acc.merge(layout) }
 }

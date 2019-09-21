@@ -1,14 +1,15 @@
 package com.github.unchama.seichiassist.menus
 
-import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
 import com.github.unchama.menuinventory.{IndexedSlotLayout, Menu, MenuInventoryView}
-import com.github.unchama.seichiassist.Schedulers
 import com.github.unchama.seichiassist.data.RegionMenuData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
+import com.github.unchama.seichiassist.{Schedulers, SeichiAssist}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
+import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
@@ -120,9 +121,9 @@ object RegionMenu extends Menu {
 
   }
 
-  private object ButtonComputations {
+  private case class ButtonComputations(player: Player) extends AnyVal {
 
-    @SuspendingMethod def Player.computeButtonToClaimRegion(): Button = run {
+    @SuspendingMethod def computeButtonToClaimRegion(): Button = run {
       val openerData = SeichiAssist.playermap[uniqueId]
       val selection = ExternalPlugins.worldEdit().getSelection(player)
 
@@ -190,28 +191,28 @@ object RegionMenu extends Menu {
           )
       )
     }
-
   }
 
-  private @SuspendingMethod def Player.computeMenuLayout(): IndexedSlotLayout =
-      with(ConstantButtons) {
-        with(ButtonComputations) {
-      menuinventory.IndexedSlotLayout(
-              0 to summonWandButton,
-              1 to computeButtonToClaimRegion(),
-              2 to displayOpenerRegionButton,
-              3 to openRegionGUIButton,
-              4 to openGridRegionMenuButton
-          )
-        }
-      }
+  private @SuspendingMethod def computeMenuLayout(player: Player): IndexedSlotLayout = {
+    import ConstantButtons._
+    val computations = ButtonComputations(player)
+    import computations._
+
+    menuinventory.IndexedSlotLayout(
+      0 -> summonWandButton,
+      1 -> computeButtonToClaimRegion(),
+      2 -> displayOpenerRegionButton,
+      3 -> openRegionGUIButton,
+      4 -> openGridRegionMenuButton
+    )
+  }
 
   override val open: TargetedEffect[Player] = computedEffect { player =>
     val session = MenuInventoryView(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー").createNewSession()
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
-        UnfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+        targetedeffect.UnfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
     )
   }
 
