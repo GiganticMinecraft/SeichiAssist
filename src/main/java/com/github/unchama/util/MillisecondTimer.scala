@@ -16,5 +16,9 @@ class MillisecondTimer private() {
 }
 
 object MillisecondTimer {
-  def getInitializedTimerInstance(): MillisecondTimer = MillisecondTimer().apply { resetTimer() }
+  def getInitializedTimerInstance: MillisecondTimer = {
+    val timer = new MillisecondTimer()
+    timer.resetTimer()
+    timer
+  }
 }
