@@ -14,7 +14,7 @@ import org.bukkit.{Bukkit, Material}
 object ShareInvCommand {
   @Suppress("RedundantSuspendModifier")
   @SuspendingMethod def dropIfNotEmpty(itemStack: ItemStack?, to: Player) {
-    if (itemStack != null && itemStack.type !== Material.AIR) {
+    if (itemStack != null && itemStack.getType !== Material.AIR) {
       Util.dropItem(to, itemStack)
     }
   }

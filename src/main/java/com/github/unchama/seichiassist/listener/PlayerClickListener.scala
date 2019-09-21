@@ -329,7 +329,7 @@ class PlayerClickListener  extends  Listener {
     if (action === Action.RIGHT_CLICK_AIR || action === Action.RIGHT_CLICK_BLOCK) {
 
       val mainhandflag = currentItem in MaterialSets.breakMaterials
-      val offhandflag = player.inventory.itemInOffHand.type in MaterialSets.breakMaterials
+      val offhandflag = player.inventory.itemInOffHand.getType in MaterialSets.breakMaterials
 
       var activemineflagnum = playerdata.activeskilldata.mineflagnum
       //どちらにも対応したアイテムを持っていない場合終了
@@ -381,7 +381,7 @@ class PlayerClickListener  extends  Listener {
         }
       }
 
-      if (player.inventory.itemInOffHand.type in MaterialSets.breakMaterials && equipmentslot === EquipmentSlot.OFF_HAND) {
+      if (player.inventory.itemInOffHand.getType in MaterialSets.breakMaterials && equipmentslot === EquipmentSlot.OFF_HAND) {
         //オフハンドで指定ツールを持っていた時の処理
 
         //設置をキャンセル
@@ -414,7 +414,7 @@ class PlayerClickListener  extends  Listener {
     //プレイヤーが起こしたアクションを取得
     val action = event.action
 
-    if (player.inventory.itemInMainHand.type !== Material.STICK) return
+    if (player.inventory.itemInMainHand.getType !== Material.STICK) return
 
     event.isCancelled = true
 
@@ -478,7 +478,7 @@ class PlayerClickListener  extends  Listener {
   @EventHandler
   def onPlayerRightClickExpBottleEvent(event: PlayerInteractEvent) {
     // 経験値瓶を持った状態でShift右クリックをした場合
-    if (event.player.isSneaking && event.player.inventory.itemInMainHand.type === Material.EXP_BOTTLE
+    if (event.player.isSneaking && event.player.inventory.itemInMainHand.getType === Material.EXP_BOTTLE
         && (event.action === Action.RIGHT_CLICK_AIR || event.action === Action.RIGHT_CLICK_BLOCK)) {
       event.isCancelled = true
       val num = event.item.amount
@@ -508,7 +508,7 @@ class PlayerClickListener  extends  Listener {
 
     val targetBlock = e.clickedBlock
     //頭じゃない場合無視
-    if (targetBlock.type !== Material.SKULL) {
+    if (targetBlock.getType !== Material.SKULL) {
       return
     }
 

@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.{BukkitSerialization, Util}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.util.ActionStatus
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
@@ -27,7 +27,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   private val tableReference: String
     get() = gateway.databaseName + "." + DatabaseConstants.PLAYERDATA_TABLENAME
 
-  private inline def ifCoolDownDoneThenGet(player: Player,
+  private @inline def ifCoolDownDoneThenGet(player: Player,
                                            playerdata: PlayerData,
                                            supplier: () => Int): Int = {
     //連打による負荷防止の為クールダウン処理
@@ -248,7 +248,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         s"${RED}プレーヤーデータへのアクセスに失敗しました。".asMessageEffect().left()
       }
 
-  @SuspendingMethod def addContributionPoint(targetPlayerName: String, point: Int): ResponseEffectOrResult[CommandSender, Unit] {
+  @SuspendingMethod def addContributionPoint(targetPlayerName: String, point: Int): ResponseEffectOrResult[CommandSender, Unit] = {
     @Suppress("RedundantSuspendModifier")
     @SuspendingMethod def executeUpdate(): ResponseEffectOrResult[CommandSender, Unit] = {
       val updateCommand = s"UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name LIKE '$targetPlayerName'"
@@ -291,7 +291,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
 
   @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): ResponseEffectOrResult[CommandSender, Unit] {
+  @SuspendingMethod def saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): ResponseEffectOrResult[CommandSender, Unit] = {
     //連打による負荷防止の為クールダウン処理
     if (!playerData.shareinvcooldownflag) {
     return s"${RED}しばらく待ってからやり直してください".asMessageEffect ().left ()
@@ -327,7 +327,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def loadShareInv(player: Player, playerData: PlayerData): ResponseEffectOrResult[CommandSender, String] {
+  @SuspendingMethod def loadShareInv(player: Player, playerData: PlayerData): ResponseEffectOrResult[CommandSender, String] = {
     //連打による負荷防止の為クールダウン処理
     if (!playerData.shareinvcooldownflag) {
     return s"${RED}しばらく待ってからやり直してください".asMessageEffect ().left ()
@@ -349,7 +349,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def clearShareInv(player: Player, playerdata: PlayerData): ResponseEffectOrResult[CommandSender, Unit] {
+  @SuspendingMethod def clearShareInv(player: Player, playerdata: PlayerData): ResponseEffectOrResult[CommandSender, Unit] = {
     val command = s"UPDATE $tableReference SET shareinv = '' WHERE uuid = '${playerdata.uuid}'"
 
     if (gateway.executeUpdate(command) === Fail) {
@@ -529,7 +529,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def selectPocketInventoryOf(uuid: UUID): ResponseEffectOrResult[CommandSender, Inventory] {
+  @SuspendingMethod def selectPocketInventoryOf(uuid: UUID): ResponseEffectOrResult[CommandSender, Inventory] = {
     val command = s"select inventory from $tableReference where uuid like '$uuid'"
 
     try {

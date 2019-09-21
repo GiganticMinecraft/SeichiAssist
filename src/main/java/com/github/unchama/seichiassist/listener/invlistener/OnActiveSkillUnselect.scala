@@ -18,7 +18,7 @@ object OnActiveSkillUnselect extends Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -36,13 +36,13 @@ object OnActiveSkillUnselect extends Listener {
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキル選択") {
       event.isCancelled = true
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      if (itemstackcurrent.type === Material.BEDROCK) {
+      if (itemstackcurrent.getType === Material.BEDROCK) {
         val itemmeta = itemstackcurrent.itemMeta
         val skilllevel: Int
         val skilltype: Int

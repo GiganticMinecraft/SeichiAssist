@@ -24,7 +24,7 @@ case class Button(override val itemStack: ItemStack,
   /**
    * [effects]をひとつずつ作用として発生させる [Slot] を構築します.
    */
-  def this(itemStack: ItemStack, vararg effects: ButtonEffect): this(itemStack, effects.toList())
+  def this(itemStack: ItemStack, effects: ButtonEffect*): this(itemStack, effects.toList())
 
   override def effectOn(event: InventoryClickEvent): TargetedEffect[Player] =
     targetedeffect.UnfocusedEffect {

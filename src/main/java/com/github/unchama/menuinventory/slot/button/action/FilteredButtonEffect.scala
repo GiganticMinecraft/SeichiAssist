@@ -1,4 +1,10 @@
 package com.github.unchama.menuinventory.slot.button.action
+
+import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.{EmptyEffect, TargetedEffect}
+import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryClickEvent
+
 /**
  * "フィルタ"付きの[ButtonEffect]
  *
@@ -8,12 +14,14 @@ package com.github.unchama.menuinventory.slot.button.action
  * [effect]は[clickEventFilter] がtrueを返した際に発火されます.
  */
 case class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter,
-                                private val effect: ButtonEffectScope.() => TargetedEffect[Player]) extends ButtonEffect {
+                                private val effect: (ButtonEffectScope) => TargetedEffect[Player]) extends ButtonEffect {
 
   /**
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[FilteredButtonEffect]を構築する.
    */
-  def this(clickEventFilter: ClickEventFilter, vararg effects: TargetedEffect[Player]): this(clickEventFilter, { sequentialEffect(*effects) })
+  def this(clickEventFilter: ClickEventFilter, effects: targetedeffect.TargetedEffect[Player]*) {
+    this(clickEventFilter, { sequentialEffect(effects: _*) })
+  }
 
   /**
    * [event]に基づいた[effect]による作用を計算する.
@@ -31,11 +39,12 @@ case class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter,
 /**
  * 左クリックに限定した[FilteredButtonEffect]
  */
-case class LeftClickButtonEffect(private val effect: ButtonEffectScope.() => TargetedEffect[Player]) extends
-    ButtonEffect by FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, effect) {
+case class LeftClickButtonEffect(private val effect: (ButtonEffectScope) => TargetedEffect[Player]) extends FilteredButtonEffect(ClickEventFilter.LEFT_CLICK, effect) {
 
   /**
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[LeftClickButtonEffect]を構築する.
    */
-  def this(vararg effects: TargetedEffect[Player]): this({ sequentialEffect(*effects) })
+  def this(effects: TargetedEffect[Player]*) {
+    this({ sequentialEffect(effects: _*) })
+  }
 }

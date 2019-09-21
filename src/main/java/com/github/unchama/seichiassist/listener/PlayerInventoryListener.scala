@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import org.bukkit.ChatColor._
-import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.{Material, Sound}
 class PlayerInventoryListener  extends  Listener {
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
@@ -23,7 +24,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -40,7 +41,7 @@ class PlayerInventoryListener  extends  Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type === InventoryType.PLAYER) return
+      if (event.clickedInventory.getType === InventoryType.PLAYER) return
 
       val meta = itemstackcurrent.itemMeta
 
@@ -79,7 +80,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -102,10 +103,10 @@ class PlayerInventoryListener  extends  Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
-      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
@@ -122,7 +123,7 @@ class PlayerInventoryListener  extends  Listener {
           ).runFor(player)
         }
       } else {
-        val type = itemstackcurrent.type
+        val type = itemstackcurrent.getType
         when (type) {
           Material.DIAMOND_PICKAXE => {
             // 複数破壊トグル
@@ -192,7 +193,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -213,12 +214,12 @@ class PlayerInventoryListener  extends  Listener {
 
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキル選択") {
-      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
 
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -226,9 +227,9 @@ class PlayerInventoryListener  extends  Listener {
       ActiveSkill.ARROW.gettypenum().let { type =>
         (4..9).forEach { skilllevel =>
           val name = ActiveSkill.ARROW.getName(skilllevel)
-          if (itemstackcurrent.type == ActiveSkill.ARROW.getMaterial(skilllevel)) {
+          if (itemstackcurrent.getType == ActiveSkill.ARROW.getMaterial(skilllevel)) {
             val potionmeta = itemstackcurrent.itemMeta as PotionMeta
-            if (potionmeta.basePotionData.type == ActiveSkill.ARROW.getPotionType(skilllevel)) {
+            if (potionmeta.basePotionData.getType == ActiveSkill.ARROW.getPotionType(skilllevel)) {
               if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
                 player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
                 player.sendMessage(s"${YELLOW}選択を解除しました")
@@ -248,7 +249,7 @@ class PlayerInventoryListener  extends  Listener {
       ActiveSkill.MULTI.gettypenum().let { type =>
         (4..9).forEach { skilllevel =>
           val name = ActiveSkill.MULTI.getName(skilllevel)
-          if (itemstackcurrent.type == ActiveSkill.MULTI.getMaterial(skilllevel)) {
+          if (itemstackcurrent.getType == ActiveSkill.MULTI.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
               player.sendMessage(s"${YELLOW}選択を解除しました")
@@ -267,7 +268,7 @@ class PlayerInventoryListener  extends  Listener {
       ActiveSkill.BREAK.gettypenum().let { type =>
         (1..9).forEach { skilllevel =>
           val name = ActiveSkill.BREAK.getName(skilllevel)
-          if (itemstackcurrent.type == ActiveSkill.BREAK.getMaterial(skilllevel)) {
+          if (itemstackcurrent.getType == ActiveSkill.BREAK.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.skilltype == type && playerdata.activeskilldata.skillnum == skilllevel) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
               player.sendMessage(s"${YELLOW}選択を解除しました")
@@ -287,7 +288,7 @@ class PlayerInventoryListener  extends  Listener {
       ActiveSkill.WATERCONDENSE.gettypenum().let { type =>
         (7..9).forEach { skilllevel =>
           val name = ActiveSkill.WATERCONDENSE.getName(skilllevel)
-          if (itemstackcurrent.type == ActiveSkill.WATERCONDENSE.getMaterial(skilllevel)) {
+          if (itemstackcurrent.getType == ActiveSkill.WATERCONDENSE.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.assaulttype == type && playerdata.activeskilldata.assaultnum == skilllevel) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
               player.sendMessage(s"${YELLOW}選択を解除しました")
@@ -306,7 +307,7 @@ class PlayerInventoryListener  extends  Listener {
       ActiveSkill.LAVACONDENSE.gettypenum().let { type =>
         (7..9).forEach { skilllevel =>
           val name = ActiveSkill.LAVACONDENSE.getName(skilllevel)
-          if (itemstackcurrent.type == ActiveSkill.LAVACONDENSE.getMaterial(skilllevel)) {
+          if (itemstackcurrent.getType == ActiveSkill.LAVACONDENSE.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.assaulttype == type && playerdata.activeskilldata.assaultnum == skilllevel) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
               player.sendMessage(s"${YELLOW}選択を解除しました")
@@ -323,7 +324,7 @@ class PlayerInventoryListener  extends  Listener {
 
       ActiveSkill.FLUIDCONDENSE.gettypenum().let { type =>
         (10).let { skilllevel =>
-          if (itemstackcurrent.type == ActiveSkill.FLUIDCONDENSE.getMaterial(skilllevel)) {
+          if (itemstackcurrent.getType == ActiveSkill.FLUIDCONDENSE.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
               player.sendMessage(s"${YELLOW}選択を解除しました")
@@ -341,7 +342,7 @@ class PlayerInventoryListener  extends  Listener {
       //アサルトアーマー
       ActiveSkill.ARMOR.gettypenum().let { type =>
         (10).let { skilllevel =>
-          if (itemstackcurrent.type == ActiveSkill.ARMOR.getMaterial(skilllevel)) {
+          if (itemstackcurrent.getType == ActiveSkill.ARMOR.getMaterial(skilllevel)) {
             if (playerdata.activeskilldata.assaultnum == skilllevel && playerdata.activeskilldata.assaulttype == type) {
               player.playSound(player.location, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat())
               player.sendMessage(s"${YELLOW}選択を解除しました")
@@ -365,7 +366,7 @@ class PlayerInventoryListener  extends  Listener {
           ).runFor(player)
         }
       } else {
-        when (itemstackcurrent.type) {
+        when (itemstackcurrent.getType) {
           Material.STONE_BUTTON => {
             if (itemstackcurrent.itemMeta.displayName.contains("リセット")) {
               //経験値変更用のクラスを設定
@@ -422,7 +423,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -441,17 +442,17 @@ class PlayerInventoryListener  extends  Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
-      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
       //ページ変更処理
-      val currentType = itemstackcurrent.type
+      val currentType = itemstackcurrent.getType
       if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
         //開く音を再生
         player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1.toFloat())
@@ -565,7 +566,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -577,13 +578,13 @@ class PlayerInventoryListener  extends  Listener {
     }
     val player = he as Player
 
-    val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
+    val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地神ランキング") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -647,7 +648,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -659,13 +660,13 @@ class PlayerInventoryListener  extends  Listener {
     }
     val player = he as Player
 
-    val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
+    val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "ログイン神ランキング") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -714,7 +715,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -726,13 +727,13 @@ class PlayerInventoryListener  extends  Listener {
     }
     val player = he as Player
 
-    val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
+    val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "投票神ランキング") {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -790,7 +791,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -807,11 +808,11 @@ class PlayerInventoryListener  extends  Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
-      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
@@ -865,7 +866,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -882,11 +883,11 @@ class PlayerInventoryListener  extends  Listener {
       event.isCancelled = true
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
-      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
@@ -945,7 +946,7 @@ class PlayerInventoryListener  extends  Listener {
           //丁重にお返しする
           dropitem.add(m)
           continue
-        } else if (m.type === Material.SKULL_ITEM) {
+        } else if (m.getType === Material.SKULL_ITEM) {
           //丁重にお返しする
           dropitem.add(m)
           continue
@@ -1070,10 +1071,10 @@ class PlayerInventoryListener  extends  Listener {
 
     val (itemsToExchange, rejectedItems) =
         inventoryContents
-            .partition { it.type in requiredAmountPerTicket }
+            .partition { it.getType in requiredAmountPerTicket }
 
     val exchangingAmount = itemsToExchange
-        .groupBy { it.type }
+        .groupBy { it.getType }
         .mapValues { (_, stacks) => stacks.map { it.amount }.sum() }
 
     val ticketAmount = exchangingAmount
@@ -1173,7 +1174,7 @@ class PlayerInventoryListener  extends  Listener {
           //丁重にお返しする
           dropitem.add(m)
           continue
-        } else if (m.type === Material.SKULL_ITEM) {
+        } else if (m.getType === Material.SKULL_ITEM) {
           //丁重にお返しする
           dropitem.add(m)
           continue
@@ -1309,7 +1310,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -1327,18 +1328,18 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "投票ptメニュー") {
       event.isCancelled = true
 
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
-      val isSkull = itemstackcurrent.type === Material.SKULL_ITEM
+      val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
 
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
 
       //投票pt受取
-      if (itemstackcurrent.type === Material.DIAMOND) {
+      if (itemstackcurrent.getType === Material.DIAMOND) {
         //nは特典をまだ受け取ってない投票分
         var n = databaseGateway.playerDataManipulator.compareVotePoint(player, playerdata)
         //投票数に変化が無ければ処理終了
@@ -1394,7 +1395,7 @@ class PlayerInventoryListener  extends  Listener {
         val itemmeta = itemstackcurrent.itemMeta
         itemstackcurrent.itemMeta = itemmeta
         player.openInventory(MenuInventoryData.votingMenuData(player))
-      } else if (itemstackcurrent.type === Material.BOOK_AND_QUILL) {
+      } else if (itemstackcurrent.getType === Material.BOOK_AND_QUILL) {
         // 投票リンク表示
         player.sendMessage(RED.toString() + "" + UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote")
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -1407,19 +1408,19 @@ class PlayerInventoryListener  extends  Listener {
           ).runFor(player)
         }
         // NOTE: WHEN
-      } else if (itemstackcurrent.type === Material.WATCH) {
+      } else if (itemstackcurrent.getType === Material.WATCH) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.toggleVotingFairy = playerdata.toggleVotingFairy % 4 + 1
         player.openInventory(MenuInventoryData.votingMenuData(player))
-      } else if (itemstackcurrent.type === Material.PAPER) {
+      } else if (itemstackcurrent.getType === Material.PAPER) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.toggleGiveApple = playerdata.toggleGiveApple % 4 + 1
         player.openInventory(MenuInventoryData.votingMenuData(player))
-      } else if (itemstackcurrent.type === Material.JUKEBOX) {
+      } else if (itemstackcurrent.getType === Material.JUKEBOX) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.toggleVFSound = !playerdata.toggleVFSound
         player.openInventory(MenuInventoryData.votingMenuData(player))
-      } else if (itemstackcurrent.type === Material.GHAST_TEAR) {
+      } else if (itemstackcurrent.getType === Material.GHAST_TEAR) {
         player.closeInventory()
 
         //プレイヤーレベルが10に達していないとき
@@ -1445,7 +1446,7 @@ class PlayerInventoryListener  extends  Listener {
 
         VotingFairyListener.summon(player)
         player.closeInventory()
-      } else if (itemstackcurrent.type === Material.COMPASS) {
+      } else if (itemstackcurrent.getType === Material.COMPASS) {
         VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.votingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound)
         player.closeInventory()
       }//妖精召喚
@@ -1468,7 +1469,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type != EntityType.PLAYER) {
+    if (he.getType != EntityType.PLAYER) {
       return
     }
 
@@ -1486,7 +1487,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "ホームメニュー") {
       event.isCancelled = true
 
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -1520,7 +1521,7 @@ class PlayerInventoryListener  extends  Listener {
     } else if (topinventory.title.contains("ホームポイントを変更しますか?")) {
       event.isCancelled = true
 
-      if (event.clickedInventory.type === InventoryType.PLAYER) {
+      if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -1549,7 +1550,7 @@ class PlayerInventoryListener  extends  Listener {
     val view = event.view
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
-    if (he.type !== EntityType.PLAYER) {
+    if (he.getType !== EntityType.PLAYER) {
       return
     }
 
@@ -1566,7 +1567,7 @@ class PlayerInventoryListener  extends  Listener {
 
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "スキルを進化させますか?") {
       event.isCancelled = true
-      if (itemstackcurrent.type === Material.NETHER_STAR) {
+      if (itemstackcurrent.getType == Material.NETHER_STAR) {
         playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1, false)
         player.playSound(player.location, Sound.BLOCK_END_GATEWAY_SPAWN, 1f, 0.5.toFloat())
         player.playSound(player.location, Sound.ENTITY_ENDERDRAGON_AMBIENT, 1f, 0.8.toFloat())
