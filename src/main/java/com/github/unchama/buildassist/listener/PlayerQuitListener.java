@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
+import scala.collection.mutable.HashMap;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 
@@ -25,7 +25,7 @@ public class PlayerQuitListener implements TypedEventListener<PlayerQuitEvent> {
         //プレイヤーのuuidを取得
         final UUID uuid = player.getUniqueId();
         //プレイヤーデータ取得
-        final PlayerData playerdata = playermap.get(uuid);
+        final PlayerData playerdata = playermap.getOrElse(uuid, () -> null);
 
         //念のためエラー分岐
         if (playerdata == null) {
@@ -33,11 +33,11 @@ public class PlayerQuitListener implements TypedEventListener<PlayerQuitEvent> {
             Bukkit.getLogger().warning("BuildAssist.PlayerQuitListener.onplayerQuitEvent");
             return;
         }
+
         //建築系データを保存
         playerdata.buildsave(player);
         //不要なplayerdataを削除
         playermap.remove(uuid);
-
     }
 
 }

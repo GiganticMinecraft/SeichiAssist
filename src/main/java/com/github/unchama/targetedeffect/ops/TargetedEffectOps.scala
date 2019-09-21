@@ -6,7 +6,7 @@ import scala.collection.JavaConverters._
 
 object TargetedEffectOps {
     implicit class TargetedEffectCombine[T](val effect: TargetedEffect[T]) {
-        def plus(anotherEffect: TargetedEffect[T]): TargetedEffect[T] =
+        def +(anotherEffect: TargetedEffect[T]): TargetedEffect[T] =
             TargetedEffect.monoid[T]().combine(effect, anotherEffect)
     }
 

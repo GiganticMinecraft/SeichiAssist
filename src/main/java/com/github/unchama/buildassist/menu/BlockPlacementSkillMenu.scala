@@ -1,6 +1,7 @@
 package com.github.unchama.buildassist.menu
 
 import com.github.unchama.buildassist.{BuildAssist, PlayerData}
+import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.{Menu, MenuInventoryView}
@@ -15,8 +16,8 @@ import org.bukkit.{Material, Sound}
 
 object BlockPlacementSkillMenu extends Menu {
   private object ConstantButtons {
-    val buttonToOpenPreviousPage = run {
-      val iconItemStack = IconItemStackBuilder(Material.BARRIER)
+    val buttonToOpenPreviousPage = {
+      val iconItemStack = new IconItemStackBuilder(Material.BARRIER)
         .title(s"$YELLOW$UNDERLINE${BOLD}元のページへ")
         .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
         .build()

@@ -5,22 +5,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 /**
  * @author karayuu
  */
-enum class ClickEventFilter(private val predicate: (InventoryClickEvent) => Boolean) {
-  /**
-   * 左クリックを表す [ClickEventFilter] です.
-   */
-  LEFT_CLICK({ it.isLeftClick }),
-
-  /**
-   * 右クリックを表す [ClickEventFilter] です.
-   */
-  RIGHT_CLICK({ it.isRightClick }),
-
-  /**
-   * 常に `true` を返す [ClickEventFilter] です
-   */
-  ALWAYS_INVOKE({ true });
-
+case class ClickEventFilter(private val predicate: InventoryClickEvent => Boolean) extends AnyVal {
   /**
    * 与えられた [InventoryClickEvent] に対して動作を行うべきか返します.
    *
@@ -28,4 +13,10 @@ enum class ClickEventFilter(private val predicate: (InventoryClickEvent) => Bool
    * @return true: 動作を行う / false: 動作を行わない
    */
   def shouldReactTo(event: InventoryClickEvent): Boolean = predicate(event)
+}
+
+object ClickEventFilter {
+  val LEFT_CLICK = ClickEventFilter(_.isLeftClick)
+  val RIGHT_CLICK = ClickEventFilter(_.isRightClick)
+  val ALWAYS_INVOKE = ClickEventFilter(_ => true)
 }

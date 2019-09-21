@@ -17,12 +17,10 @@ trait ButtonEffect {
 }
 
 object ButtonEffect {
-  def apply(effect: ButtonEffectScope.()
-
-  => targetedeffect.TargetedEffect[Player]
-  ): ButtonEffect =
-  object: ButtonEffect {
-    override def asyncEffectOn(event: InventoryClickEvent): TargetedEffect[Player] = effect(ButtonEffectScope(event))
-  }
+  def apply(effect: ButtonEffectScope => targetedeffect.TargetedEffect[Player]): ButtonEffect =
+    new ButtonEffect {
+      override def asyncEffectOn(event: InventoryClickEvent): TargetedEffect[Player] =
+        effect(ButtonEffectScope(event))
+    }
 }
 

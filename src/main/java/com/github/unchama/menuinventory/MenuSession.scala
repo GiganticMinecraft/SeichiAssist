@@ -15,7 +15,7 @@ class MenuSession private[menuinventory](view: MenuInventoryView) extends Invent
   var view: MenuInventoryView = view
     private set
 
-  internal @SuspendingMethod def overwriteViewWith(layout: IndexedSlotLayout) {
+  @SuspendingMethod def overwriteViewWith(layout: IndexedSlotLayout) {
     view = view.copy(slotLayout = layout)
     view.slotLayout.asynchronouslySetItemsOn(sessionInventory)
   }
