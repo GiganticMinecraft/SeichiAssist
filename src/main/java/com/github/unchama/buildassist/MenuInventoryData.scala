@@ -656,6 +656,6 @@ object MenuInventoryData {
   }
 
   private def comma(i: Long): String = {
-    return NumberFormat.getNumberInstance(Locale.US).format(i)
+    return NumberFormat.numberInstance(Locale.US).format(i)
   }
 }

@@ -26,8 +26,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public class AssaultTask extends BukkitRunnable{
-	SeichiAssist plugin = SeichiAssist.getInstance();
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.getPlayermap();
+	SeichiAssist plugin = SeichiAssist.instance();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap();
 	Player player;
 	UUID uuid;
 	PlayerData playerdata;
@@ -247,7 +247,7 @@ public class AssaultTask extends BukkitRunnable{
 									waters.add(breakblock);
 								}else{
 									blocks.add(breakblock);
-									SeichiAssist.getAllblocklist().add(breakblock);
+									SeichiAssist.allblocklist().add(breakblock);
 								}
 							}
 						}
@@ -274,7 +274,7 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に破壊するブロック数 * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
 		double useMana = (double)breaksum * (gravity + 1)
-				* ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().assaulttype, playerdata.getActiveskilldata().assaultnum)
+				* ActiveSkill.activeSkillUseExp(playerdata.getActiveskilldata().assaulttype, playerdata.getActiveskilldata().assaultnum)
 				/(ifallbreaknum) ;
 
 
@@ -286,7 +286,7 @@ public class AssaultTask extends BukkitRunnable{
 		//重力値の判定
 		if(gravity > 15){
 			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-			SeichiAssist.getAllblocklist().removeAll(blocks);
+			SeichiAssist.allblocklist().removeAll(blocks);
 			setCancel();
 			return;
 		}
@@ -297,7 +297,7 @@ public class AssaultTask extends BukkitRunnable{
 			if(SeichiAssist.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
-			SeichiAssist.getAllblocklist().removeAll(blocks);
+			SeichiAssist.allblocklist().removeAll(blocks);
 			setCancel();
 			return;
 		}
@@ -309,7 +309,7 @@ public class AssaultTask extends BukkitRunnable{
 			if(SeichiAssist.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
-			SeichiAssist.getAllblocklist().removeAll(blocks);
+			SeichiAssist.allblocklist().removeAll(blocks);
 			setCancel();
 			return;
 		}
@@ -354,10 +354,10 @@ public class AssaultTask extends BukkitRunnable{
 			}
 			for(Block b:blocks){
 				BreakUtil.INSTANCE.breakBlock(player, b, player.getLocation(), tool,false);
-				SeichiAssist.getAllblocklist().remove(b);
+				SeichiAssist.allblocklist().remove(b);
 			}
 		}
-		SeichiAssist.getAllblocklist().removeAll(blocks);
+		SeichiAssist.allblocklist().removeAll(blocks);
 	}
 
 	private boolean isCanceled() {

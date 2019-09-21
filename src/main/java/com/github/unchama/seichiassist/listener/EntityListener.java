@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class EntityListener implements Listener {
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.getPlayermap();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap();
 
 	@EventHandler
 	public void onPlayerActiveSkillEvent(ProjectileHitEvent event){
@@ -66,7 +66,7 @@ public class EntityListener implements Listener {
 
 
 		//他人の保護がかかっている場合は処理を終了
-		if(!ExternalPlugins.getWorldGuard().canBuild(player, block.getLocation())){
+		if(!ExternalPlugins.worldGuard().canBuild(player, block.getLocation())){
 			return;
 		}
 
@@ -81,7 +81,7 @@ public class EntityListener implements Listener {
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//UUIDを基にプレイヤーデータ取得
-		PlayerData playerdata = SeichiAssist.getPlayermap().get(uuid);
+		PlayerData playerdata = SeichiAssist.playermap().get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
 			Util.INSTANCE.sendPlayerDataNullMessage(player);
@@ -134,7 +134,7 @@ public class EntityListener implements Listener {
 			return;
 		}
 		//スキルで破壊されるブロックの時処理を終了
-		if(SeichiAssist.getAllblocklist().contains(block)){
+		if(SeichiAssist.allblocklist().contains(block)){
 			if(SeichiAssist.getDEBUG()){
 				player.sendMessage("スキルで使用中のブロックです。");
 			}
@@ -143,7 +143,7 @@ public class EntityListener implements Listener {
 
 		runArrowSkillofHitBlock(player,proj, block, tool);
 
-		SeichiAssist.getEntitylist().remove(proj);
+		SeichiAssist.entitylist().remove(proj);
 		proj.remove();
 	}
 
@@ -192,7 +192,7 @@ public class EntityListener implements Listener {
 				for(int z = start.z ; z <= end.z ; z++){
 					breakblock = block.getRelative(x, y, z);
 
-					if(playerdata.getLevel() >= SeichiAssist.getSeichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getSettings().getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
+					if(playerdata.getLevel() >= SeichiAssist.seichiAssistConfig().getMultipleIDBlockBreaklevel() && playerdata.getSettings().getMultipleidbreakflag()) { //追加テスト(複数種類一括破壊スキル)
 						if(breakblock.getType() != Material.AIR && breakblock.getType() != Material.BEDROCK) {
 							if(breakblock.getType() == Material.STATIONARY_LAVA || BreakUtil.INSTANCE.BlockEqualsMaterialList(breakblock)){
 								if(BreakUtil.INSTANCE.canBreak(player, breakblock)){
@@ -200,7 +200,7 @@ public class EntityListener implements Listener {
 										lavas.add(breakblock);
 									}else{
 										breakBlock.add(breakblock);
-										SeichiAssist.getAllblocklist().add(breakblock);
+										SeichiAssist.allblocklist().add(breakblock);
 									}
 								}
 							}
@@ -220,7 +220,7 @@ public class EntityListener implements Listener {
 									lavas.add(breakblock);
 								}else{
 									breakBlock.add(breakblock);
-									SeichiAssist.getAllblocklist().add(breakblock);
+									SeichiAssist.allblocklist().add(breakblock);
 								}
 							}
 						}
@@ -238,10 +238,10 @@ public class EntityListener implements Listener {
 		//実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
 		double useMana = (double) (breakBlock.size()) * (gravity + 1)
-				* ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
+				* ActiveSkill.activeSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
 				/(ifallbreaknum) ;
 		if(SeichiAssist.getDEBUG()){
-			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum));
+			player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.activeSkillUseExp(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum));
 			player.sendMessage(ChatColor.RED + "全ての破壊数：" + (ifallbreaknum));
 			player.sendMessage(ChatColor.RED + "実際の破壊数：" + breakBlock.size());
 			player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナ：" + useMana);
@@ -255,7 +255,7 @@ public class EntityListener implements Listener {
 		//重力値の判定
 		if(gravity > 15) {
 			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-			SeichiAssist.getAllblocklist().removeAll(breakBlock);
+			SeichiAssist.allblocklist().removeAll(breakBlock);
 			return;
 		}
 
@@ -265,7 +265,7 @@ public class EntityListener implements Listener {
 			if(SeichiAssist.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
-			SeichiAssist.getAllblocklist().removeAll(breakBlock);
+			SeichiAssist.allblocklist().removeAll(breakBlock);
 			return;
 		}
 		if(SeichiAssist.getDEBUG()){
@@ -277,7 +277,7 @@ public class EntityListener implements Listener {
 			if(SeichiAssist.getDEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
-			SeichiAssist.getAllblocklist().removeAll(breakBlock);
+			SeichiAssist.allblocklist().removeAll(breakBlock);
 			return;
 		}
 
@@ -304,7 +304,7 @@ public class EntityListener implements Listener {
 		if(playerdata.getActiveskilldata().effectnum == 0){
 			for(final Block b : breakBlock){
 				BreakUtil.INSTANCE.breakBlock(player, b, player.getLocation(), tool,false);
-				SeichiAssist.getAllblocklist().remove(b);
+				SeichiAssist.allblocklist().remove(b);
 			}
 		}
 		//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）

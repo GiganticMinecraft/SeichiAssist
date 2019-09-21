@@ -1,17 +1,20 @@
 package com.github.unchama.seichiassist.data.player
-case class PlayerNickName(val style: Style = Style.SecondaryName, val id1: Int = 0, val id2: Int = 0, val id3: Int = 0) {
-  enum class Style(val displayLevel: Boolean) {
-    Level(true),
-    SecondaryName(false),
-    ;
-  }
 
-  object Style {
-    def marshal(isLevel: Boolean): Style = {
-      return if (isLevel) {
-      Level
-    } else {
-      SecondaryName
-    }
-  }
+case class PlayerNickName(style: Style = Style.SecondaryName,
+                          id1: Int = 0,
+                          id2: Int = 0,
+                          id3: Int = 0)
+
+object Style {
+
+  case object Level extends Style(true)
+
+  case object SecondaryName extends Style(false)
+
+}
+
+sealed abstract class Style(val displayLevel: Boolean) {
+
+  def marshal(isLevel: Boolean): Style = if (isLevel) Style.Level else Style.SecondaryName
+
 }

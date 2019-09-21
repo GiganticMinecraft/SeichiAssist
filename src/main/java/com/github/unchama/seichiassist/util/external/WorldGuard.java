@@ -15,7 +15,7 @@ public class WorldGuard {
     /**
      * ワールドガードのインスタンス
      */
-    private static WorldGuardPlugin plugin = ExternalPlugins.getWorldGuard();
+    private static WorldGuardPlugin plugin = ExternalPlugins.worldGuard();
 
     /**
      * 与えられた {@link World} の {@link Player} の最大保護可能数を取得します.

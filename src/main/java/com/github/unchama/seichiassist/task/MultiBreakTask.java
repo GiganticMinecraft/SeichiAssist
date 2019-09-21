@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class MultiBreakTask extends BukkitRunnable{
-	private HashMap<UUID, PlayerData> playermap = SeichiAssist.getPlayermap();
+	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 	private Player player;
 	private Location droploc;
 	private ItemStack tool;
@@ -64,7 +64,7 @@ public class MultiBreakTask extends BukkitRunnable{
 				//ブロックを破壊する処理
 				for(Block b:multibreaklist.get(count)){
 					BreakUtil.INSTANCE.breakBlock(player, b, droploc, tool,false);
-					SeichiAssist.getAllblocklist().remove(b);
+					SeichiAssist.allblocklist().remove(b);
 				}
 			}
 

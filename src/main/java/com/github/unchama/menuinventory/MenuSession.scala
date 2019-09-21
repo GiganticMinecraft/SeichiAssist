@@ -2,6 +2,9 @@ package com.github.unchama.menuinventory
 
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
+import kotlin.coroutines.CoroutineContext
+import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryHolder
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
@@ -12,7 +15,7 @@ class MenuSession private[menuinventory](view: MenuInventoryView) extends Invent
   var view: MenuInventoryView = view
     private set
 
-  internal suspend def overwriteViewWith(layout: IndexedSlotLayout) {
+  internal @SuspendingMethod def overwriteViewWith(layout: IndexedSlotLayout) {
     view = view.copy(slotLayout = layout)
     view.slotLayout.asynchronouslySetItemsOn(sessionInventory)
   }

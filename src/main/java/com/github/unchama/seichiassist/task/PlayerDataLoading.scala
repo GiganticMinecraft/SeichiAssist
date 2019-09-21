@@ -24,7 +24,7 @@ object PlayerDataLoading {
     val uuid: UUID = playerUUID
     val stringUuid: String = uuid.toString().toLowerCase()
     val db: String = SeichiAssist.seichiAssistConfig.db
-    val timer: MillisecondTimer = MillisecondTimer.getInitializedTimerInstance()
+    val timer: MillisecondTimer = MillisecondTimer.initializedTimerInstance()
 
     val playerData = PlayerData(playerUUID, playerName)
 

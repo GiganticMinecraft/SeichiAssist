@@ -2,5 +2,4 @@ package com.github.unchama.seichiassist.data.player
 
 import java.time.LocalDateTime
 
-case class VoteStatus(val lastVote: LocalDateTime, val chainLength: Int = 0, val totalVote: Int = 0) {
-}
+case class VoteStatus(lastVote: LocalDateTime, chainLength: Int = 0, totalVote: Int = 0)

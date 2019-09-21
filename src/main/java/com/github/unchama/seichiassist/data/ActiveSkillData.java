@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.stream.IntStream;
 
 public class ActiveSkillData {
-	SeichiAssist plugin = SeichiAssist.getInstance();
+	SeichiAssist plugin = SeichiAssist.instance();
 	//アクティブスキルポイント
 	public int skillpoint;
 	//アクティブスキルエフェクトポイント
@@ -204,7 +204,7 @@ public class ActiveSkillData {
 		//アサルトスキルの実行
 		if(this.assaultflag && this.assaulttype != 0){
 			this.updateAssaultSkill(player,this.assaulttype,this.assaultnum,this.mineflagnum);
-			String name = ActiveSkill.getActiveSkillName(this.assaulttype, this.assaultnum);
+			String name = ActiveSkill.activeSkillName(this.assaulttype, this.assaultnum);
 			player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル:" + name + "  を選択しています。");
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
 		}
@@ -212,7 +212,7 @@ public class ActiveSkillData {
 		//通常スキルの実行
 		if(this.skilltype != 0){
 			this.updateSkill(player, this.skilltype, this.skillnum,this.mineflagnum);
-			String name = ActiveSkill.getActiveSkillName(this.skilltype, this.skillnum);
+			String name = ActiveSkill.activeSkillName(this.skilltype, this.skillnum);
 			player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  を選択しています。");
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
 		}

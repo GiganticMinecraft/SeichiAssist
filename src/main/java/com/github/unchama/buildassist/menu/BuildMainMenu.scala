@@ -1,9 +1,13 @@
 package com.github.unchama.buildassist.menu
 
 import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
+import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.menuinventory.{IndexedSlotLayout, Menu, MenuInventoryView}
+import com.github.unchama.seichiassist.{Schedulers, SkullOwners}
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
@@ -13,7 +17,7 @@ object BuildMainMenu extends Menu {
 
   private object ButtonComputations {
 
-    suspend def Player.computeNotationOfStats(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeNotationOfStats(): Button = recomputedButton {
       val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = SkullItemStackBuilder(uniqueId)
           .enchanted()
@@ -28,7 +32,7 @@ object BuildMainMenu extends Menu {
       Button(iconItemStack)
     }
 
-    suspend def Player.computeButtonToShowStateOfFlying() = run {
+    @SuspendingMethod def Player.computeButtonToShowStateOfFlying() = run {
       val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = IconItemStackBuilder(Material.COOKED_CHICKEN)
           .title(s"$YELLOW${EMPHASIZE}FLY機能 情報表示")
@@ -131,7 +135,7 @@ object BuildMainMenu extends Menu {
       )
     }
 
-    suspend def Player.computeButtonToToggleRangedPlaceSkill() = recomputedButton {
+    @SuspendingMethod def Player.computeButtonToToggleRangedPlaceSkill() = recomputedButton {
       val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = IconItemStackBuilder(Material.STONE)
           .title(s"$GREEN${EMPHASIZE}「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
@@ -166,7 +170,7 @@ object BuildMainMenu extends Menu {
       )
     }
 
-    suspend def Player.computeButtonToOpenRangedPlaceSkillMenu() = run {
+    @SuspendingMethod def Player.computeButtonToOpenRangedPlaceSkillMenu() = run {
       val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = SkullItemStackBuilder(SkullOwners.MHF_Exclamation)
           .title(s"$YELLOW${EMPHASIZE}「範囲設置スキル」設定画面へ")
@@ -193,7 +197,7 @@ object BuildMainMenu extends Menu {
       )
     }
 
-    suspend def Player.computeButtonToLineUpBlocks() = recomputedButton {
+    @SuspendingMethod def Player.computeButtonToLineUpBlocks() = recomputedButton {
       val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = IconItemStackBuilder(Material.WOOD)
           .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str[openerData.line_up_flg]}")
@@ -224,7 +228,7 @@ object BuildMainMenu extends Menu {
       )
     }
 
-    suspend def Player.computeButtonToOpenLineUpBlocksMenu() = run {
+    @SuspendingMethod def Player.computeButtonToOpenLineUpBlocksMenu() = run {
       val openerData = BuildAssist.playermap[uniqueId]
       val iconItemStack = IconItemStackBuilder(Material.PAPER)
           .title(s"$YELLOW${EMPHASIZE}「ブロックを並べるスキル（仮） 」設定画面へ")
@@ -241,13 +245,13 @@ object BuildMainMenu extends Menu {
           FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
             sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                TargetedEffect { it.openInventory(MenuInventoryData.getBlockLineUpData(it)) }
+                TargetedEffect { it.openInventory(MenuInventoryData.blockLineUpData(it)) }
             )
           }
       )
     }
 
-    suspend def Player.computeButtonToOpenMenuToCraftItemsWhereMineStack() = run {
+    @SuspendingMethod def Player.computeButtonToOpenMenuToCraftItemsWhereMineStack() = run {
       val iconItemStackBuilder = IconItemStackBuilder(Material.WORKBENCH)
           .title(s"$YELLOW${EMPHASIZE}MineStackブロック一括クラフト画面へ")
           .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
@@ -256,15 +260,15 @@ object BuildMainMenu extends Menu {
       Button(iconItemStackBuilder,
           FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
             sequentialEffect(FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                TargetedEffect { it.openInventory(MenuInventoryData.getBlockCraftData(it)) })
+                TargetedEffect { it.openInventory(MenuInventoryData.blockCraftData(it)) })
           })
     }
 
   }
 
-  private suspend def Player.computeMenuLayout(): IndexedSlotLayout =
+  private @SuspendingMethod def Player.computeMenuLayout(): IndexedSlotLayout =
       with(ButtonComputations) {
-        IndexedSlotLayout(
+        menuinventory.IndexedSlotLayout(
             0 to computeNotationOfStats(),
             2 to computeButtonToShowStateOfFlying(),
             3 to buttonToFlyFor1Minute,

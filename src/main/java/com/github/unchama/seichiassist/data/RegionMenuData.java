@@ -29,10 +29,10 @@ import java.util.Map;
  * @author karayuu
  */
 public class RegionMenuData {
-    static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
-    static WorldEditPlugin We = ExternalPlugins.getWorldEdit();
-    static Config config = SeichiAssist.getSeichiAssistConfig();
-    static NumberFormat nfNum = NumberFormat.getNumberInstance();
+    static WorldGuardPlugin Wg = ExternalPlugins.worldGuard();
+    static WorldEditPlugin We = ExternalPlugins.worldEdit();
+    static Config config = SeichiAssist.seichiAssistConfig();
+    static NumberFormat nfNum = NumberFormat.numberInstance();
 
     /**
      * グリッド式保護メニュを開きます。
@@ -41,7 +41,7 @@ public class RegionMenuData {
      * @return
      */
     public static Inventory getGridWorldGuardMenu(Player player) {
-        PlayerData playerData = SeichiAssist.getPlayermap().get(player.getUniqueId());
+        PlayerData playerData = SeichiAssist.playermap().get(player.getUniqueId());
         Map<DirectionType, Integer> unitMap = playerData.getUnitMap();
         Map<DirectionType, String> directionMap = getPlayerDirectionString(player);
 
@@ -254,7 +254,7 @@ public class RegionMenuData {
      * @return メニューアイコン
      */
     private static ItemStack getGridtempMenuicon(int i, Player player) {
-        PlayerData playerData = SeichiAssist.getPlayermap().get(player.getUniqueId());
+        PlayerData playerData = SeichiAssist.playermap().get(player.getUniqueId());
         @Nullable GridTemplate template = playerData.getTemplateMap().get(i);
 
         if (template != null) {

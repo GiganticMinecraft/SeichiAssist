@@ -1,12 +1,15 @@
 package com.github.unchama.seichiassist.task
 
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.achievement.SeichiAchievement
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
+import org.bukkit.potion.PotionEffectType
 object PlayerDataPeriodicRecalculation extends RepeatedTaskLauncher() {
   override def getRepeatIntervalTicks(): Long = if (SeichiAssist.DEBUG) 20 * 10 else 20 * 60
 
-  override suspend def runRoutine() {
+  override @SuspendingMethod def runRoutine() {
     val playerMap = SeichiAssist.playermap
     val config = SeichiAssist.seichiAssistConfig
 
@@ -128,7 +131,7 @@ object PlayerDataPeriodicRecalculation extends RepeatedTaskLauncher() {
 			 * ガチャ券付与の処理
 			 */
       if (playerData.gachapoint >= config.gachaPresentInterval && playerData.settings.receiveGachaTicketEveryMinute) {
-        val skull = Util.getskull(name)
+        val skull = Util.skull(name)
         playerData.gachapoint = playerData.gachapoint - config.gachaPresentInterval
         if (player.inventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
           Util.addItem(player, skull)
@@ -157,7 +160,7 @@ object PlayerDataPeriodicRecalculation extends RepeatedTaskLauncher() {
           6001 until 6008,
           8001 until 8002
       ).flatten().forEach { achievementNumber =>
-        if (!playerData.TitleFlags.get(achievementNumber)) {
+        if (!playerData.TitleFlags.(achievementNumber)) {
           SeichiAchievement.tryAchieve(player, achievementNumber)
         }
       }

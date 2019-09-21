@@ -18,8 +18,8 @@ import java.util.UUID;
 //import org.bukkit.instance.java.JavaPlugin;
 
 public class LimitedLoginEvent {
-    private static Config config = SeichiAssist.getSeichiAssistConfig();
-    HashMap<UUID, PlayerData> playermap = SeichiAssist.getPlayermap();
+    private static Config config = SeichiAssist.seichiAssistConfig();
+    HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 	Player player;
 	PlayerData playerdata;
 	String lastcheckdate ;
@@ -52,10 +52,10 @@ public class LimitedLoginEvent {
 				final Date LLEStart = sdf.parse(config.getLimitedLoginEventStart());
 				final Date LLEEnd = sdf.parse(config.getLimitedLoginEventEnd());
 
-				final long TodayLong = TodayDate.getTime();
-				final long LastLong = LastDate.getTime();
-				final long LLEStartLong = LLEStart.getTime();
-				final long LLEEndLong = LLEEnd.getTime();
+				final long TodayLong = TodayDate.time();
+				final long LastLong = LastDate.time();
+				final long LLEStartLong = LLEStart.time();
+				final long LLEEndLong = LLEEnd.time();
 
 				int loginDays = playerdata.getLimitedLoginCount();
 				int configDays;

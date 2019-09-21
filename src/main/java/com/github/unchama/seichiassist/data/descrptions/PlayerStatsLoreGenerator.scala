@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.data.descrptions
 
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.util.TypeConverter
+import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
+import kotlin.Suppress
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -15,7 +19,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * Player統計のLoreを返します.
    */
   @Suppress("RedundantSuspendModifier")
-  suspend def computeLore(): List[String] = {
+  @SuspendingMethod def computeLore(): List[String] = {
     return with(WarningsGenerator(targetPlayer)) {
       List(
           List(seichiLevelDescription()),

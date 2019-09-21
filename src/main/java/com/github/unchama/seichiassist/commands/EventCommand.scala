@@ -11,11 +11,11 @@ object EventCommand {
 
         val player = context.sender
         if (Util.isPlayerInventoryFull(player)) {
-          Util.dropItem(player, NewYearBagListener.getNewYearBag())
-          Util.dropItem(player, NewYearItemListener.getNewYearApple())
+          Util.dropItem(player, NewYearBagListener.newYearBag())
+          Util.dropItem(player, NewYearItemListener.newYearApple())
         } else {
-          Util.addItem(player, NewYearBagListener.getNewYearBag())
-          Util.addItem(player, NewYearItemListener.getNewYearApple())
+          Util.addItem(player, NewYearBagListener.newYearBag())
+          Util.addItem(player, NewYearItemListener.newYearApple())
         }
 
         return@execution EmptyEffect

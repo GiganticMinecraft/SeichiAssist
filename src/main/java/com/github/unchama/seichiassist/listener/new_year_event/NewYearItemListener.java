@@ -28,8 +28,8 @@ import java.util.UUID;
  * @since 2017/12/10
  */
 public class NewYearItemListener implements Listener {
-	private static Map<UUID, PlayerData> playerMap = SeichiAssist.getPlayermap();
-	private static Config config = SeichiAssist.getSeichiAssistConfig();
+	private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap();
+	private static Config config = SeichiAssist.seichiAssistConfig();
 
 	@EventHandler
 	public void onPlayerNewYearItemConsumeEvent(PlayerItemConsumeEvent event) {

@@ -112,7 +112,7 @@ object RegionMenu extends Menu {
           FilteredButtonEffect(ClickEventFilter.LEFT_CLICK,
               sequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
-                  TargetedEffect { it.openInventory(RegionMenuData.getGridWorldGuardMenu(it)) }
+                  TargetedEffect { it.openInventory(RegionMenuData.gridWorldGuardMenu(it)) }
               )
           )
       )
@@ -122,9 +122,9 @@ object RegionMenu extends Menu {
 
   private object ButtonComputations {
 
-    suspend def Player.computeButtonToClaimRegion(): Button = run {
+    @SuspendingMethod def Player.computeButtonToClaimRegion(): Button = run {
       val openerData = SeichiAssist.playermap[uniqueId]
-      val selection = ExternalPlugins.getWorldEdit().getSelection(player)
+      val selection = ExternalPlugins.worldEdit().getSelection(player)
 
       val playerHasPermission = player.hasPermission("worldguard.region.claim")
       val isSelectionNull = selection == null
@@ -193,7 +193,7 @@ object RegionMenu extends Menu {
 
   }
 
-  private suspend def Player.computeMenuLayout(): IndexedSlotLayout =
+  private @SuspendingMethod def Player.computeMenuLayout(): IndexedSlotLayout =
       with(ConstantButtons) {
         with(ButtonComputations) {
       menuinventory.IndexedSlotLayout(

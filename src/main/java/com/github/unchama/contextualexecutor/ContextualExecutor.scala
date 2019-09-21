@@ -1,7 +1,6 @@
 package com.github.unchama.contextualexecutor
 
-import com.github.unchama.util.kotlin2scala.Coroutines
-import kotlin.coroutines.Continuation
+import com.github.unchama.util.kotlin2scala.{Coroutines, SuspendingMethod}
 import org.bukkit.command.{Command, CommandSender, TabExecutor}
 
 /**
@@ -15,7 +14,7 @@ trait ContextualExecutor {
    * このメソッドは**サーバーメインスレッド上のコルーチンで実行する必要性はない**.
    * また, 実行時例外が発生することはない.
    */
-  def executeWith(rawContext: RawCommandContext, continuation: Continuation[Unit])
+  @SuspendingMethod def executeWith(rawContext: RawCommandContext)
 
   /**
    * [context] に基づいてTab補完の候補をListで返却する.

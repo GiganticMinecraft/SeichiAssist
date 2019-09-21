@@ -10,7 +10,7 @@ object Coroutines {
     BuildersKt.launch(
       GlobalScope.INSTANCE, context, start,
       new kotlin.jvm.functions.Function2[CoroutineScope, Continuation[kotlin.Unit], Unit] {
-        override def invoke(p1: CoroutineScope, p2: Continuation[kotlin.Unit]): Unit = block(p1, p2)
+        override @SuspendingMethod def invoke(p1: CoroutineScope): Unit = block(p1, p2)
       }.asInstanceOf[kotlin.jvm.functions.Function2[_ >: CoroutineScope, _ >: Continuation[_ >: kotlin.Unit], Unit]]
     )
   }

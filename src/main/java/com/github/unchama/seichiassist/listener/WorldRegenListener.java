@@ -41,7 +41,7 @@ public class WorldRegenListener implements Listener {
 
 
 	public WorldRegenListener() {
-		Config config = SeichiAssist.getSeichiAssistConfig();
+		Config config = SeichiAssist.seichiAssistConfig();
 		this.roadY = config.getRoadY();
 		this.roadLength = config.getRoadLength();
 		this.spaceHeight = config.getSpaceHeight();
@@ -64,7 +64,7 @@ public class WorldRegenListener implements Listener {
 
 		world.setSpawnLocation(8, 71, 8);
 		Location spawn = world.getSpawnLocation();
-		RegenWorld.getInstance().getController().setSpawnLocation(world.getName(), spawn);
+		RegenWorld.instance().getController().setSpawnLocation(world.getName(), spawn);
 
 		com.wimbli.WorldBorder.Config.setBorder(world.getName(), worldSize, worldSize, spawn.getX(), spawn.getZ());
 		com.wimbli.WorldBorder.Config.fillTask = new WorldFillTask(Bukkit.getServer(), null, world.getName(), CoordXZ.chunkToBlock(13), 1, 1, false);

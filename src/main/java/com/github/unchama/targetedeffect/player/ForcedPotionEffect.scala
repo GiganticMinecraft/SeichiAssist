@@ -1,12 +1,12 @@
 package com.github.unchama.targetedeffect.player
 
 import com.github.unchama.targetedeffect.TargetedEffect
-import kotlin.coroutines.Continuation
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 
 case class ForcedPotionEffect(val effect: PotionEffect) extends TargetedEffect[Player] {
-  override def runFor(minecraftObject: Player, continuation: Continuation[Unit]) {
+  override @SuspendingMethod def runFor(minecraftObject: Player) {
     minecraftObject.addPotionEffect(effect)
   }
 }

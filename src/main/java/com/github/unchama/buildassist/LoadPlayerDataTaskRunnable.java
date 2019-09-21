@@ -13,7 +13,7 @@ import java.util.UUID;
 
 
 public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
-    private final HashMap<UUID, PlayerData> playermap = BuildAssist.getPlayermap();
+    private final HashMap<UUID, PlayerData> playermap = BuildAssist.playermap();
 	private final Player p;
 	private final UUID uuid;
 	private int retryCount;
@@ -43,7 +43,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable{
  			return;
  		}
  		//DBから読み込み終わるまで待つ
-        final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.getPlayermap().get(uuid);
+        final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.playermap().get(uuid);
 		if(playerdata_s == null){
 			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + p.getName() + "の建築系データ取得待機…(" + (retryCount +1) + "回目)");
  			retryCount++;

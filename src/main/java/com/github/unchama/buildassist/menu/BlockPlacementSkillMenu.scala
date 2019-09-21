@@ -6,6 +6,7 @@ import com.github.unchama.menuinventory.slot.button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.seichiassist.{CommonSoundEffects, Schedulers}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -27,7 +28,7 @@ object BlockPlacementSkillMenu extends Menu {
     )
   }
 
-  private suspend def Player.computeButtonToToggleDirtPlacement() = recomputedButton {
+  private @SuspendingMethod def Player.computeButtonToToggleDirtPlacement() = recomputedButton {
     val playerData = BuildAssist.playermap[uniqueId]
     val currentStatus = playerData.zsSkillDirtFlag
 
@@ -49,7 +50,7 @@ object BlockPlacementSkillMenu extends Menu {
     )
   }
 
-  private suspend def Player.computeButtonToShowCurrentStatus() = recomputedButton {
+  private @SuspendingMethod def Player.computeButtonToShowCurrentStatus() = recomputedButton {
     val playerData = BuildAssist.playermap[uniqueId]
     val isSkillEnabled = playerData.ZoneSetSkillFlag
     val skillRange = playerData.computeCurrentSkillRange()
@@ -223,7 +224,7 @@ object BlockPlacementSkillMenu extends Menu {
     )
   }
 
-  private suspend def Player.computeButtonToToggleConsumingMineStack() = recomputedButton {
+  private @SuspendingMethod def Player.computeButtonToToggleConsumingMineStack() = recomputedButton {
     val playerData = BuildAssist.playermap[uniqueId]
     val currentStatus = playerData.zs_minestack_flag
 
@@ -258,7 +259,7 @@ object BlockPlacementSkillMenu extends Menu {
 
   private def PlayerData.computeCurrentSkillRange() = AREAint * 2 + 1
 
-  private suspend def Player.computeMenuLayout() = IndexedSlotLayout(
+  private @SuspendingMethod def Player.computeMenuLayout() = IndexedSlotLayout(
       0 to buttonToOpenPreviousPage,
       4 to computeButtonToToggleDirtPlacement(),
       13 to computeButtonToShowCurrentStatus(),

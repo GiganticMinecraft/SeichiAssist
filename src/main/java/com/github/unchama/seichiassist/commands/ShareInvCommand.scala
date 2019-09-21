@@ -2,8 +2,10 @@ package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.{ItemListSerialization, Util}
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
+import kotlin.Suppress
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -11,13 +13,13 @@ import org.bukkit.{Bukkit, Material}
 
 object ShareInvCommand {
   @Suppress("RedundantSuspendModifier")
-  suspend def dropIfNotEmpty(itemStack: ItemStack?, to: Player) {
+  @SuspendingMethod def dropIfNotEmpty(itemStack: ItemStack?, to: Player) {
     if (itemStack != null && itemStack.type !== Material.AIR) {
       Util.dropItem(to, itemStack)
     }
   }
 
-  private suspend def withdrawFromSharedInventory(player: Player): TargetedEffect[Player] = {
+  private @SuspendingMethod def withdrawFromSharedInventory(player: Player): TargetedEffect[Player] = {
     val playerData = SeichiAssist.playermap[player.uniqueId]
     val databaseGateway = SeichiAssist.databaseGateway
 
@@ -45,7 +47,7 @@ object ShareInvCommand {
     return s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。".asMessageEffect()
   }
 
-  private suspend def depositToSharedInventory(player: Player): TargetedEffect[Player] = {
+  private @SuspendingMethod def depositToSharedInventory(player: Player): TargetedEffect[Player] = {
     val playerData = SeichiAssist.playermap[player.uniqueId]
     val databaseGateway = SeichiAssist.databaseGateway
 

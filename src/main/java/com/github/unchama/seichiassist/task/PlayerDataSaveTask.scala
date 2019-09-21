@@ -4,9 +4,11 @@ import java.sql.{SQLException, Statement}
 
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import kotlin.ExperimentalUnsignedTypes
 import kotlin.jvm.Throws
 import org.bukkit.ChatColor._
+import org.junit.internal.runners.statements.Fail
 
 object PlayerDataSaving {
   /**
@@ -15,7 +17,7 @@ object PlayerDataSaving {
    * @param playerdata 保存するプレーヤーデータ
    * @author unchama
    */
-  suspend def savePlayerData(playerdata: PlayerData) {
+  @SuspendingMethod def savePlayerData(playerdata: PlayerData) {
     val databaseGateway = SeichiAssist.databaseGateway
     val serverId = SeichiAssist.seichiAssistConfig.serverNum
 

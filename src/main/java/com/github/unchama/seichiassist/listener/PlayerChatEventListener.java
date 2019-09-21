@@ -18,7 +18,7 @@ public class PlayerChatEventListener implements Listener {
 	@EventHandler(priority=EventPriority.LOW)
 	public void setSubHomeName(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
-		PlayerData data = SeichiAssist.getPlayermap().get(player.getUniqueId());
+		PlayerData data = SeichiAssist.playermap().get(player.getUniqueId());
 
 		if (!data.isSubHomeNameChange()) {
 			return;

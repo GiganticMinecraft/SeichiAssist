@@ -137,7 +137,7 @@ class PlayerJoinListener  extends  Listener {
         // アクティブスキルがONになっている
         if (pd.activeskilldata.mineflagnum != 0) {
           // メッセージを表示
-          p.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF")
+          p.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF")
           // 内部状態をアサルトOFFに変更
           pd.activeskilldata.updateAssaultSkill(p, pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum, 0)
           // トグル音を鳴らす

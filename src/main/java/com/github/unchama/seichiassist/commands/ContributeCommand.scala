@@ -6,11 +6,12 @@ import com.github.unchama.contextualexecutor.builder.Parsers.{identity, nonNegat
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandExecutor, CommandSender}
 
 object ContributeCommand {
-  private suspend def addContributionPoint(targetPlayerName: String, point: Int): TargetedEffect[CommandSender] =
+  private @SuspendingMethod def addContributionPoint(targetPlayerName: String, point: Int): TargetedEffect[CommandSender] =
       SeichiAssist.databaseGateway.playerDataManipulator
           .addContributionPoint(targetPlayerName, point)
           .map {

@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.task
+
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
+
 abstract class RepeatedTaskLauncher {
-  suspend def launch(): Nothing = {
+  @SuspendingMethod def launch(): Nothing = {
     while (true) {
       delay(getRepeatIntervalTicks() * 50)
       runRoutine()
@@ -9,5 +12,5 @@ abstract class RepeatedTaskLauncher {
 
   protected abstract def getRepeatIntervalTicks(): Long
 
-  protected abstract suspend def runRoutine()
+  protected abstract @SuspendingMethod def runRoutine()
 }

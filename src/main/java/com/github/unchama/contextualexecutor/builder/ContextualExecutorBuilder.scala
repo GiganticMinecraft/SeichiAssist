@@ -108,7 +108,7 @@ case class ContextualExecutorBuilder[CS  <: CommandSender](
    * 処理を[ContextualExecutor.executeWith]内で行う.
    */
   def build(): ContextualExecutor = object : ContextualExecutor {
-    override suspend def executeWith(rawContext: RawCommandContext) {
+    override @SuspendingMethod def executeWith(rawContext: RawCommandContext) {
       senderTypeValidation(rawContext.sender)
           .flatMap { refinedSender =>
             argumentsParser(refinedSender, rawContext).map { parsedArgs =>
