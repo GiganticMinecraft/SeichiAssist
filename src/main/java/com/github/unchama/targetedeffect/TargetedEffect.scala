@@ -1,6 +1,7 @@
 package com.github.unchama.targetedeffect
 
 import arrow.typeclasses.Monoid
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import kotlin.coroutines.Continuation
 
 /**
@@ -10,7 +11,7 @@ import kotlin.coroutines.Continuation
  * [runFor]の副作用は, Arrow Fxの設計理念に従いコルーチンの中で発動される.
  */
 trait TargetedEffect[-T] {
-  def runFor(minecraftObject: T, cont: Continuation[Unit])
+  @SuspendingMethod def runFor(minecraftObject: T)
 }
 
 object TargetedEffect {
@@ -18,14 +19,14 @@ object TargetedEffect {
     override def empty(): TargetedEffect[T] = EmptyEffect
 
     override def combine(a: TargetedEffect[T], b: TargetedEffect[T]): TargetedEffect[T] =
-        TargetedEffect { cont =>
-          a.runFor(_, cont)
-          b.runFor(_, cont)
+        TargetedEffect { _ =>
+          a.runFor _
+          b.runFor _
         }
   }
 
   def apply[T](effect: Continuation[Unit] => T => Unit): TargetedEffect[T] = new TargetedEffect[T] {
-    override def runFor(minecraftObject: T, continuation: Continuation[Unit]): Unit = effect(continuation)(minecraftObject)
+    override @SuspendingMethod def runFor(minecraftObject: T): Unit = effect(continuation)(minecraftObject)
   }
 }
 

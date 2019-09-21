@@ -8,9 +8,13 @@ import com.github.unchama.seichiassist.task.MebiusTask
 import com.github.unchama.seichiassist.{ManagedWorld, MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect}
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
+import kotlin.Suppress
+import kotlin.jvm.JvmName
 import org.bukkit.ChatColor._
+import org.bukkit.command.CommandSender
 import org.bukkit.potion.PotionEffectType
-import org.bukkit.{Bukkit, Material}
+import org.bukkit.{Bukkit, Material, Statistic}
 
 import scala.collection.mutable
 class PlayerData(
@@ -755,7 +759,7 @@ class PlayerData(
   }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def toggleMessageFlag(): TargetedEffect[Player] = {
+  @SuspendingMethod def toggleMessageFlag(): TargetedEffect[Player] = {
     settings.receiveFastDiggingEffectStats = !settings.receiveFastDiggingEffectStats
 
     val responseMessage = if (settings.receiveFastDiggingEffectStats) {
@@ -775,7 +779,7 @@ class PlayerData(
    * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
    */
   @Suppress("RedundantSuspendModifier")
-  suspend def tryForcefullyUnlockAchievement(number: Int): TargetedEffect[CommandSender] =
+  @SuspendingMethod def tryForcefullyUnlockAchievement(number: Int): TargetedEffect[CommandSender] =
       if (!TitleFlags[number]) {
         TitleFlags.set(number)
         Bukkit.getPlayer(uuid)?.sendMessage(s"運営チームよりNo${number}の実績が配布されました。")
@@ -793,7 +797,7 @@ class PlayerData(
    * @return この作用の実行者に向け操作の結果を記述する[TargetedEffect]
    */
   @Suppress("RedundantSuspendModifier")
-  suspend def forcefullyDepriveAchievement(number: Int): TargetedEffect[CommandSender] =
+  @SuspendingMethod def forcefullyDepriveAchievement(number: Int): TargetedEffect[CommandSender] =
       if (!TitleFlags[number]) {
         TitleFlags[number] = false
 
@@ -805,7 +809,7 @@ class PlayerData(
   /**
    * プレーヤーに付与されるべき採掘速度上昇効果を適用する[TargetedEffect].
    */
-  suspend def computeFastDiggingEffect(): TargetedEffect[Player] = {
+  @SuspendingMethod def computeFastDiggingEffect(): TargetedEffect[Player] = {
     val activeEffects = effectdatalist.toList()
 
     val amplifierSum = activeEffects.map { it.amplifier }.sum()

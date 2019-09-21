@@ -5,13 +5,14 @@ import com.github.unchama.menuinventory.IndexedSlotLayout
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.seichiassist.MineStackObjectList
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 object CategorizedMineStackMenu {
   private const val mineStackObjectPerPage = 9 * 5
 
-  private suspend def Player.computeMenuLayout(category: MineStackObjectCategory, page: Int): IndexedSlotLayout = {
+  private @SuspendingMethod def Player.computeMenuLayout(category: MineStackObjectCategory, page: Int): IndexedSlotLayout = {
     val categoryItemList = MineStackObjectList.minestacklist.filter { it.category() === category }
     val totalNumberOfPages = ceil(categoryItemList.size / 45.0).toInt()
 

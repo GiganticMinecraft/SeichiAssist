@@ -3,7 +3,9 @@ package com.github.unchama.seichiassist.commands
 import com.github.unchama.contextualexecutor.builder.TypeAliases.ResponseEffectOrResult
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, ConsoleCommandSender}
@@ -31,7 +33,7 @@ object RmpCommand {
         Parsers.nonNegativeInteger(s"${RED}[日数]には非負整数を入力してください".asMessageEffect())
       ), onMissingArguments = printDescriptionExecutor)
 
-  private suspend def getOldRegionsIn(world: World, daysThreshold: Int): ResponseEffectOrResult[CommandSender, List[ProtectedRegion]] {
+  private @SuspendingMethod def getOldRegionsIn(world: World, daysThreshold: Int): ResponseEffectOrResult[CommandSender, List[ProtectedRegion]] = {
     val databaseGateway = SeichiAssist.databaseGateway
 
     val leavers = databaseGateway.playerDataManipulator.selectLeaversUUIDs(daysThreshold)

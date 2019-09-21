@@ -122,7 +122,7 @@ object RegionMenu extends Menu {
 
   private object ButtonComputations {
 
-    suspend def Player.computeButtonToClaimRegion(): Button = run {
+    @SuspendingMethod def Player.computeButtonToClaimRegion(): Button = run {
       val openerData = SeichiAssist.playermap[uniqueId]
       val selection = ExternalPlugins.worldEdit().getSelection(player)
 
@@ -193,7 +193,7 @@ object RegionMenu extends Menu {
 
   }
 
-  private suspend def Player.computeMenuLayout(): IndexedSlotLayout =
+  private @SuspendingMethod def Player.computeMenuLayout(): IndexedSlotLayout =
       with(ConstantButtons) {
         with(ButtonComputations) {
       menuinventory.IndexedSlotLayout(

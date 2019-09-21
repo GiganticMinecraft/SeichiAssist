@@ -1,11 +1,19 @@
 package com.github.unchama.seichiassist.database.manipulators
 
 import java.sql.SQLException
+import java.util
+import java.util.{Calendar, UUID}
 
+import com.github.unchama.contextualexecutor.builder.TypeAliases.ResponseEffectOrResult
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
+import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.util.ActionStatus
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
+import kotlin.Suppress
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
@@ -224,7 +232,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @Suppress("RedundantSuspendModifier")
-  private suspend def assertPlayerDataExistenceFor(playerName: String): ResponseEffectOrResult[CommandSender, Unit] =
+  private @SuspendingMethod def assertPlayerDataExistenceFor(playerName: String): ResponseEffectOrResult[CommandSender, Unit] =
       try {
         gateway.executeQuery(s"select * from $tableReference where name like $playerName").use { resultSet =>
           if (!resultSet.next()) {
@@ -240,9 +248,9 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         s"${RED}プレーヤーデータへのアクセスに失敗しました。".asMessageEffect().left()
       }
 
-  suspend def addContributionPoint(targetPlayerName: String, point: Int): ResponseEffectOrResult[CommandSender, Unit] {
+  @SuspendingMethod def addContributionPoint(targetPlayerName: String, point: Int): ResponseEffectOrResult[CommandSender, Unit] {
     @Suppress("RedundantSuspendModifier")
-    suspend def executeUpdate(): ResponseEffectOrResult[CommandSender, Unit] {
+    @SuspendingMethod def executeUpdate(): ResponseEffectOrResult[CommandSender, Unit] = {
       val updateCommand = s"UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name LIKE '$targetPlayerName'"
 
       return if (gateway.executeUpdate(updateCommand) === Fail) {
@@ -254,7 +262,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     @Suppress("RedundantSuspendModifier")
-    suspend def updatePlayerDataMemoryCache() {
+    @SuspendingMethod def updatePlayerDataMemoryCache() {
       Bukkit.getServer().getPlayer(targetPlayerName)?.let { targetPlayer =>
         val targetPlayerData = SeichiAssist.playermap[targetPlayer.uniqueId] ?: return@let
 
@@ -283,7 +291,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
 
   @Suppress("RedundantSuspendModifier")
-  suspend def saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): ResponseEffectOrResult[CommandSender, Unit] {
+  @SuspendingMethod def saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): ResponseEffectOrResult[CommandSender, Unit] {
     //連打による負荷防止の為クールダウン処理
     if (!playerData.shareinvcooldownflag) {
     return s"${RED}しばらく待ってからやり直してください".asMessageEffect ().left ()
@@ -319,7 +327,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def loadShareInv(player: Player, playerData: PlayerData): ResponseEffectOrResult[CommandSender, String] {
+  @SuspendingMethod def loadShareInv(player: Player, playerData: PlayerData): ResponseEffectOrResult[CommandSender, String] {
     //連打による負荷防止の為クールダウン処理
     if (!playerData.shareinvcooldownflag) {
     return s"${RED}しばらく待ってからやり直してください".asMessageEffect ().left ()
@@ -341,7 +349,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def clearShareInv(player: Player, playerdata: PlayerData): ResponseEffectOrResult[CommandSender, Unit] {
+  @SuspendingMethod def clearShareInv(player: Player, playerdata: PlayerData): ResponseEffectOrResult[CommandSender, Unit] {
     val command = s"UPDATE $tableReference SET shareinv = '' WHERE uuid = '${playerdata.uuid}'"
 
     if (gateway.executeUpdate(command) === Fail) {
@@ -353,11 +361,11 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def selectLeaversUUIDs(days: Int): List[UUID]? = {
+  @SuspendingMethod def selectLeaversUUIDs(days: Int): List[UUID]? = {
     val command = s"select name, uuid from $tableReference " +
         s"where ((lastquit <= date_sub(curdate(), interval $days day)) " +
         "or (lastquit is null)) and (name != '') and (uuid != '')"
-    val uuidList = ArrayList[UUID]()
+    val uuidList = util.ArrayList[UUID]()
 
     try {
       gateway.executeQuery(command).recordIteration {
@@ -378,7 +386,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   //ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
   private def successBlockRankingUpdate(): Boolean = {
-    val ranklist = ArrayList[RankData]()
+    val ranklist = util.ArrayList[RankData]()
     SeichiAssist.allplayerbreakblockint = 0
     val command = ("select name,level,totalbreaknum from " + tableReference
         + " order by totalbreaknum desc")
@@ -405,7 +413,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   //ランキング表示用にプレイ時間のカラムだけ全員分引っ張る
   private def successPlayTickRankingUpdate(): Boolean = {
-    val ranklist = ArrayList[RankData]()
+    val ranklist = util.ArrayList[RankData]()
     val command = ("select name,playtick from " + tableReference
         + " order by playtick desc")
     try {
@@ -429,7 +437,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   //ランキング表示用に投票数のカラムだけ全員分引っ張る
   private def successVoteRankingUpdate(): Boolean = {
-    val ranklist = ArrayList[RankData]()
+    val ranklist = util.ArrayList[RankData]()
     val command = ("select name,p_vote from " + tableReference
         + " order by p_vote desc")
     try {
@@ -453,7 +461,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   //ランキング表示用にプレミアムエフェクトポイントのカラムだけ全員分引っ張る
   private def successPremiumEffectPointRanking(): Boolean = {
-    val ranklist = ArrayList[RankData]()
+    val ranklist = util.ArrayList[RankData]()
     val command = ("select name,premiumeffectpoint from " + tableReference
         + " order by premiumeffectpoint desc")
     try {
@@ -477,7 +485,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   //ランキング表示用に上げたりんご数のカラムだけ全員分引っ張る
   private def successAppleNumberRankingUpdate(): Boolean = {
-    val ranklist = ArrayList[RankData]()
+    val ranklist = util.ArrayList[RankData]()
     SeichiAssist.allplayergiveapplelong = 0
     val command = s"select name,p_apple from $tableReference order by p_apple desc"
     try {
@@ -521,7 +529,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def selectPocketInventoryOf(uuid: UUID): ResponseEffectOrResult[CommandSender, Inventory] {
+  @SuspendingMethod def selectPocketInventoryOf(uuid: UUID): ResponseEffectOrResult[CommandSender, Inventory] {
     val command = s"select inventory from $tableReference where uuid like '$uuid'"
 
     try {
@@ -537,8 +545,8 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def inquireLastQuitOf(playerName: String): TargetedEffect[CommandSender] = {
-    suspend def fetchLastQuitData(): String? = {
+  @SuspendingMethod def inquireLastQuitOf(playerName: String): TargetedEffect[CommandSender] = {
+    @SuspendingMethod def fetchLastQuitData(): String? = {
       val command = s"select lastquit from $tableReference where playerName = '$playerName'"
       try {
         gateway.executeQuery(command).use { lrs =>

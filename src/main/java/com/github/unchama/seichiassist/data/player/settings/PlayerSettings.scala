@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.data.player.settings
 
 import com.github.unchama.seichiassist.data.player.PlayerNickName
-import com.github.unchama.targetedeffect.UnfocusedEffect
+import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect}
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
+import kotlin.Suppress
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
@@ -55,7 +57,7 @@ class PlayerSettings {
       }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def getBroadcastMutingSettings(): BroadcastMutingSettings = broadcastMutingSettings
+  @SuspendingMethod def getBroadcastMutingSettings(): BroadcastMutingSettings = broadcastMutingSettings
 
   val toggleBroadcastMutingSettings
     get() = UnfocusedEffect {
@@ -63,7 +65,7 @@ class PlayerSettings {
     }
 
   @Suppress("RedundantSuspendModifier")
-  suspend def toggleHalfBreakFlag(): TargetedEffect[Player] = {
+  @SuspendingMethod def toggleHalfBreakFlag(): TargetedEffect[Player] = {
     allowBreakingHalfBlocks = !allowBreakingHalfBlocks
 
     val newStatus = if (allowBreakingHalfBlocks) s"${GREEN}破壊可能" else "${RED}破壊不可能"

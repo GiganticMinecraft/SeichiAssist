@@ -5,6 +5,7 @@ import com.github.unchama.menuinventory.{IndexedSlotLayout, Menu, MenuInventoryV
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.{CommonSoundEffects, Schedulers}
+import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.ChatColor._
 import org.bukkit.Material
@@ -44,7 +45,7 @@ object MineStackMainMenu extends Menu {
     /**
      * メインメニュー内の「履歴」機能部分のレイアウトを計算する
      */
-    suspend def Player.computeHistoricalMineStackLayout(): IndexedSlotLayout = {
+    @SuspendingMethod def Player.computeHistoricalMineStackLayout(): IndexedSlotLayout = {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val buttonMapping = playerData.hisotryData.usageHistory.mapIndexed { index, mineStackObject =>
@@ -58,7 +59,7 @@ object MineStackMainMenu extends Menu {
     }
   }
 
-  private suspend def Player.computeMineStackMainMenuLayout(): IndexedSlotLayout = {
+  private @SuspendingMethod def Player.computeMineStackMainMenuLayout(): IndexedSlotLayout = {
     return with(ButtonComputations) {
       IndexedSlotLayout(
           0 to with (MineStackButtons) { computeAutoMineStackToggleButton() },
@@ -77,7 +78,7 @@ object MineStackMainMenu extends Menu {
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
-        UnfocusedEffect { session.overwriteViewWith(player.computeMineStackMainMenuLayout()) }
+        targetedeffect.UnfocusedEffect { session.overwriteViewWith(player.computeMineStackMainMenuLayout()) }
     )
   }
 }

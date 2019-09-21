@@ -1,7 +1,7 @@
 package com.github.unchama.targetedeffect.player
 
 import com.github.unchama.targetedeffect.TargetedEffect
-import kotlin.coroutines.Continuation
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 case class FocusedSoundEffect(private val sound: Sound,
                               private val volume: Float,
                               private val pitch: Float) extends TargetedEffect[Player] {
-  override def runFor(minecraftObject: Player, continuation: Continuation[Unit]) {
+  override @SuspendingMethod def runFor(minecraftObject: Player) {
     minecraftObject.playSound(minecraftObject.getLocation, sound, volume, pitch)
   }
 }

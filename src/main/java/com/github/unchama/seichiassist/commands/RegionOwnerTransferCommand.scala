@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.Bukkit
@@ -10,7 +11,7 @@ import org.bukkit.entity.Player
 
 object RegionOwnerTransferCommand {
   @Suppress("RedundantSuspendModifier")
-  private suspend def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): TargetedEffect[Player] = {
+  private @SuspendingMethod def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): TargetedEffect[Player] = {
     val owners = region.owners
 
     if (!owners.contains(donner.uniqueId)) {

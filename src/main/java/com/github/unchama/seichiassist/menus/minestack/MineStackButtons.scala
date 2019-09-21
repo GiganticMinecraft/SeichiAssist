@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectC
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -47,7 +48,7 @@ internal object MineStackButtons {
     }
   }
 
-  suspend def Player.getMineStackItemButtonOf(mineStackObj: MineStackObj): Button = recomputedButton {
+  @SuspendingMethod def Player.getMineStackItemButtonOf(mineStackObj: MineStackObj): Button = recomputedButton {
     val playerData = SeichiAssist.playermap[uniqueId]
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
@@ -86,7 +87,7 @@ internal object MineStackButtons {
     )
   }
 
-  suspend def Player.computeAutoMineStackToggleButton(): Button = recomputedButton {
+  @SuspendingMethod def Player.computeAutoMineStackToggleButton(): Button = recomputedButton {
     val playerData = SeichiAssist.playermap[uniqueId]
 
     val iconItemStack = run {

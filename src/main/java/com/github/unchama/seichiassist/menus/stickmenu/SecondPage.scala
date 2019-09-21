@@ -1,14 +1,16 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, action}
+import com.github.unchama.menuinventory.{IndexedSlotLayout, Menu, MenuInventoryView}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
+import com.github.unchama.seichiassist.{Schedulers, SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
+import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
@@ -105,7 +107,7 @@ object SecondPage extends Menu {
 
       Button(
           iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+          action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 closeInventoryEffect,
                 s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("jms")}".asMessageEffect(),
@@ -189,7 +191,7 @@ object SecondPage extends Menu {
 
       Button(
           iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+          action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
                 TargetedEffect {
@@ -212,7 +214,7 @@ object SecondPage extends Menu {
 
       Button(
           iconItemStack,
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+          action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 closeInventoryEffect,
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
@@ -224,7 +226,7 @@ object SecondPage extends Menu {
   }
 
   private object ButtonComputations {
-    suspend def Player.computeHeadSummoningButton(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeHeadSummoningButton(): Button = recomputedButton {
       val iconItemStack = run {
         val baseLore = List(
             s"$RESET${GRAY}経験値10000を消費して",
@@ -257,7 +259,7 @@ object SecondPage extends Menu {
 
                 sequentialEffect(
                     UnfocusedEffect { expManager.changeExp(-10000) },
-                    UnfocusedEffect { Util.dropItem(it, skullToGive) },
+                    targetedeffect.UnfocusedEffect { Util.dropItem(it, skullToGive) },
                   s"${GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
                     FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
                 )
@@ -274,7 +276,7 @@ object SecondPage extends Menu {
       Button(iconItemStack, effect)
     }
 
-    suspend def Player.computeBroadcastMessageToggleButton(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeBroadcastMessageToggleButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
       val iconItemStack = run {
         val currentSettings = playerData.settings.getBroadcastMutingSettings()
@@ -321,7 +323,7 @@ object SecondPage extends Menu {
       )
     }
 
-    suspend def Player.computeDeathMessageToggleButton(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeDeathMessageToggleButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -367,7 +369,7 @@ object SecondPage extends Menu {
       )
     }
 
-    suspend def Player.computeWorldGuardMessageToggleButton(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeWorldGuardMessageToggleButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -416,7 +418,7 @@ object SecondPage extends Menu {
       )
     }
 
-    suspend def Player.computeShareInventoryButton(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeShareInventoryButton(): Button = recomputedButton {
       val iconItemStack = run {
         val lore = run {
           val playerData = SeichiAssist.playermap[uniqueId]
@@ -453,10 +455,10 @@ object SecondPage extends Menu {
     }
   }
 
-  private suspend def Player.computeMenuLayout(): IndexedSlotLayout =
+  private @SuspendingMethod def Player.computeMenuLayout(): IndexedSlotLayout =
       with(ConstantButtons) {
         with(ButtonComputations) {
-          IndexedSlotLayout(
+          menuinventory.IndexedSlotLayout(
               0 to officialWikiNavigationButton,
               1 to rulesPageNavigationButton,
               2 to serverMapNavigationButton,
@@ -480,7 +482,7 @@ object SecondPage extends Menu {
 
     sequentialEffect(
         session.openEffectThrough(Schedulers.sync),
-        UnfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
+        targetedeffect.UnfocusedEffect { session.overwriteViewWith(player.computeMenuLayout()) }
     )
   }
 }

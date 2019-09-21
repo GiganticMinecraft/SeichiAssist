@@ -1,7 +1,7 @@
 package com.github.unchama.contextualexecutor.executors
 
 import com.github.unchama.contextualexecutor.{ContextualExecutor, RawCommandContext}
-import kotlin.coroutines.Continuation
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 
 /**
  * コマンドの枝分かれでのルーティングを静的に行うアクションを返す[ContextualExecutor]
@@ -12,7 +12,7 @@ case class BranchedExecutor(val branches: Map[String, ContextualExecutor],
 
   import com.github.unchama.util.syntax.Nullability._
 
-  override def executeWith(rawContext: RawCommandContext, cont: Continuation[Unit]) {
+  override @SuspendingMethod def executeWith(rawContext: RawCommandContext) {
     val (argHead, argTail) = rawContext.args match {
       case ::(head, tl) => (head, tl)
       case Nil =>

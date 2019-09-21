@@ -1,10 +1,10 @@
 package com.github.unchama.targetedeffect
 
-import kotlin.coroutines.Continuation
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 
 /**
  * 何も作用を及ぼさないような[TargetedEffect].
  */
 object EmptyEffect extends TargetedEffect[Any] {
-  override def runFor(minecraftObject: Any, continuation: Continuation[Unit]) = Unit
+  override @SuspendingMethod def runFor(minecraftObject: Any) = Unit
 }

@@ -2,12 +2,13 @@ package com.github.unchama.seichiassist.task
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 object HalfHourRankingRoutine extends RepeatedTaskLauncher() {
   override def getRepeatIntervalTicks(): Long = if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 30
 
-  override suspend def runRoutine() {
+  override @SuspendingMethod def runRoutine() {
     Util.sendEveryMessage("--------------30分間整地ランキング--------------")
 
     var totalBreakCount = 0

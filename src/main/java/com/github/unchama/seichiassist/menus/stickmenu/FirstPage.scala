@@ -1,14 +1,17 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import com.github.unchama.menuinventory.Menu
-import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
+import com.github.unchama.menuinventory.slot.button.{Button, action}
+import com.github.unchama.menuinventory.{IndexedSlotLayout, Menu}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.MenuInventoryData
+import com.github.unchama.seichiassist.menus.RegionMenu
+import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{CommonSoundEffects, Schedulers, SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{EmptyEffect, TargetedEffect}
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -334,7 +337,7 @@ private object FirstPage extends Menu {
   }
 
   private object ButtonComputations {
-    suspend def Player.computeStatsButton(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeStatsButton(): Button = recomputedButton {
       val openerData = SeichiAssist.playermap[uniqueId]
 
       Button(
@@ -354,7 +357,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeEffectSuppressionButton(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeEffectSuppressionButton(): Button = recomputedButton {
       val openerData = SeichiAssist.playermap[uniqueId]
 
       val buttonLore: List[String] = run {
@@ -383,7 +386,7 @@ private object FirstPage extends Menu {
               .enchanted()
               .lore(buttonLore)
               .build(),
-          FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
+          action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) {
             sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                 openerData.settings.fastDiggingEffectSuppression.suppressionDegreeToggleEffect,
@@ -393,7 +396,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeRegionMenuButton(): Button = {
+    @SuspendingMethod def Player.computeRegionMenuButton(): Button = {
       val buttonLore = run {
         val worldGuardPlugin = ExternalPlugins.worldGuard()
         val regionManager = worldGuardPlugin.getRegionManager(world)
@@ -422,7 +425,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeMineStackButton(): Button = {
+    @SuspendingMethod def Player.computeMineStackButton(): Button = {
       val openerData = SeichiAssist.playermap[uniqueId]
 
       val minimumLevelRequired = SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
@@ -466,7 +469,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computePocketOpenButton(): Button = {
+    @SuspendingMethod def Player.computePocketOpenButton(): Button = {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
@@ -507,7 +510,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeEnderChestButton(): Button = {
+    @SuspendingMethod def Player.computeEnderChestButton(): Button = {
       val playerData = SeichiAssist.playermap[uniqueId]
       val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.passivePortalInventorylevel
 
@@ -545,7 +548,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeApologyItemsButton(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeApologyItemsButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -584,7 +587,7 @@ private object FirstPage extends Menu {
                   val itemToGive = Util.forBugskull(this.name)
 
                   sequentialEffect(
-                      UnfocusedEffect {
+                      targetedeffect.UnfocusedEffect {
                         repeat(numberOfItemsToGive) { Util.addItemToPlayerSafely(this, itemToGive) }
                         playerData.unclaimedApologyItems = 0
                       },
@@ -597,7 +600,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeStarLevelStatsButton(): Button = {
+    @SuspendingMethod def Player.computeStarLevelStatsButton(): Button = {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -619,7 +622,7 @@ private object FirstPage extends Menu {
       return Button(iconItemStack)
     }
 
-    suspend def Player.computeActiveSkillButton(): Button = {
+    @SuspendingMethod def Player.computeActiveSkillButton(): Button = {
       val iconItemStack = run {
         val lore =
             if (Util.isSkillEnable(this))
@@ -650,7 +653,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeGachaTicketButton(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeGachaTicketButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -687,7 +690,7 @@ private object FirstPage extends Menu {
 
               if (gachaTicketsToGive > 0) {
                 sequentialEffect(
-                    UnfocusedEffect {
+                    targetedeffect.UnfocusedEffect {
                       playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
                       repeat(gachaTicketsToGive) { Util.addItemToPlayerSafely(this@computeGachaTicketButton, itemStackToGive) }
                     },
@@ -700,7 +703,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeGachaTicketDeliveryButton(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeGachaTicketDeliveryButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       val iconItemStack = run {
@@ -746,7 +749,7 @@ private object FirstPage extends Menu {
       )
     }
 
-    suspend def Player.computeValentineChocolateButton(): Button = recomputedButton {
+    @SuspendingMethod def Player.computeValentineChocolateButton(): Button = recomputedButton {
       val playerData = SeichiAssist.playermap[uniqueId]
 
       if (playerData.hasChocoGave && Valentine.isInEvent) {
@@ -770,7 +773,7 @@ private object FirstPage extends Menu {
                   if (Valentine.isInEvent) {
                     sequentialEffect(
                         FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 0.5f),
-                        UnfocusedEffect {
+                        targetedeffect.UnfocusedEffect {
                           Valentine.giveChoco(this)
                           playerData.hasChocoGave = true
                         },
@@ -788,10 +791,10 @@ private object FirstPage extends Menu {
     }
   }
 
-  private suspend def Player.computeMenuLayout(): IndexedSlotLayout =
+  private @SuspendingMethod def Player.computeMenuLayout(): IndexedSlotLayout =
       with(ConstantButtons) {
         with(ButtonComputations) {
-          IndexedSlotLayout(
+          menuinventory.IndexedSlotLayout(
               0 to computeStatsButton(),
               1 to computeEffectSuppressionButton(),
               3 to computeRegionMenuButton(),

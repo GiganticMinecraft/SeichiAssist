@@ -1,7 +1,10 @@
 package com.github.unchama.menuinventory
 
 import com.github.unchama.menuinventory.slot.Slot
+import com.github.unchama.targetedeffect.{EmptyEffect, TargetedEffect}
+import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import kotlin.collections.IndexedValue
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 /**
@@ -24,7 +27,7 @@ case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
   /**
    * 指定した[Inventory]に[Slot]により構成されたレイアウトを敷き詰める.
    */
-  internal suspend def asynchronouslySetItemsOn(inventory: Inventory) {
+  internal @SuspendingMethod def asynchronouslySetItemsOn(inventory: Inventory) {
     coroutineScope {
       for (slotIndex in 0 until inventory.size) {
         launch {
