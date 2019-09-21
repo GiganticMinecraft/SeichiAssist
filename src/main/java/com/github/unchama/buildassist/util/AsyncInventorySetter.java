@@ -7,6 +7,6 @@ import org.bukkit.inventory.ItemStack;
 
 public final class AsyncInventorySetter {
     public static void setItemAsync(Inventory inventory, int slot, ItemStack item) {
-        Bukkit.getServer().getScheduler().runTaskAsynchronously(BuildAssist.plugin, () -> inventory.setItem(slot, item));
+        Bukkit.getServer().getScheduler().runTaskAsynchronously(BuildAssist.Companion.getPlugin(), () -> inventory.setItem(slot, item));
     }
 }

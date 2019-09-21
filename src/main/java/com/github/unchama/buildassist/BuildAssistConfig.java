@@ -7,11 +7,11 @@ import org.bukkit.plugin.Plugin;
 
 public class BuildAssistConfig {
     private static FileConfiguration config;
-    private Plugin plugin;
+    private final Plugin plugin;
 
     //コンストラクタ
-    public BuildAssistConfig(Plugin _plugin) {
-        plugin = _plugin;
+    public BuildAssistConfig(final Plugin plugin) {
+        this.plugin = plugin;
         saveDefaultConfig();
     }
 
