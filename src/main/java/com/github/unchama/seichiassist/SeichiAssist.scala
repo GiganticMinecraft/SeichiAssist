@@ -14,7 +14,6 @@ import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation}
-import com.github.unchama.util.syntax.Nullability._
 import kotlinx.coroutines.Job
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
@@ -66,11 +65,10 @@ class SeichiAssist extends JavaPlugin() {
         SeichiAssist.seichiAssistConfig.getID, SeichiAssist.seichiAssistConfig.getPW
       )
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         e.printStackTrace()
         logger.severe("データベース初期化に失敗しました。サーバーを停止します…")
         Bukkit.shutdown()
-      }
     }
 
     //mysqlからガチャデータ読み込み
@@ -149,10 +147,9 @@ class SeichiAssist extends JavaPlugin() {
         SeichiAssist.playermap(p.getUniqueId) = SeichiAssist.databaseGateway
           .playerDataManipulator.loadPlayerData(p.getUniqueId, p.getName)
       } catch {
-        case e: Exception => {
+        case e: Exception =>
           e.printStackTrace()
           p.kickPlayer("プレーヤーデータの読み込みに失敗しました。")
-        }
       }
     }
 
