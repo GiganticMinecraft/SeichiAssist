@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
+import com.github.unchama.seichiassist.task.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation}
 import com.github.unchama.util.syntax.Nullability._
 import kotlinx.coroutines.Job
 import org.bukkit.ChatColor._
@@ -27,7 +28,7 @@ import scala.collection.mutable
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
 
-  private var repeatedJobCoroutine: Job = _
+  private var repeatedJobCoroutine: Option[Job] = None
 
   val expBarSynchronization = new ExpBarSynchronization()
 
@@ -218,15 +219,17 @@ class SeichiAssist extends JavaPlugin() {
       = SeichiAssist.buildAssist.onCommand(sender, command, label, args)
 
   private def startRepeatedJobs() {
-    repeatedJobCoroutine = CoroutineScope(Schedulers.sync).launch {
+    repeatedJobCoroutine = Some(CoroutineScope(Schedulers.sync).launch {
       launch { HalfHourRankingRoutine.launch() }
       launch { PlayerDataPeriodicRecalculation.launch() }
       launch { PlayerDataBackupTask.launch() }
-    }
+    })
   }
 
   private def cancelRepeatedJobs() {
-    repeatedJobCoroutine.ifNotNull(_.cancel(null))
+    repeatedJobCoroutine match {
+      case Some(x) => x.cancel(null)
+    }
   }
 
   def restartRepeatedJobs() {
