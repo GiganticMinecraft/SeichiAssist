@@ -1,71 +1,92 @@
 package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist.data.{ActiveSkillData, Coordinate}
-import org.bukkit.ChatColor._
-import org.bukkit.Material
+import org.bukkit.block.Block
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-enum class ActiveSkillEffect (
-    val num: Int,
-    val nameOnDatabase: String,
-    val nameOnUI: String,
-    val explanation: String,
-    val usePoint: Int,
-    val material: Material) {
+import org.bukkit.{Location, Material}
 
-  EXPLOSION(1, s"ef_explosion", "${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
-  ,
-  BLIZZARD(2, s"ef_blizzard", "${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
-  ,
-  METEO(3, s"ef_meteo", "${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL);
+object ActiveSkillEffect extends Enumeration {
 
-  internal var plugin = SeichiAssist.instance
+  case class ActiveSkillEffectVal(num: Int,
+                                  nameOnDatabase: String,
+                                  nameOnUI: String,
+                                  explanation: String,
+                                  usePoint: Int,
+                                  material: Material) extends Val
 
-  //エフェクトの実行処理分岐 範囲破壊と複数範囲破壊
+  val Explosion = ActiveSkillEffectVal(1, s"ef_explosion", "${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
+  val Blizzard = ActiveSkillEffectVal(2, s"ef_blizzard", "${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
+  val Meteo = ActiveSkillEffectVal(3, s"ef_meteo", "${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
+
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
                      tool: ItemStack,
-                     breaklist: Set[Block],
-                     start: Coordinate, end: Coordinate,
-                     standard: Location) {
-    val skillId = skillData.skillnum
-    when (this) {
-      EXPLOSION => ExplosionTask(player, skillId <= 2, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
-      BLIZZARD => {
-        val effect = BlizzardTask(player, skillData, tool, breaklist, start, end, standard)
+                     breakList: Set[Block],
+                     start: Coordinate,
+                     end: Coordinate,
+                     standard: Location) = {
+    case Explosion => ExplosionTask(player, skillId <= 2, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
+    case Blizzard => {
+      val effect = BlizzardTask(player, skillData, tool, breaklist, start, end, standard)
 
-        if (skillId < 3) {
-          effect.runTaskLater(plugin, 1)
-        } else {
-          val period = if (SeichiAssist.DEBUG) 100L else 10L
-          effect.runTaskTimer(plugin, 0, period)
-        }
+      if (skillId < 3) {
+        effect.runTaskLater(plugin, 1)
+      } else {
+        val period = if (SeichiAssist.DEBUG) 100L else 10L
+        effect.runTaskTimer(plugin, 0, period)
       }
-      METEO => {
-        val delay = if (skillId < 3) 1L else 10L
+    }
+    case Meteo => {
+      val delay = if (skillId < 3) 1L else 10L
 
-        MeteoTask(player, skillData, tool, breaklist, start, end, standard)
-            .runTaskLater(plugin, delay)
-      }
+      MeteoTask(player, skillData, tool, breaklist, start, end, standard)
+        .runTaskLater(plugin, delay)
     }
   }
 
   //エフェクトの実行処理分岐
   def runArrowEffect(player: Player) {
-    val effect = when (this@ActiveSkillEffect) {
-      EXPLOSION => ArrowEffects.singleArrowExplosionEffect
-      BLIZZARD => ArrowEffects.singleArrowBlizzardEffect
-      METEO => ArrowEffects.singleArrowMeteoEffect
+    val effect = when(this
+    @ActiveSkillEffect
+    )
+    {
+      EXPLOSION =>
+        ArrowEffects.singleArrowExplosionEffect
+        BLIZZARD =>
+          ArrowEffects.singleArrowBlizzardEffect
+          METEO => ArrowEffects.singleArrowMeteoEffect
     }
 
-    GlobalScope.launch(Schedulers.async) { effect.runFor(player) }
+    GlobalScope.launch(Schedulers.async) {
+      effect.runFor(player)
+    }
   }
+
+  def getNameByNum(effectNum: Int): String = ActiveSkillEffect.values
+    .filter(_.isInstanceOf[ActiveSkillEffectVal])
+    .map[ActiveSkillEffectVal](_.asInstanceOf)
+    .find(activeSkillEffect => activeSkillEffect.num == effectNum)
+    .map(_.nameOnUI)
+    .orElse("未設定")
+
+  def fromSqlName(sqlName: String): Option[ActiveSkillEffectVal] = ActiveSkillEffect.values
 }
 
-object ActiveSkillEffect {
-  def getNamebyNum(effectnum: Int): String = values()
-    .find { activeSkillEffect => activeSkillEffect.num == effectnum }
-  ?.let { it.nameOnUI } ?: "未設定"
 
-  def fromSqlName(sqlName: String): ActiveSkillEffect? = values()
-    .find { effect => sqlName == effect.nameOnDatabase }
+object ActiveSkillEffect {
+
+  def getNamebyNum(effectnum: Int): String = {
+    case 1 => ActiveSkillEffect.Explosion.nameOnUI
+    case 2 => ActiveSkillEffect.Blizzard.nameOnUI
+    case 3 => ActiveSkillEffect.Meteo.nameOnUI
+    case _ => "未設定"
+  }
+
+  def fromSqlName(sqlName: String): Option[ActiveSkillEffect] = {
+    case "ef_explosion" => Some(ActiveSkillEffect.Explosion)
+    case "ef_blizzard" => Some(ActiveSkillEffect.Blizzard)
+    case "ef_meteo" => Some(ActiveSkillEffect.Meteo)
+  }
+
 }
