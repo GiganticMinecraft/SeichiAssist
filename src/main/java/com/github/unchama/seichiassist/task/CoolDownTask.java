@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class CoolDownTask extends BukkitRunnable{
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.getPlayermap();
+	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap();
 	private Player player;
 	UUID uuid;
 	PlayerData playerdata;

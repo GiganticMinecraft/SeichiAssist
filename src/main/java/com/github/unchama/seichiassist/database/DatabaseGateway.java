@@ -38,7 +38,7 @@ public class DatabaseGateway {
 	public Connection con = null;
 	private Statement stmt = null;
 
-	private SeichiAssist plugin = SeichiAssist.getInstance();
+	private SeichiAssist plugin = SeichiAssist.instance();
 
 	private DatabaseGateway(@NotNull String databaseUrl, @NotNull String databaseName, @NotNull String loginId, @NotNull String password){
 		this.databaseUrl = databaseUrl;
@@ -72,7 +72,7 @@ public class DatabaseGateway {
 				stmt.close();
 				con.close();
 			}
-			con = DriverManager.getConnection(databaseUrl, loginId, password);
+			con = DriverManager.connection(databaseUrl, loginId, password);
 			stmt = con.createStatement();
 			return Ok;
 		} catch (SQLException e) {
@@ -89,7 +89,7 @@ public class DatabaseGateway {
 		try {
 			if(con.isClosed()){
 				plugin.getLogger().warning("sqlConnectionクローズを検出。再接続試行");
-				con = DriverManager.getConnection(databaseUrl, loginId, password);
+				con = DriverManager.connection(databaseUrl, loginId, password);
 			}
 			if(stmt.isClosed()){
 				plugin.getLogger().warning("sqlStatementクローズを検出。再接続試行");

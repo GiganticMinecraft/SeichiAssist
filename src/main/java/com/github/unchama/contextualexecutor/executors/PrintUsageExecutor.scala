@@ -5,7 +5,7 @@ import com.github.unchama.targetedeffect.MessageEffects._
 import kotlin.coroutines.Continuation
 
 /**
- * コマンドの[Command.getUsage]を送信者に送り返すだけのアクションを返すExecutor
+ * コマンドの[Command.usage]を送信者に送り返すだけのアクションを返すExecutor
  */
 object PrintUsageExecutor extends ContextualExecutor {
   override def executeWith(rawContext: RawCommandContext, cont: Continuation[Unit]) =

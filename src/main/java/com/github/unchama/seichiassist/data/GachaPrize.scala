@@ -55,6 +55,6 @@ object GachaPrize {
         return gachadata.copy()
       }
     }
-    return GachaPrize(StaticGachaPrizeFactory.getGachaRingo(), 1.0)
+    return GachaPrize(StaticGachaPrizeFactory.gachaRingo(), 1.0)
   }
 }

@@ -30,7 +30,7 @@ class PlayerRightClickListener extends Listener {
     val equipmentslot = event.getHand
     //プレイヤーデータ
     val playerdata = BuildAssist.playermap.getOrElse(uuid, return)
-    val playerdata_s = SeichiAssist.getPlayermap.get(uuid).ifNull { return }
+    val playerdata_s = SeichiAssist.playermap.get(uuid).ifNull { return }
 
     if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
       //左クリックの処理
@@ -196,7 +196,7 @@ class PlayerRightClickListener extends Listener {
                           WGloc.setY((setblockY - setunder).toDouble)
                           WGloc.setZ(setblockZ.toDouble)
                           //他人の保護がかかっている場合は処理を終了
-                          if (!Util.getWorldGuard().canBuild(player, WGloc)) {
+                          if (!Util.worldGuard().canBuild(player, WGloc)) {
                             player.sendMessage(RED.toString() + "付近に誰かの保護がかかっているようです")
                           } else {
                             //保護のない場合、土を設置する処理
@@ -212,14 +212,14 @@ class PlayerRightClickListener extends Listener {
                     WGloc.setX(setblockX.toDouble)
                     WGloc.setY(setblockY.toDouble)
                     WGloc.setZ(setblockZ.toDouble)
-                    if (!Util.getWorldGuard().canBuild(player, WGloc)) {
+                    if (!Util.worldGuard().canBuild(player, WGloc)) {
                       player.sendMessage(RED.toString() + "付近に誰かの保護がかかっているようです")
                       b1.break
                     } else {
                       //ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
                       if (playerdata.zs_minestack_flag) {//label指定は基本的に禁じ手だが、今回は後付けなので使わせてもらう。(解読性向上のため、1箇所のみの利用)
-                        for (cnt <- 0 until MineStackObjectList.getMinestacklist.size) {
-                          if (offhanditem.getType == MineStackObjectList.getMinestacklist.get(cnt).getMaterial && offhanditem.getData.getData.toInt == MineStackObjectList.getMinestacklist.get(cnt).getDurability) {
+                        for (cnt <- 0 until MineStackObjectList.minestacklist.size) {
+                          if (offhanditem.getType == MineStackObjectList.minestacklist.get(cnt).getMaterial && offhanditem.getData.getData.toInt == MineStackObjectList.minestacklist.get(cnt).getDurability) {
                             no = cnt
                             b1.break
                             //no:設置するブロック・max:設置できる最大量
@@ -228,7 +228,7 @@ class PlayerRightClickListener extends Listener {
                         if (no > 0) {
                           //設置するブロックがMineStackに登録済み
                           //1引く
-                          val mineStackObj = MineStackObjectList.getMinestacklist.get(no)
+                          val mineStackObj = MineStackObjectList.minestacklist.get(no)
                           if (playerdata_s.getMinestack.getStackedAmountOf(mineStackObj) > 0) {
                             //player.sendMessage("MineStackよりブロック消費");
                             //player.sendMessage("MineStackブロック残量(前):" + playerdata_s.getMinestack().getNum(no));
@@ -262,7 +262,7 @@ class PlayerRightClickListener extends Listener {
                         ItemInInv = player.getInventory.getItem(searchedInv)
                         if (ItemInInv == null) {
                         } else {
-                          ItemInInvAmount = ItemInInv.getAmount
+                          ItemInInvAmount = ItemInInv.amount
                         }
                         //スロットのアイテムが空白だった場合の処理(エラー回避のため)
                         if (ItemInInv == null) {
@@ -276,7 +276,7 @@ class PlayerRightClickListener extends Listener {
                             searchedInv += 1
                           }
                           //スロットアイテムがオフハンドと一致した場合
-                        } else if (ItemInInv.getType == offhanditem.getType) {
+                        } else if (ItemInInv.type == offhanditem.getType) {
                           //数量以外のデータ(各種メタ)が一致するかどうか検知(仮)
                           val ItemInInvCheck = ItemInInv
                           ItemInInvCheck.setAmount(1)

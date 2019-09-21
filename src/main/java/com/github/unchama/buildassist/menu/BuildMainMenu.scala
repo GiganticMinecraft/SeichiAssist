@@ -241,7 +241,7 @@ object BuildMainMenu extends Menu {
           FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
             sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                TargetedEffect { it.openInventory(MenuInventoryData.getBlockLineUpData(it)) }
+                TargetedEffect { it.openInventory(MenuInventoryData.blockLineUpData(it)) }
             )
           }
       )
@@ -256,7 +256,7 @@ object BuildMainMenu extends Menu {
       Button(iconItemStackBuilder,
           FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) {
             sequentialEffect(FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                TargetedEffect { it.openInventory(MenuInventoryData.getBlockCraftData(it)) })
+                TargetedEffect { it.openInventory(MenuInventoryData.blockCraftData(it)) })
           })
     }
 

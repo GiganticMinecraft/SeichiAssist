@@ -71,31 +71,31 @@ object OnClickTitleMenu extends Listener {
           // Zero clear
           playerdata.updateNickname(style = PlayerNickName.Style.Level)
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          player.openInventory(MenuInventoryData.getTitleMenuData(player))
+          player.openInventory(MenuInventoryData.titleMenuData(player))
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_Present2") {
           SeichiAchievement.tryAchieve(player, playerdata.giveachvNo)
           playerdata.giveachvNo = 0
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          player.openInventory(MenuInventoryData.getTitleMenuData(player))
+          player.openInventory(MenuInventoryData.titleMenuData(player))
         } else if (itemstackcurrent.type == Material.ANVIL) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         } else if (itemstackcurrent.type == Material.GOLD_PICKAXE) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
-          player.openInventory(MenuInventoryData.getTitleSeichi(player))
+          player.openInventory(MenuInventoryData.titleSeichi(player))
         } else if (itemstackcurrent.type == Material.COMPASS) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
-          player.openInventory(MenuInventoryData.getTitleLogin(player))
+          player.openInventory(MenuInventoryData.titleLogin(player))
         } else if (itemstackcurrent.type == Material.BLAZE_POWDER) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
-          player.openInventory(MenuInventoryData.getTitleSuperTry(player))
+          player.openInventory(MenuInventoryData.titleSuperTry(player))
         } else if (itemstackcurrent.type == Material.EYE_OF_ENDER) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
-          player.openInventory(MenuInventoryData.getTitleSpecial(player))
+          player.openInventory(MenuInventoryData.titleSpecial(player))
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           GlobalScope.launch(Schedulers.async) {
             sequentialEffect(
@@ -112,7 +112,7 @@ object OnClickTitleMenu extends Listener {
         else if(itemstackcurrent.getType().equals(Material.WOODEN_DOOR)){
           player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
           playerdata.titlepage = 1 ;
-          player.openInventory(MenuInventoryData.getTitleBuild(player));
+          player.openInventory(MenuInventoryData.titleBuild(player));
         }
         *///カテゴリ「ログイン」を開く
         //カテゴリ「整地」を開く
@@ -136,17 +136,17 @@ object OnClickTitleMenu extends Listener {
         if (itemstackcurrent.type === Material.IRON_PICKAXE) {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleAmountData(player))
+          player.openInventory(MenuInventoryData.titleAmountData(player))
         }
 
         //実績「整地神ランキング」
         if (itemstackcurrent.type === Material.DIAMOND_PICKAXE) {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleRankData(player))
+          player.openInventory(MenuInventoryData.titleRankData(player))
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleMenuData(player))
+          player.openInventory(MenuInventoryData.titleMenuData(player))
           return
         }//実績メニューに戻る
       }
@@ -161,7 +161,7 @@ object OnClickTitleMenu extends Listener {
           return
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleMenuData(player))
+          player.openInventory(MenuInventoryData.titleMenuData(player))
           return
         }//クリックしたボタンに応じた各処理内容の記述ここから
         //実績未実装のカテゴリです。
@@ -181,22 +181,22 @@ object OnClickTitleMenu extends Listener {
         } else if (itemstackcurrent.type === Material.COMPASS) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
-          player.openInventory(MenuInventoryData.getTitleTimeData(player))
+          player.openInventory(MenuInventoryData.titleTimeData(player))
         } else if (itemstackcurrent.type === Material.BOOK) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
-          player.openInventory(MenuInventoryData.getTitleJoinAmountData(player))
+          player.openInventory(MenuInventoryData.titleJoinAmountData(player))
         } else if (itemstackcurrent.type === Material.BOOK_AND_QUILL) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
-          player.openInventory(MenuInventoryData.getTitleJoinChainData(player))
+          player.openInventory(MenuInventoryData.titleJoinChainData(player))
         } else if (itemstackcurrent.type === Material.NETHER_STAR) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
-          player.openInventory(MenuInventoryData.getTitleExtraData(player))
+          player.openInventory(MenuInventoryData.titleExtraData(player))
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleMenuData(player))
+          player.openInventory(MenuInventoryData.titleMenuData(player))
           return
         }//実績メニューに戻る
         //実績「記念日」を開く
@@ -217,7 +217,7 @@ object OnClickTitleMenu extends Listener {
           return
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleMenuData(player))
+          player.openInventory(MenuInventoryData.titleMenuData(player))
           return
         }//クリックしたボタンに応じた各処理内容の記述ここから
         //実績未実装のカテゴリです。
@@ -236,18 +236,18 @@ object OnClickTitleMenu extends Listener {
         } else if (itemstackcurrent.type === Material.BLAZE_POWDER) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
-          player.openInventory(MenuInventoryData.getTitleEventData(player))
+          player.openInventory(MenuInventoryData.titleEventData(player))
         } else if (itemstackcurrent.type === Material.YELLOW_FLOWER) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
-          player.openInventory(MenuInventoryData.getTitleSupportData(player))
+          player.openInventory(MenuInventoryData.titleSupportData(player))
         } else if (itemstackcurrent.type === Material.DIAMOND_BARDING) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = 1
-          player.openInventory(MenuInventoryData.getTitleSecretData(player))
+          player.openInventory(MenuInventoryData.titleSecretData(player))
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleMenuData(player))
+          player.openInventory(MenuInventoryData.titleMenuData(player))
           return
         }//実績メニューに戻る
         //実績「極秘任務」を開く
@@ -326,7 +326,7 @@ object OnClickTitleMenu extends Listener {
         }
         if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleMenuData(player))
+          player.openInventory(MenuInventoryData.titleMenuData(player))
           return
         }//実績メニューに戻る
 
@@ -540,7 +540,7 @@ object OnClickTitleMenu extends Listener {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
-          player.openInventory(MenuInventoryData.getTitleRankData(player))
+          player.openInventory(MenuInventoryData.titleRankData(player))
         } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           val name = itemstackcurrent.itemMeta.displayName
@@ -576,11 +576,11 @@ object OnClickTitleMenu extends Listener {
               setTitle(1009, 9909, 1009)
             }
           }
-          player.openInventory(MenuInventoryData.getTitleRankData(player))
+          player.openInventory(MenuInventoryData.titleRankData(player))
 
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleSeichi(player))
+          player.openInventory(MenuInventoryData.titleSeichi(player))
           return
         }//実績メニューに戻る
       }
@@ -603,7 +603,7 @@ object OnClickTitleMenu extends Listener {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
-          player.openInventory(MenuInventoryData.getTitleAmountData(player))
+          player.openInventory(MenuInventoryData.titleAmountData(player))
         } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           val name = itemstackcurrent.itemMeta.displayName
@@ -637,11 +637,11 @@ object OnClickTitleMenu extends Listener {
             "No3018「" + SeichiAssist.seichiAssistConfig.getTitle1(3018) + "」" in name => setTitle(first = 3018)
             "No3019「" + SeichiAssist.seichiAssistConfig.getTitle1(3019) + "」" in name => setTitle(first = 3019)
           }
-          player.openInventory(MenuInventoryData.getTitleAmountData(player))
+          player.openInventory(MenuInventoryData.titleAmountData(player))
 
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleSeichi(player))
+          player.openInventory(MenuInventoryData.titleSeichi(player))
           return
         }//実績メニューに戻る
       }
@@ -664,7 +664,7 @@ object OnClickTitleMenu extends Listener {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
-          player.openInventory(MenuInventoryData.getTitleTimeData(player))
+          player.openInventory(MenuInventoryData.titleTimeData(player))
         } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
           val itemmeta = itemstackcurrent.itemMeta
 
@@ -743,16 +743,16 @@ object OnClickTitleMenu extends Listener {
                   + SeichiAssist.seichiAssistConfig.getTitle3(4023) + "」")) {
             setTitle(first = 4023, third = 4023)
           }
-          player.openInventory(MenuInventoryData.getTitleTimeData(player))
+          player.openInventory(MenuInventoryData.titleTimeData(player))
         } else if (itemstackcurrent.type === Material.EMERALD_BLOCK) {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           playerdata.TitleFlags.set(8003)
           player.sendMessage("お疲れ様でした！今日のお給料の代わりに二つ名をどうぞ！")
-          player.openInventory(MenuInventoryData.getTitleTimeData(player))
+          player.openInventory(MenuInventoryData.titleTimeData(player))
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleLogin(player))
+          player.openInventory(MenuInventoryData.titleLogin(player))
           return
         }//実績メニューに戻る
       }
@@ -771,7 +771,7 @@ object OnClickTitleMenu extends Listener {
         if (itemstackcurrent.type === Material.BEDROCK) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
-          player.openInventory(MenuInventoryData.getTitleJoinAmountData(player))
+          player.openInventory(MenuInventoryData.titleJoinAmountData(player))
         } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
           val itemmeta = itemstackcurrent.itemMeta
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -833,11 +833,11 @@ object OnClickTitleMenu extends Listener {
             setTitle(5120, 5120, 5120)
           }
 
-          player.openInventory(MenuInventoryData.getTitleJoinAmountData(player))
+          player.openInventory(MenuInventoryData.titleJoinAmountData(player))
 
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleLogin(player))
+          player.openInventory(MenuInventoryData.titleLogin(player))
           return
         }//実績メニューに戻る
       }
@@ -857,7 +857,7 @@ object OnClickTitleMenu extends Listener {
         if (itemstackcurrent.type === Material.BEDROCK) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
-          player.openInventory(MenuInventoryData.getTitleJoinChainData(player))
+          player.openInventory(MenuInventoryData.titleJoinChainData(player))
         } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           val name = itemstackcurrent.itemMeta.displayName
@@ -879,11 +879,11 @@ object OnClickTitleMenu extends Listener {
                 + SeichiAssist.seichiAssistConfig.getTitle2(9905) + "」") in name => setTitle(first = 5008, second = 9905)
           }
 
-          player.openInventory(MenuInventoryData.getTitleJoinChainData(player))
+          player.openInventory(MenuInventoryData.titleJoinChainData(player))
 
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
-          player.openInventory(MenuInventoryData.getTitleLogin(player))
+          player.openInventory(MenuInventoryData.titleLogin(player))
           return
         }//実績メニューに戻る
       }
@@ -906,7 +906,7 @@ object OnClickTitleMenu extends Listener {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.sendMessage("この実績は自動解禁式です。毎分の処理をお待ちください。")
-          player.openInventory(MenuInventoryData.getTitleSupportData(player))
+          player.openInventory(MenuInventoryData.titleSupportData(player))
         } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           val name = itemstackcurrent.itemMeta.displayName
@@ -933,10 +933,10 @@ object OnClickTitleMenu extends Listener {
           } else if (name.contains("No6008「" + SeichiAssist.seichiAssistConfig.getTitle1(6008) + "」")) {
             setTitle(first = 6008)
           }
-          player.openInventory(MenuInventoryData.getTitleSupportData(player))
+          player.openInventory(MenuInventoryData.titleSupportData(player))
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleSpecial(player))
+          player.openInventory(MenuInventoryData.titleSpecial(player))
           return
         }//実績メニューに戻る
       }
@@ -959,7 +959,7 @@ object OnClickTitleMenu extends Listener {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.sendMessage("この実績は配布解禁式です。運営チームからの配布タイミングを逃さないようご注意ください。")
-          player.openInventory(MenuInventoryData.getTitleEventData(player))
+          player.openInventory(MenuInventoryData.titleEventData(player))
         } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
           val itemmeta = itemstackcurrent.itemMeta
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -1065,11 +1065,11 @@ object OnClickTitleMenu extends Listener {
                   + SeichiAssist.seichiAssistConfig.getTitle3(7906) + "」")) {
             setTitle(first = 7906, third = 7906)
           }
-          player.openInventory(MenuInventoryData.getTitleEventData(player))
+          player.openInventory(MenuInventoryData.titleEventData(player))
 
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleSpecial(player))
+          player.openInventory(MenuInventoryData.titleSpecial(player))
           return
         }//実績メニューに戻る
       }
@@ -1095,7 +1095,7 @@ object OnClickTitleMenu extends Listener {
             }
           }
 
-          player.openInventory(MenuInventoryData.getTitleExtraData(player))
+          player.openInventory(MenuInventoryData.titleExtraData(player))
         } else if (itemstackcurrent.type === Material.DIAMOND_BLOCK) {
           val itemmeta = itemstackcurrent.itemMeta
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -1203,15 +1203,15 @@ object OnClickTitleMenu extends Listener {
                   + SeichiAssist.seichiAssistConfig.getTitle3(9036) + "」")) {
             setTitle(first = 9036, third = 9036)
           }
-          player.openInventory(MenuInventoryData.getTitleExtraData(player))
+          player.openInventory(MenuInventoryData.titleExtraData(player))
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleLogin(player))
+          player.openInventory(MenuInventoryData.titleLogin(player))
           return
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowRight") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
           playerdata.titlepage = playerdata.titlepage + 1
-          player.openInventory(MenuInventoryData.getTitleExtraData(player))
+          player.openInventory(MenuInventoryData.titleExtraData(player))
           return
         }//次ページ
         //実績メニューに戻る
@@ -1236,7 +1236,7 @@ object OnClickTitleMenu extends Listener {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.sendMessage("この実績は「極秘実績」です。いろいろやってみましょう！")
-          player.openInventory(MenuInventoryData.getTitleSecretData(player))
+          player.openInventory(MenuInventoryData.titleSecretData(player))
         } else if (itemstackcurrent.type == Material.DIAMOND_BLOCK) {
           player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           val name = itemstackcurrent.itemMeta.displayName
@@ -1249,11 +1249,11 @@ object OnClickTitleMenu extends Listener {
             ("No8003「" + SeichiAssist.seichiAssistConfig.getTitle1(8003)
                 + SeichiAssist.seichiAssistConfig.getTitle3(8003) + "」") in name => setTitle(first = 8003, third = 8003)
           }
-          player.openInventory(MenuInventoryData.getTitleSecretData(player))
+          player.openInventory(MenuInventoryData.titleSecretData(player))
 
         } else if (isSkull && (itemstackcurrent.itemMeta as SkullMeta).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
-          player.openInventory(MenuInventoryData.getTitleSpecial(player))
+          player.openInventory(MenuInventoryData.titleSpecial(player))
         }//実績メニューに戻る
       }
       else => {

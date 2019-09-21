@@ -25,7 +25,7 @@ object BreakUtil {
     val material = breakblock.type
 
     //壊されるブロックがワールドガード範囲だった場合処理を終了
-    if (!ExternalPlugins.getWorldGuard().canBuild(player, breakblock.location)) {
+    if (!ExternalPlugins.worldGuard().canBuild(player, breakblock.location)) {
       if (playerdata.settings.shouldDisplayWorldGuardLogs) {
         player.sendMessage(RED.toString() + "ワールドガードで保護されています。")
       }
@@ -33,7 +33,7 @@ object BreakUtil {
     }
 
     if (!equalsIgnoreNameCaseWorld(player.world.name)) {
-      val wrapper = ExternalPlugins.getCoreProtectWrapper()
+      val wrapper = ExternalPlugins.coreProtectWrapper()
       if (wrapper == null) {
         Bukkit.getLogger().warning("CoreProtectにアクセスできませんでした。")
       } else {
@@ -166,7 +166,7 @@ object BreakUtil {
         } else if (mineStackObj.hasNameLore && itemstack.itemMeta.hasDisplayName() && itemstack.itemMeta.hasLore()) {
           //ガチャ以外のアイテム(がちゃりんご)
           if (mineStackObj.gachaType == -1) {
-            if (!itemstack.isSimilar(StaticGachaPrizeFactory.getGachaRingo())) return false
+            if (!itemstack.isSimilar(StaticGachaPrizeFactory.gachaRingo())) return false
 
             return addToMineStackAfterLevelCheck()
           } else {
@@ -456,7 +456,7 @@ object BreakUtil {
         startY = skillBreakArea.y - 2
       } else {
         /** 該当プレイヤーが向いている方向  */
-        val dir = BreakUtil.getCardinalDirection(player)
+        val dir = BreakUtil.cardinalDirection(player)
         // 下向きによる発動
         if (dir == "D") {
           // block＝破壊範囲の最上層ブロックにつき、startは0
@@ -529,7 +529,7 @@ object BreakUtil {
   }
 
   def logRemove(player: Player, removedBlock: Block): Boolean = {
-    val wrapper = ExternalPlugins.getCoreProtectWrapper()
+    val wrapper = ExternalPlugins.coreProtectWrapper()
     if (wrapper == null) {
       player.sendMessage(RED.toString() + "error:coreprotectに保存できませんでした。管理者に報告してください。")
       return false

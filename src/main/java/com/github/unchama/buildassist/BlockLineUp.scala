@@ -20,7 +20,7 @@ class BlockLineUp extends Listener {
     val action = event.getAction
     val playerWorld = player.getWorld
 
-    val seichiAssistData = SeichiAssist.getPlayermap.get(player.getUniqueId).ifNull { return }
+    val seichiAssistData = SeichiAssist.playermap.get(player.getUniqueId).ifNull { return }
     val buildAssistData = BuildAssist.playermap.getOrElse(player.getUniqueId, return)
 
     val playerMineStack = seichiAssistData.getMinestack
@@ -88,7 +88,7 @@ class BlockLineUp extends Listener {
 
     val mineStackObjectToBeUsed =
         if (buildAssistData.line_up_minestack_flg == 1)
-          MineStackObjectList.getMinestacklist.asScala.find { obj =]
+          MineStackObjectList.minestacklist.asScala.find { obj =]
             mainHandItem.getType == obj.getMaterial && mainHandItemData.toInt == obj.getDurability
           }
         else None
@@ -146,7 +146,7 @@ class BlockLineUp extends Listener {
         val block = playerWorld.getBlockAt(px, py, pz)
 
         //他人の保護がかかっている場合は設置終わり
-        if (!ExternalPlugins.getWorldGuard.canBuild(player, block.getLocation)) b.break
+        if (!ExternalPlugins.worldGuard.canBuild(player, block.getLocation)) b.break
 
         if (block.getType != Material.AIR) {
           //空気以外にぶつかり、ブロック破壊をしないならば終わる

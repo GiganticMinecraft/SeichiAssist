@@ -63,7 +63,7 @@ object MebiusCommand {
     object NickNameCommand {
       private val checkNickNameExecutor = playerCommandBuilder
           .execution { context =>
-            val message = MebiusListener.getNickname(context.sender)
+            val message = MebiusListener.nickname(context.sender)
             ?.let {
               s"${GREEN}現在のメビウスからの呼び名 : $it"
             }

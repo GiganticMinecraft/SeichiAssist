@@ -128,7 +128,7 @@ object PlayerDataPeriodicRecalculation extends RepeatedTaskLauncher() {
 			 * ガチャ券付与の処理
 			 */
       if (playerData.gachapoint >= config.gachaPresentInterval && playerData.settings.receiveGachaTicketEveryMinute) {
-        val skull = Util.getskull(name)
+        val skull = Util.skull(name)
         playerData.gachapoint = playerData.gachapoint - config.gachaPresentInterval
         if (player.inventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
           Util.addItem(player, skull)
@@ -157,7 +157,7 @@ object PlayerDataPeriodicRecalculation extends RepeatedTaskLauncher() {
           6001 until 6008,
           8001 until 8002
       ).flatten().forEach { achievementNumber =>
-        if (!playerData.TitleFlags.get(achievementNumber)) {
+        if (!playerData.TitleFlags.(achievementNumber)) {
           SeichiAchievement.tryAchieve(player, achievementNumber)
         }
       }

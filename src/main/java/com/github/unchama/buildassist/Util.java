@@ -106,7 +106,7 @@ public final class Util {
 	 */
 	public static void addBuild1MinAmount(final Player player, final BigDecimal amount) {
 		//プレイヤーデータ取得
-        final PlayerData playerData = BuildAssist.getPlayermap().get(player.getUniqueId());
+        final PlayerData playerData = BuildAssist.playermap().get(player.getUniqueId());
 		//player.sendMessage("足す数:" + amount.doubleValue() + ",かけた後:" + amount.multiply(new BigDecimal("0.1")).doubleValue());
 		//ワールドによって倍率変化
         if (player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.getSEICHIWORLDNAME())) {

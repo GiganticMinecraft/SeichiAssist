@@ -38,7 +38,7 @@ private object FirstPage extends Menu {
           LeftClickButtonEffect(
               FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f),
               // TODO メニューに置き換える
-              TargetedEffect { it.openInventory(MenuInventoryData.getServerSwitchMenu(it)) }
+              TargetedEffect { it.openInventory(MenuInventoryData.serverSwitchMenu(it)) }
           )
       )
     }
@@ -81,7 +81,7 @@ private object FirstPage extends Menu {
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
               // TODO メニューに置き換える
             targetedeffect.TargetedEffect {
-              it.openInventory(MenuInventoryData.getTitleMenuData(it))
+              it.openInventory(MenuInventoryData.titleMenuData(it))
             }
           )
       )
@@ -102,7 +102,7 @@ private object FirstPage extends Menu {
           LeftClickButtonEffect(
               CommonSoundEffects.menuTransitionFenceSound,
               // TODO メニューに置き換える
-              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList(0)) }
+              TargetedEffect { it.openInventory(MenuInventoryData.rankingList(0)) }
           )
       )
     }
@@ -121,7 +121,7 @@ private object FirstPage extends Menu {
           LeftClickButtonEffect(
               CommonSoundEffects.menuTransitionFenceSound,
               // TODO メニューに置き換える
-              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList_playtick(0)) }
+              TargetedEffect { it.openInventory(MenuInventoryData.rankingList_playtick(0)) }
           )
       )
     }
@@ -141,7 +141,7 @@ private object FirstPage extends Menu {
           LeftClickButtonEffect(
               CommonSoundEffects.menuTransitionFenceSound,
               // TODO メニューに置き換える
-              TargetedEffect { it.openInventory(MenuInventoryData.getRankingList_p_vote(0)) }
+              TargetedEffect { it.openInventory(MenuInventoryData.rankingList_p_vote(0)) }
           )
       )
     }
@@ -210,7 +210,7 @@ private object FirstPage extends Menu {
           LeftClickButtonEffect(
               FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
             targetedeffect.TargetedEffect {
-              it.openInventory(MenuInventoryData.getHomeMenuData(it))
+              it.openInventory(MenuInventoryData.homeMenuData(it))
             }
           )
       )
@@ -276,7 +276,7 @@ private object FirstPage extends Menu {
           LeftClickButtonEffect(
               FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
               // TODO メニューに置き換える
-              TargetedEffect { it.openInventory(MenuInventoryData.getPassiveSkillMenuData(it)) }
+              TargetedEffect { it.openInventory(MenuInventoryData.passiveSkillMenuData(it)) }
           )
       )
     }
@@ -327,7 +327,7 @@ private object FirstPage extends Menu {
           LeftClickButtonEffect(
               CommonSoundEffects.menuTransitionFenceSound,
               // TODO メニューに置き換える
-              TargetedEffect { it.openInventory(MenuInventoryData.getVotingMenuData(it)) }
+              TargetedEffect { it.openInventory(MenuInventoryData.votingMenuData(it)) }
           )
       )
     }
@@ -395,10 +395,10 @@ private object FirstPage extends Menu {
 
     suspend def Player.computeRegionMenuButton(): Button = {
       val buttonLore = run {
-        val worldGuardPlugin = ExternalPlugins.getWorldGuard()
+        val worldGuardPlugin = ExternalPlugins.worldGuard()
         val regionManager = worldGuardPlugin.getRegionManager(world)
 
-        val maxRegionCount = WorldGuard.getMaxRegionCount(this, world)
+        val maxRegionCount = WorldGuard.maxRegionCount(this, world)
         val currentPlayerRegionCount =
             regionManager.getRegionCountOfPlayer(worldGuardPlugin.wrapPlayer(this))
 
@@ -581,7 +581,7 @@ private object FirstPage extends Menu {
                 val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(this, playerData)
 
                 if (numberOfItemsToGive != 0) {
-                  val itemToGive = Util.getForBugskull(this.name)
+                  val itemToGive = Util.forBugskull(this.name)
 
                   sequentialEffect(
                       UnfocusedEffect {
@@ -645,7 +645,7 @@ private object FirstPage extends Menu {
           LeftClickButtonEffect(
               FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
               // TODO メニューに置き換える
-              TargetedEffect { it.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(it)) }
+              TargetedEffect { it.openInventory(ActiveSkillInventoryData.activeSkillMenuData(it)) }
           )
       )
     }
@@ -683,7 +683,7 @@ private object FirstPage extends Menu {
               val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.gachaPresentInterval
               val gachaTicketsToGive = min(playerData.gachapoint / gachaPointPerTicket, 576)
 
-              val itemStackToGive = Util.getskull(this@computeGachaTicketButton.name)
+              val itemStackToGive = Util.skull(this@computeGachaTicketButton.name)
 
               if (gachaTicketsToGive > 0) {
                 sequentialEffect(

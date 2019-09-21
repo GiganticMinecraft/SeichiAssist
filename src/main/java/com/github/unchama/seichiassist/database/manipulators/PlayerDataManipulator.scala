@@ -179,7 +179,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
       gateway.executeUpdate(update)
     } catch (e: SQLException) {
-      Bukkit.getLogger().warning(s"${Util.getName(name)} sql failed. => lastvote")
+      Bukkit.getLogger().warning(s"${Util.name(name)} sql failed. => lastvote")
       e.printStackTrace()
       return false
     }
@@ -215,7 +215,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         }
       }
     } catch (e: SQLException) {
-      Bukkit.getLogger().warning(Util.getName(name) + " sql failed. => chainvote")
+      Bukkit.getLogger().warning(Util.name(name) + " sql failed. => chainvote")
       e.printStackTrace()
       return false
     }

@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.util.BreakUtil
-import com.github.unchama.seichiassist._
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Arrow
 import org.bukkit.event.player.PlayerInteractEvent
@@ -254,7 +254,7 @@ class PlayerClickListener  extends  Listener {
 
         val localizedEnchantmentList = givenItem.itemMeta.enchants
             .map { (enchantment, level) =>
-              s"$GRAY${Util.getEnchantName(enchantment.name, level)}"
+              s"$GRAY${Util.enchantName(enchantment.name, level)}"
             }
 
         val message =
@@ -265,8 +265,8 @@ class PlayerClickListener  extends  Listener {
                   arrayOf(
                       TextComponent(
                           s" ${givenItem.itemMeta.displayName}\n" +
-                              Util.getDescFormat(localizedEnchantmentList) +
-                              Util.getDescFormat(loreWithoutOwnerName)
+                              Util.descFormat(localizedEnchantmentList) +
+                              Util.descFormat(loreWithoutOwnerName)
                       )
                   )
               )
@@ -366,15 +366,15 @@ class PlayerClickListener  extends  Listener {
             2 => ":ON-Under(下向き）"
             else => throw RuntimeException("This branch should not be reached")
           }
-          player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + status)
+          player.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(skillTypeId, skillNumber) + status)
           playerdata.activeskilldata.updateSkill(player, skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.location, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
         } else if (skillTypeId > 0 && skillNumber > 0
             && skillTypeId < 4) {
           activemineflagnum = (activemineflagnum + 1) % 2
           when (activemineflagnum) {
-            0 => player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + "：OFF")
-            1 => player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + ":ON")
+            0 => player.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(skillTypeId, skillNumber) + "：OFF")
+            1 => player.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(skillTypeId, skillNumber) + ":ON")
           }
           playerdata.activeskilldata.updateSkill(player, skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.location, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
@@ -395,9 +395,9 @@ class PlayerClickListener  extends  Listener {
             activemineflagnum = (activemineflagnum + 1) % 2
           }
           if (activemineflagnum == 0) {
-            player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(assaultTypeId, assaultNumber) + ":OFF")
+            player.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(assaultTypeId, assaultNumber) + ":OFF")
           } else {
-            player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(assaultTypeId, assaultNumber) + ":ON")
+            player.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(assaultTypeId, assaultNumber) + ":ON")
           }
           playerdata.activeskilldata.updateAssaultSkill(player, assaultTypeId, assaultNumber, activemineflagnum)
           player.playSound(player.location, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
@@ -524,7 +524,7 @@ class PlayerClickListener  extends  Listener {
     }
 
     //頭を付与
-    p.inventory.addItem(Util.getSkullDataFromBlock(targetBlock))
+    p.inventory.addItem(Util.skullDataFromBlock(targetBlock))
     //ブロックを空気で置き換える
     targetBlock.type = Material.AIR
     //音を鳴らしておく

@@ -76,30 +76,30 @@ class RegionInventoryListener  extends  Listener {
       } else if (itemstackcurrent.type == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 4) {
         gridResetFunction(player)
         player.playSound(player.location, Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
-        player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
+        player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
       } else if (itemstackcurrent.type == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 0) {
         playerData.toggleUnitPerGrid()
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-        player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
+        player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
       } else if (itemstackcurrent.type == Material.CHEST) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-        player.openInventory(RegionMenuData.getGridTemplateInventory(player))
+        player.openInventory(RegionMenuData.gridTemplateInventory(player))
       }
     }
   }
 
   private def createRegion(player: Player) {
     val playerData = SeichiAssist.playermap[player.uniqueId]
-    val selection = We.getSelection(player)
+    val selection = We.selection(player)
 
     val region = ProtectedCuboidRegion(player.name + "_" + playerData.regionCount,
         selection.getNativeMinimumPoint().toBlockVector(), selection.getNativeMaximumPoint().toBlockVector())
-    val manager = Wg.getRegionManager(player.world)
+    val manager = Wg.regionManager(player.world)
 
     val task = RegionAdder(Wg, manager, region)
     task.setLocatorPolicy(DomainInputResolver.UserLocatorPolicy.UUID_ONLY)
     task.setOwnersInput(arrayOf(player.name))
-    val future = Wg.getExecutorService().submit(task)
+    val future = Wg.executorService().submit(task)
 
     AsyncCommandHelper.wrap(future, Wg, player).formatUsing(player.name + "_" + playerData.regionCount)
         .registerWithSupervisor("保護申請中").thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
@@ -145,7 +145,7 @@ class RegionInventoryListener  extends  Listener {
       //戻るボタン
       if (itemstackcurrent.type == Material.BARRIER) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
+        player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
       } else {
         val slot = event.slot
 
@@ -156,7 +156,7 @@ class RegionInventoryListener  extends  Listener {
           if (event.isLeftClick) {
             //左クリックの時は新規登録処理
             playerGridTemplateSave(player, slot)
-            player.openInventory(RegionMenuData.getGridTemplateInventory(player))
+            player.openInventory(RegionMenuData.gridTemplateInventory(player))
           }
           return
         }
@@ -170,13 +170,13 @@ class RegionInventoryListener  extends  Listener {
           playerData.setUnitAmount(DirectionType.LEFT, template.leftAmount)
           setWGSelection(player)
           canCreateRegion(player)
-          player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
+          player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
         }
 
         if (event.isRightClick) {
           //新規登録処理
           playerGridTemplateSave(player, slot)
-          player.openInventory(RegionMenuData.getGridTemplateInventory(player))
+          player.openInventory(RegionMenuData.gridTemplateInventory(player))
         }
       }
     }
@@ -184,8 +184,8 @@ class RegionInventoryListener  extends  Listener {
 }
 
 object RegionInventoryListener {
-  internal var Wg = ExternalPlugins.getWorldGuard()
-  internal var We = ExternalPlugins.getWorldEdit()
+  internal var Wg = ExternalPlugins.worldGuard()
+  internal var We = ExternalPlugins.worldEdit()
   internal var config = SeichiAssist.seichiAssistConfig
 
   private def gridResetFunction(player: Player) {
@@ -212,7 +212,7 @@ object RegionInventoryListener {
         playerData.addUnitAmount(directionType, playerData.unitPerClick)
         setWGSelection(player)
         canCreateRegion(player)
-        player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
+        player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
       }
     } else if (event.isRightClick) {
       if (playerData.canGridReduce(directionType)) {
@@ -220,7 +220,7 @@ object RegionInventoryListener {
         playerData.addUnitAmount(directionType, playerData.unitPerClick * -1)
         setWGSelection(player)
         canCreateRegion(player)
-        player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
+        player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
       }
     }
   }
@@ -228,7 +228,7 @@ object RegionInventoryListener {
   private def setWGSelection(player: Player) {
     val playerData = SeichiAssist.playermap[player.uniqueId]
     val unitMap = playerData.unitMap
-    val direction = Util.getPlayerDirection(player)
+    val direction = Util.playerDirection(player)
     val world = player.world
 
     val aheadUnitAmount = unitMap[DirectionType.AHEAD]
@@ -277,9 +277,9 @@ object RegionInventoryListener {
 
   private def canCreateRegion(player: Player) {
     val playerData = SeichiAssist.playermap[player.uniqueId]
-    val selection = We.getSelection(player)
-    val manager = Wg.getRegionManager(player.world)
-    val wcfg = Wg.getGlobalStateManager().get(player.world)
+    val selection = We.selection(player)
+    val manager = Wg.regionManager(player.world)
+    val wcfg = Wg.globalStateManager().get(player.world)
 
     if (selection == null) {
       playerData.canCreateRegion = false

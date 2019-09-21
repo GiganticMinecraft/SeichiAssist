@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class ActiveSkillInventoryData {
-    static HashMap<UUID, PlayerData> playermap = SeichiAssist.getPlayermap();
-    static DatabaseGateway databaseGateway = SeichiAssist.getDatabaseGateway();
-    SeichiAssist plugin = SeichiAssist.getInstance();
+    static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
+    static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway();
+    SeichiAssist plugin = SeichiAssist.instance();
 
 	//アクティブスキルメニュー
 	public static Inventory getActiveSkillMenuData(Player p){
@@ -38,7 +38,7 @@ public class ActiveSkillInventoryData {
 		//UUID取得
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.getPlayermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
 		//念のためエラー分岐
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -72,7 +72,7 @@ public class ActiveSkillInventoryData {
 		itemstack.setDurability((short) 3);
 		skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.getLowercaseName() + "のアクティブスキルデータ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.getActiveSkillName(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.activeSkillName(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
 				, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるアクティブスキルポイント：" + playerdata.getActiveskilldata().skillpoint);
 		skullmeta.setLore(lore);
 		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerdata.getUuid()));

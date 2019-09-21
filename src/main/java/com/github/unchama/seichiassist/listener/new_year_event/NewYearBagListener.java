@@ -28,8 +28,8 @@ import java.util.*;
  * @since 2017/11/29
  */
 public class NewYearBagListener implements Listener {
-	private static Config config = SeichiAssist.getSeichiAssistConfig();
-	private static Map<UUID, PlayerData> playerMap = SeichiAssist.getPlayermap();
+	private static Config config = SeichiAssist.seichiAssistConfig();
+	private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap();
 	/**
 	 * プレイヤーがブロックを破壊した際に呼ばれるメソッド。
 	 * お年玉袋のドロップ処理に利用。
@@ -51,7 +51,7 @@ public class NewYearBagListener implements Listener {
 		}
 
 		//自分の保護範囲外ではドロップさせない
-		if (!ExternalPlugins.getWorldGuard().canBuild(player, block)) {
+		if (!ExternalPlugins.worldGuard().canBuild(player, block)) {
 			return;
 		}
 
