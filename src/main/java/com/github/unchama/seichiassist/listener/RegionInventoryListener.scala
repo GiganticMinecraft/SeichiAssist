@@ -1,17 +1,20 @@
 package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
+import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.{EventHandler, Listener}
+
 /**
  * 保護関連メニューのListenerクラス
  * @author karayuu
  * 2017/09/02
  */
 class RegionInventoryListener  extends  Listener {
-  internal var playermap = SeichiAssist.playermap
+  var playermap = SeichiAssist.playermap
 
   /**
    * グリッド式保護メニューInventoryClickListener
@@ -29,13 +32,13 @@ class RegionInventoryListener  extends  Listener {
     }
 
     val itemstackcurrent = event.currentItem
-    val view = event.view
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType != EntityType.PLAYER) {
       return
     }
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.getTopInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリタイプがディスペンサーでない時終了
     if (topinventory.getType != InventoryType.DISPENSER) {
@@ -123,7 +126,7 @@ class RegionInventoryListener  extends  Listener {
     if (he.getType != EntityType.PLAYER) {
       return
     }
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
     //インベントリが存在しない時終了
 
     //インベントリ名が以下の時処理

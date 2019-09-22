@@ -3,12 +3,14 @@ package com.github.unchama.seichiassist.listener.invlistener
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.PlayerNickName
+import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}
+
 object OnClickTitleMenu extends Listener {
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
@@ -17,7 +19,7 @@ object OnClickTitleMenu extends Listener {
     }
 
     //インベントリを開けたのがプレイヤーではない時終了
-    val view = event.view
+    val view = event.getView
 
     val he = view.player
     if (he.getType !== EntityType.PLAYER) {
@@ -25,7 +27,7 @@ object OnClickTitleMenu extends Listener {
     }
 
     //インベントリが存在しない時終了
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.getTopInventory.ifNull { return }
     //インベントリサイズが36でない時終了
     if (topinventory.row != 4) {
       return

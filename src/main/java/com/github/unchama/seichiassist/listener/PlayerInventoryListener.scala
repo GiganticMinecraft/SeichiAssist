@@ -2,11 +2,14 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
+import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
+import com.google.common.io.ByteStreams
 import org.bukkit.ChatColor._
 import org.bukkit.entity.EntityType
-import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{Material, Sound}
+
 class PlayerInventoryListener  extends  Listener {
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
@@ -21,14 +24,14 @@ class PlayerInventoryListener  extends  Listener {
     }
 
     val itemstackcurrent = event.currentItem
-    val view = event.view
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {
       return
     }
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.getTopInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
     if (topinventory.row != 2) {
@@ -84,7 +87,7 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
     if (topinventory.row != 4) {
@@ -198,7 +201,7 @@ class PlayerInventoryListener  extends  Listener {
     }
 
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズが45でない時終了
     if (topinventory.row != 5) {
@@ -427,7 +430,7 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズ終了
     if (topinventory.row != 6) {
@@ -570,7 +573,7 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.row != 6) {
@@ -652,7 +655,7 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.row != 6) {
@@ -719,7 +722,7 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.row != 6) {
@@ -795,7 +798,7 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.row != 6) {
@@ -870,7 +873,7 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
     if (topinventory.row != 4) {
@@ -906,7 +909,7 @@ class PlayerInventoryListener  extends  Listener {
   def onGachaTradeEvent(event: InventoryCloseEvent) {
     val player = event.player.asInstanceOf[Player]
     val uuid = player.uniqueId
-    val playerdata = playerMap[uuid] ?: return
+    val playerdata = playerMap[uuid].ifNull { return }
     //エラー分岐
     val name = playerdata.lowercaseName
     val inventory = event.inventory
@@ -1135,7 +1138,7 @@ class PlayerInventoryListener  extends  Listener {
   def onGachaRingoEvent(event: InventoryCloseEvent) {
     val player = event.player.asInstanceOf[Player]
     val uuid = player.uniqueId
-    val playerdata = playerMap[uuid] ?: return
+    val playerdata = playerMap[uuid].ifNull { return }
     //エラー分岐
     val name = playerdata.lowercaseName
     val inventory = event.inventory
@@ -1257,7 +1260,7 @@ class PlayerInventoryListener  extends  Listener {
   def onTitanRepairEvent(event: InventoryCloseEvent) {
     val player = event.player.asInstanceOf[Player]
     val uuid = player.uniqueId
-    val playerdata = playerMap[uuid] ?: return
+    val playerdata = playerMap[uuid].ifNull { return }
     //エラー分岐
     val inventory = event.inventory
 
@@ -1314,7 +1317,7 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズが4列でない時終了
     if (topinventory.row != 4) {
@@ -1473,7 +1476,7 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズが3列でない時終了
     if (topinventory.row != 3) {
@@ -1555,7 +1558,7 @@ class PlayerInventoryListener  extends  Listener {
     }
 
     //インベントリが存在しない時終了
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.topInventory.ifNull { return }
 
     //インベントリが6列でない時終了
     if (topinventory.row != 6) {

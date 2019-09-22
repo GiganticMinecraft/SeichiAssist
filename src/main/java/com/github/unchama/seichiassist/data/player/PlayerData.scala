@@ -3,9 +3,12 @@ package com.github.unchama.seichiassist.data.player
 import java.util
 import java.util.UUID
 
+import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
+import com.github.unchama.seichiassist.data.subhome.SubHome
+import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.MebiusTask
-import com.github.unchama.seichiassist.{ManagedWorld, MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.{LevelThresholds, ManagedWorld, MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect}
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
@@ -13,10 +16,12 @@ import kotlin.Suppress
 import kotlin.jvm.JvmName
 import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.{Bukkit, Material, Statistic}
 
 import scala.collection.mutable
+
 class PlayerData(
     @Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID,
     val name: String
@@ -57,7 +62,7 @@ class PlayerData(
   var lastminespeedlv = 0
 
   //持ってるポーションエフェクト全てを格納する．
-  val effectdatalist: MutableList[FastDiggingEffect] = LinkedList()
+  val effectdatalist: mutable.ListBuffer[FastDiggingEffect] = mutable.ListBuffer
 
   //プレイ時間差分計算用int
   private var totalPlayTick: Int? = null
@@ -810,11 +815,11 @@ class PlayerData(
    * プレーヤーに付与されるべき採掘速度上昇効果を適用する[TargetedEffect].
    */
   @SuspendingMethod def computeFastDiggingEffect(): TargetedEffect[Player] = {
-    val activeEffects = effectdatalist.toList()
+    val activeEffects = effectdatalist.toList
 
-    val amplifierSum = activeEffects.map { it.amplifier }.sum()
-    val maxDuration = activeEffects.map { it.duration }.max() ?: 0
-    val computedAmplifier = floor(amplifierSum - 1).toInt()
+    val amplifierSum = activeEffects.map(_.amplifier).sum
+    val maxDuration = activeEffects.map(_.duration).maxOption.getOrElse(0)
+    val computedAmplifier = Math.floor(amplifierSum - 1).toInt
 
     val maxSpeed: Int = settings.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
 

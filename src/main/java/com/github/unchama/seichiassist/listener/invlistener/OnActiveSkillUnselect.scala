@@ -2,11 +2,13 @@ package com.github.unchama.seichiassist.listener.invlistener
 
 import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.{ActiveSkill, SeichiAssist}
+import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.{Material, Sound}
+
 object OnActiveSkillUnselect extends Listener {
   def onPlayerClickActiveSkillReleaseEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
@@ -15,14 +17,14 @@ object OnActiveSkillUnselect extends Listener {
     }
 
     val itemstackcurrent = event.currentItem
-    val view = event.view
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {
       return
     }
 
-    val topinventory = view.topInventory ?: return
+    val topinventory = view.getTopInventory.ifNull { return }
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
     if (topinventory.row != 5) {

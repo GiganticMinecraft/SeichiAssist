@@ -2,13 +2,15 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
-import com.github.unchama.seichiassist.util.BreakUtil
+import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
-import org.bukkit.entity.Arrow
+import org.bukkit.entity.{Arrow, ThrownExpBottle}
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{GameMode, Material, Sound}
+
 class PlayerClickListener  extends  Listener {
   private val plugin = SeichiAssist.instance
   private val playerMap = SeichiAssist.playermap
@@ -26,7 +28,7 @@ class PlayerClickListener  extends  Listener {
     //UUIDを取得
     val uuid = player.uniqueId
     //プレイヤーデータを取得
-    val playerdata = playerMap[uuid] ?: return
+    val playerdata = playerMap.getOrElse(uuid, return)
 
     //playerdataがない場合はreturn
     if (equipmentslot === null) {
@@ -166,13 +168,13 @@ class PlayerClickListener  extends  Listener {
   def onPlayerRightClickGachaEvent(event: PlayerInteractEvent) {
     val player = event.player
     val uuid = player.uniqueId
-    val playerData = playerMap[uuid] ?: return
+    val playerData = playerMap.getOrElse(uuid, return)
     val name = playerData.lowercaseName
 
     //もしサバイバルでなければ処理を終了
     if (player.gameMode != GameMode.SURVIVAL) return
 
-    val clickedItemStack = event.item ?: return
+    val clickedItemStack = event.getItem.ifNull { return }
 
     //ガチャ用の頭でなければ終了
     if (!Util.isGachaTicket(clickedItemStack)) return
@@ -305,7 +307,7 @@ class PlayerClickListener  extends  Listener {
     //UUIDを取得
     val uuid = player.uniqueId
     //playerdataを取得
-    val playerdata = playerMap[uuid] ?: return
+    val playerdata = playerMap[uuid].ifNull { return }
     //playerdataがない場合はreturn
 
 

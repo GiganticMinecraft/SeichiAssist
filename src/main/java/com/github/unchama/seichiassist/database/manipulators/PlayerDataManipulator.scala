@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.util.{BukkitSerialization, Util}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.util.ActionStatus
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
+import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import kotlin.Suppress
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
@@ -24,8 +25,7 @@ import org.junit.internal.runners.statements.Fail
 class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   private val plugin = SeichiAssist.instance
 
-  private val tableReference: String
-    get() = gateway.databaseName + "." + DatabaseConstants.PLAYERDATA_TABLENAME
+  private val tableReference: String = gateway.databaseName + "." + DatabaseConstants.PLAYERDATA_TABLENAME
 
   private @inline def ifCoolDownDoneThenGet(player: Player,
                                            playerdata: PlayerData,
@@ -253,7 +253,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     @SuspendingMethod def executeUpdate(): ResponseEffectOrResult[CommandSender, Unit] = {
       val updateCommand = s"UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name LIKE '$targetPlayerName'"
 
-      return if (gateway.executeUpdate(updateCommand) === Fail) {
+      if (gateway.executeUpdate(updateCommand) === Fail) {
         Bukkit.getLogger().warning(s"sql failed on updating $targetPlayerName's contribute_point")
       s"${RED}貢献度ptの変更に失敗しました。".asMessageEffect ().left ()
       } else {
@@ -263,12 +263,11 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
     @Suppress("RedundantSuspendModifier")
     @SuspendingMethod def updatePlayerDataMemoryCache() {
-      Bukkit.getServer().getPlayer(targetPlayerName)?.let { targetPlayer =>
-        val targetPlayerData = SeichiAssist.playermap[targetPlayer.uniqueId] ?: return@let
+      val targetPlayer = Bukkit.getServer.getPlayer(targetPlayerName).ifNull(return)
+      val targetPlayerData = SeichiAssist.playermap(targetPlayer.getUniqueId).ifNull(return)
 
-        targetPlayerData.contribute_point += point
-        targetPlayerData.setContributionPoint(point)
-      }
+      targetPlayerData.contribute_point += point
+      targetPlayerData.setContributionPoint(point)
     }
 
     return assertPlayerDataExistenceFor(targetPlayerName)

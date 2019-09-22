@@ -1,8 +1,10 @@
 package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
+
 class PlayerQuitListener  extends  Listener {
   private val playerMap = SeichiAssist.playermap
 
@@ -13,7 +15,7 @@ class PlayerQuitListener  extends  Listener {
     val uuid = player.uniqueId
     SeichiAssist.instance.expBarSynchronization.desynchronizeFor(player)
 
-    val playerData = playerMap[uuid] ?: return
+    val playerData = playerMap[uuid].ifNull { return }
 
     playerData.updateOnQuit()
 

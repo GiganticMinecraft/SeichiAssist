@@ -1,7 +1,10 @@
 package com.github.unchama.menuinventory
 
+import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.event.{EventHandler, Listener}
+
 /**
  * [MenuInventoryView] に由来するインベントリ上のクリックイベントをビューに定義されたアクションに流すようなリスナーオブジェクト.
  *
@@ -10,10 +13,10 @@ import org.bukkit.event.{EventHandler, Listener}
 object MenuHandler extends Listener {
   @EventHandler
   def onInventoryClick(event: InventoryClickEvent) {
-    val whoClicked = event.whoClicked as? Player ?: return
+    val whoClicked = event.getWhoClicked.refineOrNone[Player].ifNull { return }
 
     //メニュー外のクリック排除
-    val clickedInventory = event.clickedInventory ?: return
+    val clickedInventory = event.getClickedInventory.ifNull { return }
     val openInventory = event.whoClicked.openInventory.topInventory
 
     //プレイヤーインベントリ内のクリック排除
