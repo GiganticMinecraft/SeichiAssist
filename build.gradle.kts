@@ -74,7 +74,7 @@ dependencies {
 
     embed("com.okkero.skedule:skedule:1.2.6")
 
-    embed("org.scala-lang:scala-library:2.11.6")
+    embed("org.scala-lang:scala-library:2.13.1")
 
     // arrow依存
     val arrowVersion = "0.9.0"
@@ -91,8 +91,8 @@ dependencies {
     embed("io.arrow-kt:arrow-effects-io-extensions:$arrowVersion")
 
     // cats依存
-    embed("org.typelevel:cats-core_2.11:2.0.0")
-    embed("org.typelevel:cats-effect_2.11:2.0.0")
+    embed("org.typelevel:cats-core_2.13:2.0.0")
+    embed("org.typelevel:cats-effect_2.13:2.0.0")
 }
 
 tasks.processResources {
