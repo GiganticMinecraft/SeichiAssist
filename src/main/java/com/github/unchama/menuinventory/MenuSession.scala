@@ -1,23 +1,21 @@
 package com.github.unchama.menuinventory
 
-import com.github.unchama.targetedeffect
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
-import kotlin.coroutines.CoroutineContext
+import cats.effect.{ContextShift, IO}
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryHolder
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
  */
-class MenuSession private[menuinventory](view: MenuInventoryView) extends InventoryHolder {
-  private val sessionInventory = view.createConfiguredInventory(this)
+class MenuSession private[menuinventory](private var _view: MenuInventoryView) extends InventoryHolder {
+  private val sessionInventory = _view.createConfiguredInventory(this)
 
-  var view: MenuInventoryView = view
-    private set
+  def view: MenuInventoryView = _view
 
-  @SuspendingMethod def overwriteViewWith(layout: IndexedSlotLayout) {
-    view = view.copy(slotLayout = layout)
-    view.slotLayout.asynchronouslySetItemsOn(sessionInventory)
+  def overwriteViewWith(layout: IndexedSlotLayout): IO[Unit] = {
+    _view = _view.copy(slotLayout = layout)
+
+    view.slotLayout.setItemsOn(sessionInventory)
   }
 
   override def getInventory() = sessionInventory
@@ -25,12 +23,15 @@ class MenuSession private[menuinventory](view: MenuInventoryView) extends Invent
   /**
    * このセッションが持つ共有インベントリを開く[TargetedEffect]を返します.
    *
-   * @param syncExecutionContext インベントリを開くコルーチンの実行コンテキスト
+   * @param context インベントリを開く前に実行をシフトさせるためのContextShift
    */
-  def openEffectThrough(syncExecutionContext: CoroutineContext): TargetedEffect[Player] = targetedeffect.TargetedEffect {
-    withContext(syncExecutionContext) {
-      it.openInventory(sessionInventory)
-    }
+  def openEffectThrough(context: ContextShift[IO]): TargetedEffect[Player] = { player: Player =>
+    for {
+      _ <- IO.shift(context)
+      _ <- IO {
+        player.openInventory(sessionInventory)
+      }
+    } yield Unit
   }
 
 }

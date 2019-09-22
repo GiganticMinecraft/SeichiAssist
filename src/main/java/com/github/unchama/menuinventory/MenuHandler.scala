@@ -13,32 +13,31 @@ import org.bukkit.event.{EventHandler, Listener}
 object MenuHandler extends Listener {
   @EventHandler
   def onInventoryClick(event: InventoryClickEvent) {
-    val whoClicked = event.getWhoClicked.refineOrNone[Player].ifNull { return }
+    val whoClicked = event.getWhoClicked match {
+      case player: Player => player
+      case _ => return
+    }
 
     //メニュー外のクリック排除
     val clickedInventory = event.getClickedInventory.ifNull { return }
-    val openInventory = event.getWhoClicked.openInventory.topInventory
+
+    val holder = event.getWhoClicked.getOpenInventory.getTopInventory.getHolder match {
+      case session: MenuSession => session
+      case _ => return
+    }
 
     //プレイヤーインベントリ内のクリック排除
-    if (openInventory.holder is MenuSession && clickedInventory.getType === InventoryType.PLAYER) {
+    if (clickedInventory.getType == InventoryType.PLAYER) {
       event.setCancelled(true)
       return
     }
 
-    val holder = clickedInventory.holder
+    val effect = holder.view.slotLayout.computeAsyncEffectOn(event)
 
-    if (holder is MenuSession) {
-      val effect = holder.view.slotLayout.computeAsyncEffectOn(event)
-
-      unsafe {
-        runNonBlocking({
-          fx {
-            !effect {
-              effect.runFor(whoClicked)
-            }
-          }
-        }) { if (it is Either.Left) it.a.printStackTrace() }
-      }
+    effect(whoClicked).attempt.unsafeRunAsync {
+      case Left(error) =>
+        println("Caught exception while handling a menu effect.")
+        error.printStackTrace()
     }
   }
 }

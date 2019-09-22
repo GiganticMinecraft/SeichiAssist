@@ -1,6 +1,6 @@
 package com.github.unchama.menuinventory
 
-import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.entity.Player
 /**
  * メニュー一つに対応するオブジェクトへの抽象インターフェース

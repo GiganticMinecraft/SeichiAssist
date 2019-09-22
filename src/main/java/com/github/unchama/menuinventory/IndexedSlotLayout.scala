@@ -1,9 +1,9 @@
 package com.github.unchama.menuinventory
 
+import cats.effect.{ContextShift, IO}
 import com.github.unchama.menuinventory.slot.Slot
-import com.github.unchama.targetedeffect.{EmptyEffect, TargetedEffect}
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
-import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
+import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import kotlin.collections.IndexedValue
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -26,15 +26,19 @@ case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
   /**
    * 指定した[Inventory]に[Slot]により構成されたレイアウトを敷き詰める.
    */
-  @SuspendingMethod def asynchronouslySetItemsOn(inventory: Inventory) {
-    coroutineScope {
-      for (slotIndex <- 0 until inventory.getSize) {
-        launch {
-          val itemStack = map(slotIndex).itemStack.ifNull { new ItemStack(Material.AIR) }
-          inventory.setItem(slotIndex, itemStack)
-        }
+  def setItemsOn(inventory: Inventory): IO[Unit] = {
+    import cats.implicits._
+
+    import scala.concurrent.ExecutionContext
+
+    val effects = for (slotIndex <- 0 until inventory.getSize)
+      yield IO {
+        val itemStack = map.get(slotIndex).map(_.itemStack).getOrElse(new ItemStack(Material.AIR))
+        inventory.setItem(slotIndex, itemStack)
       }
-    }
+
+    implicit val context: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+    effects.toList.parSequence_
   }
 
   /**
@@ -58,9 +62,9 @@ object IndexedSlotLayout {
 
   def apply(mappings: (Int, Slot)*): IndexedSlotLayout = { IndexedSlotLayout(Map(mappings: _*)) }
 
-  def apply(mapping: Iterable[IndexedValue[Slot]]) = IndexedSlotLayout(mapping.toMap)
+  def apply(mapping: Iterable[IndexedValue[Slot]]) = IndexedSlotLayout(mapping.map(v => (v.component1(), v.component2())).toSeq: _*)
 
-  @inline def singleSlotLayout(indexedSlot: => (Int, Slot)): IndexedSlotLayout = IndexedSlotLayout(indexedSlot())
+  @inline def singleSlotLayout(indexedSlot: => (Int, Slot)): IndexedSlotLayout = IndexedSlotLayout(indexedSlot)
 
   def combinedLayout(layouts: IndexedSlotLayout*): IndexedSlotLayout =
     layouts.toList.foldLeft(emptyLayout) { case (acc, layout) => acc.merge(layout) }

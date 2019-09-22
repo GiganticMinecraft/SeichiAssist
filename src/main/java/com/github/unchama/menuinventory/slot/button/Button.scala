@@ -2,9 +2,9 @@ package com.github.unchama.menuinventory.slot.button
 
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
-import com.github.unchama.targetedeffect
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.ops.TargetedEffectOps._
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffects._
+import com.github.unchama.targetedeffect.UnfocusedEffect
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
@@ -28,7 +28,7 @@ case class Button(override val itemStack: ItemStack,
   def this(itemStack: ItemStack, effects: ButtonEffect*) = this(itemStack, effects.toList)
 
   override def effectOn(event: InventoryClickEvent): TargetedEffect[Player] =
-    targetedeffect.UnfocusedEffect { _ => _ => event.setCancelled(true)} +
+    UnfocusedEffect { event.setCancelled(true) } +
       this.effects.map { _.asyncEffectOn(event) }.asSequentialEffect()
 
   def withAnotherEffect(effect: ButtonEffect): Button = this.copy(effects = effect +: effects)

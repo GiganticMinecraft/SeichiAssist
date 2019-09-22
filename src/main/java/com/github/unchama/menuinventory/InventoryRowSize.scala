@@ -4,7 +4,7 @@ import org.bukkit.event.inventory.InventoryType
 /**
  * チェストインベントリの行数を表すcase class
  */
-case class InventoryRowSize(val rows: Int)
+case class InventoryRowSize(rows: Int) extends AnyVal
 object InventoryRowSize {
   /**
    * インベントリのサイズを表すデータ型.
