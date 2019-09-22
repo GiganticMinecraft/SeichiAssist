@@ -13,7 +13,7 @@ class ExpBarSynchronization {
   private val managedExpBars: MutableMap[Player, BossBar] = mutable.HashMap()
 
   private def computePropertiesFor(player: Player): ExpBarProperties = {
-    val playerData = SeichiAssist.playermap[player.uniqueId]
+    val playerData = SeichiAssist.playermap(player.uniqueId)
     val playerLevel = playerData.level
 
     return if (playerLevel >= LevelThresholds.levelExpThresholds.size) {
@@ -45,7 +45,7 @@ class ExpBarSynchronization {
   def synchronizeFor(player: Player) {
     desynchronizeFor(player)
 
-    val playerData = SeichiAssist.playermap[player.uniqueId]
+    val playerData = SeichiAssist.playermap(player.uniqueId)
 
     if (playerData.settings.isExpBarVisible) {
       val (title, progress) = computePropertiesFor(player)

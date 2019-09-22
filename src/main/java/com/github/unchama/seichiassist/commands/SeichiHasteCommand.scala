@@ -63,7 +63,7 @@ object SeichiHasteCommand {
               .firstOrNull() ?: return@execution "対象のプレーヤー名を指定してください。".asMessageEffect()
 
             val playerData = Bukkit.getPlayer(playerName)
-              ?.let { SeichiAssist.playermap[it.uniqueId] } ?: return@execution s"プレーヤー $playerName はオンラインではありません。".asMessageEffect()
+              ?.let { SeichiAssist.playermap(it.uniqueId) } ?: return@execution s"プレーヤー $playerName はオンラインではありません。".asMessageEffect()
 
             playerData.effectdatalist.add(effectData)
 

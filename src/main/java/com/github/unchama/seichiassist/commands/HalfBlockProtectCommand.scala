@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 object HalfBlockProtectCommand {
   val executor = playerCommandBuilder
       .execution { context =>
-        val playerData = SeichiAssist.playermap[context.sender.uniqueId] ?: return@execution EmptyEffect
+        val playerData = SeichiAssist.playermap(context.sender.uniqueId) ?: return@execution EmptyEffect
         playerData.settings.toggleHalfBreakFlag()
       }
       .build()

@@ -35,7 +35,7 @@ object OnClickTitleMenu extends Listener {
     val itemstackcurrent = event.getCurrentItem
 
     val player = he.asInstanceOf[Player]
-    val playerdata = SeichiAssist.playermap[player.uniqueId]
+    val playerdata = SeichiAssist.playermap(player.uniqueId)
 
     def setTitle(first: Int = 0, second: Int = 0, third: Int = 0, message: String =
         """二つ名$first「

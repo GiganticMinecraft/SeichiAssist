@@ -59,7 +59,7 @@ class RegionInventoryListener  extends  Listener {
 			 */
       val player = view.player.asInstanceOf[Player]
       val uuid = player.uniqueId
-      val playerData = playermap[uuid]
+      val playerData = playermap(uuid)
 
       //チャンク延長
       if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 14) {
@@ -92,7 +92,7 @@ class RegionInventoryListener  extends  Listener {
   }
 
   private def createRegion(player: Player) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]
+    val playerData = SeichiAssist.playermap(player.uniqueId)
     val selection = We.selection(player)
 
     val region = ProtectedCuboidRegion(player.name + "_" + playerData.regionCount,
@@ -143,7 +143,7 @@ class RegionInventoryListener  extends  Listener {
 			 */
       val player = view.player.asInstanceOf[Player]
       val uuid = player.uniqueId
-      val playerData = playermap[uuid]
+      val playerData = playermap(uuid)
 
       //戻るボタン
       if (itemstackcurrent.getType == Material.BARRIER) {
@@ -192,7 +192,7 @@ object RegionInventoryListener {
   internal var config = SeichiAssist.seichiAssistConfig
 
   private def gridResetFunction(player: Player) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]
+    val playerData = SeichiAssist.playermap(player.uniqueId)
       playerData.setUnitAmount(DirectionType.AHEAD, 0)
     playerData.setUnitAmount(DirectionType.BEHIND, 0)
     playerData.setUnitAmount(DirectionType.RIGHT, 0)
@@ -208,7 +208,7 @@ object RegionInventoryListener {
   }
 
   private def gridChangeFunction(player: Player, directionType: DirectionType, event: InventoryClickEvent) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]
+    val playerData = SeichiAssist.playermap(player.uniqueId)
     if (event.isLeftClick) {
       if (playerData.canGridExtend(directionType, player.world.name)) {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -229,7 +229,7 @@ object RegionInventoryListener {
   }
 
   private def setWGSelection(player: Player) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]
+    val playerData = SeichiAssist.playermap(player.uniqueId)
     val unitMap = playerData.unitMap
     val direction = Util.playerDirection(player)
     val world = player.world
@@ -279,7 +279,7 @@ object RegionInventoryListener {
   }
 
   private def canCreateRegion(player: Player) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]
+    val playerData = SeichiAssist.playermap(player.uniqueId)
     val selection = We.selection(player)
     val manager = Wg.regionManager(player.world)
     val wcfg = Wg.globalStateManager().get(player.world)
@@ -307,7 +307,7 @@ object RegionInventoryListener {
   }
 
   private def playerGridTemplateSave(player: Player, i: Int) {
-    val playerData = SeichiAssist.playermap[player.uniqueId]
+    val playerData = SeichiAssist.playermap(player.uniqueId)
     val unitMap = playerData.unitMap
 
     player.sendMessage(GREEN.toString() + "グリッド式保護の現在の設定を保存しました。")

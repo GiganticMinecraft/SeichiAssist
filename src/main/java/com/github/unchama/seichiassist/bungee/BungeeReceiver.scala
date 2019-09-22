@@ -45,7 +45,7 @@ class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageLi
     val player: Player? = Bukkit.getServer().getPlayer(playerName)
 
     try {
-      val playerData = SeichiAssist.playermap[player.uniqueId]
+      val playerData = SeichiAssist.playermap(player.uniqueId)
 
       playerData.updateOnQuit()
 
@@ -68,7 +68,7 @@ class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageLi
 
   private def getLocation(servername: String, uuid: String, wanter: String) {
     val player = Bukkit.getServer().getPlayer(UUID.fromString(uuid))
-    val playerData = SeichiAssist.playermap[UUID.fromString(uuid)]
+    val playerData = SeichiAssist.playermap(UUID.fromString(uuid))
 
     val message = writtenMessage(
         "GetLocation",

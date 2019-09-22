@@ -14,7 +14,7 @@ class PlayerJoinListener  extends  Listener {
   private val databaseGateway = SeichiAssist.databaseGateway
 
   private def loadPlayerData(playerUuid: UUID, playerName: String) {
-    SeichiAssist.playermap[playerUuid] =
+    SeichiAssist.playermap(playerUuid) =
         databaseGateway.playerDataManipulator.loadPlayerData(playerUuid, playerName)
   }
 

@@ -27,7 +27,7 @@ object MenuInventoryData {
     //UUID取得
     val uuid = player.uniqueId
     //プレイヤーデータ
-    val playerdata = BuildAssist.playermap[uuid] // If NPE, player is already offline
+    val playerdata = BuildAssist.playermap(uuid) // If NPE, player is already offline
 
     val inventory = Bukkit.getServer().createInventory(null, 4 * 9, DARK_PURPLE.toString() + "" + BOLD + "「範囲設置スキル」設定画面")
     var itemstack = ItemStack(Material.BARRIER, 1)
@@ -160,7 +160,7 @@ object MenuInventoryData {
     //UUID取得
     val uuid = player.uniqueId
     //プレイヤーデータ
-    val playerdata = BuildAssist.playermap[uuid]
+    val playerdata = BuildAssist.playermap(uuid)
 
     val inventory = Bukkit.getServer().createInventory(null, 4 * 9, DARK_PURPLE.toString() + "" + BOLD + "「ブロックを並べるスキル（仮）」設定")
     var itemstack = ItemStack(Material.SKULL_ITEM, 1)
@@ -238,7 +238,7 @@ object MenuInventoryData {
     val player = p.player
     //UUID取得
     val uuid = player.uniqueId
-    val playerdata_s = SeichiAssist.playermap[uuid] // if thrown NPE, player has already left
+    val playerdata_s = SeichiAssist.playermap(uuid) // if thrown NPE, player has already left
 
     val inventory = Bukkit.getServer().createInventory(null, 6 * 9, DARK_PURPLE.toString() + "" + BOLD + "MineStackブロック一括クラフト1")
     var itemstack: ItemStack
@@ -403,7 +403,7 @@ object MenuInventoryData {
     //UUID取得
     val uuid = player.uniqueId
     //プレイヤーデータ
-    val playerdata_s = SeichiAssist.playermap[uuid]
+    val playerdata_s = SeichiAssist.playermap(uuid)
 
     val inventory = Bukkit.getServer().createInventory(null, 6 * 9, DARK_PURPLE.toString() + "" + BOLD + "MineStackブロック一括クラフト2")
     var itemstack: ItemStack
@@ -599,7 +599,7 @@ object MenuInventoryData {
     val player = p.player
     //UUID取得
     val uuid = player.uniqueId
-    val playerdata_s = SeichiAssist.playermap[uuid]
+    val playerdata_s = SeichiAssist.playermap(uuid)
 
     val inventory = Bukkit.getServer().createInventory(null, 6 * 9, DARK_PURPLE.toString() + "" + BOLD + "MineStackブロック一括クラフト3")
     var itemstack: ItemStack
