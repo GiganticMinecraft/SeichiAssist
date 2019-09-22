@@ -179,7 +179,7 @@ class PlayerClickListener  extends  Listener {
     //ガチャ用の頭でなければ終了
     if (!Util.isGachaTicket(clickedItemStack)) return
 
-    event.isCancelled = true
+    event.setCancelled(true)
 
     //連打防止クールダウン処理
     if (!playerData.gachacooldownflag) return
@@ -356,7 +356,7 @@ class PlayerClickListener  extends  Listener {
         }
 
         //設置をキャンセル
-        event.isCancelled = true
+        event.setCancelled(true)
         val skillTypeId = playerdata.activeskilldata.skilltype
         val skillNumber = playerdata.activeskilldata.skillnum
         if (skillTypeId == ActiveSkill.BREAK.gettypenum() && skillNumber == 1 || skillTypeId == ActiveSkill.BREAK.gettypenum() && skillNumber == 2) {
@@ -387,7 +387,7 @@ class PlayerClickListener  extends  Listener {
         //オフハンドで指定ツールを持っていた時の処理
 
         //設置をキャンセル
-        event.isCancelled = true
+        event.setCancelled(true)
         val assaultNumber = playerdata.activeskilldata.assaultnum
         val assaultTypeId = playerdata.activeskilldata.assaulttype
 
@@ -418,7 +418,7 @@ class PlayerClickListener  extends  Listener {
 
     if (player.inventory.itemInMainHand.getType !== Material.STICK) return
 
-    event.isCancelled = true
+    event.setCancelled(true)
 
     // 右クリックの処理ではない
     if (!(action === Action.RIGHT_CLICK_AIR || action === Action.RIGHT_CLICK_BLOCK)) return
@@ -446,7 +446,7 @@ class PlayerClickListener  extends  Listener {
 
     if (event.material === Material.ENDER_PORTAL_FRAME) {
       //設置をキャンセル
-      event.isCancelled = true
+      event.setCancelled(true)
       //UUIDを取得
       val uuid = player.uniqueId
       //playerdataを取得
@@ -482,7 +482,7 @@ class PlayerClickListener  extends  Listener {
     // 経験値瓶を持った状態でShift右クリックをした場合
     if (event.player.isSneaking && event.player.inventory.itemInMainHand.getType === Material.EXP_BOTTLE
         && (event.action === Action.RIGHT_CLICK_AIR || event.action === Action.RIGHT_CLICK_BLOCK)) {
-      event.isCancelled = true
+      event.setCancelled(true)
       val num = event.item.amount
       for (cnt in 0 until num) {
         event.player.launchProjectile(ThrownExpBottle::class.java)

@@ -5,7 +5,7 @@ import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
-import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.event.{EventHandler, Listener}
 
 /**
@@ -47,7 +47,7 @@ class RegionInventoryListener  extends  Listener {
 
     //インベントリ名が以下の時処理
     if (topinventory.title == LIGHT_PURPLE.toString() + "グリッド式保護設定メニュー") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType == InventoryType.PLAYER) {
@@ -131,7 +131,7 @@ class RegionInventoryListener  extends  Listener {
 
     //インベントリ名が以下の時処理
     if (topinventory.title == LIGHT_PURPLE.toString() + "グリッド式保護・設定保存") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType == InventoryType.PLAYER) {

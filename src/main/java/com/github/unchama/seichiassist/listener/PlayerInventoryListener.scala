@@ -41,7 +41,7 @@ class PlayerInventoryListener  extends  Listener {
 
     //インベントリ名が以下の時処理
     if (topinventory.title == s"$DARK_RED${BOLD}サーバーを選択してください") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType === InventoryType.PLAYER) return
@@ -103,7 +103,7 @@ class PlayerInventoryListener  extends  Listener {
 
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキル切り替え") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -219,7 +219,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキル選択") {
       val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
 
-      event.isCancelled = true
+      event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -442,7 +442,7 @@ class PlayerInventoryListener  extends  Listener {
 
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキルエフェクト選択") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -584,7 +584,7 @@ class PlayerInventoryListener  extends  Listener {
     val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地神ランキング") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -666,7 +666,7 @@ class PlayerInventoryListener  extends  Listener {
     val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "ログイン神ランキング") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -733,7 +733,7 @@ class PlayerInventoryListener  extends  Listener {
     val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "投票神ランキング") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -808,7 +808,7 @@ class PlayerInventoryListener  extends  Listener {
 
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "寄付神ランキング") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -883,7 +883,7 @@ class PlayerInventoryListener  extends  Listener {
 
     //インベントリ名が以下の時処理
     if (topinventory.title == BLUE.toString() + "" + BOLD + "プレミアムエフェクト購入履歴") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -1329,7 +1329,7 @@ class PlayerInventoryListener  extends  Listener {
 
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "投票ptメニュー") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
@@ -1488,7 +1488,7 @@ class PlayerInventoryListener  extends  Listener {
     val itemmeta = itemstackcurrent.itemMeta
 
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "ホームメニュー") {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
@@ -1522,7 +1522,7 @@ class PlayerInventoryListener  extends  Listener {
       }
 
     } else if (topinventory.title.contains("ホームポイントを変更しますか?")) {
-      event.isCancelled = true
+      event.setCancelled(true)
 
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
@@ -1569,7 +1569,7 @@ class PlayerInventoryListener  extends  Listener {
     val playerdata = playerMap[uuid]
 
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "スキルを進化させますか?") {
-      event.isCancelled = true
+      event.setCancelled(true)
       if (itemstackcurrent.getType == Material.NETHER_STAR) {
         playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1, false)
         player.playSound(player.location, Sound.BLOCK_END_GATEWAY_SPAWN, 1f, 0.5.toFloat())
@@ -1577,7 +1577,7 @@ class PlayerInventoryListener  extends  Listener {
         player.openInventory(MenuInventoryData.giganticBerserkEvolution2Menu(player))
       }
     } else if (topinventory.title == LIGHT_PURPLE.toString() + "" + BOLD + "スキルを進化させました") {
-      event.isCancelled = true
+      event.setCancelled(true)
     }
   }
 }

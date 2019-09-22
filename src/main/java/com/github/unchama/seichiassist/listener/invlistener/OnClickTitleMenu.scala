@@ -56,7 +56,7 @@ object OnClickTitleMenu extends Listener {
     val prefix = s"${DARK_PURPLE}${BOLD}"
     when (title) {
       s"${prefix}実績・二つ名システム" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
         if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -123,7 +123,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}カテゴリ「整地」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -154,7 +154,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}カテゴリ「建築」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -172,7 +172,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}カテゴリ「ログイン」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -210,7 +210,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}カテゴリ「やりこみ」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -228,7 +228,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}カテゴリ「特殊」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -260,7 +260,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}二つ名組合せシステム" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -335,7 +335,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}二つ名組合せ「前」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -377,7 +377,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}二つ名組合せ「中」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -419,7 +419,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}二つ名組合せ「後」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -461,7 +461,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}実績ポイントショップ" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -525,7 +525,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}実績「整地神ランキング」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -588,7 +588,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}実績「整地量」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -649,7 +649,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}実績「参加時間」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -760,7 +760,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}実績「通算ログイン」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
         if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -845,7 +845,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}実績「連続ログイン」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
         if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -891,7 +891,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}実績「JMS投票数」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -944,7 +944,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}実績「公式イベント」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
@@ -1077,7 +1077,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}実績「記念日」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
         if (event.clickedInventory.getType === InventoryType.PLAYER) {
@@ -1221,7 +1221,7 @@ object OnClickTitleMenu extends Listener {
       }
 
       s"${prefix}実績「極秘任務」" => {
-        event.isCancelled = true
+        event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;

@@ -21,7 +21,7 @@ object MenuHandler extends Listener {
 
     //プレイヤーインベントリ内のクリック排除
     if (openInventory.holder is MenuSession && clickedInventory.getType === InventoryType.PLAYER) {
-      event.isCancelled = true
+      event.setCancelled(true)
       return
     }
 

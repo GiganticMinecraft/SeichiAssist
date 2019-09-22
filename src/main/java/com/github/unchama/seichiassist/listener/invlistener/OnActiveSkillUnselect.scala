@@ -36,7 +36,7 @@ object OnActiveSkillUnselect extends Listener {
 
     //インベントリ名が以下の時処理
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキル選択") {
-      event.isCancelled = true
+      event.setCancelled(true)
       //プレイヤーインベントリのクリックの場合終了
       if (event.clickedInventory.getType === InventoryType.PLAYER) {
         return
