@@ -95,6 +95,13 @@ dependencies {
     embed("org.typelevel:cats-effect_2.13:2.0.0")
 }
 
+task("repl", JavaExec::class) {
+    main = "scala.tools.nsc.MainGenericRunner"
+    classpath = sourceSets.main.get().runtimeClasspath
+    standardInput = System.`in`
+    args = listOf("-usejavacp")
+}
+
 tasks.processResources {
     filteringCharset = "UTF-8"
     from(sourceSets.main.get().resources.srcDirs) {
