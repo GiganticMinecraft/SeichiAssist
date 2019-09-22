@@ -89,6 +89,10 @@ dependencies {
     embed("io.arrow-kt:arrow-effects-data:$arrowVersion")
     embed("io.arrow-kt:arrow-effects-extensions:$arrowVersion")
     embed("io.arrow-kt:arrow-effects-io-extensions:$arrowVersion")
+
+    // cats依存
+    embed("org.typelevel:cats-core_2.11:2.0.0")
+    embed("org.typelevel:cats-effect_2.11:2.0.0")
 }
 
 tasks.processResources {
