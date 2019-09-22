@@ -6,7 +6,7 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, Material}
 
-import scala.collection.JavaConversions._
+import scala.jdk.javaapi.CollectionConverters.asJava
 
 /**
  * ビルダー内で保持されるアイテムスタックの情報をまとめて持つデータ型.
@@ -32,7 +32,7 @@ class IconComponent(val material: Material, private val durability: Short = 0.to
 
     title.ifNotNull(meta.setDisplayName)
 
-    meta.setLore(lore)
+    meta.setLore(asJava(lore))
 
     if (isUnbreakable) {
       meta.setUnbreakable(true)
