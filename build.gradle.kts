@@ -93,6 +93,8 @@ dependencies {
     // cats依存
     embed("org.typelevel:cats-core_2.13:2.0.0")
     embed("org.typelevel:cats-effect_2.13:2.0.0")
+
+    embed("com.beachape:enumeratum_2.13:1.5.13")
 }
 
 task("repl", JavaExec::class) {
