@@ -9,6 +9,7 @@ object TargetedEffect {
    * Minecraft内の何らかの対象[T]に向けた作用を持ち,
    * [runFor]メソッドにより作用を[T]に関して及ぼすことができるオブジェクトのtrait.
    */
+  // TODO move type alias to package object
   type TargetedEffect[-T] = T => IO[Unit]
 
   def monoid[T]: Monoid[TargetedEffect[T]] = new Monoid[TargetedEffect[T]] {

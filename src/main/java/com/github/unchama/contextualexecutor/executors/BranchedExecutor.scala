@@ -1,40 +1,43 @@
 package com.github.unchama.contextualexecutor.executors
 
+import cats.effect.IO
 import com.github.unchama.contextualexecutor.{ContextualExecutor, RawCommandContext}
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
 
 /**
  * コマンドの枝分かれでのルーティングを静的に行うアクションを返す[ContextualExecutor]
  */
-case class BranchedExecutor(val branches: Map[String, ContextualExecutor],
-                            val whenArgInsufficient: ContextualExecutor = PrintUsageExecutor,
-                            val whenBranchNotFound: ContextualExecutor = PrintUsageExecutor) extends ContextualExecutor {
+case class BranchedExecutor(branches: Map[String, ContextualExecutor],
+                            whenArgInsufficient: Option[ContextualExecutor] = Some(PrintUsageExecutor),
+                            whenBranchNotFound: Option[ContextualExecutor] = Some(PrintUsageExecutor)) extends ContextualExecutor {
 
-  import com.github.unchama.util.syntax.Nullability._
+  override def executeWith(rawContext: RawCommandContext): IO[Unit] = {
+    def executeOptionally(executor: Option[ContextualExecutor]): IO[Unit] =
+      executor match {
+        case Some(executor) => executor.executeWith(rawContext)
+        case None => IO.pure(Unit)
+      }
 
-  override @SuspendingMethod def executeWith(rawContext: RawCommandContext) {
     val (argHead, argTail) = rawContext.args match {
       case ::(head, tl) => (head, tl)
-      case Nil =>
-        whenArgInsufficient.ifNotNull(_.executeWith(rawContext, cont))
-        return
+      case Nil => return executeOptionally(whenArgInsufficient)
     }
 
-    val branch = branches.getOrElse(argHead, return whenBranchNotFound.ifNotNull(_.executeWith(rawContext, cont)))
+    val branch = branches.getOrElse(argHead, return executeOptionally(whenBranchNotFound))
 
     val argShiftedContext = rawContext.copy(args = argTail)
 
-    branch.executeWith(argShiftedContext, cont)
+    branch.executeWith(argShiftedContext)
   }
 
   override def tabCandidatesFor(context: RawCommandContext): List[String] = {
-    val args = context.args
+    context.args match {
+      case head :: tail => {
+        val childExecutor = branches.getOrElse(head, return Nil)
 
-    if (args.size <= 1) return branches.keys.toArray.sorted.toList
-
-    val childExecutor = branches.getOrElse(args.head, whenBranchNotFound.ifNull { return null })
-
-    childExecutor.tabCandidatesFor(context.copy(args = args.drop(1)))
+        childExecutor.tabCandidatesFor(context.copy(args = tail))
+      }
+      case Nil => branches.keys.toArray.sorted.toList
+    }
   }
 
 }

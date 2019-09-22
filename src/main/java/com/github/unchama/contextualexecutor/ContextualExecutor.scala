@@ -1,29 +1,27 @@
 package com.github.unchama.contextualexecutor
 
-import com.github.unchama.util.kotlin2scala.{Coroutines, SuspendingMethod}
+import cats.effect.IO
 import org.bukkit.command.{Command, CommandSender, TabExecutor}
 
 /**
  * コマンド実行時に[TabExecutor]へ渡される情報をラップした[RawCommandContext]を用いて処理を行うオブジェクトへのtrait.
  */
 trait ContextualExecutor {
-
   /**
-   * [rawContext] に基づいて, 作用を発生させる.
+   * [rawContext] に基づいて, 作用を計算する.
    *
-   * このメソッドは**サーバーメインスレッド上のコルーチンで実行する必要性はない**.
-   * また, 実行時例外が発生することはない.
+   * 計算された作用はサーバーメインスレッド以外のコンテキストで実行されても良い.
    */
-  @SuspendingMethod def executeWith(rawContext: RawCommandContext)
+  // TODO rename to "executionWith"
+  def executeWith(commandContext: RawCommandContext): IO[Unit]
 
   /**
    * [context] に基づいてTab補完の候補をListで返却する.
    */
-  def tabCandidatesFor(context: RawCommandContext): List[String] = null
+  def tabCandidatesFor(context: RawCommandContext): List[String] = Nil
 }
 
 object ContextualExecutor {
-
   implicit class ContextualTabExecutor(val contextualExecutor: ContextualExecutor) {
     /**
      * この[ContextualExecutor]を[TabExecutor]オブジェクトへ変換する.
@@ -35,9 +33,12 @@ object ContextualExecutor {
       override def onCommand(sender: CommandSender, command: Command, alias: String, args: Array[String]): Boolean = {
         val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList)
 
-        Coroutines.launchInGlobalScope(block = { case (_, cont) =>
-          contextualExecutor.executeWith(context, cont)
-        })
+        contextualExecutor.executeWith(context).attempt.unsafeRunAsync {
+          case Left(error) => {
+            println(s"Caught exception while executing ${command.getName} command.")
+            error.printStackTrace()
+          }
+        }
 
         // 非同期の操作を含むことを前提とするため, Bukkitへのコマンドの成否を必ず成功扱いにする
         true

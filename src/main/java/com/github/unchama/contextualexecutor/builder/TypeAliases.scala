@@ -1,8 +1,8 @@
 package com.github.unchama.contextualexecutor.builder
 
-import com.github.unchama.contextualexecutor.{PartiallyParsedArgs, RawCommandContext}
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.{contextualexecutor, targetedeffect}
+import cats.effect.IO
+import com.github.unchama.contextualexecutor.{ParsedArgCommandContext, PartiallyParsedArgs, RawCommandContext}
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.command.CommandSender
 
 object TypeAliases {
@@ -10,13 +10,11 @@ object TypeAliases {
 
   type ResponseEffectOrResult[CS, T] = Result[TargetedEffect[CS], T]
 
-  type SingleArgumentParser = (String) => ResponseEffectOrResult[CommandSender, Any]
+  type SingleArgumentParser = String => ResponseEffectOrResult[CommandSender, Any]
 
-  type SenderTypeValidation[CS] = suspend (CommandSender) => Option[CS]
+  type SenderTypeValidation[CS] = CommandSender => IO[Option[CS]]
 
-  type CommandArgumentsParser[CS] = suspend (CS, RawCommandContext) => Option[PartiallyParsedArgs]
+  type CommandArgumentsParser[CS] = (CS, RawCommandContext) => IO[Option[PartiallyParsedArgs]]
 
-  type ScopedContextualExecution[CS] = suspend
-  (contextualexecutor.ParsedArgCommandContext[CS]
-  ) => targetedeffect.TargetedEffect[CS]
+  type ScopedContextualExecution[CS] = ParsedArgCommandContext[CS] => IO[TargetedEffect[CS]]
 }
