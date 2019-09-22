@@ -1,8 +1,8 @@
 package com.github.unchama.targetedeffect
 
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
-import kotlin.coroutines.Continuation
+import cats.effect.IO
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 
-case class UnfocusedEffect(effect: Continuation[Unit] => Any => Unit) extends TargetedEffect[Any] {
-  override @SuspendingMethod def runFor(minecraftObject: Any) = effect(continuation)(minecraftObject)
+object UnfocusedEffect {
+  def apply(effect: => Unit): TargetedEffect[Any] = _ => IO(effect)
 }

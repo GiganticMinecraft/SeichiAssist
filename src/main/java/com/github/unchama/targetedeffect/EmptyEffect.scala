@@ -1,10 +1,12 @@
 package com.github.unchama.targetedeffect
 
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
+import cats.effect.IO
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 
 /**
  * 何も作用を及ぼさないような[TargetedEffect].
  */
+
 object EmptyEffect extends TargetedEffect[Any] {
-  override @SuspendingMethod def runFor(minecraftObject: Any) = Unit
+  override def apply(v1: Any): IO[Unit] = IO.pure(Unit)
 }
