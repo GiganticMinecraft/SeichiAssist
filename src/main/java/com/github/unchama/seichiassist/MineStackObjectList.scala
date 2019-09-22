@@ -517,7 +517,7 @@ object MineStackObjectList {
    * デフォルトでガチャの内容に含まれている景品。
    */
   val minestackBuiltinGachaPrizes = List(
-      new MineStackObj("gachaimo", null, 1, StaticGachaPrizeFactory.gachaRingo, true, -1, MineStackObjectCategory.GACHA_PRIZES),
+      new MineStackObj("gachaimo", null, 1, StaticGachaPrizeFactory.getGachaRingo, true, -1, MineStackObjectCategory.GACHA_PRIZES),
       new MineStackGachaObj("exp_bottle", "エンチャントの瓶", 1, Material.EXP_BOTTLE, 0)
   )
 
@@ -525,8 +525,8 @@ object MineStackObjectList {
    * マインスタックに格納できるガチャ景品。
    */
   // これは後に変更されるのでミュータブルでないといけない
-  val minestackGachaPrizes: mutable.MutableList[MineStackObj] = minestackBuiltinGachaPrizes.to[mutable.MutableList]
+  val minestackGachaPrizes: mutable.ArrayBuffer[MineStackObj] = mutable.ArrayBuffer.from(minestackBuiltinGachaPrizes)
 
   // ランダムアクセスしないので
-  val minestacklist: mutable.MutableList[MineStackObj] = mutable.MutableList()
+  val minestacklist: mutable.ArrayBuffer[MineStackObj] = mutable.ArrayBuffer()
 }

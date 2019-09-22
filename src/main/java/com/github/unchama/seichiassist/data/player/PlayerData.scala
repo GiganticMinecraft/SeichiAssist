@@ -3,9 +3,9 @@ package com.github.unchama.seichiassist.data.player
 import java.util
 import java.util.UUID
 
-import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
+import com.github.unchama.seichiassist.data.{ActiveSkillData, GridTemplate}
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.MebiusTask
 import com.github.unchama.seichiassist.{LevelThresholds, ManagedWorld, MaterialSets, SeichiAssist}
@@ -20,7 +20,7 @@ import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.{Bukkit, Material, Statistic}
 
-import scala.collection.mutable
+import scala.collection.{BitSet, mutable}
 
 class PlayerData(
     @Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID,
@@ -128,7 +128,7 @@ class PlayerData(
 
   var starLevels = StarLevel(0, 0, 0)
 
-  var minestack = MineStack()
+  var minestack = new MineStack()
 
   //プレイ時間
   var playTick = 0
@@ -151,9 +151,9 @@ class PlayerData(
   var ChainVote = 0
 
   //アクティブスキル関連データ
-  var activeskilldata: ActiveSkillData = ActiveSkillData()
+  var activeskilldata: ActiveSkillData = new ActiveSkillData()
 
-  private val subHomeMap = HashMap[Int, SubHome]()
+  private val subHomeMap = mutable.HashMap[Int, SubHome]()
 
   //二つ名解禁フラグ保存用
   var TitleFlags: BitSet = BitSet(10000).apply { set(1) }
@@ -170,7 +170,7 @@ class PlayerData(
 
   //グリッド式保護関連
   private var claimUnit = ClaimUnit(0, 0, 0, 0)
-  var templateMap: MutableMap[Int, GridTemplate] = HashMap()
+  var templateMap: MutableMap[Int, GridTemplate] = mutable.HashMap()
 
   //投票妖精関連
   var usingVotingFairy = false

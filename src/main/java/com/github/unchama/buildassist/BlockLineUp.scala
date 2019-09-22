@@ -20,10 +20,10 @@ class BlockLineUp extends Listener {
     val action = event.getAction
     val playerWorld = player.getWorld
 
-    val seichiAssistData = SeichiAssist.playermap.get(player.getUniqueId).ifNull { return }
+    val seichiAssistData = SeichiAssist.playermap.getOrElse(player.getUniqueId, return)
     val buildAssistData = BuildAssist.playermap.getOrElse(player.getUniqueId, return)
 
-    val playerMineStack = seichiAssistData.getMinestack
+    val playerMineStack = seichiAssistData.minestack
 
     //スキルOFFなら終了
     if (buildAssistData.line_up_flg == 0) return
@@ -66,18 +66,18 @@ class BlockLineUp extends Listener {
     if (pitch > 45) {
       step_y = -1
       py = pl.getBlockY
-    } else if (pitch [ -45) {
+    } else if (pitch < -45) {
       step_y = 1
     } else {
       if (buildAssistData.line_up_flg == 2) {
         //下設置設定の場合は一段下げる
         py -= 1
       }
-      if (yaw ] 315 || yaw < 45) {//南
+      if (yaw > 315 || yaw < 45) {//南
         step_z = 1
       } else if (yaw < 135) {//西
         step_x = -1
-      } else if (yaw [ 225) {//北
+      } else if (yaw < 225) {//北
         step_z = -1
       } else {//東
         step_x = 1
@@ -88,8 +88,8 @@ class BlockLineUp extends Listener {
 
     val mineStackObjectToBeUsed =
         if (buildAssistData.line_up_minestack_flg == 1)
-          MineStackObjectList.minestacklist.asScala.find { obj =]
-            mainHandItem.getType == obj.getMaterial && mainHandItemData.toInt == obj.getDurability
+          MineStackObjectList.minestacklist.find { obj =>
+            mainHandItem.getType == obj.material && mainHandItemData.toInt == obj.durability
           }
         else None
 
@@ -100,7 +100,7 @@ class BlockLineUp extends Listener {
       val available = availableOnHand + availableInMineStack
 
       val manaCap: Option[Long] = {
-        val availableMana = seichiAssistData.getActiveskilldata.mana.getMana
+        val availableMana = seichiAssistData.activeskilldata.mana.getMana
 
         if (availableMana < available.toDouble * manaConsumptionPerPlacement)
           Some((availableMana / manaConsumptionPerPlacement).toLong)
@@ -130,9 +130,9 @@ class BlockLineUp extends Listener {
 
     val (placingBlockType, itemConsumptionPerPlacement, placementIteration) =
         if (shouldPlaceDoubleSlabs)
-          Triple(slabToDoubleSlab(mainHandItemType), 2, maxBlockUsage / 2)
+          (slabToDoubleSlab(mainHandItemType), 2, maxBlockUsage / 2)
         else
-          Triple(mainHandItemType, 1, maxBlockUsage)
+          (mainHandItemType, 1, maxBlockUsage)
 
     //設置した数
     var placedBlockCount = 0
@@ -146,7 +146,7 @@ class BlockLineUp extends Listener {
         val block = playerWorld.getBlockAt(px, py, pz)
 
         //他人の保護がかかっている場合は設置終わり
-        if (!ExternalPlugins.worldGuard.canBuild(player, block.getLocation)) b.break
+        if (!ExternalPlugins.getWorldGuard.canBuild(player, block.getLocation)) b.break
 
         if (block.getType != Material.AIR) {
           //空気以外にぶつかり、ブロック破壊をしないならば終わる

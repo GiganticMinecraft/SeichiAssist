@@ -20,6 +20,7 @@ import org.bukkit.command.{Command, CommandSender}
 import org.bukkit.entity.Entity
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
+import org.junit.internal.runners.statements.Fail
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable

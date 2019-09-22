@@ -1,6 +1,7 @@
 package com.github.unchama.buildassist.menu
 
 import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
+import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{IndexedSlotLayout, Menu, MenuInventoryView}
 import com.github.unchama.seichiassist.{Schedulers, SkullOwners}
