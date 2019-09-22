@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
 class PlayerJoinListener  extends  Listener {
   private val playerMap: util.HashMap[UUID, PlayerData] = SeichiAssist.playermap
@@ -29,15 +29,15 @@ class PlayerJoinListener  extends  Listener {
         val isLastTry = tryCount == maxTryCount
 
         try {
-          loadPlayerData(event.uniqueId, event.name)
+          loadPlayerData(event.getUniqueId, event.getName)
           return@runBlocking
         } catch (e: Exception) {
           if (isLastTry) {
             println("Caught exception while loading PlayerData.")
             e.printStackTrace()
 
-            event.kickMessage = failedToLoadDataError
-            event.loginResult = AsyncPlayerPreLoginEvent.Result.KICK_OTHER
+            event.setKickMessage(failedToLoadDataError)
+            event.getLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
             return@runBlocking
           }
         }
@@ -50,7 +50,7 @@ class PlayerJoinListener  extends  Listener {
   // プレイヤーがjoinした時に実行
   @EventHandler
   def onPlayerJoinEvent(event: PlayerJoinEvent) {
-    val player: Player = event.player
+    val player: Player = event.getPlayer
 
     /*
       サーバー起動してからワールドが読み込まれる前に接続試行をするとAsyncPlayerPreLoginEventが発火されないことがあり、
@@ -119,8 +119,8 @@ class PlayerJoinListener  extends  Listener {
   @EventHandler
   def onPlayerChangedWorld(event: PlayerChangedWorldEvent) {
     // 整地ワールドから他のワールドに移動したとき
-    if (ManagedWorld.fromBukkitWorld(event.from)?.isSeichi == true) {
-      val p = event.player
+    if (ManagedWorld.fromBukkitWorld(event.getFrom)?.isSeichi == true) {
+      val p = event.getPlayer
       val pd = playerMap[p.uniqueId]
 
       // coreprotectを切る

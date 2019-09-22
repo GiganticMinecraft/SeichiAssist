@@ -20,11 +20,11 @@ class PlayerClickListener  extends  Listener {
   @EventHandler
   def onPlayerActiveSkillEvent(event: PlayerInteractEvent) {
     //プレイヤー型を取得
-    val player = event.player
+    val player = event.getPlayer
     //プレイヤーが起こしたアクションを取得
-    val action = event.action
+    val action = event.getAction
     //使った手を取得
-    val equipmentslot = event.hand
+    val equipmentslot = event.getHand
     //UUIDを取得
     val uuid = player.uniqueId
     //プレイヤーデータを取得
@@ -70,7 +70,7 @@ class PlayerClickListener  extends  Listener {
       }
 
 
-      if (MaterialSets.breakMaterials.contains(event.material)) {
+      if (MaterialSets.breakMaterials.contains(event.getMaterial)) {
         if (playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()) {
           //クールダウン処理
           val cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum)
@@ -105,7 +105,7 @@ class PlayerClickListener  extends  Listener {
       }
 
 
-      if (MaterialSets.breakMaterials.contains(event.material)) {
+      if (MaterialSets.breakMaterials.contains(event.getMaterial)) {
         if (playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()) {
           //クールダウン処理
           val cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum)
@@ -166,7 +166,7 @@ class PlayerClickListener  extends  Listener {
   //プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
   @EventHandler
   def onPlayerRightClickGachaEvent(event: PlayerInteractEvent) {
-    val player = event.player
+    val player = event.getPlayer
     val uuid = player.uniqueId
     val playerData = playerMap.getOrElse(uuid, return)
     val name = playerData.lowercaseName
@@ -188,7 +188,7 @@ class PlayerClickListener  extends  Listener {
     CoolDownTask(player, false, false, true).runTaskLater(plugin, 4)
 
     //オフハンドから実行された時処理を終了
-    if (event.hand == EquipmentSlot.OFF_HAND) return
+    if (event.getHand == EquipmentSlot.OFF_HAND) return
 
     //ガチャシステムメンテナンス中は処理を終了
     if (SeichiAssist.gachamente) {
@@ -202,7 +202,7 @@ class PlayerClickListener  extends  Listener {
       return
     }
 
-    val action = event.action
+    val action = event.getAction
     if (!(action === Action.RIGHT_CLICK_AIR || action === Action.RIGHT_CLICK_BLOCK)) return
 
     val count =
@@ -295,11 +295,11 @@ class PlayerClickListener  extends  Listener {
   @EventHandler
   def onPlayerActiveSkillToggleEvent(event: PlayerInteractEvent) {
     //プレイヤーを取得
-    val player = event.player
+    val player = event.getPlayer
     //プレイヤーの起こしたアクションの取得
-    val action = event.action
+    val action = event.getAction
     //アクションを起こした手を取得
-    val equipmentslot = event.hand
+    val equipmentslot = event.getHand
     val currentItem = player.inventory.itemInMainHand.type
     if (currentItem === Material.STICK || currentItem === Material.SKULL_ITEM) {
       return
@@ -341,7 +341,7 @@ class PlayerClickListener  extends  Listener {
       //アクション実行されたブロックがある場合の処理
       if (action === Action.RIGHT_CLICK_BLOCK) {
         //クリックされたブロックの種類を取得
-        val cmaterial = event.clickedBlock.type
+        val cmaterial = event.getClickedBlock.type
         //cancelledmateriallistに存在すれば処理終了
         if (MaterialSets.cancelledMaterials.contains(cmaterial)) {
           return
@@ -412,9 +412,9 @@ class PlayerClickListener  extends  Listener {
   @EventHandler
   def onPlayerMenuEvent(event: PlayerInteractEvent) {
     //プレイヤーを取得
-    val player = event.player
+    val player = event.getPlayer
     //プレイヤーが起こしたアクションを取得
-    val action = event.action
+    val action = event.getAction
 
     if (player.inventory.itemInMainHand.getType !== Material.STICK) return
 
@@ -422,7 +422,7 @@ class PlayerClickListener  extends  Listener {
 
     // 右クリックの処理ではない
     if (!(action === Action.RIGHT_CLICK_AIR || action === Action.RIGHT_CLICK_BLOCK)) return
-    if (event.hand === EquipmentSlot.OFF_HAND) return
+    if (event.getHand === EquipmentSlot.OFF_HAND) return
 
     val effect = sequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
@@ -438,13 +438,13 @@ class PlayerClickListener  extends  Listener {
   @EventHandler
   def onPlayerOpenInventorySkillEvent(event: PlayerInteractEvent) {
     //プレイヤーを取得
-    val player = event.player
+    val player = event.getPlayer
     //プレイヤーが起こしたアクションを取得
-    val action = event.action
+    val action = event.getAction
     //使った手を取得
-    val equipmentslot = event.hand
+    val equipmentslot = event.getHand
 
-    if (event.material === Material.ENDER_PORTAL_FRAME) {
+    if (event.getMaterial === Material.ENDER_PORTAL_FRAME) {
       //設置をキャンセル
       event.setCancelled(true)
       //UUIDを取得
@@ -480,14 +480,14 @@ class PlayerClickListener  extends  Listener {
   @EventHandler
   def onPlayerRightClickExpBottleEvent(event: PlayerInteractEvent) {
     // 経験値瓶を持った状態でShift右クリックをした場合
-    if (event.player.isSneaking && event.player.inventory.itemInMainHand.getType === Material.EXP_BOTTLE
-        && (event.action === Action.RIGHT_CLICK_AIR || event.action === Action.RIGHT_CLICK_BLOCK)) {
+    if (event.getPlayer.isSneaking && event.getPlayer.inventory.itemInMainHand.getType === Material.EXP_BOTTLE
+        && (event.getAction === Action.RIGHT_CLICK_AIR || event.getAction === Action.RIGHT_CLICK_BLOCK)) {
       event.setCancelled(true)
-      val num = event.item.amount
+      val num = event.getItem.amount
       for (cnt in 0 until num) {
-        event.player.launchProjectile(ThrownExpBottle::class.java)
+        event.getPlayer.launchProjectile(ThrownExpBottle::class.java)
       }
-      event.player.inventory.itemInMainHand = ItemStack(Material.AIR)
+      event.getPlayer.inventory.itemInMainHand = ItemStack(Material.AIR)
     }
   }
 

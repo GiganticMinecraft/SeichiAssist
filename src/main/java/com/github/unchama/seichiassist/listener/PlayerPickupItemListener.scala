@@ -14,7 +14,7 @@ class PlayerPickupItemListener  extends  Listener {
 
   @EventHandler
   def onPickupMineStackItem(event: PlayerPickupItemEvent) {
-    val player = event.player
+    val player = event.getPlayer
 
     if (player.gameMode !== GameMode.SURVIVAL) return
 
@@ -24,7 +24,7 @@ class PlayerPickupItemListener  extends  Listener {
 
     if (!playerData.settings.autoMineStack) return
 
-    val item = event.item
+    val item = event.getItem
     val itemstack = item.itemStack
 
     if (SeichiAssist.DEBUG) {

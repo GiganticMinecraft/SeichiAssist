@@ -19,11 +19,11 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onPlayerClickServerSwitchMenuEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
+    val itemstackcurrent = event.getCurrentItem
     val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
@@ -44,7 +44,7 @@ class PlayerInventoryListener  extends  Listener {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType === InventoryType.PLAYER) return
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) return
 
       val meta = itemstackcurrent.itemMeta
 
@@ -75,12 +75,12 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onPlayerClickPassiveSkillSellectEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory === null) {
+    if (event.getClickedInventory === null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {
@@ -106,7 +106,7 @@ class PlayerInventoryListener  extends  Listener {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
       val isSkull = itemstackcurrent.getType === Material.SKULL_ITEM
@@ -188,12 +188,12 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onPlayerClickActiveSkillSellectEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory === null) {
+    if (event.getClickedInventory === null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {
@@ -222,7 +222,7 @@ class PlayerInventoryListener  extends  Listener {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -419,11 +419,11 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onPlayerClickActiveSkillEffectSellectEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {
@@ -445,7 +445,7 @@ class PlayerInventoryListener  extends  Listener {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -561,12 +561,12 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onPlayerClickSeichiRankingMenuEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {
@@ -587,7 +587,7 @@ class PlayerInventoryListener  extends  Listener {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -643,12 +643,12 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onPlayerClickSeichiRankingMenuEvent1(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {
@@ -669,7 +669,7 @@ class PlayerInventoryListener  extends  Listener {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -710,12 +710,12 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onPlayerClickSeichiRankingMenuEvent2(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {
@@ -736,7 +736,7 @@ class PlayerInventoryListener  extends  Listener {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -786,12 +786,12 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onOpenDonationRanking(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {
@@ -811,7 +811,7 @@ class PlayerInventoryListener  extends  Listener {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -861,12 +861,12 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onPlayerClickPremiumLogMenuEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {
@@ -886,7 +886,7 @@ class PlayerInventoryListener  extends  Listener {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -907,12 +907,12 @@ class PlayerInventoryListener  extends  Listener {
   //ガチャ交換システム
   @EventHandler
   def onGachaTradeEvent(event: InventoryCloseEvent) {
-    val player = event.player.asInstanceOf[Player]
+    val player = event.getPlayer.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid].ifNull { return }
     //エラー分岐
     val name = playerdata.lowercaseName
-    val inventory = event.inventory
+    val inventory = event.getInventory
 
     //インベントリサイズが36でない時終了
     if (inventory.row != 4) {
@@ -1044,10 +1044,10 @@ class PlayerInventoryListener  extends  Listener {
   //鉱石・交換券変換システム
   @EventHandler
   def onOreTradeEvent(event: InventoryCloseEvent) {
-    val player = event.player.asInstanceOf[Player]
+    val player = event.getPlayer.asInstanceOf[Player]
 
     //エラー分岐
-    val inventory = event.inventory
+    val inventory = event.getInventory
 
     //インベントリサイズが36でない時終了
     if (inventory.row != 4) return
@@ -1136,12 +1136,12 @@ class PlayerInventoryListener  extends  Listener {
   //ギガンティック→椎名林檎交換システム
   @EventHandler
   def onGachaRingoEvent(event: InventoryCloseEvent) {
-    val player = event.player.asInstanceOf[Player]
+    val player = event.getPlayer.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid].ifNull { return }
     //エラー分岐
     val name = playerdata.lowercaseName
-    val inventory = event.inventory
+    val inventory = event.getInventory
 
     //インベントリサイズが4列でない時終了
     if (inventory.row != 4) {
@@ -1258,11 +1258,11 @@ class PlayerInventoryListener  extends  Listener {
 
   @EventHandler
   def onTitanRepairEvent(event: InventoryCloseEvent) {
-    val player = event.player.asInstanceOf[Player]
+    val player = event.getPlayer.asInstanceOf[Player]
     val uuid = player.uniqueId
     val playerdata = playerMap[uuid].ifNull { return }
     //エラー分岐
-    val inventory = event.inventory
+    val inventory = event.getInventory
 
     //インベントリサイズが36でない時終了
     if (inventory.row != 4) {
@@ -1305,12 +1305,12 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onVotingMenuEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {
@@ -1331,7 +1331,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "投票ptメニュー") {
       event.setCancelled(true)
 
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -1464,12 +1464,12 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onHomeMenuEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType != EntityType.PLAYER) {
@@ -1490,7 +1490,7 @@ class PlayerInventoryListener  extends  Listener {
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "ホームメニュー") {
       event.setCancelled(true)
 
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -1524,7 +1524,7 @@ class PlayerInventoryListener  extends  Listener {
     } else if (topinventory.title.contains("ホームポイントを変更しますか?")) {
       event.setCancelled(true)
 
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
 
@@ -1545,12 +1545,12 @@ class PlayerInventoryListener  extends  Listener {
   @EventHandler
   def onGiganticBerserkMenuEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType !== EntityType.PLAYER) {

@@ -14,7 +14,7 @@ import org.bukkit.{Material, Sound}
 object OnClickTitleMenu extends Listener {
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
 
@@ -32,7 +32,7 @@ object OnClickTitleMenu extends Listener {
     if (topinventory.row != 4) {
       return
     }
-    val itemstackcurrent = event.currentItem
+    val itemstackcurrent = event.getCurrentItem
 
     val player = he.asInstanceOf[Player]
     val playerdata = SeichiAssist.playermap[player.uniqueId]
@@ -59,7 +59,7 @@ object OnClickTitleMenu extends Listener {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 
@@ -128,7 +128,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 
@@ -159,7 +159,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType == InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType == InventoryType.PLAYER) {
           return
         } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
@@ -177,7 +177,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
           // NOTE: WHEN
         } else if (itemstackcurrent.getType === Material.COMPASS) {
@@ -215,7 +215,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         } else if (isSkull && (itemstackcurrent.itemMeta.asInstanceOf[SkullMeta]).owner == "MHF_ArrowLeft") {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
@@ -233,7 +233,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         } else if (itemstackcurrent.getType === Material.BLAZE_POWDER) {
           player.playSound(player.location, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat())
@@ -265,7 +265,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 
@@ -340,7 +340,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
           // NOTE: WHEN
         } else if (itemstackcurrent.getType === Material.WATER_BUCKET) {
@@ -382,7 +382,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
           // NOTE: WHEN
         } else if (itemstackcurrent.getType === Material.MILK_BUCKET) {
@@ -425,7 +425,7 @@ object OnClickTitleMenu extends Listener {
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
         // NOTE: when
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         } else if (itemstackcurrent.getType === Material.LAVA_BUCKET) {
           val itemmeta = itemstackcurrent.itemMeta
@@ -466,7 +466,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 
@@ -530,7 +530,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 
@@ -593,7 +593,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 
@@ -654,7 +654,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 
@@ -763,7 +763,7 @@ object OnClickTitleMenu extends Listener {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
         /*
@@ -848,7 +848,7 @@ object OnClickTitleMenu extends Listener {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 
@@ -896,7 +896,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 
@@ -949,7 +949,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 
@@ -1080,7 +1080,7 @@ object OnClickTitleMenu extends Listener {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 
@@ -1226,7 +1226,7 @@ object OnClickTitleMenu extends Listener {
         //実績解除処理部分の読みこみ
         //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
         //プレイヤーインベントリのクリックの場合終了
-        if (event.clickedInventory.getType === InventoryType.PLAYER) {
+        if (event.getClickedInventory.getType === InventoryType.PLAYER) {
           return
         }
 

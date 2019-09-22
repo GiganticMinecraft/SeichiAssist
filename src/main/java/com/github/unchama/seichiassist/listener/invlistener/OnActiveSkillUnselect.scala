@@ -12,11 +12,11 @@ import org.bukkit.{Material, Sound}
 object OnActiveSkillUnselect extends Listener {
   def onPlayerClickActiveSkillReleaseEvent(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
+    val itemstackcurrent = event.getCurrentItem
     val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
@@ -38,7 +38,7 @@ object OnActiveSkillUnselect extends Listener {
     if (topinventory.title == DARK_PURPLE.toString() + "" + BOLD + "整地スキル選択") {
       event.setCancelled(true)
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType === InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType === InventoryType.PLAYER) {
         return
       }
       /*

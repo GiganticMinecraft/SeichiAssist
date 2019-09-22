@@ -10,7 +10,6 @@ import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation}

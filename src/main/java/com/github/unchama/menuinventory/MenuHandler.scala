@@ -17,7 +17,7 @@ object MenuHandler extends Listener {
 
     //メニュー外のクリック排除
     val clickedInventory = event.getClickedInventory.ifNull { return }
-    val openInventory = event.whoClicked.openInventory.topInventory
+    val openInventory = event.getWhoClicked.openInventory.topInventory
 
     //プレイヤーインベントリ内のクリック排除
     if (openInventory.holder is MenuSession && clickedInventory.getType === InventoryType.PLAYER) {

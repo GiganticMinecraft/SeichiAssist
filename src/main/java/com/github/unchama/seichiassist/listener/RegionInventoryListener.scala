@@ -23,15 +23,15 @@ class RegionInventoryListener  extends  Listener {
   @EventHandler
   def onPlayerClickGridMenu(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
     //クリックしたところにアイテムがない場合終了
-    if (event.currentItem == null) {
+    if (event.getCurrentItem == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
+    val itemstackcurrent = event.getCurrentItem
     val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
@@ -50,7 +50,7 @@ class RegionInventoryListener  extends  Listener {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType == InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
         return
       }
 
@@ -111,16 +111,16 @@ class RegionInventoryListener  extends  Listener {
   @EventHandler
   def onPlayerClickRegionTemplateMenu(event: InventoryClickEvent) {
     //外枠のクリック処理なら終了
-    if (event.clickedInventory == null) {
+    if (event.getClickedInventory == null) {
       return
     }
     //クリックしたところにアイテムがない場合終了
-    if (event.currentItem == null) {
+    if (event.getCurrentItem == null) {
       return
     }
 
-    val itemstackcurrent = event.currentItem
-    val view = event.view
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
     val he = view.player
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType != EntityType.PLAYER) {
@@ -134,7 +134,7 @@ class RegionInventoryListener  extends  Listener {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
-      if (event.clickedInventory.getType == InventoryType.PLAYER) {
+      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
         return
       }
 
@@ -150,7 +150,7 @@ class RegionInventoryListener  extends  Listener {
         player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
       } else {
-        val slot = event.slot
+        val slot = event.getSlot
 
         val template = playerData.templateMap[slot]
 
