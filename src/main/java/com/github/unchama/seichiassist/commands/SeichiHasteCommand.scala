@@ -43,8 +43,7 @@ object SeichiHasteCommand {
               Parsers.double("効果の強さは実数を指定してください。".asMessageEffect()),
               parser { argument =>
                 ScopeSpecification.fromString(argument)
-                    ?.let { succeedWith(it) }
-                    ?: failWith("スコープ指定子はallかplayerのどちらかを指定してください。")
+                    ?.let { succeedWith(it) } ?: failWith("スコープ指定子はallかplayerのどちらかを指定してください。")
               }
           ),
           onMissingArguments = descriptionPrintExecutor
@@ -60,11 +59,11 @@ object SeichiHasteCommand {
 
         when (scope) {
           ScopeSpecification.PLAYER => {
-            val playerName = context.args.yetToBeParsed.firstOrNull()
-                ?: return@execution "対象のプレーヤー名を指定してください。".asMessageEffect()
+            val playerName = context.args.yetToBeParsed
+              .firstOrNull() ?: return@execution "対象のプレーヤー名を指定してください。".asMessageEffect()
 
-            val playerData = Bukkit.getPlayer(playerName)?.let { SeichiAssist.playermap[it.uniqueId] }
-                ?: return@execution s"プレーヤー $playerName はオンラインではありません。".asMessageEffect()
+            val playerData = Bukkit.getPlayer(playerName)
+              ?.let { SeichiAssist.playermap[it.uniqueId] } ?: return@execution s"プレーヤー $playerName はオンラインではありません。".asMessageEffect()
 
             playerData.effectdatalist.add(effectData)
 

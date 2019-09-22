@@ -54,9 +54,9 @@ object ShareInvCommand {
     val playerInventory = player.inventory
 
     // アイテム一覧をシリアル化する
-    val serializedInventory = ItemListSerialization.serializeToBase64(playerInventory.contents.toList())
-    ?:
-    return s"${RESET}${RED}${BOLD}収納アイテムの変換に失敗しました。".asMessageEffect()
+    val serializedInventory = ItemListSerialization
+      .serializeToBase64(playerInventory.contents.toList())
+      ?: return s"${RESET}${RED}${BOLD}収納アイテムの変換に失敗しました。".asMessageEffect()
 
     return databaseGateway.playerDataManipulator.saveSharedInventory(player, playerData, serializedInventory).map {
       // 現所持アイテムを全て削除

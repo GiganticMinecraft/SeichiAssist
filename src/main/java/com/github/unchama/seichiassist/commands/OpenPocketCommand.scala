@@ -29,10 +29,7 @@ object OpenPocketCommand {
           EmptyEffect
         } else {
           @Suppress("DEPRECATION") val targetPlayerUuid = Bukkit.getOfflinePlayer(playerName)?.uniqueId
-          ?:
-          return
-          @execution
-          s"${RED}プレーヤー $playerName のuuidを取得できませんでした。".asMessageEffect()
+          ?: return@execution s"${RED}プレーヤー $playerName のuuidを取得できませんでした。".asMessageEffect()
 
           SeichiAssist.databaseGateway.playerDataManipulator
               .selectPocketInventoryOf(targetPlayerUuid)

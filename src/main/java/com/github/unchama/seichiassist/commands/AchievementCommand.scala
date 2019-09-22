@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.targetedeffect.EmptyEffect
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
@@ -70,10 +71,7 @@ object AchievementCommand {
           ScopeSpecification.USER => {
             val targetPlayerName =
                 context.args.yetToBeParsed.firstOrNull()
-            ?:
-            return
-            @execution
-            s"${RED}プレーヤー名が未入力です。".asMessageEffect()
+            ?: return@execution s"${RED}プレーヤー名が未入力です。".asMessageEffect()
 
             List(targetPlayerName)
           }

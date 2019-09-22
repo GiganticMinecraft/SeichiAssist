@@ -64,11 +64,8 @@ object MebiusCommand {
       private val checkNickNameExecutor = playerCommandBuilder
           .execution { context =>
             val message = MebiusListener.nickname(context.sender)
-            ?.let {
-              s"${GREEN}現在のメビウスからの呼び名 : $it"
-            }
-            ?:
-            s"${RED}呼び名の確認はMEBIUSを装着して行ってください."
+              ?.let { s"${GREEN}現在のメビウスからの呼び名 : $it" }
+              ?: s"${RED}呼び名の確認はMEBIUSを装着して行ってください."
 
             message.asMessageEffect()
           }
