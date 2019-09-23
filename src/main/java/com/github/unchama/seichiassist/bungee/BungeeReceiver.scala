@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.bungee
 
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream, DataInputStream, DataOutputStream, IOException}
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, DataInputStream, DataOutputStream}
 import java.util.UUID
 
 import com.github.unchama.seichiassist.SeichiAssist
@@ -46,17 +46,21 @@ class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageLi
   private def savePlayerDataOnUpstreamRequest(playerName: String): Unit = {
     println(s"unloading data for $playerName by upstream request.")
 
-    //TODO: nullableなのでOption[Player]で置き換えたいところ...
     val player: Player = Bukkit.getServer.getPlayer(playerName)
 
     try {
-      val playerData = SeichiAssist.playermap(player.getUniqueId)
+      /**
+       * 存在しないプレーヤーのデータアンロードが要求されたら
+       * NPEをcatchさせたいためnullableに対するフィールドアクセスは意図的.
+       */
+      val uuid = player.getUniqueId
+      val playerData = SeichiAssist.playermap(uuid)
 
       playerData.updateOnQuit()
 
       Coroutines.launchInGlobalScope(block = (_, _) => {
         PlayerDataSaving.savePlayerData(playerData)
-        SeichiAssist.playermap.remove(player.getUniqueId)
+        SeichiAssist.playermap.remove(uuid)
 
         val message = writtenMessage("PlayerDataUnloaded", playerName)
         player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
