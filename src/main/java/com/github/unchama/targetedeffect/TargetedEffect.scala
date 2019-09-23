@@ -38,18 +38,12 @@ object TargetedEffects {
   /**
    * [TargetedEffect]を非純粋に計算しそれをすぐに実行するような作用を作成する.
    */
-  def deferredEffect[T](f: IO[TargetedEffect[T]]): TargetedEffect[T] =
-    t =>
-      for {
-        effect <- f
-        _ <- effect(t)
-      } yield Unit
+  def deferredEffect[T](f: IO[TargetedEffect[T]]): TargetedEffect[T] = t => f.flatMap(_(t))
 
   /**
   * 実行対象の[T]から[TargetedEffect]を非純粋に計算しそれをすぐに実行するような作用を作成する.
   */
-  def computedEffect[T](f: T => TargetedEffect[T]): TargetedEffect[T] =
-    t => for { _ <- f(t)(t) } yield Unit
+  def computedEffect[T](f: T => TargetedEffect[T]): TargetedEffect[T] = t => f(t)(t)
 
   def sequentialEffect[T](effects: TargetedEffect[T]*): TargetedEffect[T] = effects.toList.asSequentialEffect()
 }
