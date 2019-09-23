@@ -12,7 +12,7 @@ object TargetedEffect {
   // TODO move type alias to package object
   type TargetedEffect[-T] = T => IO[Unit]
 
-  def monoid[T]: Monoid[TargetedEffect[T]] = new Monoid[TargetedEffect[T]] {
+  implicit def monoid[T]: Monoid[TargetedEffect[T]] = new Monoid[TargetedEffect[T]] {
     override def empty(): TargetedEffect[T] = EmptyEffect
 
     override def combine(a: TargetedEffect[T], b: TargetedEffect[T]): TargetedEffect[T] =

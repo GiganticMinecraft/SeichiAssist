@@ -43,4 +43,9 @@ object Parsers {
       case None => failWith(failureEffect)
     }
   }
+
+  def fromOptionParser[T](fromString: String => Option[T],
+                          failureMessage: TargetedEffect[CommandSender] = EmptyEffect): SingleArgumentParser = {
+    fromString.andThen(_.toRight(failureMessage))
+  }
 }

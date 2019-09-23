@@ -1,80 +1,93 @@
 package com.github.unchama.seichiassist.bungee
 
-import java.io.IOException
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, DataInputStream, DataOutputStream}
 import java.util.UUID
 
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.task.PlayerDataSaving
+import com.github.unchama.util.kotlin2scala.Coroutines
 import kotlin.jvm.Synchronized
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.messaging.PluginMessageListener
 
+import scala.jdk.CollectionConverters._
+
 class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageListener {
 
   @Synchronized
-  override def onPluginMessageReceived(channel: String, player: Player, message: ByteArray) {
+  override def onPluginMessageReceived(channel: String, player: Player, message: Array[Byte]) {
     // ストリームの準備
-    val stream = ByteArrayInputStream(message)
-    val `in` = DataInputStream(stream)
+    val stream = new ByteArrayInputStream(message)
+    val in = new DataInputStream(stream)
     try {
-      when (`in`.readUTF()) {
-        "GetLocation" => getLocation(`in`.readUTF(), `in`.readUTF(), `in`.readUTF())
-        "UnloadPlayerData" => savePlayerDataOnUpstreamRequest(`in`.readUTF())
+      in.readUTF() match {
+        case "GetLocation" => getLocation(in.readUTF(), in.readUTF(), in.readUTF())
+        case "UnloadPlayerData" => savePlayerDataOnUpstreamRequest(in.readUTF())
       }
-    } catch (e: IOException) {
-      e.printStackTrace()
+    } catch {
+      case e: Exception => e.printStackTrace()
     }
   }
 
-  private def writtenMessage(messages: String*): ByteArray = {
-    val b = ByteArrayOutputStream()
-    val out = DataOutputStream(b)
+  private def writtenMessage(messages: String*): Array[Byte] = {
+    val b = new ByteArrayOutputStream()
+    val out = new DataOutputStream(b)
 
     try {
-      messages.forEach { out.writeUTF(it) }
-    } catch (e: IOException) {
-      e.printStackTrace()
+      messages.foreach(out.writeUTF)
+    } catch {
+      case e: Exception => e.printStackTrace()
     }
 
-    return b.toByteArray()
+    b.toByteArray
   }
 
-  private def savePlayerDataOnUpstreamRequest(playerName: String) {
+  private def savePlayerDataOnUpstreamRequest(playerName: String): Unit = {
     println(s"unloading data for $playerName by upstream request.")
 
-    val player: Player? = Bukkit.getServer().getPlayer(playerName)
+    val player: Player = Bukkit.getServer.getPlayer(playerName)
 
     try {
-      val playerData = SeichiAssist.playermap(player.uniqueId)
+      /**
+       * 存在しないプレーヤーのデータアンロードが要求されたら
+       * NPEをcatchさせたいためnullableに対するフィールドアクセスは意図的.
+       */
+      val uuid = player.getUniqueId
+      val playerData = SeichiAssist.playermap(uuid)
 
       playerData.updateOnQuit()
 
-      GlobalScope.launch {
-        savePlayerData(playerData)
-        SeichiAssist.playermap.remove(player.uniqueId)
+      Coroutines.launchInGlobalScope(block = (_, _) => {
+        PlayerDataSaving.savePlayerData(playerData)
+        SeichiAssist.playermap.remove(uuid)
 
         val message = writtenMessage("PlayerDataUnloaded", playerName)
         player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
         println(s"successfully unloaded data for $playerName by upstream request.")
-      }
-    } catch (e: Exception) {
-      e.printStackTrace()
-      val message = writtenMessage("FailedToUnloadPlayerData", playerName)
-      Bukkit.getOnlinePlayers().first().sendPluginMessage(plugin, "SeichiAssistBungee", message)
+      })
+    } catch {
+      case e: Exception =>
+        e.printStackTrace()
+        val message = writtenMessage("FailedToUnloadPlayerData", playerName)
+        Bukkit.getOnlinePlayers.asScala.head.sendPluginMessage(plugin, "SeichiAssistBungee", message)
 
-      player?.kickPlayer(s"${playerName}のプレーヤーデータが正常にアンロードされませんでした。再接続した後サーバーを移動してください。")
+        if (player != null) {
+          player.kickPlayer(s"${playerName}のプレーヤーデータが正常にアンロードされませんでした。再接続した後サーバーを移動してください。")
+        }
     }
   }
 
-  private def getLocation(servername: String, uuid: String, wanter: String) {
-    val player = Bukkit.getServer().getPlayer(UUID.fromString(uuid))
+  private def getLocation(servername: String, uuid: String, wanter: String): Unit = {
+    val player = Bukkit.getServer.getPlayer(UUID.fromString(uuid))
     val playerData = SeichiAssist.playermap(UUID.fromString(uuid))
 
     val message = writtenMessage(
         "GetLocation",
         wanter,
-        s"${player.name}: 整地Lv${playerData.level} (総整地量: ${String.format("%,d", playerData.totalbreaknum)})",
-        s"Server: $servername, World: ${player.world.name} (${player.location.blockX}, ${player.location.blockY}, ${player.location.blockZ})"
+        s"${player.getName}: 整地Lv${playerData.level} (総整地量: ${String.format("%,d", playerData.totalbreaknum)})",
+        s"Server: $servername, World: ${player.getWorld.getName} ",
+        s"(${player.getLocation.getBlockX}, ${player.getLocation.getBlockY}, ${player.getLocation.getBlockZ})"
     )
 
     player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
