@@ -60,7 +60,7 @@ class PlayerInventoryListener extends Listener {
         sequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
           BuildMainMenu.open
-        )(player).attempt.unsafeRunAsync {
+        )(player).unsafeRunAsync {
           case Left(error) =>
             println("Caught exception while processing clickevent on BlockLineUpMenu")
             error.printStackTrace()

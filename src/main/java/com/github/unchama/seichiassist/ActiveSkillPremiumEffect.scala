@@ -45,7 +45,7 @@ sealed case class ActiveSkillPremiumEffect(num: Int,
     }
 
     // TODO take this outside
-    effect(player).attempt.unsafeRunAsync {
+    effect(player).unsafeRunAsync {
       case Left(error) =>
         println("Caught exception while executing arrow effect.")
         error.printStackTrace()

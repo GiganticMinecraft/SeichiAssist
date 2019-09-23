@@ -49,7 +49,7 @@ class PlayerRightClickListener extends Listener {
         sequentialEffect[Player](
             CommonSoundEffects.menuTransitionFenceSound,
             BuildMainMenu.open
-        )(player).attempt.unsafeRunAsync {
+        )(player).unsafeRunAsync {
           case Left(error) =>
             println("Caught exception while opening BuildMainMenu")
             error.printStackTrace()

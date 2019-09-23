@@ -33,7 +33,7 @@ object ContextualExecutor {
       override def onCommand(sender: CommandSender, command: Command, alias: String, args: Array[String]): Boolean = {
         val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList)
 
-        contextualExecutor.executeWith(context).attempt.unsafeRunAsync {
+        contextualExecutor.executeWith(context).unsafeRunAsync {
           case Left(error) => {
             println(s"Caught exception while executing ${command.getName} command.")
             error.printStackTrace()

@@ -34,7 +34,7 @@ object MenuHandler extends Listener {
 
     val effect = holder.view.slotLayout.computeAsyncEffectOn(event)
 
-    effect(whoClicked).attempt.unsafeRunAsync {
+    effect(whoClicked).unsafeRunAsync {
       case Left(error) =>
         println("Caught exception while handling a menu effect.")
         error.printStackTrace()
