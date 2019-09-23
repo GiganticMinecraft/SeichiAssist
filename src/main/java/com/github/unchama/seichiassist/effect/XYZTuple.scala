@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.effect
 
 import com.github.unchama.seichiassist.data.Coordinate
 
-case class XYZTuple(val x: Int, val y: Int, val z: Int)
+case class XYZTuple(x: Int, y: Int, z: Int)
 
 object XYZTuple {
   implicit class CoordinateOps(val coordinate: Coordinate) extends AnyVal {

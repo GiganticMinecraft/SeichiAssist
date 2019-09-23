@@ -2,19 +2,23 @@ package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.commands.SeichiHasteCommand.ScopeSpecification.{ALL, PLAYER}
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 
 object SeichiHasteCommand {
-  private enum class ScopeSpecification {
-    PLAYER, ALL;
+  sealed trait ScopeSpecification
+  case object ScopeSpecification {
+    case object PLAYER extends ScopeSpecification
+    case object ALL extends ScopeSpecification
   }
+
   object ScopeSpecification {
-    def fromString(string: String) = when (string) {
-      "player" => PLAYER
-      "all" => ALL
-      else => null
+    def fromString(string: String): Option[ScopeSpecification] = string match {
+      case "player" => Some(PLAYER)
+      case "all" => Some(ALL)
+      case _ => None
     }
   }
 

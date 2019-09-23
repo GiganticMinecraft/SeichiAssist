@@ -8,16 +8,23 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 object AchievementCommand {
-  private enum class AchievementOperation { GIVE, DEPRIVE }
-  private enum class ScopeSpecification {
-    USER, SERVER, WORLD;
+  sealed trait AchievementOperation
+  object AchievementOperation {
+    case object GIVE extends AchievementOperation
+    case object DEPRIVE extends AchievementOperation
   }
+
+  sealed trait ScopeSpecification
   object ScopeSpecification {
-    def fromString(string: String) = when (string) {
-      "user" => USER
-      "server" => SERVER
-      "world" => WORLD
-      else => null
+    case object USER extends ScopeSpecification
+    case object SERVER extends ScopeSpecification
+    case object WORLD extends ScopeSpecification
+
+    def fromString(string: String): Option[ScopeSpecification] = string match {
+      case "user" => Some(USER)
+      case "server" => Some(SERVER)
+      case "world" => Some(WORLD)
+      case _ => None
     }
   }
 

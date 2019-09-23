@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.util
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.util.collection.ImmutableListFactory
+import enumeratum._
 import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
@@ -484,21 +485,27 @@ object Util {
   /**
    * PlayerDataでチャンク数をゲット・セットするためのenum
    */
-  enum class DirectionType {
-    AHEAD,
-    BEHIND,
-    RIGHT,
-    LEFT
+  sealed trait DirectionType extends EnumEntry
+  case object DirectionType extends Enum[DirectionType] {
+    case object AHEAD extends DirectionType
+    case object BEHIND extends DirectionType
+    case object RIGHT extends DirectionType
+    case object LEFT extends DirectionType
+
+    val values: IndexedSeq[DirectionType] = findValues
   }
 
   /**
    * PlayerDataなどで使用する方角関係のenum
    */
-  enum class Direction {
-    NORTH,
-    SOUTH,
-    EAST,
-    WEST
+  sealed trait Direction extends EnumEntry
+  case object Direction extends Enum[Direction] {
+    case object NORTH extends Direction
+    case object SOUTH extends Direction
+    case object EAST extends Direction
+    case object WEST extends Direction
+
+    val values: IndexedSeq[Direction] = findValues
   }
 
   def getPlayerDirection(player: Player): Direction? = {

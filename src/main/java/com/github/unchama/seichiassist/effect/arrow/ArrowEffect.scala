@@ -1,9 +1,12 @@
 package com.github.unchama.seichiassist.effect.arrow
 
+import com.github.unchama.seichiassist.effect.FixedMetadataValues
+import com.github.unchama.seichiassist.{Schedulers, SeichiAssist}
 import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.{EmptyEffect, TargetedEffect}
-import org.bukkit.entity.Projectile
+import com.github.unchama.targetedeffect.{EmptyEffect, UnfocusedEffect}
+import org.bukkit.entity.{Player, Projectile, Snowball, ThrownPotion}
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionType
 import org.bukkit.{Bukkit, Material, Sound}

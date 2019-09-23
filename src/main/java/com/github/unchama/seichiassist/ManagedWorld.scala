@@ -1,50 +1,51 @@
 package com.github.unchama.seichiassist
 
-import org.bukkit.ChatColor._
+import enumeratum._
 import org.bukkit.World
 
-enum class ManagedWorld(
-    val alphabetName: String,
-    val japaneseName: String) {
+sealed class ManagedWorld(val alphabetName: String, val japaneseName: String) extends EnumEntry
+case object ManagedWorld extends Enum[ManagedWorld] {
+  case object WORLD_SPAWN extends ManagedWorld("world_spawn", "スポーンワールド")
+  // "world"は旧メインワールドのidであり既に存在しない
+  case object WORLD_2 extends ManagedWorld("world_2", "メインワールド")
+  case object WORLD_SW extends ManagedWorld("world_SW", "第一整地ワールド")
+  case object WORLD_SW_2 extends ManagedWorld("world_SW_2", "第二整地ワールド")
+  case object WORLD_SW_3 extends ManagedWorld("world_SW_3", "第三整地ワールド")
+  case object WORLD_SW_4 extends ManagedWorld("world_SW_4", "第四整地ワールド")
+  case object WORLD_SW_NETHER extends ManagedWorld("world_SW_nether", "整地ネザー")
+  case object WORLD_SW_END extends ManagedWorld("world_SW_the_end", "整地エンド")
 
-  WORLD_SPAWN("world_spawn", "スポーンワールド"),
-  WORLD_2("world_2", "メインワールド"), // "world"は旧メインワールドのidであり既に存在しない
-  WORLD_SW("world_SW", "第一整地ワールド"),
-  WORLD_SW_2("world_SW_2", "第二整地ワールド"),
-  WORLD_SW_3("world_SW_3", "第三整地ワールド"),
-  WORLD_SW_4("world_SW_4", "第四整地ワールド"),
-  WORLD_SW_NETHER("world_SW_nether", "整地ネザー"),
-  WORLD_SW_END("world_SW_the_end", "整地エンド");
-}
+  val values: IndexedSeq[ManagedWorld] = findValues
 
-object ManagedWorld {
-  val seichiWorlds = values().filter { it.isSeichi }
-
-  def fromName(worldName: String): ManagedWorld? = values().find { it.alphabetName == worldName }
-
-  def fromBukkitWorld(world: World): ManagedWorld? = fromName(world.name)
-
-  implicit class ManagedWorldOps(val managedWorld: ManagedWorld) extends AnyVal {
-    val ManagedWorld.isSeichi: Boolean
-    get() = when (this) {
-      WORLD_SW, WORLD_SW_2, WORLD_SW_3, WORLD_SW_4, WORLD_SW_NETHER, WORLD_SW_END => true
-      else => false
+  implicit case class ManagedWorldOps(val managedWorld: ManagedWorld) extends AnyVal {
+    def isSeichi: Boolean = managedWorld match {
+      case WORLD_SW
+           | WORLD_SW_2
+           | WORLD_SW_3
+           | WORLD_SW_4
+           | WORLD_SW_NETHER
+           | WORLD_SW_END => true
+      case _ => false
     }
 
     /**
      * 保護を掛けて整地するワールドであるかどうか
      */
-    val ManagedWorld.isSeichiWorldWithWGRegions: Boolean
-    get() = when (this) {
-      WORLD_SW_2, WORLD_SW_4 => true
-      else => false
+    def isSeichiWorldWithWGRegions: Boolean = managedWorld match {
+      case WORLD_SW_2 | WORLD_SW_4 => true
+      case _ => false
     }
 
-    val ManagedWorld.shouldMuteCoreProtect: Boolean
-    get() = this.isSeichiWorldWithWGRegions
+    def shouldMuteCoreProtect: Boolean = isSeichiWorldWithWGRegions
   }
 
+  val seichiWorlds: IndexedSeq[ManagedWorld] = values.filter(_.isSeichi)
+
+  def fromName(worldName: String): Option[ManagedWorld] = values.find(_.alphabetName == worldName)
+
+  def fromBukkitWorld(world: World): Option[ManagedWorld] = fromName(world.getName)
+
   implicit class WorldOps(val world: World) {
-    def asManagedWorld(): ManagedWorld? = fromBukkitWorld(world)
+    def asManagedWorld(): Option[ManagedWorld] = fromBukkitWorld(world)
   }
 }
