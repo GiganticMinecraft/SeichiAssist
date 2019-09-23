@@ -7,7 +7,7 @@
 - [JDK 1.8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 - [mysql-connecter-java-5.1.35](https://downloads.mysql.com/archives/c-j/)
 - [Kotlin 1.3](https://plugins.jetbrains.com/plugin/6954-kotlin)
-- [Scala 2,11](https://www.scala-lang.org/download/)
+- [Scala 2.11](https://www.scala-lang.org/download/)
 ## 前提プラグイン
 - [CoreProtect-2.14.4](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)
 - [item-nbt-api-plugin-1.8.2-SNAPSHOT](https://www.spigotmc.org/resources/item-entity-tile-nbt-api.7939/download?version=241690)
