@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.data.player.BuildCount;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import scala.Int;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -53,7 +54,7 @@ public final class PlayerData {
 	//プレイヤーデータクラスのコンストラクタ
 	public PlayerData(final Player player){
 		//初期値を設定
-		name = Util.name(player);
+		name = Util.getName(player);
 		uuid = player.getUniqueId();
 		totalbuildnum = BigDecimal.ZERO;
 		level = 1;
@@ -84,8 +85,8 @@ public final class PlayerData {
 		//現在のランクの次を取得
 		int i = level;
 		//ランクが上がらなくなるまで処理
-        while (BuildAssist.levellist().get(i) <= totalbuildnum.doubleValue() && (i + 2) <= BuildAssist.levellist().size()) {
-            if (!BuildAssist.getDEBUG()) {
+        while (((Int) BuildAssist.levellist().apply(i)).toInt() <= totalbuildnum.doubleValue() && (i + 2) <= BuildAssist.levellist().size()) {
+            if (!BuildAssist.DEBUG()) {
 				//レベルアップ時のメッセージ
 				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(" + i +")→建築Lv(" + (i+1) + ")】");
 			}
@@ -108,18 +109,18 @@ public final class PlayerData {
 	 * @return ture:読み込み成功　false:読み込み失敗
 	 */
 	boolean buildload(final Player player){
-        final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.playermap().get(uuid);
+        final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.playermap().getOrElse(uuid, () -> null);
 		if(playerdata_s == null){
 			return false;
 		}
         final int server_num = SeichiAssist.seichiAssistConfig().getServerNum();
 
-		final BuildCount oldBuildCount = playerdata_s.getBuildCount();
+		final BuildCount oldBuildCount = playerdata_s.buildCount();
 
-		totalbuildnum = playerdata_s.getBuildCount().getCount();
+		totalbuildnum = playerdata_s.buildCount().count();
 		//ブロック設置カウントが統合されてない場合は統合する
 		if(server_num >= 1 && server_num <= 3){
-			byte f = playerdata_s.getBuildCount().getMigrationFlag();
+			byte f = playerdata_s.buildCount().migrationFlag();
 			if( (f & (0x01 << server_num))  == 0 ){
 				if(f == 0) {
 					// 初回は加算じゃなくベースとして代入にする
@@ -128,8 +129,8 @@ public final class PlayerData {
 					totalbuildnum = totalbuildnum.add(BuildBlock.calcBuildBlock(player));
 				}
 				f = (byte) (f | (0x01 << server_num));
-				final BuildCount updatedBuildCount = playerdata_s.getBuildCount().copy(oldBuildCount.getLv(), totalbuildnum, f);
-				playerdata_s.setBuildCount(updatedBuildCount);
+				final BuildCount updatedBuildCount = playerdata_s.buildCount().copy(oldBuildCount.lv(), totalbuildnum, f);
+				playerdata_s.buildCount_$eq(updatedBuildCount);
 
 				player.sendMessage(ChatColor.GREEN+"サーバー" + server_num + "の建築データを統合しました");
 				if(f == 0x0E){
@@ -137,20 +138,20 @@ public final class PlayerData {
 				}
 			}
 		}
-		level = playerdata_s.getBuildCount().getLv();
+		level = playerdata_s.buildCount().lv();
 		updateLevel(player);
 		return true;
 	}
 
 	/** 建築系データを保存 */
     public void buildsave(final Player player){
-        final com.github.unchama.seichiassist.data.player.PlayerData playerData = SeichiAssist.playermap().get(uuid);
+        final com.github.unchama.seichiassist.data.player.PlayerData playerData = SeichiAssist.playermap().getOrElse(uuid, () -> null);
 		if (playerData == null){
 			player.sendMessage(ChatColor.RED+"建築系データ保存失敗しました");
 			return;
 		}
 
-		final BuildCount oldBuildCount = playerData.getBuildCount();
+		final BuildCount oldBuildCount = playerData.buildCount();
 
 		//1分制限の判断
 		final BigDecimal newBuildCount;
@@ -160,7 +161,7 @@ public final class PlayerData {
             newBuildCount = totalbuildnum.add(new BigDecimal(BuildAssist.config().getBuildNum1minLimit()));
 		}
 
-		playerData.setBuildCount(new BuildCount(level, newBuildCount, oldBuildCount.getMigrationFlag()));
+		playerData.buildCount_$eq(new BuildCount(level, newBuildCount, oldBuildCount.migrationFlag()));
 	}
 
 }

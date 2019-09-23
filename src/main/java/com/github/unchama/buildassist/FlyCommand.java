@@ -36,7 +36,7 @@ public final class FlyCommand implements CommandExecutor {
             //UUIDを取得
             final UUID uuid = player.getUniqueId();
             //playerdataを取得
-            final PlayerData playerdata = BuildAssist.playermap().get(uuid);
+            final PlayerData playerdata = BuildAssist.playermap().getOrElse(uuid, () -> null);
             //プレイヤーデータが無い場合は処理終了
             if (playerdata == null) {
                 return false;

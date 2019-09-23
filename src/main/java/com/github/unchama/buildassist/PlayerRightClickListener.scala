@@ -1,8 +1,7 @@
 package com.github.unchama.buildassist
 
 import com.github.unchama.buildassist.menu.BuildMainMenu
-import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, Schedulers, SeichiAssist}
-import com.github.unchama.util.kotlin2scala.Coroutines
+import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, SeichiAssist}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -15,6 +14,8 @@ import scala.util.control.Breaks
 
 class PlayerRightClickListener extends Listener {
   private var playermap = BuildAssist.playermap
+
+  import com.github.unchama.targetedeffect.TargetedEffects._
 
   @EventHandler
   def onPlayerMenuUIEvent(event: PlayerInteractEvent) {
@@ -30,7 +31,7 @@ class PlayerRightClickListener extends Listener {
     val equipmentslot = event.getHand
     //プレイヤーデータ
     val playerdata = BuildAssist.playermap.getOrElse(uuid, return)
-    val playerdata_s = SeichiAssist.playermap.get(uuid).ifNull { return }
+    val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
 
     if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
       //左クリックの処理
@@ -44,12 +45,15 @@ class PlayerRightClickListener extends Listener {
 
         event.setCancelled(true)
 
-        Coroutines.launchInGlobalScope(Schedulers.INSTANCE.getAsync, block = { case (_, cont) =>
-          sequentialEffect[Player](
-              CommonSoundEffects.INSTANCE.getMenuTransitionFenceSound,
-              BuildMainMenu.INSTANCE.getOpen
-          ).runFor(player, cont)
-        })
+
+        sequentialEffect[Player](
+            CommonSoundEffects.menuTransitionFenceSound,
+            BuildMainMenu.open
+        )(player).attempt.unsafeRunAsync {
+          case Left(error) =>
+            println("Caught exception while opening BuildMainMenu")
+            error.printStackTrace()
+        }
       } else if (player.isSneaking) {
 
         //プレイヤーインベントリを取得
@@ -196,7 +200,7 @@ class PlayerRightClickListener extends Listener {
                           WGloc.setY((setblockY - setunder).toDouble)
                           WGloc.setZ(setblockZ.toDouble)
                           //他人の保護がかかっている場合は処理を終了
-                          if (!Util.worldGuard().canBuild(player, WGloc)) {
+                          if (!Util.getWorldGuard.canBuild(player, WGloc)) {
                             player.sendMessage(RED.toString() + "付近に誰かの保護がかかっているようです")
                           } else {
                             //保護のない場合、土を設置する処理
@@ -212,14 +216,14 @@ class PlayerRightClickListener extends Listener {
                     WGloc.setX(setblockX.toDouble)
                     WGloc.setY(setblockY.toDouble)
                     WGloc.setZ(setblockZ.toDouble)
-                    if (!Util.worldGuard().canBuild(player, WGloc)) {
+                    if (!Util.getWorldGuard.canBuild(player, WGloc)) {
                       player.sendMessage(RED.toString() + "付近に誰かの保護がかかっているようです")
                       b1.break
                     } else {
                       //ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
                       if (playerdata.zs_minestack_flag) {//label指定は基本的に禁じ手だが、今回は後付けなので使わせてもらう。(解読性向上のため、1箇所のみの利用)
                         for (cnt <- 0 until MineStackObjectList.minestacklist.size) {
-                          if (offhanditem.getType == MineStackObjectList.minestacklist.get(cnt).getMaterial && offhanditem.getData.getData.toInt == MineStackObjectList.minestacklist.get(cnt).getDurability) {
+                          if (offhanditem.getType == MineStackObjectList.minestacklist(cnt).material && offhanditem.getData.getData.toInt == MineStackObjectList.minestacklist(cnt).durability) {
                             no = cnt
                             b1.break
                             //no:設置するブロック・max:設置できる最大量
@@ -228,11 +232,11 @@ class PlayerRightClickListener extends Listener {
                         if (no > 0) {
                           //設置するブロックがMineStackに登録済み
                           //1引く
-                          val mineStackObj = MineStackObjectList.minestacklist.get(no)
-                          if (playerdata_s.getMinestack.getStackedAmountOf(mineStackObj) > 0) {
+                          val mineStackObj = MineStackObjectList.minestacklist(no)
+                          if (playerdata_s.minestack.getStackedAmountOf(mineStackObj) > 0) {
                             //player.sendMessage("MineStackよりブロック消費");
                             //player.sendMessage("MineStackブロック残量(前):" + playerdata_s.getMinestack().getNum(no));
-                            playerdata_s.getMinestack.subtractStackedAmountOf(mineStackObj, 1)
+                            playerdata_s.minestack.subtractStackedAmountOf(mineStackObj, 1)
                             //player.sendMessage("MineStackブロック残量(後):" + playerdata_s.getMinestack().getNum(no));
 
                             //設置処理
@@ -262,7 +266,7 @@ class PlayerRightClickListener extends Listener {
                         ItemInInv = player.getInventory.getItem(searchedInv)
                         if (ItemInInv == null) {
                         } else {
-                          ItemInInvAmount = ItemInInv.amount
+                          ItemInInvAmount = ItemInInv.getAmount
                         }
                         //スロットのアイテムが空白だった場合の処理(エラー回避のため)
                         if (ItemInInv == null) {

@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist
 
-import kotlinx.coroutines.CoroutineDispatcher
+import cats.effect.{ContextShift, IO}
 
 object Schedulers {
 
-  val sync: CoroutineDispatcher by lazy { SeichiAssist.instance.dispatcher() }
+  val sync: ContextShift[IO] = ???
 
-  val async: CoroutineDispatcher by lazy { SeichiAssist.instance.dispatcher(async = true) }
+  val async: ContextShift[IO] = ???
 
 }

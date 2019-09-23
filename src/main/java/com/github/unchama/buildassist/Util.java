@@ -46,9 +46,9 @@ public final class Util {
 	 */
 	public static boolean isSkillEnable(final Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
-        String worldname = SeichiAssist.getSEICHIWORLDNAME();
-        if (SeichiAssist.getDEBUG()) {
-            worldname = SeichiAssist.getDEBUGWORLDNAME();
+        String worldname = SeichiAssist.SEICHIWORLDNAME();
+        if (SeichiAssist.DEBUG()) {
+            worldname = SeichiAssist.DEBUGWORLDNAME();
 		}
 		//プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)または各種TTワールドにいる場合
         // TODO: ManagedWorldへ移行
@@ -72,12 +72,12 @@ public final class Util {
 	 */
 	public static boolean inTrackedWorld(final Player player){
 		//デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
-        if (SeichiAssist.getDEBUG()) {
+        if (SeichiAssist.DEBUG()) {
 			return true;
 		}
 		final String name = player.getWorld().getName();
 		//プレイヤーの場所がメインワールド(world)または各種整地ワールド(world_SW)にいる場合
-        return name.toLowerCase().startsWith(SeichiAssist.getSEICHIWORLDNAME())
+        return name.toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())
                 || name.equalsIgnoreCase("world")
                 || name.equalsIgnoreCase("world_2")
                 || name.equalsIgnoreCase("world_nether")
@@ -92,9 +92,9 @@ public final class Util {
 	// FIXME: これはここにあるべきではない
 	@Deprecated public static @Nullable
 	MineStackObj findMineStackObjectByName(final String name) {
-		return MineStackObjectList.INSTANCE.getMinestacklist().stream()
-				.filter(obj -> name.equals(obj.getMineStackObjName()))
-				.findFirst().orElse(null);
+		return MineStackObjectList.minestacklist()
+				.filter(obj -> name.equals(obj.mineStackObjName()))
+				.headOption().getOrElse(() -> null);
 	}
 
 	/**
@@ -106,10 +106,10 @@ public final class Util {
 	 */
 	public static void addBuild1MinAmount(final Player player, final BigDecimal amount) {
 		//プレイヤーデータ取得
-        final PlayerData playerData = BuildAssist.playermap().get(player.getUniqueId());
+        final PlayerData playerData = BuildAssist.playermap().get(player.getUniqueId()).get();
 		//player.sendMessage("足す数:" + amount.doubleValue() + ",かけた後:" + amount.multiply(new BigDecimal("0.1")).doubleValue());
 		//ワールドによって倍率変化
-        if (player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.getSEICHIWORLDNAME())) {
+        if (player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())) {
 			playerData.build_num_1min = playerData.build_num_1min.add(amount.multiply(new BigDecimal("0.1")));
 		} else {
 			playerData.build_num_1min = playerData.build_num_1min.add(amount);

@@ -7,9 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import scala.collection.mutable.HashMap;
+import scala.runtime.BoxedUnit;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class MinuteTaskRunnable extends BukkitRunnable {
@@ -17,16 +18,13 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		if (this.playermap.isEmpty()) {
-			return;
-		}
-		for (final PlayerData playerdata : this.playermap.values()) {
+		this.playermap.values().foreach(playerdata -> {
 			if (!playerdata.isOffline()) {
 				final Player player = Bukkit.getServer().getPlayer(
 						playerdata.uuid);
 				//SeichiAssistのデータを取得
 				final UUID uuid = player.getUniqueId();
-                final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.playermap().get(uuid);
+                final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.playermap().get(uuid).get();
 				//経験値変更用のクラスを設定
 				final IExperienceManager expman = new ExperienceManager(player);
 
@@ -44,7 +42,7 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 				playerdata.buildsave(player);
 
 				if (playerdata.endlessfly) {
-					if (playerdata_s.getIdleMinute() >= 10) {
+					if (playerdata_s.idleMinute() >= 10) {
 						player.setAllowFlight(true);
 						player.sendMessage(ChatColor.GRAY + "放置時間中のFLYは無期限で継続中です(経験値は消費しません)");
                     } else if (!expman.hasExp(BuildAssist.config().getFlyExp())) {
@@ -63,7 +61,7 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 					}
 				}else if (playerdata.flyflag) {
 					final int flytime = playerdata.flytime;
-					if (playerdata_s.getIdleMinute() >= 10) {
+					if (playerdata_s.idleMinute() >= 10) {
 						player.setAllowFlight(true);
 						player.sendMessage(ChatColor.GRAY + "放置時間中のFLYは無期限で継続中です(経験値は消費しません)");
 					} else if (flytime <= 0) {
@@ -88,6 +86,8 @@ public class MinuteTaskRunnable extends BukkitRunnable {
 					}
 				}
 			}
-		}
+
+			return BoxedUnit.UNIT;
+		});
 	}
 }

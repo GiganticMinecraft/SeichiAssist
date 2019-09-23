@@ -10,13 +10,13 @@ import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.MebiusTask
 import com.github.unchama.seichiassist.{LevelThresholds, ManagedWorld, MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect
-import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect}
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import kotlin.Suppress
 import kotlin.jvm.JvmName
 import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.{Bukkit, Material, Statistic}
 

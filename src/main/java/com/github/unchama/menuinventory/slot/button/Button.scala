@@ -21,16 +21,16 @@ import org.bukkit.inventory.ItemStack
  */
 case class Button(override val itemStack: ItemStack,
                   private val effects: List[ButtonEffect]) extends Slot {
-
-  /**
-   * [effects]をひとつずつ作用として発生させる [Slot] を構築します.
-   */
-  def this(itemStack: ItemStack, effects: ButtonEffect*) = this(itemStack, effects.toList)
-
   override def effectOn(event: InventoryClickEvent): TargetedEffect[Player] =
     UnfocusedEffect { event.setCancelled(true) } +
       this.effects.map { _.asyncEffectOn(event) }.asSequentialEffect()
 
   def withAnotherEffect(effect: ButtonEffect): Button = this.copy(effects = effect +: effects)
+}
 
+case object Button {
+  /**
+   * [effects]をひとつずつ作用として発生させる [Slot] を構築します.
+   */
+  def apply(itemStack: ItemStack, effects: ButtonEffect*): Button = Button(itemStack, effects.toList)
 }

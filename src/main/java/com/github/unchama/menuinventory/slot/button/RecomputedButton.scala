@@ -7,10 +7,10 @@ object RecomputedButton {
   /**
    * クリックされるたびに[buttonComputation]に基づいてスロット自体が更新される[Button]を作成する.
    */
-  def recomputedButton(buttonComputation: IO[Button]): IO[Button] =
+  def apply(buttonComputation: IO[Button]): IO[Button] =
     buttonComputation.map { computedButton =>
       val recomputation = ButtonEffect { scope => _ =>
-        recomputedButton(buttonComputation).flatMap(scope.overwriteCurrentSlotBy)
+        this(buttonComputation).flatMap(scope.overwriteCurrentSlotBy)
       }
 
       computedButton.withAnotherEffect(recomputation)

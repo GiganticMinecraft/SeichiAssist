@@ -25,6 +25,8 @@ class MenuSession private[menuinventory](private var _view: MenuInventoryView) e
    *
    * @param context インベントリを開く前に実行をシフトさせるためのContextShift
    */
+  // TODO make context implicit
+  // TODO should this revert back the shifted context?
   def openEffectThrough(context: ContextShift[IO]): TargetedEffect[Player] = { player: Player =>
     for {
       _ <- IO.shift(context)
