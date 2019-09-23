@@ -1,17 +1,28 @@
 package com.github.unchama.seichiassist.commands
 
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
+import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.MessageEffects._
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
+import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
+
+import scala.jdk.CollectionConverters._
 
 object AchievementCommand {
   sealed trait AchievementOperation
   object AchievementOperation {
     case object GIVE extends AchievementOperation
     case object DEPRIVE extends AchievementOperation
+
+    def fromString(string: String): Option[AchievementOperation] = string match {
+      case "give" => Some(GIVE)
+      case "deprive" => Some(DEPRIVE)
+      case _ => None
+    }
   }
 
   sealed trait ScopeSpecification
@@ -28,7 +39,7 @@ object AchievementCommand {
     }
   }
 
-  private val descriptionPrintExecutor = EchoExecutor(
+  private val descriptionPrintExecutor = new EchoExecutor(
       List(
         s"${RED}/achievement [操作] [実績No] [スコープ指定子]",
           "[操作]にはgive(実績付与)またはdeprive(実績剥奪)のいずれかを入力することができます。",
@@ -36,14 +47,9 @@ object AchievementCommand {
       ).asMessageEffect()
   )
 
-  private val operationParser =
-      parser { argument =>
-        when (argument) {
-          "give" => succeedWith(AchievementOperation.GIVE)
-          "deprive" => succeedWith(AchievementOperation.DEPRIVE)
-          else => failWith("操作はgive/depriveで与えてください。")
-        }
-      }
+  private val operationParser = Parsers.arg(AchievementOperation.fromString,
+    "操作はgive/depriveで与えてください。".asMessageEffect()
+  )
 
   /**
    * TODO
@@ -56,14 +62,11 @@ object AchievementCommand {
         s"${RED}操作の対象として指定できるのはNo1000～9999の実績です。".asMessageEffect()
       )
 
-  private val scopeParser =
-      parser { argument =>
-        ScopeSpecification.fromString(argument)
-            ?.let { succeedWith(it) }
-        ?: failWith (s"${RED}スコープ指定子はuser [ユーザー名], server, worldのみ入力できます。")
-      }
+  private val scopeParser = Parsers.arg(ScopeSpecification.fromString,
+    s"${RED}スコープ指定子はuser [ユーザー名], server, worldのみ入力できます。".asMessageEffect()
+  )
 
-  val executor = ContextualExecutorBuilder.beginConfiguration()
+  val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
       .argumentsParsers(
           List(operationParser, achievementNumberParser, scopeParser),
           onMissingArguments = descriptionPrintExecutor
@@ -74,29 +77,30 @@ object AchievementCommand {
         val operation = context.args.parsed[0].asInstanceOf[AchievementOperation]
         val achievementNumber = context.args.parsed[1].asInstanceOf[Int]
 
-        val targetPlayerNames = when (context.args.parsed[2].asInstanceOf[ScopeSpecification]) {
-          ScopeSpecification.USER => {
+        // TODO: どうしても書き直せません...
+        val targetPlayerNames: List[String] = context.args.parsed[2].asInstanceOf[ScopeSpecification] match {
+          case ScopeSpecification.USER =>
             val targetPlayerName =
-                context.args.yetToBeParsed.firstOrNull()
+                context.args.yetToBeParsed.head
             ?: return@execution s"${RED}プレーヤー名が未入力です。".asMessageEffect()
 
             List(targetPlayerName)
-          }
-          ScopeSpecification.SERVER => Bukkit.getServer().onlinePlayers.map { it.name }
-          ScopeSpecification.WORLD => {
-            if (sender is Player) sender.world.players.map { it.name }
-            else return@execution "コンソール実行の場合は「world」処理は実行できません。".asMessageEffect()
-          }
+          case ScopeSpecification.SERVER => Bukkit.getServer.getOnlinePlayers.asScala.map(_.getName)
+          case ScopeSpecification.WORLD =>
+            sender match {
+              case player: Player => player.getWorld.getPlayers.asScala.map(_.getName)
+              case _ => "コンソール実行の場合は「world」処理は実行できません。".asMessageEffect()
+            }
         }
 
-        targetPlayerNames.forEach { playerName =>
+        targetPlayerNames.foreach { playerName =>
           val targetPlayer = Bukkit.getPlayer(playerName)
 
           if (targetPlayer != null) {
-            val playerData = SeichiAssist.playermap(targetPlayer.uniqueId)
-            when (operation) {
-              AchievementOperation.GIVE => playerData.tryForcefullyUnlockAchievement(achievementNumber)
-              AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
+            val playerData = SeichiAssist.playermap(targetPlayer.getUniqueId)
+            operation match {
+              case AchievementOperation.GIVE => playerData.tryForcefullyUnlockAchievement(achievementNumber)
+              case AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
             }
           } else {
             sender.sendMessage(s"$playerName は現在サーバーにログインしていません。")

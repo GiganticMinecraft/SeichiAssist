@@ -43,4 +43,12 @@ object Parsers {
       case None => failWith(failureEffect)
     }
   }
+
+  //TODO: 命名?? T??
+  def arg[T](fromString: String => Option[T], failureMessage: TargetedEffect[CommandSender] = EmptyEffect): SingleArgumentParser = { arg =>
+    fromString(arg) match {
+      case Some(value) => succeedWith(value)
+      case None => failWith(failureMessage)
+    }
+  }
 }
