@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import scala.collection.mutable.HashMap;
 
 import java.util.*;
 
@@ -54,7 +55,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
 
         // 1ページ目を開く
         itemstack = new ItemStack(Material.SKULL_ITEM, 1);
@@ -78,7 +79,7 @@ public class MenuInventoryData {
         inventory.setItem(0, itemstack);
 
         //Chest破壊
-        if (playerdata.getChestflag()) {
+        if (playerdata.chestflag()) {
             itemstack = new ItemStack(Material.DIAMOND_AXE, 1);
             itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_AXE);
             itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -93,12 +94,12 @@ public class MenuInventoryData {
 
         //GiganticBerserk
         //10レベ未満のプレイヤーはスキル未解放
-        if (playerdata.getLevel() < 10) {
+        if (playerdata.level() < 10) {
             itemstack = new ItemStack(Material.STICK, 1);
             itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STICK);
         } else {
             final Material m;
-            switch (playerdata.getGiganticBerserk().getStage()) {
+            switch (playerdata.giganticBerserk().stage()) {
                 case 0:
                     m = Material.WOOD_SWORD;
                     break;
@@ -122,7 +123,7 @@ public class MenuInventoryData {
         }
         itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk");
 
-        if (playerdata.getGiganticBerserk().getCanEvolve() || playerdata.getGiganticBerserk().reachedLimit()) {
+        if (playerdata.giganticBerserk().canEvolve() || playerdata.giganticBerserk().reachedLimit()) {
             itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
             itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         }
@@ -139,15 +140,15 @@ public class MenuInventoryData {
         lore.addAll(Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "投票特典を受け取るには"
                 , ChatColor.RESET + "" + ChatColor.GRAY + "投票ページで投票した後"
                 , ChatColor.RESET + "" + ChatColor.GRAY + "このボタンをクリックします"));
-        lore.add(ChatColor.RESET + "" + ChatColor.AQUA + "特典受取済投票回数：" + playerdata.getP_givenvote());
-        lore.add(ChatColor.RESET + "" + ChatColor.AQUA + "所有投票pt：" + playerdata.getActiveskilldata().effectpoint);
+        lore.add(ChatColor.RESET + "" + ChatColor.AQUA + "特典受取済投票回数：" + playerdata.p_givenvote());
+        lore.add(ChatColor.RESET + "" + ChatColor.AQUA + "所有投票pt：" + playerdata.activeskilldata().effectpoint);
         return lore;
     }
 
     // 複数種類ブロック同時破壊トグルボタン(追加)
     public static ItemMeta MultipleIDBlockBreakToggleMeta(PlayerData playerdata, ItemMeta itemmeta) {
         List<String> lore = new ArrayList<>();
-        if (playerdata.getSettings().getMultipleidbreakflag()) {
+        if (playerdata.settings().multipleidbreakflag()) {
             itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
             lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "複数種類ブロック同時破壊");
             lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
@@ -155,7 +156,7 @@ public class MenuInventoryData {
             lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "整地ワールドではON/OFFに関わらず同時破壊されます");
             lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "ON");
             lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
-            if (SeichiAssist.getDEBUG()) {
+            if (SeichiAssist.DEBUG()) {
                 lore.add(ChatColor.RESET + "" + ChatColor.RED + "ON");
             }
         } else {
@@ -166,7 +167,7 @@ public class MenuInventoryData {
             lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "整地ワールドではON/OFFに関わらず同時破壊されます");
             lore.add(ChatColor.RESET + "" + ChatColor.RED + "OFF");
             lore.add(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
-            if (SeichiAssist.getDEBUG()) {
+            if (SeichiAssist.DEBUG()) {
                 lore.add(ChatColor.RESET + "" + ChatColor.RED + "OFF");
             }
         }
@@ -178,9 +179,9 @@ public class MenuInventoryData {
     public static ItemMeta GiganticBerserkMeta(PlayerData playerdata, ItemMeta itemmeta) {
         List<String> lore = new ArrayList<>();
 
-        int n = (playerdata.getGiganticBerserk().getStage() * 10) + playerdata.getGiganticBerserk().getLevel();
+        int n = (playerdata.giganticBerserk().stage() * 10) + playerdata.giganticBerserk().level();
 
-        if (playerdata.getLevel() < 10) {
+        if (playerdata.level() < 10) {
             lore.add(ChatColor.WHITE + "このパッシブスキルは");
             lore.add(ChatColor.WHITE + "整地レベルが10以上になると解放されます");
         } else {
@@ -190,17 +191,17 @@ public class MenuInventoryData {
             lore.add(ChatColor.DARK_GRAY + "整地中でなければその効果を発揮しない");
             lore.add("");
             lore.add(ChatColor.DARK_GRAY + "実装は試験的であり、変更される場合があります");
-            if (playerdata.getGiganticBerserk().reachedLimit()) {
+            if (playerdata.giganticBerserk().reachedLimit()) {
                 lore.add(ChatColor.GRAY + "MOBの魂を極限まで吸収し最大限の力を発揮する");
             } else {
-                lore.add(ChatColor.GRAY + "MOBの魂を" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n) + "回吸収すると更なる力が得られる");
+                lore.add(ChatColor.GRAY + "MOBの魂を" + LevelThresholds.giganticBerserkLevelList().apply(n) + "回吸収すると更なる力が得られる");
                 //exp
-                lore.add(ChatColor.GRAY + "" + playerdata.getGiganticBerserk().getExp() + "/" + LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n));
+                lore.add(ChatColor.GRAY + "" + playerdata.giganticBerserk().exp() + "/" + LevelThresholds.giganticBerserkLevelList().apply(n));
             }
             //level
-            lore.add(ChatColor.GRAY + "現在" + (playerdata.getGiganticBerserk().getLevel() + 1) + "レベル,回復率 " + (100 * playerdata.getGiganticBerserk().manaRegenerationProbability()) + ".0%");
+            lore.add(ChatColor.GRAY + "現在" + (playerdata.giganticBerserk().level() + 1) + "レベル,回復率 " + (100 * playerdata.giganticBerserk().manaRegenerationProbability()) + ".0%");
 
-            if (playerdata.getGiganticBerserk().getCanEvolve()) {
+            if (playerdata.giganticBerserk().canEvolve()) {
                 lore.add("");
                 lore.add(ChatColor.DARK_RED + "沢山の魂を吸収したことで");
                 lore.add(ChatColor.DARK_RED + "スキルの秘めたる力を解放できそうだ…！");
@@ -218,7 +219,7 @@ public class MenuInventoryData {
 
         lore.add(ChatColor.GREEN + "スキルでチェストを破壊するスキル");
 
-        if (playerdata.getChestflag()) {
+        if (playerdata.chestflag()) {
             lore.add(ChatColor.RED + "整地ワールドでのみ発動中(デフォルト)");
             lore.add("");
             lore.add(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで切り替え");
@@ -248,8 +249,8 @@ public class MenuInventoryData {
                 break;
             }
 //			if(count2==45){count2+=2;}
-            rankdata = SeichiAssist.ranklist().get(count);
-            if (rankdata.totalbreaknum < LevelThresholds.INSTANCE.getLevelExpThresholds().get(MIN_LEVEL - 1)) { //レベル100相当の総整地量判定に変更
+            rankdata = SeichiAssist.ranklist().apply(count);
+            if (rankdata.totalbreaknum < (Long) LevelThresholds.levelExpThresholds().apply(MIN_LEVEL - 1)) { //レベル100相当の総整地量判定に変更
                 break;
             }
 
@@ -325,7 +326,7 @@ public class MenuInventoryData {
             if (count >= SeichiAssist.ranklist_playtick().size()) {
                 break;
             }
-            rankdata = SeichiAssist.ranklist_playtick().get(count);
+            rankdata = SeichiAssist.ranklist_playtick().apply(count);
 
             skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (count + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name);
             lore.clear();
@@ -389,7 +390,7 @@ public class MenuInventoryData {
                 break;
             }
 //			if(count2==45){count2+=2;}
-            rankdata = SeichiAssist.ranklist_p_vote().get(count);
+            rankdata = SeichiAssist.ranklist_p_vote().apply(count);
             if (rankdata.p_vote < MIN_LEVEL) { //投票数0
                 break;
             }
@@ -459,7 +460,7 @@ public class MenuInventoryData {
             if (count2 == 45) {
                 count2 += 2;
             }
-            rankdata = SeichiAssist.ranklist_premiumeffectpoint().get(count);
+            rankdata = SeichiAssist.ranklist_premiumeffectpoint().apply(count);
             if (rankdata.premiumeffectpoint < MIN_LEVEL) { //寄付金額0
                 break;
             }
@@ -519,7 +520,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -551,17 +552,17 @@ public class MenuInventoryData {
         skullmeta = ItemMetaFactory.SKULL.getValue();
         itemstack.setDurability((short) 3);
         skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-        skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.getLowercaseName() + "のスキルエフェクトデータ");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillEffect.namebyNum(playerdata.getActiveskilldata().effectnum)
-                , ChatColor.RESET + "" + ChatColor.YELLOW + "使えるエフェクトポイント：" + playerdata.getActiveskilldata().effectpoint
+        skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.lowercaseName() + "のスキルエフェクトデータ");
+        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillEffect.getNameByNum(playerdata.activeskilldata().effectnum)
+                , ChatColor.RESET + "" + ChatColor.YELLOW + "使えるエフェクトポイント：" + playerdata.activeskilldata().effectpoint
                 , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※投票すると獲得出来ます"
-                , ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "使えるプレミアムポイント：" + playerdata.getActiveskilldata().premiumeffectpoint
+                , ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "使えるプレミアムポイント：" + playerdata.activeskilldata().premiumeffectpoint
                 , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※寄付をすると獲得できます"
 
         );
         skullmeta.setLore(lore);
         // この操作は安全; メニューを開けているのにUUIDがないなんてことがないから
-        skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerdata.getUuid())); //.setOwner(playerdata.name);
+        skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerdata.uuid())); //.setOwner(playerdata.name);
         itemstack.setItemMeta(skullmeta);
         AsyncInventorySetter.setItemAsync(inventory, 0, itemstack.clone());
 
@@ -584,15 +585,15 @@ public class MenuInventoryData {
         inventory.setItem(1, itemstack);
 
 
-        ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+        ActiveSkillEffect[] skilleffect = ActiveSkillEffect.arrayValues();
 
         for (int i = 0; i < skilleffect.length; i++) {
             //プレイヤーがそのスキルを取得している場合の処理
-            if (playerdata.getActiveskilldata().obtainedSkillEffects.contains(skilleffect[i])) {
-                itemstack = new ItemStack(skilleffect[i].getMaterial(), 1);
-                itemmeta = Bukkit.getItemFactory().getItemMeta(skilleffect[i].getMaterial());
-                itemmeta.setDisplayName(skilleffect[i].getNameOnUI());
-                lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + skilleffect[i].getExplanation()
+            if (playerdata.activeskilldata().obtainedSkillEffects.contains(skilleffect[i])) {
+                itemstack = new ItemStack(skilleffect[i].material(), 1);
+                itemmeta = Bukkit.getItemFactory().getItemMeta(skilleffect[i].material());
+                itemmeta.setDisplayName(skilleffect[i].nameOnUI());
+                lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + skilleffect[i].explanation()
                         , ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
                 );
                 itemmeta.setLore(lore);
@@ -602,24 +603,24 @@ public class MenuInventoryData {
             else {
                 itemstack = new ItemStack(Material.BEDROCK, 1);
                 itemmeta = ItemMetaFactory.BEDROCK.getValue();
-                itemmeta.setDisplayName(skilleffect[i].getNameOnUI());
-                lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + skilleffect[i].getExplanation()
-                        , ChatColor.RESET + "" + ChatColor.YELLOW + "必要エフェクトポイント：" + skilleffect[i].getUsePoint()
+                itemmeta.setDisplayName(skilleffect[i].nameOnUI());
+                lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + skilleffect[i].explanation()
+                        , ChatColor.RESET + "" + ChatColor.YELLOW + "必要エフェクトポイント：" + skilleffect[i].usePoint()
                         , ChatColor.RESET + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
                 itemmeta.setLore(lore);
                 itemstack.setItemMeta(itemmeta);
             }
             inventory.setItem(i + 9, itemstack);
         }
-        ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
 
+        ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.arrayValues();
         for (int i = 0; i < premiumeffect.length; i++) {
             //プレイヤーがそのスキルを取得している場合の処理
-            if (playerdata.getActiveskilldata().obtainedSkillPremiumEffects.contains(premiumeffect[i])) {
-                itemstack = new ItemStack(premiumeffect[i].getMaterial(), 1);
-                itemmeta = Bukkit.getItemFactory().getItemMeta(premiumeffect[i].getMaterial());
-                itemmeta.setDisplayName(ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(premiumeffect[i].getDesc()));
-                lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + premiumeffect[i].getExplain()
+            if (playerdata.activeskilldata().obtainedSkillPremiumEffects.contains(premiumeffect[i])) {
+                itemstack = new ItemStack(premiumeffect[i].material(), 1);
+                itemmeta = Bukkit.getItemFactory().getItemMeta(premiumeffect[i].material());
+                itemmeta.setDisplayName(ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(premiumeffect[i].desc()));
+                lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + premiumeffect[i].explain()
                         , ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
                 );
                 itemmeta.setLore(lore);
@@ -629,9 +630,9 @@ public class MenuInventoryData {
             else {
                 itemstack = new ItemStack(Material.BEDROCK, 1);
                 itemmeta = ItemMetaFactory.BEDROCK.getValue();
-                itemmeta.setDisplayName(premiumeffect[i].getDesc());
-                lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + premiumeffect[i].getExplain()
-                        , ChatColor.RESET + "" + ChatColor.YELLOW + "必要プレミアムポイント：" + premiumeffect[i].getUsePoint()
+                itemmeta.setDisplayName(premiumeffect[i].desc());
+                lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + premiumeffect[i].explain()
+                        , ChatColor.RESET + "" + ChatColor.YELLOW + "必要プレミアムポイント：" + premiumeffect[i].usePoint()
                         , ChatColor.RESET + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除");
                 itemmeta.setLore(lore);
                 itemstack.setItemMeta(itemmeta);
@@ -644,7 +645,7 @@ public class MenuInventoryData {
 
     //プレミア購入履歴表示
     public static Inventory getBuyRecordMenuData(Player player) {
-        PlayerData playerdata = playermap.get(player.getUniqueId());
+        PlayerData playerdata = playermap.apply(player.getUniqueId());
         Inventory inventory = Bukkit.getServer().createInventory(null, 4 * 9, ChatColor.BLUE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴");
         ItemStack itemstack;
         SkullMeta skullmeta;
@@ -673,7 +674,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -700,7 +701,7 @@ public class MenuInventoryData {
         inventory.setItem(0, itemstack);
 
         //予約付与受け取りボタン
-        if (!(playerdata.getGiveachvNo() == 0)) {
+        if (!(playerdata.giveachvNo() == 0)) {
             itemstack = new ItemStack(Material.SKULL_ITEM, 1);
             skullmeta = ItemMetaFactory.SKULL.getValue();
             itemstack.setDurability((short) 3);
@@ -803,7 +804,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -834,9 +835,9 @@ public class MenuInventoryData {
         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
         itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報");
         lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "クリックで情報を最新化"
-                , ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + playerdata.getAchievePoint().getCumulativeTotal()
-                , ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + playerdata.getAchievePoint().getUsed()
-                , ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + playerdata.getAchievePoint().getLeft());
+                , ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + playerdata.achievePoint().cumulativeTotal()
+                , ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + playerdata.achievePoint().used()
+                , ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + playerdata.achievePoint().left());
         itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         itemmeta.setLore(lore);
         itemstack.setItemMeta(itemmeta);
@@ -860,8 +861,8 @@ public class MenuInventoryData {
                 , ChatColor.RESET + "" + ChatColor.RED + "実績ポイントに変換できます。"
                 , ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "投票pt 10pt → 実績pt 3pt"
                 , ChatColor.RESET + "" + ChatColor.AQUA + "クリックで変換を一回行います。"
-                , ChatColor.RESET + "" + ChatColor.GREEN + "所有投票pt :" + playerdata.getActiveskilldata().effectpoint
-                , ChatColor.RESET + "" + ChatColor.GREEN + "所有実績pt :" + playerdata.getAchievePoint().getLeft());
+                , ChatColor.RESET + "" + ChatColor.GREEN + "所有投票pt :" + playerdata.activeskilldata().effectpoint
+                , ChatColor.RESET + "" + ChatColor.GREEN + "所有実績pt :" + playerdata.achievePoint().left());
         itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         itemmeta.setLore(lore);
         itemstack.setItemMeta(itemmeta);
@@ -871,8 +872,8 @@ public class MenuInventoryData {
         itemstack = new ItemStack(Material.BOOK, 1);
         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
         itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認");
-        lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.seichiAssistConfig().getTitle1(playerdata.getSettings().getNickName().getId1())
-                + SeichiAssist.seichiAssistConfig().getTitle2(playerdata.getSettings().getNickName().getId2()) + SeichiAssist.seichiAssistConfig().getTitle3(playerdata.getSettings().getNickName().getId3()) + "」");
+        lore = ImmutableListFactory.of(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.seichiAssistConfig().getTitle1(playerdata.settings().nickName().id1())
+                + SeichiAssist.seichiAssistConfig().getTitle2(playerdata.settings().nickName().id2()) + SeichiAssist.seichiAssistConfig().getTitle3(playerdata.settings().nickName().id3()) + "」");
         itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         itemmeta.setLore(lore);
         itemstack.setItemMeta(itemmeta);
@@ -936,7 +937,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -963,7 +964,7 @@ public class MenuInventoryData {
         int checkInv = 0;
         for (; checkTitle1 < 9900; ) {
             if (checkInv < 27) {
-                if (playerdata.getTitleFlags().get(checkTitle1)) {
+                if (playerdata.TitleFlags().contains(checkTitle1)) {
                     if (SeichiAssist.seichiAssistConfig().getTitle1(checkTitle1) == null || SeichiAssist.seichiAssistConfig().getTitle1(checkTitle1).equals("")) {
                     } else {
                         itemstack = new ItemStack(Material.WATER_BUCKET, 1);
@@ -1029,7 +1030,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -1058,7 +1059,7 @@ public class MenuInventoryData {
             if (checkInv < 27) {
                 //一部の「隠し中パーツ」は取得しているかの確認
                 if (9911 <= checkTitle2  /*&& checkTitle2 <= 9927*/) {
-                    if (playerdata.getTitleFlags().get(checkTitle2)) {
+                    if (playerdata.TitleFlags().contains(checkTitle2)) {
                         if (SeichiAssist.seichiAssistConfig().getTitle2(checkTitle2) == null || SeichiAssist.seichiAssistConfig().getTitle2(checkTitle2).equals("")) {
                         } else {
                             itemstack = new ItemStack(Material.MILK_BUCKET, 1);
@@ -1136,7 +1137,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -1161,7 +1162,7 @@ public class MenuInventoryData {
         int checkInv = 0;
         for (; checkTitle3 < 9900; ) {
             if (checkInv < 27) {
-                if (playerdata.getTitleFlags().get(checkTitle3)) {
+                if (playerdata.TitleFlags().contains(checkTitle3)) {
                     if (SeichiAssist.seichiAssistConfig().getTitle3(checkTitle3) == null || SeichiAssist.seichiAssistConfig().getTitle3(checkTitle3).equals("")) {
                     } else {
                         itemstack = new ItemStack(Material.LAVA_BUCKET, 1);
@@ -1228,7 +1229,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -1248,26 +1249,26 @@ public class MenuInventoryData {
         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
         itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報");
         lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "クリックで情報を最新化"
-                , ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + playerdata.getAchievePoint().getCumulativeTotal()
-                , ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + playerdata.getAchievePoint().getUsed()
-                , ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + playerdata.getAchievePoint().getLeft());
+                , ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + playerdata.achievePoint().cumulativeTotal()
+                , ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + playerdata.achievePoint().used()
+                , ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + playerdata.achievePoint().left());
         itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         itemmeta.setLore(lore);
         itemstack.setItemMeta(itemmeta);
         inventory.setItem(0, itemstack);
 
         //おしながき
-        if (playerdata.getSamepageflag()) {
+        if (playerdata.samepageflag()) {
             checkTitleS = NoKeep;
         } else if (!nextpageflagS) {
             checkTitleS = 9801;
         }
         NoKeep = checkTitleS;
-        playerdata.setSamepageflag(false);
+        playerdata.samepageflag_$eq(false);
         int setInv = 1;
         for (; checkTitleS <= 9832; ) {
             if (setInv < 27) {
-                if (!playerdata.getTitleFlags().get(checkTitleS)) {
+                if (!playerdata.TitleFlags().contains(checkTitleS)) {
                     itemstack = new ItemStack(Material.BEDROCK, 1);
                     itemmeta = ItemMetaFactory.BEDROCK.getValue();
                     itemmeta.setDisplayName(String.valueOf(checkTitleS));
@@ -1304,7 +1305,7 @@ public class MenuInventoryData {
         }
         for (; checkTitleS <= 9932; ) {
             if (setInv < 27) {
-                if (!playerdata.getTitleFlags().get(checkTitleS)) {
+                if (!playerdata.TitleFlags().contains(checkTitleS)) {
                     itemstack = new ItemStack(Material.BEDROCK, 1);
                     itemmeta = ItemMetaFactory.BEDROCK.getValue();
                     itemmeta.setDisplayName(String.valueOf(checkTitleS));
@@ -1358,7 +1359,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -1414,7 +1415,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -1454,7 +1455,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -1524,7 +1525,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -1578,7 +1579,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -1641,7 +1642,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -1659,7 +1660,7 @@ public class MenuInventoryData {
 
         //実績設定・解禁ボタン
         //1位
-        if (playerdata.getTitleFlags().get(1001)) {
+        if (playerdata.TitleFlags().contains(1001)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1001「" + SeichiAssist.seichiAssistConfig().getTitle1(1001) + "」");
@@ -1681,7 +1682,7 @@ public class MenuInventoryData {
             inventory.setItem(0, itemstack);
         }
         //5位
-        if (playerdata.getTitleFlags().get(1002)) {
+        if (playerdata.TitleFlags().contains(1002)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1002「" + SeichiAssist.seichiAssistConfig().getTitle1(1002) + "」");
@@ -1703,7 +1704,7 @@ public class MenuInventoryData {
             inventory.setItem(1, itemstack);
         }
         //27位
-        if (playerdata.getTitleFlags().get(1003)) {
+        if (playerdata.TitleFlags().contains(1003)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1003「" + SeichiAssist.seichiAssistConfig().getTitle1(1003) + "」");
@@ -1725,7 +1726,7 @@ public class MenuInventoryData {
             inventory.setItem(2, itemstack);
         }
         //50位
-        if (playerdata.getTitleFlags().get(1004)) {
+        if (playerdata.TitleFlags().contains(1004)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1004「" + SeichiAssist.seichiAssistConfig().getTitle1(1004) + "」");
@@ -1747,7 +1748,7 @@ public class MenuInventoryData {
             inventory.setItem(3, itemstack);
         }
         //100位
-        if (playerdata.getTitleFlags().get(1010)) {
+        if (playerdata.TitleFlags().contains(1010)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1010「" + SeichiAssist.seichiAssistConfig().getTitle1(1010) + "」");
@@ -1769,7 +1770,7 @@ public class MenuInventoryData {
             inventory.setItem(4, itemstack);
         }
         //250位
-        if (playerdata.getTitleFlags().get(1011)) {
+        if (playerdata.TitleFlags().contains(1011)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1011「" + SeichiAssist.seichiAssistConfig().getTitle1(1011)
@@ -1792,7 +1793,7 @@ public class MenuInventoryData {
             inventory.setItem(5, itemstack);
         }
         //500位
-        if (playerdata.getTitleFlags().get(1012)) {
+        if (playerdata.TitleFlags().contains(1012)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1012「" + SeichiAssist.seichiAssistConfig().getTitle1(1012)
@@ -1815,7 +1816,7 @@ public class MenuInventoryData {
             inventory.setItem(6, itemstack);
         }
         //750位
-        if (playerdata.getTitleFlags().get(1005)) {
+        if (playerdata.TitleFlags().contains(1005)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1005「" + SeichiAssist.seichiAssistConfig().getTitle1(1005)
@@ -1838,7 +1839,7 @@ public class MenuInventoryData {
             inventory.setItem(7, itemstack);
         }
         //1000位
-        if (playerdata.getTitleFlags().get(1006)) {
+        if (playerdata.TitleFlags().contains(1006)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1006「" + SeichiAssist.seichiAssistConfig().getTitle1(1006) + "」");
@@ -1860,7 +1861,7 @@ public class MenuInventoryData {
             inventory.setItem(8, itemstack);
         }
         //2500位
-        if (playerdata.getTitleFlags().get(1007)) {
+        if (playerdata.TitleFlags().contains(1007)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1007「" + SeichiAssist.seichiAssistConfig().getTitle1(1007)
@@ -1883,7 +1884,7 @@ public class MenuInventoryData {
             inventory.setItem(9, itemstack);
         }
         //5000位
-        if (playerdata.getTitleFlags().get(1008)) {
+        if (playerdata.TitleFlags().contains(1008)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1008「" + SeichiAssist.seichiAssistConfig().getTitle1(1008)
@@ -1906,7 +1907,7 @@ public class MenuInventoryData {
             inventory.setItem(10, itemstack);
         }
         //10000位
-        if (playerdata.getTitleFlags().get(1009)) {
+        if (playerdata.TitleFlags().contains(1009)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No1009「" + SeichiAssist.seichiAssistConfig().getTitle1(1009)
@@ -1952,7 +1953,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -1970,9 +1971,9 @@ public class MenuInventoryData {
 
         //実績設定・解禁ボタン
         //90億突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(3018)) {
+        if (playerdata.TitleFlags().contains(3018)) {
             //100億
-            if (playerdata.getTitleFlags().get(3019)) {
+            if (playerdata.TitleFlags().contains(3019)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_BLOCK);
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3019「" + SeichiAssist.seichiAssistConfig().getTitle1(3019) + "」");
@@ -1998,9 +1999,9 @@ public class MenuInventoryData {
         } else {
         }
         //80億突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(3017)) {
+        if (playerdata.TitleFlags().contains(3017)) {
             //90億
-            if (playerdata.getTitleFlags().get(3018)) {
+            if (playerdata.TitleFlags().contains(3018)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3018「" + SeichiAssist.seichiAssistConfig().getTitle1(3018) + "」");
@@ -2026,9 +2027,9 @@ public class MenuInventoryData {
         } else {
         }
         //70億突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(3016)) {
+        if (playerdata.TitleFlags().contains(3016)) {
             //80億
-            if (playerdata.getTitleFlags().get(3017)) {
+            if (playerdata.TitleFlags().contains(3017)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3017「" + SeichiAssist.seichiAssistConfig().getTitle1(3017) + "」");
@@ -2054,9 +2055,9 @@ public class MenuInventoryData {
         } else {
         }
         //60億突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(3015)) {
+        if (playerdata.TitleFlags().contains(3015)) {
             //70億
-            if (playerdata.getTitleFlags().get(3016)) {
+            if (playerdata.TitleFlags().contains(3016)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3016「" + SeichiAssist.seichiAssistConfig().getTitle1(3016) + "」");
@@ -2082,9 +2083,9 @@ public class MenuInventoryData {
         } else {
         }
         //50億突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(3014)) {
+        if (playerdata.TitleFlags().contains(3014)) {
             //60億
-            if (playerdata.getTitleFlags().get(3015)) {
+            if (playerdata.TitleFlags().contains(3015)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3015「" + SeichiAssist.seichiAssistConfig().getTitle1(3015) + "」");
@@ -2110,9 +2111,9 @@ public class MenuInventoryData {
         } else {
         }
         //int実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(3001)) {
+        if (playerdata.TitleFlags().contains(3001)) {
             //50億
-            if (playerdata.getTitleFlags().get(3014)) {
+            if (playerdata.TitleFlags().contains(3014)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3014「" + SeichiAssist.seichiAssistConfig().getTitle1(3014)
@@ -2137,7 +2138,7 @@ public class MenuInventoryData {
                 inventory.setItem(20, itemstack);
             }
             //40億
-            if (playerdata.getTitleFlags().get(3013)) {
+            if (playerdata.TitleFlags().contains(3013)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3013「" + SeichiAssist.seichiAssistConfig().getTitle1(3013)
@@ -2162,7 +2163,7 @@ public class MenuInventoryData {
                 inventory.setItem(19, itemstack);
             }
             //30億
-            if (playerdata.getTitleFlags().get(3012)) {
+            if (playerdata.TitleFlags().contains(3012)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3012「" + SeichiAssist.seichiAssistConfig().getTitle1(3012) +
@@ -2189,9 +2190,9 @@ public class MenuInventoryData {
         } else {
         }
         //「10億」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(3002)) {
+        if (playerdata.TitleFlags().contains(3002)) {
             //int限界突破
-            if (playerdata.getTitleFlags().get(3001)) {
+            if (playerdata.TitleFlags().contains(3001)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3001「" + SeichiAssist.seichiAssistConfig().getTitle1(3001) + "」");
@@ -2217,7 +2218,7 @@ public class MenuInventoryData {
         } else {
         }
         //10億突破
-        if (playerdata.getTitleFlags().get(3002)) {
+        if (playerdata.TitleFlags().contains(3002)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3002「" + SeichiAssist.seichiAssistConfig().getTitle1(3002)
@@ -2240,7 +2241,7 @@ public class MenuInventoryData {
             inventory.setItem(0, itemstack);
         }
         //5億突破
-        if (playerdata.getTitleFlags().get(3003)) {
+        if (playerdata.TitleFlags().contains(3003)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3003「" + SeichiAssist.seichiAssistConfig().getTitle1(3003) + "」");
@@ -2262,7 +2263,7 @@ public class MenuInventoryData {
             inventory.setItem(1, itemstack);
         }
         //1億突破
-        if (playerdata.getTitleFlags().get(3004)) {
+        if (playerdata.TitleFlags().contains(3004)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3004「" + SeichiAssist.seichiAssistConfig().getTitle1(3004)
@@ -2285,7 +2286,7 @@ public class MenuInventoryData {
             inventory.setItem(2, itemstack);
         }
         //5000万突破
-        if (playerdata.getTitleFlags().get(3005)) {
+        if (playerdata.TitleFlags().contains(3005)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3005「" + SeichiAssist.seichiAssistConfig().getTitle1(3005)
@@ -2308,7 +2309,7 @@ public class MenuInventoryData {
             inventory.setItem(3, itemstack);
         }
         //1000万突破
-        if (playerdata.getTitleFlags().get(3006)) {
+        if (playerdata.TitleFlags().contains(3006)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3006「" + SeichiAssist.seichiAssistConfig().getTitle1(3006) + "」");
@@ -2330,7 +2331,7 @@ public class MenuInventoryData {
             inventory.setItem(4, itemstack);
         }
         //500万突破
-        if (playerdata.getTitleFlags().get(3007)) {
+        if (playerdata.TitleFlags().contains(3007)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3007「" + SeichiAssist.seichiAssistConfig().getTitle1(3007)
@@ -2353,7 +2354,7 @@ public class MenuInventoryData {
             inventory.setItem(5, itemstack);
         }
         //100万突破
-        if (playerdata.getTitleFlags().get(3008)) {
+        if (playerdata.TitleFlags().contains(3008)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3008「" + SeichiAssist.seichiAssistConfig().getTitle1(3008) + "」");
@@ -2375,7 +2376,7 @@ public class MenuInventoryData {
             inventory.setItem(6, itemstack);
         }
         //50万突破
-        if (playerdata.getTitleFlags().get(3009)) {
+        if (playerdata.TitleFlags().contains(3009)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3009「" + SeichiAssist.seichiAssistConfig().getTitle1(3009)
@@ -2398,7 +2399,7 @@ public class MenuInventoryData {
             inventory.setItem(7, itemstack);
         }
         //10万突破
-        if (playerdata.getTitleFlags().get(3010)) {
+        if (playerdata.TitleFlags().contains(3010)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3010「" + SeichiAssist.seichiAssistConfig().getTitle1(3010)
@@ -2421,7 +2422,7 @@ public class MenuInventoryData {
             inventory.setItem(8, itemstack);
         }
         //1万突破
-        if (playerdata.getTitleFlags().get(3011)) {
+        if (playerdata.TitleFlags().contains(3011)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No3011「" + SeichiAssist.seichiAssistConfig().getTitle1(3011) + "」");
@@ -2466,7 +2467,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -2484,9 +2485,9 @@ public class MenuInventoryData {
 
         //実績設定・解禁ボタン
         //「18000h」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(4022)) {
+        if (playerdata.TitleFlags().contains(4022)) {
             //20000h突破
-            if (playerdata.getTitleFlags().get(4023)) {
+            if (playerdata.TitleFlags().contains(4023)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4023「" + SeichiAssist.seichiAssistConfig().getTitle1(4023)
@@ -2513,9 +2514,9 @@ public class MenuInventoryData {
         } else {
         }
         //「16000h」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(4021)) {
+        if (playerdata.TitleFlags().contains(4021)) {
             //18000h突破
-            if (playerdata.getTitleFlags().get(4022)) {
+            if (playerdata.TitleFlags().contains(4022)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4022「" + SeichiAssist.seichiAssistConfig().getTitle1(4022)
@@ -2542,9 +2543,9 @@ public class MenuInventoryData {
         } else {
         }
         //「14000h」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(4020)) {
+        if (playerdata.TitleFlags().contains(4020)) {
             //16000h突破
-            if (playerdata.getTitleFlags().get(4021)) {
+            if (playerdata.TitleFlags().contains(4021)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4021「" + SeichiAssist.seichiAssistConfig().getTitle1(4021)
@@ -2571,9 +2572,9 @@ public class MenuInventoryData {
         } else {
         }
         //「12000h」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(4019)) {
+        if (playerdata.TitleFlags().contains(4019)) {
             //14000h突破
-            if (playerdata.getTitleFlags().get(4020)) {
+            if (playerdata.TitleFlags().contains(4020)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4020「" + SeichiAssist.seichiAssistConfig().getTitle1(4020)
@@ -2600,9 +2601,9 @@ public class MenuInventoryData {
         } else {
         }
         //「10000h」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(4018)) {
+        if (playerdata.TitleFlags().contains(4018)) {
             //12000h突破
-            if (playerdata.getTitleFlags().get(4019)) {
+            if (playerdata.TitleFlags().contains(4019)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4019「" + SeichiAssist.seichiAssistConfig().getTitle1(4019)
@@ -2629,9 +2630,9 @@ public class MenuInventoryData {
         } else {
         }
         //「5000h」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(4013)) {
+        if (playerdata.TitleFlags().contains(4013)) {
             //10000h突破
-            if (playerdata.getTitleFlags().get(4018)) {
+            if (playerdata.TitleFlags().contains(4018)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4018「" + SeichiAssist.seichiAssistConfig().getTitle1(4018)
@@ -2656,7 +2657,7 @@ public class MenuInventoryData {
                 inventory.setItem(17, itemstack);
             }
             //9000h突破
-            if (playerdata.getTitleFlags().get(4017)) {
+            if (playerdata.TitleFlags().contains(4017)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4017「" + SeichiAssist.seichiAssistConfig().getTitle1(4017) + "」");
@@ -2680,7 +2681,7 @@ public class MenuInventoryData {
                 inventory.setItem(16, itemstack);
             }
             //8000h突破
-            if (playerdata.getTitleFlags().get(4016)) {
+            if (playerdata.TitleFlags().contains(4016)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4016「" + SeichiAssist.seichiAssistConfig().getTitle1(4016)
@@ -2705,7 +2706,7 @@ public class MenuInventoryData {
                 inventory.setItem(15, itemstack);
             }
             //7000h突破
-            if (playerdata.getTitleFlags().get(4015)) {
+            if (playerdata.TitleFlags().contains(4015)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4015「" + SeichiAssist.seichiAssistConfig().getTitle1(4015) + "」");
@@ -2729,7 +2730,7 @@ public class MenuInventoryData {
                 inventory.setItem(14, itemstack);
             }
             //6000h突破
-            if (playerdata.getTitleFlags().get(4014)) {
+            if (playerdata.TitleFlags().contains(4014)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4014「" + SeichiAssist.seichiAssistConfig().getTitle1(4014)
@@ -2757,9 +2758,9 @@ public class MenuInventoryData {
         } else {
         }
         //「1000h」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(4002)) {
+        if (playerdata.TitleFlags().contains(4002)) {
             //5000h突破
-            if (playerdata.getTitleFlags().get(4013)) {
+            if (playerdata.TitleFlags().contains(4013)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4013「" + SeichiAssist.seichiAssistConfig().getTitle1(4013)
@@ -2784,7 +2785,7 @@ public class MenuInventoryData {
                 inventory.setItem(12, itemstack);
             }
             //4000h突破
-            if (playerdata.getTitleFlags().get(4012)) {
+            if (playerdata.TitleFlags().contains(4012)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4012「" + SeichiAssist.seichiAssistConfig().getTitle1(4012)
@@ -2809,7 +2810,7 @@ public class MenuInventoryData {
                 inventory.setItem(11, itemstack);
             }
             //3000h突破
-            if (playerdata.getTitleFlags().get(4011)) {
+            if (playerdata.TitleFlags().contains(4011)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4011「" + SeichiAssist.seichiAssistConfig().getTitle1(4011)
@@ -2834,7 +2835,7 @@ public class MenuInventoryData {
                 inventory.setItem(10, itemstack);
             }
             //2000h突破
-            if (playerdata.getTitleFlags().get(4001)) {
+            if (playerdata.TitleFlags().contains(4001)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4001「" + SeichiAssist.seichiAssistConfig().getTitle1(4001)
@@ -2862,7 +2863,7 @@ public class MenuInventoryData {
         } else {
         }
         //1000h突破
-        if (playerdata.getTitleFlags().get(4002)) {
+        if (playerdata.TitleFlags().contains(4002)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4002「" + SeichiAssist.seichiAssistConfig().getTitle1(4002)
@@ -2885,7 +2886,7 @@ public class MenuInventoryData {
             inventory.setItem(0, itemstack);
         }
         //500h突破
-        if (playerdata.getTitleFlags().get(4003)) {
+        if (playerdata.TitleFlags().contains(4003)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4003「" + SeichiAssist.seichiAssistConfig().getTitle1(4003)
@@ -2908,7 +2909,7 @@ public class MenuInventoryData {
             inventory.setItem(1, itemstack);
         }
         //250h突破
-        if (playerdata.getTitleFlags().get(4004)) {
+        if (playerdata.TitleFlags().contains(4004)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4004「" + SeichiAssist.seichiAssistConfig().getTitle1(4004)
@@ -2931,7 +2932,7 @@ public class MenuInventoryData {
             inventory.setItem(2, itemstack);
         }
         //100h突破
-        if (playerdata.getTitleFlags().get(4005)) {
+        if (playerdata.TitleFlags().contains(4005)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4005「" + SeichiAssist.seichiAssistConfig().getTitle1(4005)
@@ -2954,7 +2955,7 @@ public class MenuInventoryData {
             inventory.setItem(3, itemstack);
         }
         //50h突破
-        if (playerdata.getTitleFlags().get(4006)) {
+        if (playerdata.TitleFlags().contains(4006)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4006「" + SeichiAssist.seichiAssistConfig().getTitle1(4006)
@@ -2977,7 +2978,7 @@ public class MenuInventoryData {
             inventory.setItem(4, itemstack);
         }
         //24h突破
-        if (playerdata.getTitleFlags().get(4007)) {
+        if (playerdata.TitleFlags().contains(4007)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4007「" + SeichiAssist.seichiAssistConfig().getTitle1(4007)
@@ -3000,7 +3001,7 @@ public class MenuInventoryData {
             inventory.setItem(5, itemstack);
         }
         //10h突破
-        if (playerdata.getTitleFlags().get(4008)) {
+        if (playerdata.TitleFlags().contains(4008)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4008「" + SeichiAssist.seichiAssistConfig().getTitle1(4008)
@@ -3023,7 +3024,7 @@ public class MenuInventoryData {
             inventory.setItem(6, itemstack);
         }
         //5h突破
-        if (playerdata.getTitleFlags().get(4009)) {
+        if (playerdata.TitleFlags().contains(4009)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4009「" + SeichiAssist.seichiAssistConfig().getTitle1(4009)
@@ -3046,7 +3047,7 @@ public class MenuInventoryData {
             inventory.setItem(7, itemstack);
         }
         //1h突破
-        if (playerdata.getTitleFlags().get(4010)) {
+        if (playerdata.TitleFlags().contains(4010)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No4010「" + SeichiAssist.seichiAssistConfig().getTitle1(4010)
@@ -3068,7 +3069,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(8, itemstack);
         }
-        if (playerdata.getPlayTick() % 576000 >= 0 && playerdata.getPlayTick() % 576000 <= 1199 && !(playerdata.getTitleFlags().get(8003))) {
+        if (playerdata.playTick() % 576000 >= 0 && playerdata.playTick() % 576000 <= 1199 && !(playerdata.TitleFlags().contains(8003))) {
             itemstack = new ItemStack(Material.EMERALD_BLOCK, 1);
             itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_BLOCK);
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "タイムカード、切りましょ？");
@@ -3101,7 +3102,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -3119,8 +3120,8 @@ public class MenuInventoryData {
 
         //実績設定・解禁ボタン
         //「1000日」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(5119)) {
-            if (playerdata.getTitleFlags().get(5120)) {
+        if (playerdata.TitleFlags().contains(5119)) {
+            if (playerdata.TitleFlags().contains(5120)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5120「" + SeichiAssist.seichiAssistConfig().getTitle1(5120)
@@ -3147,8 +3148,8 @@ public class MenuInventoryData {
         } else {
         }
         //「900日」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(5118)) {
-            if (playerdata.getTitleFlags().get(5119)) {
+        if (playerdata.TitleFlags().contains(5118)) {
+            if (playerdata.TitleFlags().contains(5119)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5119「" + SeichiAssist.seichiAssistConfig().getTitle1(5119)
@@ -3175,8 +3176,8 @@ public class MenuInventoryData {
         } else {
         }
         //「800日」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(5117)) {
-            if (playerdata.getTitleFlags().get(5118)) {
+        if (playerdata.TitleFlags().contains(5117)) {
+            if (playerdata.TitleFlags().contains(5118)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5118「" + SeichiAssist.seichiAssistConfig().getTitle1(5118)
@@ -3203,8 +3204,8 @@ public class MenuInventoryData {
         } else {
         }
         //「730日」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(5116)) {
-            if (playerdata.getTitleFlags().get(5117)) {
+        if (playerdata.TitleFlags().contains(5116)) {
+            if (playerdata.TitleFlags().contains(5117)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5117「" + SeichiAssist.seichiAssistConfig().getTitle1(5117)
@@ -3231,8 +3232,8 @@ public class MenuInventoryData {
         } else {
         }
         //「700日」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(5115)) {
-            if (playerdata.getTitleFlags().get(5116)) {
+        if (playerdata.TitleFlags().contains(5115)) {
+            if (playerdata.TitleFlags().contains(5116)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5116「" + SeichiAssist.seichiAssistConfig().getTitle1(5116)
@@ -3259,8 +3260,8 @@ public class MenuInventoryData {
         } else {
         }
         //「600日」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(5114)) {
-            if (playerdata.getTitleFlags().get(5115)) {
+        if (playerdata.TitleFlags().contains(5114)) {
+            if (playerdata.TitleFlags().contains(5115)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5115「" + SeichiAssist.seichiAssistConfig().getTitle1(5115) + "」");
@@ -3286,8 +3287,8 @@ public class MenuInventoryData {
         } else {
         }
         //「500日」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(5113)) {
-            if (playerdata.getTitleFlags().get(5114)) {
+        if (playerdata.TitleFlags().contains(5113)) {
+            if (playerdata.TitleFlags().contains(5114)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5114「" + SeichiAssist.seichiAssistConfig().getTitle1(5114)
@@ -3314,8 +3315,8 @@ public class MenuInventoryData {
         } else {
         }
         //「400日」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(5112)) {
-            if (playerdata.getTitleFlags().get(5113)) {
+        if (playerdata.TitleFlags().contains(5112)) {
+            if (playerdata.TitleFlags().contains(5113)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5113「" + SeichiAssist.seichiAssistConfig().getTitle1(5113)
@@ -3342,8 +3343,8 @@ public class MenuInventoryData {
         } else {
         }
         //「365日」実績突破前は表示されない処理
-        if (playerdata.getTitleFlags().get(5101)) {
-            if (playerdata.getTitleFlags().get(5112)) {
+        if (playerdata.TitleFlags().contains(5101)) {
+            if (playerdata.TitleFlags().contains(5112)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5112「" + SeichiAssist.seichiAssistConfig().getTitle1(5112)
@@ -3369,7 +3370,7 @@ public class MenuInventoryData {
             }
         } else {
         }
-        if (playerdata.getTitleFlags().get(5101)) {
+        if (playerdata.TitleFlags().contains(5101)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5101「" + SeichiAssist.seichiAssistConfig().getTitle1(5101)
@@ -3391,7 +3392,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(10, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5102)) {
+        if (playerdata.TitleFlags().contains(5102)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5102「" + SeichiAssist.seichiAssistConfig().getTitle1(5102)
@@ -3413,7 +3414,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(9, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5103)) {
+        if (playerdata.TitleFlags().contains(5103)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5103「" + SeichiAssist.seichiAssistConfig().getTitle1(5103)
@@ -3435,7 +3436,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(8, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5104)) {
+        if (playerdata.TitleFlags().contains(5104)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5104「" + SeichiAssist.seichiAssistConfig().getTitle1(5104)
@@ -3457,7 +3458,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(7, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5105)) {
+        if (playerdata.TitleFlags().contains(5105)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5105「" + SeichiAssist.seichiAssistConfig().getTitle1(5105)
@@ -3479,7 +3480,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(6, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5106)) {
+        if (playerdata.TitleFlags().contains(5106)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5106「" + SeichiAssist.seichiAssistConfig().getTitle1(5106) + "」");
@@ -3500,7 +3501,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(5, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5107)) {
+        if (playerdata.TitleFlags().contains(5107)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5107「" + SeichiAssist.seichiAssistConfig().getTitle1(5107)
@@ -3522,7 +3523,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(4, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5108)) {
+        if (playerdata.TitleFlags().contains(5108)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5108「" + SeichiAssist.seichiAssistConfig().getTitle1(5108)
@@ -3544,7 +3545,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(3, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5109)) {
+        if (playerdata.TitleFlags().contains(5109)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5109「" + SeichiAssist.seichiAssistConfig().getTitle1(5109)
@@ -3566,7 +3567,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(2, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5110)) {
+        if (playerdata.TitleFlags().contains(5110)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5110「" + SeichiAssist.seichiAssistConfig().getTitle1(5110) + "」");
@@ -3587,7 +3588,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(1, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5111)) {
+        if (playerdata.TitleFlags().contains(5111)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5111「" + SeichiAssist.seichiAssistConfig().getTitle1(5111) + "」");
@@ -3630,7 +3631,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -3647,7 +3648,7 @@ public class MenuInventoryData {
 
 
         //実績設定・解禁ボタン
-        if (playerdata.getTitleFlags().get(5001)) {
+        if (playerdata.TitleFlags().contains(5001)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5001「" + SeichiAssist.seichiAssistConfig().getTitle1(5001)
@@ -3669,7 +3670,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(0, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5002)) {
+        if (playerdata.TitleFlags().contains(5002)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5002「" + SeichiAssist.seichiAssistConfig().getTitle1(5002)
@@ -3691,7 +3692,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(1, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5003)) {
+        if (playerdata.TitleFlags().contains(5003)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5003「" + SeichiAssist.seichiAssistConfig().getTitle1(5003) + "」");
@@ -3712,7 +3713,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(2, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5004)) {
+        if (playerdata.TitleFlags().contains(5004)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5004「" + SeichiAssist.seichiAssistConfig().getTitle1(5004)
@@ -3734,7 +3735,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(3, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5005)) {
+        if (playerdata.TitleFlags().contains(5005)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5005「" + SeichiAssist.seichiAssistConfig().getTitle1(5005)
@@ -3756,7 +3757,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(4, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5006)) {
+        if (playerdata.TitleFlags().contains(5006)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5006「" + SeichiAssist.seichiAssistConfig().getTitle1(5006)
@@ -3778,7 +3779,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(5, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5007)) {
+        if (playerdata.TitleFlags().contains(5007)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5007「" + SeichiAssist.seichiAssistConfig().getTitle1(5007) + "」");
@@ -3799,7 +3800,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(6, itemstack);
         }
-        if (playerdata.getTitleFlags().get(5008)) {
+        if (playerdata.TitleFlags().contains(5008)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No5008「" + SeichiAssist.seichiAssistConfig().getTitle1(5008)
@@ -3844,7 +3845,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -3862,7 +3863,7 @@ public class MenuInventoryData {
 
         //実績設定・解禁ボタン
         //投票数365
-        if (playerdata.getTitleFlags().get(6001)) {
+        if (playerdata.TitleFlags().contains(6001)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No6001「" + SeichiAssist.seichiAssistConfig().getTitle1(6001) + "」");
@@ -3884,7 +3885,7 @@ public class MenuInventoryData {
             inventory.setItem(0, itemstack);
         }
         //投票数200
-        if (playerdata.getTitleFlags().get(6002)) {
+        if (playerdata.TitleFlags().contains(6002)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No6002「" + SeichiAssist.seichiAssistConfig().getTitle1(6002)
@@ -3907,7 +3908,7 @@ public class MenuInventoryData {
             inventory.setItem(1, itemstack);
         }
         //投票数100
-        if (playerdata.getTitleFlags().get(6003)) {
+        if (playerdata.TitleFlags().contains(6003)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No6003「" + SeichiAssist.seichiAssistConfig().getTitle1(6003) + "」");
@@ -3929,7 +3930,7 @@ public class MenuInventoryData {
             inventory.setItem(2, itemstack);
         }
         //投票数50
-        if (playerdata.getTitleFlags().get(6004)) {
+        if (playerdata.TitleFlags().contains(6004)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No6004「" + SeichiAssist.seichiAssistConfig().getTitle1(6004)
@@ -3952,7 +3953,7 @@ public class MenuInventoryData {
             inventory.setItem(3, itemstack);
         }
         //投票数25
-        if (playerdata.getTitleFlags().get(6005)) {
+        if (playerdata.TitleFlags().contains(6005)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No6005「" + SeichiAssist.seichiAssistConfig().getTitle1(6005)
@@ -3975,7 +3976,7 @@ public class MenuInventoryData {
             inventory.setItem(4, itemstack);
         }
         //投票数10
-        if (playerdata.getTitleFlags().get(6006)) {
+        if (playerdata.TitleFlags().contains(6006)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No6006「" + SeichiAssist.seichiAssistConfig().getTitle1(6006)
@@ -3998,7 +3999,7 @@ public class MenuInventoryData {
             inventory.setItem(5, itemstack);
         }
         //投票数5
-        if (playerdata.getTitleFlags().get(6007)) {
+        if (playerdata.TitleFlags().contains(6007)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No6007「" + SeichiAssist.seichiAssistConfig().getTitle1(6007)
@@ -4021,7 +4022,7 @@ public class MenuInventoryData {
             inventory.setItem(6, itemstack);
         }
         //投票数1
-        if (playerdata.getTitleFlags().get(6008)) {
+        if (playerdata.TitleFlags().contains(6008)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No6008「" + SeichiAssist.seichiAssistConfig().getTitle1(6008) + "」");
@@ -4065,7 +4066,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -4082,7 +4083,7 @@ public class MenuInventoryData {
 
 
         //実績設定・解禁ボタン
-        if (playerdata.getTitleFlags().get(7001)) {
+        if (playerdata.TitleFlags().contains(7001)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7001「" + SeichiAssist.seichiAssistConfig().getTitle1(7001)
@@ -4104,7 +4105,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(0, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7002)) {
+        if (playerdata.TitleFlags().contains(7002)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7002「" + SeichiAssist.seichiAssistConfig().getTitle1(7002)
@@ -4126,7 +4127,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(1, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7003)) {
+        if (playerdata.TitleFlags().contains(7003)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7003「" + SeichiAssist.seichiAssistConfig().getTitle1(7003)
@@ -4148,7 +4149,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(2, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7004)) {
+        if (playerdata.TitleFlags().contains(7004)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7004「" + SeichiAssist.seichiAssistConfig().getTitle2(7004) + "」");
@@ -4169,7 +4170,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(3, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7005)) {
+        if (playerdata.TitleFlags().contains(7005)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7005「" + SeichiAssist.seichiAssistConfig().getTitle1(7005)
@@ -4191,7 +4192,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(4, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7006)) {
+        if (playerdata.TitleFlags().contains(7006)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7006「" + SeichiAssist.seichiAssistConfig().getTitle1(7006)
@@ -4215,7 +4216,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(5, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7007)) {
+        if (playerdata.TitleFlags().contains(7007)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7007「" + SeichiAssist.seichiAssistConfig().getTitle1(7007)
@@ -4241,7 +4242,7 @@ public class MenuInventoryData {
         }
         //以下の二つはデータだけ先に実装しています。(使いそうだけど使うか分からない)
         //一応このままの状態でも解禁コマンドは使用可能。
-        if (playerdata.getTitleFlags().get(7008)) {
+        if (playerdata.TitleFlags().contains(7008)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7008「" + SeichiAssist.seichiAssistConfig().getTitle1(7008)
@@ -4263,7 +4264,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(7, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7009)) {
+        if (playerdata.TitleFlags().contains(7009)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7009「" + SeichiAssist.seichiAssistConfig().getTitle1(7009)
@@ -4277,7 +4278,7 @@ public class MenuInventoryData {
             inventory.setItem(8, itemstack);
         }
 
-        if (playerdata.getTitleFlags().get(7010)) {
+        if (playerdata.TitleFlags().contains(7010)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7010「" + SeichiAssist.seichiAssistConfig().getTitle1(7010)
@@ -4301,7 +4302,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(9, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7011)) {
+        if (playerdata.TitleFlags().contains(7011)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7011「" + SeichiAssist.seichiAssistConfig().getTitle1(7011)
@@ -4325,7 +4326,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(10, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7012)) {
+        if (playerdata.TitleFlags().contains(7012)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7012「" + SeichiAssist.seichiAssistConfig().getTitle1(7012)
@@ -4349,7 +4350,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(11, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7013)) {
+        if (playerdata.TitleFlags().contains(7013)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7013「" + SeichiAssist.seichiAssistConfig().getTitle1(7013) + "」");
@@ -4372,7 +4373,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(12, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7014)) {
+        if (playerdata.TitleFlags().contains(7014)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7014「" + SeichiAssist.seichiAssistConfig().getTitle1(7014) + "」");
@@ -4395,7 +4396,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(13, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7015)) {
+        if (playerdata.TitleFlags().contains(7015)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7015「" + SeichiAssist.seichiAssistConfig().getTitle1(7015)
@@ -4419,7 +4420,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(14, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7016)) {
+        if (playerdata.TitleFlags().contains(7016)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7016「" + SeichiAssist.seichiAssistConfig().getTitle1(7016)
@@ -4443,7 +4444,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(15, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7017)) {
+        if (playerdata.TitleFlags().contains(7017)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7017「" + SeichiAssist.seichiAssistConfig().getTitle1(7017)
@@ -4467,7 +4468,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(16, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7018)) {
+        if (playerdata.TitleFlags().contains(7018)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7018「" + SeichiAssist.seichiAssistConfig().getTitle1(7018)
@@ -4491,7 +4492,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(17, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7019)) {
+        if (playerdata.TitleFlags().contains(7019)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7019「" + SeichiAssist.seichiAssistConfig().getTitle1(7019)
@@ -4515,7 +4516,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(18, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7020)) {
+        if (playerdata.TitleFlags().contains(7020)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7020「" + SeichiAssist.seichiAssistConfig().getTitle1(7020)
@@ -4539,7 +4540,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(19, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7021)) {
+        if (playerdata.TitleFlags().contains(7021)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7021「" + SeichiAssist.seichiAssistConfig().getTitle1(7021)
@@ -4563,7 +4564,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(20, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7022)) {
+        if (playerdata.TitleFlags().contains(7022)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7022「" + SeichiAssist.seichiAssistConfig().getTitle1(7022)
@@ -4587,7 +4588,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(21, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7023)) {
+        if (playerdata.TitleFlags().contains(7023)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7023「" + SeichiAssist.seichiAssistConfig().getTitle1(7023)
@@ -4611,7 +4612,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(22, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7024)) {
+        if (playerdata.TitleFlags().contains(7024)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7024「" + SeichiAssist.seichiAssistConfig().getTitle1(7024)
@@ -4635,7 +4636,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(23, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7025)) {
+        if (playerdata.TitleFlags().contains(7025)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7025「" + SeichiAssist.seichiAssistConfig().getTitle1(7025)
@@ -4659,7 +4660,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(24, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7026)) {
+        if (playerdata.TitleFlags().contains(7026)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7026「" + SeichiAssist.seichiAssistConfig().getTitle1(7026)
@@ -4683,7 +4684,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(25, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7027)) {
+        if (playerdata.TitleFlags().contains(7027)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7027「" + SeichiAssist.seichiAssistConfig().getTitle1(7027)
@@ -4707,7 +4708,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(26, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7901)) {
+        if (playerdata.TitleFlags().contains(7901)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7901「" + SeichiAssist.seichiAssistConfig().getTitle1(7901)
@@ -4729,7 +4730,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(30, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7902)) {
+        if (playerdata.TitleFlags().contains(7902)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7902「" + SeichiAssist.seichiAssistConfig().getTitle1(7902)
@@ -4751,7 +4752,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(31, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7903)) {
+        if (playerdata.TitleFlags().contains(7903)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7903「" + SeichiAssist.seichiAssistConfig().getTitle1(7903)
@@ -4773,7 +4774,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(32, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7904)) {
+        if (playerdata.TitleFlags().contains(7904)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7904「" + SeichiAssist.seichiAssistConfig().getTitle1(7904)
@@ -4795,7 +4796,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(33, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7905)) {
+        if (playerdata.TitleFlags().contains(7905)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7905「" + SeichiAssist.seichiAssistConfig().getTitle1(7905)
@@ -4817,7 +4818,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(34, itemstack);
         }
-        if (playerdata.getTitleFlags().get(7906)) {
+        if (playerdata.TitleFlags().contains(7906)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No7906「" + SeichiAssist.seichiAssistConfig().getTitle1(7906)
@@ -4862,7 +4863,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -4879,8 +4880,8 @@ public class MenuInventoryData {
 
 
         //実績設定・解禁ボタン
-        if (playerdata.getTitlepage() == 1) {
-            if (playerdata.getTitleFlags().get(9001)) {
+        if (playerdata.titlepage() == 1) {
+            if (playerdata.TitleFlags().contains(9001)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9001「" + SeichiAssist.seichiAssistConfig().getTitle1(9001) + "」");
@@ -4900,7 +4901,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(0, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9002)) {
+            if (playerdata.TitleFlags().contains(9002)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9002「" + SeichiAssist.seichiAssistConfig().getTitle1(9002)
@@ -4921,7 +4922,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(1, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9003)) {
+            if (playerdata.TitleFlags().contains(9003)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9003「" + SeichiAssist.seichiAssistConfig().getTitle1(9003) + "」");
@@ -4941,7 +4942,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(2, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9004)) {
+            if (playerdata.TitleFlags().contains(9004)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9004「" + SeichiAssist.seichiAssistConfig().getTitle1(9004)
@@ -4962,7 +4963,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(3, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9005)) {
+            if (playerdata.TitleFlags().contains(9005)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9005「" + SeichiAssist.seichiAssistConfig().getTitle1(9005)
@@ -4983,7 +4984,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(4, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9006)) {
+            if (playerdata.TitleFlags().contains(9006)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9006「" + SeichiAssist.seichiAssistConfig().getTitle1(9006) + "」");
@@ -5003,7 +5004,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(5, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9007)) {
+            if (playerdata.TitleFlags().contains(9007)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9007「" + SeichiAssist.seichiAssistConfig().getTitle1(9007) + "」");
@@ -5023,7 +5024,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(6, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9008)) {
+            if (playerdata.TitleFlags().contains(9008)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9008「" + SeichiAssist.seichiAssistConfig().getTitle1(9008)
@@ -5044,7 +5045,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(7, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9009)) {
+            if (playerdata.TitleFlags().contains(9009)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9009「" + SeichiAssist.seichiAssistConfig().getTitle1(9009) + "」");
@@ -5064,7 +5065,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(8, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9010)) {
+            if (playerdata.TitleFlags().contains(9010)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9010「" + SeichiAssist.seichiAssistConfig().getTitle1(9010)
@@ -5085,7 +5086,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(9, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9011)) {
+            if (playerdata.TitleFlags().contains(9011)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9011「" + SeichiAssist.seichiAssistConfig().getTitle1(9011)
@@ -5106,7 +5107,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(10, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9012)) {
+            if (playerdata.TitleFlags().contains(9012)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9012「" + SeichiAssist.seichiAssistConfig().getTitle1(9012)
@@ -5127,7 +5128,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(11, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9013)) {
+            if (playerdata.TitleFlags().contains(9013)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9013「" + SeichiAssist.seichiAssistConfig().getTitle1(9013) + "」");
@@ -5147,7 +5148,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(12, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9014)) {
+            if (playerdata.TitleFlags().contains(9014)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9014「" + SeichiAssist.seichiAssistConfig().getTitle2(9014) + "」");
@@ -5167,7 +5168,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(13, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9015)) {
+            if (playerdata.TitleFlags().contains(9015)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9015「" + SeichiAssist.seichiAssistConfig().getTitle1(9015)
@@ -5188,7 +5189,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(14, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9016)) {
+            if (playerdata.TitleFlags().contains(9016)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9016「" + SeichiAssist.seichiAssistConfig().getTitle1(9016)
@@ -5209,7 +5210,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(15, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9017)) {
+            if (playerdata.TitleFlags().contains(9017)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9017「" + SeichiAssist.seichiAssistConfig().getTitle1(9017)
@@ -5230,7 +5231,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(16, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9018)) {
+            if (playerdata.TitleFlags().contains(9018)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9018「" + SeichiAssist.seichiAssistConfig().getTitle1(9018) + "」");
@@ -5250,7 +5251,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(17, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9019)) {
+            if (playerdata.TitleFlags().contains(9019)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9019「" + SeichiAssist.seichiAssistConfig().getTitle1(9019)
@@ -5271,7 +5272,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(18, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9020)) {
+            if (playerdata.TitleFlags().contains(9020)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9020「" + SeichiAssist.seichiAssistConfig().getTitle1(9020)
@@ -5292,7 +5293,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(19, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9021)) {
+            if (playerdata.TitleFlags().contains(9021)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9021「" + SeichiAssist.seichiAssistConfig().getTitle1(9021)
@@ -5313,7 +5314,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(20, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9022)) {
+            if (playerdata.TitleFlags().contains(9022)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9022「" + SeichiAssist.seichiAssistConfig().getTitle1(9022)
@@ -5334,7 +5335,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(21, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9023)) {
+            if (playerdata.TitleFlags().contains(9023)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9023「" + SeichiAssist.seichiAssistConfig().getTitle1(9023)
@@ -5355,7 +5356,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(22, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9024)) {
+            if (playerdata.TitleFlags().contains(9024)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9024「" + SeichiAssist.seichiAssistConfig().getTitle1(9024)
@@ -5376,7 +5377,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(23, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9025)) {
+            if (playerdata.TitleFlags().contains(9025)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9025「" + SeichiAssist.seichiAssistConfig().getTitle1(9025)
@@ -5397,7 +5398,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(24, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9026)) {
+            if (playerdata.TitleFlags().contains(9026)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9026「" + SeichiAssist.seichiAssistConfig().getTitle1(9026)
@@ -5418,7 +5419,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(25, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9027)) {
+            if (playerdata.TitleFlags().contains(9027)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9027「" + SeichiAssist.seichiAssistConfig().getTitle1(9027)
@@ -5439,7 +5440,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(26, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9028)) {
+            if (playerdata.TitleFlags().contains(9028)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9028「" + SeichiAssist.seichiAssistConfig().getTitle1(9028)
@@ -5460,7 +5461,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(29, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9029)) {
+            if (playerdata.TitleFlags().contains(9029)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9029「" + SeichiAssist.seichiAssistConfig().getTitle1(9029)
@@ -5481,7 +5482,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(30, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9030)) {
+            if (playerdata.TitleFlags().contains(9030)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9030「" + SeichiAssist.seichiAssistConfig().getTitle1(9030)
@@ -5502,7 +5503,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(31, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9031)) {
+            if (playerdata.TitleFlags().contains(9031)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9031「" + SeichiAssist.seichiAssistConfig().getTitle1(9031)
@@ -5523,7 +5524,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(32, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9032)) {
+            if (playerdata.TitleFlags().contains(9032)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9032「" + SeichiAssist.seichiAssistConfig().getTitle1(9032)
@@ -5544,8 +5545,8 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(33, itemstack);
             }
-        } else if (playerdata.getTitlepage() == 2) {
-            if (playerdata.getTitleFlags().get(9033)) {
+        } else if (playerdata.titlepage() == 2) {
+            if (playerdata.TitleFlags().contains(9033)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9033「" + SeichiAssist.seichiAssistConfig().getTitle1(9033)
@@ -5566,7 +5567,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(0, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9034)) {
+            if (playerdata.TitleFlags().contains(9034)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9034「" + SeichiAssist.seichiAssistConfig().getTitle1(9034)
@@ -5587,7 +5588,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(1, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9035)) {
+            if (playerdata.TitleFlags().contains(9035)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9035「" + SeichiAssist.seichiAssistConfig().getTitle1(9035)
@@ -5608,7 +5609,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(itemmeta);
                 inventory.setItem(2, itemstack);
             }
-            if (playerdata.getTitleFlags().get(9036)) {
+            if (playerdata.TitleFlags().contains(9036)) {
                 itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
                 itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No9036「" + SeichiAssist.seichiAssistConfig().getTitle1(9036)
@@ -5665,7 +5666,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = player.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
             player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -5682,7 +5683,7 @@ public class MenuInventoryData {
 
 
         //実績設定・解禁ボタン
-        if (playerdata.getTitleFlags().get(8001)) {
+        if (playerdata.TitleFlags().contains(8001)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8001「" + SeichiAssist.seichiAssistConfig().getTitle1(8001)
@@ -5709,7 +5710,7 @@ public class MenuInventoryData {
                 inventory.setItem(0, itemstack);
             }
         }
-        if (playerdata.getTitleFlags().get(8002)) {
+        if (playerdata.TitleFlags().contains(8002)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8002「" + SeichiAssist.seichiAssistConfig().getTitle1(8002)
@@ -5722,7 +5723,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(1, itemstack);
         } else {
-            if (playerdata.getTotalbreaknum() % 1000000 == 0 && !(playerdata.getTotalbreaknum() == 0)) {
+            if (playerdata.totalbreaknum() % 1000000 == 0 && !(playerdata.totalbreaknum() == 0)) {
                 itemstack = new ItemStack(Material.BEDROCK, 1);
                 itemmeta = ItemMetaFactory.BEDROCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8002「???」");
@@ -5735,7 +5736,7 @@ public class MenuInventoryData {
                 inventory.setItem(1, itemstack);
             }
         }
-        if (playerdata.getTitleFlags().get(8003)) {
+        if (playerdata.TitleFlags().contains(8003)) {
             itemstack = new ItemStack(Material.DIAMOND_BLOCK, 1);
             itemmeta = ItemMetaFactory.DIAMOND_BLOCK.getValue();
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8003「" + SeichiAssist.seichiAssistConfig().getTitle1(8003)
@@ -5748,7 +5749,7 @@ public class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             inventory.setItem(2, itemstack);
         } else {
-            if (playerdata.getPlayTick() % 72000 >= 0 && playerdata.getPlayTick() % 72000 <= 1199) {
+            if (playerdata.playTick() % 72000 >= 0 && playerdata.playTick() % 72000 <= 1199) {
                 itemstack = new ItemStack(Material.BEDROCK, 1);
                 itemmeta = ItemMetaFactory.BEDROCK.getValue();
                 itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "No8003「???」");
@@ -5781,7 +5782,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = p.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (sendWarningToLogger(p, playerdata)) return null;
         Inventory inventory = Bukkit.getServer().createInventory(null, 2 * 9, ChatColor.DARK_RED + "" + ChatColor.BOLD + "サーバーを選択してください");
@@ -5843,7 +5844,7 @@ public class MenuInventoryData {
 
     private static boolean sendWarningToLogger(Player p, PlayerData playerdata) {
         if (playerdata == null) {
-            Util.INSTANCE.sendPlayerDataNullMessage(p);
+            Util.sendPlayerDataNullMessage(p);
             Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
             Bukkit.getLogger().warning("MenuInventoryData.menuData");
             return true;
@@ -5857,7 +5858,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = p.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (sendWarningToLogger(p, playerdata)) return null;
         Inventory inventory = Bukkit.getServer().createInventory(null, 4 * 9, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票ptメニュー");
@@ -5906,10 +5907,10 @@ public class MenuInventoryData {
         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATCH);
         itemmeta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 時間設定");
         lore = Arrays.asList(
-                ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "" + VotingFairyTask.dispToggleVFTime(playerdata.getToggleVotingFairy()),
+                ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "" + VotingFairyTask.dispToggleVFTime(playerdata.toggleVotingFairy()),
                 "",
                 ChatColor.RESET + "" + ChatColor.GRAY + "コスト",
-                ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "" + (playerdata.getToggleVotingFairy() * 2) + "投票pt",
+                ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "" + (playerdata.toggleVotingFairy() * 2) + "投票pt",
                 "",
                 ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで切替"
         );
@@ -5924,7 +5925,7 @@ public class MenuInventoryData {
 
         //妖精音トグル
         itemstack = new ItemStack(Material.JUKEBOX);
-        itemstack.setItemMeta(VFSoundToggleMeta(playerdata.getToggleVFSound()));
+        itemstack.setItemMeta(VFSoundToggleMeta(playerdata.toggleVFSound()));
         inventory.setItem(20, itemstack);
 
 
@@ -5932,16 +5933,16 @@ public class MenuInventoryData {
         itemstack = new ItemStack(Material.GHAST_TEAR);
         itemmeta = itemstack.getItemMeta();
         itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 召喚");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "" + (playerdata.getToggleVotingFairy() * 2) + "投票ptを消費して"
+        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "" + (playerdata.toggleVotingFairy() * 2) + "投票ptを消費して"
                 , ChatColor.RESET + "" + ChatColor.GRAY + "マナ妖精を呼びます"
-                , ChatColor.RESET + "" + ChatColor.GRAY + "時間 : " + VotingFairyTask.dispToggleVFTime(playerdata.getToggleVotingFairy())
+                , ChatColor.RESET + "" + ChatColor.GRAY + "時間 : " + VotingFairyTask.dispToggleVFTime(playerdata.toggleVotingFairy())
                 , ChatColor.RESET + "" + ChatColor.DARK_RED + "Lv.10以上で解放");
         itemmeta.setLore(lore);
         itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
         itemstack.setItemMeta(itemmeta);
         inventory.setItem(4, itemstack);
 
-        if (playerdata.getUsingVotingFairy()) {
+        if (playerdata.usingVotingFairy()) {
             //妖精 時間確認
             itemstack = new ItemStack(Material.COMPASS);
             itemmeta = itemstack.getItemMeta();
@@ -5972,7 +5973,7 @@ public class MenuInventoryData {
                 if (count >= SeichiAssist.ranklist_p_apple().size()) {
                     break;
                 }
-                rankdata = SeichiAssist.ranklist_p_apple().get(count);
+                rankdata = SeichiAssist.ranklist_p_apple().apply(count);
                 if (rankdata.p_apple < 1) { //数0
                     break;
                 }
@@ -5983,7 +5984,7 @@ public class MenuInventoryData {
             lores.add(ChatColor.AQUA + "ぜーんぶで" + SeichiAssist.allplayergiveapplelong() + "個もらえた！");
             lores.add("");
             lores.add(ChatColor.GREEN + "↓呼び出したﾆﾝｹﾞﾝの情報↓");
-            lores.add(ChatColor.GREEN + "今までに" + playerdata.getP_apple() + "個もらった");
+            lores.add(ChatColor.GREEN + "今までに" + playerdata.p_apple() + "個もらった");
             lores.add(ChatColor.GREEN + "ﾆﾝｹﾞﾝの中では" + prank + "番目にたくさんくれる！");
 
             itemmeta.setLore(lores);
@@ -6024,26 +6025,26 @@ public class MenuInventoryData {
         ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
         itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精とのお約束");
 
-        if (playerdata.getToggleGiveApple() == 1) {
+        if (playerdata.toggleGiveApple() == 1) {
             itemmeta.setLore(Arrays.asList(
                     ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガンガンたべるぞ"
                     , ChatColor.RESET + "" + ChatColor.GRAY + "とにかく妖精さんにりんごを開放します。"
                     , ChatColor.RESET + "" + ChatColor.GRAY + "めっちゃ喜ばれます。"
             ));
-        } else if (playerdata.getToggleGiveApple() == 2) {
+        } else if (playerdata.toggleGiveApple() == 2) {
             itemmeta.setLore(Arrays.asList(
                     ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "バッチリたべよう"
                     , ChatColor.RESET + "" + ChatColor.GRAY + "食べ過ぎないように注意しつつ"
                     , ChatColor.RESET + "" + ChatColor.GRAY + "妖精さんにりんごを開放します。"
                     , ChatColor.RESET + "" + ChatColor.GRAY + "喜ばれます。"
             ));
-        } else if (playerdata.getToggleGiveApple() == 3) {
+        } else if (playerdata.toggleGiveApple() == 3) {
             itemmeta.setLore(Arrays.asList(
                     ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リンゴだいじに"
                     , ChatColor.RESET + "" + ChatColor.GRAY + "少しだけ妖精さんにりんごを開放します。"
                     , ChatColor.RESET + "" + ChatColor.GRAY + "伝えると大抵落ち込みます。"
             ));
-        } else if (playerdata.getToggleGiveApple() == 4) {
+        } else if (playerdata.toggleGiveApple() == 4) {
             itemmeta.setLore(Arrays.asList(
                     ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リンゴつかうな"
                     , ChatColor.RESET + "" + ChatColor.GRAY + "絶対にりんごを開放しません。"
@@ -6057,7 +6058,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = p.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (sendWarningToLogger(p, playerdata)) return null;
         Inventory inventory = Bukkit.getServer().createInventory(null, 3 * 9, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ホームメニュー");
@@ -6112,11 +6113,11 @@ public class MenuInventoryData {
             itemstack = new ItemStack(Material.PAPER);
             itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント" + (x + 1) + "の情報");
-            Location l = playerdata.getSubHomeLocation(x);
+            Location l = playerdata.getSubHomeLocation(x).get();
             final List<String> subHomeLore;
             if (l != null) {
-                final ManagedWorld world = ManagedWorldKt.asManagedWorld(l.getWorld());
-                final String worldName = world != null ? world.getJapaneseName() : l.getWorld().getName();
+                final ManagedWorld world = ManagedWorld$.MODULE$.fromBukkitWorld(l.getWorld()).getOrElse(() -> null);
+                final String worldName = world != null ? world.japaneseName() : l.getWorld().getName();
 
                 subHomeLore = Arrays.asList(
                         ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x + 1) + "は",
@@ -6155,8 +6156,8 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = p.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
-        int n = playerdata.getSelectHomeNum();
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
+        int n = playerdata.selectHomeNum();
         //念のためエラー分岐
         if (sendWarningToLogger(p, playerdata)) return null;
         Inventory inventory = Bukkit.getServer().createInventory(null, 3 * 9, ChatColor.RED + "" + ChatColor.BOLD + "ホームポイントを変更しますか?");
@@ -6196,7 +6197,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = p.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (sendWarningToLogger(p, playerdata)) return null;
         Inventory inventory = Bukkit.getServer().createInventory(null, 6 * 9, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "スキルを進化させますか?");
@@ -6207,7 +6208,7 @@ public class MenuInventoryData {
         // stage
         {
             final byte b;
-            switch (playerdata.getGiganticBerserk().getStage()) {
+            switch (playerdata.giganticBerserk().stage()) {
                 case 0:
                     b = 12;
                     break;
@@ -6274,7 +6275,7 @@ public class MenuInventoryData {
         //UUID取得
         UUID uuid = p.getUniqueId();
         //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (sendWarningToLogger(p, playerdata)) return null;
         Inventory inventory = Bukkit.getServer().createInventory(null, 6 * 9, ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "スキルを進化させました");
@@ -6285,7 +6286,7 @@ public class MenuInventoryData {
         {
             final byte b;
             // stage
-            switch (playerdata.getGiganticBerserk().getStage()) {
+            switch (playerdata.giganticBerserk().stage()) {
                 case 1:
                     b = 15;
                     break;
