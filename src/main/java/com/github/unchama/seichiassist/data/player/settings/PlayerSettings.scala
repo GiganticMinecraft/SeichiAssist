@@ -1,13 +1,16 @@
 package com.github.unchama.seichiassist.data.player.settings
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.data.player.PlayerNickName
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.UnfocusedEffect
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
-import kotlin.Suppress
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 class PlayerSettings {
+  import com.github.unchama.targetedeffect.MessageEffects._
+  import com.github.unchama.targetedeffect.TargetedEffects._
+
   val fastDiggingEffectSuppression = new FastDiggingEffectSuppression()
 
   var autoMineStack = true
@@ -24,7 +27,7 @@ class PlayerSettings {
   //ワールドガード保護ログ表示トグル
   var shouldDisplayWorldGuardLogs = true
 
-  var broadcastMutingSettings: BroadcastMutingSettings = BroadcastMutingSettings.MUTE_MESSAGE_AND_SOUND
+  var broadcastMutingSettings: BroadcastMutingSettings = BroadcastMutingSettings.MuteMessageAndSound
 
   //ハーフブロック破壊抑制用
   private var allowBreakingHalfBlocks = false
@@ -41,36 +44,35 @@ class PlayerSettings {
 
   //region accessors and modifiers
 
-  val toggleAutoMineStack: UnfocusedEffect =
+  val toggleAutoMineStack: TargetedEffect[Any] =
       UnfocusedEffect {
         this.autoMineStack = !this.autoMineStack
       }
 
-  val toggleWorldGuardLogEffect: UnfocusedEffect =
+  val toggleWorldGuardLogEffect: TargetedEffect[Any] =
       UnfocusedEffect {
         this.shouldDisplayWorldGuardLogs = !this.shouldDisplayWorldGuardLogs
       }
 
-  val toggleDeathMessageMutingSettings: UnfocusedEffect =
+  val toggleDeathMessageMutingSettings: TargetedEffect[Any] =
       UnfocusedEffect {
         this.shouldDisplayDeathMessages = !this.shouldDisplayDeathMessages
       }
 
-  @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def getBroadcastMutingSettings(): BroadcastMutingSettings = broadcastMutingSettings
+  val getBroadcastMutingSettings: IO[BroadcastMutingSettings] = IO { broadcastMutingSettings }
 
-  val toggleBroadcastMutingSettings
-    get() = UnfocusedEffect {
-      broadcastMutingSettings = getBroadcastMutingSettings().nextSettingsOption()
-    }
+  val toggleBroadcastMutingSettings: TargetedEffect[Any] = (_: Any) =>
+    for {
+      currentSettings <- getBroadcastMutingSettings
+      nextSettings = currentSettings.next
+    } yield { broadcastMutingSettings = nextSettings }
 
-  @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def toggleHalfBreakFlag(): TargetedEffect[Player] = {
+  val toggleHalfBreakFlag: TargetedEffect[Player] = deferredEffect(IO {
     allowBreakingHalfBlocks = !allowBreakingHalfBlocks
 
     val newStatus = if (allowBreakingHalfBlocks) s"${GREEN}破壊可能" else "${RED}破壊不可能"
     val responseMessage = s"現在ハーフブロックは$newStatus${RESET}です."
 
-    return responseMessage.asMessageEffect()
-  }
+    responseMessage.asMessageEffect()
+  })
 }
