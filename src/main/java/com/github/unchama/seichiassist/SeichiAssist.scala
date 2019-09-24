@@ -263,7 +263,7 @@ object SeichiAssist {
   val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap()
 
   //総採掘量ランキング表示用データリスト
-  val ranklist: mutable.MutableList[RankData] = mutable.MutableList()
+  val ranklist: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
 
   //プレイ時間ランキング表示用データリスト
   val ranklist_playtick: mutable.MutableList[RankData] = mutable.MutableList()

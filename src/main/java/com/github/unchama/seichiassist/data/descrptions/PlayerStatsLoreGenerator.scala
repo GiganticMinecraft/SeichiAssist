@@ -1,9 +1,10 @@
 package com.github.unchama.seichiassist.data.descrptions
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.text.WarningsGenerator
 import com.github.unchama.seichiassist.util.TypeConverter
 import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import kotlin.Suppress
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
@@ -19,33 +20,37 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * Player統計のLoreを返します.
    */
   @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def computeLore(): List[String] = {
-    return with(WarningsGenerator(targetPlayer)) {
-      List(
-          List(seichiLevelDescription()),
-          levelProgressionDescription(),
-          noRewardsOutsideSeichiWorld,
-          passiveSkillDescription(),
-          List(
-              totalBreakAmountDescription(),
-              rankingDescription()
-          ),
-          rankingDiffDescription(),
-          List(
-              totalLoginTimeDescrpition(),
-              totalLoginDaysDescrption(),
-              totalChainLoginDaysDescription()
-          ),
-          totalChainVoteDaysDescription(),
-          List(
-              s"$DARK_GRAY※1分毎に更新",
-              s"${GREEN}統計データは",
-              s"${GREEN}各サバイバルサーバー間で",
-              s"${GREEN}共有されます"
-          ),
-          expBarDescription()
-      ).flatten()
-    }
+  def computeLore(): IO[List[String]] = {
+    val generator = new WarningsGenerator(targetPlayer)
+
+    import generator._
+
+    val lore = List(
+        List(seichiLevelDescription()),
+        levelProgressionDescription(),
+        noRewardsOutsideSeichiWorld,
+        passiveSkillDescription(),
+        List(
+            totalBreakAmountDescription(),
+            rankingDescription()
+        ),
+        rankingDiffDescription(),
+        List(
+            totalLoginTimeDescrpition(),
+            totalLoginDaysDescrption(),
+            totalChainLoginDaysDescription()
+        ),
+        totalChainVoteDaysDescription(),
+        List(
+            s"$DARK_GRAY※1分毎に更新",
+            s"${GREEN}統計データは",
+            s"${GREEN}各サバイバルサーバー間で",
+            s"${GREEN}共有されます"
+        ),
+        expBarDescription()
+    ).flatten
+
+    IO.pure(lore)
   }
 
   /**
@@ -69,11 +74,11 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
   private def levelProgressionDescription(): List[String] = {
     return if (playerData.level < LevelThresholds.levelExpThresholds.size) {
       //TODO:この計算は,ここにあるべきではない.
-      val expRequiredToLevelUp = LevelThresholds.levelExpThresholds[playerData.level] - playerData.totalbreaknum
+      val expRequiredToLevelUp = LevelThresholds.levelExpThresholds(playerData.level) - playerData.totalbreaknum
 
       List(s"${AQUA}次のレベルまで:$expRequiredToLevelUp")
     } else {
-      emptyList()
+      Nil
     }
   }
 
@@ -81,7 +86,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * パッシブスキルの説明文
    */
   private def passiveSkillDescription(): List[String] = {
-    return List(
+    List(
         s"${DARK_GRAY}パッシブスキル効果：",
         s"${DARK_GRAY}1ブロック整地ごとに",
         s"$DARK_GRAY${PlayerData.passiveSkillProbability}%の確率で",
@@ -106,12 +111,12 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
   private def rankingDiffDescription(): List[String] =
       if (playerData.calcPlayerRank() != 1) {
         val playerRanking = playerData.calcPlayerRank()
-        val rankData = SeichiAssist.ranklist[playerRanking - 2]
+        val rankData = SeichiAssist.ranklist(playerRanking - 2)
         val differenceToTheBest = rankData.totalbreaknum - playerData.totalbreaknum
 
         List(s"$AQUA${playerRanking - 1}位(${rankData.name})との差：$differenceToTheBest")
       } else {
-        emptyList()
+        Nil
       }
 
   /**
@@ -137,22 +142,17 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
       if (playerData.ChainVote > 0)
         List(s"$RESET${GRAY}連続投票日数：${playerData.ChainVote}日")
       else
-        emptyList()
+        Nil
 
   /**
    * Expバーの説明文.
    */
-  private def expBarDescription(): List[String] = {
-    return if (playerData.settings.isExpBarVisible) {
-      List(
-          s"${GREEN}整地量バーを表示",
-          s"$DARK_RED${UNDERLINE}クリックで非表示"
-      )
-    } else {
-      List(
-          s"${RED}整地量バーを非表示",
-          s"$DARK_GREEN${UNDERLINE}クリックで表示"
-      )
-    }
-  }
+  private def expBarDescription(): List[String] =
+    if (playerData.settings.isExpBarVisible) List(
+        s"${GREEN}整地量バーを表示",
+        s"$DARK_RED${UNDERLINE}クリックで非表示"
+    ) else List(
+        s"${RED}整地量バーを非表示",
+        s"$DARK_GREEN${UNDERLINE}クリックで表示"
+    )
 }

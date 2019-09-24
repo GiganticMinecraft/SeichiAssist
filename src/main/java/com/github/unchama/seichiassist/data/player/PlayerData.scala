@@ -3,22 +3,25 @@ package com.github.unchama.seichiassist.data.player
 import java.util
 import java.util.UUID
 
+import com.github.unchama.menuinventory.InventoryRowSize
+import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.data.{ActiveSkillData, GridTemplate}
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.MebiusTask
+import com.github.unchama.seichiassist.util.Util.DirectionType
+import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
 import com.github.unchama.seichiassist.{LevelThresholds, ManagedWorld, MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import kotlin.Suppress
-import kotlin.jvm.JvmName
 import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.potion.PotionEffectType
-import org.bukkit.{Bukkit, Material, Statistic}
+import org.bukkit.{Bukkit, Location, Material, Statistic}
 
 import scala.collection.{BitSet, mutable}
 
@@ -26,8 +29,11 @@ class PlayerData(
     @Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID,
     val name: String
 ) {
+  import com.github.unchama.util.InventoryUtil._
 
-  val settings = PlayerSettings()
+  import scala.jdk.CollectionConverters._
+
+  val settings = new PlayerSettings()
 
   //region session-specific data
   // TODO many properties here might not be right to belong here
@@ -39,21 +45,16 @@ class PlayerData(
   var chestflag = true
 
   //各統計値差分計算用配列
-  private val statisticsData: mutable.MutableList[Int] by
-  lazy
-  {
+  lazy private val statisticsData: mutable.ArrayBuffer[Int] =
     (MaterialSets.materials - exclude)
         .map { player.getStatistic(Statistic.MINE_BLOCK, it) }
         .toMutableList()
-  }
 
-  @get:JvmName("canCreateRegion")
   var canCreateRegion = true
   var unitPerClick = 1
-    private set
 
   //３０分間のデータを保存する．
-  val halfhourblock: MineBlock = MineBlock()
+  val halfhourblock: MineBlock = new MineBlock()
 
   //今回の採掘速度上昇レベルを格納
   var minespeedlv = 0
@@ -65,7 +66,7 @@ class PlayerData(
   val effectdatalist: mutable.ListBuffer[FastDiggingEffect] = mutable.ListBuffer
 
   //プレイ時間差分計算用int
-  private var totalPlayTick: Int? = null
+  private var totalPlayTick: Option[Int] = None
 
   //投票受け取りボタン連打防止用
   var votecooldownflag = true
@@ -83,17 +84,17 @@ class PlayerData(
   var samepageflag = false//実績ショップ用
 
   //MineStackの履歴
-  var hisotryData: MineStackUsageHistory = MineStackUsageHistory()
+  var hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
 
   //経験値マネージャ
-  private val expmanager: IExperienceManager by lazy { ExperienceManager(player) }
+  lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
 
   var titlepage = 1 //実績メニュー用汎用ページ指定
 
   //現在座標
-  var loc: Location? = null
+  var loc: Option[Location] = null
 
-  val mebius: MebiusTask by lazy { MebiusTask(uuid) }
+  lazy val mebius: MebiusTask = new MebiusTask(uuid)
 
   //放置時間
   var idleMinute = 0
@@ -110,18 +111,21 @@ class PlayerData(
   var level = 1
   //詫び券をあげる数
   var unclaimedApologyItems = 0
-  //拡張インベントリ
-  var pocketInventory: Inventory = createInventory(size = 1.rows(), title = s"$DARK_PURPLE${BOLD}4次元ポケット")
-    get() {
-      // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
-      if (field.size < pocketSize) {
-        field = Bukkit.getServer()
-            .createInventory(null, pocketSize, s"$DARK_PURPLE${BOLD}4次元ポケット")
-            .also { field.forEachIndexed(it::setItem) }
-      }
 
-      return field
+  //拡張インベントリ
+  private var _pocketInventory: Inventory = createInventory(null, Left(InventoryRowSize(1)), Some(s"$DARK_PURPLE${BOLD}4次元ポケット"))
+  def pocketInventory: Inventory = {
+    // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
+    if (_pocketInventory.getSize < pocketSize) {
+      val newInventory =
+        Bukkit.getServer
+          .createInventory(null, pocketSize, s"$DARK_PURPLE${BOLD}4次元ポケット")
+      _pocketInventory.asScala.zipWithIndex.map(_.swap).foreach { case (i, is) => newInventory.setItem(i, is) }
+      _pocketInventory = newInventory
     }
+
+    _pocketInventory
+  }
 
   //ワールドガード保護自動設定用
   var regionCount = 0
@@ -133,7 +137,7 @@ class PlayerData(
   //プレイ時間
   var playTick = 0
   //トータル破壊ブロック
-  var totalbreaknum = 0.toLong()
+  var totalbreaknum = 0.toLong
   //合計経験値
   var totalexp = 0
   //合計経験値統合済みフラグ
@@ -142,7 +146,7 @@ class PlayerData(
   var p_givenvote = 0
 
   //連続・通算ログイン用
-  var lastcheckdate: String? = null
+  var lastcheckdate: Option[String] = None
   var loginStatus = LoginStatus(null, 0, 0)
 
   //期間限定ログイン用
@@ -224,11 +228,9 @@ class PlayerData(
   /**
    * スターレベルの合計を返すショートカットフィールド。
    */
-  val totalStarLevel
-    get() = starLevels.total()
+  def totalStarLevel = starLevels.total()
 
-  val subHomeEntries: Set[Map.Entry[Int, SubHome]]
-    get() = subHomeMap.toMap().entries
+  def subHomeEntries: Set[Map.Entry[Int, SubHome]] = subHomeMap.toMap().entries
 
   val unitMap: Map[DirectionType, Int]
     get() {
