@@ -1,14 +1,14 @@
 package com.github.unchama.seichiassist.data.player.settings
 
 import com.github.unchama.seichiassist.data.player.PlayerNickName
-import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import kotlin.Suppress
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 class PlayerSettings {
-  val fastDiggingEffectSuppression = FastDiggingEffectSuppression()
+  val fastDiggingEffectSuppression = new FastDiggingEffectSuppression()
 
   var autoMineStack = true
 

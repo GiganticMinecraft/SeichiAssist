@@ -1,44 +1,46 @@
 package com.github.unchama.seichiassist.data.player
 
-import java.util
-import java.util.{Comparator, GregorianCalendar, UUID}
+import java.text.SimpleDateFormat
+import java.util.{GregorianCalendar, UUID}
 
-import cats.effect.internals.IORace.Pair
+import cats.effect.IO
 import com.github.unchama.menuinventory.InventoryRowSize
+import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
-import com.github.unchama.seichiassist.data.{ActiveSkillData, GridTemplate}
+import com.github.unchama.seichiassist.data.{ActiveSkillData, GridTemplate, Mana}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
-import com.github.unchama.seichiassist.task.MebiusTask
+import com.github.unchama.seichiassist.task.{MebiusTask, VotingFairyTask}
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
-import com.github.unchama.seichiassist.util.{ClosedRangeWithComparator, Util}
-import com.github.unchama.seichiassist.{LevelThresholds, ManagedWorld, MaterialSets, SeichiAssist}
-import com.github.unchama.targetedeffect
+import com.github.unchama.seichiassist.util.{ClosedRange, Util}
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.{TargetedEffects, UnfocusedEffect}
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import kotlin.Suppress
 import org.bukkit.ChatColor._
+import org.bukkit._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
-import org.bukkit.potion.PotionEffectType
-import org.bukkit.{Bukkit, Location, Material, Sound, Statistic}
+import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.{BitSet, mutable}
+import scala.jdk.CollectionConverters._
 import scala.util.control.Breaks
-
 
 class PlayerData(
                   @Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID,
                   val name: String
                 ) {
 
+  import TargetedEffects._
+  import com.github.unchama.targetedeffect.MessageEffects._
+  import com.github.unchama.targetedeffect.player.ForcedPotionEffect._
   import com.github.unchama.util.InventoryUtil._
-
-  import scala.jdk.CollectionConverters._
 
   val settings = new PlayerSettings()
 
@@ -55,7 +57,7 @@ class PlayerData(
   lazy private val statisticsData: mutable.ArrayBuffer[Int] = {
     val buffer: mutable.ArrayBuffer[Int] = ArrayBuffer()
 
-    buffer ++= (MaterialSets.materials -- PlayerData.exclude.asScala)
+    buffer ++= (MaterialSets.materials -- PlayerData.exclude)
       .map(material => player.getStatistic(Statistic.MINE_BLOCK, material))
 
     buffer
@@ -172,14 +174,14 @@ class PlayerData(
   private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
 
   //二つ名解禁フラグ保存用
-  var TitleFlags: BitSet = BitSet(10001)
+  var TitleFlags: mutable.BitSet = new mutable.BitSet(10001)
 
   //二つ名関連用にp_vote(投票数)を引っ張る。(予期せぬエラー回避のため名前を複雑化)
   var p_vote_forT = 0
   //二つ名配布予約NOの保存
   var giveachvNo = 0
   //実績ポイント用
-  var achievePoint = AchievementPoint(fromUnlockedAchievements = 0, used = 0, conversionCount = 0)
+  var achievePoint = AchievementPoint()
 
   var buildCount = BuildCount(1, java.math.BigDecimal.ZERO, 0)
   // 1周年記念
@@ -193,9 +195,7 @@ class PlayerData(
   var usingVotingFairy = false
   private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
 
-  var voteFairyPeriod = new ClosedRangeWithComparator(dummyDate, dummyDate, new Comparator((o1, o2) =>
-    o1.timeInMillis.compareTo(o2.timeInMillis)
-  ))
+  var voteFairyPeriod = new ClosedRange(dummyDate, dummyDate)
   var hasVotingFairyMana = 0
   var VotingFairyRecoveryValue = 0
   var toggleGiveApple = 1
@@ -219,16 +219,16 @@ class PlayerData(
   //region calculated
   // TODO many properties here may be inlined and deleted
 
-  def votingFairyStartTime: Int = voteFairyPeriod.start
+  def votingFairyStartTime: GregorianCalendar = voteFairyPeriod.start
 
-  def votingFairyStartTime_=(value: Int): Unit = {
-    voteFairyPeriod = new ClosedRangeWithComparator(value, voteFairyPeriod.endInclusive, voteFairyPeriod.comparator)
+  def votingFairyStartTime_=(value: GregorianCalendar): Unit = {
+    voteFairyPeriod = new ClosedRange(value, voteFairyPeriod.endInclusive)
   }
 
-  def votingFairyEndTime: Int = voteFairyPeriod.endInclusive
+  def votingFairyEndTime: GregorianCalendar = voteFairyPeriod.endInclusive
 
-  def votingFairyEndTime_=(value: Int): Unit = {
-    voteFairyPeriod = new ClosedRangeWithComparator(voteFairyPeriod.start, value, voteFairyPeriod.comparator)
+  def votingFairyEndTime_=(value: GregorianCalendar): Unit = {
+    voteFairyPeriod = new ClosedRange(voteFairyPeriod.start, value)
   }
 
   @Deprecated("PlayerDataはPlayerに依存するべきではない。")
@@ -242,7 +242,7 @@ class PlayerData(
    */
   def totalStarLevel: Int = starLevels.total()
 
-  def subHomeEntries: Set[Pair[Int, SubHome]] = Set(subHomeMap.map((_._1, _._2))
+  def subHomeEntries: Set[(Int, SubHome)] = subHomeMap.toSet
 
   def unitMap: Map[DirectionType, Int] = {
     val unitMap = mutable.Map[DirectionType, Int]().empty
@@ -501,302 +501,261 @@ class PlayerData(
   def updatePlayTick() {
     // WARN: 1分毎にupdatePlayTickが呼び出されるというコンテクストに依存している.
     val nowTotalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK)
-    val diff = nowTotalPlayTick - (totalPlayTick ?: nowTotalPlayTick)
+    val diff = nowTotalPlayTick - totalPlayTick.getOrElse(nowTotalPlayTick)
 
-    totalPlayTick = nowTotalPlayTick
+    totalPlayTick = Some(nowTotalPlayTick)
     playTick += diff
   }
 
   //総破壊ブロック数を更新する
   def updateAndCalcMinedBlockAmount(): Int = {
-    var sum = 0.0
-    for ((i, m) in (MaterialSets.materials - exclude)
-    .withIndex()
-    )
-    {
+    val blockIncreases = for {
+      (m, i) <- (MaterialSets.materials -- PlayerData.exclude).zipWithIndex
+    } yield {
       val materialStatistics = player.getStatistic(Statistic.MINE_BLOCK, m)
-      val increase = materialStatistics - statisticsData[i]
+      val increase = materialStatistics - statisticsData(i)
       val amount = calcBlockExp(m, increase)
-      sum += amount
       if (SeichiAssist.DEBUG) {
         if (amount > 0.0) {
           player.sendMessage(s"calcの値:$amount($m)")
         }
       }
-      statisticsData[i] = materialStatistics
+      statisticsData(i) = materialStatistics
+
+      amount
     }
 
-    return sum.roundToInt().also {
-      //整地量に追加
-      totalbreaknum += it
+    val sum = blockIncreases.sum.round.toInt
 
-      //ガチャポイントに合算
-      gachapoint += it
-    }
+    totalbreaknum += sum
+    gachapoint += sum
+
+    sum
   }
 
   //ブロック別整地数反映量の調節
   private def calcBlockExp(m: Material, i: Int): Double = {
-    val amount = i.toDouble()
+    val amount = i.toDouble
+
     //ブロック別重み分け
-    val matMult = when(m) {
+    val materialFactor = m match {
       //DIRTとGRASSは二重カウントされているので半分に
-      Material.DIRT
-      => 0.5
-      Material.GRASS
-      => 0.5
+      case Material.DIRT => 0.5
+      case Material.GRASS => 0.5
 
       //氷塊とマグマブロックの整地量を2倍
-      Material.PACKED_ICE
-      => 2.0
-      Material.MAGMA
-      => 2.0
+      case Material.PACKED_ICE | Material.MAGMA => 2.0
 
-      else => 1.0
+      case _ => 1.0
     }
 
-    val managedWorld = ManagedWorld.fromBukkitWorld(player.world)
-    val swMult = if (managedWorld ?
-    .isSeichi == true
-    ) 1.0
-    else 0.0
-    val sw01PenaltyMult = if (ManagedWorld.WORLD_SW == managedWorld) 0.8 else 1.0
-    return amount * matMult * swMult * sw01PenaltyMult
+    val managedWorld = ManagedWorld.fromBukkitWorld(player.getWorld)
+    val swMult = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
+    val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
+
+    amount * materialFactor * swMult * sw01PenaltyMult
   }
 
   //現在の採掘量順位
   def calcPlayerRank(): Int = {
     //ランク用関数
     var i = 0
-    val t = totalbreaknum
-    if (SeichiAssist.ranklist.size == 0) {
-      return 1
-    }
-    var rankdata = SeichiAssist.ranklist[i]
+
+    if (SeichiAssist.ranklist.isEmpty) return 1
+
+    var rankdata = SeichiAssist.ranklist(i)
+
     //ランクが上がらなくなるまで処理
-    while (rankdata.totalbreaknum > t) {
-      i ++
-        rankdata = SeichiAssist.ranklist[i]
+    while (rankdata.totalbreaknum > totalbreaknum) {
+      i += 1
+      rankdata = SeichiAssist.ranklist(i)
     }
-    return i + 1
+
+    i + 1
   }
 
   def calcPlayerApple(): Int = {
     //ランク用関数
     var i = 0
     val t = p_apple
-    if (SeichiAssist.ranklist_p_apple.size == 0) {
-      return 1
-    }
-    var rankdata = SeichiAssist.ranklist_p_apple[i]
+
+    if (SeichiAssist.ranklist_p_apple.isEmpty) return 1
+
+    var rankdata = SeichiAssist.ranklist_p_apple(i)
+
     //ランクが上がらなくなるまで処理
     while (rankdata.p_apple > t) {
-      i ++
-        rankdata = SeichiAssist.ranklist_p_apple[i]
+      i += 1
+      rankdata = SeichiAssist.ranklist_p_apple(i)
     }
-    return i + 1
+
+    i + 1
   }
 
   //パッシブスキルの獲得量表示
   def getPassiveExp(): Double = {
-    return when {
-      level < 8
-      => 0.0
-      level < 18
-      => SeichiAssist.seichiAssistConfig.getDropExplevel(1)
-      level < 28
-      => SeichiAssist.seichiAssistConfig.getDropExplevel(2)
-      level < 38
-      => SeichiAssist.seichiAssistConfig.getDropExplevel(3)
-      level < 48
-      => SeichiAssist.seichiAssistConfig.getDropExplevel(4)
-      level < 58
-      => SeichiAssist.seichiAssistConfig.getDropExplevel(5)
-      level < 68
-      => SeichiAssist.seichiAssistConfig.getDropExplevel(6)
-      level < 78
-      => SeichiAssist.seichiAssistConfig.getDropExplevel(7)
-      level < 88
-      => SeichiAssist.seichiAssistConfig.getDropExplevel(8)
-      level < 98
-      => SeichiAssist.seichiAssistConfig.getDropExplevel(9)
-      else => SeichiAssist.seichiAssistConfig.getDropExplevel(10)
+    {
+      case level < 8 => 0.0
+      case level < 18 => SeichiAssist.seichiAssistConfig.getDropExplevel(1)
+      case level < 28 => SeichiAssist.seichiAssistConfig.getDropExplevel(2)
+      case level < 38 => SeichiAssist.seichiAssistConfig.getDropExplevel(3)
+      case level < 48 => SeichiAssist.seichiAssistConfig.getDropExplevel(4)
+      case level < 58 => SeichiAssist.seichiAssistConfig.getDropExplevel(5)
+      case level < 68 => SeichiAssist.seichiAssistConfig.getDropExplevel(6)
+      case level < 78 => SeichiAssist.seichiAssistConfig.getDropExplevel(7)
+      case level < 88 => SeichiAssist.seichiAssistConfig.getDropExplevel(8)
+      case level < 98 => SeichiAssist.seichiAssistConfig.getDropExplevel(9)
+      case _ => SeichiAssist.seichiAssistConfig.getDropExplevel(10)
     }
   }
 
   //サブホームの位置をセットする
   def setSubHomeLocation(location: Location, subHomeIndex: Int) {
-    if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.subHomeMax) {
-      val currentSubHome = this.subHomeMap[subHomeIndex]
-      val currentSubHomeName = currentSubHome ?
-      .name
+    if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.getSubHomeMax) {
+      val currentSubHome = this.subHomeMap.get(subHomeIndex)
+      val currentSubHomeName = currentSubHome.map(_.name).orNull
 
-      this.subHomeMap[subHomeIndex] = SubHome(location, currentSubHomeName)
+      this.subHomeMap(subHomeIndex) = new SubHome(location, currentSubHomeName)
     }
   }
 
-  def setSubHomeName(name: String ?, subHomeIndex: Int) {
-    if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.subHomeMax) {
-      val currentSubHome = this.subHomeMap[subHomeIndex]
-      if (currentSubHome != null) {
-        this.subHomeMap[subHomeIndex] = SubHome(currentSubHome.location, name)
-      }
+  def setSubHomeName(name: String, subHomeIndex: Int) {
+    if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.getSubHomeMax) {
+      val currentSubHome = this.subHomeMap.getOrElse(subHomeIndex, return)
+
+      this.subHomeMap(subHomeIndex) = new SubHome(currentSubHome.getLocation, name)
     }
   }
 
   // サブホームの位置を読み込む
-  def getSubHomeLocation(subHomeIndex: Int): Location ? = {
-    val subHome = this.subHomeMap[subHomeIndex]
-    return subHome ?
-    .location
+  def getSubHomeLocation(subHomeIndex: Int): Option[Location] = {
+    val subHome = this.subHomeMap.get(subHomeIndex)
+    subHome.map(_.getLocation)
   }
 
   def getSubHomeName(subHomeIndex: Int): String = {
-    val subHome = this.subHomeMap[subHomeIndex]
-    val subHomeName = subHome ?
-    .name
-    return subHomeName ?: s"サブホームポイント${subHomeIndex + 1}"
+    val subHome = this.subHomeMap.get(subHomeIndex)
+    val subHomeName = subHome.map(_.name)
+    subHomeName.getOrElse(s"サブホームポイント${subHomeIndex + 1}")
   }
 
   private def saveTotalExp() {
-    totalexp = expmanager.currentExp
+    totalexp = expmanager.getCurrentExp
   }
 
   private def loadTotalExp() {
-    val internalServerId = SeichiAssist.seichiAssistConfig.serverNum
+    val internalServerId = SeichiAssist.seichiAssistConfig.getServerNum
     //経験値が統合されてない場合は統合する
-    if (expmarge.toInt() != 0x07 && internalServerId in 1..3
-    )
-    {
-      if (expmarge and (0x01 shl internalServerId - 1).toByte() == 0.toByte()) {
-        if (expmarge.toInt() == 0) {
+    if (expmarge.toInt != 0x07 && (1 to 3).contains(internalServerId)) {
+      if (expmarge.&(0x01 << internalServerId - 1).toByte == 0.toByte) {
+        if (expmarge.toInt == 0) {
           // 初回は加算じゃなくベースとして代入にする
-          totalexp = expmanager.currentExp
+          totalexp = expmanager.getCurrentExp
         } else {
-          totalexp += expmanager.currentExp
+          totalexp += expmanager.getCurrentExp
         }
-        expmarge = expmarge or (0x01 shl internalServerId - 1).toByte()
+        expmarge = (expmarge | (0x01 << internalServerId - 1).toByte).toByte
       }
     }
     expmanager.setExp(totalexp)
   }
 
-  def canBreakHalfBlock(): Boolean = {
-    return this.allowBreakingHalfBlocks
-  }
+  def canBreakHalfBlock(): Boolean = this.allowBreakingHalfBlocks
 
   def canGridExtend(directionType: DirectionType, world: String): Boolean = {
-    val limit = config.getGridLimitPerWorld(world)
+    val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(world)
     val chunkMap = unitMap
 
     //チャンクを拡大すると仮定する
-    val assumedAmoont = chunkMap.getValue(directionType) + this.unitPerClick
+    val assumedAmoont = chunkMap(directionType) + this.unitPerClick
 
     //一応すべての拡張値を出しておく
-    val ahead = chunkMap.getValue(DirectionType.AHEAD)
-    val behind = chunkMap.getValue(DirectionType.BEHIND)
-    val right = chunkMap.getValue(DirectionType.RIGHT)
-    val left = chunkMap.getValue(DirectionType.LEFT)
+    val ahead = chunkMap(DirectionType.AHEAD)
+    val behind = chunkMap(DirectionType.BEHIND)
+    val right = chunkMap(DirectionType.RIGHT)
+    val left = chunkMap(DirectionType.LEFT)
 
     //合計チャンク再計算値
-    val assumedUnitAmount = when(directionType) {
-      DirectionType.AHEAD
-      => (assumedAmoont + 1 + behind) * (right + 1 + left)
-      DirectionType.BEHIND
-      => (ahead + 1 + assumedAmoont) * (right + 1 + left)
-      DirectionType.RIGHT
-      => (ahead + 1 + behind) * (assumedAmoont + 1 + left)
-      DirectionType.LEFT
-      => (ahead + 1 + behind) * (right + 1 + assumedAmoont)
+    val assumedUnitAmount = directionType match {
+      case DirectionType.AHEAD => (assumedAmoont + 1 + behind) * (right + 1 + left)
+      case DirectionType.BEHIND => (ahead + 1 + assumedAmoont) * (right + 1 + left)
+      case DirectionType.RIGHT => (ahead + 1 + behind) * (assumedAmoont + 1 + left)
+      case DirectionType.LEFT => (ahead + 1 + behind) * (right + 1 + assumedAmoont)
     }
 
-    return assumedUnitAmount <= limit
-
+    assumedUnitAmount <= limit
   }
 
   def canGridReduce(directionType: DirectionType): Boolean = {
     val chunkMap = unitMap
 
     //減らしたと仮定する
-    val assumedAmount = chunkMap.getValue(directionType) - unitPerClick
-    return assumedAmount >= 0
+    val sizeAfterShrink = chunkMap(directionType) - unitPerClick
+
+    sizeAfterShrink >= 0
   }
 
   def setUnitAmount(directionType: DirectionType, amount: Int) {
-    when(directionType) {
-      DirectionType.AHEAD
-      => this.claimUnit = this.claimUnit.copy(ahead = amount)
-      DirectionType.BEHIND
-      => this.claimUnit = this.claimUnit.copy(behind = amount)
-      DirectionType.RIGHT
-      => this.claimUnit = this.claimUnit.copy(right = amount)
-      DirectionType.LEFT
-      => this.claimUnit = this.claimUnit.copy(left = amount)
+    this.claimUnit = directionType match {
+      case DirectionType.AHEAD => this.claimUnit.copy(ahead = amount)
+      case DirectionType.BEHIND => this.claimUnit.copy(behind = amount)
+      case DirectionType.RIGHT => this.claimUnit.copy(right = amount)
+      case DirectionType.LEFT => this.claimUnit.copy(left = amount)
     }
   }
 
   def addUnitAmount(directionType: DirectionType, amount: Int) {
-    when(directionType) {
-      DirectionType.AHEAD
-      => this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
-      DirectionType.BEHIND
-      => this.claimUnit = this.claimUnit.copy(behind = this.claimUnit.behind + amount)
-      DirectionType.RIGHT
-      => this.claimUnit = this.claimUnit.copy(right = this.claimUnit.right + amount)
-      DirectionType.LEFT
-      => this.claimUnit = this.claimUnit.copy(left = this.claimUnit.left + amount)
+    directionType match {
+      case DirectionType.AHEAD => this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
+      case DirectionType.BEHIND => this.claimUnit = this.claimUnit.copy(behind = this.claimUnit.behind + amount)
+      case DirectionType.RIGHT => this.claimUnit = this.claimUnit.copy(right = this.claimUnit.right + amount)
+      case DirectionType.LEFT => this.claimUnit = this.claimUnit.copy(left = this.claimUnit.left + amount)
     }
   }
 
   def toggleUnitPerGrid() {
-    when {
-      this.unitPerClick == 1
-      => this.unitPerClick = 10
-      this.unitPerClick == 10
-      => this.unitPerClick = 100
-      this.unitPerClick == 100
-      => this.unitPerClick = 1
+    this.unitPerClick = {
+      case this.unitPerClick == 1 => 10
+      case this.unitPerClick == 10 => 100
+      case this.unitPerClick == 100 => 1
     }
   }
 
   @AntiTypesafe
   def getVotingFairyStartTimeAsString(): String = {
     val cal = this.votingFairyStartTime
-    return if (votingFairyStartTime == dummyDate) {
+
+    if (votingFairyStartTime == dummyDate) {
       //設定されてない場合
       ",,,,,"
     } else {
       //設定されてる場合
-      val date = cal.time
-      val format = SimpleDateFormat("yyyy,MM,dd,HH,mm,")
+      val date = cal.getTime
+      val format = new SimpleDateFormat("yyyy,MM,dd,HH,mm,")
       format.format(date)
     }
   }
 
   def setVotingFairyTime(@AntiTypesafe str: String) {
-    val s = str.split(",".toRegex()).toTypedArray()
+    val s = str.split(",")
     if (s.size < 5) return
-    if (s.slice(0..4
-    ).all(String :: isNotEmpty)
-    )
-    {
-      val year = s[0].toInt()
-      val month = s[1].toInt() - 1
-      val dayOfMonth = s[2].toInt()
-      val starts = GregorianCalendar(year, month, dayOfMonth, Integer.parseInt(s[3]), Integer.parseInt(s[4]))
+    if (!s.slice(0, 5).contains("")) {
+      val year = s(0).toInt
+      val month = s(1).toInt - 1
+      val dayOfMonth = s(2).toInt
+      val starts = new GregorianCalendar(year, month, dayOfMonth, Integer.parseInt(s(3)), Integer.parseInt(s(4)))
 
-      var min = Integer.parseInt(s[4]) + 1
-      var hour = Integer.parseInt(s[3])
+      var min = Integer.parseInt(s(4)) + 1
+      var hour = Integer.parseInt(s(3))
 
       min = if (this.toggleVotingFairy % 2 != 0) min + 30 else min
-      hour = if (this.toggleVotingFairy == 2 or 3)
-        hour + 1
-      else if (this.toggleVotingFairy == 4)
-        hour + 2
-      else
-        hour
+      hour = this.toggleVotingFairy match {
+        case 2 | 3 => hour + 1
+        case 4 => hour + 2
+        case _ => hour
+      }
 
-      val ends = GregorianCalendar(year, month, dayOfMonth, hour, min)
+      val ends = new GregorianCalendar(year, month, dayOfMonth, hour, min)
 
       this.votingFairyStartTime = starts
       this.votingFairyEndTime = ends
@@ -807,22 +766,22 @@ class PlayerData(
     //効果は継続しているか
     if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.votingFairyStartTime, this.votingFairyEndTime)) {
       this.usingVotingFairy = false
-      player.sendMessage(LIGHT_PURPLE.toString() + "" + BOLD + "妖精は何処かへ行ってしまったようだ...")
+      player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
     } else if (this.usingVotingFairy) {
-      VotingFairyTask.speak(player, "おかえり！" + player.name, true)
+      VotingFairyTask.speak(player, "おかえり！" + player.getName, true)
     }
   }
 
   def setContributionPoint(addAmount: Int) {
-    val mana = Mana()
+    val mana = new Mana()
 
     //負数(入力ミスによるやり直し中プレイヤーがオンラインだった場合)の時
     if (addAmount < 0) {
-      player.sendMessage(GREEN.toString() + "" + BOLD + "入力者のミスによって得た不正なマナを" + -10 * addAmount + "分減少させました.")
-      player.sendMessage(GREEN.toString() + "" + BOLD + "申し訳ございません.")
+      player.sendMessage(s"$GREEN${BOLD}入力者のミスによって得た不正なマナを${-10 * addAmount}分減少させました.")
+      player.sendMessage(s"$GREEN${BOLD}申し訳ございません.")
     } else {
-      player.sendMessage(GREEN.toString() + "" + BOLD + "運営からあなたの整地鯖への貢献報酬として")
-      player.sendMessage(GREEN.toString() + "" + BOLD + "マナの上限値が" + 10 * addAmount + "上昇しました．(永久)")
+      player.sendMessage(s"$GREEN${BOLD}運営からあなたの整地鯖への貢献報酬として")
+      player.sendMessage(s"$GREEN${BOLD}マナの上限値が${10 * addAmount}上昇しました．(永久)")
     }
     this.added_mana += addAmount
 
@@ -830,7 +789,7 @@ class PlayerData(
   }
 
   @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def toggleMessageFlag(): TargetedEffect[Player] = {
+  @SuspendingMethod def toggleMessageFlag(): TargetedEffect[Player] = deferredEffect(IO {
     settings.receiveFastDiggingEffectStats = !settings.receiveFastDiggingEffectStats
 
     val responseMessage = if (settings.receiveFastDiggingEffectStats) {
@@ -839,8 +798,8 @@ class PlayerData(
       s"${GREEN}内訳表示:OFF"
     }
 
-    return responseMessage.asMessageEffect()
-  }
+    responseMessage.asMessageEffect()
+  })
 
   /**
    * 運営権限により強制的に実績を解除することを試みる。
@@ -849,17 +808,16 @@ class PlayerData(
    * @param number 解除対象の実績番号
    * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
    */
-  @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def tryForcefullyUnlockAchievement(number: Int): TargetedEffect[CommandSender] =
-    if (!TitleFlags[number]) {
-      TitleFlags.set(number)
-      Bukkit.getPlayer(uuid) ?
-      .sendMessage(s"運営チームよりNo${number}の実績が配布されました。")
+  def tryForcefullyUnlockAchievement(number: Int): TargetedEffect[CommandSender] = deferredEffect(IO {
+    if (!TitleFlags(number)) {
+      TitleFlags.addOne(number)
+      player.sendMessage(s"運営チームよりNo${number}の実績が配布されました。")
 
       s"$lowercaseName に実績No. $number を${GREEN}付与${RESET}しました。".asMessageEffect()
     } else {
       s"$GRAY$lowercaseName は既に実績No. $number を獲得しています。".asMessageEffect()
     }
+  })
 
   /**
    * 運営権限により強制的に実績を剥奪することを試みる。
@@ -868,20 +826,20 @@ class PlayerData(
    * @param number 解除対象の実績番号
    * @return この作用の実行者に向け操作の結果を記述する[TargetedEffect]
    */
-  @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def forcefullyDepriveAchievement(number: Int): TargetedEffect[CommandSender] =
-    if (!TitleFlags[number]) {
-      TitleFlags[number] = false
+  def forcefullyDepriveAchievement(number: Int): TargetedEffect[CommandSender] = deferredEffect(IO {
+    if (!TitleFlags(number)) {
+      TitleFlags(number) = false
 
       s"$lowercaseName から実績No. $number を${RED}剥奪${GREEN}しました。".asMessageEffect()
     } else {
       s"$GRAY$lowercaseName は実績No. $number を獲得していません。".asMessageEffect()
     }
+  })
 
   /**
    * プレーヤーに付与されるべき採掘速度上昇効果を適用する[TargetedEffect].
    */
-  @SuspendingMethod def computeFastDiggingEffect(): TargetedEffect[Player] = {
+  def computeFastDiggingEffect(): TargetedEffect[Player] = deferredEffect(IO {
     val activeEffects = effectdatalist.toList
 
     val amplifierSum = activeEffects.map(_.amplifier).sum
@@ -891,45 +849,45 @@ class PlayerData(
     val maxSpeed: Int = settings.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
 
     // 実際に適用されるeffect量
-    val amplifier = min(computedAmplifier, maxSpeed)
+    val amplifier = Math.min(computedAmplifier, maxSpeed)
 
-    return if (amplifier >= 0) {
-      PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
-    } else {
+    val effect =
+      if (amplifier >= 0)
+        new PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
+      else
+        new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
 
-      PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
-      }.asTargetedEffect()
-  }
+    effect.asTargetedEffect()
+  })
 
   /**
    * 保護申請の番号を更新させる[UnfocusedEffect]
    */
-  val incrementRegionNumber: UnfocusedEffect =
-    targetedeffect.UnfocusedEffect {
-      this.regionCount += 1
-    }
+  val incrementRegionNumber: TargetedEffect[Any] = UnfocusedEffect { this.regionCount += 1 }
 
   @Deprecated("Should be moved to external scope")
   val toggleExpBarVisibility: TargetedEffect[Player] =
-    targetedeffect.UnfocusedEffect {
+    UnfocusedEffect {
       this.settings.isExpBarVisible = !this.settings.isExpBarVisible
     } + deferredEffect {
-      when {
-        this.settings.isExpBarVisible
-        => s"${GREEN}整地量バー表示"
-        else => s"${RED}整地量バー非表示"
-      }.asMessageEffect()
-    } + targetedeffect.UnfocusedEffect {
+      IO ({
+        if (this.settings.isExpBarVisible)
+          s"${GREEN}整地量バー表示"
+        else
+          s"${RED}整地量バー非表示"
+      }.asMessageEffect())
+    } + UnfocusedEffect {
       SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
     }
 }
 
 object PlayerData {
-  var config = SeichiAssist.seichiAssistConfig
-
   //TODO:もちろんここにあるべきではない
   val passiveSkillProbability = 10
 
-  val exclude = util.EnumSet.of(Material.GRASS_PATH, Material.SOIL, Material.MOB_SPAWNER,
-    Material.CAULDRON, Material.ENDER_CHEST)
+  val exclude: Set[Material] = Set(
+    Material.GRASS_PATH,
+    Material.SOIL, Material.MOB_SPAWNER,
+    Material.CAULDRON, Material.ENDER_CHEST
+  )
 }
