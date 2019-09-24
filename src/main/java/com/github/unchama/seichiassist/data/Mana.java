@@ -88,7 +88,7 @@ public class Mana {
 	public void decrease(double amount, Player player, int level){
 		value -= amount;
 		if(value < 0) value = 0;
-		if (SeichiAssist.getDEBUG()) value = getMax();
+		if (SeichiAssist.DEBUG()) value = getMax();
 		display(player,level);
 	}
 
@@ -108,9 +108,9 @@ public class Mana {
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
-		PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+		PlayerData playerdata = SeichiAssist.playermap().getOrElse(uuid, () -> null);
 
-		if (SeichiAssist.getDEBUG()) {
+		if (SeichiAssist.DEBUG()) {
 			setMax(100000);
 			return;
 		}
@@ -133,7 +133,7 @@ public class Mana {
 			t_max += increase;
 		}
 		//貢献度ptの上昇値
-		t_max += playerdata.getAdded_mana() * SeichiAssist.seichiAssistConfig().getContributeAddedMana();
+		t_max += playerdata.added_mana() * SeichiAssist.seichiAssistConfig().getContributeAddedMana();
 
 		setMax(t_max);
 	}
@@ -151,7 +151,7 @@ public class Mana {
 		//UUIDを取得
 		UUID uuid = player.getUniqueId();
 		//playerdataを取得
-		PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+		PlayerData playerdata = SeichiAssist.playermap().getOrElse(uuid, () -> null);
 
 		/*
 		if(SeichiAssist.DEBUG){
@@ -178,7 +178,7 @@ public class Mana {
 			t_max += increase;
 		}
 		//貢献度ptの上昇値
-		t_max += playerdata.getAdded_mana() * SeichiAssist.seichiAssistConfig().getContributeAddedMana();
+		t_max += playerdata.added_mana() * SeichiAssist.seichiAssistConfig().getContributeAddedMana();
 
 		setMax(t_max);
 		return t_max;

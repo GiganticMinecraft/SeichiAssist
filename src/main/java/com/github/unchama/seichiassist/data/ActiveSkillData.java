@@ -100,7 +100,7 @@ public class ActiveSkillData {
 	public void updateActiveSkillPoint(Player player,int level) {
 		int point = IntStream.rangeClosed(1, level).map(i -> i / 10 + 1).sum();
 		//レベルに応じたスキルポイント量を取得
-		if (SeichiAssist.getDEBUG()) {
+		if (SeichiAssist.DEBUG()) {
 			player.sendMessage("あなたのレベルでの獲得アクティブスキルポイント：" + point);
 		}
 		//取得しているスキルを確認してその分のスキルポイントを引く
@@ -129,7 +129,7 @@ public class ActiveSkillData {
 			point -= 110;
 		}
 
-		if (SeichiAssist.getDEBUG()) {
+		if (SeichiAssist.DEBUG()) {
 			player.sendMessage("獲得済みスキルを考慮したアクティブスキルポイント：" + point);
 			point += 10000;
 		}
@@ -204,7 +204,7 @@ public class ActiveSkillData {
 		//アサルトスキルの実行
 		if(this.assaultflag && this.assaulttype != 0){
 			this.updateAssaultSkill(player,this.assaulttype,this.assaultnum,this.mineflagnum);
-			String name = ActiveSkill.activeSkillName(this.assaulttype, this.assaultnum);
+			String name = ActiveSkill.getActiveSkillName(this.assaulttype, this.assaultnum);
 			player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル:" + name + "  を選択しています。");
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
 		}
@@ -212,7 +212,7 @@ public class ActiveSkillData {
 		//通常スキルの実行
 		if(this.skilltype != 0){
 			this.updateSkill(player, this.skilltype, this.skillnum,this.mineflagnum);
-			String name = ActiveSkill.activeSkillName(this.skilltype, this.skillnum);
+			String name = ActiveSkill.getActiveSkillName(this.skilltype, this.skillnum);
 			player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  を選択しています。");
 			player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
 		}

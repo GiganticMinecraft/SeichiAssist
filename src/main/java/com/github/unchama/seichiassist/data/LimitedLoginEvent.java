@@ -6,16 +6,13 @@ import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import scala.collection.mutable.HashMap;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.UUID;
-
-//import org.bukkit.metadata.FixedMetadataValue;
-//import org.bukkit.instance.java.JavaPlugin;
 
 public class LimitedLoginEvent {
     private static Config config = SeichiAssist.seichiAssistConfig();
@@ -23,14 +20,6 @@ public class LimitedLoginEvent {
 	Player player;
 	PlayerData playerdata;
 	String lastcheckdate ;
-
-//	private JavaPlugin instance;
-
-//	public void BlockFill(JavaPlugin instance) {
-//		this.instance = instance;
-//		instance.getServer().getPluginManager().registerEvents(this, instance);
-//	}
-
 
 	public void getLastcheck(String s){
 		lastcheckdate = s ;
@@ -40,8 +29,8 @@ public class LimitedLoginEvent {
 	public void TryGetItem(Player p){
 		player = p;
 		UUID uuid = p.getUniqueId();
-		playerdata = playermap.get(uuid);
-		ItemStack skull = Util.INSTANCE.getskull(player.getName());
+		playerdata = playermap.getOrElse(uuid, () -> null);
+		ItemStack skull = Util.getskull(player.getName());
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -52,12 +41,12 @@ public class LimitedLoginEvent {
 				final Date LLEStart = sdf.parse(config.getLimitedLoginEventStart());
 				final Date LLEEnd = sdf.parse(config.getLimitedLoginEventEnd());
 
-				final long TodayLong = TodayDate.time();
-				final long LastLong = LastDate.time();
-				final long LLEStartLong = LLEStart.time();
-				final long LLEEndLong = LLEEnd.time();
+				final long TodayLong = TodayDate.getTime();
+				final long LastLong = LastDate.getTime();
+				final long LLEStartLong = LLEStart.getTime();
+				final long LLEEndLong = LLEEnd.getTime();
 
-				int loginDays = playerdata.getLimitedLoginCount();
+				int loginDays = playerdata.LimitedLoginCount();
 				int configDays;
 				int internalItemId;
 				int amount;
@@ -90,10 +79,10 @@ public class LimitedLoginEvent {
 								}
 								p.sendMessage("【"+ message +"】"+ amount +"個のガチャ券をプレゼント！");
 								for (int i = 1; i <= amount; i++) {
-									if(player.getInventory().contains(skull) || !Util.INSTANCE.isPlayerInventoryFull(player)){
-										Util.INSTANCE.addItem(player,skull);
+									if(player.getInventory().contains(skull) || !Util.isPlayerInventoryFull(player)){
+										Util.addItem(player,skull);
 									}else{
-										Util.INSTANCE.dropItem(player,skull);
+										Util.dropItem(player,skull);
 									}
 								}
 								break;
@@ -108,7 +97,7 @@ public class LimitedLoginEvent {
 					}while(configDays == loginDays);
 				}
 
-				playerdata.setLimitedLoginCount(loginDays);
+				playerdata.LimitedLoginCount_$eq(loginDays);
 
 			} catch (ParseException e) {
 				e.printStackTrace();

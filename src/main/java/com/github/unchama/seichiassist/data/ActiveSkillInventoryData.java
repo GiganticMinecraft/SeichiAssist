@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.data;
 import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.PlayerData;
-import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
 import com.github.unchama.util.collection.ImmutableListFactory;
@@ -22,15 +21,10 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 public class ActiveSkillInventoryData {
-    static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
-    static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway();
-    SeichiAssist plugin = SeichiAssist.instance();
-
 	//アクティブスキルメニュー
 	public static Inventory getActiveSkillMenuData(Player p){
 		//プレイヤーを取得
@@ -38,7 +32,7 @@ public class ActiveSkillInventoryData {
 		//UUID取得
 		UUID uuid = player.getUniqueId();
 		//プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().get(uuid);
+        PlayerData playerdata = SeichiAssist.playermap().getOrElse(uuid, () -> null);
 		//念のためエラー分岐
 		if(playerdata == null){
 			player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
@@ -71,11 +65,11 @@ public class ActiveSkillInventoryData {
 		skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
 		itemstack.setDurability((short) 3);
 		skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.getLowercaseName() + "のアクティブスキルデータ");
-		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.activeSkillName(playerdata.getActiveskilldata().skilltype, playerdata.getActiveskilldata().skillnum)
-				, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるアクティブスキルポイント：" + playerdata.getActiveskilldata().skillpoint);
+		skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.lowercaseName() + "のアクティブスキルデータ");
+		lore = Arrays.asList(ChatColor.RESET + "" +  ChatColor.GREEN + "現在選択しているスキル：" + ActiveSkill.getActiveSkillName(playerdata.activeskilldata().skilltype, playerdata.activeskilldata().skillnum)
+				, ChatColor.RESET + "" +  ChatColor.YELLOW + "使えるアクティブスキルポイント：" + playerdata.activeskilldata().skillpoint);
 		skullmeta.setLore(lore);
-		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerdata.getUuid()));
+		skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerdata.uuid()));
 		itemstack.setItemMeta(skullmeta);
 		inventory.setItem(0,itemstack);
 
@@ -97,7 +91,7 @@ public class ActiveSkillInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(2,itemstack);
 
-        if (SeichiAssist.getDEBUG()) {
+        if (SeichiAssist.DEBUG()) {
 		itemstack = new ItemStack(Material.STONE_BUTTON,1);
 		itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE_BUTTON);
 		itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リセットボタン");
@@ -108,7 +102,7 @@ public class ActiveSkillInventoryData {
 		itemstack.setItemMeta(itemmeta);
 		inventory.setItem(9,itemstack);
 		}
-		if(playerdata.getActiveskilldata().arrowskill >= 4){
+		if(playerdata.activeskilldata().arrowskill >= 4){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.REGEN));
@@ -136,7 +130,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(3,itemstack);
 
-		if(playerdata.getActiveskilldata().arrowskill >= 5){
+		if(playerdata.activeskilldata().arrowskill >= 5){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.FIRE_RESISTANCE));
@@ -164,7 +158,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(4,itemstack);
 
-		if(playerdata.getActiveskilldata().arrowskill >= 6){
+		if(playerdata.activeskilldata().arrowskill >= 6){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.INSTANT_HEAL));
@@ -192,7 +186,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(5,itemstack);
 
-		if(playerdata.getActiveskilldata().arrowskill >= 7){
+		if(playerdata.activeskilldata().arrowskill >= 7){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.NIGHT_VISION));
@@ -220,7 +214,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(6,itemstack);
 
-		if(playerdata.getActiveskilldata().arrowskill >= 8){
+		if(playerdata.activeskilldata().arrowskill >= 8){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.SPEED));
@@ -248,7 +242,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(7,itemstack);
 
-		if(playerdata.getActiveskilldata().arrowskill >= 9){
+		if(playerdata.activeskilldata().arrowskill >= 9){
 			itemstack = new ItemStack(Material.TIPPED_ARROW,1);
 			potionmeta = ItemMetaFactory.TIPPED_ARROW.getValue();
 			potionmeta.setBasePotionData(new PotionData(PotionType.INSTANT_DAMAGE));
@@ -277,7 +271,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(8,itemstack);
 
 		//2列目
-		if(playerdata.getActiveskilldata().multiskill >= 4){
+		if(playerdata.activeskilldata().multiskill >= 4){
 			itemstack = new ItemStack(Material.SADDLE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SADDLE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -304,7 +298,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(12,itemstack);
 
 
-		if(playerdata.getActiveskilldata().multiskill >= 5){
+		if(playerdata.activeskilldata().multiskill >= 5){
 			itemstack = new ItemStack(Material.MINECART,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MINECART);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -330,7 +324,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(13,itemstack);
 
-		if(playerdata.getActiveskilldata().multiskill >= 6){
+		if(playerdata.activeskilldata().multiskill >= 6){
 			itemstack = new ItemStack(Material.STORAGE_MINECART,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STORAGE_MINECART);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -357,7 +351,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(14,itemstack);
 
 
-		if(playerdata.getActiveskilldata().multiskill >= 7){
+		if(playerdata.activeskilldata().multiskill >= 7){
 			itemstack = new ItemStack(Material.POWERED_MINECART,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.POWERED_MINECART);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -384,7 +378,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(15,itemstack);
 
 
-		if(playerdata.getActiveskilldata().multiskill >= 8){
+		if(playerdata.activeskilldata().multiskill >= 8){
 			itemstack = new ItemStack(Material.EXPLOSIVE_MINECART,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EXPLOSIVE_MINECART);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -411,7 +405,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(16,itemstack);
 
 
-		if(playerdata.getActiveskilldata().multiskill >= 9){
+		if(playerdata.activeskilldata().multiskill >= 9){
 			itemstack = new ItemStack(Material.HOPPER_MINECART,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.HOPPER_MINECART);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -439,7 +433,7 @@ public class ActiveSkillInventoryData {
 
 
 		//３列目
-		if(playerdata.getActiveskilldata().breakskill >= 1){
+		if(playerdata.activeskilldata().breakskill >= 1){
 			itemstack = new ItemStack(Material.GRASS,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -466,7 +460,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(18,itemstack);
 
 
-		if(playerdata.getActiveskilldata().breakskill >= 2){
+		if(playerdata.activeskilldata().breakskill >= 2){
 			itemstack = new ItemStack(Material.STONE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STONE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -492,7 +486,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(19,itemstack);
 
-		if(playerdata.getActiveskilldata().breakskill >= 3){
+		if(playerdata.activeskilldata().breakskill >= 3){
 			itemstack = new ItemStack(Material.COAL_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COAL_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -518,7 +512,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(20,itemstack);
 
-		if(playerdata.getActiveskilldata().breakskill >= 4){
+		if(playerdata.activeskilldata().breakskill >= 4){
 			itemstack = new ItemStack(Material.IRON_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.IRON_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -544,7 +538,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(21,itemstack);
 
-		if(playerdata.getActiveskilldata().breakskill >= 5){
+		if(playerdata.activeskilldata().breakskill >= 5){
 			itemstack = new ItemStack(Material.GOLD_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -570,7 +564,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(22,itemstack);
 
-		if(playerdata.getActiveskilldata().breakskill >= 6){
+		if(playerdata.activeskilldata().breakskill >= 6){
 			itemstack = new ItemStack(Material.REDSTONE_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -597,7 +591,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(23,itemstack);
 
 
-		if(playerdata.getActiveskilldata().breakskill >= 7){
+		if(playerdata.activeskilldata().breakskill >= 7){
 			itemstack = new ItemStack(Material.LAPIS_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAPIS_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -623,7 +617,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(24,itemstack);
 
-		if(playerdata.getActiveskilldata().breakskill >= 8){
+		if(playerdata.activeskilldata().breakskill >= 8){
 			itemstack = new ItemStack(Material.EMERALD_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -649,7 +643,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(25,itemstack);
 
-		if(playerdata.getActiveskilldata().breakskill >= 9){
+		if(playerdata.activeskilldata().breakskill >= 9){
 			itemstack = new ItemStack(Material.DIAMOND_ORE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_ORE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -676,7 +670,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(26,itemstack);
 
 		//4列目
-		if(playerdata.getActiveskilldata().watercondenskill >= 7){
+		if(playerdata.activeskilldata().watercondenskill >= 7){
 			itemstack = new ItemStack(Material.SNOW_BLOCK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.SNOW_BLOCK);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -703,7 +697,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(30,itemstack);
 
 
-		if(playerdata.getActiveskilldata().watercondenskill >= 8){
+		if(playerdata.activeskilldata().watercondenskill >= 8){
 			itemstack = new ItemStack(Material.ICE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ICE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -730,7 +724,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(31,itemstack);
 
 
-		if(playerdata.getActiveskilldata().watercondenskill >= 9){
+		if(playerdata.activeskilldata().watercondenskill >= 9){
 			itemstack = new ItemStack(Material.PACKED_ICE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PACKED_ICE);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -758,7 +752,7 @@ public class ActiveSkillInventoryData {
 
 
 		//五行目
-		if(playerdata.getActiveskilldata().lavacondenskill >= 7){
+		if(playerdata.activeskilldata().lavacondenskill >= 7){
 			itemstack = new ItemStack(Material.NETHERRACK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHERRACK);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -785,7 +779,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(39,itemstack);
 
 
-		if(playerdata.getActiveskilldata().lavacondenskill >= 8){
+		if(playerdata.activeskilldata().lavacondenskill >= 8){
 			itemstack = new ItemStack(Material.NETHER_BRICK,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_BRICK);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -812,7 +806,7 @@ public class ActiveSkillInventoryData {
 		inventory.setItem(40,itemstack);
 
 
-		if(playerdata.getActiveskilldata().lavacondenskill >= 9){
+		if(playerdata.activeskilldata().lavacondenskill >= 9){
 			itemstack = new ItemStack(Material.MAGMA,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MAGMA);
 			itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
@@ -838,7 +832,7 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(41,itemstack);
 
-		if(playerdata.getActiveskilldata().multiskill >= 9 && playerdata.getActiveskilldata().breakskill >= 9 && playerdata.getActiveskilldata().arrowskill >= 9 && playerdata.getActiveskilldata().watercondenskill >= 9 && playerdata.getActiveskilldata().lavacondenskill >= 9){
+		if(playerdata.activeskilldata().multiskill >= 9 && playerdata.activeskilldata().breakskill >= 9 && playerdata.activeskilldata().arrowskill >= 9 && playerdata.activeskilldata().watercondenskill >= 9 && playerdata.activeskilldata().lavacondenskill >= 9){
 			itemstack = new ItemStack(Material.DIAMOND_CHESTPLATE,1);
 			itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_CHESTPLATE);
 			itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -863,8 +857,8 @@ public class ActiveSkillInventoryData {
 		}
 		inventory.setItem(10,itemstack);
 
-		if(playerdata.getActiveskilldata().watercondenskill >= 9 && playerdata.getActiveskilldata().lavacondenskill >= 9){
-			if(playerdata.getActiveskilldata().fluidcondenskill == 10){
+		if(playerdata.activeskilldata().watercondenskill >= 9 && playerdata.activeskilldata().lavacondenskill >= 9){
+			if(playerdata.activeskilldata().fluidcondenskill == 10){
 				itemstack = new ItemStack(Material.NETHER_STAR,1);
 				itemmeta = Bukkit.getItemFactory().getItemMeta(Material.NETHER_STAR);
 				itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
