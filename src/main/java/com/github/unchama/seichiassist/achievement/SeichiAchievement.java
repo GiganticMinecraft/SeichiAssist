@@ -189,13 +189,13 @@ public enum SeichiAchievement {
 
     public void achieve(Player player) {
         PlayerData playerData = getPlayerData(player);
-        if (playerData.getTitleFlags().get(id)) return;
+        if (playerData.TitleFlags().contains(id)) return;
 
         if (!condition.test(player)) {
             // TODO: this shouldn't be here
             if (9000 < id && id < 10000) player.sendMessage("実績No" + id + "は条件を満たしていません。");
         } else {
-            playerData.getTitleFlags().set(id);
+            playerData.TitleFlags().addOne(id);
             player.sendMessage("実績No" + id + "解除！おめでとうございます！");
         }
     }
@@ -208,7 +208,7 @@ public enum SeichiAchievement {
 
         // 予約配布システム
         if (7000 < id && id < 8000) {
-            playerData.getTitleFlags().set(id);
+            playerData.TitleFlags().addOne(id);
             player.sendMessage("【実績システム】運営チームよりNo" + id + "の二つ名がプレゼントされました。");
         } else {
             optionalAchievement.ifPresent(seichiAchievement -> seichiAchievement.achieve(player));
@@ -232,27 +232,27 @@ public enum SeichiAchievement {
     }
 
     private static long getBrokenBlockAmount(Player player) {
-        return getPlayerData(player).getTotalbreaknum();
+        return getPlayerData(player).totalbreaknum();
     }
 
     private static long getSpentTicks(Player player) {
-        return getPlayerData(player).getPlayTick();
+        return getPlayerData(player).playTick();
     }
 
     private static int getDaysChaining(Player player) {
-        return getPlayerData(player).getLoginStatus().getConsecutiveLoginDays();
+        return getPlayerData(player).loginStatus().consecutiveLoginDays();
     }
 
     private static int getTotalPlayedDays(Player player) {
-        return getPlayerData(player).getLoginStatus().getTotalLoginDay();
+        return getPlayerData(player).loginStatus().totalLoginDay();
     }
 
     private static int getVotingCounts(Player player) {
-        return getPlayerData(player).getP_vote_forT();
+        return getPlayerData(player).p_vote_forT();
     }
 
     private static PlayerData getPlayerData(Player player) {
-        return SeichiAssist.playermap().get(player.getUniqueId());
+        return SeichiAssist.playermap().apply(player.getUniqueId());
     }
 
     /**
