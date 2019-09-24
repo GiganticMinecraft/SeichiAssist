@@ -6,7 +6,12 @@ abstract class RepeatedTaskLauncher {
   suspend fun launch(): Nothing {
     while (true) {
       delay(getRepeatIntervalTicks() * 50)
-      runRoutine()
+      try {
+        runRoutine()
+      } catch (e: Exception) {
+        println("Caught an exception while executing repeating task.")
+        e.printStackTrace()
+      }
     }
   }
 
