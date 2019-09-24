@@ -11,11 +11,12 @@ object BroadcastMutingSettings {
 
   case object MuteMessageAndSound extends BroadcastMutingSettings(ReceiveMessageAndSound, true, true)
 
-  // TODO: ここパターンマッチっぽくない
   def fromBooleanSettings(displayMessages: Boolean, playSounds: Boolean): BroadcastMutingSettings = {
-    case _ if displayMessages && playSounds => ReceiveMessageAndSound
-    case _ if displayMessages => ReceiveMessageOnly
-    case _ => MuteMessageAndSound
+    (displayMessages, playSounds) match {
+      case (true, true) => ReceiveMessageAndSound
+      case (true, _) => ReceiveMessageOnly
+      case _ => MuteMessageAndSound
+    }
   }
 
 }
