@@ -1,18 +1,21 @@
 package com.github.unchama.seichiassist.database.manipulators
 
+import java.sql.SQLException
+
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
-import org.bukkit.Material
-import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.{Inventory, ItemStack}
+import org.bukkit.{Bukkit, Material}
 
 class DonateDataManipulator(private val gateway: DatabaseGateway) {
+  import com.github.unchama.util.syntax.ResultSetSyntax._
 
-  private val tableReference: String
-    get() = gateway.databaseName + "." + DatabaseConstants.DONATEDATA_TABLENAME
+  import scala.jdk.CollectionConverters._
+
+  private def tableReference: String = gateway.databaseName + "." + DatabaseConstants.DONATEDATA_TABLENAME
 
   def addPremiumEffectBuy(playerdata: PlayerData,
                           effect: ActiveSkillPremiumEffect): ActionStatus = {
@@ -42,53 +45,56 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   def loadDonateData(playerdata: PlayerData, inventory: Inventory): Boolean = {
-    var itemstack: ItemStack
-    var itemmeta: ItemMeta
-    var material: Material
-    var lore2: List[String]
-    var count = 0
-    val effect = ActiveSkillPremiumEffect.values()
+    var itemstack: ItemStack = null
+    var material: Material = null
+    var lore2: List[String] = null
+    val effect = ActiveSkillPremiumEffect.values
 
     val command = "select * from " + tableReference + " where playername = '" + playerdata.lowercaseName + "'"
     try {
-      gateway.executeQuery(command).recordIteration {
-        val lrs = this
+      var count = 0
+      gateway.executeQuery(command).recordIteration { lrs =>
         //ポイント購入の処理
         val getPoint = lrs.getInt("getpoint")
         val usePoint = lrs.getInt("usepoint")
         if (getPoint > 0) {
-          itemstack = ItemStack(Material.DIAMOND)
+          itemstack = new ItemStack(Material.DIAMOND)
           lore2 = List(RESET.toString() + "" + GREEN + "" + "金額：" + getPoint * 100,
             "" + RESET + GREEN + "プレミアムエフェクトポイント：+" + getPoint,
             "" + RESET + GREEN + "日時：" + lrs.getString("date")
           )
-          itemstack.itemMeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND).apply {
-            displayName = "" + AQUA + UNDERLINE + "" + BOLD + "寄付"
-            lore = lore2
-          }
+          itemstack.setItemMeta({
+            val meta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND)
+            meta.setDisplayName("" + AQUA + UNDERLINE + "" + BOLD + "寄付")
+            meta.setLore(lore2.asJava)
+            meta
+          })
           inventory.setItem(count, itemstack)
         } else if (usePoint > 0) {
           val num = lrs.getInt("effectnum") - 1
-          material = effect[num].material
-          itemstack = ItemStack(material)
+          material = effect(num).material
+          itemstack = new ItemStack(material)
 
           lore2 = List("" + RESET + GOLD + "プレミアムエフェクトポイント： -" + usePoint,
             "" + RESET + GOLD + "日時：" + lrs.getString("date")
           )
-          itemstack.itemMeta = Bukkit.getItemFactory().getItemMeta(material).apply {
-            displayName = "" + RESET.toString() + YELLOW + "購入エフェクト：" + effect[num].desc
-            lore = lore2
-          }
+          itemstack.setItemMeta({
+            val meta = Bukkit.getItemFactory().getItemMeta(material)
+            meta.setDisplayName("" + RESET.toString() + YELLOW + "購入エフェクト：" + effect(num).desc)
+            meta.setLore(lore2.asJava)
+            meta
+          })
           inventory.setItem(count, itemstack)
         }
-        count++
+        count += 1
       }
-    } catch (e: SQLException) {
-      println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-      e.printStackTrace()
-      return false
+    } catch {
+      case e: SQLException =>
+        println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+        e.printStackTrace()
+        return false
     }
 
-    return true
+    true
   }
 }
