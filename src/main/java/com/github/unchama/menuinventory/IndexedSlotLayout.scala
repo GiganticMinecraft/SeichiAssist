@@ -4,7 +4,6 @@ import cats.effect.{ContextShift, IO}
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.targetedeffect.EmptyEffect
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import kotlin.collections.IndexedValue
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -61,10 +60,6 @@ object IndexedSlotLayout {
   def apply() = IndexedSlotLayout(Map[Int, Slot]())
 
   def apply(mappings: (Int, Slot)*): IndexedSlotLayout = IndexedSlotLayout(Map(mappings: _*))
-
-  def apply(mapping: Iterable[IndexedValue[Slot]]) = IndexedSlotLayout(
-    mapping.map(v => v.component1() -> v.component2().asInstanceOf[Slot]).toMap
-  )
 
   @inline def singleSlotLayout(indexedSlot: => (Int, Slot)): IndexedSlotLayout = IndexedSlotLayout(indexedSlot)
 
