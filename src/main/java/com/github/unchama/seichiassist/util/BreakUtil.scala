@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.util
 
+import java.util.stream.IntStream
+
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.{ActiveSkill, MaterialSets, SeichiAssist}
 import org.bukkit.ChatColor._
@@ -382,7 +384,7 @@ object BreakUtil {
         .count().toShort()
   }
 
-  def getCardinalDirection(entity: Entity): String? = {
+  def getCardinalDirection(entity: Entity): String = {
     var rotation = ((entity.location.yaw + 180) % 360).toDouble()
     val loc = entity.location
     val pitch = loc.pitch

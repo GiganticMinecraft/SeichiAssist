@@ -19,22 +19,21 @@ import com.github.unchama.seichiassist.util.TypeConverter
  * TODO [id]はenumに[effectDescription]
  */
 class FastDiggingEffect(var duration: Int, var amplifier: Double, private val id: Int) {
-  val effectDescription: String
-    get() {
-      val effectStrength = String.format("%.2f", amplifier)
-      val formattedDuration = TypeConverter.toTimeString(duration / 20)
+  def effectDescription: String = {
+    val effectStrength = String.format("%.2f", amplifier)
+    val formattedDuration = TypeConverter.toTimeString(duration / 20)
 
-      return when (id) {
-        0 => s"+$effectStrength 不明な上昇値_${formattedDuration}"
-        1 => s"+$effectStrength 接続人数から"
-        2 => s"+$effectStrength 整地量から"
-        3 => s"+$effectStrength ﾄﾞﾗｹﾞﾅｲﾀｲﾑから_${formattedDuration}"
-        4 => s"+$effectStrength 投票ボーナスから_${formattedDuration}"
-        5 => s"+$effectStrength コマンド入力から_${formattedDuration}"
-        else => s"+$effectStrength 不明な上昇値_${formattedDuration}"
-      }
+    id match {
+      case 0 => s"+$effectStrength 不明な上昇値_${formattedDuration}"
+      case 1 => s"+$effectStrength 接続人数から"
+      case 2 => s"+$effectStrength 整地量から"
+      case 3 => s"+$effectStrength ﾄﾞﾗｹﾞﾅｲﾀｲﾑから_${formattedDuration}"
+      case 4 => s"+$effectStrength 投票ボーナスから_${formattedDuration}"
+      case 5 => s"+$effectStrength コマンド入力から_${formattedDuration}"
+      case _ => s"+$effectStrength 不明な上昇値_${formattedDuration}"
     }
+  }
 
   //６０秒固定採掘速度固定
-  def this(amplifier: Double, id: Int) : this(1260, amplifier, id)
+  def this(amplifier: Double, id: Int) = this(1260, amplifier, id)
 }

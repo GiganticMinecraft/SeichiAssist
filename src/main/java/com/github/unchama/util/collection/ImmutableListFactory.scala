@@ -13,7 +13,6 @@ object ImmutableListFactory {
   def of[E](o: Array[E]): java.util.List[E] = o.toList.asJava
 
   @SafeVarargs
-  // Checked, no scala usage found
   def of[E](o: E*): java.util.List[E] = List(o: _*).asJava
 
 }

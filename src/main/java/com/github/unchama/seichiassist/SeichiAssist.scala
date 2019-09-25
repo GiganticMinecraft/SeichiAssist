@@ -254,10 +254,10 @@ object SeichiAssist {
   var buildAssist: BuildAssist
 
   //Gachadataに依存するデータリスト
-  val gachadatalist: mutable.MutableList[GachaPrize] = mutable.MutableList()
+  val gachadatalist: mutable.ArrayBuffer[GachaPrize] = mutable.ArrayBuffer()
 
   //(minestackに格納する)Gachadataに依存するデータリスト
-  var msgachadatalist: mutable.MutableList[MineStackGachaData] = mutable.MutableList()
+  var msgachadatalist: mutable.ArrayBuffer[MineStackGachaData] = mutable.ArrayBuffer()
 
   //Playerdataに依存するデータリスト
   val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap()
@@ -266,16 +266,16 @@ object SeichiAssist {
   val ranklist: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
 
   //プレイ時間ランキング表示用データリスト
-  val ranklist_playtick: mutable.MutableList[RankData] = mutable.MutableList()
+  val ranklist_playtick: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
 
   //投票ポイント表示用データリスト
-  val ranklist_p_vote: mutable.MutableList[RankData] = mutable.MutableList()
+  val ranklist_p_vote: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
 
   //マナ妖精表示用のデータリスト
-  val ranklist_p_apple: mutable.MutableList[RankData] = mutable.MutableList()
+  val ranklist_p_apple: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
 
   //プレミアムエフェクトポイント表示用データリスト
-  val ranklist_premiumeffectpoint: mutable.MutableList[RankData] = mutable.MutableList()
+  val ranklist_premiumeffectpoint: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
 
   //総採掘量表示用
   var allplayerbreakblockint = 0L
@@ -283,13 +283,13 @@ object SeichiAssist {
   var allplayergiveapplelong = 0L
 
   //プラグインで出すエンティティの保存
-  val entitylist: mutable.MutableList[Entity] = mutable.MutableList()
+  val entitylist: mutable.ArrayBuffer[Entity] = mutable.ArrayBuffer()
 
   //プレイヤーがスキルで破壊するブロックリスト
-  val allblocklist: mutable.MutableList[Block] = mutable.MutableList()
+  val allblocklist: mutable.ArrayBuffer[Block] = mutable.ArrayBuffer()
 
   private def generateGachaPrizes(): List[MineStackObj] = {
-    val minestacklist = mutable.MutableList[MineStackObj]()
+    val minestacklist = mutable.ArrayBuffer[MineStackObj]()
     for (i <- msgachadatalist.indices) {
       val g = msgachadatalist(i)
       if (g.itemStack.getType != Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外

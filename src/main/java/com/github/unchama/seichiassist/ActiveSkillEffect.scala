@@ -1,24 +1,20 @@
 package com.github.unchama.seichiassist
 
+import com.github.unchama.seichiassist.ActiveSkillEffect.{Blizzard, Explosion, Meteo}
 import com.github.unchama.seichiassist.data.{ActiveSkillData, Coordinate}
+import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
+import enumeratum._
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Location, Material}
 
-object ActiveSkillEffect extends Enumeration {
-
-  case class ActiveSkillEffectVal(num: Int,
-                                  nameOnDatabase: String,
-                                  nameOnUI: String,
-                                  explanation: String,
-                                  usePoint: Int,
-                                  material: Material) extends Val
-
-  val Explosion = ActiveSkillEffectVal(1, s"ef_explosion", "${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
-  val Blizzard = ActiveSkillEffectVal(2, s"ef_blizzard", "${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
-  val Meteo = ActiveSkillEffectVal(3, s"ef_meteo", "${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
-
+sealed abstract case class ActiveSkillEffect(num: Int,
+                                             nameOnDatabase: String,
+                                             nameOnUI: String,
+                                             explanation: String,
+                                             usePoint: Int,
+                                             material: Material) extends EnumEntry {
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
                      tool: ItemStack,
@@ -62,31 +58,24 @@ object ActiveSkillEffect extends Enumeration {
       effect.runFor(player)
     }
   }
-
-  def getNameByNum(effectNum: Int): String = ActiveSkillEffect.values
-    .filter(_.isInstanceOf[ActiveSkillEffectVal])
-    .map[ActiveSkillEffectVal](_.asInstanceOf)
-    .find(activeSkillEffect => activeSkillEffect.num == effectNum)
-    .map(_.nameOnUI)
-    .orElse("未設定")
-
-  def fromSqlName(sqlName: String): Option[ActiveSkillEffectVal] = ActiveSkillEffect.values
 }
 
+object ActiveSkillEffect extends Enum[ActiveSkillEffect] {
+  case object Explosion extends ActiveSkillEffect(1, s"ef_explosion", "${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
+  case object Blizzard extends ActiveSkillEffect(2, s"ef_blizzard", "${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
+  case object Meteo extends ActiveSkillEffect(3, s"ef_meteo", "${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
 
-object ActiveSkillEffect {
+  val values: IndexedSeq[ActiveSkillEffect] = findValues
 
-  def getNamebyNum(effectnum: Int): String = {
-    case 1 => ActiveSkillEffect.Explosion.nameOnUI
-    case 2 => ActiveSkillEffect.Blizzard.nameOnUI
-    case 3 => ActiveSkillEffect.Meteo.nameOnUI
-    case _ => "未設定"
-  }
+  @Deprecated("for interop purpose only")
+  val arrayValues: Array[ActiveSkillEffect] = values.toArray
 
-  def fromSqlName(sqlName: String): Option[ActiveSkillEffect] = {
-    case "ef_explosion" => Some(ActiveSkillEffect.Explosion)
-    case "ef_blizzard" => Some(ActiveSkillEffect.Blizzard)
-    case "ef_meteo" => Some(ActiveSkillEffect.Meteo)
-  }
+  def getNameByNum(effectNum: Int): String = ActiveSkillEffect.values
+    .filter(_.isInstanceOf[ActiveSkillEffect])
+    .map[ActiveSkillEffect](_.asInstanceOf)
+    .find(activeSkillEffect => activeSkillEffect.num == effectNum)
+    .map(_.nameOnUI)
+    .orElseGet("未設定")
 
+  def fromSqlName(sqlName: String): Option[ActiveSkillEffect] = ActiveSkillEffect.values
 }

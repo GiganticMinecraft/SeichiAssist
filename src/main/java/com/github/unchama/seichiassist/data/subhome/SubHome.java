@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * サブホームオブジェクトのクラス
  */
+// TODO Scalaize and make this case class
 public class SubHome {
     private final @NotNull Location location;
     public final @Nullable String name;

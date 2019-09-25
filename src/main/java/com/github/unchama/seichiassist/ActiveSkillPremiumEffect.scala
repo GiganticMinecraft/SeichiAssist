@@ -60,5 +60,8 @@ case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
 
   val values: IndexedSeq[ActiveSkillPremiumEffect] = findValues
 
+  @Deprecated("for interop purpose only")
+  val arrayValues = values.toArray
+
   def fromSqlName(sqlName: String): Option[ActiveSkillPremiumEffect] = values.find(sqlName == _.sql_name)
 }
