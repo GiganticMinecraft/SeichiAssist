@@ -2,12 +2,11 @@ package com.github.unchama.seichiassist.menus
 
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.menuinventory.slot.button.action.FilteredButtonEffect
+import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.{IndexedSlotLayout, Menu, MenuInventoryView}
 import com.github.unchama.seichiassist.data.RegionMenuData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.{Schedulers, SeichiAssist}
-import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import com.github.unchama.{menuinventory, targetedeffect}
