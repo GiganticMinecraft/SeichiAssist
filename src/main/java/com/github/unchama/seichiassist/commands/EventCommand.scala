@@ -1,25 +1,30 @@
 package com.github.unchama.seichiassist.commands
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.listener.new_year_event.{NewYearBagListener, NewYearItemListener}
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.targetedeffect.{EmptyEffect, TargetedEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import org.bukkit.command.TabExecutor
+import org.bukkit.entity.Player
 
 object EventCommand {
-  val executor = playerCommandBuilder
-      .execution { context =>
-        if (context.args.yetToBeParsed.firstOrNull() != "get") return@execution EmptyEffect
+  val executor: TabExecutor = playerCommandBuilder
+    .execution { context =>
+      val player = context.sender
 
-        val player = context.sender
-        if (Util.isPlayerInventoryFull(player)) {
-          Util.dropItem(player, NewYearBagListener.newYearBag())
-          Util.dropItem(player, NewYearItemListener.newYearApple())
-        } else {
-          Util.addItem(player, NewYearBagListener.newYearBag())
-          Util.addItem(player, NewYearItemListener.newYearApple())
+      def execution(): TargetedEffect[Player] = {
+        if (context.args.yetToBeParsed.head != "get") return EmptyEffect
+
+        TargetedEffect { player: Player =>
+          Util.addItemToPlayerSafely(player, NewYearBagListener.getNewYearBag)
+          Util.addItemToPlayerSafely(player, NewYearItemListener.getNewYearApple)
         }
-
-        return@execution EmptyEffect
       }
-      .build()
-      .asNonBlockingTabExecutor()
+
+      IO(execution())
+    }
+    .build()
+    .asNonBlockingTabExecutor()
 }

@@ -48,6 +48,7 @@ public class NewYearItemListener implements Listener {
 		return lore.containsAll(checkLore);
 	}
 
+	// FIXME: ここはListenerクラスですぞ
 	public static ItemStack getNewYearApple() {
 		ItemStack apple = new ItemStack(Material.GOLDEN_APPLE, 1);
 		ItemMeta appleMeta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
@@ -59,6 +60,7 @@ public class NewYearItemListener implements Listener {
 		return apple;
 	}
 
+	// FIXME: ここはListenerクラスですぞ
 	private static List<String> getAppleLoreList() {
 		List<String> lore = new ArrayList<>();
 		lore.add("");
