@@ -1,4 +1,4 @@
-package com.github.unchama.bukkitexecutioncontext
+package com.github.unchama.concurrent
 
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
