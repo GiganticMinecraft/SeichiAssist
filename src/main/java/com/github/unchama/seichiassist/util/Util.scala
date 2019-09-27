@@ -1,22 +1,28 @@
 package com.github.unchama.seichiassist.util
 
-import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.stream.IntStream
+import java.util.{Calendar, Random}
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
-import com.github.unchama.util.collection.ImmutableListFactory
 import enumeratum._
 import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.ChatColor._
-import org.bukkit.block.Block
+import org.bukkit._
+import org.bukkit.block.{Block, Skull}
 import org.bukkit.entity.{EntityType, Firework, Player}
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack, PlayerInventory}
-import org.bukkit._
 
 object Util {
 
-  private val types = arrayOf(FireworkEffect.Type.BALL, FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST, FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR)
+  import com.github.unchama.util.syntax._
+
+  import scala.jdk.CollectionConverters._
+
+  private val types = List(FireworkEffect.Type.BALL, FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST, FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR)
 
   def sendPlayerDataNullMessage(player: Player) {
     player.sendMessage(RED.toString() + "初回ログイン時の読み込み中か、読み込みに失敗しています")
@@ -26,18 +32,19 @@ object Util {
   //スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
   def isSkillEnable(player: Player): Boolean = {
     val seichiWorldPrefix = if (SeichiAssist.DEBUG) SeichiAssist.DEBUGWORLDNAME else SeichiAssist.SEICHIWORLDNAME
+    val worldNameLowerCase = player.getWorld.getName.toLowerCase()
 
-    // 整地ワールドzeroではスキル発動不可
-    return if (player.world.name.equals("world_sw_zero", ignoreCase = true)) {
-      false
-    } else player.world.name.toLowerCase().startsWith(seichiWorldPrefix)
-        || player.world.name.equals("world", ignoreCase = true)
-        || player.world.name.equals("world_2", ignoreCase = true)
-        || player.world.name.equals("world_nether", ignoreCase = true)
-        || player.world.name.equals("world_the_end", ignoreCase = true)
-        || player.world.name.equals("world_TT", ignoreCase = true)
-        || player.world.name.equals("world_nether_TT", ignoreCase = true)
-        || player.world.name.equals("world_the_end_TT", ignoreCase = true)
+    worldNameLowerCase match {
+      case "world_sw_zero" => false // 整地ワールドzeroではスキル発動不可
+      case "world" |
+           "world_2" |
+           "world_nether" |
+           "world_the_end" |
+           "world_TT" |
+           "world_nether_TT" |
+           "world_the_end_TT" => true
+      case _ => worldNameLowerCase.startsWith(seichiWorldPrefix)
+    }
   }
 
   /**
@@ -52,39 +59,39 @@ object Util {
       worldname = SeichiAssist.DEBUGWORLDNAME
     }
     //整地ワールドではtrue
-    return player.world.name.toLowerCase().startsWith(worldname)
-
-    //それ以外のワールドの場合
+    player.getWorld.getName.toLowerCase().startsWith(worldname)
   }
 
   //ガチャ券アイテムスタック型の取得
   def getskull(name: String): ItemStack = {
-    val skull: ItemStack
-    val skullmeta: SkullMeta
-    skull = ItemStack(Material.SKULL_ITEM, 1)
-    skullmeta = ItemMetaFactory.SKULL.value
-    skull.durability = 3.toShort()
-    skullmeta.displayName = YELLOW.toString() + "" + BOLD + "ガチャ券"
-    val lore = ImmutableListFactory.of(RESET.toString() + "" + GREEN + "右クリックで使えます", RESET.toString() + "" + DARK_GREEN + "所有者:" + name)
-    skullmeta.lore = lore
-    skullmeta.owner = "unchama"
-    skull.itemMeta = skullmeta
-    return skull
+    new ItemStack(Material.SKULL_ITEM, 1).modify { skull => import skull._
+      setDurability(3.toShort)
+      setItemMeta {
+        ItemMetaFactory.SKULL.getValue.modify { skullMeta => import skullMeta._
+          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
+          setLore {
+            List(
+              s"$RESET${GREEN}右クリックで使えます",
+              s"$RESET${DARK_GREEN}所有者:$name"
+            ).asJava
+          }
+          setOwner("unchama")
+        }
+      }
+    }
   }
 
   //プレイヤーのインベントリがフルかどうか確認
-  def isPlayerInventoryFull(player: Player): Boolean = {
-    return player.inventory.firstEmpty() == -1
-  }
+  def isPlayerInventoryFull(player: Player): Boolean = player.getInventory.firstEmpty() == -1
 
   //指定されたアイテムを指定されたプレイヤーにドロップする
   def dropItem(player: Player, itemstack: ItemStack) {
-    player.world.dropItemNaturally(player.location, itemstack)
+    player.getWorld.dropItemNaturally(player.getLocation, itemstack)
   }
 
   //指定されたアイテムを指定されたプレイヤーインベントリに追加する
   def addItem(player: Player, itemstack: ItemStack) {
-    player.inventory.addItem(itemstack)
+    player.getInventory.addItem(itemstack)
   }
 
   /**
@@ -102,37 +109,34 @@ object Util {
   }
 
   def sendAdminMessage(str: String) {
-    for (player in Bukkit.getOnlinePlayers()) {
+    Bukkit.getOnlinePlayers.forEach { player =>
       if (player.hasPermission("SeichiAssist.admin")) {
         player.sendMessage(str)
       }
     }
   }
 
-
   def sendEveryMessage(str: String) {
-    for (player in Bukkit.getOnlinePlayers()) {
-      player.sendMessage(str)
-    }
+    Bukkit.getOnlinePlayers.forEach(_.sendMessage(str))
   }
 
   def sendEveryMessageWithoutIgnore(str: String) {
-    runBlocking {
-      for (player in Bukkit.getOnlinePlayers()) {
-        if (SeichiAssist.playermap(player.uniqueId).settings.getBroadcastMutingSettings().shouldMuteMessages()) {
-          player.sendMessage(str)
-        }
-      }
-    }
+    import cats.implicits._
+
+    Bukkit.getOnlinePlayers.asScala.map { player =>
+      for {
+        playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
+        _ <- IO { if (!playerSettings.shouldMuteMessages) player.sendMessage(str) }
+      } yield ()
+    }.toList.sequence.unsafeRunSync()
   }
 
   def sendEveryMessageWithoutIgnore(base: BaseComponent) {
-    runBlocking {
-      for (player in Bukkit.getOnlinePlayers()) {
-        if (SeichiAssist.playermap(player.uniqueId).settings.getBroadcastMutingSettings().shouldMuteMessages()) {
-          player.spigot().sendMessage(base)
-        }
-      }
+    Bukkit.getOnlinePlayers.asScala.foreach { player =>
+      for {
+        playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
+        _ <- IO { if (!playerSettings.shouldMuteMessages) player.spigot().sendMessage(base) }
+      } yield ()
     }
   }
 
@@ -140,141 +144,108 @@ object Util {
    * json形式のチャットを送信する際に使用
    */
   def sendEveryMessage(base: BaseComponent) {
-    for (player in Bukkit.getOnlinePlayers()) {
-      player.spigot().sendMessage(base)
-    }
+    Bukkit.getOnlinePlayers.asScala.foreach(_.spigot().sendMessage(base))
   }
 
   def getEnchantName(vaname: String, enchlevel: Int): String = {
-    when (vaname) {
-      "PROTECTION_ENVIRONMENTAL" => return "ダメージ軽減" + " " + getEnchantLevelRome(enchlevel)
+    val levelLessEnchantmentMapping = Map(
+      "WATER_WORKER" -> "水中採掘",
+      "SILK_TOUCH" -> "シルクタッチ",
+      "ARROW_FIRE" -> "フレイム",
+      "ARROW_INFINITE" -> "無限",
+      "MENDING" -> "修繕"
+    )
+    val leveledEnchantmentMapping = Map(
+      "PROTECTION_ENVIRONMENTAL" -> "ダメージ軽減",
+      "PROTECTION_FIRE" -> "火炎耐性",
+      "PROTECTION_FALL" -> "落下耐性",
+      "PROTECTION_EXPLOSIONS" -> "爆発耐性",
+      "PROTECTION_PROJECTILE" -> "飛び道具耐性",
+      "OXYGEN" -> "水中呼吸",
+      "THORNS" -> "棘の鎧",
+      "DEPTH_STRIDER" -> "水中歩行",
+      "FROST_WALKER" -> "氷渡り",
+      "DAMAGE_ALL" -> "ダメージ増加",
+      "DAMAGE_UNDEAD" -> "アンデッド特効",
+      "DAMAGE_ARTHROPODS" -> "虫特効",
+      "KNOCKBACK" -> "ノックバック",
+      "FIRE_ASPECT" -> "火属性",
+      "LOOT_BONUS_MOBS" -> "ドロップ増加",
+      "DIG_SPEED" -> "効率強化",
+      "DURABILITY" -> "耐久力",
+      "LOOT_BONUS_BLOCKS" -> "幸運",
+      "ARROW_DAMAGE" -> "射撃ダメージ増加",
+      "ARROW_KNOCKBACK" -> "パンチ",
+      "LUCK" -> "宝釣り",
+      "LURE" -> "入れ食い"
+    )
+    val enchantmentLevelRepresentation = getEnchantLevelRome(enchlevel)
 
-      "PROTECTION_FIRE" => return "火炎耐性" + " " + getEnchantLevelRome(enchlevel)
-
-      "PROTECTION_FALL" => return "落下耐性" + " " + getEnchantLevelRome(enchlevel)
-
-      "PROTECTION_EXPLOSIONS" => return "爆発耐性" + " " + getEnchantLevelRome(enchlevel)
-
-      "PROTECTION_PROJECTILE" => return "飛び道具耐性" + " " + getEnchantLevelRome(enchlevel)
-
-      "OXYGEN" => return "水中呼吸" + " " + getEnchantLevelRome(enchlevel)
-
-      "WATER_WORKER" => return "水中採掘"
-
-      "THORNS" => return "棘の鎧" + " " + getEnchantLevelRome(enchlevel)
-
-      "DEPTH_STRIDER" => return "水中歩行" + " " + getEnchantLevelRome(enchlevel)
-
-      "FROST_WALKER" => return "氷渡り" + " " + getEnchantLevelRome(enchlevel)
-
-      "DAMAGE_ALL" => return "ダメージ増加" + " " + getEnchantLevelRome(enchlevel)
-
-      "DAMAGE_UNDEAD" => return "アンデッド特効" + " " + getEnchantLevelRome(enchlevel)
-
-      "DAMAGE_ARTHROPODS" => return "虫特効" + " " + getEnchantLevelRome(enchlevel)
-
-      "KNOCKBACK" => return "ノックバック" + " " + getEnchantLevelRome(enchlevel)
-
-      "FIRE_ASPECT" => return "火属性" + " " + getEnchantLevelRome(enchlevel)
-
-      "LOOT_BONUS_MOBS" => return "ドロップ増加" + " " + getEnchantLevelRome(enchlevel)
-
-      "DIG_SPEED" => return "効率強化" + " " + getEnchantLevelRome(enchlevel)
-
-      "SILK_TOUCH" => return "シルクタッチ"
-
-      "DURABILITY" => return "耐久力" + " " + getEnchantLevelRome(enchlevel)
-
-      "LOOT_BONUS_BLOCKS" => return "幸運" + " " + getEnchantLevelRome(enchlevel)
-
-      "ARROW_DAMAGE" => return "射撃ダメージ増加" + " " + getEnchantLevelRome(enchlevel)
-
-      "ARROW_KNOCKBACK" => return "パンチ" + " " + getEnchantLevelRome(enchlevel)
-
-      "ARROW_FIRE" => return "フレイム"
-
-      "ARROW_INFINITE" => return "無限"
-
-      "LUCK" => return "宝釣り" + " " + getEnchantLevelRome(enchlevel)
-
-      "LURE" => return "入れ食い" + " " + getEnchantLevelRome(enchlevel)
-
-      "MENDING" => return "修繕"
-
-      else => return vaname
-    }
+    levelLessEnchantmentMapping.get(vaname).orElse(
+      leveledEnchantmentMapping.get(vaname)
+        .map(localizedName => s"$localizedName $enchantmentLevelRepresentation")
+    ).getOrElse(vaname)
   }
 
   private def getEnchantLevelRome(enchantlevel: Int): String = {
-    when (enchantlevel) {
-      1 => return "Ⅰ"
-
-      2 => return "Ⅱ"
-
-      3 => return "Ⅲ"
-
-      4 => return "Ⅳ"
-
-      5 => return "Ⅴ"
-
-      6 => return "Ⅵ"
-
-      7 => return "Ⅶ"
-
-      8 => return "Ⅷ"
-
-      9 => return "Ⅸ"
-
-      10 => return "Ⅹ"
-
-      else => return enchantlevel.toString()
+    enchantlevel match {
+      case 1 => "Ⅰ"
+      case 2 => "Ⅱ"
+      case 3 => "Ⅲ"
+      case 4 => "Ⅳ"
+      case 5 => "Ⅴ"
+      case 6 => "Ⅵ"
+      case 7 => "Ⅶ"
+      case 8 => "Ⅷ"
+      case 9 => "Ⅸ"
+      case 10 => "Ⅹ"
+      case _ => enchantlevel.toString
     }
 
   }
 
-  def getDescFormat(list: List[String]): String = {
-    return " " + list.joinToString("\n") + "\n"
+  def getDescFormat(list: List[String]): String = s" ${list.mkString("", "\n", "\n")}"
+
+  def sendEverySound(kind: Sound, volume: Float, pitch: Float) {
+    Bukkit.getOnlinePlayers.forEach(player =>
+      player.playSound(player.getLocation, kind, volume, pitch)
+    )
   }
 
-  def sendEverySound(kind: Sound, a: Float, b: Float) {
-    for (player in Bukkit.getOnlinePlayers()) {
-      player.playSound(player.location, kind, a, b)
-    }
-  }
+  def sendEverySoundWithoutIgnore(kind: Sound, volume: Float, pitch: Float) {
+    import cats.implicits._
 
-  def sendEverySoundWithoutIgnore(kind: Sound, a: Float, b: Float) {
-    runBlocking {
-      for (player in Bukkit.getOnlinePlayers()) {
-        if (SeichiAssist.playermap(player.uniqueId).settings.getBroadcastMutingSettings().shouldMuteSounds()) {
-          player.playSound(player.location, kind, a, b)
-        }
-      }
-    }
+    Bukkit.getOnlinePlayers.asScala.toList.map { player =>
+      for {
+        settings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
+        _ <- IO { if (!settings.shouldMuteSounds) player.playSound(player.getLocation, kind, volume, pitch) }
+      } yield ()
+    }.sequence.unsafeRunSync()
   }
 
   def getName(name: String): String = {
     //小文字にしてるだけだよ
-    return name.toLowerCase()
+    name.toLowerCase()
   }
 
   //指定された場所に花火を打ち上げる関数
   def launchFireWorks(loc: Location) {
     // 花火を作る
-    val firework = loc.world.spawn(loc, Firework::class.java)
+    val firework = loc.getWorld.spawn(loc, classOf[Firework])
 
     // 花火の設定情報オブジェクトを取り出す
-    val meta = firework.fireworkMeta
+    val meta = firework.getFireworkMeta
     val effect = FireworkEffect.builder()
-    val rand = Random()
+    val rand = new Random()
 
     // 形状をランダムに決める
-    effect.with(types[rand.nextInt(types.size)])
+    effect.`with`(types(rand.nextInt(types.size)))
 
     // 基本の色を単色～5色以内でランダムに決める
-    effect.withColor(*getRandomColors(1 + rand.nextInt(5)))
+    effect.withColor(getRandomColors(1 + rand.nextInt(5)): _*)
 
     // 余韻の色を単色～3色以内でランダムに決める
-    effect.withFade(*getRandomColors(1 + rand.nextInt(3)))
+    effect.withFade(getRandomColors(1 + rand.nextInt(3)): _*)
 
     // 爆発後に点滅するかをランダムに決める
     effect.flicker(rand.nextBoolean())
@@ -283,42 +254,40 @@ object Util {
     effect.trail(rand.nextBoolean())
 
     // 打ち上げ高さを1以上4以内でランダムに決める
-    meta.power = 1 + rand.nextInt(4)
+    meta.setPower(1 + rand.nextInt(4))
 
     // 花火の設定情報を花火に設定
     meta.addEffect(effect.build())
-    firework.fireworkMeta = meta
 
+    firework.setFireworkMeta(meta)
   }
 
   //カラーをランダムで決める
   def getRandomColors(length: Int): Array[Color] = {
     // 配列を作る
-    val rand = Random()
+    val rand = new Random()
     // 配列の要素を順に処理していく
     // 24ビットカラーの範囲でランダムな色を決める
 
     // 配列を返す
-    return (0 until length).map { Color.fromBGR(rand.nextInt(1 shl 24)) }.toTypedArray()
+    (0 until length).map { _ => Color.fromBGR(rand.nextInt(1 << 24)) }.toArray
   }
 
   //ガチャアイテムを含んでいるか調べる
   def containsGachaTicket(player: Player): Boolean = {
-    val inventory = player.inventory.storageContents
-    var material: Material
-    var skullmeta: SkullMeta
-    for (itemStack in inventory) {
-      material = itemStack.type
+    player.getInventory.getStorageContents.foreach { itemStack =>
+      val material = itemStack.getType
       if (material == Material.SKULL_ITEM) {
-        skullmeta = itemStack.itemMeta.asInstanceOf[SkullMeta]
-        if (skullmeta.hasOwner()) {
-          if (skullmeta.owner == "unchama") {
+        val skullmeta = itemStack.getItemMeta.asInstanceOf[SkullMeta]
+        if (skullmeta.hasOwner) {
+          if (skullmeta.getOwner == "unchama") {
             return true
           }
         }
       }
     }
-    return false
+
+    false
   }
 
   /**
@@ -328,130 +297,130 @@ object Util {
    * @return 見つかった場合はその添字、見つからなかった場合は-1
    */
   def loreIndexOf(lore: List[String], find: String): Int = {
-    return IntStream.range(0, lore.size)
-        .filter { i => lore[i].contains(find) }
+    IntStream.range(0, lore.size)
+        .filter { i => lore(i).contains(find) }
         .findFirst()
         .orElse(-1)
   }
 
   def isGachaTicket(itemstack: ItemStack): Boolean = {
-    if (itemstack.getType != Material.SKULL_ITEM) {
-      return false
-    }
-    val skullmeta = itemstack.itemMeta.asInstanceOf[SkullMeta]
+    if (itemstack.getType != Material.SKULL_ITEM) return false
 
-    //ownerがいない場合処理終了
-    return if (!skullmeta.hasOwner()) {
-      false
-    } else skullmeta.owner == "unchama"
+    val skullMeta = itemstack.getItemMeta.asInstanceOf[SkullMeta]
+
     // オーナーがunchamaか？
+    !skullMeta.hasOwner && skullMeta.getOwner == "unchama"
   }
 
   def removeItemfromPlayerInventory(inventory: PlayerInventory,
                                     itemstack: ItemStack, count: Int): Boolean = {
     //持っているアイテムを減らす処理
-    if (itemstack.amount == count) {
+    if (itemstack.getAmount == count) {
       // アイテムをcount個使うので、プレイヤーの手を素手にする
-      inventory.itemInMainHand = ItemStack(Material.AIR)
-    } else if (itemstack.amount > count) {
+      inventory.setItemInMainHand(new ItemStack(Material.AIR))
+    } else if (itemstack.getAmount > count) {
       // プレイヤーが持っているアイテムをcount個減らす
-      itemstack.amount = itemstack.amount - count
+      itemstack.setAmount(itemstack.getAmount - count)
     } else
-      return itemstack.amount >= count
+      return itemstack.getAmount >= count
     return true
   }
 
   def getForBugskull(name: String): ItemStack = {
-    val skull: ItemStack
-    val skullmeta: SkullMeta
-    skull = ItemStack(Material.SKULL_ITEM, 1)
-    skullmeta = ItemMetaFactory.SKULL.value
-    skull.durability = 3.toShort()
-    skullmeta.displayName = YELLOW.toString() + "" + BOLD + "ガチャ券"
-    val lore = ImmutableListFactory.of(RESET.toString() + "" + GREEN + "右クリックで使えます", RESET.toString() + "" + DARK_GREEN + "所有者：" + name, RESET.toString() + "" + DARK_RED + "運営から不具合のお詫びです")
-    skullmeta.lore = lore
-    skullmeta.owner = "unchama"
-    skull.itemMeta = skullmeta
-    return skull
-  }
-
-  def getVoteskull(name: String): ItemStack = {
-    val skull: ItemStack
-    val skullmeta: SkullMeta
-    skull = ItemStack(Material.SKULL_ITEM, 1)
-    skullmeta = ItemMetaFactory.SKULL.value
-    skull.durability = 3.toShort()
-    skullmeta.displayName = YELLOW.toString() + "" + BOLD + "ガチャ券"
-    val lore = ImmutableListFactory.of(RESET.toString() + "" + GREEN + "右クリックで使えます", RESET.toString() + "" + DARK_GREEN + "所有者：" + name, RESET.toString() + "" + LIGHT_PURPLE + "投票ありがとナス♡")
-    skullmeta.lore = lore
-    skullmeta.owner = "unchama"
-    skull.itemMeta = skullmeta
-    return skull
-  }
-
-  def getExchangeskull(name: String): ItemStack = {
-    val skull: ItemStack
-    val skullmeta: SkullMeta
-    skull = ItemStack(Material.SKULL_ITEM, 1)
-    skullmeta = ItemMetaFactory.SKULL.value
-    skull.durability = 3.toShort()
-    skullmeta.displayName = YELLOW.toString() + "" + BOLD + "ガチャ券"
-    val lore = ImmutableListFactory.of(RESET.toString() + "" + GREEN + "右クリックで使えます", RESET.toString() + "" + DARK_GREEN + "所有者：" + name, RESET.toString() + "" + GRAY + "ガチャ景品と交換しました。")
-    skullmeta.lore = lore
-    skullmeta.owner = "unchama"
-    skull.itemMeta = skullmeta
-    return skull
-  }
-
-  def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean = {
-    val meta = itemstack.itemMeta
-
-    val lore: List[String] = if (meta.hasLore()) {
-      meta.lore
-    } else {
-      ArrayList()
-    }
-
-    for (s in lore) {
-      if (s.contains("所有者：")) { //"所有者:がある"
-        var idx = s.lastIndexOf("所有者：")
-        idx += 4 //「所有者：」の右端(名前の左端)までidxを移動
-        val temp = s.substring(idx)
-        if (temp.equals(name, ignoreCase = true)) {
-          return true
+    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack => import itemStack._
+      setDurability(3)
+      setItemMeta {
+        ItemMetaFactory.SKULL.getValue.modify { meta => import meta._
+          setDisplayName(s"${YELLOW}${BOLD}ガチャ券")
+          setLore {
+            List(
+              s"${RESET}${GREEN}右クリックで使えます",
+              s"${RESET}${DARK_GREEN}所有者：$name",
+              s"${RESET}${DARK_RED}運営から不具合のお詫びです"
+            ).asJava
+          }
+          setOwner("unchama")
         }
       }
     }
-    return false
+  }
+
+  def getVoteskull(name: String): ItemStack = {
+    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack => import itemStack._
+      setDurability(3)
+      setItemMeta {
+        ItemMetaFactory.SKULL.getValue.modify { meta => import meta._
+          setDisplayName(s"${YELLOW}${BOLD}ガチャ券")
+          setLore {
+            List(
+              s"${RESET}${GREEN}右クリックで使えます",
+              s"${RESET}${DARK_GREEN}所有者：$name",
+              s"${RESET}${LIGHT_PURPLE}投票ありがとナス♡"
+            ).asJava
+          }
+          setOwner("unchama")
+        }
+      }
+    }
+  }
+
+  def getExchangeskull(name: String): ItemStack = {
+    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack => import itemStack._
+      setDurability(3)
+      setItemMeta {
+        ItemMetaFactory.SKULL.getValue.modify { meta => import meta._
+          setDisplayName(s"${YELLOW}${BOLD}ガチャ券")
+          setLore {
+            List(
+              s"${RESET}${GREEN}右クリックで使えます",
+              s"${RESET}${DARK_GREEN}所有者：$name",
+              s"${RESET}${GRAY}ガチャ景品と交換しました。"
+            ).asJava
+          }
+          setOwner("unchama")
+        }
+      }
+    }
+  }
+
+  def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean = {
+    val meta = itemstack.getItemMeta
+
+    val lore: List[String] =
+      if (meta.hasLore)
+        meta.getLore.asScala.toList
+      else
+        Nil
+
+    lore.exists(line =>
+      line.contains("所有者：") && line.drop(line.indexOf("所有者：") + 4).toLowerCase == name.toLowerCase()
+    )
   }
 
   /**
    * GUIメニューアイコン作成用
    * @author karayuu
    *
-   * @param material メニューアイコンMaterial, not `null`
+   * @param material メニューアイコンMaterial
    * @param amount メニューアイコンのアイテム個数
-   * @param displayName メニューアイコンのDisplayName, not `null`
-   * @param lore メニューアイコンのLore, not `null`
+   * @param displayName メニューアイコンのDisplayName
+   * @param lore メニューアイコンのLore
    * @param isHideFlags 攻撃値・ダメージ値を隠すかどうか(true: 隠す / false: 隠さない)
-   * @throws IllegalArgumentException Material,DisplayName, Loreのいずれかが `null` の時
    * @return ItemStack型のメニューアイコン
    */
-  def getMenuIcon(material: Material?, amount: Int,
-                  displayName: String?, lore: List[String]?, isHideFlags: Boolean): ItemStack = {
-    if (material == null || displayName == null || lore == null) {
-      throw IllegalArgumentException("Material,DisplayName,LoreにNullは指定できません。")
+  def getMenuIcon(material: Material, amount: Int,
+                  displayName: String, lore: List[String], isHideFlags: Boolean): ItemStack = {
+    new ItemStack(material, amount).modify { itemStack => import itemStack._
+      setItemMeta {
+        getItemMeta.modify { meta => import meta._
+          setDisplayName(displayName)
+          setLore(lore.asJava)
+          if (isHideFlags) {
+            addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
+          }
+        }
+      }
     }
-    val menuicon = ItemStack(material, amount)
-    val itemMeta = Bukkit.getItemFactory().getItemMeta(material)
-    itemMeta.displayName = displayName
-    itemMeta.lore = lore
-    if (isHideFlags) {
-      itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
-    }
-    menuicon.itemMeta = itemMeta
-
-    return menuicon
   }
 
   /**
@@ -467,22 +436,18 @@ object Util {
    * @throws IllegalArgumentException Material,DisplayName, Loreのいずれかが `null` の時
    * @return ItemStack型のメニューアイコン
    */
-  def getMenuIcon(material: Material?, amount: Int, durabity: Int,
-                  displayName: String?, lore: List[String]?, isHideFlags: Boolean): ItemStack = {
-    if (material == null || displayName == null || lore == null) {
-      throw IllegalArgumentException("Material,DisplayName,LoreにNullは指定できません。")
-    }
-    val menuicon = ItemStack(material, amount, durabity.toShort())
-    val itemMeta = Bukkit.getItemFactory().getItemMeta(material)
-    itemMeta.displayName = displayName
-    itemMeta.lore = lore
-    if (isHideFlags) {
-      itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
-    }
-    menuicon.itemMeta = itemMeta
+  def getMenuIcon(material: Material, amount: Int, durabity: Int,
+                  displayName: String, lore: List[String], isHideFlags: Boolean): ItemStack =
+    new ItemStack(material, amount, durabity.toShort).modify { itemStack => import itemStack._
+      setItemMeta {
+        getItemMeta.modify { meta => import meta._
+          setDisplayName(displayName)
+          setLore(lore.asJava)
 
-    return menuicon
-  }
+          if (isHideFlags) addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
+        }
+      }
+    }
 
   /**
    * PlayerDataでチャンク数をゲット・セットするためのenum
@@ -510,49 +475,34 @@ object Util {
     val values: IndexedSeq[Direction] = findValues
   }
 
-  def getPlayerDirection(player: Player): Direction? = {
-    var rotation = ((player.location.yaw + 180) % 360).toDouble()
+  def getPlayerDirection(player: Player): Direction = {
+    var rotation = ((player.getLocation.getYaw + 180) % 360).toDouble
 
-    if (rotation < 0) {
-      rotation += 360.0
-    }
+    if (rotation < 0) rotation += 360.0
 
     //0,360:south 90:west 180:north 270:east
-    if (0.0 <= rotation && rotation < 45.0) {
-      //前が北(North)
-      return Direction.NORTH
-    } else if (45.0 <= rotation && rotation < 135.0) {
-      //前が東(East)
-      return Direction.EAST
-    } else if (135.0 <= rotation && rotation < 225.0) {
-      //前が南(South)
-      return Direction.SOUTH
-    } else if (225.0 <= rotation && rotation < 315.0) {
-      //前が西(West)
-      return Direction.WEST
-    } else if (315.0 <= rotation && rotation < 360.0) {
-      //前が北(North)
-      return Direction.NORTH
-    }
-    //ここに到達はありえない。
-    return null
+    if (0.0 <= rotation && rotation < 45.0) Direction.NORTH
+    else if (45.0 <= rotation && rotation < 135.0) Direction.EAST
+    else if (135.0 <= rotation && rotation < 225.0) Direction.SOUTH
+    else if (225.0 <= rotation && rotation < 315.0) Direction.WEST
+    else Direction.NORTH
   }
 
   def showTime(cal: Calendar): String = {
-    val date = cal.time
-    val format = SimpleDateFormat("yyyy/MM/dd HH:mm")
+    val date = cal.getTime
+    val format = new SimpleDateFormat("yyyy/MM/dd HH:mm")
     return format.format(date)
   }
 
   def showHour(cal: Calendar): String = {
-    val date = cal.time
-    val format = SimpleDateFormat("HH:mm")
+    val date = cal.getTime
+    val format = new SimpleDateFormat("HH:mm")
     return format.format(date)
   }
 
   def getTimeZone(cal: Calendar): String = {
-    val date = cal.time
-    val format = SimpleDateFormat("HH")
+    val date = cal.getTime
+    val format = new SimpleDateFormat("HH")
     val n = TypeConverter.toInt(format.format(date))
     return if (4 <= n && n < 10)
       "morning"
@@ -568,13 +518,13 @@ object Util {
   }
 
   def setDifficulty(worldNameList: List[String], difficulty: Difficulty) {
-    for (name in worldNameList) {
+    worldNameList.foreach { name =>
       val world = Bukkit.getWorld(name)
-      if (world == null) {
+
+      if (world == null)
         Bukkit.getLogger().warning(name + "という名前のワールドは存在しません。")
-        continue
-      }
-      world.difficulty = difficulty
+      else
+        world.setDifficulty(difficulty)
     }
   }
 
@@ -583,77 +533,71 @@ object Util {
    */
   // TODO これはここにあるべきではない
   @Deprecated("")
-  def findMineStackObjectByName(name: String): MineStackObj? = {
-    return MineStackObjectList.minestacklist.stream()
-        .filter { obj => name == obj.mineStackObjName }
-        .findFirst().orElse(null)
+  def findMineStackObjectByName(name: String): Option[MineStackObj] = {
+    MineStackObjectList.minestacklist.find(_.mineStackObjName == name)
   }
 
-  def isEnemy(type: EntityType): Boolean = {
-    when (type) {
-      //通常世界MOB
-      EntityType.CAVE_SPIDER => return true
-      EntityType.CREEPER => return true
-      EntityType.GUARDIAN => return true
-      EntityType.SILVERFISH => return true
-      EntityType.SKELETON => return true
-      EntityType.SLIME => return true
-      EntityType.SPIDER => return true
-      EntityType.WITCH => return true
-      EntityType.ZOMBIE => return true
-      //ネザーMOB
-      EntityType.BLAZE => return true
-      EntityType.GHAST => return true
-      EntityType.MAGMA_CUBE => return true
-      EntityType.PIG_ZOMBIE => return true
-      //エンドMOB
-      EntityType.ENDERMAN => return true
-      EntityType.ENDERMITE => return true
-      EntityType.SHULKER => return true
+  def isEnemy(entityType: EntityType): Boolean = {
+    entityType match {
+      case
+        //通常世界MOB
+        EntityType.CAVE_SPIDER |
+        EntityType.CREEPER |
+        EntityType.GUARDIAN |
+        EntityType.SILVERFISH |
+        EntityType.SKELETON |
+        EntityType.SLIME |
+        EntityType.SPIDER |
+        EntityType.WITCH |
+        EntityType.ZOMBIE |
+        //ネザーMOB
+        EntityType.BLAZE |
+        EntityType.GHAST |
+        EntityType.MAGMA_CUBE |
+        EntityType.PIG_ZOMBIE |
+        //エンドMOB
+        EntityType.ENDERMAN |
+        EntityType.ENDERMITE |
+        EntityType.SHULKER => true
       //敵MOB以外(エンドラ,ウィザーは除外)
-      else => return false
+      case _ => false
     }
   }
 
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
-    return itemstack.getType == Material.CARROT_STICK && loreIndexOf(itemstack.itemMeta.lore, "頭を狩り取る形をしている...") >= 0
+    itemstack.getType == Material.CARROT_STICK &&
+      loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "頭を狩り取る形をしている...") >= 0
   }
 
   def getSkullDataFromBlock(block: Block): ItemStack = {
     //ブロックがskullじゃない場合石でも返しとく
+    // TODO ????
     if (block.getType != Material.SKULL) {
-      return ItemStack(Material.STONE)
+      return new ItemStack(Material.STONE)
     }
 
-    val skull = block.state.asInstanceOf[Skull]
-    var itemStack = ItemStack(Material.SKULL_ITEM)
+    val skull = block.getState.asInstanceOf[Skull]
+    val itemStack = new ItemStack(Material.SKULL_ITEM)
 
     //SkullTypeがプレイヤー以外の場合，SkullTypeだけ設定して終わり
-    if (skull.skullType != SkullType.PLAYER) {
-      when (skull.skullType) {
-        SkullType.CREEPER => itemStack.durability = SkullType.CREEPER.ordinal.toShort()
-        SkullType.DRAGON => itemStack.durability = SkullType.DRAGON.ordinal.toShort()
-        SkullType.SKELETON => itemStack.durability = SkullType.SKELETON.ordinal.toShort()
-        SkullType.WITHER => itemStack.durability = SkullType.WITHER.ordinal.toShort()
-        SkullType.ZOMBIE => itemStack.durability = SkullType.ZOMBIE.ordinal.toShort()
-        else => {
-        }
+    if (skull.getSkullType != SkullType.PLAYER) {
+      val durability = skull.getSkullType match {
+        case SkullType.CREEPER => SkullType.CREEPER.ordinal.toShort
+        case SkullType.DRAGON => SkullType.DRAGON.ordinal.toShort
+        case SkullType.SKELETON => SkullType.SKELETON.ordinal.toShort
+        case SkullType.WITHER => SkullType.WITHER.ordinal.toShort
+        case SkullType.ZOMBIE => SkullType.ZOMBIE.ordinal.toShort
+        case _ => itemStack.getDurability
       }
-      return itemStack
+      return itemStack.modify(_.setDurability(durability))
     }
 
     //プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
-    val drops = block.drops
-    for (drop in drops) {
-      itemStack = drop
-    }
-
-    itemStack.durability = SkullType.PLAYER.ordinal.toShort()
-    return itemStack
+    block.getDrops.asScala.head.modify(_.setDurability(SkullType.PLAYER.ordinal.toShort))
   }
 
   def isLimitedTitanItem(itemstack: ItemStack): Boolean = {
-    return itemstack.getType == Material.DIAMOND_AXE && loreIndexOf(itemstack.itemMeta.lore, "特別なタイタンをあなたに♡") >= 0
+    itemstack.getType == Material.DIAMOND_AXE &&
+      loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "特別なタイタンをあなたに♡") >= 0
   }
-
-}// インスタンスを作成したところでメソッドが呼べるわけでもないので封印
+}
