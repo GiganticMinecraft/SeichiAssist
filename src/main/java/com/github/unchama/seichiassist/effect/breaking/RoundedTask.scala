@@ -14,7 +14,7 @@ abstract class RoundedTask  extends  BukkitRunnable() {
 
   override def run() {
     round += 1
-      round match {
+    round match {
       case 1 => firstAction()
       case 2 => secondAction()
       case _ => otherwiseAction()
