@@ -13,11 +13,11 @@ abstract class RoundedTask  extends  BukkitRunnable() {
   }
 
   override def run() {
-    round++
-    when (round) {
-      1 => firstAction()
-      2 => secondAction()
-      else => otherwiseAction()
+    round += 1
+      round match {
+      case 1 => firstAction()
+      case 2 => secondAction()
+      case _ => otherwiseAction()
     }
   }
 }
