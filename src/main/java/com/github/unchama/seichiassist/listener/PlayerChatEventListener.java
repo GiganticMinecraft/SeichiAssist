@@ -18,20 +18,20 @@ public class PlayerChatEventListener implements Listener {
 	@EventHandler(priority=EventPriority.LOW)
 	public void setSubHomeName(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
-		PlayerData data = SeichiAssist.playermap().get(player.getUniqueId());
+		PlayerData data = SeichiAssist.playermap().apply(player.getUniqueId());
 
 		if (!data.isSubHomeNameChange()) {
 			return;
 		}
 
-		int n = data.getSetHomeNameNum();
+		int n = data.setHomeNameNum();
 
 		data.setSubHomeName(event.getMessage(), n);
 
 		player.sendMessage(ChatColor.GREEN + "サブホームポイント" + (n+1) + "の名前を");
 		player.sendMessage(ChatColor.GREEN + event.getMessage() + "に更新しました");
 
-		data.setSubHomeNameChange(false);
+		data.isSubHomeNameChange_$eq(false);
 		event.setCancelled(true);
 	}
 

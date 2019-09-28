@@ -4,7 +4,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class ItemStackOps {
+object ItemStackOps {
   implicit class ItemStackOps(val itemStack: ItemStack) {
     import scala.jdk.CollectionConverters._
 
