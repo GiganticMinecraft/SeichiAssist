@@ -586,7 +586,7 @@ public class MebiusListener implements Listener {
 			this.ench = ench;
 			this.open = open;
 			this.max = max;
-			this.getName = name;
+			this.name = name;
 		}
 	}
 
@@ -632,9 +632,9 @@ public class MebiusListener implements Listener {
 					ench.put(ec.ench, ecLv + 1);
 					// メッセージを生成
 					if (ecLv == 0) {
-						player.sendMessage(ChatColor.GRAY + ec.getName + ChatColor.RESET + "が付与されました。");
+						player.sendMessage(ChatColor.GRAY + ec.name + ChatColor.RESET + "が付与されました。");
 					} else {
-						player.sendMessage(ChatColor.GRAY + ec.getName + ROMAN.get(ecLv) + ChatColor.RESET + "が" + ChatColor.GRAY + ec.getName + ROMAN.get(ecLv + 1) + ChatColor.RESET + "に強化されました。");
+						player.sendMessage(ChatColor.GRAY + ec.name + ROMAN.get(ecLv) + ChatColor.RESET + "が" + ChatColor.GRAY + ec.name + ROMAN.get(ecLv + 1) + ChatColor.RESET + "に強化されました。");
 					}
 					// 古いエンチャントを消去し新しいエンチャントを付与する
 					for (Map.Entry<Enchantment, Integer> e : ench.entrySet()) {

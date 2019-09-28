@@ -10,12 +10,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import scala.Some;
+import scala.collection.mutable.HashMap;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 public class PlayerDeathEventListener implements Listener {
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap();
+	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 	SeichiAssist plugin = SeichiAssist.instance();
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -34,7 +35,7 @@ public class PlayerDeathEventListener implements Listener {
 				continue;
 			}
 			//キルログ表示フラグがONのプレイヤーにのみ死亡メッセージを送信
-			if(playerdata.settings().getShouldDisplayDeathMessages()){
+			if(playerdata.settings().shouldDisplayDeathMessages()){
 				p.sendMessage(msg);
 			}
 		}
@@ -55,8 +56,8 @@ public class PlayerDeathEventListener implements Listener {
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 				p.sendMessage("整地サーバー1周年の記念品を入手しました。");
 				p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f);
-				playerdata.setAnniversary(false);
-				SeichiAssist.databaseGateway().playerDataManipulator.setAnniversary(false, p.getUniqueId());
+				playerdata.anniversary_$eq(false);
+				SeichiAssist.databaseGateway().playerDataManipulator.setAnniversary(false, Some.apply(p.getUniqueId()));
 			}
 		}
 	}

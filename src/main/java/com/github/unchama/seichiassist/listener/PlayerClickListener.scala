@@ -12,12 +12,14 @@ import org.bukkit.entity.{Arrow, Player, ThrownExpBottle}
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.{GameMode, Material, Sound}
 
 class PlayerClickListener  extends  Listener {
 
+  import com.github.unchama.seichiassist.util.ops.ItemStackOps._
+  import com.github.unchama.targetedeffect.TargetedEffects._
   import com.github.unchama.util.syntax._
 
   import scala.jdk.CollectionConverters._
@@ -271,22 +273,24 @@ class PlayerClickListener  extends  Listener {
             }
 
         val message =
-            new TextComponent().modify {
-              text = s"$AQUA${givenItem.getItemMeta.displayName}${GOLD}を引きました！おめでとうございます！"
-              hoverEvent = HoverEvent(
+            new TextComponent().modify { c => import c._
+              setText(s"$AQUA${givenItem.getItemMeta.getDisplayName}${GOLD}を引きました！おめでとうございます！")
+              setHoverEvent {
+                new HoverEvent(
                   HoverEvent.Action.SHOW_TEXT,
-                  arrayOf(
-                      TextComponent(
-                          s" ${givenItem.getItemMeta.displayName}\n" +
-                              Util.descFormat(localizedEnchantmentList) +
-                              Util.descFormat(loreWithoutOwnerName)
-                      )
+                  Array(
+                    new TextComponent(
+                      s" ${givenItem.getItemMeta.getDisplayName}\n" +
+                        Util.getDescFormat(localizedEnchantmentList.toList) +
+                        Util.getDescFormat(loreWithoutOwnerName)
+                    )
                   )
-              )
+                )
+              }
             }
 
         player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
-        Util.sendEveryMessageWithoutIgnore(s"$GOLD${player.displayName}がガチャでGigantic☆大当たり！")
+        Util.sendEveryMessageWithoutIgnore(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
         Util.sendEveryMessageWithoutIgnore(message)
       } else if (probabilityOfItem < 0.01) {
         player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8.toFloat, 1f)
@@ -311,7 +315,7 @@ class PlayerClickListener  extends  Listener {
     val action = event.getAction
     //アクションを起こした手を取得
     val equipmentslot = event.getHand
-    val currentItem = player.inventory.itemInMainHand.type
+    val currentItem = player.getInventory.getItemInMainHand.getType
     if (currentItem == Material.STICK || currentItem == Material.SKULL_ITEM) {
       return
     }
@@ -328,7 +332,7 @@ class PlayerClickListener  extends  Listener {
     }
 
     //アクティブスキルを発動できるレベルに達していない場合処理終了
-    if (playerdata.level < SeichiAssist.seichiAssistConfig.dualBreaklevel) {
+    if (playerdata.level < SeichiAssist.seichiAssistConfig.getDualBreaklevel) {
       return
     }
 
@@ -341,8 +345,8 @@ class PlayerClickListener  extends  Listener {
 
     if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
 
-      val mainhandflag = currentItem in MaterialSets.breakMaterials
-      val offhandflag = player.inventory.itemInOffHand.getType in MaterialSets.breakMaterials
+      val mainhandflag = MaterialSets.breakMaterials.contains(currentItem)
+      val offhandflag = MaterialSets.breakMaterials.contains(player.getInventory.getItemInOffHand.getType)
 
       var activemineflagnum = playerdata.activeskilldata.mineflagnum
       //どちらにも対応したアイテムを持っていない場合終了
@@ -352,7 +356,7 @@ class PlayerClickListener  extends  Listener {
       //アクション実行されたブロックがある場合の処理
       if (action == Action.RIGHT_CLICK_BLOCK) {
         //クリックされたブロックの種類を取得
-        val cmaterial = event.getClickedBlock.type
+        val cmaterial = event.getClickedBlock.getType
         //cancelledmateriallistに存在すれば処理終了
         if (MaterialSets.cancelledMaterials.contains(cmaterial)) {
           return
@@ -373,28 +377,28 @@ class PlayerClickListener  extends  Listener {
         if (skillTypeId == ActiveSkill.BREAK.gettypenum() && skillNumber == 1 || skillTypeId == ActiveSkill.BREAK.gettypenum() && skillNumber == 2) {
 
           activemineflagnum = (activemineflagnum + 1) % 3
-          val status = when (activemineflagnum) {
-            0 => "：OFF"
-            1 => ":ON-Above(上向き）"
-            2 => ":ON-Under(下向き）"
-            else => throw RuntimeException("This branch should not be reached")
+          val status = activemineflagnum match {
+            case 0 => "：OFF"
+            case 1 => ":ON-Above(上向き）"
+            case 2 => ":ON-Under(下向き）"
+            case _ => throw new RuntimeException("This branch should not be reached")
           }
-          player.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(skillTypeId, skillNumber) + status)
+          player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + status)
           playerdata.activeskilldata.updateSkill(player, skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
         } else if (skillTypeId > 0 && skillNumber > 0
             && skillTypeId < 4) {
           activemineflagnum = (activemineflagnum + 1) % 2
-          when (activemineflagnum) {
-            0 => player.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(skillTypeId, skillNumber) + "：OFF")
-            1 => player.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(skillTypeId, skillNumber) + ":ON")
+          activemineflagnum match {
+            case 0 => player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + "：OFF")
+            case 1 => player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + ":ON")
           }
           playerdata.activeskilldata.updateSkill(player, skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
         }
       }
 
-      if (player.inventory.itemInOffHand.getType in MaterialSets.breakMaterials && equipmentslot == EquipmentSlot.OFF_HAND) {
+      if (MaterialSets.breakMaterials(player.getInventory.getItemInOffHand.getType) && equipmentslot == EquipmentSlot.OFF_HAND) {
         //オフハンドで指定ツールを持っていた時の処理
 
         //設置をキャンセル
@@ -408,9 +412,9 @@ class PlayerClickListener  extends  Listener {
             activemineflagnum = (activemineflagnum + 1) % 2
           }
           if (activemineflagnum == 0) {
-            player.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(assaultTypeId, assaultNumber) + ":OFF")
+            player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(assaultTypeId, assaultNumber) + ":OFF")
           } else {
-            player.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(assaultTypeId, assaultNumber) + ":ON")
+            player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(assaultTypeId, assaultNumber) + ":ON")
           }
           playerdata.activeskilldata.updateAssaultSkill(player, assaultTypeId, assaultNumber, activemineflagnum)
           player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
@@ -427,7 +431,7 @@ class PlayerClickListener  extends  Listener {
     //プレイヤーが起こしたアクションを取得
     val action = event.getAction
 
-    if (player.inventory.itemInMainHand.getType != Material.STICK) return
+    if (player.getInventory.getItemInMainHand.getType != Material.STICK) return
 
     event.setCancelled(true)
 
@@ -440,8 +444,10 @@ class PlayerClickListener  extends  Listener {
         StickMenu.firstPage.open
     )
 
-    GlobalScope.launch(Schedulers.async) {
-      effect.runFor(player)
+    effect(player).unsafeRunAsync {
+      case Left(error) =>
+        println("Caught exception while opening StickMenu")
+        error.printStackTrace()
     }
   }
 
@@ -465,13 +471,13 @@ class PlayerClickListener  extends  Listener {
       //念のためエラー分岐
       if (playerdata == null) {
         Util.sendPlayerDataNullMessage(player)
-        plugin.logger.warning(player.getName + " => PlayerData not found.")
-        plugin.logger.warning("PlayerClickListener.onPlayerOpenInventorySkillEvent")
+        plugin.getLogger.warning(player.getName + " => PlayerData not found.")
+        plugin.getLogger.warning("PlayerClickListener.onPlayerOpenInventorySkillEvent")
         return
       }
       //パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
-      if (playerdata.level < SeichiAssist.seichiAssistConfig.passivePortalInventorylevel) {
-        player.sendMessage(GREEN.toString() + "4次元ポケットを入手するには整地レベルが" + SeichiAssist.seichiAssistConfig.passivePortalInventorylevel + "以上必要です。")
+      if (playerdata.level < SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel) {
+        player.sendMessage(GREEN.toString() + "4次元ポケットを入手するには整地レベルが" + SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel + "以上必要です。")
         return
       }
       if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
@@ -491,14 +497,15 @@ class PlayerClickListener  extends  Listener {
   @EventHandler
   def onPlayerRightClickExpBottleEvent(event: PlayerInteractEvent) {
     // 経験値瓶を持った状態でShift右クリックをした場合
-    if (event.getPlayer.isSneaking && event.getPlayer.inventory.itemInMainHand.getType == Material.EXP_BOTTLE
+    if (event.getPlayer.isSneaking && event.getPlayer.getInventory.getItemInMainHand.getType == Material.EXP_BOTTLE
         && (event.getAction == Action.RIGHT_CLICK_AIR || event.getAction == Action.RIGHT_CLICK_BLOCK)) {
       event.setCancelled(true)
-      val num = event.getItem.amount
-      for (cnt in 0 until num) {
+
+      (0 until event.getItem.getAmount).foreach { _ =>
         event.getPlayer.launchProjectile(classOf[ThrownExpBottle])
       }
-      event.getPlayer.inventory.itemInMainHand = ItemStack(Material.AIR)
+
+      event.getPlayer.getInventory.setItemInMainHand(new ItemStack(Material.AIR))
     }
   }
 
@@ -506,27 +513,27 @@ class PlayerClickListener  extends  Listener {
   @EventHandler
   def onPlayerRightClickMineHeadEvent(e: PlayerInteractEvent) {
 
-    val p = e.player
-    val useItem = p.inventory.itemInMainHand
+    val p = e.getPlayer
+    val useItem = p.getInventory.getItemInMainHand
     //専用アイテムを持っていない場合無視
     if (!Util.isMineHeadItem(useItem)) {
       return
     }
 
-    val action = e.action
+    val action = e.getAction
     //ブロックの左クリックじゃない場合無視
     if (action != Action.LEFT_CLICK_BLOCK) {
       return
     }
 
-    val targetBlock = e.clickedBlock
+    val targetBlock = e.getClickedBlock
     //頭じゃない場合無視
     if (targetBlock.getType != Material.SKULL) {
       return
     }
 
     //壊せない場合無視
-    if (!BreakUtil.canBreak(p, targetBlock)) {
+    if (!BreakUtil.canBreak(p, Some.apply(targetBlock))) {
       return
     }
 
@@ -537,9 +544,9 @@ class PlayerClickListener  extends  Listener {
     }
 
     //頭を付与
-    p.inventory.addItem(Util.skullDataFromBlock(targetBlock))
+    p.getInventory.addItem(Util.getSkullDataFromBlock(targetBlock))
     //ブロックを空気で置き換える
-    targetBlock.type = Material.AIR
+    targetBlock.setType(Material.AIR)
     //音を鳴らしておく
     p.playSound(p.getLocation, Sound.ENTITY_ITEM_PICKUP, 2.0f, 1.0f)
   }

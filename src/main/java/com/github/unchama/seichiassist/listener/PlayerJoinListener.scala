@@ -1,16 +1,22 @@
 package com.github.unchama.seichiassist.listener
 
-import java.util
 import java.util.UUID
 
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.{ActiveSkill, ManagedWorld, SeichiAssist}
+import net.coreprotect.model.Config
 import org.bukkit.ChatColor._
-import org.bukkit.Sound
-import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}
+import org.bukkit.entity.Player
+import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerChangedWorldEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.inventory.ItemStack
+import org.bukkit.{Material, Sound}
+
+import scala.collection.mutable
 class PlayerJoinListener  extends  Listener {
-  private val playerMap: util.HashMap[UUID, PlayerData] = SeichiAssist.playermap
+  private val playerMap: mutable.HashMap[UUID, PlayerData] = SeichiAssist.playermap
   private val databaseGateway = SeichiAssist.databaseGateway
 
   private def loadPlayerData(playerUuid: UUID, playerName: String) {
@@ -24,26 +30,27 @@ class PlayerJoinListener  extends  Listener {
   @EventHandler
   def onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent) {
     val maxTryCount = 10
-    runBlocking {
-      (1 until maxTryCount + 1).forEach { tryCount =>
-        val isLastTry = tryCount == maxTryCount
 
-        try {
-          loadPlayerData(event.getUniqueId, event.getName)
-          return@runBlocking
-        } catch (e: Exception) {
+    (1 until maxTryCount + 1).foreach { tryCount =>
+      val isLastTry = tryCount == maxTryCount
+
+      try {
+        loadPlayerData(event.getUniqueId, event.getName)
+        return
+      } catch {
+        case e: Exception =>
           if (isLastTry) {
             println("Caught exception while loading PlayerData.")
             e.printStackTrace()
 
             event.setKickMessage(failedToLoadDataError)
-            event.getLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
-            return@runBlocking
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
+            return
           }
-        }
-
-        delay(600)
       }
+
+      // intentional blocking
+      Thread.sleep(600)
     }
   }
 
@@ -56,21 +63,22 @@ class PlayerJoinListener  extends  Listener {
       サーバー起動してからワールドが読み込まれる前に接続試行をするとAsyncPlayerPreLoginEventが発火されないことがあり、
       そういった場合ではPlayerDataが読み込まれないままここに到達するため、読み込み試行をしてだめだったらキックする。
      */
-    if (!playerMap.containsKey(player.uniqueId)) {
+    if (!playerMap.isDefinedAt(player.getUniqueId)) {
       try {
-        loadPlayerData(player.uniqueId, player.getName)
-      } catch (e: Exception) {
-        println("Caught exception while loading PlayerData.")
-        e.printStackTrace()
+        loadPlayerData(player.getUniqueId, player.getName)
+      } catch {
+        case e: Exception =>
+          println("Caught exception while loading PlayerData.")
+          e.printStackTrace()
 
-        player.kickPlayer(failedToLoadDataError)
-        return
+          player.kickPlayer(failedToLoadDataError)
+          return
       }
     }
 
-    run {
-      val limitedLoginEvent = LimitedLoginEvent()
-      val playerData = playerMap(player.uniqueId)
+    {
+      val limitedLoginEvent = new LimitedLoginEvent()
+      val playerData = playerMap(player.getUniqueId)
 
       //期間限定ログインイベント判別処理
       limitedLoginEvent.getLastcheck(playerData.lastcheckdate)
@@ -93,18 +101,18 @@ class PlayerJoinListener  extends  Listener {
       Util.sendEveryMessage(WHITE.toString() + "webサイトはもう読みましたか？→" + YELLOW + "" + UNDERLINE + "https://www.seichi.network/gigantic")
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
       //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
-      player.inventory.addItem(ItemStack(Material.STICK))
-      player.inventory.addItem(ItemStack(Material.ELYTRA))
-      player.inventory.addItem(ItemStack(Material.DIAMOND_PICKAXE))
-      player.inventory.addItem(ItemStack(Material.DIAMOND_SPADE))
+      player.getInventory.addItem(new ItemStack(Material.STICK))
+      player.getInventory.addItem(new ItemStack(Material.ELYTRA))
+      player.getInventory.addItem(new ItemStack(Material.DIAMOND_PICKAXE))
+      player.getInventory.addItem(new ItemStack(Material.DIAMOND_SPADE))
 
-      player.inventory.addItem(ItemStack(Material.LOG, 64, 0.toShort()),
-          ItemStack(Material.LOG, 64, 0.toShort()),
-          ItemStack(Material.LOG, 64, 2.toShort()),
-          ItemStack(Material.LOG_2, 64, 1.toShort()))
+      player.getInventory.addItem(new ItemStack(Material.LOG, 64, 0.toShort),
+          new ItemStack(Material.LOG, 64, 0.toShort),
+          new ItemStack(Material.LOG, 64, 2.toShort),
+          new ItemStack(Material.LOG_2, 64, 1.toShort))
 
       /* 期間限定ダイヤ配布.期間終了したので64→32に変更して恒久継続 */
-      player.inventory.addItem(ItemStack(Material.DIAMOND, 32))
+      player.getInventory.addItem(new ItemStack(Material.DIAMOND, 32))
 
       player.sendMessage("初期装備を配布しました。Eキーで確認してネ")
       //メビウスおひとつどうぞ
@@ -119,13 +127,13 @@ class PlayerJoinListener  extends  Listener {
   @EventHandler
   def onPlayerChangedWorld(event: PlayerChangedWorldEvent) {
     // 整地ワールドから他のワールドに移動したとき
-    if (ManagedWorld.fromBukkitWorld(event.getFrom)?.isSeichi == true) {
+    if (ManagedWorld.fromBukkitWorld(event.getFrom).exists(_.isSeichi)) {
       val p = event.getPlayer
-      val pd = playerMap(p.uniqueId)
+      val pd = playerMap(p.getUniqueId)
 
       // coreprotectを切る
       // inspectマップにtrueで登録されている場合
-      if (Config.inspecting(p.getName] != null && (Config.inspecting[p.getName) == true)) {
+      if (Config.inspecting.getOrDefault(p.getName, false)) {
         // falseに変更する
         p.sendMessage("§3CoreProtect §f- Inspector now disabled.")
         Config.inspecting(p.getName) = false
@@ -137,7 +145,7 @@ class PlayerJoinListener  extends  Listener {
         // アクティブスキルがONになっている
         if (pd.activeskilldata.mineflagnum != 0) {
           // メッセージを表示
-          p.sendMessage(GOLD.toString() + ActiveSkill.activeSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF")
+          p.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF")
           // 内部状態をアサルトOFFに変更
           pd.activeskilldata.updateAssaultSkill(p, pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum, 0)
           // トグル音を鳴らす

@@ -9,19 +9,20 @@ import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import scala.collection.mutable.HashMap;
 
 import java.util.*;
 
 public class VotingFairyListener implements Listener {
 
 	public static void summon(Player p){
-		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap();
+		HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 		UUID uuid = p.getUniqueId();
 		PlayerData playerdata = playermap.apply(uuid);
 		Mana mana = playerdata.activeskilldata().mana;
 
 		//召喚した時間を取り出す
-		playerdata.setVotingFairyStartTime(new GregorianCalendar(
+		playerdata.votingFairyStartTime_$eq(new GregorianCalendar(
                 Calendar.getInstance().get(Calendar.YEAR),
                 Calendar.getInstance().get(Calendar.MONTH),
                 Calendar.getInstance().get(Calendar.DATE),
@@ -38,7 +39,7 @@ public class VotingFairyListener implements Listener {
 			 : playerdata.toggleVotingFairy() == 4 ? hour + 2
 					 : hour;
 
-		playerdata.setVotingFairyEndTime(new GregorianCalendar(
+		playerdata.votingFairyEndTime_$eq(new GregorianCalendar(
                 Calendar.getInstance().get(Calendar.YEAR),
                 Calendar.getInstance().get(Calendar.MONTH),
                 Calendar.getInstance().get(Calendar.DATE),
@@ -49,14 +50,14 @@ public class VotingFairyListener implements Listener {
 		//投票ptを減らす
 		playerdata.activeskilldata().effectpoint -= playerdata.toggleVotingFairy() *2;
 		//フラグ
-		playerdata.setUsingVotingFairy(true);
+		playerdata.usingVotingFairy_$eq(true);
 
 		//マナ回復量最大値の決定
 		double n = mana.getMax();
-		playerdata.setVotingFairyRecoveryValue((int) ((n / 10 - n / 30 + (new Random().nextInt((int) (n / 20)))) / 2.9) + 200);
+		playerdata.VotingFairyRecoveryValue_$eq((int) ((n / 10 - n / 30 + (new Random().nextInt((int) (n / 20)))) / 2.9) + 200);
 
 		p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "妖精を呼び出しました！");
-		p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "この子は1分間に約" + playerdata.votingFairyRecoveryValue() + "マナ");
+		p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "この子は1分間に約" + playerdata.VotingFairyRecoveryValue() + "マナ");
 		p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "回復させる力を持っているようです。");
 
 		//メッセージ
@@ -106,13 +107,13 @@ public class VotingFairyListener implements Listener {
 
 		}else {
 
-			double n = playerdata.votingFairyRecoveryValue();	//実際のマナ回復量
+			double n = playerdata.VotingFairyRecoveryValue();	//実際のマナ回復量
 			int	m = getGiveAppleValue(playerdata);			//りんご消費量
 
 			//連続投票によってりんご消費量を抑える
-			if (playerdata.chainVote() >= 30 )		m /= 2;
-			else if (playerdata.chainVote() >= 10 )	m /= 1.5;
-			else if (playerdata.chainVote() >= 3 )	m /= 1.25;
+			if (playerdata.ChainVote() >= 30 )		m /= 2;
+			else if (playerdata.ChainVote() >= 10 )	m /= 1.5;
+			else if (playerdata.ChainVote() >= 3 )	m /= 1.25;
 
 			//トグルで数値変更
 			if (playerdata.toggleGiveApple() == 2) {
@@ -135,7 +136,7 @@ public class VotingFairyListener implements Listener {
 			}
 
 			//りんご所持数で値変更
-			final MineStackObj gachaimoObject = Util.findMineStackObjectByName("gachaimo");
+			final MineStackObj gachaimoObject = Util.findMineStackObjectByName("gachaimo").get();
 			long l = playerdata.minestack().getStackedAmountOf(gachaimoObject);
 
 			if(m > l) {
@@ -158,9 +159,9 @@ public class VotingFairyListener implements Listener {
 			//マナ回復
 			mana.increase(n, p, playerdata.level());
 			//りんごを減らす
-			playerdata.minestack().subtractStackedAmountOf(Util.findMineStackObjectByName("gachaimo"), m);
+			playerdata.minestack().subtractStackedAmountOf(Util.findMineStackObjectByName("gachaimo").get(), m);
 			//減ったりんごの数をplayerdataに加算
-			playerdata.setP_apple(playerdata.p_apple() + m);
+			playerdata.p_apple_$eq(playerdata.p_apple() + m);
 
 			//メッセージ
 			final List<String> yes = Arrays.asList(
